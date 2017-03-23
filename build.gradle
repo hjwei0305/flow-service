@@ -1,0 +1,18 @@
+allprojects {
+    group GROUP
+    version VERSION
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    // JVM 版本号要求
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenLocal()
+
+        maven { url 'http://rddgit.changhong.com:8081/nexus/content/groups/public' }
+    }
+}
