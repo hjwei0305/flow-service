@@ -13,6 +13,6 @@ allprojects {
     repositories {
         mavenLocal()
 
-        maven { url 'http://rddgit.changhong.com:8081/nexus/content/groups/public' }
+        maven { url 'http://10.4.32.53:8081/nexus/content/groups/public' }
     }
 }

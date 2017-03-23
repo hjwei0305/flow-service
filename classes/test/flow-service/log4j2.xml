@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    trace：是追踪，就是程序推进以下，你就可以写个trace输出，所以trace应该会特别多，不过没关系，我们可以设置最低日志级别不让他输出。
+　　debug：调试么，我一般就只用这个作为最低级别，trace压根不用。是在没办法就用eclipse或者idea的debug功能就好了么。
+　　info： 输出一下你感兴趣的或者重要的信息，这个用的最多了。
+　　warn： 有些信息不是错误信息，但是也要给程序员的一些提示，类似于eclipse中代码的验证不是有error 和warn（不算错误但是也请注意，比如以下depressed的方法）。
+　　error：错误信息。用的也比较多。
+　　fatal：级别比较高了。重大错误，这种级别你可以直接停止程序了。
+-->
+
+<!-- status=debug 可以查看log4j的装配过程 -->
+<!--  monitorInterval="1800" 指每隔1800秒，自动监控该配置文件是否有变化，如果变化，则自动根据文件内容重新配置 -->
+<configuration status="off" monitorInterval="1800">
+    <properties>
+        <!-- 容器启动目录下(如tomcat bin目录下) -->
+        <property name="LOG_HOME">logs</property>
+        <!-- 在classPath目录下 -->
+        <!--<property name="LOG_HOME">${log4j:configParentLocation}/logs</property>-->
+        <property name="DEV_FILE_NAME">${LOG_HOME}/dev.log</property>
+        <property name="ERR_FILE_NAME">${LOG_HOME}/error.log</property>
+        <property name="ROLLING_ERR_FILE_NAME">{LOG_HOME}/backup/error_%d{yyyy-MM-dd}_%i.log.gz</property>
+        <property name="SQL_FILE_NAME">${LOG_HOME}/sql.log</property>
+        <property name="ROLLING_SQL_FILE_NAME">{LOG_HOME}/backup/sql_%d{yyyy-MM-dd}_%i.log.gz</property>
+
+        <!-- 输出日志的格式 -->
+        <property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n</property>
+
+        <!-- 日志切割的最小单位 -->
+        <property name="EVERY_FILE_SIZE">100 MB</property>
+
+        <!-- 日志输出级别 -->
+        <property name="OUTPUT_LOG_LEVEL">debug</property>
+        <property name="MAX_HISTORY">20</property>
+    </properties>
+
+    <!--先定义所有的appender-->
+    <appenders>
+        <!-- 定义控制台输出 -->
+        <!--<Console name="Console" target="SYSTEM_OUT" follow="true">-->
+        <Console name="Console">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- 定义文件输出 开发测试使用 这个log每次运行程序会自动清空，由append属性决定 -->
+        <File name="DevLog" fileName="${DEV_FILE_NAME}" append="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+
+        <!-- 定义文件输出 error -->
+        <RollingRandomAccessFile name="ErrLog" fileName="${ERR_FILE_NAME}" filePattern="${ROLLING_ERR_FILE_NAME}">
+
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <PatternLayout header="${java:runtime} - ${java:vm} - ${java:os}" pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="${EVERY_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${MAX_HISTORY}"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="SQLLog" fileName="${SQL_FILE_NAME}" filePattern="${ROLLING_SQL_FILE_NAME}">
+
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <!--<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>-->
+
+            <PatternLayout header="${java:runtime} - ${java:vm} - ${java:os}" pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="${EVERY_FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${MAX_HISTORY}"/>
+        </RollingRandomAccessFile>
+
+    </appenders>
+
+    <loggers>
+        <!-- additivity="true" 是否重复记录 -->
+        <!-- 3rd party Loggers -->
+
+        <!-- spring -->
+        <logger name="org.springframework" level="WARN"/>
+        <!--<logger name="org.springframework.core" level="INFO"/>-->
+        <!--<logger name="org.springframework.beans" level="INFO"/>-->
+        <!--<logger name="org.springframework.context" level="INFO"/>-->
+        <!--<logger name="org.springframework.web" level="INFO"/>-->
+
+        <!--myibatis log configure-->
+        <logger name="org.hibernate" level="WARN"/>
+
+        <!--myibatis log configure-->
+        <logger name="com.apache.ibatis" level="TRACE"/>
+        <!--<logger name="java.sql.Connection" level="DEBUG"/>-->
+        <!--<logger name="java.sql.Statement" level="DEBUG"/>-->
+        <!--<logger name="java.sql.PreparedStatement" level="DEBUG"/>-->
+
+        <!--<logger name="cn.rcsit" level="error">-->
+            <!--<appender-ref ref="DBLog"/>-->
+        <!--</logger>-->
+
+        <!-- Root Logger -->
+        <root level="debug">
+            <!--<appender-ref ref="ErrLog"/>-->
+            <appender-ref ref="DevLog"/>
+            <appender-ref ref="Console"/>
+            <!--<appender-ref ref="DBLog"/>-->
+        </root>
+    </loggers>
+
+</configuration>

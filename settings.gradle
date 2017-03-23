@@ -1,2 +1,7 @@
 rootProject.name = 'ecmp-workflow'
+include 'flow-entity'
+include 'flow-dao'
+include 'flow-service'
+include 'flow-api'
+include 'flow-web'
 
