@@ -17,8 +17,8 @@ public class AppModuleBaseServiceTest extends BasicContextTestCase {
     @Test
     public void save() {
         AppModule appModule = new AppModule();
-        appModule.setCode("ecmp-flow-appModule" + System.currentTimeMillis());
-        appModule.setName("应用模块测试1");
+        appModule.setCode("ecmp-flow-appModule22_" + System.currentTimeMillis());
+        appModule.setName("应用模块测试22");
         appModule = appModuleService.save(appModule);
         logger.debug("id = {}", appModule.getId());
         logger.debug("create结果：{}", appModule);

@@ -1,8 +1,10 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
-import com.ecmp.flow.dao.AppModuleDao;
-import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.dao.FlowDefVersionDao;
+import com.ecmp.flow.dao.FlowDefinationDao;
+import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowDefination;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,8 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class AppModuleService extends BaseService<AppModule, String>{
+public class FlowDefVersionService extends BaseService<FlowDefVersion, String>{
 
     @Autowired
-    private AppModuleDao appModuleDao;
+    private FlowDefVersionDao flowDefVersionDao;
 }
