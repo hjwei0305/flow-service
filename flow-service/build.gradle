@@ -6,6 +6,8 @@ ext {
 
 }
 
+apply plugin: 'war'
+
 // 依赖
 dependencies {
     compile project(':flow-entity')
@@ -14,6 +16,11 @@ dependencies {
 
     compile(
             "com.ecmp:core-service:$core_version",
+            "org.apache.cxf:cxf-rt-frontend-jaxrs:$apache_cxf_version",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$fasterxml_version",
+            "org.springframework:spring-web:$spring_version",
+            "org.webjars:swagger-ui:$swagger_version",
+
             "org.activiti:activiti-engine:$activiti_version",
             "org.activiti:activiti-bpmn-model:$activiti_version",
             "org.activiti:activiti-bpmn-converter:$activiti_version",
@@ -22,7 +29,8 @@ dependencies {
 
             "com.h2database:h2:1.3.172",
             "org.codehaus.groovy:groovy:1.8.6",
-            "com.fasterxml.uuid:java-uuid-generator:3.1.4"
+            "com.fasterxml.uuid:java-uuid-generator:3.1.4",
+            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
 
     // 测试依赖

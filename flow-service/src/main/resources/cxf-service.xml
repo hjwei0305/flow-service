@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:cxf="http://cxf.apache.org/core" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://cxf.apache.org/core
+        http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/jaxrs
+        http://cxf.apache.org/schemas/jaxrs.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <import resource="classpath*:ecmp-context.xml"/>
+    <import resource="classpath*:ecmp-service.xml"/>
+    <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
+        <property name="basePath" value="/flow"/>
+        <property name="resourcePackage" value="com.ecmp.flow.api"/>
+        <property name="title" value="工作流项目API测试文档"/>
+        <property name="description" value="工作流项目"/>
+    </bean>
+    <jaxrs:server id="userResource" address="/">
+        <jaxrs:serviceBeans>
+            <bean class="com.ecmp.flow.service.AppModuleService" />
+            <bean class="com.ecmp.flow.service.BusinessModelService" />
+           <!-- <bean class="com.ecmp.flow.service.FlowTypeService" />
+            <bean class="com.ecmp.flow.service.FlowDefinationService" />
+            <bean class="com.ecmp.flow.service.FlowDefVersionService" />
+            <bean class="com.ecmp.flow.service.FlowHistoryService" />
+            <bean class="com.ecmp.flow.service.FlowInstanceService" />
+            <bean class="com.ecmp.flow.service.FlowServiceUrlService" />
+            <bean class="com.ecmp.flow.service.FlowTaskService" />-->
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+        </jaxrs:providers>
+        <jaxrs:features>
+            <ref bean="swagger2Feature" />
+        </jaxrs:features>
+    </jaxrs:server>
+</beans>

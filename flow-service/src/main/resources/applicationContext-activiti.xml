@@ -12,16 +12,13 @@
          ">
 
 	<!-- 引入core上下文 -->
-	<import resource="classpath*:ecmp-context.xml"/>
-
-	<import resource="classpath*:ecmp-service.xml"/>
-
+    <import resource="classpath:cxf-service.xml"/>
 	<!-- activiti5集成spring配置 -->
 	<bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
 		<!-- <property name="databaseSchemaUpdate" value="drop-create" /> -->
-		<property name="databaseSchemaUpdate" value="drop-create" />
+		<property name="databaseSchemaUpdate" value="true" />
 		<property name="jobExecutorActivate" value="false" />
 
 		<!--<property name="mailServerHost" value="localhost" />

@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.entity.AppModule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：
+ * 实现功能：应用模块服务实现
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -19,8 +20,21 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class AppModuleService extends BaseService<AppModule, String>{
+public class AppModuleService extends BaseService<AppModule, String> implements IAppModuleService{
 
     @Autowired
     private AppModuleDao appModuleDao;
+
+    @Override
+    public String hello() {
+        return "hello";
+    }
+
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<AppModule> findAll() {
+//        List<AppModule> list=this.appModuleDao.findAll();
+//        //Hibernate.initialize(list);// 强制加载相关联pojo
+//        return list;
+//    }
 }

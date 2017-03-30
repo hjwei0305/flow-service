@@ -9,7 +9,11 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-entity')
-
+    compile (
+            "javax.ws.rs:javax.ws.rs-api:$javax_version",
+            "org.apache.cxf:cxf-rt-rs-service-description-swagger:$apache_cxf_version",
+            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
+    )
     /*testCompile(
             "junit:junit:$junit_version"
     )*/

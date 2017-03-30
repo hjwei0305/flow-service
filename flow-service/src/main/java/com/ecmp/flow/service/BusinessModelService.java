@@ -1,9 +1,8 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
-import com.ecmp.flow.dao.AppModuleDao;
+import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.dao.BusinessModelDao;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,13 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class BusinessModelService extends BaseService<BusinessModel, String>{
+public class BusinessModelService extends BaseService<BusinessModel, String> implements IBusinessModelService{
 
     @Autowired
     private BusinessModelDao businessModelDao;
+
+    @Override
+    public String hello() {
+        return "hello";
+    }
 }
