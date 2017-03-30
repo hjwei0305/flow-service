@@ -51,8 +51,7 @@ public class AppModule extends com.ecmp.core.entity.BaseEntity {
     /**
      * 拥有的业务实体模型
      */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appModule_id")
+    @Transient
     private Set<BusinessModel> businessModels = new HashSet<BusinessModel>();
     
 

@@ -56,6 +56,12 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
     @JoinColumn(name = "businessModel_id")
     private BusinessModel businessModel;
 
+    /**
+     * 拥有的流程定义
+     */
+    @Transient
+    private Set<FlowDefination> flowDefinations = new HashSet<FlowDefination>(0);
+
 
     public String getName() {
         return name;
@@ -88,6 +94,15 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
     public void setBusinessModel(BusinessModel businessModel) {
         this.businessModel = businessModel;
     }
+
+    public Set<FlowDefination> getFlowDefinations() {
+        return this.flowDefinations;
+    }
+
+    public void setFlowDefinations(Set<FlowDefination> flowDefinations) {
+        this.flowDefinations = flowDefinations;
+    }
+
 
     @Override
     public int hashCode() {

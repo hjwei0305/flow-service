@@ -56,9 +56,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
     /**
      * 拥有的流程类型
      */
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "businessModel_id")
+    @Transient
     private Set<FlowType> flowTypes = new HashSet<FlowType>();
 
 

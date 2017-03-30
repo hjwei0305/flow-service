@@ -1,201 +1,222 @@
 package com.ecmp.flow.entity;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 
+import org.hibernate.annotations.GenericGenerator;
 
 /**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 流程类型模块Entity定义
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/21 10:20      谭军(tanjun)                新建
- * <p/>
- * *************************************************************************************************
+ * 流程定义版本实体
  */
-
-@Entity(name = "flow_defVersion")
-@DynamicInsert
-@DynamicUpdate
+@Entity
+@Table(name = "flow_defVersion", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "defKey"))
 public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
-    /**
-     * 名称
-     */
-    @Column(length = 80, nullable = false)
-    private String name;
 
 
-    /**
-     * 定义key
-     */
-    private String defKey;
+	/**
+	 * 所属流程定义
+	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "flowDefination_id")
+	private FlowDefination flowDefination;
 
-    /**
-     * 部署ID
-     */
-    private String actDeployId;
+	/**
+	 * 定义KEY
+	 */
+	@Column(name = "defKey", unique = true, nullable = false)
+	private String defKey;
 
-    /**
-     * 启动条件UEL
-     */
-    private String startUel;
+	/**
+	 * 名称
+	 */
+	@Column(name = "name", nullable = false, length = 80)
+	private String name;
 
-    /**
-     * 版本号
-     */
-    private Integer versionCode;
+	/**
+	 * 部署ID
+	 */
+	@Column(name = "actDeployId", length = 36)
+	private String actDeployId;
 
-    /**
-     * 优先级
-     */
-    private Integer priority;
+	/**
+	 * 启动条件UEL
+	 */
+	@Column(name = "startUel")
+	private String startUel;
 
-    /**
-     * 流程定义的JSON字符窜
-     */
-    private String defJson;
+	/**
+	 * 版本号
+	 */
+	@Column(name = "versionCode")
+	private Integer versionCode;
 
-    /**
-     * 流程定义的Bpmn字符窜
-     */
-    private String defBpmn;
+	/**
+	 * 优先级
+	 */
+	@Column(name = "priority")
+	private Integer priority;
 
-    /**
-     * 流程定义的最终Xml字符窜
-     */
-    private String defXml;
+	/**
+	 * 流程JSON文本
+	 */
+	@Column(name = "defJson", length = 65535)
+	private String defJson;
 
-    /**
-     * 描述
-     */
-    @Column(length = 250)
-    private String depict;
+	/**
+	 * 流程BPMN文本
+	 */
+	@Column(name = "defBpmn", length = 65535)
+	private String defBpmn;
 
+	/**
+	 * 最终定义XML
+	 */
+	@Column(name = "defXML", length = 65535)
+	private String defXml;
 
-    /**
-     * 关联业务实体模型
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "flowDefination_id")
-    private FlowDefination flowDefination;
+	/**
+	 * 描述
+	 */
+	@Column(name = "depict")
+	private String depict;
 
+	/**
+	 * 拥有的流程实例
+	 */
+	@Transient
+	private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
+	// Constructors
 
-    public String getName() {
-        return name;
-    }
+	/** default constructor */
+	public FlowDefVersion() {
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	/** minimal constructor */
+	public FlowDefVersion(String defKey, String name) {
+		this.defKey = defKey;
+		this.name = name;
 
-    public String getDefKey() {
-        return defKey;
-    }
+	}
 
-    public void setDefKey(String defKey) {
-        this.defKey = defKey;
-    }
-
-    public String getActDeployId() {
-        return actDeployId;
-    }
-
-    public void setActDeployId(String actDeployId) {
-        this.actDeployId = actDeployId;
-    }
-
-    public String getStartUel() {
-        return startUel;
-    }
-
-    public void setStartUel(String startUel) {
-        this.startUel = startUel;
-    }
-
-    public Integer getVersionCode() {
-        return versionCode;
-    }
-
-    public void setVersionCode(Integer versionCode) {
-        this.versionCode = versionCode;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Integer priority) {
-        this.priority = priority;
-    }
-
-    public String getDefJson() {
-        return defJson;
-    }
-
-    public void setDefJson(String defJson) {
-        this.defJson = defJson;
-    }
-
-    public String getDefBpmn() {
-        return defBpmn;
-    }
-
-    public void setDefBpmn(String defBpmn) {
-        this.defBpmn = defBpmn;
-    }
-
-    public String getDefXml() {
-        return defXml;
-    }
-
-    public void setDefXml(String defXml) {
-        this.defXml = defXml;
-    }
-
-    public FlowDefination getFlowDefination() {
-        return flowDefination;
-    }
-
-    public void setFlowDefination(FlowDefination flowDefination) {
-        this.flowDefination = flowDefination;
-    }
-
-    public String getDepict() {
-        return depict;
-    }
-
-    public void setDepict(String depict) {
-        this.depict = depict;
-    }
+	/** full constructor */
+	public FlowDefVersion(FlowDefination flowDefination, String defKey,
+			String name, String actDeployId, String startUel,
+			Integer versionCode, Integer priority, String defJson,
+			String defBpmn, String defXml, String depict, Set<FlowInstance> flowInstances) {
+		this.flowDefination = flowDefination;
+		this.defKey = defKey;
+		this.name = name;
+		this.actDeployId = actDeployId;
+		this.startUel = startUel;
+		this.versionCode = versionCode;
+		this.priority = priority;
+		this.defJson = defJson;
+		this.defBpmn = defBpmn;
+		this.defXml = defXml;
+		this.depict = depict;
+		this.flowInstances = flowInstances;
+	}
 
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("id", this.getId())
-                .append("name", this.name)
-                .append("defKey", this.defKey)
-                .append("depict",this.depict)
-                .toString();
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
+	public FlowDefination getFlowDefination() {
+		return this.flowDefination;
+	}
+
+	public void setFlowDefination(FlowDefination flowDefination) {
+		this.flowDefination = flowDefination;
+	}
+
+	public String getDefKey() {
+		return this.defKey;
+	}
+
+	public void setDefKey(String defKey) {
+		this.defKey = defKey;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getActDeployId() {
+		return this.actDeployId;
+	}
+
+	public void setActDeployId(String actDeployId) {
+		this.actDeployId = actDeployId;
+	}
+
+	public String getStartUel() {
+		return this.startUel;
+	}
+
+	public void setStartUel(String startUel) {
+		this.startUel = startUel;
+	}
+
+	public Integer getVersionCode() {
+		return this.versionCode;
+	}
+
+	public void setVersionCode(Integer versionCode) {
+		this.versionCode = versionCode;
+	}
+
+	public Integer getPriority() {
+		return this.priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
+
+	public String getDefJson() {
+		return this.defJson;
+	}
+
+	public void setDefJson(String defJson) {
+		this.defJson = defJson;
+	}
+
+	public String getDefBpmn() {
+		return this.defBpmn;
+	}
+
+	public void setDefBpmn(String defBpmn) {
+		this.defBpmn = defBpmn;
+	}
+
+	public String getDefXml() {
+		return this.defXml;
+	}
+
+	public void setDefXml(String defXml) {
+		this.defXml = defXml;
+	}
+
+	public String getDepict() {
+		return this.depict;
+	}
+
+	public void setDepict(String depict) {
+		this.depict = depict;
+	}
+
+
+	public Set<FlowInstance> getFlowInstances() {
+		return this.flowInstances;
+	}
+
+	public void setFlowInstances(Set<FlowInstance> flowInstances) {
+		this.flowInstances = flowInstances;
+	}
+
 }

@@ -5,6 +5,7 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
+import com.ecmp.flow.entity.FlowTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowDefVersionService extends BaseService<FlowDefVersion, String>{
+public class FlowDefVersionService extends BaseService<FlowDefVersion,String>{
 
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
