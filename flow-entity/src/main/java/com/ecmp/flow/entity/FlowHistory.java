@@ -8,12 +8,20 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
- * 流程历史实体
+ * *************************************************************************************************
+ * <p/>
+ * 实现功能：
+ * 流程历史模型Entity定义
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * 版本          变更时间             变更人                     变更原因
+ * ------------------------------------------------------------------------------------------------
+ * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
+ * <p/>
+ * *************************************************************************************************
  */
 @Entity
 @Table(name = "flow_history", catalog = "ecmp_flow")

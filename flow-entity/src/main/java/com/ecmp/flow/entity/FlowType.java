@@ -60,6 +60,7 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
      * 拥有的流程定义
      */
     @Transient
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowType")
     private Set<FlowDefination> flowDefinations = new HashSet<FlowDefination>(0);
 
 

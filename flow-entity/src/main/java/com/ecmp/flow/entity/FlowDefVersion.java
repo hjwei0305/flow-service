@@ -7,7 +7,17 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * 流程定义版本实体
+ * *************************************************************************************************
+ * <p/>
+ * 实现功能：
+ * 流程定义版本实体模型Entity定义
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * 版本          变更时间             变更人                     变更原因
+ * ------------------------------------------------------------------------------------------------
+ * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
+ * <p/>
+ * *************************************************************************************************
  */
 @Entity
 @Table(name = "flow_defVersion", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "defKey"))
@@ -85,6 +95,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	 * 拥有的流程实例
 	 */
 	@Transient
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefVersion")
 	private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
 	// Constructors

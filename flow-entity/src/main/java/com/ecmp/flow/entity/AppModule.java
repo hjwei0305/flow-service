@@ -52,6 +52,7 @@ public class AppModule extends com.ecmp.core.entity.BaseEntity {
      * 拥有的业务实体模型
      */
     @Transient
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "appModule")
     private Set<BusinessModel> businessModels = new HashSet<BusinessModel>();
     
 
@@ -77,6 +78,14 @@ public class AppModule extends com.ecmp.core.entity.BaseEntity {
 
     public void setDepict(String depict) {
         this.depict = depict;
+    }
+
+    public Set<BusinessModel> getBusinessModels() {
+        return businessModels;
+    }
+
+    public void setBusinessModels(Set<BusinessModel> businessModels) {
+        this.businessModels = businessModels;
     }
 
     @Override

@@ -9,7 +9,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * 流程定义实体
+ * *************************************************************************************************
+ * <p/>
+ * 实现功能：
+ * 流程定义实体模型Entity定义
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * 版本          变更时间             变更人                     变更原因
+ * ------------------------------------------------------------------------------------------------
+ * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
+ * <p/>
+ * *************************************************************************************************
  */
 @Entity
 @Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "code"))
@@ -56,6 +66,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 	 * 拥有的流程定义版本
 	 */
 	@Transient
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefination")
 	private Set<FlowDefVersion> flowDefVersions = new HashSet<FlowDefVersion>(0);
 
 

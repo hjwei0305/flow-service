@@ -27,8 +27,8 @@ public class FlowInstanceBaseServiceTest extends BasicContextTestCase {
 //        logger.debug("id = {}", appModule.getId());
 //        logger.debug("create结果：{}", appModule);
         FlowInstance flowInstance = new FlowInstance();
-        flowInstance.setFlowName("流程名称");
-        flowInstance.setBusinessId("业务id");
+        flowInstance.setFlowName("流程名称2");
+        flowInstance.setBusinessId("业务id2");
         flowInstance.setStartDate(new Timestamp(System.currentTimeMillis()));
         flowInstance.setEndDate(new Timestamp(System.currentTimeMillis()+1));
         flowInstanceService.save(flowInstance);
@@ -42,6 +42,11 @@ public class FlowInstanceBaseServiceTest extends BasicContextTestCase {
 
     @Test
     public void delete(){
+        List<FlowInstance> flowInstanceList = flowInstanceService.findAll();
+        if(flowInstanceList !=null && flowInstanceList.size()>0){
+            FlowInstance flowInstance = flowInstanceList.get(0);
+            flowInstanceService.delete(flowInstance);
+        }
     }
 
 }

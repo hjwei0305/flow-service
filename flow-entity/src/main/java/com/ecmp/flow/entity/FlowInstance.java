@@ -9,7 +9,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * 流程实例实体
+ * *************************************************************************************************
+ * <p/>
+ * 实现功能：
+ * 流程实例模型Entity定义
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * 版本          变更时间             变更人                     变更原因
+ * ------------------------------------------------------------------------------------------------
+ * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
+ * <p/>
+ * *************************************************************************************************
  */
 @Entity
 @Table(name = "flow_instance", catalog = "ecmp_flow")
@@ -50,12 +60,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	 * 拥有的流程历史
 	 */
 	@Transient
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowInstance")
 	private Set<FlowHistory> flowHistories = new HashSet<FlowHistory>(0);
 
 	/**
 	 * 拥有的流程任务
 	 */
 	@Transient
+//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowInstance")
 	private Set<FlowTask> flowTasks = new HashSet<FlowTask>(0);
 
 
