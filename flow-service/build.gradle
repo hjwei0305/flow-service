@@ -35,6 +35,8 @@ dependencies {
     // 测试依赖
     testCompile(
             "org.springframework:spring-test:$spring_version",
+            "org.apache.cxf:cxf-rt-rs-client:$apache_cxf_version",
+            "com.ecmp:config-util-apiclient:$config_version",
             "junit:junit:$junit_version"
     )
 }
