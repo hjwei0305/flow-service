@@ -21,7 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * *************************************************************************************************
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/ecmp-context.xml", "classpath*:/ecmp-service.xml" })
+@ContextConfiguration("classpath:applicationContext-activiti.xml")
 public abstract class BasicContextTestCase extends AbstractJUnit4SpringContextTests {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 

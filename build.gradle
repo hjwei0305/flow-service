@@ -15,6 +15,16 @@ allprojects {
 
         maven { url 'http://10.4.32.53:8081/nexus/content/groups/public' }
     }
+
+/* 冲突失败策略设置*/
+//    configurations.all {
+//        resolutionStrategy { failOnVersionConflict() }
+//    }
+/* 强制指定版本策略设置*/
+    dependencies {
+        compile group:'org.hibernate.javax.persistence',name:'hibernate-jpa-2.1-api',version:'1.0.0.Final',force:true
+    }
+
 //    // 依赖
 //    dependencies {
 //
