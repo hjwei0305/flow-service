@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.entity.AppModule;
+import com.ecmp.vo.OperateResult;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,8 @@ public class AppModuleBaseServiceTest extends BasicContextTestCase {
         AppModule appModule = new AppModule();
         appModule.setCode("ecmp-flow-appModule22_" + System.currentTimeMillis());
         appModule.setName("应用模块测试22");
-        appModule = appModuleService.save(appModule);
+        OperateResult<AppModule> result  = appModuleService.save(appModule);
+        appModule=result.getData();
         logger.debug("id = {}", appModule.getId());
         logger.debug("create结果：{}", appModule);
     }

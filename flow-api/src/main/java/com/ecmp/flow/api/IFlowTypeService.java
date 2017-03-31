@@ -1,7 +1,6 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.FlowDefination;
+import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,19 +12,18 @@ import java.util.List;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：应用模块服务API接口定义
+ * 实现功能：流程类型服务API接口定义
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/23 22:39      谭军(tanjun)               新建
+ * 1.0.00      2017/3/26 10:39      谭军(tanjun)               新建
  * <p/>
  * *************************************************************************************************
  */
-@Path("appModule")
-@Api(value = "IAppModuleService 应用模块服务API接口")
-public interface IAppModuleService {
-
+@Path("flowType")
+@Api(value = "IFlowTypeService 流程类型服务API接口")
+public interface IFlowTypeService {
     /**
      * 获取所有实体
      * @return 实体清单
@@ -34,7 +32,7 @@ public interface IAppModuleService {
     @Path("getAll")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取所有实体",notes = "测试 获取所有实体")
-    List<AppModule> findAll();
+    List<FlowType> findAll();
 
     /**
      * 通过Id获取实体
@@ -45,7 +43,7 @@ public interface IAppModuleService {
     @Path("getById")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Id获取实体",notes = "测试 通过Id获取实体")
-    AppModule findOne(String id);
+    FlowType findOne(String id);
 
     /**
      * 保存一个实体
@@ -57,6 +55,5 @@ public interface IAppModuleService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResult<AppModule> save(AppModule entity);
-
+    OperateResult<FlowType> save(FlowType entity);
 }

@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.vo.OperateResult;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,8 @@ public class FlowServiceUrlBaseServiceTest extends BasicContextTestCase {
         FlowServiceUrl flowServiceUrl = new FlowServiceUrl();
         flowServiceUrl.setCode("ecmp-flow-flowServiceUrl22_" + System.currentTimeMillis());
         flowServiceUrl.setName("流程类型测试22");
-        flowServiceUrl = flowServiceUrlService.save(flowServiceUrl);
+        OperateResult<FlowServiceUrl> result  = flowServiceUrlService.save(flowServiceUrl);
+        flowServiceUrl=result.getData();
         logger.debug("id = {}", flowServiceUrl.getId());
         logger.debug("create结果：{}", flowServiceUrl);
     }

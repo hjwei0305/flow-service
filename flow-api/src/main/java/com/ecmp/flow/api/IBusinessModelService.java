@@ -1,6 +1,9 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.FlowDefination;
+import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -21,17 +24,8 @@ import java.util.List;
  * *************************************************************************************************
  */
 @Path("businessModel")
-@Api(value = "IBusinessModelService 工作流项目API服务")
+@Api(value = "IBusinessModelService 业务实体服务API接口")
 public interface IBusinessModelService {
-    /**
-     * 测试WEB服务方法
-     * @return hello
-     */
-    @GET
-    @Path("hello")
-    @Produces(MediaType.TEXT_PLAIN)
-    @ApiOperation(value = "测试方法",notes = "测试 hello")
-    String hello();
 
     /**
      * 获取所有实体
@@ -44,6 +38,17 @@ public interface IBusinessModelService {
     List<BusinessModel> findAll();
 
     /**
+     * 通过Id获取实体
+     * @param id
+     * @return 实体
+     */
+    @GET
+    @Path("getById")
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过Id获取实体",notes = "测试 通过Id获取实体")
+    BusinessModel findOne(String id);
+
+    /**
      * 保存一个实体
      * @param entity 实体
      * @return 保存后的实体
@@ -52,5 +57,6 @@ public interface IBusinessModelService {
     @Path("save")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    BusinessModel save(BusinessModel entity);
+    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    OperateResult<BusinessModel> save(BusinessModel entity);
 }

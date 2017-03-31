@@ -25,8 +25,4 @@ public class BusinessModelService extends BaseService<BusinessModel, String> imp
     @Autowired
     private BusinessModelDao businessModelDao;
 
-    @Override
-    public String hello() {
-        return "hello";
-    }
 }

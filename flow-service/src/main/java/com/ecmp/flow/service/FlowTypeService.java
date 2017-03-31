@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.api.IFlowTypeService;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.BusinessModel;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowTypeService extends BaseService<FlowType, String>{
+public class FlowTypeService extends BaseService<FlowType, String> implements IFlowTypeService {
 
     @Autowired
     private FlowTypeDao flowTypeDao;

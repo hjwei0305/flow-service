@@ -25,10 +25,6 @@ public class AppModuleService extends BaseService<AppModule, String> implements 
     @Autowired
     private AppModuleDao appModuleDao;
 
-    @Override
-    public String hello() {
-        return "hello";
-    }
 
 //    @Override
 //    @Transactional(readOnly = true)
