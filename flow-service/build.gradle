@@ -13,11 +13,14 @@ dependencies {
     compile project(':flow-entity')
     compile project(':flow-dao')
     compile project(':flow-api')
-
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.0.pr2',force:true
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.9.0.pr2',force:true
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0.pr2',force:true
     compile(
             "com.ecmp:core-service:$core_version",
             "org.apache.cxf:cxf-rt-frontend-jaxrs:$apache_cxf_version",
-            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$fasterxml_version",
+//            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$fasterxml_version",
+
             "org.springframework:spring-web:$spring_version",
             "org.webjars:swagger-ui:$swagger_version",
 
