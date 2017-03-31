@@ -23,37 +23,5 @@ import java.util.List;
  */
 @Path("flowType")
 @Api(value = "IFlowTypeService 流程类型服务API接口")
-public interface IFlowTypeService {
-    /**
-     * 获取所有实体
-     * @return 实体清单
-     */
-    @GET
-    @Path("getAll")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取所有实体",notes = "测试 获取所有实体")
-    List<FlowType> findAll();
-
-    /**
-     * 通过Id获取实体
-     * @param id
-     * @return 实体
-     */
-    @GET
-    @Path("getById")
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过Id获取实体",notes = "测试 通过Id获取实体")
-    FlowType findOne(String id);
-
-    /**
-     * 保存一个实体
-     * @param entity 实体
-     * @return 保存后的实体
-     */
-    @POST
-    @Path("save")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResult<FlowType> save(FlowType entity);
+public interface IFlowTypeService extends IBaseService<FlowType, String>{
 }

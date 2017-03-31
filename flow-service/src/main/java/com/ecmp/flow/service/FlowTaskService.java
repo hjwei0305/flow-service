@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowTaskService extends BaseService<FlowTask, String> {
+public class FlowTaskService extends BaseService<FlowTask, String> implements IFlowTaskService {
 
     @Autowired
     private FlowTaskDao flowTaskDao;

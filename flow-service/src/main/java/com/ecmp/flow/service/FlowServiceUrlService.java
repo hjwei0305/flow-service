@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.FlowDefVersion;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowServiceUrlService extends BaseService<FlowServiceUrl, String>{
+public class FlowServiceUrlService extends BaseService<FlowServiceUrl, String> implements IFlowServiceUrlService {
 
     @Autowired
     private FlowServiceUrlDao flowServiceUrlDao;

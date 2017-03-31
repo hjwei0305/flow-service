@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowHistoryService extends BaseService<FlowHistory, String>{
+public class FlowHistoryService extends BaseService<FlowHistory, String> implements IFlowHistoryService {
 
     @Autowired
     private FlowHistoryDao flowHistoryDao;
