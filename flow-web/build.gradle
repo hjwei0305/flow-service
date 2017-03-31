@@ -12,7 +12,6 @@ dependencies {
     compile project(':flow-api')
 
     compile(
-            "org.hibernate:hibernate-validator:5.3.4.Final",
             "com.ecmp:core-web:1.0.4"
 
     )
