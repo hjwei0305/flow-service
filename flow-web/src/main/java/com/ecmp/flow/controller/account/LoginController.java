@@ -17,13 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = "/login")
 public class LoginController {
 
-    @RequestMapping(method = RequestMethod.GET,value = "user")
+    @RequestMapping(method = RequestMethod.GET)
     public String login(String cashLogin) {
         Subject subject = (Subject) SecurityUtils.getSubject();
         if (subject != null && subject.isAuthenticated()) {// 已经登录了，不允许再来登录
             return "redirect:/";
         }
-        return "account/login";
+        return "maindata/AppModuleView";
     }
 
 }

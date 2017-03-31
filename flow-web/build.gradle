@@ -12,32 +12,8 @@ dependencies {
     compile project(':flow-api')
 
     compile(
-            //json
-            "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-            "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jackson_version",
-            "com.fasterxml.jackson.core:jackson-core:$jackson_version",
-
-            "javax.servlet:javax.servlet-api:3.1.0",
-
-            //Shiro
-            "org.apache.shiro:shiro-spring:$shiro_version",
-            "org.apache.shiro:shiro-ehcache:$shiro_version",
-            "org.apache.shiro:shiro-quartz:$shiro_version",
-
-            //Spring
-            "org.springframework:spring-web:$spring_version",
-            "org.springframework:spring-webmvc:$spring_version",
-
-            //GENERAL UTILS
-            "org.apache.commons:commons-lang3:$commons_lang3_version",
-            "org.apache.commons:commons-math3:$commons_lang3_version",
-            "commons-io:commons-io:$commons_io_version",
-            "commons-collections:commons-collections:3.2.1",
-            "commons-beanutils:commons-beanutils:1.9.2",
-            "commons-fileupload:commons-fileupload:1.3.1",
-            "commons-codec:commons-codec:1.7",
-
-            "com.ecmp:core-web:1.0.3"
+            "org.hibernate:hibernate-validator:5.3.4.Final",
+            "com.ecmp:core-web:1.0.4"
 
     )
 
