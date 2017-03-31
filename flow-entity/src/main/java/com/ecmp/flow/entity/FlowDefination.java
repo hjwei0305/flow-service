@@ -22,7 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "code"))
+@Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "defKey"))
 public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 
 	/**
@@ -35,8 +35,8 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 代码
 	 */
-	@Column(name = "code", unique = true, nullable = false)
-	private String code;
+	@Column(name = "defKey", unique = true, nullable = false)
+	private String defKey;
 
 	/**
 	 * 名称
@@ -47,8 +47,8 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 最新版本ID
 	 */
-	@Column(name = "lastVersionId")
-	private Integer lastVersionId;
+	@Column(name = "lastVersionId",length = 36)
+	private String lastVersionId;
 
 	/**
 	 * 启动条件UEL
@@ -69,23 +69,29 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 //	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefination")
 	private Set<FlowDefVersion> flowDefVersions = new HashSet<FlowDefVersion>(0);
 
+	/**
+
+	 * 当前对应的流程版本
+	 */
+	@Transient
+	private FlowDefVersion currentFlowDefVersion;
 
 	public FlowDefination() {
 	}
 
 
-	public FlowDefination(String code, String name) {
-		this.code = code;
+	public FlowDefination(String defKey, String name) {
+		this.defKey = defKey;
 		this.name = name;
 
 	}
 
 
-	public FlowDefination(FlowType flowType, String code, String name,
-			Integer lastVersionId, String startUel, String depict,
+	public FlowDefination(FlowType flowType, String defKey, String name,
+						  String lastVersionId, String startUel, String depict,
 		Set<FlowDefVersion> flowDefVersions) {
 		this.flowType = flowType;
-		this.code = code;
+		this.defKey = defKey;
 		this.name = name;
 		this.lastVersionId = lastVersionId;
 		this.startUel = startUel;
@@ -104,14 +110,6 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 		this.flowType = flowType;
 	}
 
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	public String getName() {
 		return this.name;
 	}
@@ -120,11 +118,11 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 		this.name = name;
 	}
 
-	public Integer getLastVersionId() {
+	public String getLastVersionId() {
 		return this.lastVersionId;
 	}
 
-	public void setLastVersionId(Integer lastVersionId) {
+	public void setLastVersionId(String lastVersionId) {
 		this.lastVersionId = lastVersionId;
 	}
 
@@ -152,12 +150,29 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 		this.flowDefVersions = flowDefVersions;
 	}
 
+	public FlowDefVersion getCurrentFlowDefVersion() {
+		return currentFlowDefVersion;
+	}
+
+	public void setCurrentFlowDefVersion(FlowDefVersion currentFlowDefVersion) {
+		this.currentFlowDefVersion = currentFlowDefVersion;
+	}
+
+	public String getDefKey() {
+		return defKey;
+	}
+
+	public void setDefKey(String defKey) {
+		this.defKey = defKey;
+	}
+
 	@Override
 	public String toString() {
+
 		return new ToStringBuilder(this)
 				.append("id", this.getId())
 				.append("flowType", flowType)
-				.append("code", code)
+				.append("defKey", defKey)
 				.append("name", name)
 				.append("lastVersionId", lastVersionId)
 				.append("startUel", startUel)
