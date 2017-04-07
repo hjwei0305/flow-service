@@ -2,9 +2,16 @@ package com.ecmp.flow.api;
 
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -21,4 +28,29 @@ import javax.ws.rs.Path;
 @Path("flowTask")
 @Api(value = "IFlowTaskService 流程服务地址服务API接口")
 public interface IFlowTaskService extends IBaseService<FlowTask, String>{
+    /**
+     * 任务签收
+     * @param id 任务id
+     * @param userId 用户账号
+     * @return 操作结果
+     */
+    @POST
+    @Path("claim")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "签收任务",notes = "测试")
+    public OperateResult claim(String id, String userId);
+
+    /**
+     * 完成任务
+     * @param id 任务id
+     * @param variables 参数
+     * @return 操作结果
+     */
+    @POST
+    @Path("complete")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "完成任务",notes = "测试")
+    public OperateResult complete(String id, Map<String, Object> variables);
 }

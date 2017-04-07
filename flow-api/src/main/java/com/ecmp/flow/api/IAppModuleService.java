@@ -26,5 +26,18 @@ import java.util.List;
 @Path("appModule")
 @Api(value = "IAppModuleService 应用模块服务API接口")
 public interface IAppModuleService extends IBaseService<AppModule, String>{
+//    @GET
+//    @Path("hello")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "test1",notes = "测试1")
+//    public String hello();
+//
+//    @GET
+//    @Path("hello2")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "test2",notes = "测试2")
+//    public String hello(String v);
 
 }

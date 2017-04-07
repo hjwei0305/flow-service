@@ -43,7 +43,7 @@ public class FlowTaskServiceBaseTest extends BasicContextTestCase {
         flowTask.setExecutorAccount(11111111);
         flowTask.setCandidateAccount(22222222);
         flowTask.setDepict("描述");
-        flowTask.setExecuteDate(new Timestamp(System.currentTimeMillis()));
+        flowTask.setExecuteDate(new Date(System.currentTimeMillis()));
         flowTaskService.save(flowTask);
     }
 

@@ -2,6 +2,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Persistable;
 
@@ -55,30 +56,30 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResult<T> save(T entity);
+    OperateResultWithData<T> save(T entity);
 
-    /**
-     * 删除一个实体
-     * @param entity 实体
-     * @return 删除后的返回信息
-     */
-    @DELETE
-    @Path("delete")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "删除实体",notes = "测试 删除实体")
-    public OperateResult delete(T entity);
-
-    /**
-     * 批量删除实体
-     * @param entities
-     */
-    @DELETE
-    @Path("deletes")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "删除实体",notes = "测试 删除实体")
-    public void delete(Iterable<T> entities);
+//    /**
+//     * 删除一个实体
+//     * @param entity 实体
+//     * @return 删除后的返回信息
+//     */
+//    @DELETE
+//    @Path("delete")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "删除实体",notes = "测试 删除实体")
+//    public OperateResult delete(T entity);
+//
+//    /**
+//     * 批量删除实体
+//     * @param entities
+//     */
+//    @DELETE
+//    @Path("deletes")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "删除实体",notes = "测试 删除实体")
+//    public void delete(Iterable<T> entities);
 
     /**
      * 通过ID删除实体
@@ -90,7 +91,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID删除实体",notes = "测试 通过ID删除实体")
-    public OperateResult deleteById(ID id);
+    public OperateResult delete(ID id);
 
     /**
      * 通过ID集合批量删除实体
@@ -101,5 +102,5 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID集合删除实体集",notes = "测试 通过ID集合删除实体集")
-    public void deleteById(Iterable<ID> ids);
+    public void delete(Iterable<ID> ids);
 }

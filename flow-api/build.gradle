@@ -10,11 +10,11 @@ ext {
 dependencies {
     compile project(':flow-entity')
     /* 强制指定版本策略设置*/
-    compile group:'javax.ws.rs',name:'javax.ws.rs-api',version:'2.+',force:true
+//    compile group:'javax.ws.rs',name:'javax.ws.rs-api',version:'2.+',force:true
     compile (
             "com.ecmp:ecmp-context:$context_version",
-            "org.apache.cxf:cxf-rt-rs-service-description-swagger:$apache_cxf_version",
-            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
+            "com.ecmp:core-api:$core_version"
+//            "org.apache.cxf:cxf-rt-rs-service-description-swagger:$cxf_version"
     )
     /*testCompile(
             "junit:junit:$junit_version"

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FlowDefinationDao extends BaseDao<FlowDefination, String> {
-
+    public FlowDefination findByDefKey(String defKey);
 }
