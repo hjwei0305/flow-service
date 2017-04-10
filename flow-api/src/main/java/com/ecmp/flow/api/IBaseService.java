@@ -9,6 +9,7 @@ import org.springframework.data.domain.Persistable;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -102,5 +103,5 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID集合删除实体集",notes = "测试 通过ID集合删除实体集")
-    public void delete(Iterable<ID> ids);
+    public void delete(Collection<ID> ids);
 }

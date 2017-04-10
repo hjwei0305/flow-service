@@ -52,7 +52,7 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
     /**
      * 关联业务实体模型
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "businessModel_id")
     private BusinessModel businessModel;
 
@@ -110,13 +110,26 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+//    @Override
+//    public String toString() {
+//        return new ToStringBuilder(this)
+//                .append("id", this.getId())
+//                .append("name", this.name)
+//                .append("code", this.code)
+//                .append("depict",this.depict)
+//                .toString();
+//    }
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", this.getId())
-                .append("name", this.name)
-                .append("code", this.code)
-                .append("depict",this.depict)
+                .append("name", name)
+                .append("code", code)
+                .append("depict", depict)
+                .append("businessModel", businessModel)
+                .append("flowDefinations", flowDefinations)
                 .toString();
     }
 
