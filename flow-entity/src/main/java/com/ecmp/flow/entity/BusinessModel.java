@@ -49,7 +49,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
     /**
      * 所属应用模块
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "appModule_id")
     private AppModule appModule;
 
@@ -106,13 +106,25 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+//    @Override
+//    public String toString() {
+//        return new ToStringBuilder(this)
+//                .append("id", this.getId())
+//                .append("name", this.name)
+//                .append("className", this.className)
+//                .append("depict",this.depict)
+//                .toString();
+//    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", this.getId())
-                .append("name", this.name)
-                .append("className", this.className)
-                .append("depict",this.depict)
+                .append("name", name)
+                .append("className", className)
+                .append("depict", depict)
+                .append("appModule", appModule)
+                .append("flowTypes", flowTypes)
                 .toString();
     }
 

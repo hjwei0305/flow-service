@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -116,7 +117,7 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
      * @param ids
      */
     @Override
-    public void delete(Iterable<String> ids) {
+    public void delete(Collection<String> ids ) {
         for (String id : ids) {
             this.delete(id);
         }

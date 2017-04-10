@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 @Table(name ="flow_appModule")
 @DynamicInsert
 @DynamicUpdate
-public class AppModule extends com.ecmp.core.entity.BaseEntity {
+public class AppModule extends com.ecmp.core.entity.BaseEntity implements Serializable {
 
     /**
      * 名称
@@ -93,13 +94,15 @@ public class AppModule extends com.ecmp.core.entity.BaseEntity {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", this.getId())
-                .append("name", this.name)
-                .append("code", this.code)
-                .append("depict",this.depict)
+                .append("name", name)
+                .append("code", code)
+                .append("depict", depict)
+                .append("businessModels", businessModels)
                 .toString();
     }
 
