@@ -10,6 +10,8 @@ import org.activiti.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -70,7 +72,7 @@ public class FlowInstanceService extends BaseService<FlowInstance, String> imple
      * @param ids
      */
     @Override
-    public void delete(Iterable<String> ids) {
+    public void delete(Collection<String> ids) {
         for (String id : ids) {
             this.delete(id);
         }

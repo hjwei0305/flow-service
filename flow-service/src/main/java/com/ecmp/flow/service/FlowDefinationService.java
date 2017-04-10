@@ -21,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -289,7 +286,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      * @param ids
      */
     @Override
-    public void delete(Iterable<String> ids) {
+    public void delete(Collection<String>  ids) {
         for (String id : ids) {
             this.delete(id);
         }
