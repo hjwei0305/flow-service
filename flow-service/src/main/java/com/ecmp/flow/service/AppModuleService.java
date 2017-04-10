@@ -6,6 +6,9 @@ import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.entity.AppModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -24,7 +27,12 @@ public class AppModuleService extends BaseService<AppModule, String> implements 
 
     @Autowired
     private AppModuleDao appModuleDao;
-
+//    public String hello(){
+//        return "hello";
+//    }
+//    public String hello(String v){
+//        return this.hello()+v;
+//    }
 
 //    @Override
 //    @Transactional(readOnly = true)

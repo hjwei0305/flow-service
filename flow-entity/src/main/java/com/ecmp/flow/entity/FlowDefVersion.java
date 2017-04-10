@@ -31,6 +31,14 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	@JoinColumn(name = "flowDefination_id")
 	private FlowDefination flowDefination;
 
+
+	/**
+	 * 定义ID
+	 */
+
+	@Column(name = "actDefId", length = 36)
+	private String actDefId;
+
 	/**
 	 * 定义KEY
 	 */
@@ -139,6 +147,14 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 
 	public void setFlowDefination(FlowDefination flowDefination) {
 		this.flowDefination = flowDefination;
+	}
+
+	public String getActDefId() {
+		return actDefId;
+	}
+
+	public void setActDefId(String actDefId) {
+		this.actDefId = actDefId;
 	}
 
 	public String getDefKey() {

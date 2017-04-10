@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
-import java.sql.Timestamp;
+import java.sql.Date;
 
 /**
  * *************************************************************************************************
@@ -87,6 +87,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	private String flowDefinitionId;
 
 	/**
+	 * 关联的实际流程引擎任务ID
+	 */
+	@Column(name = "actTaskId", nullable = false, length = 36)
+	private String actTaskId;
+
+	/**
 	 * 执行人名称
 	 */
 	@Column(name = "executorName", length = 80)
@@ -96,25 +102,67 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	 * 执行人账号
 	 */
 	@Column(name = "executorAccount")
-	private Integer executorAccount;
+	private String executorAccount;
 
 	/**
 	 * 候选人账号
 	 */
 	@Column(name = "candidateAccount")
-	private Integer candidateAccount;
+	private String candidateAccount;
 
 	/**
 	 * 执行时间
 	 */
 	@Column(name = "executeDate", nullable = false, length = 19)
-	private Timestamp executeDate;
+	private Date executeDate;
+
 
 	/**
 	 * 描述
 	 */
 	@Column(name = "depict")
 	private String depict;
+
+
+	/**
+	 * activtiti对应任务类型,如assinge、candidate
+	 */
+	@Column(name = "actType")
+	private String actType;
+
+	/**
+	 * 流程任务引擎实际的任务签收时间
+	 */
+	private java.util.Date actClaimTime;
+
+
+	/**
+
+	 * 优先级
+	 */
+	private int priority;
+
+	/**
+	 * 任务所属人账号（拥有人）
+	 */
+	private String ownerAccount;
+
+	/**
+	 * 任务所属人名称（拥有人）
+	 */
+	private String ownerName;
+
+
+	/**
+	 * 流程引擎的实际触发时间
+	 */
+	private Date actDueDate;
+
+
+	/**
+	 * 流程引擎的实际任务定义KEY
+	 */
+	private String actTaskKey;
 
 
 	public FlowTask() {
@@ -142,7 +190,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	}
 
 	public FlowTask(String flowName, String taskName, String taskDefKey,
-			String flowInstanceId, String flowDefinitionId, Timestamp executeDate) {
+			String flowInstanceId, String flowDefinitionId, Date executeDate) {
 		this.flowName = flowName;
 		this.taskName = taskName;
 		this.taskDefKey = taskDefKey;
@@ -157,8 +205,8 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 			String taskName, String taskDefKey, String taskFormUrl,
 			String taskStatus, String proxyStatus, String flowInstanceId,
 			String flowDefinitionId, String executorName,
-			Integer executorAccount, Integer candidateAccount,
-					Timestamp executeDate, String depict) {
+					String executorAccount, String candidateAccount,
+					Date executeDate, String depict) {
 		this.flowInstance = flowInstance;
 		this.flowName = flowName;
 		this.taskName = taskName;
@@ -259,29 +307,51 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.executorName = executorName;
 	}
 
-	public Integer getExecutorAccount() {
+	public String getExecutorAccount() {
 		return this.executorAccount;
 	}
 
-	public void setExecutorAccount(Integer executorAccount) {
+	public void setExecutorAccount(String executorAccount) {
 		this.executorAccount = executorAccount;
 	}
 
-	public Integer getCandidateAccount() {
+	public String getCandidateAccount() {
 		return this.candidateAccount;
 	}
 
-	public void setCandidateAccount(Integer candidateAccount) {
+	public void setCandidateAccount(String candidateAccount) {
 		this.candidateAccount = candidateAccount;
 	}
 
+	public String getActTaskId() {
+		return actTaskId;
+	}
 
+	public void setActTaskId(String actTaskId) {
+		this.actTaskId = actTaskId;
+	}
 
-	public Timestamp getExecuteDate() {
+	public Date getExecuteDate() {
 		return this.executeDate;
 	}
 
-	public void setExecuteDate(Timestamp executeDate) {
+	public java.util.Date getActClaimTime() {
+		return actClaimTime;
+	}
+
+	public void setActClaimTime(java.util.Date actClaimTime) {
+		this.actClaimTime = actClaimTime;
+	}
+
+	public String getActTaskKey() {
+		return actTaskKey;
+	}
+
+	public void setActTaskKey(String actTaskKey) {
+		this.actTaskKey = actTaskKey;
+	}
+
+	public void setExecuteDate(Date executeDate) {
 		this.executeDate = executeDate;
 	}
 
@@ -291,6 +361,45 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 
 	public void setDepict(String depict) {
 		this.depict = depict;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public String getOwnerAccount() {
+		return ownerAccount;
+	}
+
+	public void setOwnerAccount(String ownerAccount) {
+		this.ownerAccount = ownerAccount;
+	}
+
+	public String getOwnerName() {
+		return ownerName;
+	}
+
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
+	}
+
+	public Date getActDueDate() {
+		return actDueDate;
+	}
+
+	public void setActDueDate(Date actDueDate) {
+		this.actDueDate = actDueDate;
+	}
+	public String getActType() {
+		return actType;
+	}
+
+	public void setActType(String actType) {
+		this.actType = actType;
 	}
 
 

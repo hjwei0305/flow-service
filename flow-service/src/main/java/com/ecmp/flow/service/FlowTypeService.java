@@ -26,4 +26,5 @@ public class FlowTypeService extends BaseService<FlowType, String> implements IF
 
     @Autowired
     private FlowTypeDao flowTypeDao;
+
 }

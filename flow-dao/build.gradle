@@ -11,8 +11,8 @@ dependencies {
     compile project(':flow-entity')
 
     compile(
-            "com.ecmp:core-dao:$core_version",
-            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
+            "com.ecmp:core-dao:$core_version"
+//            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
 
     testCompile(

@@ -1,6 +1,6 @@
 package com.ecmp.flow.entity;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -48,13 +48,30 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	 * 开始时间
 	 */
 	@Column(name = "startDate", nullable = false, length = 19)
-	private Timestamp startDate;
+	private Date startDate;
 
 	/**
 	 * 结束时间
 	 */
 	@Column(name = "endDate", nullable = false, length = 19)
-	private Timestamp endDate;
+	private Date endDate;
+
+	/**
+	 * 关联的实际流程引擎实例ID
+	 */
+	@Column(name = "actInstanceId", nullable = false, length = 36)
+	private String actInstanceId;
+
+
+	/**
+	 * 是否挂起
+	 */
+	private boolean suspended;
+
+	/**
+	 * 是否结束
+	 */
+	private boolean ended;
 
 	/**
 	 * 拥有的流程历史
@@ -75,7 +92,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	}
 
 	public FlowInstance(String flowName, String businessId,
-						Timestamp startDate, Timestamp endDate) {
+						Date startDate, Date endDate) {
 		this.flowName = flowName;
 		this.businessId = businessId;
 		this.startDate = startDate;
@@ -83,7 +100,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	}
 
 	public FlowInstance(FlowDefVersion flowDefVersion, String flowName,
-			String businessId, Timestamp startDate, Timestamp endDate,
+			String businessId, Date startDate, Date endDate,
 			Set<FlowHistory> flowHistories, Set<FlowTask> flowTasks) {
 		this.flowDefVersion = flowDefVersion;
 		this.flowName = flowName;
@@ -120,19 +137,19 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 		this.businessId = businessId;
 	}
 
-	public Timestamp getStartDate() {
+	public Date getStartDate() {
 		return this.startDate;
 	}
 
-	public void setStartDate(Timestamp startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	public Timestamp getEndDate() {
+	public Date getEndDate() {
 		return this.endDate;
 	}
 
-	public void setEndDate(Timestamp endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
@@ -150,6 +167,30 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 
 	public void setFlowTasks(Set<FlowTask> flowTasks) {
 		this.flowTasks = flowTasks;
+	}
+
+	public String getActInstanceId() {
+		return actInstanceId;
+	}
+
+	public void setActInstanceId(String actInstanceId) {
+		this.actInstanceId = actInstanceId;
+	}
+
+	public boolean isSuspended() {
+		return suspended;
+	}
+
+	public void setSuspended(boolean suspended) {
+		this.suspended = suspended;
+	}
+
+	public boolean isEnded() {
+		return ended;
+	}
+
+	public void setEnded(boolean ended) {
+		this.ended = ended;
 	}
 
 	@Override
