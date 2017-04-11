@@ -18,11 +18,13 @@ ext {
 // 依赖
 dependencies {
     /* 强制指定版本策略设置*/
-//    compile group:'org.hibernate.javax.persistence',name:'hibernate-jpa-2.1-api',version:'1.0.0.Final',force:true
+    compile group:'org.hibernate.javax.persistence',name:'hibernate-jpa-2.1-api',version:'1.0.0.Final',force:true
     compile(
             "com.ecmp:core-entity:$core_version",
-            "org.hibernate:hibernate-core:$hibernate_version",
-            "org.apache.commons:commons-lang3:$commons_lang3_version"
+            "mysql:mysql-connector-java:$mysql_version",
+            "org.apache.commons:commons-lang3:$commonsLang3_version",
+            "net.sf.json-lib:json-lib:$jsonlib_version:jdk15",
+            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
 
     /*testCompile(
