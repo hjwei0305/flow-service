@@ -16,5 +16,10 @@ public interface FlowTaskDao extends BaseDao<FlowTask, String> {
      * @return
      */
     @Query("delete from FlowTask fv where (fv.actTaskId = :actTaskId) and (fv.id <> :idExclude) ")
-    public FlowDefVersion deleteNotClaimTask(@Param("actTaskId")String actTaskId, @Param("idExclude")String idExclude);
+    public long deleteNotClaimTask(@Param("actTaskId")String actTaskId, @Param("idExclude")String idExclude);
+
+    public long  deleteByActTaskId(String actTaskId);
+
+    public  FlowTask findByActTaskId(String actTaskId);
+
 }

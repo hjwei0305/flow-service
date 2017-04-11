@@ -53,8 +53,8 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 任务定义KEY
 	 */
-	@Column(name = "taskDefKey", nullable = false)
-	private String taskDefKey;
+	@Column(name = "actTaskDefKey", nullable = false)
+	private String actTaskDefKey ;
 
 	/**
 	 * 任务表单URL
@@ -164,6 +164,11 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	 */
 	private String actTaskKey;
 
+	/**
+	 * 记录上一个流程历史任务的id
+	 */
+	private String preId;
+
 
 	public FlowTask() {
 	}
@@ -175,7 +180,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 				.append("flowInstance", flowInstance)
 				.append("flowName", flowName)
 				.append("taskName", taskName)
-				.append("taskDefKey", taskDefKey)
+				.append("taskDefKey", actTaskDefKey )
 				.append("taskFormUrl", taskFormUrl)
 				.append("taskStatus", taskStatus)
 				.append("proxyStatus", proxyStatus)
@@ -189,11 +194,11 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 				.toString();
 	}
 
-	public FlowTask(String flowName, String taskName, String taskDefKey,
+	public FlowTask(String flowName, String taskName, String actTaskDefKey ,
 			String flowInstanceId, String flowDefinitionId, Date executeDate) {
 		this.flowName = flowName;
 		this.taskName = taskName;
-		this.taskDefKey = taskDefKey;
+		this.actTaskDefKey  = actTaskDefKey ;
 		this.flowInstanceId = flowInstanceId;
 		this.flowDefinitionId = flowDefinitionId;
 
@@ -202,7 +207,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	}
 
 	public FlowTask(FlowInstance flowInstance, String flowName,
-			String taskName, String taskDefKey, String taskFormUrl,
+			String taskName, String actTaskDefKey , String taskFormUrl,
 			String taskStatus, String proxyStatus, String flowInstanceId,
 			String flowDefinitionId, String executorName,
 					String executorAccount, String candidateAccount,
@@ -210,7 +215,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.flowInstance = flowInstance;
 		this.flowName = flowName;
 		this.taskName = taskName;
-		this.taskDefKey = taskDefKey;
+		this.actTaskDefKey  = actTaskDefKey ;
 		this.taskFormUrl = taskFormUrl;
 		this.taskStatus = taskStatus;
 		this.proxyStatus = proxyStatus;
@@ -251,12 +256,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.taskName = taskName;
 	}
 
-	public String getTaskDefKey() {
-		return this.taskDefKey;
+	public String getActTaskDefKey() {
+		return actTaskDefKey;
 	}
 
-	public void setTaskDefKey(String taskDefKey) {
-		this.taskDefKey = taskDefKey;
+	public void setActTaskDefKey(String actTaskDefKey) {
+		this.actTaskDefKey = actTaskDefKey;
 	}
 
 	public String getTaskFormUrl() {
@@ -402,5 +407,11 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.actType = actType;
 	}
 
+	public String getPreId() {
+		return preId;
+	}
 
+	public void setPreId(String preId) {
+		this.preId = preId;
+	}
 }

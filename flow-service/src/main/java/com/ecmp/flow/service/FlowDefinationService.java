@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.vo.OperateResult;
@@ -490,6 +491,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                             flowTask.setExecutorAccount(identityLink.getUserId());
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
+                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTaskDao.save(flowTask);
                         }
                     }else{
@@ -501,6 +503,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                         flowTask.setExecutorAccount(task.getAssignee());
                         flowTask.setDepict(task.getDescription());
                         flowTask.setActType("assignee");
+                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         flowTaskDao.save(flowTask);
                     }
 

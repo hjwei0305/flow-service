@@ -121,7 +121,8 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	/**
 	 * 流程引擎的实际任务定义KEY
 	 */
-	private String actTaskKey;
+	@Column(name = "actTaskDefKey", nullable = false)
+	private String actTaskDefKey ;
 
 
 	/**
@@ -151,6 +152,24 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	 * 任务所属人名称（拥有人）
 	 */
 	private String ownerName;
+
+	/**
+	 * 记录上一个流程历史任务的id
+	 */
+	private String preId;
+
+//	/**
+//	 * 记录下一个流程历史任务的id
+//	 */
+//	private String nextId;
+
+	/**
+	 * 任务状态
+	 */
+	@Column(name = "taskStatus", length = 80)
+	private String taskStatus;
+
+
 
 	public FlowHistory() {
 	}
@@ -293,13 +312,12 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 		this.actType = actType;
 	}
 
-
-	public String getActTaskKey() {
-		return actTaskKey;
+	public String getActTaskDefKey() {
+		return actTaskDefKey;
 	}
 
-	public void setActTaskKey(String actTaskKey) {
-		this.actTaskKey = actTaskKey;
+	public void setActTaskDefKey(String actTaskDefKey) {
+		this.actTaskDefKey = actTaskDefKey;
 	}
 
 	public String getExecutorName() {
@@ -340,6 +358,30 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 
 	public void setOwnerName(String ownerName) {
 		this.ownerName = ownerName;
+	}
+
+	public String getPreId() {
+		return preId;
+	}
+
+	public void setPreId(String preId) {
+		this.preId = preId;
+	}
+
+//	public String getNextId() {
+//		return nextId;
+//	}
+//
+//	public void setNextId(String nextId) {
+//		this.nextId = nextId;
+//	}
+
+	public String getTaskStatus() {
+		return taskStatus;
+	}
+
+	public void setTaskStatus(String taskStatus) {
+		this.taskStatus = taskStatus;
 	}
 
 	@Override

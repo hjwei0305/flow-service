@@ -53,4 +53,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String>{
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
     public OperateResult complete(String id, Map<String, Object> variables);
+
+
+
+    /**
+     * 撤回到指定任务节点
+     * @param id
+     * @return
+     */
+    @POST
+    @Path("rollBackTo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "撤回任务",notes = "测试")
+    public  OperateResult rollBackTo(String id);
 }
