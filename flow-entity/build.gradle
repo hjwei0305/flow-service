@@ -23,7 +23,7 @@ dependencies {
             "com.ecmp:core-entity:$core_version",
             "mysql:mysql-connector-java:$mysql_version",
             "org.apache.commons:commons-lang3:$commonsLang3_version",
-            "net.sf.json-lib:json-lib:$jsonlib_version",
+            "net.sf.json-lib:json-lib:$jsonlib_version:jdk15",
             "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
 
