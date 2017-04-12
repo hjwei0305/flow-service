@@ -205,6 +205,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             // 取得回退目标的活动定义节点
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
+            if(ifMultiInstance(currActivity)){
+                 return  result.fail("10006");//当前是会 签任务，不允许撤回
+            }
             //通过回调函数，实现出口活动定义节点的遍历执行
             result = activitiCallBack( currActivity, instance,definition,currTask);
             if(result.notSuccessful()){
@@ -319,6 +322,19 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         if("exclusiveGateway".equalsIgnoreCase(nextActivtityType)||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
                 || "parallelGateWay".equalsIgnoreCase(nextActivtityType)){ //并行网关
+            result=true;
+        }
+        return result;
+    }
+    /**
+     * 判断是否是多实例任务（会签）
+     * @param pvmActivity
+     * @return
+     */
+    private boolean ifMultiInstance( PvmActivity pvmActivity ){
+        Object nextActivtityType = pvmActivity.getProperty("multiInstance");
+        Boolean result=false;
+        if(nextActivtityType!=null && !"".equals(nextActivtityType)){ //多实例任务
             result=true;
         }
         return result;
