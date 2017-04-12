@@ -2,7 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
-import com.ecmp.flow.com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.vo.OperateResult;

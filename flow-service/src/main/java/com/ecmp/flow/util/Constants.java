@@ -1,7 +1,4 @@
-package com.ecmp.flow.com.ecmp.flow.util;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+package com.ecmp.flow.util;
 
 /**
  * 系统级静态常量. 可通过framework.properties初始化,同时保持常量static & final的特征.

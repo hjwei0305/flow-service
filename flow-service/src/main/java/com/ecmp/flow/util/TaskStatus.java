@@ -1,4 +1,4 @@
-package com.ecmp.flow.com.ecmp.flow.util;
+package com.ecmp.flow.util;
 
 /**
  * *************************************************************************************************

@@ -2,8 +2,7 @@ package com.ecmp.flow.service;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.com.ecmp.flow.util.Constants;
-import com.ecmp.flow.com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowHistory;
@@ -206,7 +205,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
             if(ifMultiInstance(currActivity)){
-                 return  result.fail("10006");//当前是会 签任务，不允许撤回
+                 return  result.fail("10006");//当前是会签任务，不允许撤回
             }
             //通过回调函数，实现出口活动定义节点的遍历执行
             result = activitiCallBack( currActivity, instance,definition,currTask);
