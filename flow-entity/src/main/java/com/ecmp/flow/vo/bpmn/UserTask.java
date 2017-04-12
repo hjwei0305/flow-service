@@ -1,5 +1,6 @@
 package com.ecmp.flow.vo.bpmn;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
@@ -18,4 +19,30 @@ import java.io.Serializable;
 @XmlType(name = "userTask")
 public class UserTask extends BaseFlowNode implements Serializable {
     private static final long serialVersionUID = 1L;
+    /**
+     * 任务参与人id
+     */
+    @XmlAttribute(name = "activiti:assignee")
+    private String assignee = "admin";
+    /**
+     * 候选人id结合，以","间隔
+     */
+    @XmlAttribute(name = "activiti:candidateUsers")
+    private String candidateUsers;
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public String getCandidateUsers() {
+        return candidateUsers;
+    }
+
+    public void setCandidateUsers(String candidateUsers) {
+        this.candidateUsers = candidateUsers;
+    }
 }
