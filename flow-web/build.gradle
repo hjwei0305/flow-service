@@ -12,7 +12,7 @@ dependencies {
     compile project(':flow-api')
 
     compile(
-            "com.ecmp:core-web:1.0.4"
+            "com.ecmp:core-web:1.+"
 
     )
 
