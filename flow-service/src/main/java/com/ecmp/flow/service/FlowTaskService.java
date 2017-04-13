@@ -102,6 +102,11 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         this.completeActiviti( actTaskId,variables);
         HistoricTaskInstance historicTaskInstance=historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
+        // 取得流程实例
+        ProcessInstance instance = runtimeService
+                .createProcessInstanceQuery()
+                .processInstanceId(historicTaskInstance.getProcessInstanceId())
+                .singleResult();
         if(historicTaskInstance!=null){
             FlowHistory flowHistory = new FlowHistory();
             flowHistory.setActType(flowTask.getActType());
@@ -129,9 +134,34 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
             flowTaskDao.deleteNotClaimTask(actTaskId,id);//删除其他候选用户的任务
+
+            //初始化新的任务
+            PvmActivity  currentNode = this.getActivitNode(actTaskId);
+            if(currentNode!=null){
+                callInitTaskBack(currentNode,instance, flowTask);
+            }
+
         }
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
         return result;
+    }
+
+    private void callInitTaskBack( PvmActivity  currentNode,ProcessInstance instance,FlowTask flowTask ){
+        List<PvmTransition>   nextNodes = currentNode.getOutgoingTransitions();
+        if(nextNodes!=null && nextNodes.size()>0){
+            for(PvmTransition node:nextNodes){
+                PvmActivity nextActivity = node.getDestination();
+                if( ifGageway( nextActivity)){
+                    callInitTaskBack(nextActivity,instance,flowTask);
+                }
+                String key = nextActivity.getProperty("key")!=null?nextActivity.getProperty("key").toString():null;
+                if(key==null){
+                    key = nextActivity.getId();
+                }
+                initTask(instance,key,flowTask);
+            }
+        }
+
     }
 
     /**
@@ -142,7 +172,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
     public  OperateResult rollBackTo(String id){
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
         FlowTask flowTask =  flowTaskDao.findOne(id);
-        result = this.taskRollBack(flowTask.getActTaskId());
+        result = this.taskRollBack(flowTask);
         if(result.successful()){
             flowTask.setTaskStatus(TaskStatus.CANCLE.toString());
             flowTaskDao.save(flowTask);
@@ -169,20 +199,40 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         taskService.complete(taskId, variables);
     }
 
+   private PvmActivity getActivitNode(String taskId){
+       // 取得当前任务
+       HistoricTaskInstance currTask = historyService
+               .createHistoricTaskInstanceQuery().taskId(taskId)
+               .singleResult();
+       ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+               .getDeployedProcessDefinition(currTask
+                       .getProcessDefinitionId());
+       if (definition == null) {
+           logger.error(ContextUtil.getMessage("10003"));
+       }
+       // 取得当前活动定义节点
+       ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+               .findActivity(currTask.getTaskDefinitionKey());
 
+//       List<PvmTransition> nextTransitionList = currActivity
+//               .getOutgoingTransitions();
+       return currActivity;
+
+   }
 
     /**
      * 任务撤销、回退
-     * @param taskId 要回退的任务ID
+     * @param flowTask 要回退的任务
      * @return
      */
-    private OperateResult taskRollBack(String taskId){
+    private OperateResult taskRollBack(FlowTask flowTask){
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        String actTaskId = flowTask.getActTaskId();
         try {
             Map<String, Object> variables;
             // 取得当前任务
             HistoricTaskInstance currTask = historyService
-                    .createHistoricTaskInstanceQuery().taskId(taskId)
+                    .createHistoricTaskInstanceQuery().taskId(actTaskId)
                     .singleResult();
             // 取得流程实例
             ProcessInstance instance = runtimeService
@@ -221,7 +271,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             //初始化本地对象
 
 //            flowTaskDao.deleteByActTaskId(currTask.getId());
-            initTask(instance,currTask.getTaskDefinitionKey());
+            initTask(instance,currTask.getTaskDefinitionKey(),flowTask);
 
             return result;
         } catch (Exception e) {
@@ -344,7 +394,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * @param instance
      * @param actTaskDefKey
      */
-    private void initTask(ProcessInstance instance,String actTaskDefKey){
+    private void initTask(ProcessInstance instance,String actTaskDefKey,FlowTask preTask){
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
@@ -362,6 +412,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                         flowTask.setActType(identityLink.getType());
                         flowTask.setDepict(task.getDescription());
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        if(preTask!=null){
+                            flowTask.setPreId(task.getId());
+                        }
                         flowTaskDao.save(flowTask);
                     }
                 }else{
@@ -374,6 +427,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     flowTask.setDepict(task.getDescription());
                     flowTask.setActType("assignee");
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                    if(preTask!=null){
+                        flowTask.setPreId(task.getId());
+                    }
                     flowTaskDao.save(flowTask);
                 }
 //                flowTask.setCandidateAccount(instance.get);
