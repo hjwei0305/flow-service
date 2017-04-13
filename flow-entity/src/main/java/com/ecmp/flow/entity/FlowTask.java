@@ -10,8 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.GenericGenerator;
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * *************************************************************************************************
@@ -113,7 +112,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 执行时间
 	 */
-	@Column(name = "executeDate", nullable = false, length = 19)
+	@Column(name = "executeDate", nullable = false,length = 19)
 	private Date executeDate;
 
 
