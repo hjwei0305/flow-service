@@ -23,7 +23,7 @@ public class LoginController {
         if (subject != null && subject.isAuthenticated()) {// 已经登录了，不允许再来登录
             return "redirect:/";
         }
-        return "maindata/AppModuleView";
+        return "maindata/login";
     }
 
 }

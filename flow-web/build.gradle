@@ -12,8 +12,8 @@ dependencies {
     compile project(':flow-api')
 
     compile(
-            "com.ecmp:core-web:1.+"
-
+            "com.ecmp:core-web:1.+",
+            "com.ecmp:config-util-apiclient:$config_version",
     )
 
     /*testCompile(
