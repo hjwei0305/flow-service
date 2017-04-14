@@ -1,0 +1,240 @@
+.flow-border {
+    border: 1px solid #cccccc;
+}
+
+.flow-item-box {
+    text-align: center;
+}
+
+.node-choosed {
+    text-align: center;
+    position: absolute;
+    opacity: 0.5;
+    cursor: no-drop;
+    margin-top: 0;
+}
+
+.flow-node {
+    text-align: center;
+    -moz-user-select: none; /*火狐*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -ms-user-select: none; /*IE10*/
+    -khtml-user-select: none; /*早期浏览器*/
+    user-select: none;
+}
+
+.flow-task:hover {
+    box-shadow: 0 0 6px #aaa;
+}
+
+.flow-item-title {
+    font-size: 16px;
+    height: 40px;
+    line-height: 40px;
+    vertical-align: middle;
+    color: #333333;
+    cursor: pointer;
+}
+
+.flow-item-box .select {
+    color: #45b7ff;
+    font-weight: bold;
+}
+
+.flow-task {
+    border: 1px solid #45b7ff;
+    border-radius: 4px;
+    display: inline-block;
+    height: 60px;
+    margin-top: 20px;
+    padding-top: 10px;
+    width: 110px;
+    background: #FEFED9;
+}
+
+.flow-item-space {
+    background: url("../images/flow_space.png") no-repeat;
+    height: 1px;
+    width: 208px;
+}
+
+.flow-event-box {
+    height: 72px;
+    padding-top: 20px;
+}
+
+.flow-task-box {
+    height: 92px;
+}
+
+.flow-gateway-box {
+    height: 90px;
+    padding-top: 20px;
+}
+
+.flow-item-content .last {
+    margin-bottom: 20px;
+    padding-top: 13px;
+}
+
+.flow-event-start {
+    background: url("../images/flow_start.png") no-repeat scroll 0 0/cover;
+    display: inline-block;
+    height: 45px;
+    width: 45px;
+}
+.flow-event-start:hover {
+    background: url("../images/flow_start_select.png") no-repeat scroll 0 0/cover;
+    height: 60px;
+    width: 60px;
+}
+
+.flow-event-end {
+    background: url("../images/flow_end.png") no-repeat scroll 0 0/cover;
+    display: inline-block;
+    height: 45px;
+    width: 45px;
+    line-height: 45px;
+    vertical-align: middle;
+}
+
+.flow-event-iconbox {
+    display: inline-block;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    width: 60px;
+}
+
+.flow-event-end:hover {
+    background: url("../images/flow_end_select.png") no-repeat scroll
+    0 0/cover;
+    height: 60px;
+    width: 60px;
+}
+
+.parallelgateway {
+    background: url("../images/flow_gateway_sync.png") no-repeat
+    scroll 0 0/cover;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+}
+
+.parallelgateway:hover {
+    background: url("../images/flow_gateway_sync_select.png")
+    no-repeat scroll 0 0/cover;
+    height: 61px;
+    width: 61px;
+}
+
+.exclusivegateway {
+    background: url("../images/flow_gateway_fork.png") no-repeat
+    scroll 0 0/cover;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+}
+
+.exclusivegateway:hover {
+    background: url("../images/flow_gateway_fork.png") no-repeat
+    scroll 0 0/cover;
+    height: 61px;
+    width: 61px;
+}
+
+.inclusivegateway {
+    background: url("../images/flow_gateway_condition.png") no-repeat
+    scroll 0 0/cover;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+}
+
+.inclusivegateway:hover {
+    background: url("../images/flow_gateway_condition.png") no-repeat
+    scroll 0 0/cover;
+    height: 61px;
+    width: 61px;
+}
+
+.eventgateway {
+    background: url("../images/flow_gateway_event.png") no-repeat
+    scroll 0 0/cover;
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+}
+
+.eventgateway:hover {
+    background: url("../images/flow_gateway_event.png") no-repeat
+    scroll 0 0/cover;
+    height: 61px;
+    width: 61px;
+}
+
+.flow-task .usertask {
+    background: url("../images/flow_task_user.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 16px;
+}
+
+.flow-task .servicetask {
+    background: url("../images/flow_task_service.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 27px;
+}
+
+.flow-task .emailtask {
+    background: url("../images/flow_task_mail.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 24px;
+}
+
+.flow-task .scripttask {
+    background: url("../images/flow_task_script.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+}
+
+.flow-task .manualtask {
+    background: url("../images/flow_task_man.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 18px;
+    background: #fefed9;
+}
+
+.node-dot {
+    background-color: orange;
+    bottom: 45%;
+    box-shadow: 0 0 2px black;
+    cursor: pointer;
+    height: 16px;
+    position: absolute;
+    right: 5px;
+    transition: box-shadow 0.25s ease-in 0s;
+    width: 16px;
+    display: none;
+}
+
+.flow-node:hover .node-dot {
+    display: block;
+}
+
+.flow-content {
+    width: 100%;
+    height: 100%;
+}
+
+.node-choosed {
+    text-align: center;
+    position: absolute;
+    opacity: 0.5;
+    cursor: no-drop;
+    margin-top: 0;
+}
