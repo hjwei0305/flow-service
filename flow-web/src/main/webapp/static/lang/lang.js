@@ -93,4 +93,8 @@ if(EUI.FlowTypeView){
         addNewFlowTypeText:"新增流程类型",
         nowSaveMsgText:"正在保存，请稍候...",
     });
+
+
+
+
 }
