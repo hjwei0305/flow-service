@@ -98,8 +98,8 @@ if (EUI.FlowTypeView) {
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {
         eventTitleText: "事件",
-        TaskTextTitleText: "任务",
-        GatewayTextTitleText: "网关",
+        taskTitleText: "任务",
+        gatewayTitleText: "网关",
         noConnectLineText: "{0}节点没有进行连线",
         startEventText: "开始",
         endEventText: "结束",

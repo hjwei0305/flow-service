@@ -23,7 +23,7 @@
     </script>
 </head>
 
-<body style='min-width: 1260px;overflow: auto;background: white;'>
+<body>
 
 <div id="appModule"></div>
 
