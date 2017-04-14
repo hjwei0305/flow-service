@@ -94,6 +94,23 @@ if (EUI.FlowTypeView) {
         addNewFlowTypeText: "新增流程类型",
         nowSaveMsgText: "正在保存，请稍候...",
     });
-
-
+}
+if (EUI.WorkFlowView) {
+    EUI.apply(EUI.WorkFlowView.prototype.lang, {
+        eventTitleText: "事件",
+        TaskTextTitleText: "任务",
+        GatewayTextTitleText: "网关",
+        noConnectLineText: "{0}节点没有进行连线",
+        startEventText: "开始",
+        endEventText: "结束",
+        userTaskText: "审批任务",
+        serviceTaskText: "服务任务",
+        scriptTaskText: "脚本任务",
+        emailTaskText: "邮件任务",
+        manualTaskText: "手工任务",
+        exclusiveGatewayText: "排他网关",
+        parallelGatewayText: "并行网关",
+        inclusiveGatewayText: "包容网关",
+        eventGatewayText: "事件网关"
+    }, common_lang);
 }
