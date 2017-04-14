@@ -14,7 +14,7 @@ dependencies {
     compile(
 
             "com.ecmp:core-web:1.+",
-            "com.ecmp:config-util-apiclient:$config_version",
+            "com.ecmp:config-util-apiclient:$config_version"
     )
 
     /*testCompile(

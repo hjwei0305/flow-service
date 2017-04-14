@@ -1,3 +1,7 @@
+.flow-grid {
+    background: url("../images/flow_grid.png") repeat;
+}
+
 .flow-border {
     border: 1px solid #cccccc;
 }
@@ -83,6 +87,7 @@
     height: 45px;
     width: 45px;
 }
+
 .flow-event-start:hover {
     background: url("../images/flow_start_select.png") no-repeat scroll 0 0/cover;
     height: 60px;
@@ -107,68 +112,59 @@
 }
 
 .flow-event-end:hover {
-    background: url("../images/flow_end_select.png") no-repeat scroll
-    0 0/cover;
+    background: url("../images/flow_end_select.png") no-repeat scroll 0 0/cover;
     height: 60px;
     width: 60px;
 }
 
 .parallelgateway {
-    background: url("../images/flow_gateway_sync.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_sync.png") no-repeat scroll 0 0/cover;
     display: inline-block;
     height: 60px;
     width: 60px;
 }
 
 .parallelgateway:hover {
-    background: url("../images/flow_gateway_sync_select.png")
-    no-repeat scroll 0 0/cover;
+    background: url("../images/flow_gateway_sync_select.png") no-repeat scroll 0 0/cover;
     height: 61px;
     width: 61px;
 }
 
 .exclusivegateway {
-    background: url("../images/flow_gateway_fork.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_fork.png") no-repeat scroll 0 0/cover;
     display: inline-block;
     height: 60px;
     width: 60px;
 }
 
 .exclusivegateway:hover {
-    background: url("../images/flow_gateway_fork.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_fork.png") no-repeat scroll 0 0/cover;
     height: 61px;
     width: 61px;
 }
 
 .inclusivegateway {
-    background: url("../images/flow_gateway_condition.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_condition.png") no-repeat scroll 0 0/cover;
     display: inline-block;
     height: 60px;
     width: 60px;
 }
 
 .inclusivegateway:hover {
-    background: url("../images/flow_gateway_condition.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_condition.png") no-repeat scroll 0 0/cover;
     height: 61px;
     width: 61px;
 }
 
 .eventgateway {
-    background: url("../images/flow_gateway_event.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_event.png") no-repeat scroll 0 0/cover;
     display: inline-block;
     height: 60px;
     width: 60px;
 }
 
 .eventgateway:hover {
-    background: url("../images/flow_gateway_event.png") no-repeat
-    scroll 0 0/cover;
+    background: url("../images/flow_gateway_event.png") no-repeat scroll 0 0/cover;
     height: 61px;
     width: 61px;
 }
