@@ -64,7 +64,6 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         var strVar = "<div class='btn_operate'>"
                             + "<div class='agreeBtn'></div>"
                             + "<div class='nagreeBtn'></div></div>";
-
                         return strVar;
                     }
                 },/*{
@@ -219,13 +218,13 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
     },
     addEvents : function(){
         var g = this;
-        $(".condetail_update").live("click",function(){
+        $(".agreeBtn").live("click",function(){
             var data=EUI.getCmp("gridPanel").getSelectRow();
             //  var tabPanel=parent.homeView.getTabPanel();
             console.log(data);
             g.updateFlowType(data);
         });
-        $(".condetail_delete").live("click",function(){
+        $(".nagreeBtn").live("click",function(){
             var rowData=EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             var infoBox = EUI.MessageBox({
