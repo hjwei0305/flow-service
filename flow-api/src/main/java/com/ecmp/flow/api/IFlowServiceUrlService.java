@@ -19,6 +19,6 @@ import javax.ws.rs.Path;
  * *************************************************************************************************
  */
 @Path("flowServiceUrl")
-@Api(value = "IFlowServiceUrlService 流程历史服务API接口")
+@Api(value = "IFlowServiceUrlService 流程服务地址服务API接口")
 public interface IFlowServiceUrlService extends IBaseService<FlowServiceUrl, String>{
 }

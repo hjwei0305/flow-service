@@ -26,7 +26,7 @@ import java.util.Map;
  * *************************************************************************************************
  */
 @Path("flowTask")
-@Api(value = "IFlowTaskService 流程服务地址服务API接口")
+@Api(value = "IFlowTaskService 流程任务服务API接口")
 public interface IFlowTaskService extends IBaseService<FlowTask, String>{
     /**
      * 任务签收
