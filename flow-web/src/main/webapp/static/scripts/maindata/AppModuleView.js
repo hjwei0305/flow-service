@@ -50,7 +50,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
             id : "gridPanel",
             style : {
                 "border" : "1px solid #aaa",
-                "border-reduis" : "3px"
+                "border-radius" : "3px"
             },
             gridCfg : {
            //     loadonce:true,
