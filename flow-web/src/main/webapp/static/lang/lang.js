@@ -96,3 +96,4 @@ if (EUI.WorkFlowView) {
         eventGatewayText: "事件网关"
     }, common_lang);
 }
+
