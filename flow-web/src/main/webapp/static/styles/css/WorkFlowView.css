@@ -235,42 +235,39 @@
     margin-top: 0;
 }
 
-
-.condetail_operate{width:60px;height:15px;line-height:15px;margin:0 auto}
-.condetail_update {
-    width: 15px;
-    height: 15px;
+.flow-info {
+    border-radius: 2px;
+    border: 1px solid #d2d2d2;
     float: left;
+    padding: 8px 20px;
+    background-color: #fcfcfc;
+    margin-right: 10px;
     cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat;
-    background-position: 0 -144px;
 }
 
-.condetail_delete {
-    width: 15px;
-    height: 15px;
+.flow-edit {
+    width: 10px;
+    height: 12px;
+    display: inline-block;
+    vertical-align: middle;
+    background: url("../images/flow-edit.png");
+}
+
+.flow-info-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: #337edd;
+}
+
+.flow-tbar-right {
     float: right;
-    cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat;
-    background-position: -32px -144px;
 }
-.condetail_update:hover{background-position:0 -160px}
-.condetail_delete:hover{background-position:-32px -160px}
 
-.btn_operate{width:60px;height:16px;line-height:16px;margin:0 auto}
-.agreeBtn {
-    width: 16px;
-    height: 16px;
+.flow-tbar-btn {
+    border-radius: 4px;
+    color: white;
+    padding: 8px 20px;
     float: left;
+    margin-right: 10px;
     cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat;
-    background-position: 0px 0px;
-}
-.nagreeBtn {
-    width: 16px;
-    height: 16px;
-    float: right;
-    cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat;
-    background-position: -16px 0px;
 }
