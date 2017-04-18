@@ -7,15 +7,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     initComponent: function () {
+        var g = this;
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
-            itemspace: 20,
             defaultConfig: {
                 border: true,
                 borderCss: "flow-border"
             },
             items: [{
+                region: "north",
+                border: false,
+                height: 50,
+                padding: 0,
+                html: this.getTopHtml()
+            }, {
                 region: "west",
                 width: 240,
                 html: this.getLeftHtml()
@@ -29,6 +35,25 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp("center").dom.addClass("flow-grid");
         this.addEvents();
         this.initJSPlumb();
+    },
+    getTopHtml: function () {
+        return "<div style='padding:5px 0;'><div class='flow-info'>" +
+            "        <span class='flow-edit'></span>" +
+            "        <span class='flow-info-text'>流程名称</span>" +
+            "    </div>" +
+            "    <div class='flow-info'>" +
+            "        <span class='flow-edit'></span>" +
+            "        <span class='flow-info-text'>代码</span>" +
+            "    </div>" +
+            "    <div class='flow-info'>" +
+            "        <span class='flow-edit'></span>" +
+            "        <span class='flow-info-text'>流程类型</span>" +
+            "    </div>" +
+            "    <div class='flow-tbar-right'>" +
+            "        <div class='flow-tbar-btn deploy'>" + this.lang.deployText + "</div>" +
+            "        <div class='flow-tbar-btn save'>" + this.lang.saveText + "</div>" +
+            "        <div class='flow-tbar-btn clear'>" + this.lang.resetText + "</div>" +
+            "    </div></div>";
     },
     getLeftHtml: function () {
         var html = "";
@@ -120,6 +145,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
+        $(".flow-tbar-btn").bind("click", function () {
+            if ($(this).hasClass(".deploy")) {
+                g.save(true);
+            } else if ($(this).hasClass(".save")) {
+                g.save(false);
+            }
+            else if ($(this).hasClass(".clear")) {
+                g.clear();
+            }
+        });
+        this.addFlowEvents();
+    },
+    addFlowEvents: function () {
+        var g = this;
         $(".flow-item-title").bind("click", function () {
             if ($(this).hasClass("select")) {
                 return;
@@ -207,14 +246,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }
         });
-    },
+    }
+    ,
     isInCenter: function (dom) {
         var offset = EUI.getCmp("center").getDom().offset();
         var domOffset = dom.offset();
         if (offset.left < domOffset.left && offset.top < domOffset.top) {
             return true;
         }
-    },
+    }
+    ,
     initJSPlumb: function () {
         var g = this;
         this.instance = jsPlumb.getInstance({
@@ -252,7 +293,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.bind("connection", function (connection, originalEvent) {
             g.connectInfo[connection.sourceId + "," + connection.targetId] = true;
         });
-    },
+    }
+    ,
     initNode: function (el) {
         this.instance.draggable(el);
 
@@ -293,14 +335,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         });
 
-    },
+    }
+    ,
     doConect: function (sourceId, targetId) {
         this.instance.connect({
             source: sourceId,
             target: targetId,
             type: "basic"
         });
-    },
+    }
+    ,
     checkValid: function () {
         var nodes = $(".node-choosed");
         for (var i = 0; i < nodes.length; i++) {
@@ -325,7 +369,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return true;
 
-    },
+    }
+    ,
     getFlowData: function () {
         if (!this.checkValid()) {
             return;
@@ -356,8 +401,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        console.log(process);
-    },
+        return {process: process};
+    }
+    ,
     loadData: function (data) {
         var data = {
             "id": "",
@@ -442,7 +488,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 this.doConect(id, node.target[index]);
             }
         }
-    },
+    }
+    ,
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
             + id
@@ -454,7 +501,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
             + "<div class='node-title'>" + this.lang.startEventText + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
-    },
+    }
+    ,
     showEndNode: function (id, node) {
         return "<div tabindex=0 type='EndEvent' id='"
             + id
@@ -465,7 +513,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
             + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
-    },
+    }
+    ,
     showTaskNode: function (id, node) {
         return "<div tabindex=0 id='" + id
             + "' class='flow-task flow-node node-choosed' type='"
@@ -474,7 +523,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "<div class='" + node.type.toLowerCase() + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
-    },
+    }
+    ,
     showGatewayNode: function (id, node) {
         return "<div tabindex=0 id='" + id
             + "' class='flow-event-box flow-node node-choosed' type='"
@@ -484,4 +534,35 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
-});
+    ,
+    save: function (deploy) {
+        var data = this.getFlowData();
+        if (!data) {
+            return;
+        }
+        var mask = EUI.LoadMask({
+            msg: this.lang.nowSaveMsgText
+        })
+        EUI.Store({
+            url: _ctxPath + "/design/save",
+            params: {
+                def: JSON.stringify(data),
+                deploy: deploy
+            },
+            success: function (result) {
+                mask.hide();
+                EUI.ProcessStatus(result);
+                if (result.success) {
+
+                }
+            },
+            failure: function (result) {
+                mask.hide();
+                EUI.ProcessStatus(result);
+            }
+        })
+    },
+    clear: function () {
+    }
+})
+;

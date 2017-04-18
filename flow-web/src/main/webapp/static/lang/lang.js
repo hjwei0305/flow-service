@@ -93,7 +93,10 @@ if (EUI.WorkFlowView) {
         exclusiveGatewayText: "排他网关",
         parallelGatewayText: "并行网关",
         inclusiveGatewayText: "包容网关",
-        eventGatewayText: "事件网关"
+        eventGatewayText: "事件网关",
+        saveText: "保存设计",
+        resetText: "清空设计",
+        deployText:"发布流程"
     }, common_lang);
 }
 

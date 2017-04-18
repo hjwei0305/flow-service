@@ -261,13 +261,30 @@
 
 .flow-tbar-right {
     float: right;
+    margin-top: 2px;
 }
 
 .flow-tbar-btn {
     border-radius: 4px;
     color: white;
-    padding: 8px 20px;
+    padding: 6px 20px;
     float: left;
     margin-right: 10px;
     cursor: pointer;
+    color: #337edd;
+    border: 1px solid #d2d2d2;
+    background: #fcfcfc
+}
+
+.flow-tbar-btn:hover {
+    background: #71d1f1;
+    color: white;
+}
+
+.flow-tbar-right .deploy{
+    background: #71d1f1;color: white;
+}
+
+.flow-tbar-right .clear{
+    margin-right: 0px;
 }
