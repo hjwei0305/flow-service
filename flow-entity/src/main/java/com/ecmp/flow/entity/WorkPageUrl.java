@@ -25,7 +25,7 @@ import javax.persistence.Lob;
  * *************************************************************************************************
  */
 
-@Entity(name = "flow_workPageUrl")
+@Entity(name = "work_page_url")
 @DynamicInsert
 @DynamicUpdate
 public class WorkPageUrl extends com.ecmp.core.entity.BaseEntity {
@@ -50,7 +50,7 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseEntity {
     /**
      * 关联的应用模块ID
      */
-    @Column(length = 36,name = "appModule_id")
+    @Column(length = 36,name = "app_module_id")
     private String appModuleId;
 
 

@@ -29,37 +29,37 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	 * 所属流程定义版本
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "flowDefVersion_id")
+	@JoinColumn(name = "flow_def_version_id")
 	private FlowDefVersion flowDefVersion;
 
 	/**
 	 * 流程名称
 	 */
-	@Column(name = "flowName", nullable = false, length = 80)
+	@Column(name = "flow_name", nullable = false, length = 80)
 	private String flowName;
 
 	/**
 	 * 业务ID
 	 */
-	@Column(name = "businessId", nullable = false, length = 36)
+	@Column(name = "business_id", nullable = false, length = 36)
 	private String businessId;
 
 	/**
 	 * 开始时间
 	 */
-	@Column(name = "startDate", nullable = false, length = 19)
+	@Column(name = "start_date", nullable = false, length = 19)
 	private Date startDate;
 
 	/**
 	 * 结束时间
 	 */
-	@Column(name = "endDate", nullable = false, length = 19)
+	@Column(name = "end_date", nullable = false, length = 19)
 	private Date endDate;
 
 	/**
 	 * 关联的实际流程引擎实例ID
 	 */
-	@Column(name = "actInstanceId", nullable = false, length = 36)
+	@Column(name = "act_instance_id", nullable = false, length = 36)
 	private String actInstanceId;
 
 

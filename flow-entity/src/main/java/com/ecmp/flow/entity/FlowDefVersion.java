@@ -20,7 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_defVersion", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "defKey"))
+@Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 
 
@@ -28,7 +28,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	 * 所属流程定义
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "flowDefination_id")
+	@JoinColumn(name = "flow_defination_id")
 	private FlowDefination flowDefination;
 
 
@@ -36,13 +36,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	 * 定义ID
 	 */
 
-	@Column(name = "actDefId", length = 36)
+	@Column(name = "act_def_id", length = 36)
 	private String actDefId;
 
 	/**
 	 * 定义KEY
 	 */
-	@Column(name = "defKey", unique = true, nullable = false)
+	@Column(name = "def_key", unique = true, nullable = false)
 	private String defKey;
 
 	/**
@@ -54,19 +54,19 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 部署ID
 	 */
-	@Column(name = "actDeployId", length = 36)
+	@Column(name = "act_deploy_id", length = 36)
 	private String actDeployId;
 
 	/**
 	 * 启动条件UEL
 	 */
-	@Column(name = "startUel")
+	@Column(name = "start_uel")
 	private String startUel;
 
 	/**
 	 * 版本号
 	 */
-	@Column(name = "versionCode")
+	@Column(name = "version_code")
 	private Integer versionCode;
 
 	/**
@@ -78,19 +78,19 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 流程JSON文本
 	 */
-	@Column(name = "defJson", length = 65535)
+	@Column(name = "def_json", length = 65535)
 	private String defJson;
 
 	/**
 	 * 流程BPMN文本
 	 */
-	@Column(name = "defBpmn", length = 65535)
+	@Column(name = "def_bpmn", length = 65535)
 	private String defBpmn;
 
 	/**
 	 * 最终定义XML
 	 */
-	@Column(name = "defXML", length = 65535)
+	@Column(name = "def_xml", length = 65535)
 	private String defXml;
 
 	/**

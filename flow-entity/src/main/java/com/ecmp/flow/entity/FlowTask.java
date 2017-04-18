@@ -34,85 +34,85 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	 * 所属流程实例
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "flowInstance_id")
+	@JoinColumn(name = "flow_instance_id")
 	private FlowInstance flowInstance;
 
 	/**
 	 * 名称
 	 */
-	@Column(name = "flowName", nullable = false, length = 80)
+	@Column(name = "flow_name", nullable = false, length = 80)
 	private String flowName;
 
 	/**
 	 * 任务名
 	 */
-	@Column(name = "taskName", nullable = false, length = 80)
+	@Column(name = "task_name", nullable = false, length = 80)
 	private String taskName;
 
 	/**
 	 * 任务定义KEY
 	 */
-	@Column(name = "actTaskDefKey", nullable = false)
+	@Column(name = "act_task_def_key", nullable = false)
 	private String actTaskDefKey ;
 
 	/**
 	 * 任务表单URL
 	 */
-	@Column(name = "taskFormUrl", length = 65535)
+	@Column(name = "task_form_url", length = 65535)
 	private String taskFormUrl;
 
 	/**
 	 * 任务状态
 	 */
-	@Column(name = "taskStatus", length = 80)
+	@Column(name = "task_status", length = 80)
 	private String taskStatus;
 
 	/**
 	 * 代理状态
 	 */
-	@Column(name = "proxyStatus", length = 80)
+	@Column(name = "proxy_status", length = 80)
 	private String proxyStatus;
 
 	/**
 	 * 流程实例ID
 	 */
-	@Column(name = "flowInstanceId", nullable = false, length = 36)
-	private String flowInstanceId;
+//	@Column(name = "flow_instanceId", nullable = false, length = 36)
+//	private String flowInstanceId;
 
 	/**
 	 * 流程定义ID
 	 */
-	@Column(name = "flowDefinitionId", nullable = false, length = 36)
+	@Column(name = "flow_definition_id", nullable = false, length = 36)
 	private String flowDefinitionId;
 
 	/**
 	 * 关联的实际流程引擎任务ID
 	 */
-	@Column(name = "actTaskId", nullable = false, length = 36)
+	@Column(name = "act_task_id", nullable = false, length = 36)
 	private String actTaskId;
 
 	/**
 	 * 执行人名称
 	 */
-	@Column(name = "executorName", length = 80)
+	@Column(name = "executor_name", length = 80)
 	private String executorName;
 
 	/**
 	 * 执行人账号
 	 */
-	@Column(name = "executorAccount")
+	@Column(name = "executor_account")
 	private String executorAccount;
 
 	/**
 	 * 候选人账号
 	 */
-	@Column(name = "candidateAccount")
+	@Column(name = "candidate_account")
 	private String candidateAccount;
 
 	/**
 	 * 执行时间
 	 */
-	@Column(name = "executeDate", nullable = false,length = 19)
+	@Column(name = "execute_date", nullable = false,length = 19)
 	private Date executeDate;
 
 
@@ -126,13 +126,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * activtiti对应任务类型,如assinge、candidate
 	 */
-	@Column(name = "actType")
+	@Column(name = "act_type")
 	private String actType;
 
 	/**
 	 * 流程任务引擎实际的任务签收时间
 	 */
-	private java.util.Date actClaimTime;
+	@Column(name = "act_claim_time")
+	private Date actClaimTime;
 
 
 	/**
@@ -144,28 +145,33 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 任务所属人账号（拥有人）
 	 */
+	@Column(name = "owner_account")
 	private String ownerAccount;
 
 	/**
 	 * 任务所属人名称（拥有人）
 	 */
+	@Column(name = "owner_name")
 	private String ownerName;
 
 
 	/**
 	 * 流程引擎的实际触发时间
 	 */
+	@Column(name = "act_due_date")
 	private Date actDueDate;
 
 
 	/**
 	 * 流程引擎的实际任务定义KEY
 	 */
+	@Column(name = "act_task_key")
 	private String actTaskKey;
 
 	/**
 	 * 记录上一个流程历史任务的id
 	 */
+	@Column(name = "pre_id")
 	private String preId;
 
 
@@ -183,7 +189,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 				.append("taskFormUrl", taskFormUrl)
 				.append("taskStatus", taskStatus)
 				.append("proxyStatus", proxyStatus)
-				.append("flowInstanceId", flowInstanceId)
+//				.append("flowInstanceId", flowInstanceId)
 				.append("flowDefinitionId", flowDefinitionId)
 				.append("executorName", executorName)
 				.append("executorAccount", executorAccount)
@@ -198,7 +204,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.flowName = flowName;
 		this.taskName = taskName;
 		this.actTaskDefKey  = actTaskDefKey ;
-		this.flowInstanceId = flowInstanceId;
+//		this.flowInstanceId = flowInstanceId;
 		this.flowDefinitionId = flowDefinitionId;
 
 		this.executeDate = executeDate;
@@ -218,7 +224,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.taskFormUrl = taskFormUrl;
 		this.taskStatus = taskStatus;
 		this.proxyStatus = proxyStatus;
-		this.flowInstanceId = flowInstanceId;
+//		this.flowInstanceId = flowInstanceId;
 		this.flowDefinitionId = flowDefinitionId;
 		this.executorName = executorName;
 		this.executorAccount = executorAccount;
@@ -287,13 +293,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		this.proxyStatus = proxyStatus;
 	}
 
-	public String getFlowInstanceId() {
-		return this.flowInstanceId;
-	}
-
-	public void setFlowInstanceId(String flowInstanceId) {
-		this.flowInstanceId = flowInstanceId;
-	}
+//	public String getFlowInstanceId() {
+//		return this.flowInstanceId;
+//	}
+//
+//	public void setFlowInstanceId(String flowInstanceId) {
+//		this.flowInstanceId = flowInstanceId;
+//	}
 
 	public String getFlowDefinitionId() {
 		return this.flowDefinitionId;
@@ -339,11 +345,11 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 		return this.executeDate;
 	}
 
-	public java.util.Date getActClaimTime() {
+	public Date getActClaimTime() {
 		return actClaimTime;
 	}
 
-	public void setActClaimTime(java.util.Date actClaimTime) {
+	public void setActClaimTime(Date actClaimTime) {
 		this.actClaimTime = actClaimTime;
 	}
 
