@@ -24,7 +24,7 @@ public class XmlUtil {
      * @param entity
      * @return
      */
-    public String serialize(Object entity) throws JAXBException {
+    public static String SERIALIZE(Object entity) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(entity.getClass());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

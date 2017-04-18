@@ -4,17 +4,24 @@ import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
+import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.util.XmlUtil;
+import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.flow.vo.bpmn.Process;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.activiti.engine.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.JAXBException;
 import java.util.Collection;
 import java.util.List;
 
@@ -40,6 +47,9 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
 
     @Autowired
     private FlowDefinationDao flowDefinationDao;
+
+    @Autowired
+    private FlowTypeDao flowTypeDao;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -87,6 +97,87 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
         flowDefination.setLastVersionId(entity.getId());
         flowDefinationDao.save(flowDefination);
         logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+        OperateResultWithData<FlowDefVersion> operateResult;
+        if (isNew) {
+            operateResult = OperateResultWithData.OperationSuccess("core_00001");
+        } else {
+            operateResult = OperateResultWithData.OperationSuccess("core_00002");
+        }
+        operateResult.setData(entity);
+        return operateResult;
+    }
+
+    /**
+     * 新增修改操作,保存前端json，
+     * 转换成标准的BPMN
+     *
+     * @param definition
+     * @return
+     */
+    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException {
+        String flowTypeId =definition.getFlowTypeId();
+        FlowType flowType = flowTypeDao.findOne(flowTypeId);
+        if(flowType == null){ //流程版本必须指定流程类型
+            return  OperateResultWithData.OperationFailure("10007");
+        }
+        Process process = definition.getProcess();
+        FlowDefination flowDefination = flowDefinationDao.findOne(definition.getId());
+        String defBpm = XmlUtil.SERIALIZE(definition);
+        FlowDefVersion entity = null;
+        boolean isNew =true;
+        if (flowDefination ==null) {//定义为空
+//            preInsert(flowDefination);
+            flowDefination = new FlowDefination();
+            flowDefination.setName(process.getName());
+            flowDefination.setDefKey(process.getKey());
+            flowDefination.setStartUel(process.getStartUEL());
+           // flowDefination.setCurrentFlowDefVersion(1L);
+            flowDefinationDao.save(flowDefination);
+             entity = new FlowDefVersion();
+            entity.setActDefId(process.getId());
+            entity.setName(process.getName());
+            entity.setDefKey(process.getKey());
+//            entity.setVersionCode(1);
+            entity.setFlowDefination(flowDefination);
+            entity.setDefJson(definition.getDefJson());
+            entity.setDefBpmn(defBpm);
+            entity.setDefXml(defBpm);//后期添加自定义UEL转换
+            flowDefVersionDao.save(entity);
+            logger.info("Saved FlowDefVersion id is {}", entity.getId());
+            flowDefination.setLastVersionId(entity.getId());
+            flowDefinationDao.save(flowDefination);
+            logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+        } else {
+             entity =  flowDefVersionDao.findOne(process.getId());
+            if(entity!=null){//版本不为空
+                entity.setDefJson(definition.getDefJson());
+                entity.setDefBpmn(defBpm);
+                entity.setDefXml(defBpm);//后期添加自定义UEL转换
+                if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
+                    entity = (FlowDefVersion)entity.clone();
+                    entity.setId(null);
+//                    entity.setVersionCode(entity.getVersionCode()+1);
+                }
+                flowDefVersionDao.save(entity);
+                logger.info("Saved FlowDefVersion id is {}", entity.getId());
+            }else {//版本为空
+                entity = new FlowDefVersion();
+                entity.setActDefId(process.getId());
+                entity.setName(process.getName());
+                entity.setDefKey(process.getKey());
+//                entity.setVersionCode(1);
+                entity.setFlowDefination(flowDefination);
+                entity.setDefJson(definition.getDefJson());
+                entity.setDefBpmn(defBpm);
+                entity.setDefXml(defBpm);//后期添加自定义UEL转换
+                flowDefVersionDao.save(entity);
+                logger.info("Saved FlowDefVersion id is {}", entity.getId());
+                flowDefination.setLastVersionId(entity.getId());
+                flowDefinationDao.save(flowDefination);
+                logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+            }
+
+        }
         OperateResultWithData<FlowDefVersion> operateResult;
         if (isNew) {
             operateResult = OperateResultWithData.OperationSuccess("core_00001");

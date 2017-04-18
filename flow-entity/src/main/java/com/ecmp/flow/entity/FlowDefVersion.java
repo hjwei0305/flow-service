@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
-public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
+public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements Cloneable{
 
 
 	/**
@@ -244,6 +244,19 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity {
 
 	public void setFlowInstances(Set<FlowInstance> flowInstances) {
 		this.flowInstances = flowInstances;
+	}
+
+
+	@Override
+	public Object clone() {
+		FlowDefination o = null;
+		try {
+			// Object中的clone()识别出你要复制的是哪一个对象。
+			o = (FlowDefination) super.clone();
+		} catch (CloneNotSupportedException e) {
+			System.out.println(e.toString());
+		}
+		return o;
 	}
 
 }

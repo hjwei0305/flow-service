@@ -13,6 +13,7 @@ import java.io.Serializable;
  * 版本          变更时间             变更人                     变更原因
  * ------------------------------------------------------------------------------------------------
  * 1.0.00      2017/4/7 16:38      陈飞(fly)                  新建
+ * 1.0.01      2017/4/18 14:38      谭军(tanjun)               增加ID
  * <p/>
  * *************************************************************************************************
  */
@@ -48,6 +49,14 @@ public class Definition implements Serializable {
     @Transient
     private String flowTypeId;
 
+    /**
+     * 流程定义ID
+     */
+    @Transient
+     private String id;
+
+
+
     public Process getProcess() {
         return process;
     }
@@ -70,5 +79,13 @@ public class Definition implements Serializable {
 
     public void setFlowTypeId(String flowTypeId) {
         this.flowTypeId = flowTypeId;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
