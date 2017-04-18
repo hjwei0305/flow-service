@@ -122,7 +122,7 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
         }
         Process process = definition.getProcess();
         FlowDefination flowDefination = flowDefinationDao.findOne(definition.getId());
-        String defBpm = XmlUtil.SERIALIZE(definition);
+        String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew =true;
         if (flowDefination ==null) {//定义为空
