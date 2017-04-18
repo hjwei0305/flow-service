@@ -33,44 +33,44 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	 * 所属流程实例
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "flowInstance_id")
+	@JoinColumn(name = "flow_instance_id")
 	private FlowInstance flowInstance;
 
 	/**
 	 * 流程名称
 	 */
-	@Column(name = "flowName", nullable = false, length = 80)
+	@Column(name = "flow_name", nullable = false, length = 80)
 	private String flowName;
 
 	/**
 	 * 流程任务名
 	 */
-	@Column(name = "flowTaskName", nullable = false, length = 80)
+	@Column(name = "flow_task_name", nullable = false, length = 80)
 	private String flowTaskName;
 
 	/**
 	 * 流程运行ID
 	 */
-	@Column(name = "flowRunId", nullable = false, length = 36)
+	@Column(name = "flow_run_id", nullable = false, length = 36)
 	private String flowRunId;
 
 	/**
 	 * 流程实例ID
 	 */
-	@Column(name = "flowInstanceId", nullable = false, length = 36)
-	private String flowInstanceId;
+//	@Column(name = "flow_instance_id", nullable = false, length = 36)
+//	private String flowInstanceId;
 
 	/**
 	 * 流程定义ID
 	 */
-	@Column(name = "flowDefId", length = 36)
+	@Column(name = "flow_def_id", length = 36)
 	private String flowDefId;
 
 
 	/**
 	 * 关联的实际流程引擎历史ID
 	 */
-	@Column(name = "actHistoryId", nullable = false, length = 36)
+	@Column(name = "act_history_id", nullable = false, length = 36)
 	private String actHistoryId;
 
 	/**
@@ -84,18 +84,21 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	 * 流程任务引擎实际开始时间，
 	 * Time when the task started.
 	 */
+	@Column(name = "act_start_time")
 	private Date actStartTime;
 
 	/**
 	 * 流程任务引擎实际结束时间，
 	 * Time when the task was deleted or completed.
 	 */
+	@Column(name = "act_end_time")
 	private Date actEndTime;
 
 	/**
 	 * 流程任务引擎实际执行的时间间隔
 	 * Difference between {@link #getActEndTime()} and {@link #getActStartTime()} in milliseconds.
 	 */
+	@Column(name = "act_duration_in_millis")
 	private Long actDurationInMillis;
 
 
@@ -103,70 +106,77 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	 * 流程任务引擎实际执行的工作时间间隔，
 	 * Difference between {@link #getActEndTime()} and {@link #getActClaimTime()} in milliseconds.
 	 */
+	@Column(name = "act_work_time_in_millis")
 	private Long actWorkTimeInMillis;
 
 
 	/**
 	 * 流程任务引擎实际的任务签收时间
 	 */
+	@Column(name = "act_claim_time")
 	private Date actClaimTime;
 
 
 	/**
 	 * activtiti对应任务类型,如assinge、candidate
 	 */
-	@Column(name = "actType")
+	@Column(name = "act_type")
 	private String actType;
 
 	/**
 	 * 流程引擎的实际任务定义KEY
 	 */
-	@Column(name = "actTaskDefKey", nullable = false)
+	@Column(name = "act_task_def_key", nullable = false)
 	private String actTaskDefKey ;
 
 
 	/**
 	 * 执行人名称
 	 */
-	@Column(name = "executorName", length = 80)
+	@Column(name = "executor_name", length = 80)
 	private String executorName;
 
 	/**
 	 * 执行人账号
 	 */
-	@Column(name = "executorAccount")
+	@Column(name = "executor_account")
 	private String executorAccount;
 
 	/**
 	 * 候选人账号
 	 */
-	@Column(name = "candidateAccount")
+	@Column(name = "candidate_account")
 	private String candidateAccount;
 
 	/**
 	 * 任务所属人账号（拥有人）
 	 */
+
+	@Column(name = "owner_account")
 	private String ownerAccount;
 
 	/**
 	 * 任务所属人名称（拥有人）
 	 */
+	@Column(name = "owner_name")
 	private String ownerName;
 
 	/**
 	 * 记录上一个流程历史任务的id
 	 */
+	@Column(name = "pre_id")
 	private String preId;
 
-//	/**
-//	 * 记录下一个流程历史任务的id
-//	 */
-//	private String nextId;
+	/**
+	 * 记录下一个流程历史任务的id
+	 */
+	@Column(name = "next_id")
+	private String nextId;
 
 	/**
 	 * 任务状态
 	 */
-	@Column(name = "taskStatus", length = 80)
+	@Column(name = "task_status", length = 80)
 	private String taskStatus;
 
 
@@ -180,7 +190,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 		this.flowName = flowName;
 		this.flowTaskName = flowTaskName;
 		this.flowRunId = flowRunId;
-		this.flowInstanceId = flowInstanceId;
+//		this.flowInstanceId = flowInstanceId;
 	}
 
 	/** full constructor */
@@ -191,7 +201,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 		this.flowName = flowName;
 		this.flowTaskName = flowTaskName;
 		this.flowRunId = flowRunId;
-		this.flowInstanceId = flowInstanceId;
+//		this.flowInstanceId = flowInstanceId;
 		this.flowDefId = flowDefId;
 		this.depict = depict;
 	}
@@ -230,13 +240,13 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 		this.flowRunId = flowRunId;
 	}
 
-	public String getFlowInstanceId() {
-		return this.flowInstanceId;
-	}
-
-	public void setFlowInstanceId(String flowInstanceId) {
-		this.flowInstanceId = flowInstanceId;
-	}
+//	public String getFlowInstanceId() {
+//		return this.flowInstanceId;
+//	}
+//
+//	public void setFlowInstanceId(String flowInstanceId) {
+//		this.flowInstanceId = flowInstanceId;
+//	}
 
 	public String getFlowDefId() {
 		return this.flowDefId;
@@ -394,7 +404,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 				.append("flowTaskName", flowTaskName)
 				.append("flowRunId", flowRunId)
 
-				.append("flowInstanceId", flowInstanceId)
+//				.append("flowInstanceId", flowInstanceId)
 				.append("flowDefId", flowDefId)
 				.append("depict", depict)
 				.toString();

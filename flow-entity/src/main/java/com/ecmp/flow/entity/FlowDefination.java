@@ -22,20 +22,20 @@ import org.hibernate.annotations.GenericGenerator;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "defKey"))
+@Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 
 	/**
 	 * 所属流程类型
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "flowType_id")
+	@JoinColumn(name = "flow_type_id")
 	private FlowType flowType;
 
 	/**
 	 * 代码
 	 */
-	@Column(name = "defKey", unique = true, nullable = false)
+	@Column(name = "def_key", unique = true, nullable = false)
 	private String defKey;
 
 	/**
@@ -47,13 +47,13 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 最新版本ID
 	 */
-	@Column(name = "lastVersionId",length = 36)
+	@Column(name = "last_version_id",length = 36)
 	private String lastVersionId;
 
 	/**
 	 * 启动条件UEL
 	 */
-	@Column(name = "startUel")
+	@Column(name = "start_uel")
 	private String startUel;
 
 	/**

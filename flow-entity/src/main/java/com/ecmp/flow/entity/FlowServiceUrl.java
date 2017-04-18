@@ -23,7 +23,7 @@ import javax.persistence.*;
  * *************************************************************************************************
  */
 
-@Entity(name = "flow_serviceUrl")
+@Entity(name = "flow_service_url")
 @DynamicInsert
 @DynamicUpdate
 public class FlowServiceUrl extends com.ecmp.core.entity.BaseEntity {
