@@ -42,6 +42,12 @@ public class Definition implements Serializable {
     @Transient
     private String defJson;
 
+    /**
+     * 流程类型
+     */
+    @Transient
+    private String flowTypeId;
+
     public Process getProcess() {
         return process;
     }
@@ -58,4 +64,11 @@ public class Definition implements Serializable {
         this.defJson = defJson;
     }
 
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
 }
