@@ -29,7 +29,7 @@ import java.util.List;
 public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, String>{
 
     /**
-     * 保存一个实体
+     * 通过json流程定义数据，保存流程版本定义
      * @param definition json对象实体
      * @return 保存后的流程版本定义实体
      */
@@ -37,7 +37,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Path("jsonSave")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
     public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException;
 
 }
