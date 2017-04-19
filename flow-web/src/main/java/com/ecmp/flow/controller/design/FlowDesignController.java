@@ -1,12 +1,19 @@
 package com.ecmp.flow.controller.design;
 
+import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
+import com.ecmp.flow.api.IFlowDefVersionService;
+import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.xml.bind.JAXBException;
 
 /**
  * *************************************************************************************************
@@ -36,12 +43,15 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public String save(String def,boolean deploy) {
+    public String save(String def,boolean deploy) throws JAXBException {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         definition.setDefJson(def);
-        //TODO:调用API方法
-        return "";
+        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+        OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
+        status.setSuccess(result.successful());
+        status.setMsg(result.getMessage());
+        return JsonUtil.serialize(status);
     }
 }

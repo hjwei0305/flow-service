@@ -19,7 +19,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             handler: function () {
             }
         }, {
-            title: "保存",
+            title: "取消",
             handler: function () {
             }
         }];
