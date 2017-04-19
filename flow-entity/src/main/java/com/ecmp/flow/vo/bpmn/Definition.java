@@ -53,8 +53,7 @@ public class Definition implements Serializable {
      * 流程定义ID
      */
     @Transient
-     private String id;
-
+    private String id;
 
 
     public Process getProcess() {
@@ -88,4 +87,5 @@ public class Definition implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
 }
