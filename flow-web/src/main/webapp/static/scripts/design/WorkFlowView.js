@@ -41,14 +41,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             "        <span class='flow-edit'></span>" +
             "        <span class='flow-info-text'>流程名称</span>" +
             "    </div>" +
+            "<input type='text' class='flow-input' name='name'/>" +
             "    <div class='flow-info'>" +
             "        <span class='flow-edit'></span>" +
             "        <span class='flow-info-text'>代码</span>" +
             "    </div>" +
+            "<input type='text' class='flow-input' name='key'/>" +
             "    <div class='flow-info'>" +
             "        <span class='flow-edit'></span>" +
             "        <span class='flow-info-text'>流程类型</span>" +
             "    </div>" +
+            "<input type='text' class='flow-input' name='flowTypeId'/>" +
             "    <div class='flow-tbar-right'>" +
             "        <div class='flow-tbar-btn deploy'>" + this.lang.deployText + "</div>" +
             "        <div class='flow-tbar-btn save'>" + this.lang.saveText + "</div>" +
@@ -145,17 +148,32 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
+        this.addTopEvents();
+        this.addFlowEvents();
+    },
+    addTopEvents: function () {
+        var g = this;
+        $(".flow-info").bind("click", function () {
+            var dom = $(this);
+            dom.siblings(".flow-info").show();
+            dom.siblings("input").hide();
+            var nextDom = dom.next();
+            var width = dom.outerWidth();
+            dom.hide();
+            nextDom.show().focus().outerWidth(width);
+            var value = dom.find(".flow-info-text").text();
+            nextDom.val(value);
+        });
         $(".flow-tbar-btn").bind("click", function () {
-            if ($(this).hasClass(".deploy")) {
+            if ($(this).hasClass("deploy")) {
                 g.save(true);
-            } else if ($(this).hasClass(".save")) {
+            } else if ($(this).hasClass("save")) {
                 g.save(false);
             }
-            else if ($(this).hasClass(".clear")) {
+            else if ($(this).hasClass("clear")) {
                 g.clear();
             }
         });
-        this.addFlowEvents();
     },
     addFlowEvents: function () {
         var g = this;
@@ -401,7 +419,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {process: process};
+        return {flowTypeId: "c0a80169-5b7e-1032-815b-7ea0674a0000", process: process};
     }
     ,
     loadData: function (data) {
@@ -537,6 +555,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     save: function (deploy) {
         var data = this.getFlowData();
+        console.log(data);
         if (!data) {
             return;
         }

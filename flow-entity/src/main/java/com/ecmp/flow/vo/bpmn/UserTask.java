@@ -1,13 +1,14 @@
 package com.ecmp.flow.vo.bpmn;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：
+ * 实现功能：审批任务
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -23,12 +24,18 @@ public class UserTask extends BaseFlowNode implements Serializable {
      * 任务参与人id
      */
     @XmlAttribute(name = "activiti:assignee")
-    private String assignee = "admin";
+    private String assignee;
     /**
-     * 候选人id结合，以","间隔
+     * 候选人id集合，以","间隔
      */
     @XmlAttribute(name = "activiti:candidateUsers")
     private String candidateUsers;
+
+    /**
+     * 会签配置
+     */
+    @XmlElement(name = "multiInstanceLoopCharacteristics")
+    private MultiInstanceConfig config;
 
     public String getAssignee() {
         return assignee;
@@ -44,5 +51,13 @@ public class UserTask extends BaseFlowNode implements Serializable {
 
     public void setCandidateUsers(String candidateUsers) {
         this.candidateUsers = candidateUsers;
+    }
+
+    public MultiInstanceConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(MultiInstanceConfig config) {
+        this.config = config;
     }
 }
