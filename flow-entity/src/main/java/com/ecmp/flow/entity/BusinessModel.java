@@ -23,7 +23,7 @@ import java.util.Set;
  * <p/>
  * *************************************************************************************************
  */
-@Entity(name = "flow_businessModel")
+@Entity(name = "business_model")
 @DynamicInsert
 @DynamicUpdate
 public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
@@ -37,7 +37,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
     /**
      * 类全路径
      */
-    @Column(length = 255, nullable = false,unique = true)
+    @Column(length = 255, nullable = false,unique = true, name = "class_name")
     private String className;
 
     /**
@@ -50,7 +50,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
      * 所属应用模块
      */
     @ManyToOne()
-    @JoinColumn(name = "appModule_id")
+    @JoinColumn(name = "app_module_id")
     private AppModule appModule;
 
     /**

@@ -26,7 +26,7 @@ import javax.persistence.*;
  * *************************************************************************************************
  */
 
-@Entity(name = "flow_bpmType")
+@Entity(name = "flow_type")
 @DynamicInsert
 @DynamicUpdate
 public class FlowType extends com.ecmp.core.entity.BaseEntity {
@@ -53,7 +53,7 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
      * 关联业务实体模型
      */
     @ManyToOne()
-    @JoinColumn(name = "businessModel_id")
+    @JoinColumn(name = "business_model_id")
     private BusinessModel businessModel;
 
     /**

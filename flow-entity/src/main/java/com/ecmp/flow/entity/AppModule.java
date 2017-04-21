@@ -25,7 +25,7 @@ import java.util.Set;
  * *************************************************************************************************
  */
 @Entity()
-@Table(name ="flow_appModule")
+@Table(name ="app_module")
 @DynamicInsert
 @DynamicUpdate
 public class AppModule extends com.ecmp.core.entity.BaseEntity implements Serializable {
