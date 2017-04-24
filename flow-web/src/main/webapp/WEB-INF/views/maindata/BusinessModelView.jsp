@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>业务模型页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/BusinessModelView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/BusinessModelView.js"></script>
     <script type="text/javascript"
