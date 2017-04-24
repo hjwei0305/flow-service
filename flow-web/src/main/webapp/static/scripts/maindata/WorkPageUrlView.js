@@ -2,8 +2,13 @@
  * 工作页面
  */
 EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
+    appModuleName: "",
+    appModuleId: "",
     initComponent: function () {
-
+        var appModuleName = EUI.util.getUrlParam("appModuleName");
+        var appModuleId = EUI.util.getUrlParam("appModuleId");
+        this.appModuleName = appModuleName;
+        this.appModuleId = appModuleId;
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -28,26 +33,82 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ComboBox",
                 title: this.lang.modelText,
-                labelWidth: 40,
-                value: this.lang.modelValueText,
-                colon: false
+                labelWidth: 70,
+                id: "coboId",
+                async: false,
+                colon: false,
+                name: "appModule.name",
+                // submitValue:{
+                //     "appModule.id":"appModule.id"
+                // },
+                store: {
+                    url: "http://localhost:8081/flow/maindata/workPageUrl/findAllAppModuleName",
+                },
+                field: ["appModule.id"],
+                reader: {
+                    name: "name",
+                    field: ["id"]
+                },
+                afterLoad: function (data) {
+                    if (!data) {
+                        return;
+                    }
+                    var cobo = EUI.getCmp("coboId");
+                    cobo.setValue(data[0].name);
+                    g.appModuleId = data[0].id;
+                    g.appModuleName = data[0].name;
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: "http://localhost:8081/flow/maindata/workPageUrl/find",
+                        loadonce: false,
+                        datatype: "json",
+                        postData: {
+                            Q_EQ_appModuleId: data[0].id
+                        }
+                    }, true)
+                },
+                afterSelect: function (data) {
+                    if (!data) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: this.lang.inputModelText
+                        });
+                        return;
+                    }
+                    // console.log(data);
+                    g.appModuleId = data.data.id;
+                    g.appModuleName = data.data.name;
+                    EUI.getCmp("gridPanel").setPostParams({
+                            Q_EQ_appModuleId: data.data.id
+                        }
+                    ).trigger("reloadGrid");
+                },
             }, {
                 xtype: "Button",
                 title: this.lang.addBtnText,
                 selected: true,
                 handler: function () {
-                    var data = [{
-                        code: "21",
-                        id: "2"
-                    }];
-                    EUI.getCmp("gridPanel").setDataInGrid(data);
-                    // g.addWorkPageUrl();
+                    g.addWorkPageUrl();
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchKeywordText,
+                displayText: this.lang.searchNameText,
                 onSearch: function (value) {
                     console.log(value);
+                    if (!value) {
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.InputSearchNameText
+                        // });
+                        // return;
+                        EUI.getCmp("gridPanel").setPostParams({
+                                Q_LK_name: ""
+                            }
+                        ).trigger("reloadGrid");
+                    }
+                    EUI.getCmp("gridPanel").setPostParams({
+                            Q_LK_name: value
+                        }
+                    ).trigger("reloadGrid");
                 }
             }]
         }
@@ -63,7 +124,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                url: "",
+                loadonce: true,
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -81,14 +142,14 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 }, {
-                    label: this.lang.codeText,
-                    name: "code",
-                    index: "code",
-                    width: '95%'
-                }, {
                     label: this.lang.nameText,
                     name: "name",
                     index: "name",
+                    width: '95%'
+                }, {
+                    label: this.lang.urlViewAddressText,
+                    name: "url",
+                    index: "url",
                     width: '95%'
                 }, {
                     label: this.lang.depictText,
@@ -140,7 +201,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             padding: 15,
             items: [{
                 xtype: "FormPanel",
-                id: "updatreWorkPageUrl",
+                id: "updateWorkPageUrl",
                 padding: 0,
                 items: [{
                     xtype: "TextField",
@@ -153,19 +214,35 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: g.lang.codeText,
+                    title: g.lang.appModelIdText,
                     labelWidth: 90,
-                    name: "code",
+                    name: "appModuleId",
                     width: 220,
-                    maxLength: 10,
-                    value: data.code
+                    value: g.appModuleId,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.modelText,
+                    readonly: true,
+                    labelWidth: 90,
+                    name: "appModuleName",
+                    width: 220,
+                    value: g.appModuleName,
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
                     name: "name",
                     width: 220,
+                    maxLength: 10,
                     value: data.name
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.urlViewAddressText,
+                    labelWidth: 90,
+                    name: "url",
+                    width: 220,
+                    value: data.url
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
@@ -182,24 +259,24 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var form = EUI.getCmp("updateWorkPageUrl");
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.code) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputCodeMsgText,
-                        });
-                        return;
-                    }
                     if (!data.name) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: g.lang.inputNameMsgText,
+                            msg: g.lang.inputNameMsgText
+                        });
+                        return;
+                    }
+                    if (!data.url) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: g.lang.inputUrlViewAddressMsgText
                         });
                         return;
                     }
                     if (!data.depict) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: g.lang.inputDepictMsgText,
+                            msg: g.lang.inputDepictMsgText
                         });
                         return;
                     }
@@ -225,16 +302,32 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
-                    title: g.lang.codeText,
+                    title: g.lang.appModelIdText,
                     labelWidth: 90,
-                    name: "code",
+                    name: "appModuleId",
                     width: 220,
-                    maxLength: 10
+                    value: g.appModuleId,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.modelText,
+                    readonly: true,
+                    labelWidth: 90,
+                    name: "appModuleName",
+                    width: 220,
+                    value: g.appModuleName,
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
                     name: "name",
+                    width: 220,
+                    maxLength: 10
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.urlViewAddressText,
+                    labelWidth: 90,
+                    name: "url",
                     width: 220
                 }, {
                     xtype: "TextField",
@@ -251,24 +344,31 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var form = EUI.getCmp("addWorkPageUrl");
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.code) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputCodeMsgText,
-                        });
-                        return;
-                    }
                     if (!data.name) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: g.lang.inputNameMsgText,
+                            msg: g.lang.inputNameMsgText
+                        });
+                        return;
+                    }
+                    if (!data.url) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: g.lang.inputUrlViewAddressMsgText
                         });
                         return;
                     }
                     if (!data.depict) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: g.lang.inputDepictMsgText,
+                            msg: g.lang.inputDepictMsgText
+                        });
+                        return;
+                    }
+                    if (!data.appModuleName) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: g.lang.inputModelText
                         });
                         return;
                     }
@@ -289,7 +389,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText,
         });
         EUI.Store({
-            url: "",
+            url: "http://localhost:8081/flow/maindata/workPageUrl/update",
             params: data,
             success: function () {
                 myMask.hide();
@@ -331,7 +431,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowDelMsgText
         });
         EUI.Store({
-            url: "",
+            url: "http://localhost:8081/flow/maindata/workPageUrl/delete",
             params: {
                 id: rowData.id
             },
