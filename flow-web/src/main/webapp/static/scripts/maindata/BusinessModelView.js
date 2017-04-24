@@ -409,6 +409,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
+                    /* if (!data["appModule.name"]) {
+                     EUI.ProcessStatus({
+                     success: false,
+                     msg: g.lang.chooseBelongToAppModuleText,
+                     });
+                     return;
+                     }*/
                     g.saveBusinessModel(data);
                 }
             }, {
