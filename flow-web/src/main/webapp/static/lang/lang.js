@@ -66,9 +66,10 @@ if (EUI.FlowTypeView) {
 
 if (EUI.WorkPageUrlView) {
     EUI.apply(EUI.WorkPageUrlView.prototype.lang, {
-            filterText: "筛选",
+            modelText: "应用模块",
+            modelValueText:"全部模块",
             addBtnText: "新增",
-            searchKeywordText: "请输入关键字进行搜索...",
+            searchKeywordText: "请输入名称进行搜索",
             updateWorkPageUrlText: "修改工作页面",
             inputCodeMsgText: "请输入代码",
             inputNameMsgText: "请输入名称",

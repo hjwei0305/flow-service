@@ -2,13 +2,8 @@
  * 工作页面
  */
 EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
-    appModuleName: "",
-    appModuleId: "",
     initComponent: function () {
-        var appModuleName = EUI.util.getUrlParam("appModuleName");
-        var appModuleId = EUI.util.getUrlParam("appModuleId");
-        this.appModuleName = appModuleName;
-        this.appModuleId = appModuleId;
+
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -32,54 +27,27 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "应用模块",
-                labelWidth: 70,
-                id:"coboId",
-                async:false,
-                colon:false,
-                name: "appModule.name",
-                // submitValue:{
-                //     "appModule.id":"appModule.id"
-                // },
-                store: {
-                    url: "http://localhost:8081/flow/maindata/workPageUrl/findAllAppModuleName",
-                },
-                field: ["appModule.id"],
-                reader: {
-                    name: "name",
-                    field: ["id"]
-                },
-                afterLoad : function(data) {
-                    var cobo = EUI.getCmp("coboId");
-                    cobo.setValue(data[0].name)
-                    g.appModuleId = data[0].id,
-                    g.appModuleName = data[0].name
-                },
-                afterSelect: function (data) {
-                    // console.log(data);
-                    g.appModuleId = data.data.id,
-                    g.appModuleName = data.data.name,
-                    EUI.getCmp("gridPanel").setPostParams({
-                            Q_EQ_appModuleId: data.data.id
-                        }
-                    ).trigger("reloadGrid");
-                },
+                title: this.lang.modelText,
+                labelWidth: 40,
+                value: this.lang.modelValueText,
+                colon: false
             }, {
                 xtype: "Button",
                 title: this.lang.addBtnText,
                 selected: true,
                 handler: function () {
-                    g.addWorkPageUrl();
+                    var data = [{
+                        code: "21",
+                        id: "2"
+                    }];
+                    EUI.getCmp("gridPanel").setDataInGrid(data);
+                    // g.addWorkPageUrl();
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: this.lang.searchKeywordText,
                 onSearch: function (value) {
                     console.log(value);
-                    EUI.getCmp("gridPanel").setPostParams({
-                            Q_EQ_name: value
-                        }
-                    ).trigger("reloadGrid");
                 }
             }]
         }
@@ -95,7 +63,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                url: "http://localhost:8081/flow/maindata/workPageUrl/find",
+                url: "",
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -113,14 +81,14 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 }, {
-                    label: "名称",
-                    name: "name",
-                    index: "name",
+                    label: this.lang.codeText,
+                    name: "code",
+                    index: "code",
                     width: '95%'
                 }, {
-                    label: "URL界面地址",
-                    name: "url",
-                    index: "url",
+                    label: this.lang.nameText,
+                    name: "name",
+                    index: "name",
                     width: '95%'
                 }, {
                     label: this.lang.depictText,
@@ -172,7 +140,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             padding: 15,
             items: [{
                 xtype: "FormPanel",
-                id: "updateWorkPageUrl",
+                id: "updatreWorkPageUrl",
                 padding: 0,
                 items: [{
                     xtype: "TextField",
@@ -185,35 +153,19 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: "应用模块ID",
+                    title: g.lang.codeText,
                     labelWidth: 90,
-                    name: "appModuleId",
+                    name: "code",
                     width: 220,
-                    value:g.appModuleId,
-                    hidden : true
+                    maxLength: 10,
+                    value: data.code
                 }, {
                     xtype: "TextField",
-                    title: "应用模块",
-                    readonly:true,
-                    labelWidth: 90,
-                    name: "appModuleName",
-                    width: 220,
-                    value:g.appModuleName,
-                },{
-                    xtype: "TextField",
-                    title: "名称",
+                    title: g.lang.nameText,
                     labelWidth: 90,
                     name: "name",
                     width: 220,
-                    maxLength: 10,
                     value: data.name
-                }, {
-                    xtype: "TextField",
-                    title: "URL界面地址",
-                    labelWidth: 90,
-                    name: "url",
-                    width: 220,
-                    value: data.url
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
@@ -230,17 +182,17 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var form = EUI.getCmp("updateWorkPageUrl");
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
+                    if (!data.code) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请输入名称",
+                            msg: g.lang.inputCodeMsgText,
                         });
                         return;
                     }
-                    if (!data.url) {
+                    if (!data.name) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请输入URL界面地址",
+                            msg: g.lang.inputNameMsgText,
                         });
                         return;
                     }
@@ -273,32 +225,16 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
-                    title: "应用模块ID",
+                    title: g.lang.codeText,
                     labelWidth: 90,
-                    name: "appModuleId",
-                    width: 220,
-                    value:g.appModuleId,
-                    hidden : true
-                }, {
-                    xtype: "TextField",
-                    title: "应用模块",
-                    readonly:true,
-                    labelWidth: 90,
-                    name: "appModuleName",
-                    width: 220,
-                    value:g.appModuleName,
-                },{
-                    xtype: "TextField",
-                    title: "名称",
-                    labelWidth: 90,
-                    name: "name",
+                    name: "code",
                     width: 220,
                     maxLength: 10
                 }, {
                     xtype: "TextField",
-                    title: "URL界面地址",
+                    title: g.lang.nameText,
                     labelWidth: 90,
-                    name: "url",
+                    name: "name",
                     width: 220
                 }, {
                     xtype: "TextField",
@@ -315,30 +251,24 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var form = EUI.getCmp("addWorkPageUrl");
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
+                    if (!data.code) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请输入名称",
+                            msg: g.lang.inputCodeMsgText,
                         });
                         return;
                     }
-                    if (!data.url) {
+                    if (!data.name) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请输入URL界面地址",
+                            msg: g.lang.inputNameMsgText,
                         });
                         return;
                     }
                     if (!data.depict) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请输入描述",
-                        });
-                        return;
-                    }if (!data.appModuleName) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: "请选择应用模块",
+                            msg: g.lang.inputDepictMsgText,
                         });
                         return;
                     }
@@ -359,7 +289,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText,
         });
         EUI.Store({
-           url: "http://localhost:8081/flow/maindata/workPageUrl/update",
+            url: "",
             params: data,
             success: function () {
                 myMask.hide();
@@ -401,7 +331,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowDelMsgText
         });
         EUI.Store({
-            url: "http://localhost:8081/flow/maindata/workPageUrl/delete",
+            url: "",
             params: {
                 id: rowData.id
             },
