@@ -1,5 +1,8 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
@@ -67,4 +70,16 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String>{
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
     public  OperateResult rollBackTo(String id);
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowTask> findByPage(Search searchConfig);
 }
