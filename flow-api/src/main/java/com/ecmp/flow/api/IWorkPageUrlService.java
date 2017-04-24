@@ -1,9 +1,17 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.WorkPageUrl;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * *************************************************************************************************
@@ -19,5 +27,17 @@ import javax.ws.rs.Path;
  */
 @Path("workPageUrl")
 @Api(value = "IWorkPageUrlService工作界面配置管理服务API接口")
-public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String>{
+public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<WorkPageUrl> findByPage(Search searchConfig);
 }

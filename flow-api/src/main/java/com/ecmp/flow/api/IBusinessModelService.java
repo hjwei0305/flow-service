@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowDefination;
@@ -25,5 +27,17 @@ import java.util.List;
  */
 @Path("businessModel")
 @Api(value = "IBusinessModelService 业务实体服务API接口")
-public interface IBusinessModelService extends IBaseService<BusinessModel, String>{
+public interface IBusinessModelService extends IBaseService<BusinessModel, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<BusinessModel> findByPage(Search searchConfig);
 }
