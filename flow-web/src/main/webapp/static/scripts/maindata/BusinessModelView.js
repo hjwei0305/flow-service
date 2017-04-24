@@ -168,7 +168,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".condetail_update").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            //  var tabPanel=parent.homeView.getTabPanel();
             console.log(data);
             g.updateBusinessModel(data);
         });
