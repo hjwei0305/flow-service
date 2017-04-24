@@ -2,17 +2,28 @@ package com.ecmp.flow.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.*;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Transient;
+import javax.servlet.ServletRequest;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -31,22 +42,20 @@ import java.util.List;
 @RequestMapping(value = "/maindata/appModule")
 public class AppModuleController {
 
+
     @RequestMapping()
-    public String showAppModule(Model model) {
+    public String showAppModule() {
         return "maindata/AppModuleView";
     }
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public Object find() throws JsonProcessingException {
-        //  System.out.println("---------------------------------------------");
+    public String find(ServletRequest request) throws JsonProcessingException {
+         System.out.println("---------------------------------------------");
+        Search search = SearchUtil.genSearch(request);
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
-        List<AppModule> appModuleList = proxy.findAll();
-        ApiClient.createProxy(IAppModuleService.class);
-        for (int i = 0; i < appModuleList.size(); i++) {
-            System.out.println(appModuleList.get(i));
-        }
-        String appModule = JsonUtil.serialize(appModuleList);
+        PageResult<AppModule> appModulePageResult  = proxy.findByPage(search);
+        String appModule = JsonUtil.serialize(appModulePageResult);
         return appModule;
     }
 

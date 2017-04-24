@@ -2,23 +2,22 @@ package com.ecmp.flow.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
-import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
 
 /**
@@ -45,13 +44,11 @@ public class WorkPageUrlController {
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public Object find() throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException {
+        Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> workPageUrlList = proxy.findAll();
-        for (int i = 0; i < workPageUrlList.size(); i++) {
-            System.out.println(workPageUrlList.get(i));
-        }
-        String workPageUrl = JsonUtil.serialize(workPageUrlList);
+        PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
+        String workPageUrl = JsonUtil.serialize(workPageUrlPage);
         return workPageUrl;
     }
 
@@ -73,7 +70,6 @@ public class WorkPageUrlController {
         System.out.println("---------------------------------------------");
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
         List<AppModule> appModuleList = proxy.findAll();
-
         OperateStatus operateStatus = new OperateStatus(true, "ok", appModuleList);
         operateStatus.setData(appModuleList);
         String findAppModuleName = JsonUtil.serialize(operateStatus);

@@ -2,6 +2,9 @@ package com.ecmp.flow.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
 
 
@@ -36,16 +40,12 @@ public class FlowTaskController {
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public Object find() throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException {
        System.out.println("---------------------------------------------");
+        Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        List<FlowTask> flowTaskList = proxy.findAll();
-        for (int i=0;i<flowTaskList.size();i++){
-            System.out.println(flowTaskList.get(i));
-        }
-        String flowTask =  JsonUtil.serialize(flowTaskList);
-
-        System.out.println("..........................");
+        PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
+        String flowTask =  JsonUtil.serialize(flowTaskPageResult);
         return flowTask;
     }
 
