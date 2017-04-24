@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>服务地址管理页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/FlowServiceUrlView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/FlowServiceUrlView.js"></script>
     <script type="text/javascript"

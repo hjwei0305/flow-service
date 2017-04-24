@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>流程类型页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/FlowTypeView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/FlowTypeView.js"></script>
     <script type="text/javascript"

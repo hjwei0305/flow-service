@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>流程任务页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/FlowTaskView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/FlowTaskView.js"></script>
     <script type="text/javascript">
