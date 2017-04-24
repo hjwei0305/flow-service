@@ -181,7 +181,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                         infoBox.remove();
                         g.deleteGridData();
                         // EUI.getCmp("gridPanel").refreshGrid();
-
                     }
                 }, {
                     title: g.lang.cancelText,
