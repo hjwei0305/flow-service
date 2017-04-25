@@ -1,14 +1,10 @@
 package com.ecmp.flow.entity;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Date;
 
@@ -29,6 +25,12 @@ import java.util.Date;
 @Table(name = "flow_task", catalog = "ecmp_flow")
 public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 
+	/**
+	 * 乐观锁-版本
+	 */
+	@Version
+	@Column(name = "version")
+	private Integer version=0;
 
 	/**
 	 * 所属流程实例
@@ -178,26 +180,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	public FlowTask() {
 	}
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this)
-				.append("id", this.getId())
-				.append("flowInstance", flowInstance)
-				.append("flowName", flowName)
-				.append("taskName", taskName)
-				.append("taskDefKey", actTaskDefKey )
-				.append("taskFormUrl", taskFormUrl)
-				.append("taskStatus", taskStatus)
-				.append("proxyStatus", proxyStatus)
-//				.append("flowInstanceId", flowInstanceId)
-				.append("flowDefinitionId", flowDefinitionId)
-				.append("executorName", executorName)
-				.append("executorAccount", executorAccount)
-				.append("candidateAccount", candidateAccount)
-				.append("executeDate", executeDate)
-				.append("depict", depict)
-				.toString();
-	}
+
 
 	public FlowTask(String flowName, String taskName, String actTaskDefKey ,
 			String flowInstanceId, String flowDefinitionId, Date executeDate) {
@@ -418,5 +401,44 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 
 	public void setPreId(String preId) {
 		this.preId = preId;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("id", this.getId())
+				.append("flowInstance", flowInstance)
+				.append("flowName", flowName)
+				.append("taskName", taskName)
+				.append("taskDefKey", actTaskDefKey )
+				.append("taskFormUrl", taskFormUrl)
+				.append("taskStatus", taskStatus)
+				.append("proxyStatus", proxyStatus)
+				.append("flowDefinitionId", flowDefinitionId)
+				.append("executorName", executorName)
+				.append("executorAccount", executorAccount)
+				.append("candidateAccount", candidateAccount)
+				.append("executeDate", executeDate)
+				.append("depict", depict)
+				.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 }

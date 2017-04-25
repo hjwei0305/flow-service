@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.persistence.Version;
 
 
 /**
@@ -29,6 +30,14 @@ import javax.persistence.Lob;
 @DynamicInsert
 @DynamicUpdate
 public class WorkPageUrl extends com.ecmp.core.entity.BaseEntity {
+
+    /**
+     * 乐观锁-版本
+     */
+    @Version
+    @Column(name = "version")
+    private Integer version=0;
+
     /**
      * 名称
      */
@@ -86,6 +95,14 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseEntity {
 
     public void setAppModuleId(String appModuleId) {
         this.appModuleId = appModuleId;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     @Override

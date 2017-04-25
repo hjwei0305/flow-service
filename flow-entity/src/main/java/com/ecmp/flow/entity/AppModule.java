@@ -31,6 +31,13 @@ import java.util.Set;
 public class AppModule extends com.ecmp.core.entity.BaseEntity implements Serializable {
 
     /**
+     * 乐观锁-版本
+     */
+    @Version
+    @Column(name = "version")
+    private Integer version=0;
+
+    /**
      * 名称
      */
     @Column(length = 80, nullable = false)
@@ -87,6 +94,14 @@ public class AppModule extends com.ecmp.core.entity.BaseEntity implements Serial
 
     public void setBusinessModels(Set<BusinessModel> businessModels) {
         this.businessModels = businessModels;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     @Override

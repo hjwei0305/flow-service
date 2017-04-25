@@ -5,6 +5,7 @@ import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +26,8 @@ public class BusinessModelBaseServiceTest extends BasicContextTestCase {
         businessModel.setClassName("ecmp-flow-businessModel22_" + System.currentTimeMillis());
         businessModel.setName("业务实体模型测试-hasAppModule");
         businessModel.setAppModule(appModule);
-        OperateResult<BusinessModel> result  = businessModelService.save(businessModel);
+        OperateResultWithData<BusinessModel> result  = businessModelService.save(businessModel);
+
         businessModel=result.getData();
         logger.debug("id = {}", businessModel.getId());
         logger.debug("create结果：{}", businessModel);

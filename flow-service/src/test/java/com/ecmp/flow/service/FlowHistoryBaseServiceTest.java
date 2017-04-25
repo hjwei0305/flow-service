@@ -23,7 +23,7 @@ public class FlowHistoryBaseServiceTest extends BasicContextTestCase {
         flowHistory.setFlowName("流程name2");
         flowHistory.setFlowTaskName("流程任务名2");
         flowHistory.setFlowRunId("流程运行id2");
-        flowHistory.setFlowInstanceId("流程实例id2");
+//        flowHistory.setFlowInstanceId("流程实例id2");
         flowHistory.setFlowDefId("流程定义id2");
         flowHistoryService.save(flowHistory);
     }
@@ -39,7 +39,7 @@ public class FlowHistoryBaseServiceTest extends BasicContextTestCase {
         List<FlowHistory> flowHistoryList = flowHistoryService.findAll();
         if(flowHistoryList !=null && flowHistoryList.size()>0){
             FlowHistory flowHistory = flowHistoryList.get(0);
-            flowHistoryService.delete(flowHistory);
+//            flowHistoryService.delete(flowHistory);
         }
     }
 

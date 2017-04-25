@@ -68,7 +68,7 @@ create table flow_variable
    id                   varchar(36) not null comment 'ID',
    type                 varchar(20) not null comment '类型',
    name                 varchar(80) not null comment '名称',
-   task_id              varchar(36) comment '关联的任务ID',
+   task_history_id    varchar(36) comment '关联的任务ID',
    instance_id          varchar(36) comment '关联的流程实例ID',
    def_version_id       varchar(36) comment '关联的流程定义版本ID',
    defination_id        varchar(36) comment '关联的流程定义ID',
@@ -93,10 +93,10 @@ alter table flow_variable comment '运行参数表,记录任务执行中传递�
 alter table work_page_url
    add version int comment '版本-乐观锁';
 
-alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_history foreign key (task_id)
+alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_history foreign key (task_history_id)
       references flow_history (id) on delete restrict on update restrict;
 
-alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_instance foreign key (id)
+alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_instance foreign key (instance_id)
       references flow_instance (id) on delete cascade on update restrict;
 
 alter table flow_variable add constraint fk_flow_variable_instance foreign key (instance_id)

@@ -6,6 +6,7 @@ import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class AppModuleBaseServiceTest extends BasicContextTestCase {
         AppModule appModule = new AppModule();
         appModule.setCode("ecmp-flow-appModule22_" + System.currentTimeMillis());
         appModule.setName("应用模块测试22");
-        OperateResult<AppModule> result  = appModuleService.save(appModule);
+        OperateResultWithData<AppModule> result  = appModuleService.save(appModule);
         appModule=result.getData();
         logger.debug("id = {}", appModule.getId());
         logger.debug("create结果：{}", appModule);
