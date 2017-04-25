@@ -23,5 +23,5 @@ import org.springframework.stereotype.Service;
 public class FlowHiVarinstService extends BaseService<FlowHiVarinst, String> implements IFlowHiVarinstService {
 
     @Autowired
-    private FlowHiVarinstDao flowHiVarinst;
+    private FlowHiVarinstDao flowHiVarinstDao;
 }

@@ -16,29 +16,31 @@ package org.activiti.engine.impl.cmd;
 import java.io.Serializable;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
+import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 
 /**
  * @author Tom Baeyens
  */
-public class DeleteHistoricActivityInstanceByIdCmd implements Command<Object>, Serializable {
+public class UpdateHistoricActivityInstanceCmd implements Command<Object>, Serializable {
 
   private static final long serialVersionUID = 1L;
-  protected String id;
+  protected HistoricActivityInstance historicActivityInstance;
 
-  public DeleteHistoricActivityInstanceByIdCmd(String id) {
-    this.id = id;
+  public UpdateHistoricActivityInstanceCmd(HistoricActivityInstance historicActivityInstance) {
+    this.historicActivityInstance = historicActivityInstance;
   }
 
   public Object execute(CommandContext commandContext) {
 
-    if (id == null) {
-      throw new ActivitiIllegalArgumentException("id is null");
+    if (historicActivityInstance == null) {
+      throw new ActivitiIllegalArgumentException("historicActivityInstance is null");
     }
     commandContext
       .getHistoricActivityInstanceEntityManager()
-      .deleteHistoricActivityInstancesById(id);
+      .updateHistoricActivityInstance((HistoricActivityInstanceEntity)historicActivityInstance);
     return null;
   }
 

@@ -22,23 +22,23 @@ import org.activiti.engine.impl.interceptor.CommandContext;
 /**
  * @author Tom Baeyens
  */
-public class DeleteHistoricActivityInstanceByIdCmd implements Command<Object>, Serializable {
+public class DeleteHistoricActivityInstanceByTaskIdCmd implements Command<Object>, Serializable {
 
   private static final long serialVersionUID = 1L;
-  protected String id;
+  protected String taskId;
 
-  public DeleteHistoricActivityInstanceByIdCmd(String id) {
-    this.id = id;
+  public DeleteHistoricActivityInstanceByTaskIdCmd(String taskId) {
+    this.taskId = taskId;
   }
 
   public Object execute(CommandContext commandContext) {
 
-    if (id == null) {
-      throw new ActivitiIllegalArgumentException("id is null");
+    if (taskId == null) {
+      throw new ActivitiIllegalArgumentException("taskId is null");
     }
     commandContext
       .getHistoricActivityInstanceEntityManager()
-      .deleteHistoricActivityInstancesById(id);
+      .deleteHistoricActivityInstancesByTaskId(taskId);
     return null;
   }
 

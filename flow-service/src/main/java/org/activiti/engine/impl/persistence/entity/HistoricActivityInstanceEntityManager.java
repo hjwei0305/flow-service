@@ -40,10 +40,17 @@ public class HistoricActivityInstanceEntityManager extends AbstractManager {
 	      getDbSqlSession().delete("deleteHistoricActivityInstancesByTaskId", taskId);
 	    }
 	  }
-  public void deleteHistoricActivityInstanceById(String id) {
+  public void deleteHistoricActivityInstancesById(String id) {
 	    if (getHistoryManager().isHistoryLevelAtLeast(HistoryLevel.ACTIVITY)) {
-	      getDbSqlSession().delete("deleteHistoricActivityInstanceById", id);
+	      getDbSqlSession().delete("deleteHistoricActivityInstancesById", id);
 	    }
+	  }
+  /**
+   * 自定义更新 historicActivityInstance
+   * @param historicActivityInstance
+   */
+  public void updateHistoricActivityInstance(HistoricActivityInstanceEntity historicActivityInstance) {
+	    getDbSqlSession().update(historicActivityInstance);
 	  }
   
   public void insertHistoricActivityInstance(HistoricActivityInstanceEntity historicActivityInstance) {

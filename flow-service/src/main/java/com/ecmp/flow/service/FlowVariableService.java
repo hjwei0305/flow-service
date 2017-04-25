@@ -23,5 +23,5 @@ import org.springframework.stereotype.Service;
 public class FlowVariableService extends BaseService<FlowVariable, String> implements IFlowVariableService {
 
     @Autowired
-    private FlowVariableDao flowVariable;
+    private FlowVariableDao flowVariableDao;
 }

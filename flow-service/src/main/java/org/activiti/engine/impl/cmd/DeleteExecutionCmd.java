@@ -18,28 +18,39 @@ import java.io.Serializable;
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.task.IdentityLinkType;
+
 
 /**
- * @author Tom Baeyens
+ * @author 自定义添加，删除Execution
  */
-public class DeleteHistoricActivityInstanceByIdCmd implements Command<Object>, Serializable {
+public class DeleteExecutionCmd implements Command<Object>, Serializable {
 
   private static final long serialVersionUID = 1L;
-  protected String id;
 
-  public DeleteHistoricActivityInstanceByIdCmd(String id) {
-    this.id = id;
+  protected ExecutionEntity executionEntity;
+  
+  public DeleteExecutionCmd(ExecutionEntity executionEntity) {
+    this.executionEntity = executionEntity;
+    validateParams(executionEntity);
   }
-
-  public Object execute(CommandContext commandContext) {
-
-    if (id == null) {
-      throw new ActivitiIllegalArgumentException("id is null");
+  
+  protected void validateParams(ExecutionEntity executionEntity) {
+    if(executionEntity == null) {
+      throw new ActivitiIllegalArgumentException("ExecutionEntity is null");
     }
-    commandContext
-      .getHistoricActivityInstanceEntityManager()
-      .deleteHistoricActivityInstancesById(id);
-    return null;
+    
   }
+  
+  public Void execute(CommandContext commandContext) {
+
+    
+    commandContext.getExecutionEntityManager().deleteExecution(executionEntity);
+    
+    return null;  
+  }
+
 
 }
