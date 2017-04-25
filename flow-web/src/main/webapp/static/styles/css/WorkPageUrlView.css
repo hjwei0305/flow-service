@@ -21,3 +21,6 @@
 #container .ux-bar-right .ux-toolbar-item{
     margin-right: 0;
 }
+#comboBox span{
+    font-weight: bold;
+}

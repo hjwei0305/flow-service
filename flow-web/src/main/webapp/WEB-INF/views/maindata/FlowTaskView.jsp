@@ -15,7 +15,7 @@
         var flowTask;
         EUI.onReady(function () {
             flowType = new EUI.FlowTaskView({
-                renderTo: "flowTask"
+                renderTo: "container"
             });
         });
     </script>
@@ -23,7 +23,7 @@
 
 <body style='min-width: 1260px;overflow: auto;background: white;'>
 
-<div id="flowTask"></div>
+<div id="container"></div>
 
 </body>
 </html>

@@ -24,7 +24,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "ToolBar",
             region: "north",
-            height: 50,
+            height: 40,
             padding: 0,
             style: {
                 overflow: "hidden"

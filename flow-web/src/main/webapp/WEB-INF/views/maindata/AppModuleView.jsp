@@ -17,7 +17,7 @@
         var appModule;
         EUI.onReady(function () {
             appModule = new EUI.AppModuleView({
-                renderTo: "appModule"
+                renderTo: "container"
             });
         });
     </script>
@@ -25,7 +25,7 @@
 
 <body>
 
-<div id="appModule"></div>
+<div id="container"></div>
 
 </body>
 </html>

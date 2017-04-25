@@ -17,7 +17,7 @@
         var flowServiceUrl;
         EUI.onReady(function () {
             flowServiceUrl = new EUI.FlowServiceUrlView({
-                renderTo: "flowServiceUrl"
+                renderTo: "container"
             });
         });
     </script>
@@ -25,7 +25,7 @@
 
 <body style='min-width: 1260px;overflow: auto;background: white;'>
 
-<div id="flowServiceUrl"></div>
+<div id="container"></div>
 
 </body>
 </html>
