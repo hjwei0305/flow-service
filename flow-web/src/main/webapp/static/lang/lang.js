@@ -28,12 +28,22 @@ if (EUI.BusinessModelView) {
         classPathText: "类全路径",
         belongToAppModuleText: "所属应用模块",
         updateBusinessModelText: "修改业务模型",
+        conditonBeanText:"转换对象",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
         inputDepictMsgText: "请输入描述",
+        inputWorkPageText:"请输入工作界面",
+        inputConditonBeanText:"请输入转换对象",
+        searchNameText: "请输入名称进行搜索",
         chooseBelongToAppModuleText: "请选择所属应用模块",
-        addNewBusinessModelText: "新增业务模型"
+        addNewBusinessModelText: "新增业务模型",
+        urlViewAddressText:"URL地址",
+        workPageText:"工作界面",
+        workPageSetText:"工作界面配置",
+        typeText:"类型",
+        fieldNameText:"字段名",
+        noteText:"注解"
     }, common_lang);
 }
 
@@ -69,12 +79,13 @@ if (EUI.WorkPageUrlView) {
             modelText: "应用模块",
             modelValueText:"全部模块",
             addBtnText: "新增",
-            searchKeywordText: "请输入名称进行搜索",
+            searchNameText: "请输入名称进行搜索",
             updateWorkPageUrlText: "修改工作页面",
             inputCodeMsgText: "请输入代码",
             inputNameMsgText: "请输入名称",
             inputDepictMsgText: "请输入描述",
-            addNewWorkPageUrlText: "新增工作页面"
+            addNewWorkPageUrlText: "新增工作页面",
+            urlViewAddressText:"URL地址"
         }, common_lang
     );
 }
