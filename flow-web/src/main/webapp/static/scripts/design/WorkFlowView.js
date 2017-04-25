@@ -256,12 +256,24 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             },
             "keyup": function (e) {
                 var code = e.keyCode || e.charCode;
-                console.log(code);
                 if (code == 46) {
                     g.instance.detachAllConnections($(this));
                     $(this).remove();
                     e.stopPropagation();
                 }
+            },
+            "dblclick": function () {
+                new EUI.FlowNodeSettingView({
+                    title: $(this).find(".node-title").text()
+                });
+            }
+        });
+        $(".jtk-connector").live("keyup", function (e) {
+            var code = e.keyCode || e.charCode;
+            if (code == 46) {
+                g.instance.detachAllConnections($(this));
+                $(this).remove();
+                e.stopPropagation();
             }
         });
     }
@@ -301,11 +313,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 alwaysRespectStubs: true
             }]
         });
-        // 双击删除连线
+        // 双击连线弹出UEL配置界面
         this.instance.bind("dblclick", function (connection) {
-            delete g.connectInfo[connection.sourceId + ","
-            + connection.targetId];
-            jsPlumb.detach(connection);
+
+        });
+        // 双击连线弹出UEL配置界面
+        this.instance.bind("keyup", function (connection) {
+            console.log(arguments);
+            // delete g.connectInfo[connection.sourceId + ","
+            // + connection.targetId];
+            // jsPlumb.detach(connection);
         });
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {

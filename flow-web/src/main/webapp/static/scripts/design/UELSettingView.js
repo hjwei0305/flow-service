@@ -1,7 +1,7 @@
 /**
  * Created by fly on 2017/4/18.
  */
-EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
+EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
     initComponent: function () {
         this.window = EUI.Window({

@@ -9,23 +9,23 @@ var _flownode = {
 				css : "flow-event-end"
 			}],
 	task : [{
-				name : "serviceTaskText",
+				name : "userTaskText",
 				type : "UserTask",
 				css : "usertask"
 			}, {
-				name : "scriptTaskText",
+				name : "serviceTaskText",
 				type : "ServiceTask",
 				css : "servicetask"
 			}, {
-				name : "emailTaskText",
+				name : "scriptTaskText",
 				type : "ScriptTask",
 				css : "scripttask"
 			}, {
-				name : "manualTaskText",
+				name : "mailTaskText",
 				type : "mailTask",
 				css : "emailtask"
 			}, {
-				name : "exclusiveGatewayText",
+				name : "manualTaskText",
 				type : "ManualTask",
 				css : "manualtask"
 			}],
