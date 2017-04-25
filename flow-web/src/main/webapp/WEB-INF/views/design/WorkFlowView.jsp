@@ -17,7 +17,14 @@
     <script type="text/javascript"
             src="<%=basePath%>/static/ext/jsPlumb/jsplumb-2.2.10.js"></script>
     <script type="text/javascript"
+            src="<%=basePath%>/static/ext/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript"
+            src="<%=basePath%>/static/ext/ueditor/ueditor.all.min.js"></script>
+    <script type="text/javascript" src="<%=basePath%>/static/ext/ueditor/lang/zh-cn/zh-cn.js"></script>
+    <script type="text/javascript"
             src="<%=basePath%>/static/scripts/design/WorkFlowView.js"></script>
+    <script type="text/javascript"
+            src="<%=basePath%>/static/scripts/design/FlowNodeSettingView.js"></script>
     <script type="text/javascript"
             src="<%=basePath%>/static/lang/lang.js"></script>
     <script type="text/javascript">
