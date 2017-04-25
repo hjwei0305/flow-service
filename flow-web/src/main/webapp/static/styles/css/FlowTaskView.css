@@ -18,7 +18,9 @@
 }
 .condetail_update:hover{background-position:0 -160px}
 .condetail_delete:hover{background-position:-32px -160px}
-
+#container .ux-bar-right .ux-toolbar-item{
+    margin-right: 0;
+}
 .btn_operate{width:60px;height:16px;line-height:16px;margin:0 auto}
 .agreeBtn {
     width: 16px;
