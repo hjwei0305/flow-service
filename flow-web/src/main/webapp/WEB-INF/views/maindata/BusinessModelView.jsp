@@ -17,7 +17,7 @@
         var businessModel;
         EUI.onReady(function () {
             businessModel = new EUI.BusinessModelView({
-                renderTo: "businessModel"
+                renderTo: "container"
             });
         });
     </script>
@@ -25,7 +25,7 @@
 
 <body style='min-width: 1260px;overflow: auto;background: white;'>
 
-<div id="businessModel"></div>
+<div id="container"></div>
 
 </body>
 </html>
