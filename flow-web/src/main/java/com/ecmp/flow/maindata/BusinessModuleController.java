@@ -2,6 +2,9 @@ package com.ecmp.flow.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
@@ -16,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
 
 /**
@@ -42,14 +46,12 @@ public class BusinessModuleController {
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public Object find() throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException {
       //  System.out.println("---------------------------------------------");
+        Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
-        List<BusinessModel> businessModelList = proxy.findAll();
-        for (int i=0;i<businessModelList.size();i++){
-            System.out.println(businessModelList.get(i));
-        }
-        String businessModel = JsonUtil.serialize(businessModelList);
+        PageResult<BusinessModel> businessModelPageResult  = proxy.findByPage(search);
+        String businessModel = JsonUtil.serialize(businessModelPageResult);
         return businessModel;
     }
 

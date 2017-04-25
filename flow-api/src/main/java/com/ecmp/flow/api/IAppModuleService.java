@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.vo.OperateResult;
@@ -25,7 +27,7 @@ import java.util.List;
  */
 @Path("appModule")
 @Api(value = "IAppModuleService 应用模块服务API接口")
-public interface IAppModuleService extends IBaseService<AppModule, String>{
+public interface IAppModuleService extends IBaseService<AppModule, String> {
 //    @GET
 //    @Path("hello")
 //    @Produces(MediaType.APPLICATION_JSON)
@@ -39,5 +41,17 @@ public interface IAppModuleService extends IBaseService<AppModule, String>{
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @ApiOperation(value = "test2",notes = "测试2")
 //    public String hello(String v);
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<AppModule> findByPage(Search searchConfig);
 
 }

@@ -1,10 +1,18 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.flow.entity.FlowType;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * *************************************************************************************************
@@ -20,5 +28,17 @@ import javax.ws.rs.Path;
  */
 @Path("flowServiceUrl")
 @Api(value = "IFlowServiceUrlService 流程服务地址服务API接口")
-public interface IFlowServiceUrlService extends IBaseService<FlowServiceUrl, String>{
+public interface IFlowServiceUrlService extends IBaseService<FlowServiceUrl, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowServiceUrl> findByPage(Search searchConfig);
 }

@@ -1,5 +1,8 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
@@ -23,5 +26,17 @@ import java.util.List;
  */
 @Path("flowType")
 @Api(value = "IFlowTypeService 流程类型服务API接口")
-public interface IFlowTypeService extends IBaseService<FlowType, String>{
+public interface IFlowTypeService extends IBaseService<FlowType, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowType> findByPage(Search searchConfig);
 }

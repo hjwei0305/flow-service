@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>流程类型页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/FlowTypeView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/FlowTypeView.js"></script>
     <script type="text/javascript"
@@ -17,7 +17,7 @@
         var flowType;
         EUI.onReady(function () {
             flowType = new EUI.FlowTypeView({
-                renderTo: "flowType"
+                renderTo: "container"
             });
         });
     </script>
@@ -25,7 +25,7 @@
 
 <body style='min-width: 1260px;overflow: auto;background: white;'>
 
-<div id="flowType"></div>
+<div id="container"></div>
 
 </body>
 </html>

@@ -8,7 +8,7 @@
 <html>
 <head>
     <title>实体模型页面</title>
-    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/workflowview.css">
+    <link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/AppModuleView.css">
     <script type="text/javascript"
             src="<%=basePath%>/static/scripts/maindata/AppModuleView.js"></script>
     <script type="text/javascript"
@@ -17,7 +17,7 @@
         var appModule;
         EUI.onReady(function () {
             appModule = new EUI.AppModuleView({
-                renderTo: "appModule"
+                renderTo: "container"
             });
         });
     </script>
@@ -25,7 +25,7 @@
 
 <body>
 
-<div id="appModule"></div>
+<div id="container"></div>
 
 </body>
 </html>

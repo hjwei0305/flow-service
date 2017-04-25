@@ -18,7 +18,23 @@
 }
 .condetail_update:hover{background-position:0 -160px}
 .condetail_delete:hover{background-position:-32px -160px}
-
 #container .ux-bar-right .ux-toolbar-item{
     margin-right: 0;
+}
+.btn_operate{width:60px;height:16px;line-height:16px;margin:0 auto}
+.agreeBtn {
+    width: 16px;
+    height: 16px;
+    float: left;
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: 0px 0px;
+}
+.nagreeBtn {
+    width: 16px;
+    height: 16px;
+    float: right;
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: -16px 0px;
 }

@@ -115,6 +115,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             flowHistory.setActClaimTime(flowTask.getActClaimTime());
             flowHistory.setFlowTaskName(flowTask.getTaskName());
             flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+//            flowHistory.setFlowInstanceId(flowTask.getFlowInstanceId());
             flowHistory.setFlowInstance(flowTask.getFlowInstance());
             flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
             flowHistory.setOwnerName(flowTask.getOwnerName());

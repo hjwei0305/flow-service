@@ -26,7 +26,7 @@ import java.util.Set;
 @Entity(name = "business_model")
 @DynamicInsert
 @DynamicUpdate
-public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
+public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
 
     /**
      * 名称
@@ -37,8 +37,15 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
     /**
      * 类全路径
      */
-    @Column(length = 255, nullable = false,unique = true, name = "class_name")
+    @Column(length = 255, nullable = false, unique = true, name = "class_name")
     private String className;
+
+
+    /**
+     * 转换对象
+     */
+    @Column(length = 255, name = "conditon_bean")
+    private String conditonBean;
 
     /**
      * 描述
@@ -101,6 +108,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
         this.flowTypes = flowTypes;
     }
 
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -113,6 +121,15 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
 //                .append("name", this.name)
 //                .append("className", this.className)
 //                .append("depict",this.depict)
+
+    public String getConditonBean() {
+        return conditonBean;
+    }
+
+    public void setConditonBean(String conditonBean) {
+        this.conditonBean = conditonBean;
+    }
+
 //                .toString();
 //    }
 
@@ -122,6 +139,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity{
                 .append("id", this.getId())
                 .append("name", name)
                 .append("className", className)
+                .append("conditonBean", conditonBean)
                 .append("depict", depict)
                 .append("appModule", appModule)
                 .append("flowTypes", flowTypes)
