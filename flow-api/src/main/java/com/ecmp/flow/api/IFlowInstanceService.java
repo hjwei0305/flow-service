@@ -1,6 +1,6 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.flow.common.api.IBaseService;
+import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
