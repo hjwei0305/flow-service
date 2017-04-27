@@ -413,7 +413,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var nodes = $(".node-choosed");
         var process = {
             id: "",
-            name: "",
+            name: "Test" + new Date().getTime(),
+            key: "Test" + new Date().getTime(),
             isExecutable: true,
             nodes: {}
         };
