@@ -2,7 +2,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.flow.common.api.IBaseService;
+import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
