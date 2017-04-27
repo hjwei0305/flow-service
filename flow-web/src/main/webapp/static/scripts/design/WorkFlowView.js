@@ -412,7 +412,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         var nodes = $(".node-choosed");
         var process = {
-            id: "",
+            id: "Test" + new Date().getTime(),
             name: "Test" + new Date().getTime(),
             key: "Test" + new Date().getTime(),
             isExecutable: true,
@@ -437,7 +437,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {flowTypeId: "c0a80169-5b7e-1032-815b-7ea0674a0000", process: process};
+        return {flowTypeId: "c0a8016b-5b9f-1127-815b-9f0175310000", process: process};
     }
     ,
     loadData: function (data) {
