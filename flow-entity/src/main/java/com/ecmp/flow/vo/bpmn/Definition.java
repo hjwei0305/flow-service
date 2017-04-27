@@ -1,6 +1,5 @@
 package com.ecmp.flow.vo.bpmn;
 
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 
@@ -40,19 +39,19 @@ public class Definition implements Serializable {
     /**
      * 前端设计json文本
      */
-    @Transient
+    @XmlTransient
     private String defJson;
 
     /**
      * 流程类型
      */
-    @Transient
+    @XmlTransient
     private String flowTypeId;
 
     /**
      * 流程定义ID
      */
-    @Transient
+    @XmlTransient
     private String id;
 
 
