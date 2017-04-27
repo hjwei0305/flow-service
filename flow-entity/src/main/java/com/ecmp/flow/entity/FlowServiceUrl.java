@@ -27,6 +27,14 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 public class FlowServiceUrl extends com.ecmp.core.entity.BaseEntity {
+
+    /**
+     * 乐观锁-版本
+     */
+    @Version
+    @Column(name = "version")
+    private Integer version=0;
+
     /**
      * 名称
      */
@@ -85,6 +93,13 @@ public class FlowServiceUrl extends com.ecmp.core.entity.BaseEntity {
         this.depict = depict;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public int hashCode() {

@@ -4,6 +4,7 @@ package com.ecmp.flow.service;
 import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +20,7 @@ public class FlowDefinationBaseServiceTest extends BasicContextTestCase {
         FlowDefination flowDefination = new FlowDefination();
         flowDefination.setDefKey("ecmp-flow-flowDefination22_" + System.currentTimeMillis());
         flowDefination.setName("流程类型测试22");
-        OperateResult<FlowDefination> result  = flowDefinationService.save(flowDefination);
+        OperateResultWithData<FlowDefination> result  = flowDefinationService.save(flowDefination);
         flowDefination=result.getData();
         logger.debug("id = {}", flowDefination.getId());
         logger.debug("create结果：{}", flowDefination);

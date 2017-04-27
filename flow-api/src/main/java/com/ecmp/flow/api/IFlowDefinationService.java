@@ -1,15 +1,14 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +25,7 @@ import java.util.Map;
  */
 @Path("flowDefination")
 @Api(value = "IFlowDefinationService 流程定义服务API接口")
-public interface IFlowDefinationService extends IBaseService<FlowDefination, String>{
+public interface IFlowDefinationService extends IBaseService<FlowDefination, String> {
 
     /**
      * 通过流程定义ID发布最新版本的流程

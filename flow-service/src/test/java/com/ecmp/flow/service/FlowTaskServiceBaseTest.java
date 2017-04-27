@@ -34,14 +34,14 @@ public class FlowTaskServiceBaseTest extends BasicContextTestCase {
         flowTask.setTaskName("任务名称");
         flowTask.setExecutorName("执行人名称");
         flowTask.setFlowDefinitionId("流程定义版本1");
-        flowTask.setFlowInstanceId("流程实例1");
-        flowTask.setTaskDefKey("任务定义key");
+//        flowTask.setFlowInstanceId("流程实例1");
+//        flowTask.setTaskDefKey("任务定义key");
         flowTask.setTaskFormUrl("任务表单url");
         flowTask.setTaskStatus("任务状态");
         flowTask.setProxyStatus("代理状态");
         flowTask.setExecutorName("执行人");
-        flowTask.setExecutorAccount(11111111);
-        flowTask.setCandidateAccount(22222222);
+//        flowTask.setExecutorAccount(11111111);
+//        flowTask.setCandidateAccount(22222222);
         flowTask.setDepict("描述");
         flowTask.setExecuteDate(new Date(System.currentTimeMillis()));
         flowTaskService.save(flowTask);
@@ -63,7 +63,7 @@ public class FlowTaskServiceBaseTest extends BasicContextTestCase {
         List<FlowTask> flowTaskList = flowTaskService.findAll();
         if(flowTaskList !=null && flowTaskList.size()>0){
             FlowTask flowTask = flowTaskList.get(0);
-            flowTask.setTaskDefKey("任务定义key2");
+//            flowTask.setTaskDefKey("任务定义key2");
             flowTask.setTaskName("任务名称2");
             flowTask.setFlowName("工作流名称2");
             flowTaskService.save(flowTask);
@@ -76,7 +76,7 @@ public class FlowTaskServiceBaseTest extends BasicContextTestCase {
         List<FlowTask> flowTaskList = flowTaskService.findAll();
         if(flowTaskList !=null && flowTaskList.size()>0){
             FlowTask flowTask = flowTaskList.get(0);
-            flowTaskService.delete(flowTask);
+//            flowTaskService.delete(flowTask);
         }
     }
 

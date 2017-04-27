@@ -30,6 +30,14 @@ import javax.persistence.*;
 @DynamicInsert
 @DynamicUpdate
 public class FlowType extends com.ecmp.core.entity.BaseEntity {
+
+    /**
+     * 乐观锁-版本
+     */
+    @Version
+    @Column(name = "version")
+    private Integer version=0;
+
     /**
      * 名称
      */
@@ -104,21 +112,18 @@ public class FlowType extends com.ecmp.core.entity.BaseEntity {
         this.flowDefinations = flowDefinations;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
-
-//    @Override
-//    public String toString() {
-//        return new ToStringBuilder(this)
-//                .append("id", this.getId())
-//                .append("name", this.name)
-//                .append("code", this.code)
-//                .append("depict",this.depict)
-//                .toString();
-//    }
 
 
     @Override

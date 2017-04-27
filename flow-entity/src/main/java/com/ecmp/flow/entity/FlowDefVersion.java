@@ -25,6 +25,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 
 
 	/**
+	 * 乐观锁-版本
+	 */
+	@Version
+	@Column(name = "version")
+	private Integer version=0;
+
+	/**
 	 * 所属流程定义
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -259,4 +266,11 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 		return o;
 	}
 
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }

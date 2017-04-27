@@ -17,6 +17,7 @@ package org.activiti.engine.impl;
 import java.util.List;
 
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricDetailQuery;
 import org.activiti.engine.history.HistoricIdentityLink;
@@ -84,17 +85,21 @@ public class HistoryServiceImpl extends ServiceImpl implements HistoryService {
     commandExecutor.execute(new DeleteHistoricProcessInstanceCmd(processInstanceId));
   }
 
-  /**
-   * 通过任务ID删除节点执行历史记录
-   */
   @Override
   public void deleteHistoricActivityInstancesByTaskId(String taskId) {
   	// TODO Auto-generated method stub
 	  commandExecutor.execute(new DeleteHistoricActivityInstancesByTaskIdCmd(taskId));
   }
+  
+
+@Override
+public void deleteHistoricIdentityLinksByTaskId(String taskId) {
+	// TODO Auto-generated method stub
+	 commandExecutor.execute(new DeleteHistoricIdentityLinksByTaskIdCmd(taskId));
+}
 
 /**
- * 通过ID,删除节点执行历史记录
+ * 自定义，通过ID,删除节点执行历史记录
  */
 public void deleteHistoricActivityInstanceById(String id){
 	commandExecutor.execute(new DeleteHistoricActivityInstanceByIdCmd(id));
@@ -126,6 +131,21 @@ public void deleteHistoricActivityInstanceById(String id){
   public ProcessInstanceHistoryLogQuery createProcessInstanceHistoryLogQuery(String processInstanceId) {
   	return new ProcessInstanceHistoryLogQueryImpl(commandExecutor, processInstanceId);
   }
+
+@Override
+public void updateHistoricActivityInstance(HistoricActivityInstance historicActivityInstance) {
+	// TODO Auto-generated method stub
+	  commandExecutor.execute(new UpdateHistoricActivityInstanceCmd(historicActivityInstance));
+}
+
+/**
+ * 自定义删除，不带关联删除
+ */
+@Override
+public void deleteHistoricTaskInstanceOnly(String taskId) {
+	// TODO Auto-generated method stub
+	 commandExecutor.execute(new DeleteHistoricTaskInstanceOnlyCmd(taskId));
+}
 
 
   

@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
 import io.swagger.annotations.Api;
 
@@ -19,5 +20,5 @@ import javax.ws.rs.Path;
  */
 @Path("flowHistory")
 @Api(value = "IFlowHistoryService 流程历史服务API接口")
-public interface IFlowHistoryService extends IBaseService<FlowHistory, String>{
+public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 }

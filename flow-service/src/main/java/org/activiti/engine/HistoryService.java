@@ -87,14 +87,31 @@ public interface HistoryService {
   void deleteHistoricProcessInstance(String processInstanceId);
   
   /**
-   * 通过任务ID删除节点执行历史记录
+   * 删除节点执行历史记录
    */
   void deleteHistoricActivityInstancesByTaskId(String taskId);
   
   /**
    * 通过ID,删除节点执行历史记录
    */
-  void deleteHistoricActivityInstanceById(String taskId);
+  void deleteHistoricActivityInstanceById(String id);
+  
+  /**
+   * 删除任务关系执行历史记录
+   */
+  void deleteHistoricIdentityLinksByTaskId(String taskId);
+  
+  /**
+   * 更新执行历史记录
+   */
+  void updateHistoricActivityInstance(HistoricActivityInstance historicActivityInstance);  
+  
+  /**
+   * 
+   * @param taskId
+   */
+  void deleteHistoricTaskInstanceOnly(String taskId);
+  
 
   /**
    * creates a native query to search for {@link HistoricProcessInstance}s via SQL

@@ -27,6 +27,9 @@ public class AppModuleService extends BaseService<AppModule, String> implements 
 
     @Autowired
     private AppModuleDao appModuleDao;
+
+    private int xx;
+
 //    public String hello(){
 //        return "hello";
 //    }

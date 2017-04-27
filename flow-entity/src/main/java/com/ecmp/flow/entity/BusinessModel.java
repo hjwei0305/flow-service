@@ -29,6 +29,13 @@ import java.util.Set;
 public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
 
     /**
+     * 乐观锁-版本
+     */
+    @Version
+    @Column(name = "version")
+    private Integer version=0;
+
+    /**
      * 名称
      */
     @Column(length = 80, nullable = false)
@@ -108,19 +115,19 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
         this.flowTypes = flowTypes;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-//    @Override
-//    public String toString() {
-//        return new ToStringBuilder(this)
-//                .append("id", this.getId())
-//                .append("name", this.name)
-//                .append("className", this.className)
-//                .append("depict",this.depict)
 
     public String getConditonBean() {
         return conditonBean;
@@ -129,9 +136,6 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
     public void setConditonBean(String conditonBean) {
         this.conditonBean = conditonBean;
     }
-
-//                .toString();
-//    }
 
     @Override
     public String toString() {

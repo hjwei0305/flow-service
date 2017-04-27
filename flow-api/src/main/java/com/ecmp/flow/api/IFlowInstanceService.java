@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
@@ -25,7 +26,7 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("flowInstance")
 @Api(value = "IFlowInstanceService 流程实例服务API接口")
-public interface IFlowInstanceService extends IBaseService<FlowInstance, String>{
+public interface IFlowInstanceService extends IBaseService<FlowInstance, String> {
 
     /**
      * 将流程实例挂起

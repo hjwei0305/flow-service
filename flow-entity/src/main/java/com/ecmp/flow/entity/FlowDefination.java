@@ -26,6 +26,13 @@ import org.hibernate.annotations.GenericGenerator;
 public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 
 	/**
+	 * 乐观锁-版本
+	 */
+	@Version
+	@Column(name = "version")
+	private Integer version=0;
+
+	/**
 	 * 所属流程类型
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -164,6 +171,14 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 
 	public void setDefKey(String defKey) {
 		this.defKey = defKey;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 
 	@Override

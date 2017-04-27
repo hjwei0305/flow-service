@@ -2,9 +2,8 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowServiceUrl;
-import com.ecmp.flow.entity.FlowType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 

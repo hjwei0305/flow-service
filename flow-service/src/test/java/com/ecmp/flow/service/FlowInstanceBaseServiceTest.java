@@ -45,7 +45,7 @@ public class FlowInstanceBaseServiceTest extends BasicContextTestCase {
         List<FlowInstance> flowInstanceList = flowInstanceService.findAll();
         if(flowInstanceList !=null && flowInstanceList.size()>0){
             FlowInstance flowInstance = flowInstanceList.get(0);
-            flowInstanceService.delete(flowInstance);
+//            flowInstanceService.delete(flowInstance);
         }
     }
 
