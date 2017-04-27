@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="base/base :: base_head">
+    </head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>应用模块页面</title>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/AppModuleView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var appModuleView;
+        EUI.onReady(function () {
+            appModuleView = new EUI.AppModuleView({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
