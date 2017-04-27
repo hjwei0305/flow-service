@@ -1,6 +1,6 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.flow.common.api.IBaseService;
+import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
 import io.swagger.annotations.Api;
 
