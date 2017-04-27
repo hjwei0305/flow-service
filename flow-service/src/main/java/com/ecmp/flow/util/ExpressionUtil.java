@@ -29,21 +29,21 @@ public class ExpressionUtil {
         List<Object> providerList = new ArrayList<Object>();
         providerList.add(new JacksonJsonProvider());
 
-        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
-                .path("/propertiesAndValues/"+clientClassName)
+        Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
+                .path("/condition/propertiesAndValues/{conditonPojoClassName}",clientClassName)
+//                .query("conditonPojoClassName",clientClassName)
                 .accept(MediaType.APPLICATION_JSON)
-                .get(LinkedHashMap.class);
+                .get(Map.class);
         Binding bind = new Binding();
         for (Map.Entry<String,Object>  pv: pvs.entrySet()) {
             bind.setVariable(pv.getKey(), pv.getValue());
-
         }
         GroovyShell shell = new GroovyShell(bind);
         try {
             Object obj = shell.evaluate(expression);
         }catch (Exception e){
-            e.printStackTrace();
             result=false;
+            e.printStackTrace();
         }
         return result;
     }
@@ -53,7 +53,7 @@ public class ExpressionUtil {
         providerList.add(new JacksonJsonProvider());
 
         LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
-                .path("/properties/"+clientClassName)
+                .path("/properties")
                 .accept(MediaType.APPLICATION_JSON)
                 .get(LinkedHashMap.class);
         Binding bind = new Binding();

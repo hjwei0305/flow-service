@@ -31,12 +31,12 @@ public interface IConditionServer {
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException
      */
-    @POST
-    @Path("properties")
+    @GET
+    @Path("properties/{conditonPojoClassName}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO属性说明",notes = "测试")
-    public Map<String,String> getPropertiesForConditionPojo(String conditonPojoClassName) throws ClassNotFoundException;
+    public Map<String,String> getPropertiesForConditionPojo(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException;
 
     /**
      * 获取条件POJO属性说明及初始化值
@@ -47,31 +47,32 @@ public interface IConditionServer {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    @POST
-    @Path("propertiesAndValues")
+    @GET
+    @Path("propertiesAndValues/{conditonPojoClassName}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
-    public Map<String,Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException;
+    public Map<String,Object> getPropertiesAndValues(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
 
     /**
-     *
-     * @param conditonPojoClassName
-     * @param id
-     * @return
+     * 通过Id获取条件POJO的值
+     * @param conditonPojoClassName 条件pojo类名
+     * @param daoBeanName  对应的dao层BeanName
+     * @param id  业务ID
+     * @return POJO的值
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
      */
-    @POST
-    @Path("conditonPojoMap")
+    @GET
+    @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO的值",notes = "测试")
-    public Map<String,Object> getConditonPojoMap(@QueryParam("conditonPojoClassName") String conditonPojoClassName,@QueryParam("daoBeanName") String daoBeanName,@QueryParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    public Map<String,Object> getConditonPojoMap(@PathParam("conditonPojoClassName") String conditonPojoClassName,@PathParam("daoBeanName") String daoBeanName,@PathParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
-//
-//    public IConditionPojo getInitConditonPojo(String conditonPojoName);
 
 }

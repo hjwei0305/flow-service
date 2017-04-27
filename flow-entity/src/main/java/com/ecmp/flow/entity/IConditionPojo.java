@@ -13,4 +13,9 @@ import java.io.Serializable;
 public interface IConditionPojo extends Serializable{
 //    public JSONObject toJsonObject();
 
+    /**
+     * 条件表达式初始化，提供给表达式做初始化验证，
+     * 结合具体业务实际
+     */
+    public  void init();
 }

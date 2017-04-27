@@ -129,7 +129,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public  LinkedHashMap<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public  Map<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		return this.getPropertiesAndValues(conditionPojo, null);
 	}
 
@@ -147,15 +147,15 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public  LinkedHashMap<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties)
+	public  Map<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties)
 			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		LinkedHashMap<String, Object> result = null;
+		Map<String, Object> result = null;
 		// String[] excludeProperties = { "class", "pk", "equalFlag" };//
 		// 不用包括在内的字段
 		if (conditionPojo != null) {
 			Class sourceClass = conditionPojo.getClass();
 			Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
-			result = new LinkedHashMap<String, Object>();
+			result = new HashMap<String, Object>();
 			for (Method sourceMethod : sourceMethods) {		
 				
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
@@ -188,7 +188,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public  static LinkedHashMap<String, Object> getPropertiesAndValues(String className) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException{
+	public  static Map<String, Object> getPropertiesAndValues(String className)     throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
 		return getPropertiesAndValues(className, null);
 	}
 	
@@ -208,23 +208,25 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public  static LinkedHashMap<String, Object> getPropertiesAndValues(String className, String[] excludeProperties)
-			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
-		LinkedHashMap<String, Object> result = null;
+	public  static Map<String, Object> getPropertiesAndValues(String className, String[] excludeProperties)
+            throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
+		Map<String, Object> result = null;
 		// String[] excludeProperties = { "class", "pk", "equalFlag" };//
 		// 不用包括在内的字段
 		if (className != null) {
 			Class sourceClass = Class.forName(className);
 			Object conditionPojo = sourceClass.newInstance();
+			Method initMethod = sourceClass.getMethod("init");
+            initMethod.invoke(conditionPojo);
 			Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
-			result = new LinkedHashMap<String, Object>();
+			result = new HashMap<String, Object>();
 			for (Method sourceMethod : sourceMethods) {						
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
 				String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
 				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
 					continue;
 				}
-				 Object v = sourceMethod.invoke(conditionPojo, null);
+				 Object v = sourceMethod.invoke(conditionPojo);
 				 if(v!=null){
 					 result.put(sourceFieldName, v);
 				 }

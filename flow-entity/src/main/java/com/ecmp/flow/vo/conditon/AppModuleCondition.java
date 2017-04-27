@@ -46,4 +46,10 @@ public class AppModuleCondition extends AppModule implements IConditionPojo {
         return super.getCode();
     }
 
+    public void init(){
+          this.setName("name");
+          this.setCode("code");
+          this.setId("id");
+    }
+
 }

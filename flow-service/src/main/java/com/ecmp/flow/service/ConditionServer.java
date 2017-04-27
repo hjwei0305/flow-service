@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
 import com.ecmp.flow.entity.IConditionPojo;
 import com.ecmp.flow.api.common.api.IConditionServer;
@@ -31,7 +32,7 @@ public class ConditionServer   implements IConditionServer {
     }
 
     @Override
-    public Map<String, Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public Map<String, Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException{
         return ExpressionUtil.getPropertiesAndValues(conditonPojoClassName);
     }
 
@@ -41,9 +42,9 @@ public class ConditionServer   implements IConditionServer {
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao)applicationContext.getBean(daoBeanName);
         IConditionPojo conditionPojo = (IConditionPojo)conditonPojoClass.newInstance();
-        IConditionPojo content = (IConditionPojo)appModuleDao.findOne(id);
+        BaseEntity content = (BaseEntity)appModuleDao.findOne(id);
         BeanUtils.copyProperties(conditionPojo,content);
-        if(content!=null){
+        if(conditionPojo != null){
             return new ExpressionUtil<IConditionPojo>().getPropertiesAndValues(conditionPojo);
         }else {
             return  null;
