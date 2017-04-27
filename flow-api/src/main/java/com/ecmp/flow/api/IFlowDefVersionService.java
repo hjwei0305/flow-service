@@ -1,8 +1,8 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
-import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -26,7 +25,7 @@ import java.util.List;
  */
 @Path("flowDefVersion")
 @Api(value = "IFlowDefVersionService 流程定义版本服务API接口")
-public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, String>{
+public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, String> {
 
     /**
      * 通过json流程定义数据，保存流程版本定义

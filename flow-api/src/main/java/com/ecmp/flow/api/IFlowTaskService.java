@@ -2,8 +2,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
@@ -30,7 +29,7 @@ import java.util.Map;
  */
 @Path("flowTask")
 @Api(value = "IFlowTaskService 流程任务服务API接口")
-public interface IFlowTaskService extends IBaseService<FlowTask, String>{
+public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 任务签收
      * @param id 任务id

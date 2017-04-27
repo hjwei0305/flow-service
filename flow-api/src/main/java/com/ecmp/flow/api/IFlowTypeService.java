@@ -2,15 +2,13 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowType;
-import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 /**
  * *************************************************************************************************

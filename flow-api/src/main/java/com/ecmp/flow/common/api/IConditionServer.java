@@ -1,24 +1,23 @@
-package com.ecmp.flow.api;
+package com.ecmp.flow.common.api;
 
-import com.ecmp.flow.common.api.IBaseService;
-import com.ecmp.flow.entity.FlowHistory;
-import io.swagger.annotations.Api;
-
-import javax.ws.rs.Path;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：流程历史服务API接口定义
+ * 实现功能： 流程条件API定义
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)               新建
+ * 1.0.00      2017/4/26 13:19      谭军(tanjun)                    新建
  * <p/>
  * *************************************************************************************************
  */
-@Path("flowHistory")
-@Api(value = "IFlowHistoryService 流程历史服务API接口")
-public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
+public interface IConditionServer {
+
+    public Map<String,String> getPropertiesForConditionPojo(String conditonPojoName);
+
+    public Object getConditonPojo(String id);
+
 }

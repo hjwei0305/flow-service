@@ -1,4 +1,4 @@
-package com.ecmp.flow.api;
+package com.ecmp.flow.common.api;
 
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.vo.OperateResult;
