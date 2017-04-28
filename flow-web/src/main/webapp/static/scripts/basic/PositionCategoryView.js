@@ -1,7 +1,7 @@
 /**
  * 显示页面
  */
-EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
+EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
     initComponent : function(){
         EUI.Container({
             renderTo : this.renderTo,
@@ -55,7 +55,10 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg : {
            //     loadonce:true,
-                	url : _ctxPath +"/maindata/flowTask/find",
+                	url : "http://localhost:8081/flow/basic/positionCategory/findByTenantCode",
+                postData:{
+                    tenantCode:"1002"
+                },
                 colModel : [{
                     label : "操作",
                     name : "operate",
@@ -316,7 +319,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         "businessModel.id":data["businessModel.id"]||""
                     },
                     store : {
-                        url : _ctxPath +"/maindata/flowType/findAllBusinessModelName",
+                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
                     },
                     field : ["businessModel.id"],
                     reader : {
@@ -462,7 +465,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "businessModel.name",
                     width : 220,
                     store : {
-                        url : _ctxPath +"/maindata/flowType/findAllBusinessModelName",
+                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
                     },
                     field : ["businessModel.id"],
                     reader : {
@@ -549,7 +552,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
 					msg : "正在保存，请稍候..."
 				});
         EUI.Store({
-            url : _ctxPath +"/maindata/flowType/update",
+            url : "http://localhost:8081/flow/maindata/flowType/update",
             params : data,
             success : function(){
                 myMask.hide();

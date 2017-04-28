@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
@@ -18,23 +19,25 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <br>
  * 实现功能：
- * 流程任务控制器
- * <p>
+ * <br>
  * ------------------------------------------------------------------------------------------------
+ * <br>
  * 版本          变更时间             变更人                     变更原因
+ * <br>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/30 16:10      陈飞(Vision.Mac)            新建
- * <p/>
- * *************************************************************************************************
+ * <br>
+ * 1.0.00      2017/4/26 9:32      詹耀(xxxlimit)                    新建
+ * <br>
+ * *************************************************************************************************<br>
  */
 @Controller
 @RequestMapping(value = "/maindata/flowTask")
 public class FlowTaskController {
 
-    @RequestMapping()
-    public String showFlowTask() {
+    @RequestMapping(value = "show", method = RequestMethod.GET)
+    public String show() {
         return "maindata/FlowTaskView";
     }
 

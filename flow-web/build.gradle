@@ -10,11 +10,10 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-api')
-
     compile(
-
             "com.ecmp:core-web:1.+",
-            "com.ecmp:config-util-apiclient:$config_version"
+            "com.ecmp:config-util-apiclient:$config_version",
+            "com.ecmp:basic-api:1.+",
     )
 
     /*testCompile(

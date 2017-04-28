@@ -1,11 +1,17 @@
-.condetail-operate{width:60px;height:15px;line-height:15px;margin:0 auto}
+.condetail-operate {
+    width: 60px;
+    height: 15px;
+    line-height: 15px;
+    margin: 0 auto
+}
+
 .condetail-update {
     width: 15px;
     height: 15px;
     float: left;
     cursor: pointer;
     background: url("../images/operate_bg.png") no-repeat;
-    background-position: 0 -144px;
+    background-position: 0 -160px;
 }
 
 .condetail-delete {
@@ -14,13 +20,13 @@
     float: right;
     cursor: pointer;
     background: url("../images/operate_bg.png") no-repeat;
-    background-position: -32px -144px;
+    background-position: -32px -160px;
 }
-.condetail-update:hover{background-position:0 -160px}
-.condetail-delete:hover{background-position:-32px -160px}
-#container .ux-bar-right .ux-toolbar-item{
+
+#content .ux-bar-right .ux-toolbar-item {
     margin-right: 0;
 }
-#comboBox span{
+
+#comboBox span {
     font-weight: bold;
 }

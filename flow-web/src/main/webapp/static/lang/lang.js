@@ -9,11 +9,13 @@ var common_lang = {
     nowSaveMsgText: "正在保存，请稍候...",
     codeText: "代码",
     nameText: "名称",
-    depictText: "描述"
+    depictText: "描述",
+    searchNameText: "请输入名称进行搜索",
+    InputSearchNameText: "请输入搜索名称",
 };
 if (EUI.AppModuleView) {
     EUI.apply(EUI.AppModuleView.prototype.lang, {
-        addResourceText: "新增资源",
+        addResourceText: "新增",
         updateAppModuleText: "修改实体模型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
@@ -24,14 +26,17 @@ if (EUI.AppModuleView) {
 
 if (EUI.BusinessModelView) {
     EUI.apply(EUI.BusinessModelView.prototype.lang, {
-        addResourceText: "新增资源",
+        modelText: "应用模块",
+        addResourceText: "新增",
         classPathText: "类全路径",
+        conditonBeanText: "转换对象",
         belongToAppModuleText: "所属应用模块",
         updateBusinessModelText: "修改业务模型",
         conditonBeanText:"转换对象",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
+        inputConditonBeanText: "请输入转换对象",
         inputDepictMsgText: "请输入描述",
         inputWorkPageText:"请输入工作界面",
         inputConditonBeanText:"请输入转换对象",
@@ -49,7 +54,7 @@ if (EUI.BusinessModelView) {
 
 if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
-        addResourceText: "新增资源",
+        addResourceText: "新增",
         urlText: "URL",
         updateFlowServiceUrlText: "修改服务地址管理",
         inputCodeMsgText: "请输入代码",
@@ -62,7 +67,7 @@ if (EUI.FlowServiceUrlView) {
 
 if (EUI.FlowTypeView) {
     EUI.apply(EUI.FlowTypeView.prototype.lang, {
-        addResourceText: "新增资源",
+        addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
         updateFlowTypeText: "修改流程类型",
         inputCodeMsgText: "请输入代码",
@@ -76,18 +81,20 @@ if (EUI.FlowTypeView) {
 
 if (EUI.WorkPageUrlView) {
     EUI.apply(EUI.WorkPageUrlView.prototype.lang, {
-            modelText: "应用模块",
-            modelValueText:"全部模块",
-            addBtnText: "新增",
-            searchNameText: "请输入名称进行搜索",
-            updateWorkPageUrlText: "修改工作页面",
-            inputCodeMsgText: "请输入代码",
-            inputNameMsgText: "请输入名称",
-            inputDepictMsgText: "请输入描述",
-            addNewWorkPageUrlText: "新增工作页面",
-            urlViewAddressText:"URL地址"
-        }, common_lang
-    );
+        modelText: "应用模块",
+        inputModelText:"请选择应用模块",
+        modelValueText:"全部模块",
+        addBtnText: "新增",
+        urlViewAddressText:"URL地址",
+        appModelIdText:"应用模块ID",
+        updateWorkPageUrlText: "修改工作页面",
+        inputCodeMsgText: "请输入代码",
+        inputNameMsgText: "请输入名称",
+        inputUrlViewAddressMsgText:"请输入URL界面地址",
+        inputDepictMsgText: "请输入描述",
+        addNewWorkPageUrlText: "新增工作页面"
+
+    }, common_lang);
 }
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {

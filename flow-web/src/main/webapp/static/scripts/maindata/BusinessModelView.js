@@ -5,10 +5,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     appModuleName: "",
     appModule: "",
     initComponent: function () {
-        var appModuleName = EUI.util.getUrlParam("appModuleName");
-        var appModule = EUI.util.getUrlParam("appModule");
-        this.appModuleName = appModuleName;
-        this.appModule = appModule;
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -24,15 +20,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "ToolBar",
             region: "north",
-            height: 50,
-            padding: 10,
+            height: 40,
+            padding: 0,
             style: {
                 overflow: "hidden"
             },
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "应用模块",
+                title: this.lang.modelText,
                 labelWidth: 70,
                 id: "coboId",
                 async: false,
@@ -42,7 +38,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 //     "appModule.id":"appModule.id"
                 // },
                 store: {
-                    url: "http://localhost:8081/flow/maindata/businessModel/findAllAppModuleName",
+                    url: _ctxPath +"/maindata/businessModel/findAllAppModuleName",
                 },
                 field: ["appModule.id"],
                 reader: {
@@ -58,7 +54,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     g.appModule = data[0].id;
                     g.appModuleName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: "http://localhost:8081/flow/maindata/businessModel/find",
+                        url: _ctxPath +"/maindata/businessModel/find",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -124,7 +120,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: 100,
+                    width: "50%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
@@ -186,7 +182,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText,
                         });
                         EUI.Store({
-                            url: "http://localhost:8081/flow/maindata/businessModel/delete",
+                            url: _ctxPath +"/maindata/businessModel/delete",
                             params: {
                                 id: rowData.id
                             },
@@ -223,6 +219,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "ID",
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "id",
                     width: 220,
                     maxLength: 10,
@@ -232,6 +229,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "应用模块ID",
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModule.id",
                     width: 220,
                     value: g.appModule,
@@ -241,6 +239,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: "应用模块",
                     readonly: true,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModuleName",
                     width: 220,
                     value: g.appModuleName,
@@ -248,6 +247,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "name",
                     width: 220,
                     maxLength: 10,
@@ -256,6 +256,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "className",
                     width: 220,
                     value: data.className
@@ -263,6 +264,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.conditonBeanText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "conditonBean",
                     width: 220,
                     value: data.conditonBean
@@ -270,6 +272,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "depict",
                     width: 220,
                     value: data.depict
@@ -283,31 +286,31 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputNameMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText
+                        // });
                         return;
                     }
                     if (!data.className) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputClassPathMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputClassPathMsgText
+                        // });
                         return;
                     }
                     if (!data.conditonBean) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputConditonBeanText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputConditonBeanText
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputDepictMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText
+                        // });
                         return;
                     }
                     g.saveBusinessModel(data);
@@ -334,6 +337,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "应用模块ID",
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModule.id",
                     width: 220,
                     value: g.appModule,
@@ -343,34 +347,38 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: "应用模块",
                     readonly: true,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModuleName",
                     width: 220,
-                    value: g.appModuleName,
+                    value: g.appModuleName
                 }, {
                     title: g.lang.nameText,
                     xtype: "TextField",
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "name",
-                    width: 220,
-                    maxLength: 10,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "className",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.conditonBeanText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "conditonBean",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "depict",
-                    width: 220,
+                    width: 220
                 }]
             }],
             buttons: [{
@@ -381,40 +389,33 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputNameMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText,
+                        // });
                         return;
                     }
                     if (!data.className) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputClassPathMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputClassPathMsgText,
+                        // });
                         return;
                     }
                     if (!data.conditonBean) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputConditonBeanText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputConditonBeanText,
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputDepictMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText,
+                        // });
                         return;
                     }
-                    /* if (!data["appModule.name"]) {
-                     EUI.ProcessStatus({
-                     success: false,
-                     msg: g.lang.chooseBelongToAppModuleText,
-                     });
-                     return;
-                     }*/
                     g.saveBusinessModel(data);
                 }
             }, {
@@ -432,7 +433,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText,
         });
         EUI.Store({
-            url: "http://localhost:8081/flow/maindata/businessModel/update",
+            url: _ctxPath +"/maindata/businessModel/update",
             params: data,
             success: function () {
                 myMask.hide();

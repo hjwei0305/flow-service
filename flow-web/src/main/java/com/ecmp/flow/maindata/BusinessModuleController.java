@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
@@ -24,38 +25,51 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <br>
  * 实现功能：
- * 业务实体模型控制器
- * <p>
+ * <br>
  * ------------------------------------------------------------------------------------------------
+ * <br>
  * 版本          变更时间             变更人                     变更原因
+ * <br>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/30 16:10      陈飞(Vision.Mac)            新建
- * <p/>
- * *************************************************************************************************
+ * <br>
+ * 1.0.00      2017/4/26 9:32      詹耀(xxxlimit)                    新建
+ * <br>
+ * *************************************************************************************************<br>
  */
 @Controller
 @RequestMapping(value = "/maindata/businessModel")
 public class BusinessModuleController {
 
-    @RequestMapping()
-    public String showBusinessModule(Model model) {
+    @RequestMapping(value = "show", method = RequestMethod.GET)
+    public String show() {
         return "maindata/BusinessModelView";
     }
 
+    /**
+     * 查询业务实体
+     * @param request
+     * @return 业务实体清单
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException {
-      //  System.out.println("---------------------------------------------");
+        //  System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
-        PageResult<BusinessModel> businessModelPageResult  = proxy.findByPage(search);
+        PageResult<BusinessModel> businessModelPageResult = proxy.findByPage(search);
         String businessModel = JsonUtil.serialize(businessModelPageResult);
         return businessModel;
     }
 
-
+    /**
+     * 根据id删除业务实体
+     * @param id
+     * @return 操作结果
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
@@ -63,36 +77,43 @@ public class BusinessModuleController {
         System.out.println(id);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResult result = proxy.delete(id);
-        OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
-        String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询应用模块
+     * @return 应用模块清单
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "findAllAppModuleName")
     @ResponseBody
     public String findAllAppModuleName() throws JsonProcessingException {
         System.out.println("---------------------------------------------");
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
-      List<AppModule> appModuleList = proxy.findAll();
-
-       OperateStatus operateStatus = new OperateStatus(true,"ok",appModuleList);
+        List<AppModule> appModuleList = proxy.findAll();
+        OperateStatus operateStatus = new OperateStatus(true, "ok", appModuleList);
         operateStatus.setData(appModuleList);
         String findAppModuleName = JsonUtil.serialize(operateStatus);
         System.out.println(findAppModuleName);
         return findAppModuleName;
     }
 
+    /**
+     * 保存业务实体
+     * @param businessModel
+     * @return 保存后的业务实体
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(BusinessModel businessModel) throws JsonProcessingException {
         System.out.println("---------------------------------------------");
         System.out.println(businessModel);
-
-        ObjectMapper objectMapper = new ObjectMapper();
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
-        OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+        return JsonUtil.serialize(operateStatus);
     }
+
 }

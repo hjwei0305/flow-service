@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
+import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * *************************************************************************************************
@@ -43,15 +45,36 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public String save(String def,boolean deploy) throws JAXBException {
+    public String save(String def,boolean deploy) throws JAXBException,UnsupportedEncodingException {
+        System.out.println("----------------------------------------");
+        System.out.println(def);
+        System.out.println(deploy);
+        System.out.println("----------------------------------------");
+//        OperateStatus status = OperateStatus.defaultSuccess();
+//        JSONObject defObj = JSONObject.fromObject(def);
+//        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+//        definition.setDefJson(def);
+//        System.out.println(definition);
+//        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+//        OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
+//        status.setSuccess(result.successful());
+//        status.setMsg(result.getMessage());
+//        return JsonUtil.serialize(status);
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         definition.setDefJson(def);
+        System.out.println(definition);
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
-        status.setSuccess(result.successful());
-        status.setMsg(result.getMessage());
-        return JsonUtil.serialize(status);
+//        status.setSuccess(result.successful());
+//        status.setMsg(result.getMessage());
+//        status.setData(result.getData());
+//       System.out.println("!!!!!!!!!!!"+result.getData().getFlowDefination().getId());
+        IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
+        String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+        OperateStatus operateStatus = new OperateStatus(true,"ok",deployById);
+
+        return JsonUtil.serialize(operateStatus);
     }
 }

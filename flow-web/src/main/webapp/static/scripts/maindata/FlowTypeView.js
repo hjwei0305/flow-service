@@ -2,358 +2,410 @@
  * 显示页面
  */
 EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
-    initComponent : function(){
+    businessModel: "",
+    businessModelName: "",
+    initComponent: function () {
         EUI.Container({
-            renderTo : this.renderTo,
-            layout : "border",
-            border : false,
-            padding : 8,
-            itemspace : 0,
-            items : [this.initTbar(), this.initGrid()]
+            renderTo: this.renderTo,
+            layout: "border",
+            border: false,
+            padding: 8,
+            itemspace: 0,
+            items: [this.initTbar(), this.initGrid()]
         });
         this.addEvents();
     },
-    initTbar : function(){
-        var g=this;
-        return{
-            xtype : "ToolBar",
-            region : "north",
-            height : 50,
-            padding : 10,
-            style : {
-                overflow : "hidden"
+    initTbar: function () {
+        var g = this;
+        return {
+            xtype: "ToolBar",
+            region: "north",
+            height: 40,
+            padding: 0,
+            style: {
+                overflow: "hidden"
             },
-            border : false,
-            items:[{
-                xtype : "Button",
-                title : this.lang.addResourceText,
-                selected : true,
-                handler : function() {
+            border: false,
+            items: [{
+                xtype: "ComboBox",
+                title: "业务实体",
+                id: "coboId",
+                async: false,
+                colon: false,
+                labelWidth: 70,
+                store: {
+                    url: _ctxPath +"/maindata/flowType/findAllBusinessModelName"
+                },
+                reader: {
+                    name: "name",
+                    filed: ["id"]
+                },
+                afterLoad: function (data) {
+                    if (!data) {
+                        return;
+                    }
+                    var cobo = EUI.getCmp("coboId");
+                    cobo.setValue(data[0].name);
+                    g.businessModel = data[0].id;
+                    g.businessModelName = data[0].name;
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: "http://localhost:8081/flow/maindata/flowType/find",
+                        loadonce: false,
+                        datatype: "json",
+                        postData: {
+                            "Q_EQ_businessModel.id": data[0].id
+                        }
+                    }, true)
+                },
+                afterSelect: function (data) {
+                    //console.log(data);
+                    g.businessModel = data.data.id;
+                    g.businessModelName = data.data.name;
+                    EUI.getCmp("gridPanel").setPostParams({
+                            "Q_EQ_businessModel.id": data.data.id
+                        }
+                    ).trigger("reloadGrid");
+                },
+            }, {
+                xtype: "Button",
+                title: this.lang.addResourceText,
+                selected: true,
+                handler: function () {
                     g.addFlowType();
+                }
+            }, '->', {
+                xtype: "SearchBox",
+                displayText: "请输入名称进行搜索",
+                onSearch: function (value) {
+                    console.log(value);
+                    if (!value) {
+                        EUI.getCmp("gridPanel").setPostParams({
+                                Q_LK_name: ""
+                            }
+                        ).trigger("reloadGrid");
+                    }
+                    EUI.getCmp("gridPanel").setPostParams({
+                            Q_LK_name: value
+                        }
+                    ).trigger("reloadGrid");
                 }
             }]
         };
     },
-    initGrid : function(){
-        var g=this;
+    initGrid: function () {
+        var g = this;
         return {
-            xtype : "GridPanel",
-            region : "center",
-            id : "gridPanel",
-            style : {
-                "border" : "1px solid #aaa",
-                "border-reduis" : "3px"
+            xtype: "GridPanel",
+            region: "center",
+            id: "gridPanel",
+            style: {
+                "border": "1px solid #aaa",
+                "border-radius": "3px"
             },
-            gridCfg : {
-           //     loadonce:true,
-                	url : "http://localhost:8081/flow/maindata/flowType/find",
-                colModel : [{
-                    label : this.lang.operateText,
-                    name : "operate",
-                    index : "operate",
-                    width : 100,
-                    align : "center",
-                    formatter : function(cellvalue, options, rowObject) {
+            gridCfg: {
+                loadonce: true,
+                colModel: [{
+                    label: this.lang.operateText,
+                    name: "operate",
+                    index: "operate",
+                    width: "50%",
+                    align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
                             + "<div class='condetail_update'></div>"
                             + "<div class='condetail_delete'></div></div>";
                         return strVar;
                     }
-                },{
-                    name : "id",
-                    index : "id",
-                    hidden : true
-                },{
-                    label : this.lang.codeText,
-                    name : "code",
-                    index : "code",
-                    title : false
-                },{
-                    label : this.lang.nameText,
-                    name : "name",
-                    index : "name",
-                    title : false
-                },{
-                    label : this.lang.depictText,
-                    name : "depict",
-                    index : "depict",
-                    title : false
-                },{
-                    label : "businessModelId",
-                    name : "businessModel.id",
-                    index : "businessModel.id",
-                    title : false,
-                   hidden : true
-                },{
-                    label : this.lang.belongToBusinessModelText,
-                    name : "businessModel.name",
-                    index : "businessModel.name",
-                    title : false
+                }, {
+                    name: "id",
+                    index: "id",
+                    hidden: true
+                }, {
+                    label: this.lang.codeText,
+                    name: "code",
+                    index: "code",
+                    title: false
+                }, {
+                    label: this.lang.nameText,
+                    name: "name",
+                    index: "name",
+                    title: false
+                }, {
+                    label: this.lang.depictText,
+                    name: "depict",
+                    index: "depict",
+                    title: false
+                }, {
+                    label: "businessModelId",
+                    name: "businessModel.id",
+                    index: "businessModel.id",
+                    title: false,
+                    hidden: true
+                }, {
+                    label: this.lang.belongToBusinessModelText,
+                    name: "businessModel.name",
+                    index: "businessModel.name",
+                    title: false
                 }],
-                ondbClick : function(){
-                    var rowData=EUI.getCmp("gridPanel").getSelectRow();
+                ondbClick: function () {
+                    var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
                 }
             }
         };
     },
-    addEvents : function(){
+    addEvents: function () {
         var g = this;
-        $(".condetail_update").live("click",function(){
-            var data=EUI.getCmp("gridPanel").getSelectRow();
-            //  var tabPanel=parent.homeView.getTabPanel();
+        $(".condetail_update").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.updateFlowType(data);
         });
-        $(".condetail_delete").live("click",function(){
-            var rowData=EUI.getCmp("gridPanel").getSelectRow();
+        $(".condetail_delete").live("click", function () {
+            var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             var infoBox = EUI.MessageBox({
-                title : g.lang.tiShiText,
-                msg : g.lang.ifDelMsgText,
-                buttons :[{
-                    title : g.lang.sureText,
-                    selected : true,
-                    handler : function(){
+                title: g.lang.tiShiText,
+                msg: g.lang.ifDelMsgText,
+                buttons: [{
+                    title: g.lang.sureText,
+                    selected: true,
+                    handler: function () {
                         infoBox.remove();
                         var myMask = EUI.LoadMask({
-                            msg : g.lang.nowDelMsgText,
+                            msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url : "http://localhost:8081/flow/maindata/flowType/delete",
-                            params : {
-                                id:rowData.id
+                            url: _ctxPath +"/maindata/flowType/delete",
+                            params: {
+                                id: rowData.id
                             },
-                            success : function(){
+                            success: function () {
                                 myMask.hide();
                                 EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                             },
-                            failure : function(){
+                            failure: function () {
                                 myMask.hide();
                             }
                         });
                     }
-                },{
-                    title : g.lang.cancelText,
-                    handler : function(){
+                }, {
+                    title: g.lang.cancelText,
+                    handler: function () {
                         infoBox.remove();
                     }
                 }]
             });
         });
     },
-    updateFlowType : function(data) {
+    updateFlowType: function (data) {
         var g = this;
         console.log(data);
         win = EUI.Window({
-            title : g.lang.updateFlowTypeText,
-            height : 250,
-            padding : 15,
-            items : [{
-                xtype : "FormPanel",
-                id : "updateFlowType",
-                padding : 0,
-                items : [{
-                    xtype : "TextField",
-                    title : "ID",
-                    labelWidth : 90,
-                    name : "id",
-                    width : 220,
-                    maxLength : 10,
-                    value:data.id,
-                   hidden : true
-                },{
-                    xtype : "TextField",
-                    title : g.lang.codeText,
-                    labelWidth : 90,
-                    name : "code",
-                    width : 220,
-                    maxLength : 10,
-                    value:data.code
+            title: g.lang.updateFlowTypeText,
+            height: 250,
+            padding: 15,
+            items: [{
+                xtype: "FormPanel",
+                id: "updateFlowType",
+                padding: 0,
+                items: [{
+                    xtype: "TextField",
+                    title: "ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "id",
+                    width: 220,
+                    maxLength: 10,
+                    value: data.id,
+                    hidden: true
                 }, {
-                    xtype : "TextField",
-                    title : g.lang.nameText,
-                    labelWidth : 90,
-                    name : "name",
-                    width : 220,
-                    value:data.name
+                    xtype: "TextField",
+                    title: "业务实体ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: g.businessModel,
+                    hidden: true
                 }, {
-                    xtype : "TextField",
-                    title : g.lang.depictText,
-                    labelWidth : 90,
-                    name : "depict",
-                    width : 220,
-                    value:data.depict
-                },{
-                    xtype : "ComboBox",
-                    title : g.lang.belongToBusinessText,
-                    labelWidth : 90,
-                    name : "businessModel.name",
-                    width : 220,
-                     value:data["businessModel.name"]||"",
-                    submitValue:{
-                        "businessModel.id":data["businessModel.id"]||""
-                    },
-                    store : {
-                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
-                    },
-                    field : ["businessModel.id"],
-                    reader : {
-                        name : "name",
-                        field : ["id"]
-                    },
+                    xtype: "TextField",
+                    title: "业务实体",
+                    readonly: true,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModelName",
+                    width: 220,
+                    value: g.businessModelName
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.codeText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "code",
+                    width: 220,
+                    maxLength: 10,
+                    value: data.code
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.nameText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "name",
+                    width: 220,
+                    value: data.name
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.depictText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "depict",
+                    width: 220,
+                    value: data.depict
                 }]
             }],
-            buttons : [{
-                title : g.lang.saveText,
-                selected : true,
-                handler : function() {
+            buttons: [{
+                title: g.lang.saveText,
+                selected: true,
+                handler: function () {
                     var form = EUI.getCmp("updateFlowType");
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.code) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputCodeMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputCodeMsgText
+                        // });
                         return;
                     }
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputNameMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputDepictMsgText,
-                        });
-                        return;
-                    }
-                    if (!data["businessModel.name"]) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.chooseBelongToBusinessModelText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText
+                        // });
                         return;
                     }
                     g.saveFlowType(data);
                 }
             }, {
-                title : this.lang.cancelText,
-                handler : function() {
+                title: this.lang.cancelText,
+                handler: function () {
                     win.remove();
                 }
             }]
         });
     },
-    addFlowType : function() {
+    addFlowType: function () {
         var g = this;
         win = EUI.Window({
-            title : g.lang.addNewFlowTypeText,
-            height : 250,
-            padding : 15,
-            items : [{
-                xtype : "FormPanel",
-                id : "addFlowType",
-                padding : 0,
-                items : [{
-                    xtype : "TextField",
-                    title : g.lang.codeText,
-                    labelWidth : 90,
-                    name : "code",
-                    width : 220,
-                    maxLength : 10,
+            title: g.lang.addNewFlowTypeText,
+            height: 250,
+            padding: 15,
+            items: [{
+                xtype: "FormPanel",
+                id: "addFlowType",
+                padding: 0,
+                items: [{
+                    xtype: "TextField",
+                    title: "业务实体ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: g.businessModel,
+                    hidden: true
                 }, {
-                    xtype : "TextField",
-                    title : this.lang.nameText,
-                    labelWidth : 90,
-                    name : "name",
-                    width : 220,
+                    xtype: "TextField",
+                    title: "业务实体",
+                    readonly: true,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModelName",
+                    width: 220,
+                    value: g.businessModelName
                 }, {
-                    xtype : "TextField",
-                    title : this.lang.depictText,
-                    labelWidth : 90,
-                    name : "depict",
-                    width : 220,
+                    xtype: "TextField",
+                    title: g.lang.codeText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "code",
+                    width: 220,
+                    maxLength: 10
                 }, {
-                    xtype : "ComboBox",
-                    title : g.lang.belongToBusinessText,
-                    labelWidth : 90,
-                    name : "businessModel.name",
-                    width : 220,
-                    store : {
-                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
-                    },
-                    field : ["businessModel.id"],
-                    reader : {
-                        name : "name",
-                        field : ["id"]
-                    }
+                    xtype: "TextField",
+                    title: this.lang.nameText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "name",
+                    width: 220
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.depictText,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "depict",
+                    width: 220
                 }]
             }],
-            buttons : [{
-                title : g.lang.saveText,
-                selected : true,
-                handler : function() {
+            buttons: [{
+                title: g.lang.saveText,
+                selected: true,
+                handler: function () {
                     var form = EUI.getCmp("addFlowType");
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.code) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputCodeMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputCodeMsgText
+                        // });
                         return;
                     }
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputNameMsgText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.inputDepictMsgText,
-                        });
-                        return;
-                    }
-                    if (!data["businessModel.name"]) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : g.lang.chooseBelongToBusinessModelText,
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText
+                        // });
                         return;
                     }
                     g.saveFlowType(data);
-
                 }
             }, {
-                title : g.lang.cancelText,
-                handler : function() {
+                title: g.lang.cancelText,
+                handler: function () {
                     win.remove();
                 }
             }]
         });
     },
-    saveFlowType : function(data) {
+    saveFlowType: function (data) {
         var g = this;
         console.log(data);
-		var  myMask = EUI.LoadMask({
-					msg : g.lang.nowSaveMsgText,
-				});
+        var myMask = EUI.LoadMask({
+            msg: g.lang.nowSaveMsgText
+        });
         EUI.Store({
-            url : "http://localhost:8081/flow/maindata/flowType/update",
-            params : data,
-            success : function(){
+            url: _ctxPath +"/maindata/flowType/update",
+            params: data,
+            success: function () {
                 myMask.hide();
                 EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
             },
-            failure : function(){
+            failure: function () {
                 myMask.hide();
             }
         });

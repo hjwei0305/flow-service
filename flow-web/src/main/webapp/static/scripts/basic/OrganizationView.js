@@ -1,7 +1,7 @@
 /**
  * 显示页面
  */
-EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
+EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
     initComponent : function(){
         EUI.Container({
             renderTo : this.renderTo,
@@ -55,7 +55,11 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg : {
            //     loadonce:true,
-                	url : _ctxPath +"/maindata/flowTask/find",
+                	url : _ctxPath + "/basic/organization/show",
+                // postData:{
+                //     nodeId:"7f000001-5ba2-1a45-815b-a7da43800039",
+                //     targetParentId:"141414cd-5b9e-10ea-815b-9efb03470002"
+                // },
                 colModel : [{
                     label : "操作",
                     name : "operate",
@@ -316,7 +320,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         "businessModel.id":data["businessModel.id"]||""
                     },
                     store : {
-                        url : _ctxPath +"/maindata/flowType/findAllBusinessModelName",
+                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
                     },
                     field : ["businessModel.id"],
                     reader : {
@@ -462,7 +466,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "businessModel.name",
                     width : 220,
                     store : {
-                        url : _ctxPath +"/maindata/flowType/findAllBusinessModelName",
+                        url : "http://localhost:8081/flow/maindata/flowType/findAllBusinessModelName",
                     },
                     field : ["businessModel.id"],
                     reader : {
@@ -549,7 +553,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
 					msg : "正在保存，请稍候..."
 				});
         EUI.Store({
-            url : _ctxPath +"/maindata/flowType/update",
+            url : "http://localhost:8081/flow/maindata/flowType/update",
             params : data,
             success : function(){
                 myMask.hide();

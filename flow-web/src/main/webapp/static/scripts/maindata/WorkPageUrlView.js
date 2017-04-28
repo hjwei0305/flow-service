@@ -5,10 +5,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
     appModuleName: "",
     appModuleId: "",
     initComponent: function () {
-        var appModuleName = EUI.util.getUrlParam("appModuleName");
-        var appModuleId = EUI.util.getUrlParam("appModuleId");
-        this.appModuleName = appModuleName;
-        this.appModuleId = appModuleId;
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -42,7 +38,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 //     "appModule.id":"appModule.id"
                 // },
                 store: {
-                    url: "http://localhost:8081/flow/maindata/workPageUrl/findAllAppModuleName",
+                    url: _ctxPath +"/maindata/workPageUrl/findAllAppModuleName",
                 },
                 field: ["appModule.id"],
                 reader: {
@@ -58,7 +54,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     g.appModuleId = data[0].id;
                     g.appModuleName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: "http://localhost:8081/flow/maindata/workPageUrl/find",
+                        url: _ctxPath +"/maindata/workPageUrl/find",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -95,11 +91,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.InputSearchNameText
-                        // });
-                        // return;
                         EUI.getCmp("gridPanel").setPostParams({
                                 Q_LK_name: ""
                             }
@@ -129,7 +120,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: '80%',
+                    width: "40%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
@@ -180,7 +171,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         infoBox.remove();
                         g.deleteGridData();
-                        // EUI.getCmp("gridPanel").refreshGrid();
                     }
                 }, {
                     title: g.lang.cancelText,
@@ -206,6 +196,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "ID",
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "id",
                     width: 220,
                     maxLength: 10,
@@ -215,6 +206,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModuleId",
                     width: 220,
                     value: g.appModuleId,
@@ -222,15 +214,17 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.modelText,
+                    allowBlank: false,
                     readonly: true,
                     labelWidth: 90,
                     name: "appModuleName",
                     width: 220,
-                    value: g.appModuleName,
+                    value: g.appModuleName
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "name",
                     width: 220,
                     maxLength: 10,
@@ -239,6 +233,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.urlViewAddressText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "url",
                     width: 220,
                     value: data.url
@@ -246,6 +241,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "depict",
                     width: 220,
                     value: data.depict
@@ -259,24 +255,24 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputNameMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText
+                        // });
                         return;
                     }
                     if (!data.url) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputUrlViewAddressMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputUrlViewAddressMsgText
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputDepictMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText
+                        // });
                         return;
                     }
                     g.saveWorkPageUrl(data);
@@ -303,6 +299,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModuleId",
                     width: 220,
                     value: g.appModuleId,
@@ -312,13 +309,15 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.modelText,
                     readonly: true,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "appModuleName",
                     width: 220,
-                    value: g.appModuleName,
+                    value: g.appModuleName
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "name",
                     width: 220,
                     maxLength: 10
@@ -326,12 +325,14 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.urlViewAddressText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "url",
                     width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
+                    allowBlank: false,
                     name: "depict",
                     width: 220
                 }]
@@ -344,31 +345,31 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     var data = form.getFormValue();
                     console.log(data);
                     if (!data.name) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputNameMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputNameMsgText
+                        // });
                         return;
                     }
                     if (!data.url) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputUrlViewAddressMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputUrlViewAddressMsgText
+                        // });
                         return;
                     }
                     if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputDepictMsgText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputDepictMsgText
+                        // });
                         return;
                     }
                     if (!data.appModuleName) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: g.lang.inputModelText
-                        });
+                        // EUI.ProcessStatus({
+                        //     success: false,
+                        //     msg: g.lang.inputModelText
+                        // });
                         return;
                     }
                     g.saveWorkPageUrl(data);
@@ -385,10 +386,10 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var myMask = EUI.LoadMask({
-            msg: g.lang.nowSaveMsgText,
+            msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: "http://localhost:8081/flow/maindata/workPageUrl/update",
+            url: _ctxPath +"/maindata/workPageUrl/update",
             params: data,
             success: function () {
                 myMask.hide();
@@ -397,28 +398,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             failure: function () {
                 myMask.hide();
             }
-            /*success : function(status) {
-             if (!status.success) {
-             new EUI.ProcessStatus({
-             msg : status.msg,
-             success : false
-             });
-             } else {
-             new EUI.ProcessStatus({
-             msg : "操作成功！",
-             success : true
-             });
-             win.close();
-             g.reloadGrid();
-             }
-             mask.hide();
-             },
-             failure : function(re) {
-             new EUI.ProcessStatus({
-             msg : "操作失败，请稍后再试。"
-             });
-             mask.hide();
-             }*/
         });
         win.close();
         myMask.hide();
@@ -430,7 +409,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowDelMsgText
         });
         EUI.Store({
-            url: "http://localhost:8081/flow/maindata/workPageUrl/delete",
+            url: _ctxPath +"/maindata/workPageUrl/delete",
             params: {
                 id: rowData.id
             },
