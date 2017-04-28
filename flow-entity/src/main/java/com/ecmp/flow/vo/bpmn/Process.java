@@ -3,6 +3,7 @@ package com.ecmp.flow.vo.bpmn;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class Process extends BaseNode implements Serializable {
     /**
      * 流程key
      */
-    @XmlAttribute
+    @XmlTransient
     private String key;
 
     /**
@@ -40,8 +41,8 @@ public class Process extends BaseNode implements Serializable {
     /**
      * 是否可执行
      */
-    @XmlAttribute
-    private boolean isExecutable;
+    @XmlAttribute(name = "isExecutable")
+    private boolean executable = true;
 
     /**
      * 启动条件
@@ -76,14 +77,6 @@ public class Process extends BaseNode implements Serializable {
         this.name = name;
     }
 
-    public boolean isExecutable() {
-        return isExecutable;
-    }
-
-    public void setExecutable(boolean executable) {
-        isExecutable = executable;
-    }
-
     public String getStartUEL() {
         return startUEL;
     }
@@ -94,6 +87,14 @@ public class Process extends BaseNode implements Serializable {
 
     public JSONObject getNodes() {
         return nodes;
+    }
+
+    public boolean isExecutable() {
+        return executable;
+    }
+
+    public void setExecutable(boolean executable) {
+        this.executable = executable;
     }
 
     public String getKey() {

@@ -43,7 +43,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 	 * 定义ID
 	 */
 
-	@Column(name = "act_def_id", length = 36)
+	@Column(name = "act_defId", length = 36)
 	private String actDefId;
 
 	/**

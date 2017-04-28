@@ -121,7 +121,11 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
             return  OperateResultWithData.OperationFailure("10007");
         }
         Process process = definition.getProcess();
-        FlowDefination flowDefination = flowDefinationDao.findOne(definition.getId());
+        FlowDefination flowDefination = null;
+        if(definition.getId()!=null){
+            flowDefination = flowDefinationDao.findOne(definition.getId());
+        }
+
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew =true;
@@ -148,7 +152,9 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
             flowDefinationDao.save(flowDefination);
             logger.info("Saved FlowDefination id is {}", flowDefination.getId());
         } else {
-             entity =  flowDefVersionDao.findOne(process.getId());
+            if(process.getId()!=null){
+                entity =  flowDefVersionDao.findOne(process.getId());
+            }
             if(entity!=null){//版本不为空
                 entity.setDefJson(definition.getDefJson());
                 entity.setDefBpmn(defBpm);
