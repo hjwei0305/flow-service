@@ -120,7 +120,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "40%",
+                    width: "30%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
