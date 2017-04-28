@@ -77,7 +77,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                             "Q_EQ_appModule.id": data.data.id
                         }
                     ).trigger("reloadGrid");
-                },
+                }
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
@@ -120,10 +120,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "50%",
+                    width: '98%',
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_operate'>"
+                        var strVar = "<div class='condetail_operate'>" +
+                            "<div class='condetail_look'></div>" +
+                            "<div class='condetail_set'></div>"
                             + "<div class='condetail_update'></div>"
                             + "<div class='condetail_delete'></div></div>";
                         return strVar;
@@ -152,58 +154,25 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "depict",
                     index: "depict",
                     title: false
+                }, {
+                    label: this.lang.workPageText,
+                    name: "workPege",
+                    index: "workPage",
+                    title: false
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
-                    g.getValues(rowData.id);
+                    g.getValue(rowData.id);
                 }
             }
         };
     },
     addEvents: function () {
         var g = this;
-        $(".condetail_update").live("click", function () {
-            var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data);
-            g.updateBusinessModel(data);
-        });
-        $(".condetail_delete").live("click", function () {
-            var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText,
-                        });
-                        EUI.Store({
-                            url: _ctxPath +"/maindata/businessModel/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function () {
-                                myMask.hide();
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                            },
-                            failure: function () {
-                                myMask.hide();
-                            }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
-        });
+        this.operateBtnEvents();
+        this.addWorkPageEvent();
     },
+
     updateBusinessModel: function (data) {
         var g = this;
         console.log(data);
@@ -276,6 +245,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "depict",
                     width: 220,
                     value: data.depict
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.workPageText,
+                    labelWidth: 90,
+                    name: "workPage",
+                    width: 220,
+                    value: data.workPage
                 }]
             }],
             buttons: [{
@@ -379,6 +355,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "depict",
                     width: 220
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.workPageText,
+                    labelWidth: 90,
+                    name: "workPage",
+                    width: 220
                 }]
             }],
             buttons: [{
@@ -386,36 +368,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBusinessModel");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.className) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputClassPathMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.conditonBean) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputConditonBeanText,
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText,
-                        // });
-                        return;
-                    }
+
+                    /* if (!data["appModule.name"]) {
+                     EUI.ProcessStatus({
+                     success: false,
+                     msg: g.lang.chooseBelongToAppModuleText,
+                     });
+                     return;
+                     }*/
                     g.saveBusinessModel(data);
                 }
             }, {
@@ -445,5 +410,291 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         });
         win.close();
         myMask.hide();
+    },
+    lookPropertyWindow: function () {
+        var g = this;
+        var Wind = EUI.Window({
+            title: g.lang.workPageText,
+            width: 500,
+            items: [{
+                xtype: "GridPanel",
+                style: {
+                    "border": "1px solid #aaa"
+                },
+                gridCfg: {
+                    // loadonce: true,
+                    url: _ctxPath + "/maindata/businessModel/findCurAppModuleList",
+                    postDate: {
+                        id: g.appModule
+                    },
+                    colModel: [{
+                        name: "id",
+                        index: "id",
+                        hidden: true
+                    }, {
+                        label: g.lang.nameText,
+                        name: "name",
+                        index: "name"
+                    }, {
+                        label: g.lang.urlViewAddressText,
+                        name: "url",
+                        index: "url"
+                    }, {
+                        label: g.lang.depictText,
+                        name: "depict",
+                        index: "depict"
+                    }]
+                }
+            }]
+        });
+    },
+    showWorkPageWindow: function () {
+        var g = this;
+        g.workPageSetWind = EUI.Window({
+            title: g.lang.workPageSetText,
+            width: 700,
+            height: 400,
+            items: [{
+                xtype: "Container",
+                border: false,
+                layout: "border",
+                items: [this.getLeftGrid(),
+                    this.getCenterIcon(),
+                    this.getRightGrid()
+                ]
+            }],
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    // var form=EUI.getCmp("workPageSelect");
+                    // var data=form.getFormValue();
+                    g.saveWorkPageSet();
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    g.workPageSetWind.remove();
+                }
+            }]
+        });
+    },
+    getLeftGrid: function () {
+        var g = this;
+        return {
+            xtype: "GridPanel",
+            width: 310,
+            height: 300,
+            id: "workPageSet",
+            region: "west",
+            style: {
+                "border": "1px solid #aaa"
+            },
+            gridCfg: {
+                loadonce: true,
+                // url: _ctxPath + "/maindata/businessModel/findCurAppModuleList",
+                hasPager: false,
+                postData: {
+                    id: g.appModule
+                },
+                multiselect: true,
+                colModel: [{
+                    name: "id",
+                    index: "id",
+                    hidden: true
+                }, {
+                    label: g.lang.nameText,
+                    name: "name",
+                    index: "name"
+                }, {
+                    label: g.lang.urlViewAddressText,
+                    name: "url",
+                    index: "url"
+                }],
+                //添加固定数据测试
+                data: [{
+                    name: "lll",
+                    id: "1",
+                    url: "sjhvs"
+                }, {
+                    name: "fshd",
+                    id: "2",
+                    url: "dvndk"
+                }]
+            }
+        };
+    },
+    getCenterIcon: function () {
+        var g = this;
+        return {
+            xtype: "Container",
+            region: "center",
+            width: 50,
+            height: 300,
+            border: true,
+            html: "<div class='arrow-right'></div>" +
+            "<div class='arrow-left'></div>"
+        }
+    },
+    getRightGrid: function () {
+        var g = this;
+        return {
+            xtype: "GridPanel",
+            width: 310,
+            height: 300,
+            id: "workPageSelect",
+            region: "east",
+            style: {
+                "border": "1px solid #aaa"
+            },
+            gridCfg: {
+                loadonce: true,
+                hasPager: false,
+                multiselect: true,
+                // data:[],
+                colModel: [{
+                    name: "id",
+                    index: "id",
+                    hidden: true
+                }, {
+                    label: g.lang.nameText,
+                    name: "name",
+                    index: "name"
+                }, {
+                    label: g.lang.urlViewAddressText,
+                    name: "url",
+                    index: "url"
+                }]
+            }
+        }
+    },
+    operateBtnEvents:function () {
+        var g=this;
+        $(".condetail_update").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
+            console.log(data);
+            g.updateBusinessModel(data);
+        });
+        $(".condetail_delete").live("click", function () {
+            var rowData = EUI.getCmp("gridPanel").getSelectRow();
+            console.log(rowData);
+            var infoBox = EUI.MessageBox({
+                title: g.lang.tiShiText,
+                msg: g.lang.ifDelMsgText,
+                buttons: [{
+                    title: g.lang.sureText,
+                    selected: true,
+                    handler: function () {
+                        infoBox.remove();
+                        var myMask = EUI.LoadMask({
+                            msg: g.lang.nowDelMsgText
+                        });
+                        EUI.Store({
+                            url: "http://localhost:8081/flow/maindata/businessModel/delete",
+                            params: {
+                                id: rowData.id
+                            },
+                            success: function () {
+                                myMask.hide();
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            },
+                            failure: function () {
+                                myMask.hide();
+                            }
+                        });
+                    }
+                }, {
+                    title: g.lang.cancelText,
+                    handler: function () {
+                        infoBox.remove();
+                    }
+                }]
+            });
+        });
+        $(".condetail_look").live("click", function () {
+            g.lookPropertyWindow();
+        });
+        $(".condetail_set").live("click", function () {
+            g.showWorkPageWindow();
+        });
+    },
+    addWorkPageEvent: function () {
+        var g = this, selectData = [];
+        $(".arrow-right").live("click", function () {
+            var leftGrid = EUI.getCmp("workPageSet");
+            var rowDatas = leftGrid.getSelectRow();
+            var gridPanel = EUI.getCmp("workPageSelect");
+            var selectData = gridPanel.getGridData();
+            for (var i = 0; i < rowDatas.length; i++) {
+                var item = rowDatas[i];
+                if (!g.isInArray(item, selectData)) {
+                    gridPanel.grid.addRowData(item.id, item);
+                    leftGrid.deleteRow(item.id);
+                }
+            }
+        });
+        $(".arrow-left").live("click", function () {
+            var rightGrid = EUI.getCmp("workPageSelect");
+            var rowDatas = rightGrid.getSelectRow();
+            var gridPanel = EUI.getCmp("workPageSet");
+            var selectData = gridPanel.getGridData();
+            for (var i = 0; i < rowDatas.length; i++) {
+                var item = rowDatas[i];
+                if (!g.isInArray(item, selectData)) {
+                    gridPanel.grid.addRowData(item.id, item);
+                    rightGrid.deleteRow(item.id);
+                }
+            }
+        })
+    },
+    isInArray: function (item, array) {
+        for (var i = 0; i < array.length; i++) {
+            if (item.id == array[i].id) {
+                return true;
+            }
+        }
+        return false;
+    },
+    saveWorkPageSet: function (data) {
+        var g = this;
+        var mask = EUI.LoadMask({
+            msg: g.lang.nowSaveMsgText
+        });
+        EUI.Store({
+            url: "",
+            params: data,
+            success: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
+                if (status.success) {
+                    EUI.getCmp("workPageSelect").grid.trigger("reloadGrid");
+                    g.workPageSetWind.close();
+                }
+
+            },
+            failure: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
+            }
+        });
     }
+
+
+
+
+
+    /*,
+     operateLook:function () {
+     var g=this;
+     return{
+     xtype:"GridPanel",
+     style:{
+     "border":"1px solid #aaa"
+     },
+     gridCfg:{
+
+     }
+     }
+
+     }*/
 });
