@@ -196,7 +196,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "ID",
                     labelWidth: 90,
-                    allowBlank: false,
                     name: "id",
                     width: 220,
                     maxLength: 10,
@@ -206,7 +205,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
-                    allowBlank: false,
                     name: "appModuleId",
                     width: 220,
                     value: g.appModuleId,
@@ -214,7 +212,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.modelText,
-                    allowBlank: false,
                     readonly: true,
                     labelWidth: 90,
                     name: "appModuleName",
@@ -252,29 +249,11 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateWorkPageUrl");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.url) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputUrlViewAddressMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText
-                        // });
-                        return;
-                    }
                     g.saveWorkPageUrl(data);
                 }
             }, {
@@ -299,7 +278,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
-                    allowBlank: false,
                     name: "appModuleId",
                     width: 220,
                     value: g.appModuleId,
@@ -309,7 +287,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.modelText,
                     readonly: true,
                     labelWidth: 90,
-                    allowBlank: false,
                     name: "appModuleName",
                     width: 220,
                     value: g.appModuleName
@@ -342,36 +319,11 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addWorkPageUrl");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.url) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputUrlViewAddressMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.appModuleName) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputModelText
-                        // });
-                        return;
-                    }
                     g.saveWorkPageUrl(data);
                 }
             }, {
