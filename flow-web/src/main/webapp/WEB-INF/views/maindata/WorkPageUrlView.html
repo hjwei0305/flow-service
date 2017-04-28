@@ -5,14 +5,16 @@
     </head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>工作界面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/WorkPageUrlView.css}">
     <script type="text/javascript"
             data-th-src="@{/static/scripts/maindata/WorkPageUrlView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
-        var workPageUrlView;
+        var workPageUrl;
         EUI.onReady(function () {
-            workPageUrlView = new EUI.WorkPageUrlView({
+            workPageUrl = new EUI.WorkPageUrlView({
                 renderTo: "content"
             });
         });
