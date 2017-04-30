@@ -59,11 +59,11 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * @return 流程实例
      */
     @POST
-    @Path("startById")
+    @Path("startById/{id}/{businessKey}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体,附加启动ID",notes = "测试")
-    public FlowInstance startById(String id,String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id") String id,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
     /**
      * 通过ID启动流程实体
@@ -74,11 +74,11 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * @return 流程实例
      */
     @POST
-    @Path("startByIdWithStartUserId")
+    @Path("startByIdWithStartUserId/{id}/{startUserId}/{businessKey}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体",notes = "测试")
-    public FlowInstance startById(String id,String startUserId,String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id")String id,@PathParam("startUserId")String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
     /**
      * 通过Key启动流程实体
@@ -88,11 +88,11 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * @return 流程实例
      */
     @POST
-    @Path("startByKey")
+    @Path("startByKey/{key}/{businessKey}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体",notes = "测试")
-    public FlowInstance startByKey(String key,String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
     /**
      * 通过Key启动流程实体
@@ -103,10 +103,10 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * @return 流程实例
      */
     @POST
-    @Path("startByKeyWithStartUserId")
+    @Path("startByKeyWithStartUserId/{key}/{startUserId}/{businessKey}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
-    public FlowInstance startByKey(String key,String startUserId,String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
 }

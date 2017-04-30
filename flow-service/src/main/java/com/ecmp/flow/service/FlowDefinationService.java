@@ -161,14 +161,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
         String deployId = null;
         FlowDefVersion  flowDefVersion = flowDefVersionDao.findOne(id);
-
-//        org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-//        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-//        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED); // 事物隔离级别，开启新事务，这样会比较安全些。
-//        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
         Deployment deploy=null;
-        try {
-            //逻辑代码，可以写上你的逻辑处理代码
              deploy = this.deploy(flowDefVersion.getName(),flowDefVersion.getDefXml());
             deployId = deploy.getId();
             flowDefVersion.setActDeployId(deployId);//回写流程发布ID
@@ -176,14 +169,6 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
             flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
             flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
             flowDefVersionDao.save(flowDefVersion);
-//            transactionManager.commit(status);
-        } catch (Exception e) {
-            e.printStackTrace();
-//            transactionManager.rollback(status);
-        }
-
-
-
         return deployId;
     }
 
