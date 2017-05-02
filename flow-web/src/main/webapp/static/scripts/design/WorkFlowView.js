@@ -258,6 +258,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var code = e.keyCode || e.charCode;
                 if (code == 46) {
                     g.instance.detachAllConnections($(this));
+                    var sourceId = $(this).attr("id");
+                    for(var key in g.connectInfo){
+                        if(key.indexOf(sourceId) != -1){
+                            delete g.connectInfo[key];
+                        }
+                    }
                     $(this).remove();
                     e.stopPropagation();
                 }
