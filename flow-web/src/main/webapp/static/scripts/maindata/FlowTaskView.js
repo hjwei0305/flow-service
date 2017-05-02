@@ -227,38 +227,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
         $(".nagreeBtn").live("click",function(){
             var rowData=EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            // var infoBox = EUI.MessageBox({
-            //     title : "提示",
-            //     msg : "确定删除吗？",
-            //     buttons :[{
-            //         title : "确定",
-            //         selected : true,
-            //         handler : function(){
-            //             infoBox.remove();
-            //             var myMask = EUI.LoadMask({
-            //                 msg : "正在删除,请稍后...."
-            //             });
-            //             EUI.Store({
-            //                 url : "http://localhost:8081/flow/maindata/flowType/delete",
-            //                 params : {
-            //                     id:rowData.id
-            //                 },
-            //                 success : function(){
-            //                     myMask.hide();
-            //                     EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-            //                 },
-            //                 failure : function(){
-            //                     myMask.hide();
-            //                 }
-            //             });
-            //         }
-            //     },{
-            //         title : "取消",
-            //         handler : function(){
-            //             infoBox.remove();
-            //         }
-            //     }]
-            // });
+
         });
     },
     showCompleteWin : function(rowData) {
