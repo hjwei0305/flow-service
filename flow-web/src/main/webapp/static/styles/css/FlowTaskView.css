@@ -14,8 +14,6 @@
     float: right;
     cursor: pointer;
     color: firebrick;
-    /*background: url("../images/operate_bg.png") no-repeat;*/
-    /*background-position: -16px 0px;*/
 }
 #content .ux-bar-right .ux-toolbar-item{
     margin-right: 0;
