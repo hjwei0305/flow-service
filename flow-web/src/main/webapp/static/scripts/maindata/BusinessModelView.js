@@ -423,8 +423,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     // loadonce: true,
-                    url: _ctxPath + "/maindata/businessModel/findCurAppModuleList",
-                    postDate: {
+                    url: _ctxPath + "/maindata/businessModel/findByid",
+                    postData: {
                         id: g.appModule
                     },
                     colModel: [{
@@ -492,7 +492,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 loadonce: true,
-                // url: _ctxPath + "/maindata/businessModel/findCurAppModuleList",
+                url: _ctxPath + "/maindata/businessModel/findByid",
                 hasPager: false,
                 postData: {
                     id: g.appModule
@@ -501,26 +501,26 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 colModel: [{
                     name: "id",
                     index: "id",
-                    hidden: true
+                    //hidden: true
                 }, {
                     label: g.lang.nameText,
                     name: "name",
                     index: "name"
                 }, {
                     label: g.lang.urlViewAddressText,
-                    name: "url",
-                    index: "url"
+                    name: "className",
+                    index: "className"
                 }],
                 //添加固定数据测试
-                data: [{
-                    name: "lll",
-                    id: "1",
-                    url: "sjhvs"
-                }, {
-                    name: "fshd",
-                    id: "2",
-                    url: "dvndk"
-                }]
+                // data: [{
+                //     name: "lll",
+                //     id: "1",
+                //     url: "sjhvs"
+                // }, {
+                //     name: "fshd",
+                //     id: "2",
+                //     url: "dvndk"
+                // }]
             }
         };
     },

@@ -5,8 +5,10 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
+import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +52,17 @@ public class FlowTaskController {
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
         String flowTask =  JsonUtil.serialize(flowTaskPageResult);
         return flowTask;
+    }
+
+    @RequestMapping(value = "completeTask")
+    @ResponseBody
+    public String completeTask(String id)  {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result = proxy.complete(id, null);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
     }
 
 

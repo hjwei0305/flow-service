@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -37,4 +38,18 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<BusinessModel> findByPage(Search searchConfig);
+
+    /**
+     * 根据应用模块id查询业务实体
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByAppModuleId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    List<BusinessModel> findByAppModuleId(@QueryParam("appModuleId") String appModuleId);
+
+
 }
