@@ -43,6 +43,12 @@ public class FlowTaskController {
         return "maindata/FlowTaskView";
     }
 
+    /**
+     * 查询流程任务列表
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException {
@@ -50,10 +56,15 @@ public class FlowTaskController {
         Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
-        String flowTask =  JsonUtil.serialize(flowTaskPageResult);
+        String flowTask =  JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
         return flowTask;
     }
 
+    /**
+     * 通过流程
+     * @param id
+     * @return
+     */
     @RequestMapping(value = "completeTask")
     @ResponseBody
     public String completeTask(String id)  {
@@ -63,6 +74,18 @@ public class FlowTaskController {
         OperateResult result = proxy.complete(id, null);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
+    }
+
+    /**
+     * 驳回流程
+     * @param id
+     */
+    @RequestMapping(value = "rollBackTask")
+    @ResponseBody
+    public void rollBackTask(String id)  {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+
     }
 
 
