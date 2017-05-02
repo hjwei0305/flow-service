@@ -56,6 +56,9 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             gridCfg : {
            //     loadonce:true,
                 	url : _ctxPath +"/maindata/flowTask/find",
+                postData:{
+                    S_createdDate: "ASC"
+                },
                 colModel : [{
                     label : "操作",
                     name : "operate",
@@ -72,7 +75,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     label : "ID",
                     name : "id",
                     index : "id",
-                    hidden : true
+                    //hidden : true
                 },/*{
                     label : "流程名称",
                     name : "flowName",
@@ -138,6 +141,11 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     label : "描述" ,
                     name : "depict",
                     index : "depict",
+                    title : false
+                },{
+                    label : "创建时间" ,
+                    name : "createdDate",
+                    index : "createdDate",
                     title : false
                 },/*{
                     label : "创建人" ,
@@ -227,7 +235,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
         $(".nagreeBtn").live("click",function(){
             var rowData=EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-
+            g.showRollBackWin(rowData);
         });
     },
     showCompleteWin : function(rowData) {
@@ -266,162 +274,40 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    addFlowType : function() {
+    showRollBackWin : function(rowData) {
         var g = this;
-        win = EUI.Window({
-            title : "新增流程类型",
-            height : 250,
-            padding : 15,
-            items : [{
-                xtype : "FormPanel",
-                id : "addFlowType",
-                padding : 0,
-                items : [{
-                    xtype : "TextField",
-                    title : "代码",
-                    labelWidth : 90,
-                    name : "code",
-                    width : 220,
-                    maxLength : 10,
-                }, {
-                    xtype : "TextField",
-                    title : "名称",
-                    labelWidth : 90,
-                    name : "name",
-                    width : 220,
-                }, {
-                    xtype : "TextField",
-                    title : "描述",
-                    labelWidth : 90,
-                    name : "depict",
-                    width : 220,
-                }, {
-                    xtype : "ComboBox",
-                    title : "所属业务实体",
-                    labelWidth : 90,
-                    name : "businessModel.name",
-                    width : 220,
-                    store : {
-                        url : _ctxPath +"/maindata/flowType/findAllBusinessModelName",
-                    },
-                    field : ["businessModel.id"],
-                    reader : {
-                        name : "name",
-                        field : ["id"]
-                    },
-
-                }/*, {
-                    xtype : "TextField",
-                    title : "创建人",
-                    labelWidth : 90,
-                    name : "createdBy",
-                    width : 220
-                }, {
-                    xtype : "TextField",
-                    title : "创建时间",
-                    labelWidth : 90,
-                    name : "createdDate",
-                    width : 220
-                }, {
-                    xtype : "TextField",
-                    title : "最后更新者",
-                    labelWidth : 90,
-                    name : "lastModifiedBy",
-                    width : 220
-                }, {
-                    xtype : "TextField",
-                    title : "最后更新时间",
-                    labelWidth : 90,
-                    name : "lastModifiedDate",
-                    width : 220
-                }*/]
-            }],
-            buttons : [{
-                title : "保存",
-                selected : true,
-                handler : function() {
-                    var form = EUI.getCmp("addFlowType");
-                    var data = form.getFormValue();
-                    console.log(data);
-                    if (!data.code) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : "请输入代码"
-                        });
-                        return;
-                    }
-                    if (!data.name) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : "请输入名称"
-                        });
-                        return;
-                    }
-                    if (!data.depict) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : "请输入描述"
-                        });
-                        return;
-                    }
-                    if (!data["businessModel.name"]) {
-                        EUI.ProcessStatus({
-                            success : false,
-                            msg : "请选择所属业务实体模型"
-                        });
-                        return;
-                    }
-                    g.saveFlowType(data);
-
+        console.log(rowData);
+        var infoBox = EUI.MessageBox({
+            title: "提示",
+            msg:  "确定驳回当前任务吗？",
+            buttons: [{
+                title: "确定",
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: "正在执行"
+                    });
+                    EUI.Store({
+                        url:  _ctxPath +"/maindata/flowTask/rollBackTask",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function () {
+                            myMask.hide();
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                        },
+                        failure: function () {
+                            myMask.hide();
+                        }
+                    });
                 }
             }, {
-                title : "取消",
-                handler : function() {
-                    win.remove();
+                title: "取消",
+                handler: function () {
+                    infoBox.remove();
                 }
             }]
         });
-    },
-    saveFlowType : function(data) {
-        var g = this;
-        console.log(data);
-		var  myMask = EUI.LoadMask({
-					msg : "正在保存，请稍候..."
-				});
-        EUI.Store({
-            url : _ctxPath +"/maindata/flowType/update",
-            params : data,
-            success : function(){
-                myMask.hide();
-                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-            },
-            failure : function(){
-                myMask.hide();
-            }
-            // success : function(status) {
-            //     if (!status.success) {
-            //         new EUI.ProcessStatus({
-            //             msg : status.msg,
-            //             success : false
-            //         });
-            //     } else {
-            //         new EUI.ProcessStatus({
-            //             msg : "操作成功！",
-            //             success : true
-            //         });
-            //         win.close();
-            //         g.reloadGrid();
-            //     }
-            //     mask.hide();
-            // },
-            // failure : function(re) {
-            //     new EUI.ProcessStatus({
-            //         msg : "操作失败，请稍后再试。"
-            //     });
-            //     mask.hide();
-            // }
-        });
-        win.close();
-        myMask.hide();
     }
 });
