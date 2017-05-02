@@ -213,7 +213,12 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(processInstance.getName());
+
+                String processInstanceName = processInstance.getName();
+                if(processInstanceName == null){
+                    processInstanceName = processInstance.getProcessDefinitionKey();
+                }
+                flowInstance.setFlowName(processInstanceName);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
             }
@@ -517,13 +522,20 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
+         String flowName = instance.getProcessDefinitionName();
+        if(flowName == null){
+            flowName = instance.getProcessDefinitionKey();
+        }
         if(taskList!=null && taskList.size()>0){
             for(Task task:taskList){
                     if(task.getAssignee()!=null && !"".equals(task.getAssignee())){
                         List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                         for(IdentityLink identityLink:identityLinks){
                             FlowTask  flowTask = new FlowTask();
-                            flowTask.setFlowName(task.getName());
+                            flowTask.setFlowName(flowName);
+                            flowTask.setTaskName(task.getName());
+
+//                            flowTask.setFlowDefinitionId();
                             flowTask.setActTaskId(task.getId());
                             flowTask.setOwnerAccount(task.getOwner());
                             flowTask.setPriority(task.getPriority());
@@ -531,11 +543,13 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
                             flowTaskDao.save(flowTask);
                         }
                     }else{
                         FlowTask  flowTask = new FlowTask();
-                        flowTask.setFlowName(task.getName());
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
                         flowTask.setOwnerAccount(task.getOwner());
                         flowTask.setPriority(task.getPriority());
@@ -543,6 +557,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                         flowTask.setDepict(task.getDescription());
                         flowTask.setActType("assignee");
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
                         flowTaskDao.save(flowTask);
                     }
 

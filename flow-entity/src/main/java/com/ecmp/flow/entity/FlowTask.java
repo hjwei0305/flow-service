@@ -84,7 +84,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 流程定义ID
 	 */
-	@Column(name = "flow_definition_id", nullable = false, length = 36)
+	@Column(name = "flow_definition_id", length = 36)
 	private String flowDefinitionId;
 
 	/**
@@ -114,7 +114,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 执行时间
 	 */
-	@Column(name = "execute_date", nullable = false,length = 19)
+	@Column(name = "execute_date",length = 19)
 	private Date executeDate;
 
 
