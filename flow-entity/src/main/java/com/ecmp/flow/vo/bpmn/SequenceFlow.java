@@ -36,14 +36,14 @@ public class SequenceFlow extends BaseNode implements Serializable {
     /**
      * UEL
      */
-    @XmlElement(name = "conditionExpression xsi:type=\"tFormalExpression\"")
-    private String uel;
+    @XmlElement(name = "conditionExpression")
+    private ConditionExpression conditionExpression;
 
-    public SequenceFlow(String id, String sourceRef, String targetRef, String conditionExpression) {
+    public SequenceFlow(String id, String sourceRef, String targetRef, String uel) {
         this.id = id;
         this.sourceRef = sourceRef;
         this.targetRef = targetRef;
-        this.uel = conditionExpression;
+        this.conditionExpression = new ConditionExpression(uel);
     }
 
     public String getSourceRef() {
@@ -62,11 +62,11 @@ public class SequenceFlow extends BaseNode implements Serializable {
         this.targetRef = targetRef;
     }
 
-    public String getUel() {
-        return uel;
+    public ConditionExpression getConditionExpression() {
+        return conditionExpression;
     }
 
-    public void setUel(String uel) {
-        this.uel = uel;
+    public void setConditionExpression(ConditionExpression conditionExpression) {
+        this.conditionExpression = conditionExpression;
     }
 }
