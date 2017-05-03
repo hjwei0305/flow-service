@@ -34,7 +34,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 	/**
 	 * 所属流程定义
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "flow_defination_id")
 	private FlowDefination flowDefination;
 

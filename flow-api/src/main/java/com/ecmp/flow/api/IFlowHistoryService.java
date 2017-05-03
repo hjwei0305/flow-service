@@ -1,10 +1,18 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * *************************************************************************************************
@@ -21,4 +29,17 @@ import javax.ws.rs.Path;
 @Path("flowHistory")
 @Api(value = "IFlowHistoryService 流程历史服务API接口")
 public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowHistory> findByPage(Search searchConfig);
+
 }

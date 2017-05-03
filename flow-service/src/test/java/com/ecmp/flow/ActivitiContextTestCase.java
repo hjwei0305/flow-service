@@ -23,7 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * *************************************************************************************************
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-activiti.xml")
+@ContextConfiguration("/applicationContext-activiti.xml")
 public abstract class ActivitiContextTestCase extends AbstractJUnit4SpringContextTests {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired

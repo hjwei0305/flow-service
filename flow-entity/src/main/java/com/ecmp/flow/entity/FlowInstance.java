@@ -35,7 +35,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 所属流程定义版本
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "flow_def_version_id")
 	private FlowDefVersion flowDefVersion;
 
