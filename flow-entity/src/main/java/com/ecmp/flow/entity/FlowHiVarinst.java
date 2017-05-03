@@ -3,13 +3,13 @@ package com.ecmp.flow.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * *************************************************************************************************
@@ -115,7 +115,7 @@ public class FlowHiVarinst extends com.ecmp.core.entity.BaseEntity  implements
 
 	/** minimal constructor */
 	public FlowHiVarinst(FlowInstance flowInstance, String type, String name,
-			Timestamp createdDate, Timestamp lastModifiedDate) {
+						 Date createdDate, Date lastModifiedDate) {
 		this.flowInstance = flowInstance;
 		this.type = type;
 		this.name = name;

@@ -35,7 +35,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 所属流程类型
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name = "flow_type_id")
 	private FlowType flowType;
 

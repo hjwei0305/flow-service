@@ -54,11 +54,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	@Column(name = "flow_run_id", length = 36)
 	private String flowRunId;
 
-	/**
-	 * 流程实例ID
-	 */
-//	@Column(name = "flow_instance_id", nullable = false, length = 36)
-//	private String flowInstanceId;
+
 
 	/**
 	 * 流程定义ID
