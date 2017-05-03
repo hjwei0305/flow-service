@@ -6,6 +6,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     instance: null,
     connectInfo: {},
+    uelInfo: {},
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -259,8 +260,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (code == 46) {
                     g.instance.detachAllConnections($(this));
                     var sourceId = $(this).attr("id");
-                    for(var key in g.connectInfo){
-                        if(key.indexOf(sourceId) != -1){
+                    for (var key in g.connectInfo) {
+                        if (key.indexOf(sourceId) != -1) {
                             delete g.connectInfo[key];
                         }
                     }
@@ -321,7 +322,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("dblclick", function (connection) {
-
+            g.showUELWin(connection);
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("keyup", function (connection) {
@@ -438,7 +439,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             };
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {
-                    node.target.push(key.split(",")[1]);
+                    var item = {
+                        targetId: key.split(",")[1],
+                        uel: this.uelInfo[key]
+                    };
+                    node.target.push(item);
                 }
             }
             process.nodes[id] = node;
@@ -606,6 +611,36 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         })
     },
     clear: function () {
+    },
+    showUELWin: function (connection) {
+        var g = this;
+        var win = EUI.Window({
+            title: "跳转条件配置",
+            height: 180,
+            items: [{
+                xtype: "TextArea",
+                id: "uel",
+                title: "表达式",
+                name: "uel",
+                width: 240,
+                height: 160,
+                value: g.uelInfo[connection.sourceId + "," + connection.targetId]
+            }],
+            buttons: [{
+                title: "保存配置",
+                selected: true,
+                handler: function () {
+                    var uel = EUI.getCmp("uel").getValue();
+                    g.uelInfo[connection.sourceId + "," + connection.targetId] = uel;
+                    win.close();
+                }
+            }, {
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            }]
+        });
     }
 })
 ;
