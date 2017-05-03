@@ -172,12 +172,8 @@ public class Process extends BaseNode implements Serializable {
             JSONObject target = targets.getJSONObject(i);
             String id = "flow" + (++lineCount);
             String targetId = target.getString("targetId");
-            Object uel = target.get("uel");
-            String uelStr = "";
-            if(uel != null){
-                uelStr = uel.toString();
-            }
-            SequenceFlow sf = new SequenceFlow(id, sourceId, targetId, uelStr);
+            String uel = target.getString("uel");
+            SequenceFlow sf = new SequenceFlow(id, sourceId, targetId, uel);
             sequenceFlow.add(sf);
         }
     }
