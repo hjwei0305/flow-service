@@ -1,5 +1,7 @@
 package com.ecmp.flow.vo.bpmn;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
@@ -43,7 +45,9 @@ public class SequenceFlow extends BaseNode implements Serializable {
         this.id = id;
         this.sourceRef = sourceRef;
         this.targetRef = targetRef;
-        this.conditionExpression = new ConditionExpression(uel);
+        if (StringUtils.isNotBlank(uel)) {
+            this.conditionExpression = new ConditionExpression(uel);
+        }
     }
 
     public String getSourceRef() {
