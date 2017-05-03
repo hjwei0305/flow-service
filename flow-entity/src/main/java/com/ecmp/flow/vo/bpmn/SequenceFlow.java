@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo.bpmn;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
@@ -32,10 +33,17 @@ public class SequenceFlow extends BaseNode implements Serializable {
     @XmlAttribute
     private String targetRef;
 
-    public SequenceFlow(String id,String sourceRef,String targetRef){
+    /**
+     * UEL
+     */
+    @XmlElement(name = "conditionExpression xsi:type=\"tFormalExpression\"")
+    private String uel;
+
+    public SequenceFlow(String id, String sourceRef, String targetRef, String conditionExpression) {
         this.id = id;
         this.sourceRef = sourceRef;
         this.targetRef = targetRef;
+        this.uel = conditionExpression;
     }
 
     public String getSourceRef() {
@@ -52,5 +60,13 @@ public class SequenceFlow extends BaseNode implements Serializable {
 
     public void setTargetRef(String targetRef) {
         this.targetRef = targetRef;
+    }
+
+    public String getUel() {
+        return uel;
+    }
+
+    public void setUel(String uel) {
+        this.uel = uel;
     }
 }

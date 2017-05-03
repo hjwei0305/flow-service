@@ -3,7 +3,6 @@ package com.ecmp.flow.vo.bpmn;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -170,9 +169,11 @@ public class Process extends BaseNode implements Serializable {
 
     private void addSequenceFlow(String sourceId, JSONArray targets) {
         for (int i = 0; i < targets.size(); i++) {
+            JSONObject target = targets.getJSONObject(i);
             String id = "flow" + (++lineCount);
-            String targetId = targets.getString(i);
-            SequenceFlow sf = new SequenceFlow(id, sourceId, targetId);
+            String targetId = target.getString("targetId");
+            String uel = target.getString("uel");
+            SequenceFlow sf = new SequenceFlow(id, sourceId, targetId, uel);
             sequenceFlow.add(sf);
         }
     }

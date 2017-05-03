@@ -1,7 +1,13 @@
 package com.ecmp.flow.vo.bpmn;
 
+import net.sf.json.JSONObject;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.io.StringWriter;
 
 /**
  * *************************************************************************************************
@@ -87,4 +93,23 @@ public class Definition implements Serializable {
         this.id = id;
     }
 
+
+    public static void main(String[] args) throws JAXBException {
+        Definition df = new Definition();
+        Process process = new Process();
+        process.setName("测试");
+        process.setId("1122");
+        process.setStartUEL("23sfsfsf");
+        df.setDefJson("sdfsdfs");
+        JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":28,\"y\":85,\"id\":\"StartEvent_0\",\"target\":[\"UserTask_1\"],\"name\":\"开始\"},\"UserTask_1\":{\"type\":\"UserTask\",\"x\":130,\"y\":204,\"id\":\"UserTask_1\",\"target\":[\"UserTask_2\",\"ExclusiveGateway_5\"],\"name\":\"审批任务\"},\"EndEvent_3\":{\"type\":\"EndEvent\",\"x\":782,\"y\":451,\"id\":\"EndEvent_3\",\"target\":[],\"name\":\"结束\"},\"UserTask_4\":{\"type\":\"UserTask\",\"x\":517,\"y\":151,\"id\":\"UserTask_4\",\"target\":[\"UserTask_10\"],\"name\":\"审批任务\"},\"ExclusiveGateway_5\":{\"type\":\"ExclusiveGateway\",\"x\":362,\"y\":268,\"id\":\"ExclusiveGateway_5\",\"target\":[\"UserTask_4\",\"UserTask_6\",\"UserTask_8\"],\"name\":\"排他网关\"},\"UserTask_6\":{\"type\":\"UserTask\",\"x\":520,\"y\":287,\"id\":\"UserTask_6\",\"target\":[\"UserTask_10\"],\"name\":\"审批任务\"},\"UserTask_8\":{\"type\":\"UserTask\",\"x\":518,\"y\":397,\"id\":\"UserTask_8\",\"target\":[\"EndEvent_3\"],\"name\":\"审批任务\"},\"UserTask_10\":{\"type\":\"UserTask\",\"x\":756,\"y\":215,\"id\":\"UserTask_10\",\"target\":[\"EndEvent_3\"],\"name\":\"审批任务\"}}");
+        process.setNodes(nodes);
+        df.setProcess(process);
+        JAXBContext context = JAXBContext.newInstance(df.getClass());
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        StringWriter writer = new StringWriter();
+        marshaller.marshal(df, writer);
+        System.out.println(writer.toString());
+    }
 }
