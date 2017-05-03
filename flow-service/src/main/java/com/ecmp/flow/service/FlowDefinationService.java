@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.util.TaskStatus;
@@ -20,6 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -37,6 +43,7 @@ import java.util.*;
  * *************************************************************************************************
  */
 @Service
+@Transactional
 public class FlowDefinationService extends BaseService<FlowDefination, String> implements IFlowDefinationService {
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
@@ -133,6 +140,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      * @return  流程发布ID
      */
     @Override
+    @Transactional
     public String deployById(String id) throws UnsupportedEncodingException {
         String deployId = null;
         FlowDefination  flowDefination = flowDefinationDao.findOne(id);
@@ -149,17 +157,18 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      * @return  流程发布ID
      */
     @Override
+//    @Transactional
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
         String deployId = null;
         FlowDefVersion  flowDefVersion = flowDefVersionDao.findOne(id);
-        Deployment deploy = this.deploy(flowDefVersion.getName(),flowDefVersion.getDefXml());
-        deployId = deploy.getId();
-        flowDefVersion.setActDeployId(deployId);//回写流程发布ID
-
-        ProcessDefinitionEntity activtiFlowDef = getProcessDefinitionByDeployId(deployId);
-        flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
-        flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
-        flowDefVersionDao.save(flowDefVersion);
+        Deployment deploy=null;
+             deploy = this.deploy(flowDefVersion.getName(),flowDefVersion.getDefXml());
+            deployId = deploy.getId();
+            flowDefVersion.setActDeployId(deployId);//回写流程发布ID
+            ProcessDefinitionEntity activtiFlowDef = getProcessDefinitionByDeployId(deployId);
+            flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
+            flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
+            flowDefVersionDao.save(flowDefVersion);
         return deployId;
     }
 
@@ -204,7 +213,12 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(processInstance.getName());
+
+                String processInstanceName = processInstance.getName();
+                if(processInstanceName == null){
+                    processInstanceName = processInstance.getProcessDefinitionKey();
+                }
+                flowInstance.setFlowName(processInstanceName);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
             }
@@ -357,13 +371,29 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      * @return  流程发布
      * @throws UnsupportedEncodingException
      */
-    private Deployment deploy(String name, String xml) throws UnsupportedEncodingException {
+//    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public Deployment deploy(String name, String xml) throws UnsupportedEncodingException {
         // InputStream stream = new ByteArrayInputStream(xml.getBytes("utf-8"));
-        DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
-        deploymentBuilder.name(name);
-        deploymentBuilder.addString(name, xml);
-        // deploymentBuilder.addInputStream("bpmn20.xml", stream);
-        Deployment deploy = deploymentBuilder.deploy();
+        Deployment deploy=null;
+        org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+        try {
+            //逻辑代码，可以写上你的逻辑处理代码
+            DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
+//            deploymentBuilder.name(name);3
+            deploymentBuilder.addString(name+".bpmn", xml);
+            // deploymentBuilder.addInputStream("bpmn20.xml", stream);
+            deploy= deploymentBuilder.deploy();
+            transactionManager.commit(status);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            transactionManager.rollback(status);
+            throw e;
+        }
+//        TransactionStatus status = transactionManager.getTransaction(def);//设为false
         return deploy;
     }
 
@@ -373,11 +403,25 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      * @return Activiti流程定义实体
      */
     private ProcessDefinitionEntity getProcessDefinitionByDeployId(String deployId) {
-        ProcessDefinition proDefinition = (ProcessDefinition) this.repositoryService.createProcessDefinitionQuery()
-                .deploymentId(deployId).singleResult();
-        if (proDefinition == null)
-            return null;
-        return getProcessDefinitionByDefId(proDefinition.getId());
+        org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+        ProcessDefinitionEntity  result = null;
+        try {
+            //逻辑代码，可以写上你的逻辑处理代码
+            ProcessDefinition proDefinition = (ProcessDefinition) this.repositoryService.createProcessDefinitionQuery()
+                    .deploymentId(deployId).singleResult();
+            if (proDefinition == null)
+                return null;
+            result = getProcessDefinitionByDefId(proDefinition.getId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            transactionManager.rollback(status);
+            throw e;
+        }
+        return result;
     }
     /**
      * 获取Activiti流程定义实体
@@ -478,13 +522,20 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
+         String flowName = instance.getProcessDefinitionName();
+        if(flowName == null){
+            flowName = instance.getProcessDefinitionKey();
+        }
         if(taskList!=null && taskList.size()>0){
             for(Task task:taskList){
                     if(task.getAssignee()!=null && !"".equals(task.getAssignee())){
                         List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                         for(IdentityLink identityLink:identityLinks){
                             FlowTask  flowTask = new FlowTask();
-                            flowTask.setFlowName(task.getName());
+                            flowTask.setFlowName(flowName);
+                            flowTask.setTaskName(task.getName());
+
+//                            flowTask.setFlowDefinitionId();
                             flowTask.setActTaskId(task.getId());
                             flowTask.setOwnerAccount(task.getOwner());
                             flowTask.setPriority(task.getPriority());
@@ -492,11 +543,13 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
                             flowTaskDao.save(flowTask);
                         }
                     }else{
                         FlowTask  flowTask = new FlowTask();
-                        flowTask.setFlowName(task.getName());
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
                         flowTask.setOwnerAccount(task.getOwner());
                         flowTask.setPriority(task.getPriority());
@@ -504,6 +557,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                         flowTask.setDepict(task.getDescription());
                         flowTask.setActType("assignee");
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
                         flowTaskDao.save(flowTask);
                     }
 

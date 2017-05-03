@@ -14,6 +14,8 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.flow.ActivitiContextTestCase;
+import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.junit.Test;
 
@@ -42,8 +44,10 @@ public class StringDeploymentByContextTest extends ActivitiContextTestCase {
     @Test
     public void testCharsDeployment() {
         // 以candidateUserInUserTask.bpmn为资源名称，以text的内容为资源内容部署到引擎
-        repositoryService.createDeployment().addString("candidateUserInUserTask.bpmn", text).deploy();
+        Deployment deploy= repositoryService.createDeployment().addString("candidateUserInUserTask.bpmn", text).deploy();
 
+        ProcessDefinition proDefinition = (ProcessDefinition) this.repositoryService.createProcessDefinitionQuery()
+                .deploymentId(deploy.getId()).singleResult();
         // 验证流程定义是否部署成功
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         long count = processDefinitionQuery.processDefinitionKey("candidateUserInUserTask").count();

@@ -1,11 +1,15 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -25,4 +29,9 @@ public class BusinessModelService extends BaseService<BusinessModel, String> imp
     @Autowired
     private BusinessModelDao businessModelDao;
 
+
+    @Override
+    public List<BusinessModel> findByAppModuleId(String appModuleId) {
+        return businessModelDao.findByAppModuleId(appModuleId);
+    }
 }

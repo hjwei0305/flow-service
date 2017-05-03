@@ -30,7 +30,7 @@ public class ExpressionUtil {
         providerList.add(new JacksonJsonProvider());
 
         Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
-                .path("/condition/propertiesAndValues/{conditonPojoClassName}",clientClassName)
+                .path("/{conditonPojoClassName}",clientClassName)
 //                .query("conditonPojoClassName",clientClassName)
                 .accept(MediaType.APPLICATION_JSON)
                 .get(Map.class);

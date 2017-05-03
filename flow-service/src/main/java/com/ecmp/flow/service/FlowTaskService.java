@@ -602,13 +602,19 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
+        String flowName = instance.getProcessDefinitionName();
+        if(flowName == null){
+            flowName = instance.getProcessDefinitionKey();
+        }
         if(taskList!=null && taskList.size()>0){
             for(Task task:taskList){
                 if(task.getAssignee()!=null && !"".equals(task.getAssignee())){
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for(IdentityLink identityLink:identityLinks){
                         FlowTask  flowTask = new FlowTask();
-                        flowTask.setFlowName(task.getName());
+                        flowTask.setActTaskDefKey(actTaskDefKey);
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
                         flowTask.setOwnerAccount(task.getOwner());
                         flowTask.setPriority(task.getPriority());
@@ -623,7 +629,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     }
                 }else{
                     FlowTask  flowTask = new FlowTask();
-                    flowTask.setFlowName(task.getName());
+                    flowTask.setActTaskDefKey(actTaskDefKey);
+                    flowTask.setFlowName(flowName);
+                    flowTask.setTaskName(task.getName());
                     flowTask.setActTaskId(task.getId());
                     flowTask.setOwnerAccount(task.getOwner());
                     flowTask.setPriority(task.getPriority());

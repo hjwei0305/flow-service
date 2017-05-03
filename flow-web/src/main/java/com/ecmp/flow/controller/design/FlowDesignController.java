@@ -40,41 +40,32 @@ public class FlowDesignController {
 
     /**
      * 流程设计保存
+     *
      * @param def json文本
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public String save(String def,boolean deploy) throws JAXBException,UnsupportedEncodingException {
-        System.out.println("----------------------------------------");
-        System.out.println(def);
-        System.out.println(deploy);
-        System.out.println("----------------------------------------");
-//        OperateStatus status = OperateStatus.defaultSuccess();
-//        JSONObject defObj = JSONObject.fromObject(def);
-//        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-//        definition.setDefJson(def);
-//        System.out.println(definition);
-//        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
-//        OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
-//        status.setSuccess(result.successful());
-//        status.setMsg(result.getMessage());
-//        return JsonUtil.serialize(status);
+    public String save(String def, boolean deploy) throws JAXBException, UnsupportedEncodingException {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         definition.setDefJson(def);
-        System.out.println(definition);
-        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
-        OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
-//        status.setSuccess(result.successful());
-//        status.setMsg(result.getMessage());
-//        status.setData(result.getData());
-//       System.out.println("!!!!!!!!!!!"+result.getData().getFlowDefination().getId());
-        IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
-        String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
-        OperateStatus operateStatus = new OperateStatus(true,"ok",deployById);
-
-        return JsonUtil.serialize(operateStatus);
+        if (deploy == false) {
+            IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+            OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
+            status.setSuccess(result.successful());
+            status.setMsg(result.getMessage());
+            status.setData(result.getData());
+        } else {
+            IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+            OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
+            IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
+            String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+            status.setSuccess(result.successful());
+            status.setMsg(result.getMessage());
+            status.setData(deployById);
+        }
+        return JsonUtil.serialize(status);
     }
 }

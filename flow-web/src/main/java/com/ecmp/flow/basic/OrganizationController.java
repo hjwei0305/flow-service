@@ -42,14 +42,14 @@ public class OrganizationController {
     }
 
     /**
-     * 获取所有的岗位类别
-     * @return 所有岗位类别清单
+     * 获取所有的组织机构
+     * @return 所有组织机构树
      */
 //    @ResponseBody
 //    @RequestMapping("findAll")
 //    public JsonTree findAll(){
 //        IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
-//        Organization result  = proxy.findAll();
+//        Organization result  = proxy.findAllOrgs();
 //        return new JsonTree(result, true);
 //    }
 

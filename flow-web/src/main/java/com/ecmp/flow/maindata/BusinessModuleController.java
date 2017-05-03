@@ -13,9 +13,7 @@ import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -116,4 +114,13 @@ public class BusinessModuleController {
         return JsonUtil.serialize(operateStatus);
     }
 
+    @RequestMapping(value = "findByid")
+    @ResponseBody
+    public List<BusinessModel> findByid(String id) throws JsonProcessingException {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+        IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
+        List<BusinessModel> businessModelList = proxy.findByAppModuleId(id);
+        return  businessModelList;
+    }
 }

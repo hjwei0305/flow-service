@@ -18,7 +18,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
 		<!-- <property name="databaseSchemaUpdate" value="drop-create" /> -->
-		<property name="databaseSchemaUpdate" value="true" />
+		<property name="databaseSchemaUpdate" value="none" />
 		<property name="jobExecutorActivate" value="false" />
 
 		<!--<property name="mailServerHost" value="localhost" />

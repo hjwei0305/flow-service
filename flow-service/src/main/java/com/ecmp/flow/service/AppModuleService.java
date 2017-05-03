@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
@@ -27,6 +28,7 @@ public class AppModuleService extends BaseService<AppModule, String> implements 
 
     @Autowired
     private AppModuleDao appModuleDao;
+
 
 //    public String hello(){
 //        return "hello";

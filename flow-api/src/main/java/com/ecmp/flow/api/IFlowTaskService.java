@@ -8,10 +8,7 @@ import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
@@ -37,11 +34,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 操作结果
      */
     @POST
-    @Path("claim")
+    @Path("claim/{id}/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "签收任务",notes = "测试")
-    public OperateResult claim(String id, String userId);
+    public OperateResult claim(@PathParam("id") String id, @PathParam("userId")String userId);
 
     /**
      * 完成任务
@@ -50,11 +47,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 操作结果
      */
     @POST
-    @Path("complete")
+    @Path("complete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResult complete(String id, Map<String, Object> variables);
+    public OperateResult complete(@PathParam("id") String id, Map<String, Object> variables);
 
 
 

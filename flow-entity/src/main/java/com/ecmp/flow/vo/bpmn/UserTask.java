@@ -24,7 +24,7 @@ public class UserTask extends BaseFlowNode implements Serializable {
      * 任务参与人id
      */
     @XmlAttribute(name = "activiti:assignee")
-    private String assignee;
+    private String assignee="admin";
     /**
      * 候选人id集合，以","间隔
      */

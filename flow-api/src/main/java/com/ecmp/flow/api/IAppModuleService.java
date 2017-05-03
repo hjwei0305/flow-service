@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -51,5 +52,7 @@ public interface IAppModuleService extends IBaseService<AppModule, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<AppModule> findByPage(Search searchConfig);
+
+
 
 }
