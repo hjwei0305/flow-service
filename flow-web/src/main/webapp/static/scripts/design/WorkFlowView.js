@@ -276,8 +276,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             },
             "dblclick": function () {
+                var input = $(this).find(".node-title");
                 new EUI.FlowNodeSettingView({
-                    title: $(this).find(".node-title").text()
+                    title: $(this).find(".node-title").text(),
+                    afterConfirm: function (data) {
+                        input.text(data.name);
+                    }
                 });
             }
         });
@@ -424,11 +428,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var nodes = $(".node-choosed");
-        var baseDoms = $("input.flow-input");
+        var baseDoms = $(".flow-info-text");
         var process = {
             id: "flow" + new Date().getTime(),
-            name: $(baseDoms[0]).val(),
-            key: $(baseDoms[1]).val(),
+            name: $(baseDoms[0]).text(),
+            key: $(baseDoms[1]).text(),
             isExecutable: true,
             nodes: {}
         };
