@@ -274,9 +274,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     $(this).remove();
                     e.stopPropagation();
                 }
-                else if (code == 113) {
-
-                }
             },
             "dblclick": function () {
                 new EUI.FlowNodeSettingView({
@@ -451,7 +448,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (key.startsWith(id + ",")) {
                     var item = {
                         targetId: key.split(",")[1],
-                        uel: this.uelInfo[key]
+                        uel: this.uelInfo[key] || ""
                     };
                     node.target.push(item);
                 }
