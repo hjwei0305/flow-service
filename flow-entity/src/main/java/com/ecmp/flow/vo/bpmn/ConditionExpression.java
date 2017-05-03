@@ -38,4 +38,6 @@ public class ConditionExpression implements Serializable {
     public ConditionExpression(String uel) {
         this.uel = uel;
     }
+
+    public ConditionExpression(){}
 }

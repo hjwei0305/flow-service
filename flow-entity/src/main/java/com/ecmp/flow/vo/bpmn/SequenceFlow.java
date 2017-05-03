@@ -73,4 +73,6 @@ public class SequenceFlow extends BaseNode implements Serializable {
     public void setConditionExpression(ConditionExpression conditionExpression) {
         this.conditionExpression = conditionExpression;
     }
+
+    public SequenceFlow(){};
 }

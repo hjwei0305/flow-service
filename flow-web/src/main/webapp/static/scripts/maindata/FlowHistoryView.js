@@ -67,7 +67,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     align : "center",
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = "<div class='btn_operate'>"
-                            + "<div class='agreeBtn'>撤销</div>"
+                            + "<div class='rollBackBtn'>撤销</div>"
                         return strVar;
                     }
                 },{
@@ -237,15 +237,10 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
     },
     addEvents : function(){
         var g = this;
-        $(".agreeBtn").live("click",function(){
+        $(".rollBackBtn").live("click",function(){
             var rowData=EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             g.showCompleteWin(rowData);
-        });
-        $(".nagreeBtn").live("click",function(){
-            var rowData=EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
-            g.showRollBackWin(rowData);
         });
     },
     showCompleteWin : function(rowData) {
@@ -253,43 +248,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
         console.log(rowData);
         var infoBox = EUI.MessageBox({
             title: "提示",
-            msg:  "确定通过当前任务吗？",
-            buttons: [{
-                title: "确定",
-                selected: true,
-                handler: function () {
-                    infoBox.remove();
-                    var myMask = EUI.LoadMask({
-                        msg: "正在执行"
-                    });
-                    EUI.Store({
-                        url:  _ctxPath +"/maindata/flowHistory/completeTask",
-                        params: {
-                            id: rowData.id
-                        },
-                        success: function () {
-                            myMask.hide();
-                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                        },
-                        failure: function () {
-                            myMask.hide();
-                        }
-                    });
-                }
-            }, {
-                title: "取消",
-                handler: function () {
-                    infoBox.remove();
-                }
-            }]
-        });
-    },
-    showRollBackWin : function(rowData) {
-        var g = this;
-        console.log(rowData);
-        var infoBox = EUI.MessageBox({
-            title: "提示",
-            msg:  "确定驳回当前任务吗？",
+            msg:  "确定撤销当前任务吗？",
             buttons: [{
                 title: "确定",
                 selected: true,

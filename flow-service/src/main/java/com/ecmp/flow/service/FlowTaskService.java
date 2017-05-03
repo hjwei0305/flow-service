@@ -144,7 +144,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             //初始化新的任务
             PvmActivity  currentNode = this.getActivitNode(actTaskId);
             if(currentNode!=null){
-                callInitTaskBack(currentNode,instance, flowTask);
+                callInitTaskBack(currentNode,instance, flowHistory);
             }
 
         }
@@ -152,19 +152,19 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         return result;
     }
 
-    private void callInitTaskBack( PvmActivity  currentNode,ProcessInstance instance,FlowTask flowTask ){
+    private void callInitTaskBack( PvmActivity  currentNode,ProcessInstance instance,FlowHistory flowHistory ){
         List<PvmTransition>   nextNodes = currentNode.getOutgoingTransitions();
         if(nextNodes!=null && nextNodes.size()>0){
             for(PvmTransition node:nextNodes){
                 PvmActivity nextActivity = node.getDestination();
                 if( ifGageway( nextActivity)){
-                    callInitTaskBack(nextActivity,instance,flowTask);
+                    callInitTaskBack(nextActivity,instance,flowHistory);
                 }
                 String key = nextActivity.getProperty("key")!=null?nextActivity.getProperty("key").toString():null;
                 if(key==null){
                     key = nextActivity.getId();
                 }
-                initTask(instance,key,flowTask);
+                initTask(instance,key,flowHistory);
             }
         }
 
@@ -177,11 +177,11 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      */
     public  OperateResult rollBackTo(String id){
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
-        FlowTask flowTask =  flowTaskDao.findOne(id);
-        result = this.taskRollBack(flowTask);
+        FlowHistory flowHistory =  flowHistoryDao.findOne(id);
+        result = this.taskRollBack(flowHistory);
         if(result.successful()){
-            flowTask.setTaskStatus(TaskStatus.CANCLE.toString());
-            flowTaskDao.save(flowTask);
+            flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
+            flowHistoryDao.save(flowHistory);
         }
         return result;
     }
@@ -312,9 +312,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      *
      * @return
      */
-    public OperateResult taskRollBack(FlowTask flowTask) {
+    public OperateResult taskRollBack(FlowHistory flowHistory) {
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
-        String taskId = flowTask.getActTaskId();
+        String taskId = flowHistory.getActHistoryId();
         try {
             Map<String, Object> variables;
             // 取得当前任务
@@ -431,7 +431,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             deleteOtherNode(currActivity, instance, definition, currTask);
 
             //初始化回退后的新任务
-            initTask(instance,currTask.getTaskDefinitionKey(),flowTask);
+            initTask(instance,currTask.getTaskDefinitionKey(),flowHistory);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -598,7 +598,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * @param instance
      * @param actTaskDefKey
      */
-    private void initTask(ProcessInstance instance,String actTaskDefKey,FlowTask preTask){
+    private void initTask(ProcessInstance instance,String actTaskDefKey,FlowHistory preTask){
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();

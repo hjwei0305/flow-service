@@ -459,7 +459,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {flowTypeId: "c0a8016b-5b9f-1127-815b-9f0175310000", process: process};
+        return {flowTypeId: "c0a80168-5bcd-10b6-815b-cd6118490000", process: process};
     }
     ,
     loadData: function (data) {

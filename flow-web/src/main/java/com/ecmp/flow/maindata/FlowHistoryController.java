@@ -53,12 +53,28 @@ public class FlowHistoryController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException {
-       System.out.println("---------------------------------------------");
+       System.out.println("------ ---------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
         String flowHistory =  JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
         return flowHistory;
+    }
+
+    /**
+     * 撤销任务
+     * @param id 任务历史ID
+     * @return
+     */
+    @RequestMapping(value = "rollBackTask")
+    @ResponseBody
+    public String rollBackTask(String id)  {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result = proxy.rollBackTo(id);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
     }
 
 
