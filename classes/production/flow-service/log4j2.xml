@@ -40,7 +40,7 @@
         <!--<Console name="Console" target="SYSTEM_OUT" follow="true">-->
         <Console name="Console">
             <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
-            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!--<ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>-->
 
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
@@ -106,7 +106,7 @@
         <!--</logger>-->
 
         <!-- Root Logger -->
-        <root level="debug">
+        <root level="TRACE">
             <!--<appender-ref ref="ErrLog"/>-->
             <appender-ref ref="DevLog"/>
             <appender-ref ref="Console"/>

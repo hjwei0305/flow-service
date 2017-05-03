@@ -131,10 +131,12 @@ public class FlowDefVersionService extends BaseService<FlowDefVersion,String> im
         boolean isNew =true;
         if (flowDefination ==null) {//定义为空
 //            preInsert(flowDefination);
+
             flowDefination = new FlowDefination();
             flowDefination.setName(process.getName());
             flowDefination.setDefKey(process.getKey());
             flowDefination.setStartUel(process.getStartUEL());
+            flowDefination.setFlowType(flowType);
            // flowDefination.setCurrentFlowDefVersion(1L);
             flowDefinationDao.save(flowDefination);
              entity = new FlowDefVersion();

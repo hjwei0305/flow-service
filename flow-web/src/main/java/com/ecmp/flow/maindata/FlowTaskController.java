@@ -5,8 +5,10 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
+import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,12 @@ public class FlowTaskController {
         return "maindata/FlowTaskView";
     }
 
+    /**
+     * 查询流程任务列表
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException {
@@ -48,8 +56,36 @@ public class FlowTaskController {
         Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
-        String flowTask =  JsonUtil.serialize(flowTaskPageResult);
+        String flowTask =  JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
         return flowTask;
+    }
+
+    /**
+     * 通过流程
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "completeTask")
+    @ResponseBody
+    public String completeTask(String id)  {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result = proxy.complete(id, null);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
+    }
+
+    /**
+     * 驳回流程
+     * @param id
+     */
+    @RequestMapping(value = "rollBackTask")
+    @ResponseBody
+    public void rollBackTask(String id)  {
+        System.out.println("---------------------------------------------");
+        System.out.println(id);
+
     }
 
 

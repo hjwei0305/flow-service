@@ -4,7 +4,15 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.entity.BusinessModel;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface BusinessModelDao extends BaseDao<BusinessModel, String> {
-
+    /**
+     * 根据应用模块的id来查询业务实体
+     *
+     * @param appModuleId 应用模块Id
+     * @return 岗位清单
+     */
+    List<BusinessModel> findByAppModuleId(String appModuleId);
 }

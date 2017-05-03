@@ -1,6 +1,5 @@
 package com.ecmp.flow.entity;
 
-import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,6 +14,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
+
+import java.util.Date;
 
 /**
  * *************************************************************************************************
@@ -125,8 +126,8 @@ public class FlowVariable extends com.ecmp.core.entity.BaseEntity implements
 	}
 
 	/** minimal constructor */
-	public FlowVariable(String type, String name, Timestamp createdDate,
-			Timestamp lastModifiedDate) {
+	public FlowVariable(String type, String name, Date createdDate,
+						Date lastModifiedDate) {
 		this.type = type;
 		this.name = name;
 		this.setCreatedDate(createdDate);
