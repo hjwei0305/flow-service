@@ -3,6 +3,7 @@
  */
 EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
+    afterConfirm: null,
     initComponent: function () {
         this.window = EUI.Window({
             width: 600,
@@ -28,6 +29,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "保存配置",
             selected: true,
             handler: function () {
+                var normalForm = EUI.getCmp("normal");
+                var data = normalForm.getFormValue();
+                g.afterConfirm && g.afterConfirm.call(this, data);
+                g.window.close();
             }
         }, {
             title: "取消",
@@ -40,6 +45,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             title: "常规配置",
             xtype: "FormPanel",
+            id: "normal",
             padding: 10,
             defaultConfig: {
                 width: 300,
