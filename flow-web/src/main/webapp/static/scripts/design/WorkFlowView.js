@@ -165,6 +165,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var value = dom.find(".flow-info-text").text();
             nextDom.val(value);
         });
+        $(".flow-input").bind("blur", function () {
+            $(".flow-input").hide();
+            var value = $(this).val();
+            var prevDom = $(this).prev().show();
+            prevDom.find(".flow-info-text").text(value);
+        });
         $(".flow-tbar-btn").bind("click", function () {
             if ($(this).hasClass("deploy")) {
                 g.save(true);
@@ -267,6 +273,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }
                     $(this).remove();
                     e.stopPropagation();
+                }
+                else if (code == 113) {
+
                 }
             },
             "dblclick": function () {
@@ -418,10 +427,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var nodes = $(".node-choosed");
+        var baseDoms = $("input.flow-input");
         var process = {
-            id: "Test" + new Date().getTime(),
-            name: "Test" + new Date().getTime(),
-            key: "Test" + new Date().getTime(),
+            id: "flow" + new Date().getTime(),
+            name: $(baseDoms[0]).val(),
+            key: $(baseDoms[1]).val(),
             isExecutable: true,
             nodes: {}
         };
