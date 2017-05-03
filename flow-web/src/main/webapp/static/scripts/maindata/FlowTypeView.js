@@ -49,7 +49,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     g.businessModel = data[0].id;
                     g.businessModelName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: "http://localhost:8081/flow/maindata/flowType/find",
+                        url: _ctxPath +"/maindata/flowType/find",
                         loadonce: false,
                         datatype: "json",
                         postData: {

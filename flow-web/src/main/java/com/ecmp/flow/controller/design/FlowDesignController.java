@@ -6,6 +6,7 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
@@ -62,9 +63,10 @@ public class FlowDesignController {
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
             String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(),"admin","businesskeyId",null);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
-            status.setData(deployById);
+            status.setData(flowInstance.getId());
         }
         return JsonUtil.serialize(status);
     }

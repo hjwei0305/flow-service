@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
@@ -26,6 +28,18 @@ import java.util.Map;
 @Path("flowDefination")
 @Api(value = "IFlowDefinationService 流程定义服务API接口")
 public interface IFlowDefinationService extends IBaseService<FlowDefination, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowDefination> findByPage(Search searchConfig);
 
     /**
      * 通过流程定义ID发布最新版本的流程
