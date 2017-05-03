@@ -32,7 +32,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 	/**
 	 * 所属流程实例
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "flow_instance_id")
 	private FlowInstance flowInstance;
 

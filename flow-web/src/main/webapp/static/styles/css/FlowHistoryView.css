@@ -1,0 +1,20 @@
+.btn_operate{width:60px;height:16px;line-height:14px;margin:0 auto}
+.agreeBtn {
+    width: 26px;
+    height: 17px;
+    float: left;
+    cursor: pointer;
+    color:limegreen;
+    /*background: url("../images/operate_bg.png") no-repeat;*/
+    /*background-position: 0px 0px;*/
+}
+.nagreeBtn {
+    width: 26px;
+    height: 17px;
+    float: right;
+    cursor: pointer;
+    color: firebrick;
+}
+#content .ux-bar-right .ux-toolbar-item{
+    margin-right: 0;
+}
