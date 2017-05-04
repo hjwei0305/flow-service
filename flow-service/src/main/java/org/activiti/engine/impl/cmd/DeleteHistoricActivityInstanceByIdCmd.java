@@ -38,7 +38,7 @@ public class DeleteHistoricActivityInstanceByIdCmd implements Command<Object>, S
     }
     commandContext
       .getHistoricActivityInstanceEntityManager()
-      .deleteHistoricActivityInstancesById(id);
+      .deleteHistoricActivityInstanceById(id);
     return null;
   }
 

@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -71,7 +73,9 @@ public class FlowTaskController {
         System.out.println("---------------------------------------------");
         System.out.println(id);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result = proxy.complete(id, null);
+        Map<String,Object> variables = new HashMap<String,Object>();
+        variables.put("intput","2");
+        OperateResult result = proxy.complete(id,variables);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }

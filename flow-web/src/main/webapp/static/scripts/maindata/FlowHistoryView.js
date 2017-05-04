@@ -62,12 +62,15 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 colModel : [{
                     label : "操作",
                     name : "operate",
-                    index : "operate",
+                    index : "taskStatus",
                     width : 100,
                     align : "center",
                     formatter : function(cellvalue, options, rowObject) {
-                        var strVar = "<div class='btn_operate'>"
-                            + "<div class='rollBackBtn'>撤销</div>"
+                        var strVar = '';
+                        if('COMPLETED' == rowObject.taskStatus){
+                             strVar = "<div class='btn_operate'>"
+                                + "<div class='rollBackBtn'>撤销</div>"
+                        }
                         return strVar;
                     }
                 },{
@@ -100,7 +103,17 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     label : "任务状态" ,
                     name : "taskStatus",
                     index : "taskStatus",
-                    title : false
+                    title : false,
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        if('COMPLETED' == rowObject.taskStatus){
+                            strVar = "已办";
+                        }
+                        else if('CANCLE' == rowObject.taskStatus){
+                            strVar = "已撤销";
+                        }
+                        return strVar;
+                    }
                 },{
                     label : "代理状态" ,
                     name : "proxyStatus",

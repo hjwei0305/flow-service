@@ -18,6 +18,7 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
+import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -27,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -139,7 +143,21 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
-            flowTaskDao.deleteNotClaimTask(actTaskId,id);//删除其他候选用户的任务
+
+            org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+            TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+            try {
+                //逻辑代码，可以写上你的逻辑处理代码
+                flowTaskDao.deleteNotClaimTask(actTaskId,id);//删除其他候选用户的任务
+                transactionManager.commit(status);
+            } catch (Exception e) {
+                e.printStackTrace();
+                transactionManager.rollback(status);
+                throw e;
+            }
+
 
             //初始化新的任务
             PvmActivity  currentNode = this.getActivitNode(actTaskId);
@@ -340,9 +358,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
             List<HistoricVariableInstance> historicVariableInstances=	historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
 
-            for(HistoricVariableInstance h: historicVariableInstances){
-
-            }
+//            for(HistoricVariableInstance h: historicVariableInstances){
+//
+//            }
             // 取得下一步活动
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
@@ -494,6 +512,22 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                 taskService.deleteRuningTask(nextTask.getId(), false);
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
+
+                org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+                try {
+                    //逻辑代码，可以写上你的逻辑处理代码
+                    flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
+                    transactionManager.commit(status);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    transactionManager.rollback(status);
+                    throw e;
+                }
+
+
             }
 
             if ((nextTasks!=null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
