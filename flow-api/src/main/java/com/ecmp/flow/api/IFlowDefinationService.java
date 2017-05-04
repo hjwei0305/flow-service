@@ -29,6 +29,7 @@ import java.util.Map;
 @Api(value = "IFlowDefinationService 流程定义服务API接口")
 public interface IFlowDefinationService extends IBaseService<FlowDefination, String> {
 
+
     /**
      * 获取分页数据
      *
@@ -40,7 +41,6 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowDefination> findByPage(Search searchConfig);
-
     /**
      * 通过流程定义ID发布最新版本的流程
      * @param id 实体

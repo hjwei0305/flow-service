@@ -8,9 +8,11 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
+import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.time.Year;
 import java.util.List;
 
 /**
@@ -140,29 +143,30 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "findNoSetWorkPage")
     @ResponseBody
-    public List<WorkPageUrl> findNoSetWorkPage() throws JsonProcessingException {
+    public List<WorkPageUrl> findNoSetWorkPage(String id) throws JsonProcessingException {
+        System.out.println(id);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId("");
+        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId(id);
         return  workPageUrlList;
     }
 
     /**
      * 保存设置的工作界面
      * @param
-     * @param workPageUrl
+     * @param
      * @return
      * @throws JsonProcessingException
      */
 
-    //@RequestParam(value = "id") String id, @RequestParam(value = "gridData") WorkPageUrl workPageUrl
     @RequestMapping(value = "saveSetWorkPage")
     @ResponseBody
-    public void saveSetWorkPage(@RequestParam(value = "gridData") WorkPageUrl workPageUrl) throws JsonProcessingException {
-        System.out.println(workPageUrl);
-//        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-//        OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
-//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-//        return JsonUtil.serialize(operateStatus);
+    public String saveSetWorkPage(@RequestParam(value = "id") String id,@RequestParam(value = "selectWorkPageIds") String[] selectWorkPageIds) throws JsonProcessingException {
+
+        IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
+         proxy.saveBusinessWorkPageUrlByIds(id,selectWorkPageIds);
+
+        OperateStatus operateStatus = new OperateStatus(true,"ok");
+        return JsonUtil.serialize(operateStatus);
     }
 
 

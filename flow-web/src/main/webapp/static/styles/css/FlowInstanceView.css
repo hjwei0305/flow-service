@@ -1,5 +1,5 @@
 .condetail_operate {
-    width: 60px;
+    width: 100px;
     height: 15px;
     line-height: 15px;
     margin: 0 auto
@@ -21,6 +21,26 @@
     cursor: pointer;
     background: url("../images/operate_bg.png") no-repeat;
     background-position: -32px -160px;
+}
+
+.flowHistoryBtn {
+    width: 50px;
+    height: 17px;
+    float: left;
+    cursor: pointer;
+    color:limegreen;
+    /*background: url("../images/operate_bg.png") no-repeat;*/
+    /*background-position: 0px 0px;*/
+}
+
+.deleteBtn {
+    width: 25px;
+    height: 15px;
+    float: right;
+    cursor: pointer;
+    color:red;
+    /*background: url("../images/operate_bg.png") no-repeat;*/
+    /*background-position: -32px -160px;*/
 }
 
 #content .ux-bar-right .ux-toolbar-item {
