@@ -7,11 +7,9 @@ import com.ecmp.flow.entity.WorkPageUrl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -40,4 +38,16 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<WorkPageUrl> findByPage(Search searchConfig);
+
+    /**
+     * 根据应用模块id查询业务实体
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByAppModuleId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    List<WorkPageUrl> findByAppModuleId(@QueryParam("appModuleId") String appModuleId);
 }

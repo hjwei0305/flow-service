@@ -7,6 +7,8 @@ import com.ecmp.flow.entity.WorkPageUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -23,5 +25,10 @@ import org.springframework.stereotype.Service;
 public class WorkPageUrlService extends BaseService<WorkPageUrl, String> implements IWorkPageUrlService {
 
     @Autowired
-    private WorkPageUrlDao workPageUrl;
+    private WorkPageUrlDao workPageUrlDao;
+
+    @Override
+    public List<WorkPageUrl> findByAppModuleId(String appModuleId) {
+        return workPageUrlDao.findByAppModuleId(appModuleId);
+    }
 }

@@ -12,6 +12,22 @@ var common_lang = {
     depictText: "描述",
     searchNameText: "请输入名称进行搜索",
     InputSearchNameText: "请输入搜索名称",
+
+    addText: "新增",
+    hintText: "提示",
+    paramsText: "参数为空!",
+    addHintMessageText: "您确定要切换操作吗？未保存的数据可能会丢失!",
+    okText: "确定",
+    operateText: "操作",
+    cancelText: "取消",
+    saveText: "保存",
+    modifyText: "修改",
+    appendText: "添加",
+    saveMaskMessageText: "正在保存，请稍候...",
+    deleteText: "删除",
+    deleteHintMessageText: "您确定要删除吗？",
+    deleteMaskMessageText: "正在删除，请稍候...",
+    queryMaskMessageText: "正在努力获取数据，请稍候...",
 };
 if (EUI.AppModuleView) {
     EUI.apply(EUI.AppModuleView.prototype.lang, {
@@ -107,9 +123,31 @@ if (EUI.WorkPageUrlView) {
         inputUrlViewAddressMsgText:"请输入URL界面地址",
         inputDepictMsgText: "请输入描述",
         addNewWorkPageUrlText: "新增工作页面"
-
     }, common_lang);
 }
+
+if (EUI.FlowDefinationView) {
+    EUI.apply(EUI.FlowDefinationView.prototype.lang, {
+        moveText:"移动",
+        codeText: "代码",
+        nameText: "名称",
+        frozenText:'是否冻结',
+        rankText:'排序',
+        refreshTest: "刷新",
+        modifyRootText:"禁止修改根节点！",
+        addHintMessageText: "请选择一个组织结构节点!",
+        createNodeText: "创建节点",
+        updateRootText: "禁止修改根节点!",
+        moveHintMessageText: "请选择您要移动的节点！",
+        rootText: "根节点",
+        queryMaskMessageText: "正在努力获取数据，请稍候...",
+        closeText: "关闭",
+        searchDisplayText: "请输入代码或名称查询",
+        processMaskMessageText: "正在处理，请稍候...",
+        operateHintMessage: "请选择一条要操作的行项目!",
+        processMaskMessageText: "正在处理，请稍候..."
+    }, common_lang);
+};
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {
         eventTitleText: "事件",

@@ -8,14 +8,17 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
+import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
@@ -114,13 +117,52 @@ public class BusinessModuleController {
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 根据应用模块id查询已配置工作界面
+     * @param id
+     * @return
+     * @throws JsonProcessingException
+     */
     @RequestMapping(value = "findByid")
     @ResponseBody
-    public List<BusinessModel> findByid(String id) throws JsonProcessingException {
+    public List<WorkPageUrl> findByid(String id) throws JsonProcessingException {
         System.out.println("---------------------------------------------");
         System.out.println(id);
-        IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
-        List<BusinessModel> businessModelList = proxy.findByAppModuleId(id);
-        return  businessModelList;
+        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
+        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId(id);
+        return  workPageUrlList;
     }
+
+    /**
+     * 查询未配置的工作界面
+     * @return
+     * @throws JsonProcessingException
+     */
+    @RequestMapping(value = "findNoSetWorkPage")
+    @ResponseBody
+    public List<WorkPageUrl> findNoSetWorkPage() throws JsonProcessingException {
+        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
+        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId("");
+        return  workPageUrlList;
+    }
+
+    /**
+     * 保存设置的工作界面
+     * @param id
+     * @param workPageUrl
+     * @return
+     * @throws JsonProcessingException
+     */
+
+    //@RequestParam(value = "id") String id, @RequestParam(value = "gridData") WorkPageUrl workPageUrl
+//    @RequestMapping(value = "saveSetWorkPage")
+//    @ResponseBody
+//    public String saveSetWorkPage() throws JsonProcessingException {
+//        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
+//        OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
+//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+//        return JsonUtil.serialize(operateStatus);
+//    }
+
+
 }

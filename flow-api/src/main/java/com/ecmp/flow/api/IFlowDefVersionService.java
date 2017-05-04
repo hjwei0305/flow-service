@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -26,6 +28,18 @@ import javax.xml.bind.JAXBException;
 @Path("flowDefVersion")
 @Api(value = "IFlowDefVersionService 流程定义版本服务API接口")
 public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, String> {
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowDefVersion> findByPage(Search searchConfig);
 
     /**
      * 通过json流程定义数据，保存流程版本定义

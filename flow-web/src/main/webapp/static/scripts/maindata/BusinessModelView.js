@@ -11,7 +11,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             border: false,
             padding: 8,
             itemspace: 0,
-            items: [this.initTbar(), this.initGrid()]
+            items: [this.initTbar(), this.initLeftGrid()]
         });
         this.addEvents();
     },
@@ -104,7 +104,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    initGrid: function () {
+    initLeftGrid: function () {
         var g = this;
         return {
             xtype: "GridPanel",
@@ -423,10 +423,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     // loadonce: true,
-                    url: _ctxPath + "/maindata/businessModel/findByid",
-                    postData: {
-                        id: g.appModule
-                    },
+                    url: _ctxPath + "/maindata/businessModel/findNoSetWorkPage",
                     colModel: [{
                         name: "id",
                         index: "id",
@@ -492,11 +489,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 loadonce: true,
-                url: _ctxPath + "/maindata/businessModel/findByid",
+                url: _ctxPath + "/maindata/businessModel/findNoSetWorkPage",
                 hasPager: false,
-                postData: {
-                    id: g.appModule
-                },
                 multiselect: true,
                 colModel: [{
                     name: "id",
@@ -548,14 +542,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 "border": "1px solid #aaa"
             },
             gridCfg: {
-                loadonce: true,
-                hasPager: false,
+                 loadonce: true,
+                 hasPager: false,
                 multiselect: true,
                 // data:[],
                 colModel: [{
                     name: "id",
                     index: "id",
-                    hidden: true
+                    //hidden: true
                 }, {
                     label: g.lang.nameText,
                     name: "name",
@@ -657,12 +651,17 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     },
     saveWorkPageSet: function (data) {
         var g = this;
+        var gridData = EUI.getCmp("workPageSelect").getGridData();
+        console.log(gridData);
         var mask = EUI.LoadMask({
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: "",
-            params: data,
+            url: _ctxPath + "/maindata/businessModel/saveSetWorkPage",
+            params: {
+                id: g.appModule,
+                gridData: gridData
+            },
             success: function (status) {
                 mask.hide();
                 EUI.ProcessStatus(status);

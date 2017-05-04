@@ -1,40 +1,36 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/4/17 20:43:12                           */
+/* Created on:     2017/5/3 9:53:19                             */
 /*==============================================================*/
 
 
-drop index idx_app_module_code on app_module;
 
 drop table if exists app_module;
 
-drop index idx_business_model_class_name on business_model;
 
 drop table if exists business_model;
 
-drop index idx_flow_def_version_def_key on flow_def_version;
 
 drop table if exists flow_def_version;
 
-drop index idx_flow_defination_def_key on flow_defination;
 
 drop table if exists flow_defination;
+
+drop table if exists flow_hi_varinst;
 
 drop table if exists flow_history;
 
 drop table if exists flow_instance;
 
-drop index idx_flow_service_url_code on flow_service_url;
 
 drop table if exists flow_service_url;
 
 drop table if exists flow_task;
 
-drop index idx_flow_type_code on flow_type;
 
 drop table if exists flow_type;
 
-drop index idx_work_page_url_url on work_page_url;
+drop table if exists flow_variable;
 
 drop table if exists work_page_url;
 
@@ -51,6 +47,7 @@ create table app_module
    created_date         datetime comment '创建时间',
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -78,6 +75,8 @@ create table business_model
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
    app_module_id        varchar(36),
+   version              int comment '版本-乐观锁',
+   conditon_bean        varchar(255) comment '转换对象',
    primary key (id)
 );
 
@@ -113,6 +112,7 @@ create table flow_def_version
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
    flow_defination_id   varchar(36) comment '关联流程类型',
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -142,6 +142,7 @@ create table flow_defination
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
    flow_type_id         varchar(36),
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -154,6 +155,34 @@ create unique index idx_flow_defination_def_key on flow_defination
 (
    def_key
 );
+
+/*==============================================================*/
+/* Table: flow_hi_varinst                                       */
+/*==============================================================*/
+create table flow_hi_varinst
+(
+   id                   varchar(36) not null comment 'ID',
+   type                 varchar(20) not null comment '类型',
+   name                 varchar(80) not null comment '名称',
+   task_history_id      varchar(36) comment '关联的历史任务ID',
+   instance_id          varchar(36) comment '关联的流程实例ID',
+   def_version_id       varchar(36) comment '关联的流程定义版本ID',
+   defination_id        varchar(36) comment '关联的流程定义ID',
+   act_task_id          varchar(36) comment '关联的流程引擎任务ID',
+   act_instance_id      varchar(36) comment '关联的流程引擎流程实例ID',
+   act_defination_id    varchar(36) comment '关联的流程引擎流程定义ID',
+   depict               varchar(255),
+   created_by           varchar(100),
+   created_date         datetime,
+   last_modified_by     varchar(100),
+   last_modified_date   datetime,
+   v_double             double comment '值-double',
+   v_long               bigint comment '值-整形',
+   v_text               varchar(4000) comment '值-text',
+   primary key (id)
+);
+
+alter table flow_hi_varinst comment '历史参数表,记录任务执行中传递的参数，主要用于记录流程任务流转过程中传递给引擎的业务数据参数';
 
 /*==============================================================*/
 /* Table: flow_history                                          */
@@ -211,6 +240,7 @@ create table flow_instance
    act_instance_id      varchar(36) comment '引擎流程实例ID',
    suspended            boolean comment '是否挂起',
    ended                boolean comment '是否已经结束',
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -230,6 +260,7 @@ create table flow_service_url
    created_date         datetime comment '创建时间',
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -274,7 +305,8 @@ create table flow_task
    act_claim_time       datetime comment '签收时间',
    act_due_date         datetime comment '实际触发时间',
    act_task_key         varchar(255) comment '实际任务定义KEY',
-   pre_id               var(36),
+   pre_id               varchar(36),
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -294,6 +326,7 @@ create table flow_type
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
    business_model_id    varchar(36) comment '关联业务实体模型',
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
@@ -306,6 +339,35 @@ create unique index idx_flow_type_code on flow_type
 (
    code
 );
+
+/*==============================================================*/
+/* Table: flow_variable                                         */
+/*==============================================================*/
+create table flow_variable
+(
+   id                   varchar(36) not null comment 'ID',
+   type                 varchar(20) not null comment '类型',
+   name                 varchar(80) not null comment '名称',
+   task_id              varchar(36) comment '关联的任务ID',
+   instance_id          varchar(36) comment '关联的流程实例ID',
+   def_version_id       varchar(36) comment '关联的流程定义版本ID',
+   defination_id        varchar(36) comment '关联的流程定义ID',
+   act_task_id          varchar(36) comment '关联的流程引擎任务ID',
+   act_instance_id      varchar(36) comment '关联的流程引擎流程实例ID',
+   act_defination_id    varchar(36) comment '关联的流程引擎流程定义ID',
+   depict               varchar(255),
+   created_by           varchar(100),
+   created_date         datetime,
+   last_modified_by     varchar(100),
+   last_modified_date   datetime,
+   version              int comment '版本-乐观锁',
+   v_double             double comment '值-double',
+   v_long               bigint comment '值-整形',
+   v_text               varchar(4000) comment '值-text',
+   primary key (id)
+);
+
+alter table flow_variable comment '运行参数表,记录任务执行中传递的参数，主要用于任务撤回时工作流引擎的数据还原';
 
 /*==============================================================*/
 /* Table: work_page_url                                         */
@@ -321,18 +383,11 @@ create table work_page_url
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
    app_module_id        varchar(36),
+   version              int comment '版本-乐观锁',
    primary key (id)
 );
 
 alter table work_page_url comment '服务地址管理';
-
-/*==============================================================*/
-/* Index: idx_work_page_url_url                                 */
-/*==============================================================*/
-create unique index idx_work_page_url_url on work_page_url
-(
-   url
-);
 
 alter table business_model add constraint fk_business_app_module_id foreign key (app_module_id)
       references app_module (id) on delete restrict on update restrict;
@@ -342,6 +397,12 @@ alter table flow_def_version add constraint fk_def_version_defination_id foreign
 
 alter table flow_defination add constraint fk_flow_defination_type_id foreign key (flow_type_id)
       references flow_type (id) on delete restrict on update restrict;
+
+alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_history foreign key (task_history_id)
+      references flow_history (id) on delete restrict on update restrict;
+
+alter table flow_hi_varinst add constraint FK_fk_flow_hi_varinst_instance foreign key (instance_id)
+      references flow_instance (id) on delete cascade on update restrict;
 
 alter table flow_history add constraint fk_flow_history_instance_id foreign key (flow_instance_id)
       references flow_instance (id) on delete restrict on update restrict;
@@ -354,4 +415,10 @@ alter table flow_task add constraint fk_flow_task_instance_id foreign key (flow_
 
 alter table flow_type add constraint fk_flow_type_business_model_id foreign key (business_model_id)
       references business_model (id) on delete restrict on update restrict;
+
+alter table flow_variable add constraint fk_flow_variable_instance foreign key (instance_id)
+      references flow_instance (id) on delete cascade on update restrict;
+
+alter table flow_variable add constraint FK_fk_flow_variable_task foreign key (task_id)
+      references flow_task (id) on delete cascade on update restrict;
 

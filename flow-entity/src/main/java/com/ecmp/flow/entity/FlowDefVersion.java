@@ -27,14 +27,14 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 	/**
 	 * 乐观锁-版本
 	 */
-	@Version
+	//@Version
 	@Column(name = "version")
-	private Integer version=0;
+	private Integer version = 0;
 
 	/**
 	 * 所属流程定义
 	 */
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne()
 	@JoinColumn(name = "flow_defination_id")
 	private FlowDefination flowDefination;
 
@@ -49,7 +49,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 	/**
 	 * 定义KEY
 	 */
-	@Column(name = "def_key", unique = true, nullable = false)
+	@Column(name = "def_key",nullable = false)
 	private String defKey;
 
 	/**

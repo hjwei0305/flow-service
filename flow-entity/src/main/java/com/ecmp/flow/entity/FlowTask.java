@@ -28,9 +28,9 @@ public class FlowTask extends com.ecmp.core.entity.BaseEntity {
 	/**
 	 * 乐观锁-版本
 	 */
-	@Version
+//	@Version
 	@Column(name = "version")
-	private Integer version=0;
+	private Integer version = 0;
 
 	/**
 	 * 所属流程实例
