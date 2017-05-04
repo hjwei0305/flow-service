@@ -40,6 +40,12 @@ import java.util.Map;
 @RequestMapping(value = "/maindata/flowTask")
 public class FlowTaskController {
 
+
+    @RequestMapping(value = "todo", method = RequestMethod.GET)
+    public String todo() {
+        return "task/MainPageView";
+    }
+
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
         return "maindata/FlowTaskView";
@@ -54,7 +60,7 @@ public class FlowTaskController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException {
-       System.out.println("---------------------------------------------");
+        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
