@@ -75,8 +75,8 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
-                            + "<div class='condetail_update'></div>"
-                            + "<div class='condetail_delete'></div></div>";
+                            + "<div class='condetail_update'title='编辑'></div>"
+                            + "<div class='condetail_delete' title='删除'></div></div>";
                         return strVar;
                     }
                 }, {
