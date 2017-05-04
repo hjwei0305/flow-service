@@ -158,6 +158,8 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
             if(reject!=null && reject == 1){
                 flowHistory.setDepict("被驳回");
+            }else {
+                flowHistory.setDepict(null);
             }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
@@ -360,7 +362,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(currTask.getProcessInstanceId()).singleResult();
             if (instance == null) {
-                return  result.fail("10002");//流程实例不存在或者已经结束
+                return  OperateResult.OperationFailure("10002");//流程实例不存在或者已经结束
             }
             variables = instance.getProcessVariables();
             Map variablesTask = currTask.getTaskLocalVariables();
@@ -369,7 +371,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
                 logger.error(ContextUtil.getMessage("10003"));
-                return  result.fail("10003");//流程定义未找到找到");
+                return OperateResult.OperationFailure("10003");//流程定义未找到找到");
             }
 
             String executionId = currTask.getExecutionId();
@@ -384,13 +386,13 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     .findActivity(currTask.getTaskDefinitionKey());
             if (currTask.getEndTime() == null) {// 当前任务可能已经被还原
                 logger.error(ContextUtil.getMessage("10008"));
-                return  result.fail("10008");//当前任务可能已经被还原
+                return OperateResult.OperationFailure("10008");//当前任务可能已经被还原
             }
 
             Boolean resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
             if (!resultCheck) {
                 logger.info(ContextUtil.getMessage("10005"));
-                return  result.fail("10005");//下一任务正在执行或者已经执行完成，退回失败
+                return OperateResult.OperationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
             }
 
             HistoricActivityInstance historicActivityInstance = null;
@@ -409,15 +411,20 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
             if(historicActivityInstance == null){
                 logger.error(ContextUtil.getMessage("10009"));
-                return  result.fail("10009");//当前任务找不到
+                return  OperateResult.OperationFailure("10009");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
                 if(execution.getActivityId()!=null){
-                    HistoricActivityInstance historicActivityInstanceGateWay = historyService
+                    List<HistoricActivityInstance> historicActivityInstanceList = historyService
                             .createHistoricActivityInstanceQuery().executionId(execution.getId())
-                            .activityId(execution.getActivityId()).singleResult();
-                    if (historicActivityInstanceGateWay != null) {
-                        historyService.deleteHistoricActivityInstanceById(historicActivityInstanceGateWay.getId());
+                            .activityId(execution.getActivityId()).list();
+                    if (historicActivityInstanceList != null) {
+                        for(HistoricActivityInstance hTemp:historicActivityInstanceList){
+                            if(hTemp.getEndTime()==null){
+                                historyService.deleteHistoricActivityInstanceById(hTemp.getId());
+                            }
+                        }
+
                     }
                 }
             }
@@ -467,12 +474,14 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             deleteOtherNode(currActivity, instance, definition, currTask);
 
             //初始化回退后的新任务
+            flowHistory.setDepict(null);
             initTask(instance,currTask.getTaskDefinitionKey(),flowHistory);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
-            return result.fail("10004");//流程取回失败，未知错误
+
+            return OperateResult.OperationFailure("10004");//流程取回失败，未知错误
         }
     }
 
