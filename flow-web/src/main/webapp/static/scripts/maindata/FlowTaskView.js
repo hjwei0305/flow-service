@@ -112,7 +112,6 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         }else if('COMPLETED' == rowObject.taskStatus){
                             strVar = "已办";
                         }
-
                         return strVar;
                     }
                 },{
