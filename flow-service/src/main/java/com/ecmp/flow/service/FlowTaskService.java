@@ -661,6 +661,12 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      */
     private void initTask(ProcessInstance instance,String actTaskDefKey,FlowHistory preTask){
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
+        if( instance.isEnded()){//流程结束
+            flowInstance.setEnded(true);
+            flowInstance.setEndDate(new Date());
+            flowInstanceDao.save(flowInstance);
+            return;
+        }
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
