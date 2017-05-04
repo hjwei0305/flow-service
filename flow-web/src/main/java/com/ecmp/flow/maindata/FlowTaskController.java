@@ -75,6 +75,7 @@ public class FlowTaskController {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("intput","2");
+        variables.put("reject",0);
         OperateResult result = proxy.complete(id,variables);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
@@ -84,12 +85,15 @@ public class FlowTaskController {
      * 驳回流程
      * @param id
      */
-    @RequestMapping(value = "rollBackTask")
+    @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public void rollBackTask(String id)  {
-        System.out.println("---------------------------------------------");
-        System.out.println(id);
-
+    public String rejectTask(String id)  {
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        Map<String,Object> variables = new HashMap<String,Object>();
+        variables.put("reject",1);
+        OperateResult result = proxy.complete(id,variables);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
     }
 
 

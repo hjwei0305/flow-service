@@ -115,6 +115,17 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         String actTaskId = flowTask.getActTaskId();
         this.completeActiviti( actTaskId,variables);
         this.saveVariables(variables,flowTask);
+        Integer reject = null;
+        if(variables!=null){
+            Object rejectO = variables.get("reject");
+            if(rejectO != null){
+               try {
+                   reject = Integer.parseInt(rejectO.toString());
+               }catch (Exception e){
+                   logger.error(e.getMessage());
+               }
+            }
+        }
         HistoricTaskInstance historicTaskInstance=historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
         // 取得流程实例
@@ -145,7 +156,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             flowHistory.setActHistoryId(historicTaskInstance.getId());
             flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
             flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-
+            if(reject!=null && reject == 1){
+                flowHistory.setDepict("被驳回");
+            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
 
@@ -663,9 +676,11 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                         flowTask.setDepict(task.getDescription());
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         if(preTask!=null){
-                            flowTask.setPreId(task.getId());
+                            flowTask.setPreId(preTask.getId());
+                            flowTask.setDepict(preTask.getDepict());
                         }
                         flowTask.setFlowInstance(flowInstance);
+
                         flowTaskDao.save(flowTask);
                     }
                 }else{
@@ -682,7 +697,8 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
                     flowTask.setFlowInstance(flowInstance);
                     if(preTask!=null){
-                        flowTask.setPreId(task.getId());
+                        flowTask.setPreId(preTask.getId());
+                        flowTask.setDepict(preTask.getDepict());
                     }
                     flowTaskDao.save(flowTask);
                 }

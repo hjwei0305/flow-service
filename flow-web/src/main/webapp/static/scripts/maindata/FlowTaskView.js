@@ -247,7 +247,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
         $(".nagreeBtn").live("click",function(){
             var rowData=EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            g.showRollBackWin(rowData);
+            g.showRejectTaskWin(rowData);
         });
     },
     showCompleteWin : function(rowData) {
@@ -286,7 +286,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    showRollBackWin : function(rowData) {
+    showRejectTaskWin : function(rowData) {
         var g = this;
         console.log(rowData);
         var infoBox = EUI.MessageBox({
@@ -301,7 +301,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         msg: "正在执行"
                     });
                     EUI.Store({
-                        url:  _ctxPath +"/maindata/flowTask/rollBackTask",
+                        url:  _ctxPath +"/maindata/flowTask/rejectTask",
                         params: {
                             id: rowData.id
                         },
