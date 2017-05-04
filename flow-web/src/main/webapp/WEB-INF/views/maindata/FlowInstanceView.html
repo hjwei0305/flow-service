@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="base/base :: base_head">
+    </head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>流程实例页面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/FlowInstanceView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/FlowInstanceView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var flowInstanceView;
+        EUI.onReady(function () {
+            flowInstanceView = new EUI.FlowInstanceView({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>

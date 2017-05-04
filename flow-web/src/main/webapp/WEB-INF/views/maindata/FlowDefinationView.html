@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="base/base :: base_head">
+    </head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>流程定义页面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/FlowDefinationView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/FlowDefinationView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var flowDefinationView;
+        EUI.onReady(function () {
+            flowDefinationView = new EUI.FlowDefinationView({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
+
