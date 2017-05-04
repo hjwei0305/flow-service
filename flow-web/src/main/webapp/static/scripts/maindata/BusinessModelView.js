@@ -659,7 +659,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/maindata/businessModel/saveSetWorkPage",
             params: {
-                id: g.appModule,
+               // id: g.appModule,
                 gridData: gridData
             },
             success: function (status) {

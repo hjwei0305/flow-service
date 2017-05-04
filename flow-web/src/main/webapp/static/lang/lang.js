@@ -95,6 +95,20 @@ if (EUI.FlowTypeView) {
     }, common_lang);
 }
 
+if (EUI.FlowInstanceView) {
+    EUI.apply(EUI.FlowInstanceView.prototype.lang, {
+        addResourceText: "新增",
+        belongToBusinessModelText: "所属业务实体模型",
+        updateFlowTypeText: "修改流程类型",
+        inputCodeMsgText: "请输入代码",
+        inputNameMsgText: "请输入名称",
+        inputDepictMsgText: "请输入描述",
+        chooseBelongToBusinessModelText: "请选择所属业务实体模型",
+        belongToBusinessText: "所属业务实体",
+        addNewFlowTypeText: "新增流程类型"
+    }, common_lang);
+}
+
 if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         addResourceText: "新增",

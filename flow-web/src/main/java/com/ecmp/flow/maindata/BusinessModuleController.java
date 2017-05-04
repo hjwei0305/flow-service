@@ -148,21 +148,22 @@ public class BusinessModuleController {
 
     /**
      * 保存设置的工作界面
-     * @param id
+     * @param
      * @param workPageUrl
      * @return
      * @throws JsonProcessingException
      */
 
     //@RequestParam(value = "id") String id, @RequestParam(value = "gridData") WorkPageUrl workPageUrl
-//    @RequestMapping(value = "saveSetWorkPage")
-//    @ResponseBody
-//    public String saveSetWorkPage() throws JsonProcessingException {
+    @RequestMapping(value = "saveSetWorkPage")
+    @ResponseBody
+    public void saveSetWorkPage(@RequestParam(value = "gridData") WorkPageUrl workPageUrl) throws JsonProcessingException {
+        System.out.println(workPageUrl);
 //        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
 //        OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
 //        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
 //        return JsonUtil.serialize(operateStatus);
-//    }
+    }
 
 
 }

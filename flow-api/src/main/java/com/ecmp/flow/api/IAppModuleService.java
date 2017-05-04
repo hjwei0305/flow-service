@@ -54,5 +54,4 @@ public interface IAppModuleService extends IBaseService<AppModule, String> {
     PageResult<AppModule> findByPage(Search searchConfig);
 
 
-
 }
