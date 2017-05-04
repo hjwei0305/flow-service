@@ -497,7 +497,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: "新增流程定义",
-            height: 270,
+            height: 260,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -532,9 +532,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: "最新版本ID",
                     labelWidth: 90,
-                    allowBlank: false,
+                    allowBlank:true,
                     name: "lastVersionId",
-                    width: 220
+                    hidden: true
                 }, {
                     xtype: "TextField",
                     title: "定义KEY",
@@ -550,10 +550,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "startUel",
                     width: 220
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: this.lang.depictText,
                     labelWidth: 90,
-                    allowBlank: false,
+                    allowBlank: true,
                     name: "depict",
                     width: 220
                 }]

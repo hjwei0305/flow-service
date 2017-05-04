@@ -171,7 +171,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                             strVar += m+"分";
                         }
                         if(s > 0 ){
-                            strVar += s+"钞";
+                            strVar += s+"秒";
                         }
                         return strVar;
                     }
