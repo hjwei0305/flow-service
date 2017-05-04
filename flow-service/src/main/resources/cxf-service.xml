@@ -31,6 +31,7 @@
             <bean class="com.ecmp.flow.service.FlowServiceUrlService"/>
             <bean class="com.ecmp.flow.service.FlowTaskService"/>
             <bean class="com.ecmp.flow.service.WorkPageUrlService"/>
+            <bean class="com.ecmp.flow.service.BusinessWorkPageUrlService"/>
             <bean class="com.ecmp.flow.service.ConditionServer"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>

@@ -75,7 +75,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     label : "ID",
                     name : "id",
                     index : "id",
-                    //hidden : true
+                    hidden : true
                 },/*{
                     label : "流程名称",
                     name : "flowName",
@@ -179,12 +179,12 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "lastModifiedDate",
                     index : "lastModifiedDate",
                     title : false
-                },*/{
+                },{
                     label : "引擎流程任务ID" ,
                     name : "actTaskId",
                     index : "actTaskId",
                     title : false
-                },/*{
+                },{
                     label : "优先级" ,
                     name : "priority",
                     index : "priority",

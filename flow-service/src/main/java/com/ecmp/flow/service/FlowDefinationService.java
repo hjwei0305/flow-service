@@ -221,6 +221,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                 flowInstance.setFlowName(processInstanceName);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
+                initTask(processInstance);
             }
         }
         return flowInstance;
@@ -271,6 +272,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                 flowInstance.setFlowName(processInstance.getName());
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
+                initTask(processInstance);
             }
         }
         return flowInstance;
@@ -460,7 +462,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
             identityService.setAuthenticatedUserId(startUserId);
         }
         ProcessInstance instance = this.runtimeService.startProcessInstanceById(proessDefId,businessKey,variables);
-        initTask(instance);
+
         return instance;
     }
 
@@ -485,7 +487,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
      */
     private ProcessInstance startFlowByKey(String processDefKey, Map<String, Object> variables) {
         ProcessInstance instance = this.runtimeService.startProcessInstanceByKey(processDefKey, variables);
-        initTask(instance);
+
         return instance;
     }
 
@@ -503,7 +505,6 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
             identityService.setAuthenticatedUserId(startUserId);
         }
         ProcessInstance instance = this.runtimeService.startProcessInstanceByKey(processDefKey,businessKey,variables);
-        initTask(instance);
         return instance;
     }
 
@@ -519,6 +520,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
     }
 
     private void initTask(ProcessInstance instance){
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
@@ -544,6 +546,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
+                            flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
                         }
                     }else{
@@ -558,6 +561,7 @@ public class FlowDefinationService extends BaseService<FlowDefination, String> i
                         flowTask.setActType("assignee");
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
+                        flowTask.setFlowInstance(flowInstance);
                         flowTaskDao.save(flowTask);
                     }
 

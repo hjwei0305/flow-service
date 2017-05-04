@@ -2,7 +2,9 @@ package com.ecmp.flow.service;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowVariableDao;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowVariable;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
@@ -54,6 +56,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     @Autowired
     private FlowTaskDao flowTaskDao;
+
+    @Autowired
+    private FlowInstanceDao flowInstanceDao;
 
     @Autowired
     private FlowHistoryDao flowHistoryDao;
@@ -633,6 +638,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * @param actTaskDefKey
      */
     private void initTask(ProcessInstance instance,String actTaskDefKey,FlowHistory preTask){
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
@@ -659,6 +665,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                         if(preTask!=null){
                             flowTask.setPreId(task.getId());
                         }
+                        flowTask.setFlowInstance(flowInstance);
                         flowTaskDao.save(flowTask);
                     }
                 }else{
@@ -673,6 +680,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     flowTask.setDepict(task.getDescription());
                     flowTask.setActType("assignee");
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                    flowTask.setFlowInstance(flowInstance);
                     if(preTask!=null){
                         flowTask.setPreId(task.getId());
                     }

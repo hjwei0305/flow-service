@@ -77,7 +77,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     label : "ID",
                     name : "id",
                     index : "id",
-                    //hidden : true
+                    hidden : true
                 },/*{
                     label : "流程名称",
                     name : "flowName",
@@ -153,6 +153,33 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     label : "任务执行时长" ,
                     name : "actDurationInMillis",
                     index : "actDurationInMillis",
+                    title : false,
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        var timeMill = rowObject.actDurationInMillis/1000;
+                        var  h = Math.floor(timeMill / 60 / 60);
+                        var  m = Math.floor((timeMill - h * 60 * 60) / 60);
+                        var  s = Math.floor((timeMill - h * 60 * 60 - m * 60));
+                        var  d = parseInt(h/24);
+                        if(d > 0 ){
+                            strVar += d+"天";
+                        }
+                        if(h > 0 ){
+                            strVar += h+"小时";
+                        }
+                        if(m > 0 ){
+                            strVar += m+"分";
+                        }
+                        if(s > 0 ){
+                            strVar += s+"钞";
+                        }
+                        return strVar;
+                    }
+
+                },{
+                    label : "最后更新时间" ,
+                    name : "lastModifiedDate",
+                    index : "lastModifiedDate",
                     title : false
                 },
                     /*    ,{

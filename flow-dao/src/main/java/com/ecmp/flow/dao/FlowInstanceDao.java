@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FlowInstanceDao extends BaseDao<FlowInstance, String> {
 
+    public  FlowInstance findByActInstanceId(String actInstanceId);
+
 }
