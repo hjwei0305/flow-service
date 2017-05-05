@@ -14,7 +14,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             border: false,
             padding: 8,
-            itemspace: 0,
             items: [this.initLeft(), this.initCenterContainer()]
         });
         this.gridCmp = EUI.getCmp("gridPanel");
@@ -751,10 +750,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "Container",
             region: "west",
-            border: false,
+            border: true,
             width: 420,
             itemspace: 0,
-            padding: 1,
+            padding: 0,
             layout: "border",
             items: [this.initTopBar(), this.initTree()]
         }
@@ -766,12 +765,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 50,
             border: false,
-            width: 418,
             padding: 10,
             style: {
                 overflow: "hidden"
             },
-            items: ['->',{
+            items: ['->', {
                 xtype: "SearchBox",
                 displayText: "请输入名称进行搜索",
             }]
@@ -806,7 +804,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "TreePanel",
             region: "center",
-            border: true,
+            border: false,
             id: "treePanel",
             showField: "name",
             onSelect: function (node) {
@@ -845,15 +843,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             xtype: "Container",
             region: "center",
             itemspace: 0,
-            padding: 0,
-            style: {
-                overflow: "auto"
-            },
+            layout: "border",
+            padding: 10,
             items: [{
                 xtype: "ToolBar",
                 region: "north",
                 // padding: "10",
-                height: "50",
+                padding:0,
+                height: 40,
                 border: false,
                 items: [{
                     xtype: "ComboBox",
@@ -920,74 +917,69 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }
                 }]
             }, {
-                xtype: "Container",
+                xtype: "GridPanel",
                 region: "center",
-                height: "697",
-                items: [{
-                    xtype: "GridPanel",
-                    region: "center",
-                    id: "gridPanel",
-                    border:true,
-                    style: {
-                        "border-radius": "3px"
-                    },
-                    gridCfg: {
-                        loadonce: true,
-                        colModel: [{
-                            label: this.lang.operateText,
-                            name: "operate",
-                            index: "operate",
-                            width: "50",
-                            align: "center",
-                            formatter: function (cellvalue, options, rowObject) {
-                                var strVar = "<div class='condetail_operate'>"
-                                    + "<div class='condetail_look'></div>"
-                                    + "<div class='condetail_update'></div>"
-                                    + "<div class='condetail_delete'></div></div>";
-                                return strVar;
-                            }
-                        }, {
-                            name: "id",
-                            index: "id",
-                            width: "50",
-                            hidden: true
-                        }, {
-                            label: this.lang.nameText,
-                            name: "name",
-                            index: "name",
-                            width: "50",
-                            title: false
-                        }, {
-                            label: "最新版本ID",
-                            name: "lastVersionId",
-                            index: "lastVersionId",
-                            title: false,
-                            hidden: true
-                        }, {
-                            label: "定义KEY",
-                            name: "defKey",
-                            index: "defKey",
-                            width: "50",
-                            title: false
-                        }, {
-                            label: "启动条件UEL",
-                            name: "startUel",
-                            index: "startUel",
-                            width: "50",
-                            title: false
-                        }, {
-                            label: this.lang.depictText,
-                            name: "depict",
-                            index: "depict",
-                            width: "50",
-                            title: false
-                        }],
-                        ondbClick: function () {
-                            var rowData = EUI.getCmp("gridPanel").getSelectRow();
-                            g.getValues(rowData.id);
+                id: "gridPanel",
+                border: true,
+                style: {
+                    "border-radius": "3px"
+                },
+                gridCfg: {
+                    loadonce: true,
+                    colModel: [{
+                        label: this.lang.operateText,
+                        name: "operate",
+                        index: "operate",
+                        width: "50",
+                        align: "center",
+                        formatter: function (cellvalue, options, rowObject) {
+                            var strVar = "<div class='condetail_operate'>"
+                                + "<div class='condetail_look'></div>"
+                                + "<div class='condetail_update'></div>"
+                                + "<div class='condetail_delete'></div></div>";
+                            return strVar;
                         }
+                    }, {
+                        name: "id",
+                        index: "id",
+                        width: "50",
+                        hidden: true
+                    }, {
+                        label: this.lang.nameText,
+                        name: "name",
+                        index: "name",
+                        width: "50",
+                        title: false
+                    }, {
+                        label: "最新版本ID",
+                        name: "lastVersionId",
+                        index: "lastVersionId",
+                        title: false,
+                        hidden: true
+                    }, {
+                        label: "定义KEY",
+                        name: "defKey",
+                        index: "defKey",
+                        width: "50",
+                        title: false
+                    }, {
+                        label: "启动条件UEL",
+                        name: "startUel",
+                        index: "startUel",
+                        width: "50",
+                        title: false
+                    }, {
+                        label: this.lang.depictText,
+                        name: "depict",
+                        index: "depict",
+                        width: "50",
+                        title: false
+                    }],
+                    ondbClick: function () {
+                        var rowData = EUI.getCmp("gridPanel").getSelectRow();
+                        g.getValues(rowData.id);
                     }
-                }]
+                }
             }]
         }
     },
