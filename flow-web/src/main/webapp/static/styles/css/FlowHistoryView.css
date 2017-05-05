@@ -1,4 +1,7 @@
 .btn_operate{width:30px;height:16px;line-height:14px;margin:0 auto}
+.condetail_operate>div{
+    margin: 0 6px;
+}
 .rollBackBtn {
     width: 26px;
     height: 17px;
