@@ -77,7 +77,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                             Q_EQ_appModuleId: data.data.id
                         }
                     ).trigger("reloadGrid");
-                },
+                }
             }, {
                 xtype: "Button",
                 title: this.lang.addBtnText,
@@ -111,7 +111,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
-                "border": "1px solid #aaa",
                 "border-radius": "3px"
             },
             gridCfg: {
@@ -235,7 +234,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.url
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
@@ -306,7 +305,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     name: "url",
                     width: 220
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,

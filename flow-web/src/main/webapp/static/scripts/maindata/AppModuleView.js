@@ -30,7 +30,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     g.addAppModule();
-                }
+                },
             }, '->', {
                 xtype: "SearchBox",
                 displayText: "请输入名称进行搜索",
@@ -57,7 +57,6 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
-                "border": "1px solid #aaa",
                 "border-radius": "3px"
             },
             gridCfg: {
@@ -190,7 +189,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.name
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
@@ -263,7 +262,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     width: 220
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,

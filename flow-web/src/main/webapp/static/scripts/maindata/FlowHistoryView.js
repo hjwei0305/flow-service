@@ -50,7 +50,6 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             region : "center",
             id : "gridPanel",
             style : {
-                "border" : "1px solid #aaa",
                 "border-radius" : "3px"
             },
             gridCfg : {
