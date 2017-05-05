@@ -313,7 +313,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     value: data.defKey
                 }, {
                     xtype: "TextField",
-                    title: "启动条件UEL",
+                    title: "启动UEL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "startUel",
@@ -541,7 +541,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width: 220
                 }, {
                     xtype: "TextField",
-                    title: "启动条件UEL",
+                    title: "启动UEL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "startUel",
@@ -550,7 +550,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextArea",
                     title: this.lang.depictText,
                     labelWidth: 90,
-                    allowBlank: true,
+                    allowBlank: false,
                     name: "depict",
                     width: 220
                 }]
@@ -640,7 +640,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width: 220
                 }, {
                     xtype: "TextField",
-                    title: "启动条件UEL",
+                    title: "启动UEL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "startUel",
