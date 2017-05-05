@@ -111,7 +111,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
-                "border": "1px solid #aaa",
                 "border-radius": "3px"
             },
             gridCfg: {
@@ -156,7 +155,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: false
                 }, {
                     label: this.lang.workPageText,
-                    name: "workPege",
+                    name: "workPage",
                     index: "workPage",
                     title: false
                 }],
@@ -211,7 +210,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "appModuleName",
                     width: 220,
-                    value: g.appModuleName,
+                    value: g.appModuleName
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
@@ -238,21 +237,21 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.conditonBean
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
                     width: 220,
                     value: data.depict
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220,
                     value: data.workPage
-                }]
+                }*/]
             }],
             buttons: [{
                 title: g.lang.saveText,
@@ -349,19 +348,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonBean",
                     width: 220
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
                     width: 220
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220
-                }]
+                }*/]
             }],
             buttons: [{
                 title: g.lang.saveText,
@@ -395,7 +394,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var myMask = EUI.LoadMask({
-            msg: g.lang.nowSaveMsgText,
+            msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
             url: _ctxPath +"/maindata/businessModel/update",
@@ -613,12 +612,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         });
         $(".condetail_look").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data)
+            console.log(data);
             g.lookPropertyWindow(data);
         });
         $(".condetail_set").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data)
+            console.log(data);
             g.showWorkPageWindow(data);
         });
     },
@@ -684,7 +683,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp("workPageSelect").grid.trigger("reloadGrid");
                     g.workPageSetWind.close();
                 }
-
             },
             failure: function (status) {
                 mask.hide();
@@ -692,23 +690,4 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }
         });
     }
-
-
-
-
-
-    /*,
-     operateLook:function () {
-     var g=this;
-     return{
-     xtype:"GridPanel",
-     style:{
-     "border":"1px solid #aaa"
-     },
-     gridCfg:{
-
-     }
-     }
-
-     }*/
 });
