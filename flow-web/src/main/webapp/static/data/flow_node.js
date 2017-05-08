@@ -21,7 +21,7 @@ var _flownode = {
 				type : "ScriptTask",
 				css : "scripttask"
 			}, {
-				name : "mailTaskText",
+				name : "emailTaskText",
 				type : "mailTask",
 				css : "emailtask"
 			}, {

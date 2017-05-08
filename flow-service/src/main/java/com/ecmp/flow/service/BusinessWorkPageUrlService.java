@@ -2,11 +2,9 @@ package com.ecmp.flow.service;
 
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
-import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.dao.BusinessWorkPageUrlDao;
-import com.ecmp.flow.dao.WorkPageUrlDao;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
-import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.vo.OperateResultWithData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +24,18 @@ import org.springframework.stereotype.Service;
 public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl, String> implements IBusinessWorkPageUrlService {
 
     @Autowired
-    private BusinessWorkPageUrlDao businessWorkPageUrl;
+    private BusinessWorkPageUrlDao businessWorkPageUrlDao;
+
+    @Override
+    public void saveBusinessWorkPageUrlByIds(String id, String[] selectWorkPageIds) {
+        for(int i=0;i<selectWorkPageIds.length;i++){
+            BusinessWorkPageUrl businessWorkPageUrl = businessWorkPageUrlDao.findByBusinessModuleIdAndWorkPageUrlId(id,selectWorkPageIds[i]);
+            if(businessWorkPageUrl ==null){
+                businessWorkPageUrl = new BusinessWorkPageUrl();
+                businessWorkPageUrl.setBusinessModuleId(id);
+                businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
+                businessWorkPageUrlDao.save(businessWorkPageUrl);
+            }
+        }
+    }
 }

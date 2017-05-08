@@ -4,7 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * *************************************************************************************************
@@ -22,6 +27,9 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements Cloneable{
+
+	@Transient
+	private final Logger logger = LoggerFactory.getLogger(FlowDefVersion.class);
 
 
 	/**
@@ -244,7 +252,6 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 		this.depict = depict;
 	}
 
-
 	public Set<FlowInstance> getFlowInstances() {
 		return this.flowInstances;
 	}
@@ -253,6 +260,45 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 		this.flowInstances = flowInstances;
 	}
 
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public String toString() {
+
+		return new ToStringBuilder(this)
+				.append("id", this.getId())
+				.append("flowDefination", flowDefination)
+				.append("defKey", defKey)
+				.append("name", name)
+				.append("actDeployId", actDeployId)
+				.append("startUel", startUel)
+				.append("versionCode", versionCode)
+				.append("priority", priority)
+				.append("defJson", defJson)
+				.append("defBpmn", defBpmn)
+				.append("defXml", defXml)
+				.append("depict", depict)
+				.append("flowInstances", flowInstances)
+				.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
 
 	@Override
 	public Object clone() {
@@ -261,16 +307,8 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements C
 			// Object中的clone()识别出你要复制的是哪一个对象。
 			o = (FlowDefination) super.clone();
 		} catch (CloneNotSupportedException e) {
-			System.out.println(e.toString());
+			logger.error(e.getMessage());
 		}
 		return o;
-	}
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
 	}
 }

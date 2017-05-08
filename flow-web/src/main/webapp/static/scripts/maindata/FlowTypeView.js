@@ -65,7 +65,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                             "Q_EQ_businessModel.id": data.data.id
                         }
                     ).trigger("reloadGrid");
-                },
+                }
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
@@ -99,7 +99,6 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
-                "border": "1px solid #aaa",
                 "border-radius": "3px"
             },
             gridCfg: {
@@ -255,7 +254,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.name
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
@@ -346,7 +345,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     width: 220
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: this.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,

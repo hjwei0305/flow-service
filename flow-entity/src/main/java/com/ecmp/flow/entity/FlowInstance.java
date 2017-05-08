@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -208,6 +210,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 		this.version = version;
 	}
 
+
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
@@ -220,5 +229,10 @@ public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
 				.append("flowHistories", flowHistories)
 				.append("flowTasks", flowTasks)
 				.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 }

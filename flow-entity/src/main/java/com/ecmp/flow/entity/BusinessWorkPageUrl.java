@@ -39,55 +39,18 @@ public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseEntity {
     private Integer version=0;
 
     /**
-     * 名称
-     */
-    @Column(length = 80, nullable = false)
-    private String name;
-
-    /**
-     * URL界面地址
-     */
-    @Lob
-    private String url;
-
-    /**
-     * 描述
-     */
-    @Column(length = 250)
-    private String depict;
-
-    /**
      * 关联的业务实体ID
      */
-    @Column(length = 36,name = "business_model_id ")
+    @Column(length = 36,name = "business_model_id")
     private String businessModuleId;
 
+    /**
+     * 关联的工作页面ID
+     */
+    @Column(length = 36,name = "work_page_url_id")
+    private String workPageUrlId;
 
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getDepict() {
-        return depict;
-    }
-
-    public void setDepict(String depict) {
-        this.depict = depict;
-    }
 
     public String getBusinessModuleId() {
         return businessModuleId;
@@ -95,6 +58,14 @@ public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseEntity {
 
     public void setBusinessModuleId(String businessModuleId) {
         this.businessModuleId = businessModuleId;
+    }
+
+    public String getWorkPageUrlId() {
+        return workPageUrlId;
+    }
+
+    public void setWorkPageUrlId(String workPageUrlId) {
+        this.workPageUrlId = workPageUrlId;
     }
 
     public Integer getVersion() {
@@ -114,10 +85,8 @@ public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", this.getId())
-                .append("name", this.name)
                 .append("businessModuleId", this.businessModuleId)
-                .append("url", this.url)
-                .append("depict",this.depict)
+                .append("workPageUrlId", this.workPageUrlId)
                 .toString();
     }
 

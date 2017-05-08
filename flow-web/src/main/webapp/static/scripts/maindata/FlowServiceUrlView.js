@@ -57,7 +57,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
-                "border": "1px solid #aaa",
                 "border-reduis": "3px"
             },
             gridCfg: {
@@ -130,7 +129,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         infoBox.remove();
                         var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText,
+                            msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
                             url: _ctxPath +"/maindata/flowServiceUrl/delete",

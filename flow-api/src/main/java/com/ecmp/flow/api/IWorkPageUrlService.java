@@ -50,4 +50,31 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     List<WorkPageUrl> findByAppModuleId(@QueryParam("appModuleId") String appModuleId);
+
+
+    /**
+     * 查看对应业务实体已选中的工作界面
+     * @param appModuleId  业务模块Id
+     * @param businessModelId  业务实体ID
+     * @return 已选中的工作界面
+     */
+    @GET
+    @Path("findSelectEdByAppModuleId/{appModuleId}/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查看对应业务实体已选中的工作界面",notes = "测试")
+    public List<WorkPageUrl> findSelectEdByAppModuleId(@PathParam("appModuleId")String appModuleId,@PathParam("businessModelId")String businessModelId);
+
+    /**
+     * 查看对应业务实体未选中的工作界面
+     * @param appModuleId  业务模块Id
+     * @param businessModelId  业务实体ID
+     * @return 已选中的工作界面
+     */
+    @GET
+    @Path("findNotSelectEdByAppModuleId/{appModuleId}/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查看对应业务实体未选中的工作界面",notes = "测试")
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@PathParam("appModuleId")String appModuleId,@PathParam("businessModelId")String businessModelId);
 }

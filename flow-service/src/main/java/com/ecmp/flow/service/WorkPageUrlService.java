@@ -31,4 +31,14 @@ public class WorkPageUrlService extends BaseService<WorkPageUrl, String> impleme
     public List<WorkPageUrl> findByAppModuleId(String appModuleId) {
         return workPageUrlDao.findByAppModuleId(appModuleId);
     }
+
+    @Override
+    public List<WorkPageUrl> findSelectEdByAppModuleId(String appModuleId,String businessModelId) {
+        return workPageUrlDao.findSelectEd(appModuleId, businessModelId);
+    }
+
+    @Override
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(String appModuleId,String businessModelId) {
+        return workPageUrlDao.findNotSelectEd(appModuleId, businessModelId);
+    }
 }

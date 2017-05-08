@@ -4,14 +4,11 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
-import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -41,4 +38,20 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<BusinessWorkPageUrl> findByPage(Search searchConfig);
+
+    /**
+     * 通过ID启动流程实体
+     * @param startUserId 流程启动人
+     * @param businessKey 业务KEY
+     * @param variables  其他参数
+     * @param id 流程id
+     * @return 流程实例
+     */
+    @POST
+    @Path("saveBusinessWorkPageUrlByIds/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过ID启动流程实体",notes = "测试")
+    public void saveBusinessWorkPageUrlByIds(@PathParam("id")String id, String[] selectWorkPageIds);
+
 }

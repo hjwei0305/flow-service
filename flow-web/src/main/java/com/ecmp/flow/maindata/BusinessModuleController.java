@@ -8,9 +8,11 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
+import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.time.Year;
 import java.util.List;
 
 /**
@@ -50,6 +53,7 @@ public class BusinessModuleController {
 
     /**
      * 查询业务实体
+     *
      * @param request
      * @return 业务实体清单
      * @throws JsonProcessingException
@@ -67,6 +71,7 @@ public class BusinessModuleController {
 
     /**
      * 根据id删除业务实体
+     *
      * @param id
      * @return 操作结果
      * @throws JsonProcessingException
@@ -84,6 +89,7 @@ public class BusinessModuleController {
 
     /**
      * 查询应用模块
+     *
      * @return 应用模块清单
      * @throws JsonProcessingException
      */
@@ -102,6 +108,7 @@ public class BusinessModuleController {
 
     /**
      * 保存业务实体
+     *
      * @param businessModel
      * @return 保存后的业务实体
      * @throws JsonProcessingException
@@ -113,56 +120,58 @@ public class BusinessModuleController {
         System.out.println(businessModel);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 
     /**
-     * 根据应用模块id查询已配置工作界面
-     * @param id
+     * 查看对应业务实体已选中的工作界面
+     *
+     * @param appModuleId
+     * @param businessModelId
      * @return
      * @throws JsonProcessingException
      */
-    @RequestMapping(value = "findByid")
+    @RequestMapping(value = "findSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findByid(String id) throws JsonProcessingException {
+    public List<WorkPageUrl> findSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) throws JsonProcessingException {
         System.out.println("---------------------------------------------");
-        System.out.println(id);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId(id);
-        return  workPageUrlList;
+        List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
+        return workPageUrlList;
     }
 
     /**
-     * 查询未配置的工作界面
+     * 查看对应业务实体未选中的工作界面
+     *
+     * @param appModuleId 应该模块id
+     * @param businessModelId 业务实体id
      * @return
      * @throws JsonProcessingException
      */
-    @RequestMapping(value = "findNoSetWorkPage")
+    @RequestMapping(value = "findNotSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findNoSetWorkPage() throws JsonProcessingException {
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) throws JsonProcessingException {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> workPageUrlList = proxy.findByAppModuleId("");
-        return  workPageUrlList;
+        List<WorkPageUrl> workPageUrlList = proxy.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
+        return workPageUrlList;
     }
 
     /**
      * 保存设置的工作界面
-     * @param
-     * @param workPageUrl
+     *
+     * @param id  业务实体id
+     * @param   selectWorkPageIds 选中的工作界面所有di
      * @return
      * @throws JsonProcessingException
      */
-
-    //@RequestParam(value = "id") String id, @RequestParam(value = "gridData") WorkPageUrl workPageUrl
     @RequestMapping(value = "saveSetWorkPage")
     @ResponseBody
-    public void saveSetWorkPage(@RequestParam(value = "gridData") WorkPageUrl workPageUrl) throws JsonProcessingException {
-        System.out.println(workPageUrl);
-//        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-//        OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
-//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-//        return JsonUtil.serialize(operateStatus);
+    public String saveSetWorkPage(@RequestParam(value = "id") String id, @RequestParam(value = "selectWorkPageIds") String[] selectWorkPageIds) throws JsonProcessingException {
+        IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
+        proxy.saveBusinessWorkPageUrlByIds(id, selectWorkPageIds);
+        OperateStatus operateStatus = new OperateStatus(true, "保存成功");
+        return JsonUtil.serialize(operateStatus);
     }
 
 

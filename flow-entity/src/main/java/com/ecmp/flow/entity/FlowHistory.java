@@ -8,6 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Date;
@@ -390,19 +393,28 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
 		this.taskStatus = taskStatus;
 	}
 
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this)
 				.append("id", this.getId())
 				.append("flowInstance", flowInstance)
-
 				.append("flowName", flowName)
 				.append("flowTaskName", flowTaskName)
 				.append("flowRunId", flowRunId)
-
 //				.append("flowInstanceId", flowInstanceId)
 				.append("flowDefId", flowDefId)
 				.append("depict", depict)
 				.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 }

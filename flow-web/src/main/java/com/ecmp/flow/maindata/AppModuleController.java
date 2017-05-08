@@ -53,7 +53,6 @@ public class AppModuleController {
 
     /**
      * 查询所有业务实体
-     *
      * @param request
      * @return 业务实体分页数据
      * @throws JsonProcessingException
