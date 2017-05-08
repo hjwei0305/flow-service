@@ -35,6 +35,8 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
                 businessWorkPageUrl.setBusinessModuleId(id);
                 businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
                 businessWorkPageUrlDao.save(businessWorkPageUrl);
+            }else{
+                businessWorkPageUrlDao.delete(businessWorkPageUrl);
             }
         }
     }
