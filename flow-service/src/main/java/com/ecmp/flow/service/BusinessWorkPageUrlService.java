@@ -30,7 +30,7 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
     public void saveBusinessWorkPageUrlByIds(String id, String[] selectWorkPageIds) {
         for(int i=0;i<selectWorkPageIds.length;i++){
             BusinessWorkPageUrl businessWorkPageUrl = businessWorkPageUrlDao.findByBusinessModuleIdAndWorkPageUrlId(id,selectWorkPageIds[i]);
-            if(businessWorkPageUrl !=null){
+            if(businessWorkPageUrl ==null){
                 businessWorkPageUrl = new BusinessWorkPageUrl();
                 businessWorkPageUrl.setBusinessModuleId(id);
                 businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
