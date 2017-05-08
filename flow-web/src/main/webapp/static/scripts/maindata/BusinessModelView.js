@@ -244,14 +244,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "depict",
                     width: 220,
                     value: data.depict
-                }/*, {
+                }, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220,
                     value: data.workPage
-                }*/]
+                }]
             }],
             buttons: [{
                 title: g.lang.saveText,
@@ -348,19 +348,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonBean",
                     width: 220
                 }, {
-                    xtype: "TextArea",
+                    xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
                     width: 220
-                }/*, {
+                }, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220
-                }*/]
+                }]
             }],
             buttons: [{
                 title: g.lang.saveText,
