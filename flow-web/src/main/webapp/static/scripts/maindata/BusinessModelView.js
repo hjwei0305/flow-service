@@ -244,14 +244,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "depict",
                     width: 220,
                     value: data.depict
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220,
                     value: data.workPage
-                }]
+                }*/]
             }],
             buttons: [{
                 title: g.lang.saveText,
@@ -354,13 +354,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "depict",
                     width: 220
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: g.lang.workPageText,
                     labelWidth: 90,
                     name: "workPage",
                     width: 220
-                }]
+                }*/]
             }],
             buttons: [{
                 title: g.lang.saveText,
@@ -457,9 +457,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 xtype: "Container",
                 border: false,
                 layout: "border",
-                items: [this.getLeftGrid(),
+                items: [this.getLeftGrid(data),
                     this.getCenterIcon(),
-                    this.getRightGrid()
+                    this.getRightGrid(data)
                 ]
             }],
             buttons: [{
@@ -491,9 +491,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 loadonce: true,
-                url: _ctxPath + "/maindata/businessModel/findNoSetWorkPage",
+                url: _ctxPath + "/maindata/businessModel/findNotSelectEdByAppModuleId",
                 postData:{
-                    id: g.appModule
+                    appModuleId:g.appModule,
+                    businessModelId: data.id
                 },
                 hasPager: false,
                 multiselect: true,
@@ -535,7 +536,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             "<div class='arrow-left'></div>"
         }
     },
-    getRightGrid: function () {
+    getRightGrid: function (data) {
         var g = this;
         return {
             xtype: "GridPanel",
@@ -548,6 +549,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                  loadonce: true,
+                url: _ctxPath + "/maindata/businessModel/findSelectEdByAppModuleId",
+                postData:{
+                    appModuleId:g.appModule,
+                    businessModelId: data.id
+                },
                  hasPager: false,
                 multiselect: true,
                 // data:[],
@@ -589,7 +595,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: "http://localhost:8081/flow/maindata/businessModel/delete",
+                            url: _ctxPath + "/maindata/businessModel/delete",
                             params: {
                                 id: rowData.id
                             },
