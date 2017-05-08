@@ -34,4 +34,5 @@ public class BusinessModelService extends BaseService<BusinessModel, String> imp
     public List<BusinessModel> findByAppModuleId(String appModuleId) {
         return businessModelDao.findByAppModuleId(appModuleId);
     }
+
 }

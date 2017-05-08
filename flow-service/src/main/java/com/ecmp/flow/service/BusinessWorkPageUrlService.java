@@ -29,10 +29,13 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
     @Override
     public void saveBusinessWorkPageUrlByIds(String id, String[] selectWorkPageIds) {
         for(int i=0;i<selectWorkPageIds.length;i++){
-            BusinessWorkPageUrl businessWorkPageUrl = new BusinessWorkPageUrl();
-            businessWorkPageUrl.setBusinessModuleId(id);
-            businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
-            businessWorkPageUrlDao.save(businessWorkPageUrl);
+            BusinessWorkPageUrl businessWorkPageUrl = businessWorkPageUrlDao.findByBusinessModuleIdAndWorkPageUrlId(id,selectWorkPageIds[i]);
+            if(businessWorkPageUrl !=null){
+                businessWorkPageUrl = new BusinessWorkPageUrl();
+                businessWorkPageUrl.setBusinessModuleId(id);
+                businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
+                businessWorkPageUrlDao.save(businessWorkPageUrl);
+            }
         }
     }
 }

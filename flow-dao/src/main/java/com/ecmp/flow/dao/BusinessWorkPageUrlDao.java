@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BusinessWorkPageUrlDao extends BaseDao<BusinessWorkPageUrl, String> {
 
+    public BusinessWorkPageUrl findByBusinessModuleIdAndWorkPageUrlId(String businessModuleId, String workPageUrlId);
+
 }

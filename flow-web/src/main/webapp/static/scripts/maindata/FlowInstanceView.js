@@ -92,6 +92,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "gridPanel",
             style: {
+                "border": "1px solid #aaa",
                 "border-radius": "3px"
             },
             gridCfg: {
@@ -236,6 +237,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             width: 1400,
             height: 500,
+            padding: 15,
             padding: 8,
             itemspace: 0,
             items: [this.initWindTbar(), this.initWindGrid(data)],
@@ -403,7 +405,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                             strVar += m + "分";
                         }
                         if (s > 0) {
-                            strVar += s + "秒";
+                            strVar += s + "钞";
                         }
                         return strVar;
                     }
