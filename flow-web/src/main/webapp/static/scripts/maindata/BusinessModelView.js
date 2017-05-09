@@ -668,18 +668,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var gridData = EUI.getCmp("workPageSelect").getGridData();
         console.log(gridData);
-        var result = [];
+        var result = "";
         for(var i=0; i<gridData.length; i++){
-            result[i]=gridData[i].id;
+            result +=gridData[i].id + ",";
         }
-        console.log(result);
+        result=(result.substring(result.length-1)==',')?result.substring(0,result.length-1):result;
+        console.log( result);
         var mask = EUI.LoadMask({
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
             url: _ctxPath + "/maindata/businessModel/saveSetWorkPage",
             params: {
-               id: data.id,
+                id: data.id,
                 selectWorkPageIds: result
             },
             success: function (status) {
