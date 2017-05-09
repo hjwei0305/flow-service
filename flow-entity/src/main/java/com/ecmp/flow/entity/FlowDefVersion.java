@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
-public class FlowDefVersion extends com.ecmp.core.entity.BaseEntity implements Cloneable{
+public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable{
 
 	@Transient
 	private final Logger logger = LoggerFactory.getLogger(FlowDefVersion.class);

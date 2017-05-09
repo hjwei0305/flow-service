@@ -23,7 +23,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_task", catalog = "ecmp_flow")
-public class FlowTask extends com.ecmp.core.entity.BaseEntity {
+public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	/**
 	 * 乐观锁-版本

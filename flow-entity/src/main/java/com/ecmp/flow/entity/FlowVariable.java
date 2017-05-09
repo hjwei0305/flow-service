@@ -32,7 +32,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_variable", catalog = "ecmp_flow")
-public class FlowVariable extends com.ecmp.core.entity.BaseEntity implements
+public class FlowVariable extends com.ecmp.core.entity.BaseAuditableEntity implements
 		java.io.Serializable {
 
 	/**

@@ -25,7 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
-public class FlowDefination extends com.ecmp.core.entity.BaseEntity {
+public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	/**
 	 * 乐观锁-版本

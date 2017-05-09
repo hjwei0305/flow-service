@@ -25,7 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "flow_instance", catalog = "ecmp_flow")
-public class FlowInstance extends com.ecmp.core.entity.BaseEntity {
+public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	/**
 	 * 乐观锁-版本

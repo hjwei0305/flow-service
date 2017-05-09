@@ -30,7 +30,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_history", catalog = "ecmp_flow")
-public class FlowHistory  extends com.ecmp.core.entity.BaseEntity  {
+public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 
 	/**
 	 * 所属流程实例

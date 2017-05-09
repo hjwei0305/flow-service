@@ -29,7 +29,7 @@ import javax.persistence.Version;
 @Entity(name = "business_model_page_url")
 @DynamicInsert
 @DynamicUpdate
-public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseEntity {
+public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本

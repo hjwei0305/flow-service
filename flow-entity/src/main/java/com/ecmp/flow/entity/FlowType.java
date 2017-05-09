@@ -29,7 +29,7 @@ import javax.persistence.*;
 @Entity(name = "flow_type")
 @DynamicInsert
 @DynamicUpdate
-public class FlowType extends com.ecmp.core.entity.BaseEntity {
+public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本

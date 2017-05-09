@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity(name = "flow_service_url")
 @DynamicInsert
 @DynamicUpdate
-public class FlowServiceUrl extends com.ecmp.core.entity.BaseEntity {
+public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本

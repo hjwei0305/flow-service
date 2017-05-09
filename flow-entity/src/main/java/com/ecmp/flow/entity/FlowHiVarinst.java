@@ -26,7 +26,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_hi_varinst", catalog = "ecmp_flow")
-public class FlowHiVarinst extends com.ecmp.core.entity.BaseEntity  implements
+public class FlowHiVarinst extends com.ecmp.core.entity.BaseAuditableEntity  implements
 		java.io.Serializable {
 
 	/**

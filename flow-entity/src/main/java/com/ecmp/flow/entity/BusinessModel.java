@@ -26,7 +26,7 @@ import java.util.Set;
 @Entity(name = "business_model")
 @DynamicInsert
 @DynamicUpdate
-public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
+public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本
