@@ -5,8 +5,13 @@ import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.dao.BusinessWorkPageUrlDao;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import com.ecmp.vo.OperateResultWithData;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -27,16 +32,22 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
     private BusinessWorkPageUrlDao businessWorkPageUrlDao;
 
     @Override
-    public void saveBusinessWorkPageUrlByIds(String id, String[] selectWorkPageIds) {
-        for(int i=0;i<selectWorkPageIds.length;i++){
-            BusinessWorkPageUrl businessWorkPageUrl = businessWorkPageUrlDao.findByBusinessModuleIdAndWorkPageUrlId(id,selectWorkPageIds[i]);
-            if(businessWorkPageUrl ==null){
-                businessWorkPageUrl = new BusinessWorkPageUrl();
-                businessWorkPageUrl.setBusinessModuleId(id);
-                businessWorkPageUrl.setWorkPageUrlId(selectWorkPageIds[i]);
-                businessWorkPageUrlDao.save(businessWorkPageUrl);
-            }else{
-                businessWorkPageUrlDao.delete(businessWorkPageUrl);
+    public void saveBusinessWorkPageUrlByIds(String id, String selectWorkPageIds) {
+        List<BusinessWorkPageUrl> businessWorkPageUrls = businessWorkPageUrlDao.findByBusinessModuleId(id);
+        if(businessWorkPageUrls != null){
+            for(int i=0;i<businessWorkPageUrls.size();i++){
+                businessWorkPageUrlDao.delete(businessWorkPageUrls.get(i));
+            }
+            if(StringUtils.isBlank(selectWorkPageIds)){
+                return;
+            }else {
+                String[] str = selectWorkPageIds.split(",");
+                for(int i=0;i<str.length;i++){
+                    BusinessWorkPageUrl businessWorkPageUrl = new BusinessWorkPageUrl();
+                    businessWorkPageUrl.setBusinessModuleId(id);
+                    businessWorkPageUrl.setWorkPageUrlId(str[i]);
+                    businessWorkPageUrlDao.save(businessWorkPageUrl);
+                }
             }
         }
     }
