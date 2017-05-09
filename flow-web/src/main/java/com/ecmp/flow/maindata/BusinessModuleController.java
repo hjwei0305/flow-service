@@ -1,5 +1,6 @@
 package com.ecmp.flow.maindata;
 
+import com.ctc.wstx.util.StringUtil;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
@@ -17,6 +18,7 @@ import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -165,9 +167,10 @@ public class BusinessModuleController {
      * @return
      * @throws JsonProcessingException
      */
+
     @RequestMapping(value = "saveSetWorkPage")
     @ResponseBody
-    public String saveSetWorkPage(@RequestParam(value = "id") String id, @RequestParam(value = "selectWorkPageIds") String[] selectWorkPageIds) throws JsonProcessingException {
+    public String saveSetWorkPage(String id, String selectWorkPageIds) throws JsonProcessingException {
         IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
         proxy.saveBusinessWorkPageUrlByIds(id, selectWorkPageIds);
         OperateStatus operateStatus = new OperateStatus(true, "保存成功");
