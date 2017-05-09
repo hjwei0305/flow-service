@@ -60,12 +60,18 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
     @Column(length = 250)
     private String depict;
 
+//    /**
+//     * 所属应用模块
+//     */
+//    @ManyToOne()
+//    @JoinColumn(name = "app_module_id")
+//    private AppModule appModule;
+
     /**
-     * 所属应用模块
+     * 关联的应用模块ID
      */
-    @ManyToOne()
-    @JoinColumn(name = "app_module_id")
-    private AppModule appModule;
+    @Column(length = 36,name = "app_module_id")
+    private String appModuleId;
 
     /**
      * 拥有的流程类型
@@ -99,12 +105,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
         this.depict = depict;
     }
 
-    public AppModule getAppModule() {
-        return appModule;
+    public String getAppModuleId() {
+        return appModuleId;
     }
 
-    public void setAppModule(AppModule appModule) {
-        this.appModule = appModule;
+    public void setAppModuleId(String appModuleId) {
+        this.appModuleId = appModuleId;
     }
 
     public Set<FlowType> getFlowTypes() {
@@ -145,7 +151,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseEntity {
                 .append("className", className)
                 .append("conditonBean", conditonBean)
                 .append("depict", depict)
-                .append("appModule", appModule)
+                .append("appModuleId", appModuleId)
                 .append("flowTypes", flowTypes)
                 .toString();
     }

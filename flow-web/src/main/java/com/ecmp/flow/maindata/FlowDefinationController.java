@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ecmp.basic.api.IOrganizationService;
 import javax.servlet.ServletRequest;
 import javax.ws.rs.QueryParam;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class FlowDefinationController {
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
         System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
@@ -117,7 +118,7 @@ public class FlowDefinationController {
 
     @RequestMapping(value = "findDefVersion")
     @ResponseBody
-    public String findDefVersion(ServletRequest request) throws JsonProcessingException {
+    public String findDefVersion(ServletRequest request) throws JsonProcessingException, ParseException {
         System.out.println("---------------------------------------------");
       //  System.out.println(id);
         Search search = SearchUtil.genSearch(request);

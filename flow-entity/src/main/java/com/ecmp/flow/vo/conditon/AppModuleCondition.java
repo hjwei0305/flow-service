@@ -1,19 +1,8 @@
 package com.ecmp.flow.vo.conditon;
 
 import com.ecmp.flow.constant.ConditionAnnotaion;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.IConditionPojo;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -29,7 +18,7 @@ import java.util.Set;
  * *************************************************************************************************
  */
 
-public class AppModuleCondition extends AppModule implements IConditionPojo {
+public class AppModuleCondition extends com.ecmp.basic.entity.AppModule implements IConditionPojo {
 
     @ConditionAnnotaion(name="名称")
     public String getName() {

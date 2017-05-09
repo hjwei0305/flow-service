@@ -1,6 +1,5 @@
 package com.ecmp.flow.api.common.api;
 
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.ApiOperation;

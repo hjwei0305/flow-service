@@ -6,9 +6,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IWorkPageUrlService;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -47,7 +46,7 @@ public class WorkPageUrlController {
 
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
         Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
@@ -71,8 +70,8 @@ public class WorkPageUrlController {
     @ResponseBody
     public String findAllAppModuleName() throws JsonProcessingException {
         System.out.println("---------------------------------------------");
-        IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
-        List<AppModule> appModuleList = proxy.findAll();
+        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+        List< com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, "ok", appModuleList);
         operateStatus.setData(appModuleList);
         String findAppModuleName = JsonUtil.serialize(operateStatus);

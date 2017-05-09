@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.text.ParseException;
 
 
 /**
@@ -52,7 +53,7 @@ public class FlowHistoryController {
      */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException {
+    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
        System.out.println("------ ---------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
