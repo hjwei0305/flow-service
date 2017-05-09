@@ -17,4 +17,7 @@ public interface BusinessWorkPageUrlDao extends BaseDao<BusinessWorkPageUrl, Str
 
     public List<BusinessWorkPageUrl> findByBusinessModuleId(String businessModuleId);
 
+    @Modifying
+    @Query("delete from com.ecmp.flow.entity.BusinessWorkPageUrl b where b.businessModuleId = :businessModuleId")
+    public void deleteBybusinessModuleId(@Param("businessModuleId")String businessModuleId);
 }
