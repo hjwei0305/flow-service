@@ -410,42 +410,73 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win.close();
         myMask.hide();
     },
-    lookPropertyWindow: function () {
+    lookPropertyWindow: function (data) {
         var g = this;
         var Wind = EUI.Window({
-            title: g.lang.workPageText,
+            title: g.lang.conditionPropertyText,
+            id:"propertyWind",
             width: 500,
             items: [{
                 xtype: "GridPanel",
+                id:"innerWindow",
                 style: {
                     "border": "1px solid #aaa"
                 },
                 gridCfg: {
-                    // loadonce: true,
-                    url: _ctxPath + "/maindata/businessModel/findNoSetWorkPage",
-                    postData:{
-                        id: g.appModule
-                    },
+                    loadonce: true,
                     colModel: [{
                         name: "id",
                         index: "id",
                         hidden: true
                     }, {
+                        label: g.lang.propertyText,
+                        name: "key",
+                        index: "key"
+                    }, {
                         label: g.lang.nameText,
                         name: "name",
                         index: "name"
-                    }, {
-                        label: g.lang.urlViewAddressText,
-                        name: "url",
-                        index: "url"
-                    }, {
-                        label: g.lang.depictText,
-                        name: "depict",
-                        index: "depict"
                     }]
                 }
             }]
         });
+    },
+    //属性界面的数据调用
+    getProperty:function (data) {
+        var g = this;
+        EUI.Store({
+            url: _ctxPath + "/maindata/businessModel/findConditionProperty",
+            params:{
+                conditonPojoClassName: data.conditonBean
+            },
+            success:function (status) {
+                EUI.ProcessStatus(status);
+                console.log(status);
+                g.handleProperty(status);
+                /*var data = g.handleProperty(status);
+                EUI.getCmp("innerWindow").setDataInGrid(data);*///添加数据到dom的方法
+            },
+            failure:function (response) {
+                EUI.ProcessStatus(response);
+            }
+        });
+    },
+    //js将从后台获取到的object数据转化为数组
+    handleProperty:function (data) {
+        var properties = [];
+        for(var key in data){
+            properties.push({
+                key:key,
+                name:data[key]
+            });
+        }
+        console.log(properties);
+        EUI.getCmp("innerWindow").setDataInGrid(properties);
+       /* for(var k in properties){
+
+        }*/
+        // console.log(properties[k].name);
+        //return properties;
     },
     showWorkPageWindow: function (data) {
         var g = this;
@@ -490,7 +521,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 "border": "1px solid #aaa"
             },
             gridCfg: {
-                loadonce: true,
+                //loadonce: true,
                 url: _ctxPath + "/maindata/businessModel/findNotSelectEdByAppModuleId",
                 postData:{
                     appModuleId:g.appModule,
@@ -510,7 +541,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.urlViewAddressText,
                     name: "className",
                     index: "className"
-                }],
+                }]
                 //添加固定数据测试
                 // data: [{
                 //     name: "lll",
@@ -620,6 +651,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.lookPropertyWindow(data);
+            g.getProperty(data);
         });
         $(".condetail_set").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
@@ -698,3 +730,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         });
     }
 });
+
+
+
+

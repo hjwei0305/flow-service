@@ -11,6 +11,7 @@ import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
+import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.ServletRequest;
 import java.time.Year;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -176,6 +178,16 @@ public class BusinessModuleController {
         OperateStatus operateStatus = new OperateStatus(true, "保存成功");
         return JsonUtil.serialize(operateStatus);
     }
+
+    @RequestMapping(value = "findConditionProperty")
+    @ResponseBody
+    public String findConditionProperty(String conditonPojoClassName) throws JsonProcessingException,ClassNotFoundException {
+        IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
+        Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
+        return JsonUtil.serialize(result);
+    }
+
+
 
 
 }

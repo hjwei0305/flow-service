@@ -1,4 +1,5 @@
 package com.ecmp.flow.service;
+
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
@@ -34,10 +35,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -88,52 +86,54 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     /**
      * 任务签收
-     * @param id 任务id
+     *
+     * @param id     任务id
      * @param userId 用户账号
      * @return
      */
-    public OperateResult claim(String id, String userId){
+    public OperateResult claim(String id, String userId) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         this.claimActiviti(actTaskId, userId);
         flowTask.setActClaimTime(new Date());
         flowTask.setTaskStatus(TaskStatus.CLAIM.toString());
         flowTaskDao.save(flowTask);
-        flowTaskDao.deleteNotClaimTask(actTaskId,id);
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
-        return  result;
+        flowTaskDao.deleteNotClaimTask(actTaskId, id);
+        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        return result;
     }
 
     /**
      * 完成任务
-     * @param id 任务id
+     *
+     * @param id        任务id
      * @param variables 参数
      * @return
      */
-    public OperateResult complete(String id, Map<String, Object> variables){
+    public OperateResult complete(String id, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
-        this.completeActiviti( actTaskId,variables);
-        this.saveVariables(variables,flowTask);
+        this.completeActiviti(actTaskId, variables);
+        this.saveVariables(variables, flowTask);
         Integer reject = null;
-        if(variables!=null){
+        if (variables != null) {
             Object rejectO = variables.get("reject");
-            if(rejectO != null){
-               try {
-                   reject = Integer.parseInt(rejectO.toString());
-               }catch (Exception e){
-                   logger.error(e.getMessage());
-               }
+            if (rejectO != null) {
+                try {
+                    reject = Integer.parseInt(rejectO.toString());
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
             }
         }
-        HistoricTaskInstance historicTaskInstance=historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
+        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
         // 取得流程实例
         ProcessInstance instance = runtimeService
                 .createProcessInstanceQuery()
                 .processInstanceId(historicTaskInstance.getProcessInstanceId())
                 .singleResult();
-        if(historicTaskInstance!=null){
+        if (historicTaskInstance != null) {
             FlowHistory flowHistory = new FlowHistory();
             flowHistory.setActType(flowTask.getActType());
             flowHistory.setFlowName(flowTask.getFlowName());
@@ -155,22 +155,23 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             flowHistory.setActEndTime(historicTaskInstance.getEndTime());
             flowHistory.setActHistoryId(historicTaskInstance.getId());
             flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
-            flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-            if(reject!=null && reject == 1){
+            if (reject != null && reject == 1) {
                 flowHistory.setDepict("被驳回");
-            }else {
+                flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
+            } else {
                 flowHistory.setDepict(null);
+                flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
             }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
 
-            org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+            org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
             DefaultTransactionDefinition def = new DefaultTransactionDefinition();
             def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
             TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
             try {
                 //逻辑代码，可以写上你的逻辑处理代码
-                flowTaskDao.deleteNotClaimTask(actTaskId,id);//删除其他候选用户的任务
+                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
                 transactionManager.commit(status);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -180,29 +181,29 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
 
             //初始化新的任务
-            PvmActivity  currentNode = this.getActivitNode(actTaskId);
-            if(currentNode!=null){
-                callInitTaskBack(currentNode,instance, flowHistory);
+            PvmActivity currentNode = this.getActivitNode(actTaskId);
+            if (currentNode != null) {
+                callInitTaskBack(currentNode, instance, flowHistory);
             }
 
         }
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.OperationSuccess("core_00003");
         return result;
     }
 
-    private void callInitTaskBack( PvmActivity  currentNode,ProcessInstance instance,FlowHistory flowHistory ){
-        List<PvmTransition>   nextNodes = currentNode.getOutgoingTransitions();
-        if(nextNodes!=null && nextNodes.size()>0){
-            for(PvmTransition node:nextNodes){
+    private void callInitTaskBack(PvmActivity currentNode, ProcessInstance instance, FlowHistory flowHistory) {
+        List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
+        if (nextNodes != null && nextNodes.size() > 0) {
+            for (PvmTransition node : nextNodes) {
                 PvmActivity nextActivity = node.getDestination();
-                if( ifGageway( nextActivity)){
-                    callInitTaskBack(nextActivity,instance,flowHistory);
+                if (ifGageway(nextActivity)) {
+                    callInitTaskBack(nextActivity, instance, flowHistory);
                 }
-                String key = nextActivity.getProperty("key")!=null?nextActivity.getProperty("key").toString():null;
-                if(key==null){
+                String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
+                if (key == null) {
                     key = nextActivity.getId();
                 }
-                initTask(instance,key,flowHistory);
+                initTask(instance, key, flowHistory);
             }
         }
 
@@ -210,14 +211,15 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     /**
      * 撤回到指定任务节点
+     *
      * @param id
      * @return
      */
-    public  OperateResult rollBackTo(String id){
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
-        FlowHistory flowHistory =  flowHistoryDao.findOne(id);
+    public OperateResult rollBackTo(String id) {
+        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        FlowHistory flowHistory = flowHistoryDao.findOne(id);
         result = this.taskRollBack(flowHistory);
-        if(result.successful()){
+        if (result.successful()) {
             flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
             flowHistoryDao.save(flowHistory);
         }
@@ -236,6 +238,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     /**
      * 完成任务
+     *
      * @param taskId
      * @param variables
      */
@@ -243,106 +246,120 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         taskService.complete(taskId, variables);
     }
 
-   private PvmActivity getActivitNode(String taskId){
-       // 取得当前任务
-       HistoricTaskInstance currTask = historyService
-               .createHistoricTaskInstanceQuery().taskId(taskId)
-               .singleResult();
-       ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-               .getDeployedProcessDefinition(currTask
-                       .getProcessDefinitionId());
-       if (definition == null) {
-           logger.error(ContextUtil.getMessage("10003"));
-       }
-       // 取得当前活动定义节点
-       ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
-               .findActivity(currTask.getTaskDefinitionKey());
+    private PvmActivity getActivitNode(String taskId) {
+        // 取得当前任务
+        HistoricTaskInstance currTask = historyService
+                .createHistoricTaskInstanceQuery().taskId(taskId)
+                .singleResult();
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                .getDeployedProcessDefinition(currTask
+                        .getProcessDefinitionId());
+        if (definition == null) {
+            logger.error(ContextUtil.getMessage("10003"));
+        }
+        // 取得当前活动定义节点
+        ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+                .findActivity(currTask.getTaskDefinitionKey());
 
 //       List<PvmTransition> nextTransitionList = currActivity
 //               .getOutgoingTransitions();
-       return currActivity;
+        return currActivity;
 
-   }
-//
-//
-//    private OperateResult activitiCallBack(PvmActivity currActivity, ProcessInstance instance, ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask  ){
-//        List<PvmTransition> nextTransitionList = currActivity
-//                .getOutgoingTransitions();
-//        OperateResult result =  OperateResult.OperationSuccess("core_00003");
-//        for (PvmTransition nextTransition : nextTransitionList) {
-//            PvmActivity nextActivity = nextTransition.getDestination();
-//
-//            Boolean ifGateWay=this.ifGageway(nextActivity);
-//            if(ifGateWay){//如果是网关节点，直接寻找网关出口的可执行节点
-//                 result = activitiCallBack( nextActivity, instance,definition,destnetionTask);
-////                if(result.notSuccessful()){
-//                return result;
-////                }
-//            }
-//
-//            List<HistoricTaskInstance> completeTasks = historyService
-//                    .createHistoricTaskInstanceQuery()
-//                    .processInstanceId(instance.getId())
-//                    .taskDefinitionKey(nextActivity.getId()).finished()
-//                    .list();
-//            for(HistoricTaskInstance h:completeTasks){ //校验关联的出口节点任务执行情况，如果没有，则可回退
-//                if(h.getEndTime().after(destnetionTask.getEndTime())){
-//                     result =  OperateResult.OperationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
-//                }
-//            }
-//            Map<String, Object> variables;
-//            variables=instance.getProcessVariables();
-//            List<Task> nextTasks = taskService.createTaskQuery().processInstanceId(instance.getId())
-//                    .taskDefinitionKey(nextActivity.getId()).list();
-//            for (Task nextTask : nextTasks) {
-//                //取活动，清除活动方向
-//                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
-//                List<PvmTransition> pvmTransitionList = nextActivity
-//                        .getOutgoingTransitions();
-//                for (PvmTransition pvmTransition : pvmTransitionList) {
-//                    oriPvmTransitionList.add(pvmTransition);
-//                }
-//                pvmTransitionList.clear();
-//                //建立新方向
-//                ActivityImpl nextActivityImpl = ((ProcessDefinitionImpl) definition)
-//                        .findActivity(nextTask.getTaskDefinitionKey());
-//                TransitionImpl newTransition = nextActivityImpl
-//                        .createOutgoingTransition();
-//                // 取得转向的目标，这里需要指定用需要回退到的任务节点
-//                ActivityImpl destination = ((ProcessDefinitionImpl) definition)
-//                        .findActivity(destnetionTask.getTaskDefinitionKey());
-//
-////                 newTransition.setDestination((ActivityImpl) currActivity);
-//                newTransition.setDestination(destination);
-//                //完成任务
-//                taskService.complete(nextTask.getId(), variables);
-//                historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
-//
-//                historyService.deleteHistoricTaskInstance(nextTask.getId());
-//
-//                if(ifGageway(currActivity)){
-//                    HistoricActivityInstance gateWayActivity = historyService.createHistoricActivityInstanceQuery().processInstanceId(destnetionTask.getProcessInstanceId()).activityId(currActivity.getId()).singleResult();
-//                    if(gateWayActivity!=null){
-//                        historyService.deleteHistoricActivityInstanceById(gateWayActivity.getId());
-//                    }
-//                }
-//
-////                 historyService.deleteHistoricIdentityLinksByTaskId(nextTask.getId());
-//                //恢复方向
-//                destination.getIncomingTransitions().remove(newTransition);
-//                List<PvmTransition> pvmTList = nextActivity
-//                        .getOutgoingTransitions();
-//                pvmTList.clear();
-//                for (PvmTransition pvmTransition : oriPvmTransitionList) {
-//                    pvmTransitionList.add(pvmTransition);
-//                }
-//
-//
-//            }
-//
-//        }
-//        return result;
-//    }
+    }
+
+    /**
+     * 任务驳回
+     * @param id  任务id
+     * @param variables  参数
+     * @return  结果
+     */
+    public OperateResult taskReject(String id, Map<String, Object> variables) {
+        OperateResult result = OperateResult.OperationSuccess("10006");
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask != null) {
+            FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
+            if (preFlowTask == null) {
+                return OperateResult.OperationFailure("10009");
+            } else {
+                 result = this.activitiReject(flowTask,preFlowTask);
+            }
+        } else {
+            return OperateResult.OperationFailure("10009");
+        }
+        return result;
+    }
+
+
+    /**
+     * 驳回前一个任务
+     * @param currentTask  当前任务
+     * @param preFlowTask  上一个任务
+     * @return 结果
+     */
+    private OperateResult activitiReject(FlowTask currentTask,FlowHistory preFlowTask){
+        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        // 取得当前任务
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
+                .singleResult();
+        // 取得流程实例
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(currTask.getProcessInstanceId()).singleResult();
+        if (instance == null) {
+            OperateResult.OperationFailure("10009");
+        }
+        Map  variables = new HashMap();
+        Map  variablesProcess = instance.getProcessVariables();
+        Map  variablesTask = currTask.getTaskLocalVariables();
+        if((variablesProcess != null) && (!variablesProcess.isEmpty())){
+            variables.putAll(variablesProcess);
+        }
+        if((variablesTask != null) && (!variablesTask.isEmpty())){
+            variables.putAll(variablesTask);
+        }
+        // 取得流程定义
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+        if (definition == null) {
+            OperateResult.OperationFailure("10009");
+        }
+
+        // 取得当前任务标节点的活动
+        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition)
+                .findActivity(currentTask.getActTaskDefKey());
+        // 取得驳回目标节点的活动
+        ActivityImpl  preActivity= ((ProcessDefinitionImpl) definition)
+                .findActivity(preFlowTask.getActTaskDefKey());
+       if(this.checkCanReject(currentActivity,preActivity,instance,
+                definition)){
+           //取活动，清除活动方向
+           List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
+           List<PvmTransition> pvmTransitionList = currentActivity
+                   .getOutgoingTransitions();
+           for (PvmTransition pvmTransition : pvmTransitionList) {
+               oriPvmTransitionList.add(pvmTransition);
+           }
+           pvmTransitionList.clear();
+           //建立新方向
+           TransitionImpl newTransition = currentActivity
+                   .createOutgoingTransition();
+           // 取得转向的目标，这里需要指定用需要回退到的任务节点
+           newTransition.setDestination(preActivity);
+
+           //完成任务
+           variables.put("reject",1);
+           this.complete(currentTask.getId(),variables);
+
+           //恢复方向
+           preActivity.getIncomingTransitions().remove(newTransition);
+           List<PvmTransition> pvmTList = currentActivity
+                   .getOutgoingTransitions();
+           pvmTList.clear();
+           for (PvmTransition pvmTransition : oriPvmTransitionList) {
+               pvmTransitionList.add(pvmTransition);
+           }
+       }
+        return result;
+    }
 
 
     /**
@@ -351,7 +368,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * @return
      */
     public OperateResult taskRollBack(FlowHistory flowHistory) {
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.OperationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
             Map<String, Object> variables;
@@ -362,7 +379,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(currTask.getProcessInstanceId()).singleResult();
             if (instance == null) {
-                return  OperateResult.OperationFailure("10002");//流程实例不存在或者已经结束
+                return OperateResult.OperationFailure("10002");//流程实例不存在或者已经结束
             }
             variables = instance.getProcessVariables();
             Map variablesTask = currTask.getTaskLocalVariables();
@@ -376,7 +393,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
             String executionId = currTask.getExecutionId();
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-            List<HistoricVariableInstance> historicVariableInstances=	historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
+            List<HistoricVariableInstance> historicVariableInstances = historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
 
 //            for(HistoricVariableInstance h: historicVariableInstances){
 //
@@ -398,29 +415,29 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             HistoricActivityInstance historicActivityInstance = null;
             HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                     .executionId(execution.getId());
-            if(his!=null){
+            if (his != null) {
                 historicActivityInstance = his.activityId(currTask.getTaskDefinitionKey()).singleResult();
-                if(historicActivityInstance ==null ){
+                if (historicActivityInstance == null) {
                     his = historyService.createHistoricActivityInstanceQuery().processInstanceId(instance.getId())
                             .taskAssignee(currTask.getAssignee());
-                    if(his!=null){
+                    if (his != null) {
                         historicActivityInstance = his.activityId(currTask.getTaskDefinitionKey()).singleResult();
                     }
                 }
             }
 
-            if(historicActivityInstance == null){
+            if (historicActivityInstance == null) {
                 logger.error(ContextUtil.getMessage("10009"));
-                return  OperateResult.OperationFailure("10009");//当前任务找不到
+                return OperateResult.OperationFailure("10009");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
-                if(execution.getActivityId()!=null){
+                if (execution.getActivityId() != null) {
                     List<HistoricActivityInstance> historicActivityInstanceList = historyService
                             .createHistoricActivityInstanceQuery().executionId(execution.getId())
                             .activityId(execution.getActivityId()).list();
                     if (historicActivityInstanceList != null) {
-                        for(HistoricActivityInstance hTemp:historicActivityInstanceList){
-                            if(hTemp.getEndTime()==null){
+                        for (HistoricActivityInstance hTemp : historicActivityInstanceList) {
+                            if (hTemp.getEndTime() == null) {
                                 historyService.deleteHistoricActivityInstanceById(hTemp.getId());
                             }
                         }
@@ -475,7 +492,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
             //初始化回退后的新任务
             flowHistory.setDepict(null);
-            initTask(instance,currTask.getTaskDefinitionKey(),flowHistory);
+            initTask(instance, currTask.getTaskDefinitionKey(), flowHistory);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -487,14 +504,15 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     /**
      * 还原执行人、候选人
+     *
      * @param taskId
      */
-    private void callBackRunIdentityLinkEntity(String taskId){
+    private void callBackRunIdentityLinkEntity(String taskId) {
         List<HistoricIdentityLink> historicIdentityLinks = historyService.getHistoricIdentityLinksForTask(taskId);
 
-        for(HistoricIdentityLink hlink : historicIdentityLinks){
-            HistoricIdentityLinkEntity historicIdentityLinkEntity = (HistoricIdentityLinkEntity)hlink;
-            if(historicIdentityLinkEntity.getId()==null){
+        for (HistoricIdentityLink hlink : historicIdentityLinks) {
+            HistoricIdentityLinkEntity historicIdentityLinkEntity = (HistoricIdentityLinkEntity) hlink;
+            if (historicIdentityLinkEntity.getId() == null) {
                 continue;
             }
             IdentityLinkEntity identityLinkEntity = new IdentityLinkEntity();
@@ -504,9 +522,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             identityLinkEntity.setTaskId(historicIdentityLinkEntity.getTaskId());
             identityLinkEntity.setType(historicIdentityLinkEntity.getType());
             identityLinkEntity.setUserId(historicIdentityLinkEntity.getUserId());
-            try{
+            try {
                 identityService.save(identityLinkEntity);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
             }
@@ -518,7 +536,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * 删除其他到达的节点
      */
     private Boolean deleteOtherNode(PvmActivity currActivity, ProcessInstance instance,
-                                   ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
+                                    ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         Boolean result = true;
         for (PvmTransition nextTransition : nextTransitionList) {
@@ -526,7 +544,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
             Boolean ifGateWay = ifGageway(nextActivity);
             boolean ifMultiInstance = ifMultiInstance(nextActivity);
             if (ifGateWay) {
-                result= deleteOtherNode(nextActivity, instance, definition, destnetionTask);
+                result = deleteOtherNode(nextActivity, instance, definition, destnetionTask);
                 if (!result) {
                     return result;
                 }
@@ -540,7 +558,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
 
-                org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
                 DefaultTransactionDefinition def = new DefaultTransactionDefinition();
                 def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
                 TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
@@ -557,7 +575,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
             }
 
-            if ((nextTasks!=null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
+            if ((nextTasks != null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
 
                 HistoricActivityInstance gateWayActivity = historyService.createHistoricActivityInstanceQuery()
                         .processInstanceId(destnetionTask.getProcessInstanceId()).activityId(currActivity.getId())
@@ -567,9 +585,9 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                 }
 
             }
-            if(ifMultiInstance){//多实例任务，清除父执行分支
-                ExecutionEntity pExecution=(ExecutionEntity) runtimeService.createExecutionQuery().processInstanceId(instance.getId()).activityIdNoActive(nextActivity.getId()).singleResult();
-                if(pExecution != null){
+            if (ifMultiInstance) {//多实例任务，清除父执行分支
+                ExecutionEntity pExecution = (ExecutionEntity) runtimeService.createExecutionQuery().processInstanceId(instance.getId()).activityIdNoActive(nextActivity.getId()).singleResult();
+                if (pExecution != null) {
                     runtimeService.deleteExecution(pExecution);
                 }
             }
@@ -588,7 +606,7 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
      * @return
      */
     private Boolean checkNextNodeNotCompleted(PvmActivity currActivity, ProcessInstance instance,
-                                             ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
+                                              ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         boolean result = true;
 
@@ -624,44 +642,86 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
     }
 
 
-
     /**
      * 判断是否是网关节点
+     *
      * @param pvmActivity
      * @return
      */
-    private boolean ifGageway( PvmActivity pvmActivity ){
+    private boolean ifGageway(PvmActivity pvmActivity) {
         String nextActivtityType = pvmActivity.getProperty("type").toString();
-        Boolean result=false;
-        if("exclusiveGateway".equalsIgnoreCase(nextActivtityType)||  //排他网关
+        Boolean result = false;
+        if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
-                || "parallelGateWay".equalsIgnoreCase(nextActivtityType)){ //并行网关
-            result=true;
+                || "parallelGateWay".equalsIgnoreCase(nextActivtityType)) { //并行网关
+            result = true;
         }
         return result;
     }
+
     /**
-     * 判断是否是多实例任务（会签）
+     * 判断是否是排他网关节点
+     *
      * @param pvmActivity
      * @return
      */
-    private boolean ifMultiInstance( PvmActivity pvmActivity ){
-        Object nextActivtityType = pvmActivity.getProperty("multiInstance");
-        Boolean result=false;
-        if(nextActivtityType!=null && !"".equals(nextActivtityType)){ //多实例任务
-            result=true;
+    private boolean ifExclusiveGateway(PvmActivity pvmActivity) {
+        String nextActivtityType = pvmActivity.getProperty("type").toString();
+        Boolean result = false;
+        if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) { //排他网关
+            result = true;
         }
         return result;
+    }
+
+    /**
+     * 判断是否是多实例任务（会签）
+     *
+     * @param pvmActivity
+     * @return
+     */
+    private boolean ifMultiInstance(PvmActivity pvmActivity) {
+        Object nextActivtityType = pvmActivity.getProperty("multiInstance");
+        Boolean result = false;
+        if (nextActivtityType != null && !"".equals(nextActivtityType)) { //多实例任务
+            result = true;
+        }
+        return result;
+    }
+
+    private Boolean checkCanReject(PvmActivity currActivity,PvmActivity preActivity,  ProcessInstance instance,
+                                   ProcessDefinitionEntity definition){
+        Boolean result = ifMultiInstance(currActivity);
+        if(result){//多任务实例不允许驳回
+            return false;
+        }
+        List<PvmTransition> currentInTransitionList = currActivity.getIncomingTransitions();
+                for (PvmTransition currentInTransition : currentInTransitionList) {
+                    PvmActivity currentInActivity = currentInTransition.getDestination();
+                    if(currentInActivity.getId().equals(preActivity.getId())){
+                        result = true;
+                break;
+            }
+            Boolean ifExclusiveGateway = ifExclusiveGateway(currentInActivity);
+            if (ifExclusiveGateway) {
+                result = checkCanReject(currentInActivity, preActivity,instance,  definition);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+           return result;
     }
 
     /**
      * 将新的流程任务初始化
+     *
      * @param instance
      * @param actTaskDefKey
      */
-    private void initTask(ProcessInstance instance,String actTaskDefKey,FlowHistory preTask){
+    private void initTask(ProcessInstance instance, String actTaskDefKey, FlowHistory preTask) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-        if( instance.isEnded()){//流程结束
+        if (instance.isEnded()) {//流程结束
             flowInstance.setEnded(true);
             flowInstance.setEndDate(new Date());
             flowInstanceDao.save(flowInstance);
@@ -671,15 +731,15 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
         String flowName = instance.getProcessDefinitionName();
-        if(flowName == null){
+        if (flowName == null) {
             flowName = instance.getProcessDefinitionKey();
         }
-        if(taskList!=null && taskList.size()>0){
-            for(Task task:taskList){
-                if(task.getAssignee()!=null && !"".equals(task.getAssignee())){
+        if (taskList != null && taskList.size() > 0) {
+            for (Task task : taskList) {
+                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                    for(IdentityLink identityLink:identityLinks){
-                        FlowTask  flowTask = new FlowTask();
+                    for (IdentityLink identityLink : identityLinks) {
+                        FlowTask flowTask = new FlowTask();
                         flowTask.setActTaskDefKey(actTaskDefKey);
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
@@ -690,16 +750,26 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                         flowTask.setActType(identityLink.getType());
                         flowTask.setDepict(task.getDescription());
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                        if(preTask!=null){
-                            flowTask.setPreId(preTask.getId());
+                        if (preTask != null) {
+                            if(TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())){
+                                 String oldPreId =  preTask.getPreId();//前一个任务的前一个任务ID
+                                 FlowHistory oldPreFlowHistory =  flowHistoryDao.findOne(oldPreId);
+                                 if(oldPreFlowHistory != null){
+                                     flowTask.setPreId(oldPreFlowHistory.getId());
+                                 }else {
+                                     flowTask.setPreId(null);
+                                 }
+                            }else {
+                                flowTask.setPreId(preTask.getId());
+                            }
                             flowTask.setDepict(preTask.getDepict());
                         }
                         flowTask.setFlowInstance(flowInstance);
 
                         flowTaskDao.save(flowTask);
                     }
-                }else{
-                    FlowTask  flowTask = new FlowTask();
+                } else {
+                    FlowTask flowTask = new FlowTask();
                     flowTask.setActTaskDefKey(actTaskDefKey);
                     flowTask.setFlowName(flowName);
                     flowTask.setTaskName(task.getName());
@@ -711,8 +781,18 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
                     flowTask.setActType("assignee");
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
                     flowTask.setFlowInstance(flowInstance);
-                    if(preTask!=null){
-                        flowTask.setPreId(preTask.getId());
+                    if (preTask != null) {
+                        if(TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())){
+                            String oldPreId =  preTask.getPreId();//前一个任务的前一个任务ID
+                            FlowHistory oldPreFlowHistory =  flowHistoryDao.findOne(oldPreId);
+                            if(oldPreFlowHistory != null){
+                                flowTask.setPreId(oldPreFlowHistory.getId());
+                            }else {
+                                flowTask.setPreId(null);
+                            }
+                        }else {
+                            flowTask.setPreId(preTask.getId());
+                        }
                         flowTask.setDepict(preTask.getDepict());
                     }
                     flowTaskDao.save(flowTask);
@@ -726,40 +806,39 @@ public class FlowTaskService extends BaseService<FlowTask, String> implements IF
 
     /**
      * 记录任务执行过程中传入的参数
-     * @param variables  参数map
-     * @param flowTask   关联的工作任务
+     *
+     * @param variables 参数map
+     * @param flowTask  关联的工作任务
      */
-    private void saveVariables( Map<String, Object> variables, FlowTask flowTask){
-        if((variables!=null) && (!variables.isEmpty()) && (flowTask!=null)){
+    private void saveVariables(Map<String, Object> variables, FlowTask flowTask) {
+        if ((variables != null) && (!variables.isEmpty()) && (flowTask != null)) {
             FlowVariable flowVariable = new FlowVariable();
-                for(Map.Entry<String,Object> vs:variables.entrySet()){
-                   String key= vs.getKey();
-                   Object value = vs.getValue();
-                    Long longV = null;
-                    Double doubleV = null;
-                    String strV =null;
-                    flowVariable.setName(key);
-                    flowVariable.setFlowTask(flowTask);
-                    try{
-                        longV =  Long.parseLong(value.toString());
-                        flowVariable.setType(Long.class.getName());
-                        flowVariable.setVLong(longV);
-                    }catch(RuntimeException e1){
-                        try{
-                            doubleV = Double.parseDouble(value.toString());
-                            flowVariable.setType(Double.class.getName());
-                            flowVariable.setVDouble(doubleV);
-                        }catch(RuntimeException e2){
-                            strV = value.toString();
-                        }
+            for (Map.Entry<String, Object> vs : variables.entrySet()) {
+                String key = vs.getKey();
+                Object value = vs.getValue();
+                Long longV = null;
+                Double doubleV = null;
+                String strV = null;
+                flowVariable.setName(key);
+                flowVariable.setFlowTask(flowTask);
+                try {
+                    longV = Long.parseLong(value.toString());
+                    flowVariable.setType(Long.class.getName());
+                    flowVariable.setVLong(longV);
+                } catch (RuntimeException e1) {
+                    try {
+                        doubleV = Double.parseDouble(value.toString());
+                        flowVariable.setType(Double.class.getName());
+                        flowVariable.setVDouble(doubleV);
+                    } catch (RuntimeException e2) {
+                        strV = value.toString();
                     }
-                    flowVariable.setVText(strV);
+                }
+                flowVariable.setVText(strV);
             }
             flowVariableDao.save(flowVariable);
         }
     }
-
-
 
 
 //    /**
