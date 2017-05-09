@@ -1,18 +1,14 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/5/3 9:53:19                             */
+/* Created on:     2017/5/9 16:46:42                            */
 /*==============================================================*/
-
-
-
-drop table if exists app_module;
 
 
 drop table if exists business_model;
 
+drop table if exists business_model_page_url;
 
 drop table if exists flow_def_version;
-
 
 drop table if exists flow_defination;
 
@@ -27,39 +23,11 @@ drop table if exists flow_service_url;
 
 drop table if exists flow_task;
 
-
 drop table if exists flow_type;
 
 drop table if exists flow_variable;
 
 drop table if exists work_page_url;
-
-/*==============================================================*/
-/* Table: app_module                                            */
-/*==============================================================*/
-create table app_module
-(
-   id                   varchar(36) not null comment 'ID',
-   code                 varchar(60) not null comment '代码',
-   name                 varchar(80) not null comment '名称',
-   depict               varchar(255) comment '描述',
-   created_by           varchar(100) comment '创建人',
-   created_date         datetime comment '创建时间',
-   last_modified_by     varchar(100) comment '最后更新者',
-   last_modified_date   datetime comment '最后更新时间',
-   version              int comment '版本-乐观锁',
-   primary key (id)
-);
-
-alter table app_module comment '应用模块';
-
-/*==============================================================*/
-/* Index: idx_app_module_code                                   */
-/*==============================================================*/
-create unique index idx_app_module_code on app_module
-(
-   code
-);
 
 /*==============================================================*/
 /* Table: business_model                                        */
@@ -74,9 +42,10 @@ create table business_model
    created_date         datetime comment '创建时间',
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
-   app_module_id        varchar(36),
    version              int comment '版本-乐观锁',
    conditon_bean        varchar(255) comment '转换对象',
+   app_module_id        varchar(36) comment '关联应用模块ID',
+   dao_bean             varchar(255) comment '数据访问对象名称',
    primary key (id)
 );
 
@@ -89,6 +58,24 @@ create unique index idx_business_model_class_name on business_model
 (
    class_name
 );
+
+/*==============================================================*/
+/* Table: business_model_page_url                               */
+/*==============================================================*/
+create table business_model_page_url
+(
+   id                   varchar(36) not null comment 'ID',
+   created_by           varchar(100) comment '创建人',
+   created_date         datetime comment '创建时间',
+   last_modified_by     varchar(100) comment '最后更新者',
+   last_modified_date   datetime comment '最后更新时间',
+   work_page_url_id     varchar(36) comment '关联工作页面',
+   business_model_id    varchar(36) comment '关联业务实体模型',
+   version              int comment '版本-乐观锁',
+   primary key (id)
+);
+
+alter table business_model_page_url comment '业务实体工作界面配置';
 
 /*==============================================================*/
 /* Table: flow_def_version                                      */
@@ -382,15 +369,18 @@ create table work_page_url
    created_date         datetime comment '创建时间',
    last_modified_by     varchar(100) comment '最后更新者',
    last_modified_date   datetime comment '最后更新时间',
-   app_module_id        varchar(36),
    version              int comment '版本-乐观锁',
+   app_module_id        varchar(36) comment '关联应用模块ID',
    primary key (id)
 );
 
 alter table work_page_url comment '服务地址管理';
 
-alter table business_model add constraint fk_business_app_module_id foreign key (app_module_id)
-      references app_module (id) on delete restrict on update restrict;
+alter table business_model_page_url add constraint FK_fk_businessWorkUrl_businessModule_id foreign key (business_model_id)
+      references business_model (id) on delete restrict on update restrict;
+
+alter table business_model_page_url add constraint FK_fk_businessWorkUrl_workPageUrl_id foreign key (work_page_url_id)
+      references work_page_url (id) on delete restrict on update restrict;
 
 alter table flow_def_version add constraint fk_def_version_defination_id foreign key (flow_defination_id)
       references flow_defination (id) on delete restrict on update restrict;
