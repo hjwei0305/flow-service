@@ -68,6 +68,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public  OperateResult rollBackTo(String id);
 
     /**
+     * 驳回任务（动态驳回）
+     * @param id 任务id
+     * @param variables 参数
+     * @return 操作结果
+     */
+    @POST
+    @Path("reject/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "驳回任务（动态驳回）",notes = "测试")
+    public OperateResult taskReject(@PathParam("id")String id, Map<String, Object> variables);
+
+    /**
      * 获取分页数据
      *
      * @return 实体清单
@@ -78,4 +91,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowTask> findByPage(Search searchConfig);
+
+
+
 }

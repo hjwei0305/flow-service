@@ -15,12 +15,13 @@ package com.ecmp.flow.util;
 public enum TaskStatus {
 
     /**
-     * 待办、签收、撤销、完成、挂起
+     * 待办、签收、撤销、完成、驳回、挂起
      */
     INIT("init"),
     CLAIM("claim"),
     CANCLE("cancel"),
     COMPLETED("completed"),
+    REJECT("reject"),
     SUSPEND("suspend");
     private String value;
 
@@ -35,4 +36,5 @@ public enum TaskStatus {
     TaskStatus(String value) {
         this.value = value;
     }
+
 }
