@@ -37,36 +37,18 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
 
     @Override
     public void saveBusinessWorkPageUrlByIds(String id, String selectWorkPageIds) {
-       // List<BusinessWorkPageUrl> businessWorkPageUrls = businessWorkPageUrlDao.findByBusinessModuleId(id);
-       // if(businessWorkPageUrls != null){
-//            for(int i=0;i<businessWorkPageUrls.size();i++){
-//                businessWorkPageUrlDao.delete(businessWorkPageUrls.get(i));
-//            }
-        org.springframework.orm.jpa.JpaTransactionManager  transactionManager =(org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-        try {
-            //逻辑代码，可以写上你的逻辑处理代码
-            businessWorkPageUrlDao.deleteBybusinessModuleId(id);
-            transactionManager.commit(status);
-        } catch (Exception e) {
-            e.printStackTrace();
-            transactionManager.rollback(status);
-            throw e;
-        }
-
-            if(StringUtils.isBlank(selectWorkPageIds)){
-                return;
-            }else {
-                String[] str = selectWorkPageIds.split(",");
-                for(int i=0;i<str.length;i++){
-                    BusinessWorkPageUrl businessWorkPageUrl = new BusinessWorkPageUrl();
-                    businessWorkPageUrl.setBusinessModuleId(id);
-                    businessWorkPageUrl.setWorkPageUrlId(str[i]);
-                    businessWorkPageUrlDao.save(businessWorkPageUrl);
-                }
+        businessWorkPageUrlDao.deleteBybusinessModuleId(id);
+        if (StringUtils.isBlank(selectWorkPageIds)) {
+            return;
+        } else {
+            String[] str = selectWorkPageIds.split(",");
+            for (int i = 0; i < str.length; i++) {
+                BusinessWorkPageUrl businessWorkPageUrl = new BusinessWorkPageUrl();
+                businessWorkPageUrl.setBusinessModuleId(id);
+                businessWorkPageUrl.setWorkPageUrlId(str[i]);
+                businessWorkPageUrlDao.save(businessWorkPageUrl);
             }
         }
     }
+}
 
