@@ -40,10 +40,9 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     PageResult<BusinessWorkPageUrl> findByPage(Search searchConfig);
 
     /**
-     * 通过ID启动流程实体
-     * @param startUserId 流程启动人
-     * @param businessKey 业务KEY
-     * @param variables  其他参数
+     * 保存设置的工作界面
+     * @param id 业务实体id
+     * @param selectWorkPageIds 工作界面的所有id
      * @param id 流程id
      * @return 流程实例
      */
@@ -51,7 +50,7 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     @Path("saveBusinessWorkPageUrlByIds/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过ID启动流程实体",notes = "测试")
-    public void saveBusinessWorkPageUrlByIds(@PathParam("id")String id, String[] selectWorkPageIds);
+    @ApiOperation(value = "保存设置的工作界面",notes = "测试")
+    public void saveBusinessWorkPageUrlByIds(@PathParam("id")String id, String selectWorkPageIds);
 
 }
