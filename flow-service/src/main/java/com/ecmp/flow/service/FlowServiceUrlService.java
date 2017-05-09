@@ -1,10 +1,14 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +26,12 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowServiceUrlService extends BaseService<FlowServiceUrl, String> implements IFlowServiceUrlService {
+public class FlowServiceUrlService extends BaseEntityService<FlowServiceUrl> implements IFlowServiceUrlService {
 
     @Autowired
     private FlowServiceUrlDao flowServiceUrlDao;
+
+    protected BaseEntityDao<FlowServiceUrl> getDao(){
+        return this.flowServiceUrlDao;
+    }
 }

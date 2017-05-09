@@ -1,7 +1,10 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.dao.BusinessModelDao;
@@ -24,11 +27,14 @@ import java.util.List;
  * *************************************************************************************************
  */
 @Service
-public class BusinessModelService extends BaseService<BusinessModel, String> implements IBusinessModelService{
+public class BusinessModelService extends BaseEntityService<BusinessModel> implements IBusinessModelService{
 
     @Autowired
     private BusinessModelDao businessModelDao;
 
+    protected BaseEntityDao<BusinessModel> getDao(){
+        return this.businessModelDao;
+    }
 
     @Override
     public List<BusinessModel> findByAppModuleId(String appModuleId) {

@@ -1,5 +1,6 @@
 package com.ecmp.flow.dao;
 
+import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 
 @Repository
-public interface FlowTaskDao extends BaseDao<FlowTask, String> {
+public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
     /**
      * 删除没有进行任务签收的任务
      * @param actTaskId  关联流程引擎实际的任务ID

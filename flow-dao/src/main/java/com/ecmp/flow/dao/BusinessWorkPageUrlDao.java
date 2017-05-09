@@ -1,8 +1,7 @@
 package com.ecmp.flow.dao;
 
-import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
-import com.ecmp.flow.entity.WorkPageUrl;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface BusinessWorkPageUrlDao extends BaseDao<BusinessWorkPageUrl, String> {
+public interface BusinessWorkPageUrlDao extends BaseEntityDao<BusinessWorkPageUrl> {
 
     public BusinessWorkPageUrl findByBusinessModuleIdAndWorkPageUrlId(String businessModuleId, String workPageUrlId);
 

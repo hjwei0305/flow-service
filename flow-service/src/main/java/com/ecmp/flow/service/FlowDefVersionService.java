@@ -1,5 +1,8 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.dao.FlowDefVersionDao;
@@ -38,10 +41,13 @@ import java.util.List;
  * *************************************************************************************************
  */
 @Service
-public class FlowDefVersionService extends BaseService<FlowDefVersion,String> implements IFlowDefVersionService {
+public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> implements IFlowDefVersionService {
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefVersion.class);
 
+    protected BaseEntityDao<FlowDefVersion> getDao(){
+        return this.flowDefVersionDao;
+    }
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
 

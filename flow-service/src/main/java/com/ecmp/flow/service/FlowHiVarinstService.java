@@ -1,9 +1,13 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHiVarinstService;
 import com.ecmp.flow.dao.FlowHiVarinstDao;
 import com.ecmp.flow.entity.FlowHiVarinst;
+import com.ecmp.flow.entity.FlowHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +24,12 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowHiVarinstService extends BaseService<FlowHiVarinst, String> implements IFlowHiVarinstService {
+public class FlowHiVarinstService extends BaseEntityService<FlowHiVarinst> implements IFlowHiVarinstService {
 
     @Autowired
     private FlowHiVarinstDao flowHiVarinstDao;
+
+    protected BaseEntityDao<FlowHiVarinst> getDao(){
+        return this.flowHiVarinstDao;
+    }
 }

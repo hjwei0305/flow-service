@@ -1,17 +1,17 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowVariableDao;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowVariable;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
 import org.activiti.engine.history.*;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -50,10 +50,14 @@ import java.util.*;
  * *************************************************************************************************
  */
 @Service
-public class FlowTaskService extends BaseService<FlowTask, String> implements IFlowTaskService {
+public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlowTaskService {
 
     @Autowired
     private FlowTaskDao flowTaskDao;
+
+    protected BaseEntityDao<FlowTask> getDao(){
+        return this.flowTaskDao;
+    }
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;

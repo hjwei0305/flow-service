@@ -1,6 +1,9 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.util.TaskStatus;
@@ -44,9 +47,13 @@ import java.util.*;
  */
 @Service
 @Transactional
-public class FlowDefinationService extends BaseService<FlowDefination, String> implements IFlowDefinationService {
+public class FlowDefinationService extends BaseEntityService<FlowDefination> implements IFlowDefinationService {
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
+
+    protected BaseEntityDao<FlowDefination> getDao(){
+        return this.flowDefinationDao;
+    }
 
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;

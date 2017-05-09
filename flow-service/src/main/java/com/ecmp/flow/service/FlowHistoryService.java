@@ -1,5 +1,8 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
@@ -20,8 +23,12 @@ import org.springframework.stereotype.Service;
  * *************************************************************************************************
  */
 @Service
-public class FlowHistoryService extends BaseService<FlowHistory, String> implements IFlowHistoryService {
+public class FlowHistoryService extends BaseEntityService<FlowHistory> implements IFlowHistoryService {
 
     @Autowired
     private FlowHistoryDao flowHistoryDao;
+
+    protected BaseEntityDao<FlowHistory> getDao(){
+        return this.flowHistoryDao;
+    }
 }

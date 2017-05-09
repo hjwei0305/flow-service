@@ -125,15 +125,6 @@ public class FlowVariable extends com.ecmp.core.entity.BaseEntity implements
 	public FlowVariable() {
 	}
 
-	/** minimal constructor */
-	public FlowVariable(String type, String name, Date createdDate,
-						Date lastModifiedDate) {
-		this.type = type;
-		this.name = name;
-		this.setCreatedDate(createdDate);
-		this.setLastModifiedDate (lastModifiedDate);
-	}
-
 
 	public Integer getVersion() {
 		return version;

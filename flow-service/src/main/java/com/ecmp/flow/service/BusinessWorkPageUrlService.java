@@ -1,9 +1,11 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
+import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.dao.BusinessWorkPageUrlDao;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,10 @@ public class BusinessWorkPageUrlService extends BaseService<BusinessWorkPageUrl,
 
     @Autowired
     private BusinessWorkPageUrlDao businessWorkPageUrlDao;
+
+    protected BaseDao<BusinessWorkPageUrl, String> getDao(){
+        return this.businessWorkPageUrlDao;
+    }
 
     @Override
     public void saveBusinessWorkPageUrlByIds(String id, String selectWorkPageIds) {

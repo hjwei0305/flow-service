@@ -1,5 +1,8 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.dao.WorkPageUrlDao;
@@ -22,10 +25,15 @@ import java.util.List;
  * *************************************************************************************************
  */
 @Service
-public class WorkPageUrlService extends BaseService<WorkPageUrl, String> implements IWorkPageUrlService {
+public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implements IWorkPageUrlService {
 
     @Autowired
     private WorkPageUrlDao workPageUrlDao;
+
+    protected BaseEntityDao<WorkPageUrl> getDao(){
+        return this.workPageUrlDao;
+    }
+
 
     @Override
     public List<WorkPageUrl> findByAppModuleId(String appModuleId) {

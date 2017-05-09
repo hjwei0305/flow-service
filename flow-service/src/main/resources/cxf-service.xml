@@ -11,7 +11,7 @@
     <import resource="classpath*:ecmp-service.xml"/>-->
 
     <context:annotation-config/>
-    <bean class="com.ecmp.core.config.ServiceConfig"/>
+    <bean class="com.ecmp.config.ServiceConfig"/>
 
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
         <property name="basePath" value="/flow"/>
@@ -21,7 +21,7 @@
     </bean>
     <jaxrs:server id="userResource" address="/">
         <jaxrs:serviceBeans>
-            <bean class="com.ecmp.flow.service.AppModuleService"/>
+           <!-- <bean class="com.ecmp.flow.service.AppModuleService"/>-->
             <bean class="com.ecmp.flow.service.BusinessModelService"/>
             <bean class="com.ecmp.flow.service.FlowTypeService"/>
             <bean class="com.ecmp.flow.service.FlowDefinationService"/>

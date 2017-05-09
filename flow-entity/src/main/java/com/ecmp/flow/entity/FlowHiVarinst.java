@@ -113,15 +113,6 @@ public class FlowHiVarinst extends com.ecmp.core.entity.BaseEntity  implements
 	public FlowHiVarinst() {
 	}
 
-	/** minimal constructor */
-	public FlowHiVarinst(FlowInstance flowInstance, String type, String name,
-						 Date createdDate, Date lastModifiedDate) {
-		this.flowInstance = flowInstance;
-		this.type = type;
-		this.name = name;
-		this.setCreatedDate (createdDate);
-		this.setLastModifiedDate ( lastModifiedDate);
-	}
 
 	public FlowInstance getFlowInstance() {
 		return flowInstance;

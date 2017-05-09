@@ -1,5 +1,6 @@
 package com.ecmp.flow.dao;
 
+import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.WorkPageUrl;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface WorkPageUrlDao extends BaseDao<WorkPageUrl, String> {
+public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
     /**
      * 根据应用模块的id来查询工作界面
      *
