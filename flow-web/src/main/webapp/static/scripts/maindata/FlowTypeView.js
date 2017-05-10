@@ -22,13 +22,11 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "业务实体",
+                title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
                 id: "coboId",
                 async: false,
                 colon: false,

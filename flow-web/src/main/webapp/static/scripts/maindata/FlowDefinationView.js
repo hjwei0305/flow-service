@@ -141,9 +141,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: [{
                 xtype: "TextField",
@@ -199,10 +197,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width: "100",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_updateDefVersion'></div>";
-                        if (!rowObject.actDeployId) {
-                            strVar += "<div class='condetail_deleteDefVersion'></div>"
+                        var strVar = "<div class='aa'>";
+
+                        if (rowObject.actDeployId) {
+                            strVar += "<div class='condetail_updateDefVersion'></div>";
+                        }else{
+                            strVar += "<div class='condetail_updateDefVersion'></div>" +
+                                "<div class='condetail_deleteDefVersion'></div>";
                         }
+                        strVar += "</div>";
                         return strVar;
                     }
                 }, {
@@ -766,9 +769,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             height: 50,
             border: false,
             padding: 10,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             items: ['->', {
                 xtype: "SearchBox",
                 displayText: "请输入名称进行搜索",
@@ -848,13 +849,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ToolBar",
                 region: "north",
-                // padding: "10",
+                isOverFlow:false,
                 padding:0,
                 height: 40,
                 border: false,
                 items: [{
                     xtype: "ComboBox",
-                    title: "流程类型",
+                    title: "<span style='font-weight: bold'>" + "流程类型" + "</span>",
                     id: "coboId",
                     async: false,
                     colon: false,

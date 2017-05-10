@@ -22,17 +22,15 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "流程定义版本",
+                title: "<span style='font-weight: bold'>" + "流程定义版本" + "</span>",
                 id: "coboId",
                 async: false,
                 colon: false,
-                labelWidth: 90,
+                labelWidth: 100,
                 store: {
                     url: _ctxPath + "/maindata/flowInstance/findAllFlowDefVersionName"
                 },
@@ -250,9 +248,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: ['->', {
                 xtype: "SearchBox",

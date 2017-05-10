@@ -20,9 +20,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: [{
                 xtype: "Button",

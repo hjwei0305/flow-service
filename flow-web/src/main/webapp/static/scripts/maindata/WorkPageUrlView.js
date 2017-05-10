@@ -22,13 +22,11 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow: false,
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: this.lang.modelText,
+                title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
                 labelWidth: 70,
                 id: "coboId",
                 async: false,
@@ -38,7 +36,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 //     "appModule.id":"appModule.id"
                 // },
                 store: {
-                    url: _ctxPath +"/maindata/workPageUrl/findAllAppModuleName",
+                    url: _ctxPath + "/maindata/workPageUrl/findAllAppModuleName",
                 },
                 field: ["appModule.id"],
                 reader: {
@@ -54,7 +52,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     g.appModuleId = data[0].id;
                     g.appModuleName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath +"/maindata/workPageUrl/find",
+                        url: _ctxPath + "/maindata/workPageUrl/find",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -340,7 +338,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/maindata/workPageUrl/update",
+            url: _ctxPath + "/maindata/workPageUrl/update",
             params: data,
             success: function () {
                 myMask.hide();
@@ -360,7 +358,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowDelMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/maindata/workPageUrl/delete",
+            url: _ctxPath + "/maindata/workPageUrl/delete",
             params: {
                 id: rowData.id
             },

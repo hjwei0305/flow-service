@@ -22,21 +22,16 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            style: {
-                overflow: "hidden"
-            },
+            isOverFlow:false,
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: this.lang.modelText,
+                title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
                 labelWidth: 70,
                 id: "coboId",
                 async: false,
                 colon: false,
                 name: "appModule.name",
-                // submitValue:{
-                //     "appModule.id":"appModule.id"
-                // },
                 store: {
                     url: _ctxPath +"/maindata/businessModel/findAllAppModuleName",
                 },
