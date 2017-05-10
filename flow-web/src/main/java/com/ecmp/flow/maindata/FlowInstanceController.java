@@ -45,6 +45,13 @@ public class FlowInstanceController {
         return "maindata/FlowInstanceView";
     }
 
+    /**
+     * 查询流程实例
+     * @param request
+     * @return 流程实例分页清单
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
@@ -58,17 +65,23 @@ public class FlowInstanceController {
      * 根据id删除流程实例
      * @param id
      * @return 操作结果
-     * @throws JsonProcessingException
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public String delete(String id) {
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询流程历史
+     * @param request
+     * @return  流程历史分页清单
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
     @RequestMapping(value = "findFlowHistory")
     @ResponseBody
     public String findFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
@@ -78,9 +91,13 @@ public class FlowInstanceController {
         return JsonUtil.serialize(flowHistoryPageResult,JsonUtil.DATE_TIME);
     }
 
+    /**
+     * 查询流程定义版本
+     * @return 操作结果
+     */
     @RequestMapping(value = "findAllFlowDefVersionName")
     @ResponseBody
-    public String findAllFlowDefVersionName() throws JsonProcessingException {
+    public String findAllFlowDefVersionName() {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         List<FlowDefVersion> flowDefVersions = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowDefVersions);

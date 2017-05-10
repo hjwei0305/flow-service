@@ -18,7 +18,6 @@ import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +56,7 @@ public class FlowDefinationController {
 
     /**
      * 通过租户代码获取所有组织机构
-     *
+     *@param tenantCode
      * @return 组织机构清单
      */
     @ResponseBody
@@ -68,65 +67,99 @@ public class FlowDefinationController {
         return new JsonTree(result, true);
     }
 
+    /**
+     * 查询流程定义
+     * @param request
+     * @return 流程定义清单
+     * @throws ParseException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String find(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         PageResult<FlowDefination> flowDefinationPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowDefinationPageResult);
     }
 
-
+    /**
+     * 删除流程定义
+     * @param id
+     * @return操作结果
+     */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public String delete(String id){
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询所有流程类型
+     * @return 操作结果
+     */
     @RequestMapping(value = "findAllFlowType")
     @ResponseBody
-    public String findAllFlowType() throws JsonProcessingException {
+    public String findAllFlowType() {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         List<FlowType> flowTypeList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowTypeList);
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 修改流程定义
+     * @param flowDefination
+     * @return 操作结果
+     */
     @RequestMapping(value = "update")
     @ResponseBody
-    public String update(FlowDefination flowDefination) throws JsonProcessingException {
+    public String update(FlowDefination flowDefination)  {
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询流程定义版本
+     * @param request
+     * @return 流程定义版本分页结果
+     * @throws ParseException
+     */
     @RequestMapping(value = "findDefVersion")
     @ResponseBody
-    public String findDefVersion(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String findDefVersion(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         PageResult<FlowDefVersion> flowDefVersionPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowDefVersionPageResult);
     }
 
+    /**
+     * 修改流程定义版本
+     * @param flowDefVersion
+     * @return 操作结果
+     */
     @RequestMapping(value = "updateDefVersion")
     @ResponseBody
-    public String updateDefVersion(FlowDefVersion flowDefVersion) throws JsonProcessingException {
+    public String updateDefVersion(FlowDefVersion flowDefVersion) {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResultWithData<FlowDefVersion> result = proxy.save(flowDefVersion);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 
-
+    /**
+     * 根据id删除流程定义版本
+     * @param id
+     * @return 操作结果
+     */
     @RequestMapping(value = "deleteDefVieson")
     @ResponseBody
-    public String deleteDefVieson(String id) throws JsonProcessingException {
+    public String deleteDefVieson(String id) {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());

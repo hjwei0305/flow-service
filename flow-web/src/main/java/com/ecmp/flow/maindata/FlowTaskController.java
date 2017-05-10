@@ -55,8 +55,9 @@ public class FlowTaskController {
     /**
      * 查询流程任务列表
      * @param request
-     * @return
+     * @return 流程任务列表清单
      * @throws JsonProcessingException
+     * @throws ParseException
      */
     @RequestMapping(value = "find")
     @ResponseBody
@@ -70,7 +71,7 @@ public class FlowTaskController {
     /**
      * 通过流程
      * @param id
-     * @return
+     * @return 操作结果
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
@@ -87,6 +88,7 @@ public class FlowTaskController {
     /**
      * 驳回流程
      * @param id
+     * @return 操作结果
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody

@@ -11,7 +11,6 @@ import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,28 +45,43 @@ public class FlowServiceUrlController {
         return "maindata/FlowServiceUrlView";
     }
 
+    /**
+     * 查询流程服务地址
+     * @param request
+     * @return 服务地址清单
+     * @throws ParseException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String find(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowServiceUrlPageResult);
     }
 
-
+    /**
+     * 根据id删除服务地址
+     * @param id
+     * @return 操作结果
+     */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public String delete(String id) {
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 修改服务地址
+     * @param flowServiceUrl
+     * @return 操作结果
+     */
     @RequestMapping(value = "update")
     @ResponseBody
-    public String update(FlowServiceUrl flowServiceUrl) throws JsonProcessingException {
+    public String update(FlowServiceUrl flowServiceUrl) {
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResultWithData<FlowServiceUrl> result = proxy.save(flowServiceUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage(),result.getData());

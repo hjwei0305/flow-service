@@ -44,36 +44,56 @@ public class WorkPageUrlController {
         return "maindata/WorkPageUrlView";
     }
 
+    /**
+     * 查询工作界面列表
+     * @param request
+     * @return 工作界面清单
+     * @throws ParseException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String find(ServletRequest request) throws ParseException {
         Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
         return JsonUtil.serialize(workPageUrlPage);
     }
 
+    /**
+     * 根据id删除工作界面
+     * @param id
+     * @return 操作结果
+     */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public String delete(String id) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询所有应用模块
+     * @return 应该模块清单
+     */
     @RequestMapping(value = "findAllAppModuleName")
     @ResponseBody
-    public String findAllAppModuleName() throws JsonProcessingException {
+    public String findAllAppModuleName(){
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 修改工作界面
+     * @param workPageUrl
+     * @return 操作结果
+     */
     @RequestMapping(value = "update")
     @ResponseBody
-    public String update(WorkPageUrl workPageUrl) throws JsonProcessingException {
+    public String update(WorkPageUrl workPageUrl) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());

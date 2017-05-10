@@ -14,7 +14,6 @@ import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,11 +54,11 @@ public class BusinessModuleController {
      *
      * @param request
      * @return 业务实体清单
-     * @throws JsonProcessingException
+     * @throws ParseException
      */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String find(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         PageResult<BusinessModel> businessModelPageResult = proxy.findByPage(search);
@@ -71,12 +70,11 @@ public class BusinessModuleController {
      *
      * @param id
      * @return 操作结果
-     * @throws JsonProcessingException
+     * @throws
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
-        System.out.println(id);
+    public String delete(String id) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
@@ -85,13 +83,12 @@ public class BusinessModuleController {
 
     /**
      * 查询应用模块
-     *
      * @return 应用模块清单
-     * @throws JsonProcessingException
+     * @throws
      */
     @RequestMapping(value = "findAllAppModuleName")
     @ResponseBody
-    public String findAllAppModuleName() throws JsonProcessingException {
+    public String findAllAppModuleName() {
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
@@ -100,14 +97,13 @@ public class BusinessModuleController {
 
     /**
      * 保存业务实体
-     *
      * @param businessModel
      * @return 保存后的业务实体
-     * @throws JsonProcessingException
+     * @throws
      */
     @RequestMapping(value = "update")
     @ResponseBody
-    public String update(BusinessModel businessModel) throws JsonProcessingException {
+    public String update(BusinessModel businessModel) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
@@ -116,15 +112,14 @@ public class BusinessModuleController {
 
     /**
      * 查看对应业务实体已选中的工作界面
-     *
      * @param appModuleId
      * @param businessModelId
      * @return
-     * @throws JsonProcessingException
+     * @throws
      */
     @RequestMapping(value = "findSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) throws JsonProcessingException {
+    public List<WorkPageUrl> findSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -132,15 +127,14 @@ public class BusinessModuleController {
 
     /**
      * 查看对应业务实体未选中的工作界面
-     *
      * @param appModuleId     应该模块id
      * @param businessModelId 业务实体id
      * @return
-     * @throws JsonProcessingException
+     * @throws
      */
     @RequestMapping(value = "findNotSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) throws JsonProcessingException {
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -148,29 +142,33 @@ public class BusinessModuleController {
 
     /**
      * 保存设置的工作界面
-     *
-     * @param id                业务实体id
+     * @param id    业务实体id
      * @param selectWorkPageIds 选中的工作界面所有di
      * @return
-     * @throws JsonProcessingException
+     * @throws
      */
 
     @RequestMapping(value = "saveSetWorkPage")
     @ResponseBody
-    public String saveSetWorkPage(String id, String selectWorkPageIds) throws JsonProcessingException {
+    public String saveSetWorkPage(String id, String selectWorkPageIds) {
         IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
         proxy.saveBusinessWorkPageUrlByIds(id, selectWorkPageIds);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG);
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询条件属性
+     * @param conditonPojoClassName
+     * @return
+     * @throws ClassNotFoundException
+     */
     @RequestMapping(value = "findConditionProperty")
     @ResponseBody
-    public String findConditionProperty(String conditonPojoClassName) throws JsonProcessingException, ClassNotFoundException {
+    public String findConditionProperty(String conditonPojoClassName) throws  ClassNotFoundException {
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
         return JsonUtil.serialize(result);
     }
-
 
 }

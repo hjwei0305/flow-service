@@ -47,10 +47,10 @@ public class FlowHistoryController {
 
     /**
      * 查询流程任务列表
-     *
      * @param request
-     * @return
+     * @return 流程任务清单
      * @throws JsonProcessingException
+     * @throws ParseException
      */
     @RequestMapping(value = "find")
     @ResponseBody
@@ -63,9 +63,8 @@ public class FlowHistoryController {
 
     /**
      * 撤销任务
-     *
      * @param id 任务历史ID
-     * @return
+     * @return 操作结果
      */
     @RequestMapping(value = "rollBackTask")
     @ResponseBody
@@ -75,6 +74,5 @@ public class FlowHistoryController {
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
-
 
 }

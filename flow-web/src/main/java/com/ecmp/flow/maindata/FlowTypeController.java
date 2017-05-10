@@ -48,38 +48,56 @@ public class FlowTypeController {
         return "maindata/FlowTypeView";
     }
 
+    /**
+     * 查询流程类型
+     * @param request
+     * @return 流程类型清单
+     * @throws ParseException
+     */
     @RequestMapping(value = "find")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String find(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         PageResult<FlowType> flowTypePageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTypePageResult);
     }
 
-
+    /**
+     * 根据id删除流程类型
+     * @param id
+     * @return 操作结果
+     */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public String delete(String id) {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 查询所有业务实体
+     * @return 操作结果
+     */
     @RequestMapping(value = "findAllBusinessModelName")
     @ResponseBody
-    public String findAllBusinessModelName() throws JsonProcessingException {
+    public String findAllBusinessModelName() {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
         return JsonUtil.serialize(operateStatus);
     }
 
-
+    /**
+     * 修改流程类型
+     * @param flowType
+     * @return 操作结果
+     */
     @RequestMapping(value = "update")
     @ResponseBody
-    public String update(FlowType flowType) throws JsonProcessingException {
+    public String update(FlowType flowType) {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResultWithData<FlowType> result = proxy.save(flowType);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
