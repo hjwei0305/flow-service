@@ -60,12 +60,10 @@ public class BusinessModuleController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-        //  System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         PageResult<BusinessModel> businessModelPageResult = proxy.findByPage(search);
-        String businessModel = JsonUtil.serialize(businessModelPageResult);
-        return businessModel;
+        return JsonUtil.serialize(businessModelPageResult);
     }
 
     /**
@@ -78,7 +76,6 @@ public class BusinessModuleController {
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         System.out.println(id);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResult result = proxy.delete(id);
@@ -95,14 +92,10 @@ public class BusinessModuleController {
     @RequestMapping(value = "findAllAppModuleName")
     @ResponseBody
     public String findAllAppModuleName() throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, "ok", appModuleList);
-        operateStatus.setData(appModuleList);
-        String findAppModuleName = JsonUtil.serialize(operateStatus);
-        System.out.println(findAppModuleName);
-        return findAppModuleName;
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
+        return JsonUtil.serialize(operateStatus);
     }
 
     /**
@@ -115,8 +108,6 @@ public class BusinessModuleController {
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(BusinessModel businessModel) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(businessModel);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
@@ -134,7 +125,6 @@ public class BusinessModuleController {
     @RequestMapping(value = "findSelectEdByAppModuleId")
     @ResponseBody
     public List<WorkPageUrl> findSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -143,7 +133,7 @@ public class BusinessModuleController {
     /**
      * 查看对应业务实体未选中的工作界面
      *
-     * @param appModuleId 应该模块id
+     * @param appModuleId     应该模块id
      * @param businessModelId 业务实体id
      * @return
      * @throws JsonProcessingException
@@ -159,8 +149,8 @@ public class BusinessModuleController {
     /**
      * 保存设置的工作界面
      *
-     * @param id  业务实体id
-     * @param   selectWorkPageIds 选中的工作界面所有di
+     * @param id                业务实体id
+     * @param selectWorkPageIds 选中的工作界面所有di
      * @return
      * @throws JsonProcessingException
      */
@@ -170,19 +160,17 @@ public class BusinessModuleController {
     public String saveSetWorkPage(String id, String selectWorkPageIds) throws JsonProcessingException {
         IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
         proxy.saveBusinessWorkPageUrlByIds(id, selectWorkPageIds);
-        OperateStatus operateStatus = new OperateStatus(true, "保存成功");
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG);
         return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "findConditionProperty")
     @ResponseBody
-    public String findConditionProperty(String conditonPojoClassName) throws JsonProcessingException,ClassNotFoundException {
+    public String findConditionProperty(String conditonPojoClassName) throws JsonProcessingException, ClassNotFoundException {
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
         return JsonUtil.serialize(result);
     }
-
-
 
 
 }

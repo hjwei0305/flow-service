@@ -61,12 +61,10 @@ public class FlowTaskController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
-        String flowTask =  JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
-        return flowTask;
+        return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
     }
 
     /**
@@ -77,8 +75,6 @@ public class FlowTaskController {
     @RequestMapping(value = "completeTask")
     @ResponseBody
     public String completeTask(String id)  {
-        System.out.println("---------------------------------------------");
-        System.out.println(id);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("intput","2");
@@ -102,47 +98,4 @@ public class FlowTaskController {
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }
-
-
-//    @RequestMapping(value = "delete")
-//    @ResponseBody
-//    public String delete(String id) throws JsonProcessingException {
-//        System.out.println("---------------------------------------------");
-//        System.out.println("delete--------------"+id);
-//        OperateStatus status = new OperateStatus();
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-//        proxy.delete(id);
-//        String delSuccess = objectMapper.writeValueAsString(status);
-//        return delSuccess;
-//    }
-//
-//    @RequestMapping(value = "findAllFlowInstanceName")
-//    @ResponseBody
-//    public String findAllFlowInstanceName() throws JsonProcessingException {
-//        System.out.println("---------------------------------------------");
-//        OperateStatus status = new OperateStatus();
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-//        List<FlowInstance> FlowInstanceList = proxy.findAll();
-//        status.setData(FlowInstanceList);
-//        String findFlowInstanceName = objectMapper.writeValueAsString(status);
-//        return findFlowInstanceName;
-//    }
-//
-//
-//    @RequestMapping(value = "update")
-//    @ResponseBody
-//    public String update(FlowTask flowTask) throws JsonProcessingException {
-//        System.out.println("---------------------------------------------");
-//        System.out.println(flowTask);
-//        OperateStatus status = new OperateStatus();
-//        status.setSuccess(true);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//
-//        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-//        proxy.save(flowTask);
-//        String updateSuccess = objectMapper.writeValueAsString(status);
-//        return updateSuccess;
-//    }
 }

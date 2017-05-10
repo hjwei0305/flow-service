@@ -49,36 +49,28 @@ public class FlowServiceUrlController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-      //  System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
-        String flowServiceUrl = JsonUtil.serialize(flowServiceUrlPageResult);
-        return flowServiceUrl;
+        return JsonUtil.serialize(flowServiceUrlPageResult);
     }
 
 
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(id);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
-       String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(FlowServiceUrl flowServiceUrl) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(flowServiceUrl);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResultWithData<FlowServiceUrl> result = proxy.save(flowServiceUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage(),result.getData());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 }

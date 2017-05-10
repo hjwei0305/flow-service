@@ -50,45 +50,34 @@ public class WorkPageUrlController {
         Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
-        String workPageUrl = JsonUtil.serialize(workPageUrlPage);
-        return workPageUrl;
+        return JsonUtil.serialize(workPageUrlPage);
     }
 
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(id);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "findAllAppModuleName")
     @ResponseBody
     public String findAllAppModuleName() throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-        List< com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, "ok", appModuleList);
-        operateStatus.setData(appModuleList);
-        String findAppModuleName = JsonUtil.serialize(operateStatus);
-        System.out.println(findAppModuleName);
-        return findAppModuleName;
+        List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(WorkPageUrl workPageUrl) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(workPageUrl);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
 }

@@ -51,50 +51,38 @@ public class FlowTypeController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         PageResult<FlowType> flowTypePageResult = proxy.findByPage(search);
-        String flowType = JsonUtil.serialize(flowTypePageResult);
-        return flowType;
+        return JsonUtil.serialize(flowTypePageResult);
     }
 
 
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println("delete--------------" + id);
-        ObjectMapper objectMapper = new ObjectMapper();
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "findAllBusinessModelName")
     @ResponseBody
     public String findAllBusinessModelName() throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, "ok", businessModelList);
-        String findbusinessModelName = JsonUtil.serialize(operateStatus);
-        return findbusinessModelName;
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
+        return JsonUtil.serialize(operateStatus);
     }
 
 
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(FlowType flowType) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(flowType);
-
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResultWithData<FlowType> result = proxy.save(flowType);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 }

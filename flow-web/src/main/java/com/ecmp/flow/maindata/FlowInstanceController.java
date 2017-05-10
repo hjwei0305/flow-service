@@ -48,12 +48,10 @@ public class FlowInstanceController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
-        String flowInstance = JsonUtil.serialize(flowInstancePageResult,JsonUtil.DATE_TIME);
-        return flowInstance;
+        return JsonUtil.serialize(flowInstancePageResult,JsonUtil.DATE_TIME);
     }
 
     /**
@@ -65,9 +63,6 @@ public class FlowInstanceController {
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(id);
-        //   System.out.print(status);
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
@@ -77,7 +72,6 @@ public class FlowInstanceController {
     @RequestMapping(value = "findFlowHistory")
     @ResponseBody
     public String findFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowHistoryPageResult = proxy.findByPage(search);
@@ -87,25 +81,10 @@ public class FlowInstanceController {
     @RequestMapping(value = "findAllFlowDefVersionName")
     @ResponseBody
     public String findAllFlowDefVersionName() throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         List<FlowDefVersion> flowDefVersions = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, "ok", flowDefVersions);
-        String findbusinessModelName = JsonUtil.serialize(operateStatus);
-        return findbusinessModelName;
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowDefVersions);
+        return JsonUtil.serialize(operateStatus);
     }
-//
-//
-//    @RequestMapping(value = "update")
-//    @ResponseBody
-//    public String update(FlowType flowType) throws JsonProcessingException {
-//        System.out.println("---------------------------------------------");
-//        System.out.println(flowType);
-//
-//        IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
-//        OperateResultWithData<FlowType> result = proxy.save(flowType);
-//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-//        String updateSuccess = JsonUtil.serialize(operateStatus);
-//        return updateSuccess;
-//    }
+
 }

@@ -71,87 +71,66 @@ public class FlowDefinationController {
     @RequestMapping(value = "find")
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
         Search search = SearchUtil.genSearch(request);
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         PageResult<FlowDefination> flowDefinationPageResult = proxy.findByPage(search);
-        String flowDefination = JsonUtil.serialize(flowDefinationPageResult);
-        return flowDefination;
+        return JsonUtil.serialize(flowDefinationPageResult);
     }
 
 
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println("delete--------------" + id);
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "findAllFlowType")
     @ResponseBody
     public String findAllFlowType() throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         List<FlowType> flowTypeList = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, "ok", flowTypeList);
-        String findFlowTypeName = JsonUtil.serialize(operateStatus);
-        return findFlowTypeName;
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowTypeList);
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "update")
     @ResponseBody
     public String update(FlowDefination flowDefination) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(flowDefination);
-
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
     @RequestMapping(value = "findDefVersion")
     @ResponseBody
     public String findDefVersion(ServletRequest request) throws JsonProcessingException, ParseException {
-        System.out.println("---------------------------------------------");
-      //  System.out.println(id);
         Search search = SearchUtil.genSearch(request);
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         PageResult<FlowDefVersion> flowDefVersionPageResult = proxy.findByPage(search);
-        String flowDefinationVersion = JsonUtil.serialize(flowDefVersionPageResult);
-        return flowDefinationVersion;
+        return JsonUtil.serialize(flowDefVersionPageResult);
     }
 
     @RequestMapping(value = "updateDefVersion")
     @ResponseBody
     public String updateDefVersion(FlowDefVersion flowDefVersion) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println(flowDefVersion);
-
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResultWithData<FlowDefVersion> result = proxy.save(flowDefVersion);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-        String updateSuccess = JsonUtil.serialize(operateStatus);
-        return updateSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
 
     @RequestMapping(value = "deleteDefVieson")
     @ResponseBody
     public String deleteDefVieson(String id) throws JsonProcessingException {
-        System.out.println("---------------------------------------------");
-        System.out.println("delete--------------" + id);
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        String delSuccess = JsonUtil.serialize(operateStatus);
-        return delSuccess;
+        return JsonUtil.serialize(operateStatus);
     }
 
 }
