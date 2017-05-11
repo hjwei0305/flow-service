@@ -13,6 +13,8 @@ import com.ecmp.flow.entity.FlowServiceUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -33,5 +35,11 @@ public class FlowServiceUrlService extends BaseEntityService<FlowServiceUrl> imp
 
     protected BaseEntityDao<FlowServiceUrl> getDao(){
         return this.flowServiceUrlDao;
+    }
+
+
+    @Override
+    public List<FlowServiceUrl> findByFlowTypeId(String flowTypeId){
+        return flowServiceUrlDao.findByFlowTypeId(flowTypeId);
     }
 }

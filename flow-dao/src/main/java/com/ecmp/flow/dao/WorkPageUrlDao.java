@@ -40,6 +40,11 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
     List<com.ecmp.flow.entity.WorkPageUrl> findNotSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
 
 
-    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = (select t.businessModel.id from com.ecmp.flow.entity.FlowType t  where t.id = :flowTypeId)) ")
-    List<com.ecmp.flow.entity.WorkPageUrl> findByFlowTypeId(@Param("appModuleId")String appModuleId,@Param("flowTypeId")String flowTypeId);
+    /**
+     * 通过流程类型id查找可配置工作页面
+     * @param flowTypeId 流程类型id
+     * @return
+     */
+    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = (select t.businessModel.id from com.ecmp.flow.entity.FlowType t  where t.id = :flowTypeId)) ")
+    List<com.ecmp.flow.entity.WorkPageUrl> findByFlowTypeId(@Param("flowTypeId")String flowTypeId);
 }
