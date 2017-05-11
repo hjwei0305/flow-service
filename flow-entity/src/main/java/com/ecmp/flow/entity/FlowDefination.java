@@ -72,6 +72,12 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	private String depict;
 
 	/**
+	 * 组织机构id
+	 */
+	@Column(name="basic_org_id")
+	private String orgId;
+
+	/**
 	 * 拥有的流程定义版本
 	 */
 	@Transient
@@ -183,7 +189,13 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.version = version;
 	}
 
+	public String getOrgId() {
+		return orgId;
+	}
 
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
+	}
 
 	@Override
 	public int hashCode() {
