@@ -35,11 +35,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         });
         $(".condetail_updateDefVersion").live("click", function () {
             var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
-            // parent.homeView.addTab({
-            //     title: data.name,
-            //     url: _ctxPath + "/design"
-            // });
-            // g.updateDefVersion(data);
         });
 
         $(".condetail_delete").live("click", function () {
@@ -61,12 +56,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             params: {
                                 id: rowData.id
                             },
-                            success: function () {
+                            success: function (result) {
                                 myMask.hide();
-                                EUI.getCmp("gridPanel").refreshGrid();
+                                EUI.ProcessStatus(result);
+                                if (result.success) {
+                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                }
                             },
-                            failure: function () {
+                            failure: function (result) {
                                 myMask.hide();
+                                EUI.ProcessStatus(result);
                             }
                         });
                     }
@@ -97,12 +96,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             params: {
                                 id: rowData.id
                             },
-                            success: function () {
+                            success: function (result) {
                                 myMask.hide();
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                EUI.ProcessStatus(result);
+                                if (result.success) {
+                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                }
                             },
-                            failure: function () {
+                            failure: function (result) {
                                 myMask.hide();
+                                EUI.ProcessStatus(result);
                             }
                         });
                     }
@@ -173,8 +176,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         };
-    }
-    ,
+    },
     initWindGrid: function (rowData) {
         var g = this;
         return {
@@ -197,8 +199,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width: "100",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='aa'>";
-
+                        var strVar = "<div class='condetail_defVerOperate'>";
                         if (rowObject.actDeployId) {
                             strVar += "<div class='condetail_updateDefVersion'></div>";
                         }else{
@@ -304,7 +305,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "lastVersionId",
                     width: 220,
                     maxLength: 10,
-                    value: data.lastVersionId
+                    value: data.lastVersionId,
+                    hidden: true
                 }, {
                     xtype: "TextField",
                     title: "定义KEY",
@@ -552,11 +554,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/maindata/flowDefination/update",
             params: data,
-            success: function () {
+            success: function (result) {
                 myMask.hide();
-                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                EUI.ProcessStatus(result);
+                if (result.success) {
+                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                }
             },
-            failure: function () {
+            failure: function (result) {
+                EUI.ProcessStatus(result);
                 myMask.hide();
             }
         });
@@ -572,12 +578,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/maindata/flowDefination/updateDefVersion",
             params: data,
-            success: function () {
+            success: function (result) {
                 myMask.hide();
-                EUI.getCmp("defViesonGridPanel").grid.trigger("reloadGrid");
+                EUI.ProcessStatus(result);
+                if (result.success) {
+                    EUI.getCmp("defViesonGridPanel").grid.trigger("reloadGrid");
+                }
             },
-            failure: function () {
+            failure: function (result) {
                 myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
         win.close();
@@ -610,30 +620,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-// initBottomBar: function () {
-//     var g = this;
-//     return {
-//         xtype: "Container",
-//         region: "south",
-//         height: 50,
-//         padding: 7,
-//         style: {
-//             overflow: "hidden",
-//         },
-//         items: [{
-//             xtype: "SearchBox",
-//             id: "searchBox_treePanel",
-//             //searchDisplayText:"请输入代码或名称查询"
-//             displayText: g.lang.searchDisplayText,
-//             onSearch: function (v) {
-//
-//             },
-//             afterClear: function () {
-//
-//             }
-//         }]
-//     }
-// },
     initTree: function () {
         var g = this;
         return {
@@ -646,20 +632,20 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 "background":"#fff"
             },
             onSelect: function (node) {
-                if (node.parentId) {
-                    EUI.getCmp("editsave").setDisable(false);
-                    g.editFormCmp.getCmpByName("name").setReadOnly(false);
-                    g.editFormCmp.getCmpByName("frozen").setReadOnly(false);
-                    g.editFormCmp.getCmpByName("rank").setReadOnly(false);
-                } else {
-
-                    EUI.getCmp("editsave").setDisable(true);
-                    g.editFormCmp.getCmpByName("name").setReadOnly(true);
-                    g.editFormCmp.getCmpByName("frozen").setReadOnly(true);
-                    g.editFormCmp.getCmpByName("rank").setReadOnly(true);
-                }
-                g.editFormCmp.loadData(node)
-                g.selectedNode = node;
+                // if (node.parentId) {
+                //     EUI.getCmp("editsave").setDisable(false);
+                //     g.editFormCmp.getCmpByName("name").setReadOnly(false);
+                //     g.editFormCmp.getCmpByName("frozen").setReadOnly(false);
+                //     g.editFormCmp.getCmpByName("rank").setReadOnly(false);
+                // } else {
+                //
+                //     EUI.getCmp("editsave").setDisable(true);
+                //     g.editFormCmp.getCmpByName("name").setReadOnly(true);
+                //     g.editFormCmp.getCmpByName("frozen").setReadOnly(true);
+                //     g.editFormCmp.getCmpByName("rank").setReadOnly(true);
+                // }
+                // g.editFormCmp.loadData(node)
+                // g.selectedNode = node;
             },
             afterItemRender: function (nodeData) {
                 if (nodeData.frozen) {
@@ -673,8 +659,31 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
             }
         }
-    }
-    ,
+    },
+    getOrgTreeData: function (rowData) {
+        var g = this;
+        var myMask = EUI.LoadMask({
+            //queryMaskMessageText: "正在努力获取数据，请稍候...",
+            msg: g.lang.queryMaskMessageText,
+        });
+        EUI.Store({
+            async:false,
+            url: _ctxPath + "/maindata/flowDefination/findAllOrgs",
+            success: function (data) {
+                myMask.hide();
+                g.treeCmp.setData(data);
+            },
+            failure: function (re) {
+                myMask.hide();
+                var status = {
+                    msg: re.msg,
+                    success: false,
+                    showTime: 6
+                }
+                EUI.ProcessStatus(status);
+            }
+        });
+    },
     initCenterContainer: function () {
         var g = this;
         return {
@@ -821,383 +830,4 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }]
         }
     },
-    deleteTreeNode: function (rowData) {
-        var g = this;
-        var infoBox = EUI.MessageBox({
-            //hintText: 提示
-            title: g.lang.hintText,
-            //deleteHintMessageText:您确定要删除吗？
-            msg: g.lang.deleteHintMessageText,
-            buttons: [{
-                //okText: 确定
-                title: g.lang.okText,
-                selected: true,
-                handler: function () {
-                    infoBox.remove();
-                    var myMask = EUI.LoadMask({
-                        //deleteMaskMessageText: 正在删除，请稍候...
-                        msg: g.lang.deleteMaskMessageText
-                    });
-                    EUI.Store({
-                        //  url: "../Organization/delete",
-                        params: {
-                            id: rowData.id
-                        },
-                        success: function (result) {
-                            myMask.hide();
-                            var status = {
-                                msg: result.msg,
-                                success: result.success,
-                                showTime: result.success ? 2 : 60
-                            };
-                            if (status.success) {
-                                g.gridCmp.deleteRow(rowData.id);
-                                g.treeCmp.deleteItem(rowData.id);
-                                var parentData = g.treeCmp.getParentData(rowData.id);
-                                for (var i = 0; i < parentData.children.length; i++) {
-                                    if (parentData.children[i].id == node.data.id) {
-                                        parentData.children.splice(i, 1);
-                                    }
-                                    if (parentData.children.length == 0) {
-                                        parentData.children = null;
-                                        break;
-                                    }
-                                }
-                            }
-                            EUI.ProcessStatus(status);
-                        },
-                        failure: function (re) {
-                            myMask.hide();
-                            var status = {
-                                msg: re.msg,
-                                success: false,
-                                showTime: 6
-                            };
-                            EUI.ProcessStatus(status);
-                        }
-                    });
-                }
-            }, {
-                //cancelText:取消
-                title: g.lang.cancelText,
-                handler: function () {
-                    infoBox.remove();
-                }
-            }]
-        });
-    },
-    getFormItems: function (isEdit) {
-        var g = this;
-        return [{
-            xtype: "TextField",
-            hidden: true,
-            name: "id"
-        }, {
-            xtype: "TextField",
-            hidden: true,
-            name: "tenantCode"
-        }, {
-            xtype: "TextField",
-            hidden: true,
-            name: "parentId"
-        }, {
-            xtype: "TextField",
-            //codeText:"代码"
-            title: g.lang.codeText,
-            name: "code",
-            maxlength: 6,
-            //allowBlank: false,
-            hidden: !isEdit,
-            readonly: true
-        }, {
-            xtype: "TextField",
-            //nameText:"名称"
-            title: g.lang.nameText,
-            name: "name",
-            maxlength: 100,
-            allowBlank: false
-        }, {
-            xtype: "CheckBox",
-            //frozenText:'是否冻结'
-            title: g.lang.frozenText,
-            name: "frozen"
-        }, {
-            xtype: "TextField",
-            //rankText:'排序'
-            title: g.lang.rankText,
-            name: "rank",
-            allowBlank: false
-        }];
-    },
-    add: function () {
-        var g = this;
-        g.editWin = EUI.Window({
-            //addText: 新增
-            title: g.lang.addText,
-            height: 200,
-            padding: 15,
-            width: 500,
-            items: [{
-                xtype: "FormPanel",
-                id: "createForm",
-                padding: 0,
-                defaultConfig: {
-                    labelWidth: 100,
-                    width: 340
-                },
-                items: g.getFormItems(false)
-            }],
-            buttons: [{
-                // saveText:保存
-                title: g.lang.saveText,
-                selected: true,
-                handler: function () {
-                    g.save();
-                }
-            }, {
-                //cancelText:取消
-                title: g.lang.cancelText,
-                handler: function () {
-                    g.editWin.remove();
-                }
-            }]
-        });
-        g.createFormCmp = EUI.getCmp("createForm");
-        g.createFormCmp.getCmpByName("parentId").setValue(g.selectedNode.id);
-    }
-    ,
-    save: function () {
-        var g = this, data;
-        if (g.isEdit) {
-            if (!g.editFormCmp.isValid()) {
-                g.message("有必输项未输入，请确认！");
-                return;
-            }
-            data = g.editFormCmp.getFormValue();
-        } else {
-            if (!g.createFormCmp.isValid()) {
-                g.message("有必输项未输入，请确认！");
-                return;
-            }
-            data = g.createFormCmp.getFormValue();
-            delete data.id;
-        }
-
-        data.tenantCode = g.tenantCode;
-        var myMask = EUI.LoadMask({
-            //saveMaskMessageText:"正在保存，请稍候..."
-            msg: g.lang.saveMaskMessageText
-        });
-        EUI.Store({
-            //url: "../Organization/save",
-            params: data,
-            success: function (result) {
-                myMask.hide();
-                var status = {
-                    msg: result.msg,
-                    success: result.success,
-                    showTime: result.success ? 2 : 60
-                };
-                if (status.success) {
-                    if (!g.isEdit) {
-                        g.editWin.remove();
-                    }
-                    var nodeData = result.data;
-                    var parentData = g.treeCmp.getNodeData(nodeData.parentId);
-                    if (g.isEdit) {
-                        for (var i = 0; i < parentData.children.length; i++) {
-                            if (parentData.children[i].id == nodeData.id) {
-                                parentData.children[i].code = nodeData.code;
-                                parentData.children[i].name = nodeData.name;
-                                parentData.children[i].frozen = nodeData.frozen;
-                                parentData.children[i].rank = nodeData.rank;
-                            }
-                        }
-                    } else {
-                        parentData.children.push(nodeData);
-                    }
-                    parentData.children.sort(function (a, b) {
-                        return a.rank - b.rank;
-                    });
-                    g.treeCmp.initTree();
-                    g.treeCmp.setSelect(nodeData.id);
-                    //g.getOrgTreeData(result.data);
-                    //g.gridCmp.reset();
-                }
-                EUI.ProcessStatus(status);
-            },
-            failure: function (re) {
-                myMask.hide();
-                var status = {
-                    msg: re.msg,
-                    success: false,
-                    showTime: 6
-                };
-                EUI.ProcessStatus(status);
-            }
-        });
-    },
-    getOrgTreeData: function (rowData) {
-        var g = this;
-        var myMask = EUI.LoadMask({
-            //queryMaskMessageText: "正在努力获取数据，请稍候...",
-            msg: g.lang.queryMaskMessageText
-        });
-        EUI.Store({
-            async: false,
-            //    url: _ctxPath + "/maindata/flowDefination/findOrganization",
-            url: _ctxPath + "/maindata/flowDefination/findOrgTreeByTenantCode",
-            params: {tenantCode: g.tenantCode},
-            success: function (result) {
-                myMask.hide();
-                if (result.success) {
-                    g.treeCmp.setData(result.data);
-                }
-            },
-            failure: function (re) {
-                myMask.hide();
-                var status = {
-                    msg: re.msg,
-                    success: false,
-                    showTime: 6
-                };
-                EUI.ProcessStatus(status);
-            }
-        });
-    }
-    ,
-    openNodeMoveWin: function () {
-        var g = this, nodeData = g.selectedNode;
-        g.moveNodeId = nodeData.id;
-        g.nodeMoveWin = EUI.Window({
-            title: "移动节点【" + nodeData.name + "】到：",
-            height: 360,
-            width: 340,
-            buttonAlign: 'center',
-            items: [{
-                xtype: "TreePanel",
-                data: g.getMoveToData(nodeData),
-                onSelect: function (node) {
-                    if (node.id == nodeData.id || nodeData.parentId == node.id || node.parentId == nodeData.id) {
-                        $(".selected", this.dom).removeClass("selected");
-                        g.targetNode = null;
-                        return;
-                    }
-                    g.targetNode = node;
-                }
-            }],
-            buttons: [{
-                title: "确定",
-                width: 40,
-                selected: true,
-                handler: function () {
-                    g.moveNodeToSave();
-                }
-            }, {
-                title: "取消",
-                width: 40,
-                handler: function () {
-                    g.nodeMoveWin.close();
-                }
-            }]
-        });
-    },
-    getMoveToData: function (moveNode) {
-        var g = this;
-        var data = g.treeCmp.data;
-        return g._getMoveData(data, moveNode);
-    },
-    _getMoveData: function (nodes, moveNode) {
-        if (!moveNode) return [];
-        var result = [];
-        for (var i = 0; i < nodes.length; i++) {
-            if (moveNode.parentId == nodes[i].id || (nodes[i]["children"] && (nodes[i].id == moveNode.id))) {
-                result = result.concat(this._getMoveData(nodes[i]["children"], moveNode));
-            } else if (moveNode.id == nodes[i].parentId) {
-                continue;
-            }
-            else {
-                result.push(nodes[i]);
-            }
-        }
-        return result;
-    },
-    moveNodeToSave: function () {
-        var g = this;
-        var selNode = g.targetNode;
-        if (selNode) {
-            var myMask = EUI.LoadMask({
-                //queryMaskMessageText: "正在努力获取数据，请稍候...",
-                msg: g.lang.queryMaskMessageText
-            });
-            EUI.Store({
-                //url: '../Organization/move/',
-                params: {nodeId: g.moveNodeId, targetParentId: selNode.id},
-                success: function (result) {
-                    myMask.hide();
-                    if (result.success) {
-                        g.nodeMoveWin.close();
-                        g.getOrgTreeData();
-                        // g.treeCmp = EUI.getCmp("treePanel");
-                        g.treeCmp.setSelect(g.moveNodeId);
-                    }
-                    EUI.ProcessStatus({
-                        msg: result.msg,
-                        success: result.success,
-                        showTime: result.success ? 2 : 60
-                    });
-                },
-                failure: function (re) {
-                    myMask.hide();
-                    var status = {
-                        msg: re.msg,
-                        success: false,
-                        showTime: 6
-                    };
-                    EUI.ProcessStatus(status);
-                }
-            });
-        } else {
-            //moveHintMessageText: "请选择您要移动的节点！"
-            g.message(g.lang.moveHintMessageText);
-            return false;
-        }
-    },
-    /*
-     setNodeFreezedClass: function (node) {
-     var freezedItem = $("#" + node.id);
-     if (freezedItem == []) {
-     return;
-     }
-     var itemcmp = $(freezedItem[0].children[0]);
-     if (node.IsFreeze) {
-     itemcmp.find("span").addClass("ux-tree-freezed");
-     var itemdom = itemcmp[0];
-     var title = "(已冻结)" + itemdom.title;
-     itemcmp.attr("title", title);
-     } else {
-     itemcmp.find("span").removeClass("ux-tree-freezed");
-     var itemdom = itemcmp[0];
-     var title = itemdom.title.replace("(已冻结)", "");
-     itemcmp.attr("title", title);
-     }
-     },
-     */
-    message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            //hintText: "提示",
-            title: g.lang.hintText,
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                //okText:"确定",
-                title: g.lang.okText,
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
-    }
 });

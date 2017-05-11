@@ -299,12 +299,16 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         params: {
                             id: rowData.id
                         },
-                        success: function () {
+                        success: function (result) {
                             myMask.hide();
-                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            }
                         },
-                        failure: function () {
+                        failure: function (result) {
                             myMask.hide();
+                            EUI.ProcessStatus(result);
                         }
                     });
                 }

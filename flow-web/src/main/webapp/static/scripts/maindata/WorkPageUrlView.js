@@ -340,12 +340,16 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/maindata/workPageUrl/update",
             params: data,
-            success: function () {
+            success: function (result) {
                 myMask.hide();
-                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                EUI.ProcessStatus(result);
+                if (result.success) {
+                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                }
             },
-            failure: function () {
+            failure: function (result) {
                 myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
         win.close();
@@ -362,13 +366,16 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             params: {
                 id: rowData.id
             },
-            success: function () {
+            success: function (result) {
                 myMask.hide();
-                EUI.getCmp("gridPanel").deleteRow(rowData.id);
-                // EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                EUI.ProcessStatus(result);
+                if (result.success) {
+                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                }
             },
-            failure: function () {
+            failure: function (result) {
                 myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
     }
