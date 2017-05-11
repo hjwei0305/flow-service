@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -28,6 +29,18 @@ import javax.ws.rs.core.MediaType;
 @Path("flowHistory")
 @Api(value = "IFlowHistoryService 流程历史服务API接口")
 public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
+
+    /**
+     * 保存一个实体
+     * @param flowHistory 实体
+     * @return 保存后的实体
+     */
+    @POST
+    @Path("save")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    OperateResultWithData<FlowHistory> save(FlowHistory flowHistory);
 
     /**
      * 获取分页数据

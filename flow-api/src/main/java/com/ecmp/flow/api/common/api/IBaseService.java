@@ -51,12 +51,12 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
      * @param entity 实体
      * @return 保存后的实体
      */
-    @POST
-    @Path("save")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<T> save(T entity);
+//    @POST
+//    @Path("save")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+//    OperateResultWithData<T> save(T entity);
 
 //    /**
 //     * 删除一个实体

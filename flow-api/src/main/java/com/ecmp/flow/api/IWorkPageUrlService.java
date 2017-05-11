@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -26,6 +27,18 @@ import java.util.List;
 @Path("workPageUrl")
 @Api(value = "IWorkPageUrlService工作界面配置管理服务API接口")
 public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
+
+    /**
+     * 保存一个实体
+     * @param workPageUrl 实体
+     * @return 保存后的实体
+     */
+    @POST
+    @Path("save")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    OperateResultWithData<WorkPageUrl> save(WorkPageUrl workPageUrl);
 
     /**
      * 获取分页数据
