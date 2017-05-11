@@ -59,6 +59,13 @@ public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(length = 250)
     private String depict;
 
+    /**
+     * 关联业务实体模型
+     */
+    @ManyToOne()
+    @JoinColumn(name = "business_model_id")
+    private BusinessModel businessModel;
+
 
 
     public String getName() {
@@ -99,6 +106,14 @@ public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public BusinessModel getBusinessModel() {
+        return businessModel;
+    }
+
+    public void setBusinessModel(BusinessModel businessModel) {
+        this.businessModel = businessModel;
     }
 
     @Override
