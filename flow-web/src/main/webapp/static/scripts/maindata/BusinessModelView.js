@@ -167,6 +167,41 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         this.addWorkPageEvent();
     },
 
+    deleteBusinessModel:function(rowData){
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/maindata/businessModel/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function () {
+                            myMask.hide();
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                        },
+                        failure: function () {
+                            myMask.hide();
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
+        });
+    },
     updateBusinessModel: function (data) {
         var g = this;
         console.log(data);
@@ -576,38 +611,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         $(".condetail_delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath + "/maindata/businessModel/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function () {
-                                myMask.hide();
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                            },
-                            failure: function () {
-                                myMask.hide();
-                            }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+            g.deleteBusinessModel(rowData);
         });
         $(".condetail_look").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
