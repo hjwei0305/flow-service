@@ -49,4 +49,9 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     public List<WorkPageUrl> findNotSelectEdByAppModuleId(String appModuleId,String businessModelId) {
         return workPageUrlDao.findNotSelectEd(appModuleId, businessModelId);
     }
+
+    @Override
+    public List<WorkPageUrl> findByFlowTypeId(String flowTypeId){
+        return workPageUrlDao.findByFlowTypeId(flowTypeId);
+    }
 }

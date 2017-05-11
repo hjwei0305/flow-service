@@ -8,11 +8,9 @@ import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -53,4 +51,16 @@ public interface IFlowServiceUrlService extends IBaseService<FlowServiceUrl, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowServiceUrl> findByPage(Search searchConfig);
+
+    /**
+     * 通过流程类型id查找拥有的服务方法
+     * @param flowTypeId 流程类型id
+     * @return 服务方法list
+     */
+    @GET
+    @Path("findByFlowTypeId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程类型id查找拥有的服务方法",notes = "测试")
+    public List<FlowServiceUrl> findByFlowTypeId(String flowTypeId);
 }
