@@ -756,7 +756,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             border: false,
             width: 420,
             itemspace: 0,
-            padding: 0,
             layout: "border",
             items: [this.initTopBar(), this.initTree()]
         }
@@ -766,14 +765,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "ToolBar",
             region: "north",
-            height: 50,
+            height: 40,
             border: false,
-            width:428,
-            padding: 10,
+            padding: 0,
             isOverFlow:false,
-            style:{
-                "padding-right":"0px"
-            },
             items: ['->', {
                 xtype: "SearchBox",
                 displayText: "请输入名称进行搜索"
@@ -853,7 +848,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             itemspace: 0,
             layout: "border",
             border:false,
-            padding: 10,
             items: [{
                 xtype: "ToolBar",
                 region: "north",
