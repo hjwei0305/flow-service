@@ -1,5 +1,6 @@
 .condetail_operate{
-    width:108px;
+    /*width:108px;*/
+    width:138px;
     height:15px;
     line-height:15px;
     margin:0 auto
@@ -61,6 +62,15 @@
     float: left;
     background: url("../images/operate_set2.png") no-repeat;
 }
+
+
+.condetail_setServiceUrl{
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    float: left;
+    background: url("../images/operate_set2.png") no-repeat;
+}
 .arrow-right{
     background: url("../images/operate_arrow_right.png") no-repeat;
     width: 22px;
@@ -77,3 +87,30 @@
     margin: 10px auto 0;
     /*margin-top: 10px;*/
 }
+
+.condetail_operateServiceUrl{
+    /*width:108px;*/
+    width:45px;
+    height:15px;
+    line-height:15px;
+    margin:0 auto
+}
+
+.condetail_updateServiceUrl {
+    width: 15px;
+    height: 15px;
+    float: left;
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: 0 -160px;
+}
+
+.condetail_deleteServiceUrl {
+    width: 15px;
+    height: 15px;
+    float: right;
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: -32px -160px;
+}
+
