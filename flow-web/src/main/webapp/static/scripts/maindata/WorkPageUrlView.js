@@ -36,7 +36,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 //     "appModule.id":"appModule.id"
                 // },
                 store: {
-                    url: _ctxPath + "/maindata/workPageUrl/findAllAppModuleName",
+                    url: _ctxPath + "/maindata/workPageUrl/findAllAppModuleName"
                 },
                 field: ["appModule.id"],
                 reader: {
@@ -121,8 +121,8 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
-                            "<div class='condetail-update'></div>" +
-                            "<div class='condetail-delete'></div></div>";
+                            "<div class='condetail-update' title='编辑'></div>" +
+                            "<div class='condetail-delete' title='删除'></div></div>";
                         return strVar;
                     }
                 }, {

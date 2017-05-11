@@ -11,11 +11,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             border: false,
             padding: 8,
             itemspace: 0,
-            items: [this.initTbar(), this.initLeftGrid()]
+            items: [this.initToolbar(), this.initLeftGrid()]
         });
         this.addEvents();
     },
-    initTbar: function () {
+    initToolbar: function () {
         var g = this;
         return {
             xtype: "ToolBar",
@@ -33,9 +33,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 colon: false,
                 name: "appModule.name",
                 store: {
-                    url: _ctxPath +"/maindata/businessModel/findAllAppModuleName",
+                    url: _ctxPath +"/maindata/businessModel/findAllAppModuleName"
                 },
-                field: ["appModule.id"],
+                field: ["appModuleId"],
                 reader: {
                     name: "name",
                     field: ["id"]
@@ -53,7 +53,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         loadonce: false,
                         datatype: "json",
                         postData: {
-                            "Q_EQ_appModule.id": data[0].id
+                            Q_EQ_appModuleId: data[0].id
                         }
                     }, true)
                 },
@@ -69,7 +69,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     g.appModule = data.data.id;
                     g.appModuleName = data.data.name;
                     EUI.getCmp("gridPanel").setPostParams({
-                            "Q_EQ_appModule.id": data.data.id
+                            Q_EQ_appModuleId: data.data.id
                         }
                     ).trigger("reloadGrid");
                 }
@@ -118,10 +118,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>" +
-                            "<div class='condetail_look'></div>" +
-                            "<div class='condetail_set'></div>"
-                            + "<div class='condetail_update'></div>"
-                            + "<div class='condetail_delete'></div></div>";
+                            "<div class='condetail_look' title='查看'></div>" +
+                            "<div class='condetail_set' title='设置'></div>"
+                            + "<div class='condetail_update' title='编辑'></div>"
+                            + "<div class='condetail_delete' title='删除'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -193,7 +193,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: "应用模块ID",
                     labelWidth: 90,
                     allowBlank: false,
-                    name: "appModule.id",
+                    name: "appModuleId",
                     width: 220,
                     value: g.appModule,
                     hidden: true
@@ -253,36 +253,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBusinessModel");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.className) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputClassPathMsgText
-                        // });
-                        return;
-                    }
-                    if (!data.conditonBean) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputConditonBeanText
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText
-                        // });
-                        return;
-                    }
                     g.saveBusinessModel(data);
                 }
             }, {
@@ -308,7 +283,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: "应用模块ID",
                     labelWidth: 90,
                     allowBlank: false,
-                    name: "appModule.id",
+                    name: "appModuleId",
                     width: 220,
                     value: g.appModule,
                     hidden: true
@@ -367,14 +342,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     }
                     var data = form.getFormValue();
                     console.log(data);
-
-                    /* if (!data["appModule.name"]) {
-                     EUI.ProcessStatus({
-                     success: false,
-                     msg: g.lang.chooseBelongToAppModuleText,
-                     });
-                     return;
-                     }*/
                     g.saveBusinessModel(data);
                 }
             }, {

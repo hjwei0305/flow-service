@@ -66,7 +66,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         var strVar = '';
                         if('COMPLETED' == rowObject.taskStatus){
                              strVar = "<div class='btn_operate'>"
-                                + "<div class='rollBackBtn'>撤销</div>"
+                                + "<div class='rollBackBtn' title='撤销'>撤销</div>"
                         }
                         return strVar;
                     }

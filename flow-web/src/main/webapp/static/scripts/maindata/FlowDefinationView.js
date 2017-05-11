@@ -336,17 +336,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowDefination");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.defKey) {
-                        return;
-                    }
-                    if (!data.depict) {
-                        return;
-                    }
-                    if (!data.startUel) {
-                        return;
-                    }
                     g.saveFlowDefination(data);
                 }
             }, {
@@ -357,141 +351,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-// updateDefVersion: function (data) {
-//     var g = this;
-//     console.log(data);
-//     win = EUI.Window({
-//         title: "修改流程定义版本",
-//         height: 350,
-//         padding: 15,
-//         items: [{
-//             xtype: "FormPanel",
-//             id: "updateDefVersion",
-//             padding: 0,
-//             items: [{
-//                 xtype: "TextField",
-//                 title: "ID",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "id",
-//                 width: 220,
-//                 maxLength: 10,
-//                 value: data.id,
-//                 hidden: true
-//             }, {
-//                 xtype: "TextField",
-//                 title: "所属流程定义ID",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "flowDefination.id",
-//                 width: 220,
-//                 value: g.flowDefinationId,
-//                 hidden: true
-//             }, {
-//                 xtype: "TextField",
-//                 title: "名称",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "name",
-//                 width: 220,
-//                 maxLength: 10,
-//                 value: data.name
-//             }, {
-//                 xtype: "TextField",
-//                 title: "定义ID",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "actDefId",
-//                 width: 220,
-//                 value: data.actDefId
-//             }, {
-//                 xtype: "TextField",
-//                 title: "定义KEY",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "defKey",
-//                 width: 220,
-//                 value: data.defKey
-//             }, {
-//                 xtype: "TextField",
-//                 title: "部署ID",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "actDeployId",
-//                 width: 220,
-//                 value: data.actDeployId
-//             }, {
-//                 xtype: "TextField",
-//                 title: "启动条件UEL",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "startUel",
-//                 width: 220,
-//                 value: data.startUel
-//             }, {
-//                 xtype: "TextField",
-//                 title: "版本号",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "versionCode",
-//                 width: 220,
-//                 value: data.versionCode
-//             }, {
-//                 xtype: "TextField",
-//                 title: "优先级",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "priority",
-//                 width: 220,
-//                 value: data.priority
-//             }, {
-//                 xtype: "TextField",
-//                 title: "描述",
-//                 labelWidth: 90,
-//                 allowBlank: false,
-//                 name: "depict",
-//                 width: 220,
-//                 value: data.depict
-//             }]
-//         }],
-//         buttons: [{
-//             title: g.lang.saveText,
-//             selected: true,
-//             handler: function () {
-//                 var form = EUI.getCmp("updateDefVersion");
-//                 var data = form.getFormValue();
-//                 console.log(data);
-//                 if (!data.name) {
-//                     return;
-//                 }
-//                 if (!data.actDefId) {
-//                     return;
-//                 }
-//                 if (!data.defKey) {
-//                     return;
-//                 }
-//                 if (!data.actDeployId) {
-//                     return;
-//                 }
-//                 if (!data.versionCode) {
-//                     return;
-//                 }
-//                 if (!data.priority) {
-//                     return;
-//                 }
-//                 if (!data.depict) {
-//                     return;
-//                 }
-//                 g.saveFlowDefVersion(data);
-//             }
-//         }, {
-//             title: this.lang.cancelText,
-//             handler: function () {
-//                 win.remove();
-//             }
-//         }]
-//     });
-// },
     addFlowDefination: function () {
         var g = this;
         win = EUI.Window({
@@ -562,17 +421,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowDefination");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.defKey) {
-                        return;
-                    }
-                    if (!data.depict) {
-                        return;
-                    }
-                    if (!data.startUel) {
-                        return;
-                    }
                     g.saveFlowDefination(data);
                 }
             }, {
@@ -675,29 +528,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowDefVersion");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.name) {
-                        return;
-                    }
-                    if (!data.actDefId) {
-                        return;
-                    }
-                    if (!data.defKey) {
-                        return;
-                    }
-                    if (!data.actDeployId) {
-                        return;
-                    }
-                    if (!data.versionCode) {
-                        return;
-                    }
-                    if (!data.priority) {
-                        return;
-                    }
-                    if (!data.depict) {
-                        return;
-                    }
                     g.saveFlowDefVersion(data);
                 }
             }, {

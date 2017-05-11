@@ -72,8 +72,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
-                            + "<div class='condetail_update'></div>"
-                            + "<div class='condetail_delete'></div></div>";
+                            + "<div class='condetail_update' title='编辑'></div>"
+                            + "<div class='condetail_delete' title='删除'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -213,36 +213,11 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.code) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputCodeMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.url) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputUrlMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText,
-                        // });
-                        return;
-                    }
                     g.saveFlowServiceUrl(data);
                 }
             }, {
@@ -299,36 +274,11 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
+                    if (!form.isValid()) {
+                        return;
+                    }
                     var data = form.getFormValue();
                     console.log(data);
-                    if (!data.code) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputCodeMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.name) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputNameMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.url) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputUrlMsgText,
-                        // });
-                        return;
-                    }
-                    if (!data.depict) {
-                        // EUI.ProcessStatus({
-                        //     success: false,
-                        //     msg: g.lang.inputDepictMsgText,
-                        // });
-                        return;
-                    }
                     g.saveFlowServiceUrl(data);
                 }
             }, {
