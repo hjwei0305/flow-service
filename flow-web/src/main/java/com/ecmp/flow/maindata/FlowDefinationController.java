@@ -55,16 +55,15 @@ public class FlowDefinationController {
 
 
     /**
-     * 通过租户代码获取所有组织机构
-     *@param tenantCode
+     * 获取所有组织机构
      * @return 组织机构清单
      */
     @ResponseBody
-    @RequestMapping("findOrgTreeByTenantCode")
-    public JsonTree findOrgTreeByTenantCode(@QueryParam("tenantCode") String tenantCode) {
+    @RequestMapping("findAllOrgs")
+    public List<Organization> findAllOrgs() {
         IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
-        Organization result = proxy.findOrgTreeByTenantCode(tenantCode);
-        return new JsonTree(result, true);
+        List<Organization> result = proxy.findAllOrgs();
+        return result;
     }
 
     /**
