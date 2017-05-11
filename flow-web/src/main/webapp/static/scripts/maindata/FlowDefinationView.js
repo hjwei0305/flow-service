@@ -753,7 +753,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "Container",
             region: "west",
-            border: true,
+            border: false,
             width: 420,
             itemspace: 0,
             padding: 0,
@@ -768,11 +768,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 50,
             border: false,
+            width:428,
             padding: 10,
             isOverFlow:false,
+            style:{
+                "padding-right":"0px"
+            },
             items: ['->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: "请输入名称进行搜索"
             }]
         };
     },
@@ -805,9 +809,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "TreePanel",
             region: "center",
-            border: false,
+            border: true,
             id: "treePanel",
             showField: "name",
+            style:{
+                "background":"#fff"
+            },
             onSelect: function (node) {
                 if (node.parentId) {
                     EUI.getCmp("editsave").setDisable(false);
@@ -845,6 +852,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "center",
             itemspace: 0,
             layout: "border",
+            border:false,
             padding: 10,
             items: [{
                 xtype: "ToolBar",
