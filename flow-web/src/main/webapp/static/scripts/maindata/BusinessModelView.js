@@ -416,7 +416,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     lookPropertyWindow: function (data) {
         var g = this;
         var Wind = EUI.Window({
-            title: g.lang.conditionPropertyText,
+            title: "条件属性",
             id: "propertyWind",
             width: 500,
             items: [{
