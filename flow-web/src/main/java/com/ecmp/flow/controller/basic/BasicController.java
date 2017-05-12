@@ -73,5 +73,4 @@ public class BasicController {
         List<Position> positionList = proxy.findAll();
         return positionList;
     }
-
 }
