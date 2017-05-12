@@ -841,7 +841,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "businessModel.id",
                     width: 220,
-                    value: data.id
+                    value: data.id,
+                    hidden:true
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,

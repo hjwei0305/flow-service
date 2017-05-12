@@ -71,7 +71,6 @@ if (EUI.BusinessModelView) {
 if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         addResourceText: "新增",
-        urlText: "URL",
         updateFlowServiceUrlText: "修改服务地址管理",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
