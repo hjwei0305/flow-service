@@ -427,6 +427,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    hasPager: false,
                     colModel: [{
                         name: "id",
                         index: "id",
@@ -453,7 +454,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 conditonPojoClassName: data.conditonBean
             },
             success: function (status) {
-                EUI.ProcessStatus(status);
+                // EUI.ProcessStatus(status);
                 console.log(status);
                 g.handleProperty(status);
                 /*var data = g.handleProperty(status);
