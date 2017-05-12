@@ -427,6 +427,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    hasPager: false,
                     colModel: [{
                         name: "id",
                         index: "id",
@@ -453,11 +454,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 conditonPojoClassName: data.conditonBean
             },
             success: function (status) {
+                // EUI.ProcessStatus(status);
+                console.log(status);
                 g.handleProperty(status);
                 /*var data = g.handleProperty(status);
                  EUI.getCmp("innerWindow").setDataInGrid(data);*///添加数据到dom的方法
             },
             failure: function (response) {
+                EUI.ProcessStatus(response);
             }
         });
     },
