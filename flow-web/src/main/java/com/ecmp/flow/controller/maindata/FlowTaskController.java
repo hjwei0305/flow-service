@@ -1,4 +1,4 @@
-package com.ecmp.flow.maindata;
+package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
@@ -6,9 +6,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -32,23 +33,29 @@ import java.text.ParseException;
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
- * 1.0.00      2017/5/3 9:32      谭军(tanjun)                    新建
+ * 1.0.00      2017/4/26 9:32      詹耀(xxxlimit)                    新建
  * <br>
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowHistory")
-public class FlowHistoryController {
+@RequestMapping(value = "/maindata/flowTask")
+public class FlowTaskController {
+
+
+    @RequestMapping(value = "todo", method = RequestMethod.GET)
+    public String todo() {
+        return "task/MainPageView";
+    }
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
-        return "maindata/FlowHistoryView";
+        return "maindata/FlowTaskView";
     }
 
     /**
      * 查询流程任务列表
      * @param request
-     * @return 流程任务清单
+     * @return 流程任务列表清单
      * @throws JsonProcessingException
      * @throws ParseException
      */
@@ -56,23 +63,41 @@ public class FlowHistoryController {
     @ResponseBody
     public String find(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
-        IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
-        PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowTaskPageResult, JsonUtil.DATE_TIME);
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
+        return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
     }
 
     /**
-     * 撤销任务
-     * @param id 任务历史ID
+     * 通过流程
+     * @param id
      * @return 操作结果
      */
-    @RequestMapping(value = "rollBackTask")
+    @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String rollBackTask(String id) {
+    public String completeTask(String id)  {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result = proxy.rollBackTo(id);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        Map<String,Object> variables = new HashMap<String,Object>();
+        variables.put("intput","2");
+        variables.put("reject",0);
+        OperateResult result = proxy.complete(id,variables);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
     }
 
+    /**
+     * 驳回流程
+     * @param id
+     * @return 操作结果
+     */
+    @RequestMapping(value = "rejectTask")
+    @ResponseBody
+    public String rejectTask(String id)  {
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        Map<String,Object> variables = new HashMap<String,Object>();
+        variables.put("reject",1);
+        OperateResult result = proxy.complete(id,variables);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return JsonUtil.serialize(status);
+    }
 }
