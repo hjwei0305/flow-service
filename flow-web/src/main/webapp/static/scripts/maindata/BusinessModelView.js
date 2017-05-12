@@ -459,10 +459,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 g.handleProperty(status);
                 /*var data = g.handleProperty(status);
                  EUI.getCmp("innerWindow").setDataInGrid(data);*///添加数据到dom的方法
-            },
+            }/*,
             failure: function (response) {
                 EUI.ProcessStatus(response);
-            }
+            }*/
         });
     },
     //js将从后台获取到的object数据转化为数组
@@ -476,10 +476,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         }
         console.log(properties);
         EUI.getCmp("innerWindow").setDataInGrid(properties);
-        /* for(var k in properties){
-
-         }*/
-        // console.log(properties[k].name);
         //return properties;
     },
     showWorkPageWindow: function (data) {
