@@ -18,7 +18,7 @@ import javax.servlet.annotation.WebServlet;
  * *************************************************************************************************
  */
 @WebServlet(initParams = @WebInitParam(name = "config-location",value = "classpath:applicationContext-activiti.xml")
-        , urlPatterns = "/flow/*", loadOnStartup = 1)
+        , urlPatterns = "/*", loadOnStartup = 1)
 public class ConfigServiceServlet extends CXFServlet {
     private static final long serialVersionUID = 1L;
 }

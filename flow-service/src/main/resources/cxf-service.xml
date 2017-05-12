@@ -14,7 +14,7 @@
     <bean class="com.ecmp.config.ServiceConfig"/>
 
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
-        <property name="basePath" value="/flow"/>
+        <property name="basePath" value="/"/>
         <property name="resourcePackage" value="com.ecmp.flow.api"/>
         <property name="title" value="工作流项目API测试文档"/>
         <property name="description" value="工作流项目"/>
