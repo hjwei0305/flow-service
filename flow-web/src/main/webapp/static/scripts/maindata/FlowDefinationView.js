@@ -629,20 +629,20 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 "background":"#fff"
             },
             onSelect: function (node) {
-                if (node.parentId) {
-                    EUI.getCmp("editsave").setDisable(false);
-                    g.editFormCmp.getCmpByName("name").setReadOnly(false);
-                    g.editFormCmp.getCmpByName("frozen").setReadOnly(false);
-                    g.editFormCmp.getCmpByName("rank").setReadOnly(false);
-                } else {
-
-                    EUI.getCmp("editsave").setDisable(true);
-                    g.editFormCmp.getCmpByName("name").setReadOnly(true);
-                    g.editFormCmp.getCmpByName("frozen").setReadOnly(true);
-                    g.editFormCmp.getCmpByName("rank").setReadOnly(true);
-                }
-                g.editFormCmp.loadData(node)
-                g.selectedNode = node;
+                console.log(node)
+                // if (node.parentId) {
+                //     EUI.getCmp("editsave").setDisable(false);
+                //     g.editFormCmp.getCmpByName("name").setReadOnly(false);
+                //     g.editFormCmp.getCmpByName("frozen").setReadOnly(false);
+                //     g.editFormCmp.getCmpByName("rank").setReadOnly(false);
+                // } else {
+                //     EUI.getCmp("editsave").setDisable(true);
+                //     g.editFormCmp.getCmpByName("name").setReadOnly(true);
+                //     g.editFormCmp.getCmpByName("frozen").setReadOnly(true);
+                //     g.editFormCmp.getCmpByName("rank").setReadOnly(true);
+                // }
+                // g.editFormCmp.loadData(node)
+                // g.selectedNode = node;
             },
             afterItemRender: function (nodeData) {
                 if (nodeData.frozen) {
