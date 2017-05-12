@@ -195,7 +195,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -221,7 +220,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "name",
                     width: 220,
-                    maxLength: 10,
                     value: data.name
                 }, {
                     xtype: "TextField",
@@ -293,8 +291,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "name",
-                    width: 220,
-                    maxLength: 10
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.urlViewAddressText,

@@ -217,7 +217,6 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -245,7 +244,6 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "code",
                     width: 220,
-                    maxLength: 10,
                     value: data.code
                 }, {
                     xtype: "TextField",
@@ -320,7 +318,6 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "code",
                     width: 220,
-                    maxLength: 10
                 }, {
                     xtype: "TextField",
                     title: this.lang.nameText,

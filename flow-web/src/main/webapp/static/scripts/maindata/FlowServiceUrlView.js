@@ -174,7 +174,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -184,7 +183,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "code",
                     width: 220,
-                    maxLength: 10,
                     value: data.code
                 }, {
                     xtype: "TextField",
@@ -248,8 +246,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "code",
-                    width: 220,
-                    maxLength: 10
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,

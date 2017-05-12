@@ -226,7 +226,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -254,7 +253,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "name",
                     width: 220,
-                    maxLength: 10,
                     value: data.name
                 }, {
                     xtype: "TextField",
@@ -850,7 +848,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "code",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
@@ -935,7 +933,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -945,7 +942,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "businessModel.id",
                     width: 220,
-                    maxLength: 10,
                     value: g.businessModelId,
                     hidden: true
                 }, {
@@ -955,7 +951,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "code",
                     width: 220,
-                    maxLength: 10,
                     value: data.code
                 }, {
                     xtype: "TextField",

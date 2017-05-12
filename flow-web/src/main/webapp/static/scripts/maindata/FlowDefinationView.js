@@ -5,7 +5,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     renderTo: "",
     isEdit: false,
     selectedNode: null,  //当前选中的节点
-    tenantCode: "10011",
     flowDefinationId: "",
     flowDefinationName: "",
     initComponent: function () {
@@ -268,7 +267,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    maxLength: 10,
                     value: data.id,
                     hidden: true
                 }, {
@@ -304,7 +302,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "lastVersionId",
                     width: 220,
-                    maxLength: 10,
                     value: data.lastVersionId,
                     hidden: true
                 }, {
