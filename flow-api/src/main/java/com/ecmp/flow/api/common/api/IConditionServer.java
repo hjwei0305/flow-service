@@ -71,8 +71,48 @@ public interface IConditionServer {
     @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取条件POJO的值",notes = "测试")
+    @ApiOperation(value = "通过业务实体ID获取条件POJO的值",notes = "测试")
     public Map<String,Object> getConditonPojoMap(@PathParam("conditonPojoClassName") String conditonPojoClassName,@PathParam("daoBeanName") String daoBeanName,@PathParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
+    /**
+     * 获取条件POJO属性说明
+     * @param businessModelId 业务实体ID
+     * @return  POJO属性说明Map
+     * @throws ClassNotFoundException
+     */
+    @GET
+    @Path("propertiesByBusinessModelId/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID获取条件POJO属性说明",notes = "测试")
+    public Map<String, String> getPropertiesForConditionPojoByBusinessModelId(@PathParam("businessModelId")String businessModelId) throws ClassNotFoundException;
+
+
+    /**
+     * 获取条件POJO属性说明
+     * @param businessModelId 业务实体ID
+     * @return  POJO属性说明Map
+     * @throws ClassNotFoundException
+     */
+    @GET
+    @Path("propertiesAndValuesByBusinessModelId/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID获取条件POJO属性及初始化值说明",notes = "测试")
+    public Map<String, Object> getPropertiesAndValuesByBusinessModelId(@PathParam("businessModelId")String businessModelId) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+
+
+    /**
+     * 获取条件POJO属性说明
+     * @param businessModelId 业务实体ID
+     * @return  POJO属性说明Map
+     * @throws ClassNotFoundException
+     */
+    @GET
+    @Path("conditonPojoMapByBusinessModelId/{businessModelId}/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID获取条件POJO的值",notes = "测试")
+    public Map<String,Object> getConditonPojoMapByBusinessModelId(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }
