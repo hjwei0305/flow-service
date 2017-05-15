@@ -36,7 +36,7 @@ import java.util.List;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/workPageUrl")
+@RequestMapping(value = "/workPageUrl")
 public class WorkPageUrlController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -50,9 +50,9 @@ public class WorkPageUrlController {
      * @return 工作界面清单
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listWorkPageUrl")
     @ResponseBody
-    public String find(ServletRequest request) throws ParseException {
+    public String listWorkPageUrl(ServletRequest request) throws ParseException {
         Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
@@ -77,9 +77,9 @@ public class WorkPageUrlController {
      * 查询所有应用模块
      * @return 应该模块清单
      */
-    @RequestMapping(value = "findAllAppModuleName")
+    @RequestMapping(value = "listAllAppModule")
     @ResponseBody
-    public String findAllAppModuleName(){
+    public String listAllAppModule(){
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
@@ -91,7 +91,7 @@ public class WorkPageUrlController {
      * @param workPageUrl
      * @return 操作结果
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "save")
     @ResponseBody
     public String update(WorkPageUrl workPageUrl) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);

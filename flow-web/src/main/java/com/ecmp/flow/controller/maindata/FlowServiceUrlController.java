@@ -37,7 +37,7 @@ import java.util.List;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowServiceUrl")
+@RequestMapping(value = "/flowServiceUrl")
 public class FlowServiceUrlController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -51,9 +51,9 @@ public class FlowServiceUrlController {
      * @return 服务地址清单
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listServiceUrl")
     @ResponseBody
-    public String find(ServletRequest request) throws ParseException {
+    public String listServiceUrl(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
@@ -79,9 +79,9 @@ public class FlowServiceUrlController {
      * @param flowServiceUrl
      * @return 操作结果
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "save")
     @ResponseBody
-    public String update(FlowServiceUrl flowServiceUrl) {
+    public String save(FlowServiceUrl flowServiceUrl) {
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResultWithData<FlowServiceUrl> result = proxy.save(flowServiceUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage(),result.getData());

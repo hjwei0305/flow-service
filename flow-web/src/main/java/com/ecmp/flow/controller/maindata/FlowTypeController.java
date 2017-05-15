@@ -40,7 +40,7 @@ import java.util.List;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowType")
+@RequestMapping(value = "/flowType")
 public class FlowTypeController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -54,9 +54,9 @@ public class FlowTypeController {
      * @return 流程类型清单
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listFlowType")
     @ResponseBody
-    public String find(ServletRequest request) throws  ParseException {
+    public String listFlowType(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         PageResult<FlowType> flowTypePageResult = proxy.findByPage(search);
@@ -81,9 +81,9 @@ public class FlowTypeController {
      * 查询所有业务实体
      * @return 操作结果
      */
-    @RequestMapping(value = "findAllBusinessModelName")
+    @RequestMapping(value = "listAllBusinessModel")
     @ResponseBody
-    public String findAllBusinessModelName() {
+    public String listAllBusinessModel() {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
@@ -95,9 +95,9 @@ public class FlowTypeController {
      * @param flowType
      * @return 操作结果
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "save")
     @ResponseBody
-    public String update(FlowType flowType) {
+    public String save(FlowType flowType) {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResultWithData<FlowType> result = proxy.save(flowType);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());

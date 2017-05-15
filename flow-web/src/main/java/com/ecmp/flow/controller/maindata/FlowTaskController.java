@@ -38,7 +38,7 @@ import java.util.Map;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowTask")
+@RequestMapping(value = "/flowTask")
 public class FlowTaskController {
 
 
@@ -59,9 +59,9 @@ public class FlowTaskController {
      * @throws JsonProcessingException
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);

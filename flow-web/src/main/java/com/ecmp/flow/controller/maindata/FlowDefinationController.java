@@ -42,7 +42,7 @@ import java.util.List;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowDefination")
+@RequestMapping(value = "/flowDefination")
 public class FlowDefinationController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -56,8 +56,8 @@ public class FlowDefinationController {
      * @return 组织机构清单
      */
     @ResponseBody
-    @RequestMapping("findAllOrgs")
-    public List<Organization> findAllOrgs() {
+    @RequestMapping("listAllOrgs")
+    public List<Organization> listAllOrgs() {
         IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
         List<Organization> result = proxy.findAllOrgs();
         return result;
@@ -69,9 +69,9 @@ public class FlowDefinationController {
      * @return 流程定义清单
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listFlowDefination")
     @ResponseBody
-    public String find(ServletRequest request) throws ParseException {
+    public String listFlowDefination(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         PageResult<FlowDefination> flowDefinationPageResult = proxy.findByPage(search);
@@ -96,9 +96,9 @@ public class FlowDefinationController {
      * 查询所有流程类型
      * @return 操作结果
      */
-    @RequestMapping(value = "findAllFlowType")
+    @RequestMapping(value = "listAllFlowType")
     @ResponseBody
-    public String findAllFlowType() {
+    public String listAllFlowType() {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         List<FlowType> flowTypeList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowTypeList);
@@ -110,9 +110,9 @@ public class FlowDefinationController {
      * @param flowDefination
      * @return 操作结果
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "save")
     @ResponseBody
-    public String update(FlowDefination flowDefination)  {
+    public String save(FlowDefination flowDefination)  {
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
@@ -125,9 +125,9 @@ public class FlowDefinationController {
      * @return 流程定义版本分页结果
      * @throws ParseException
      */
-    @RequestMapping(value = "findDefVersion")
+    @RequestMapping(value = "listDefVersion")
     @ResponseBody
-    public String findDefVersion(ServletRequest request) throws  ParseException {
+    public String listDefVersion(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         PageResult<FlowDefVersion> flowDefVersionPageResult = proxy.findByPage(search);
@@ -139,9 +139,9 @@ public class FlowDefinationController {
      * @param flowDefVersion
      * @return 操作结果
      */
-    @RequestMapping(value = "updateDefVersion")
+    @RequestMapping(value = "saveDefVersion")
     @ResponseBody
-    public String updateDefVersion(FlowDefVersion flowDefVersion) {
+    public String saveDefVersion(FlowDefVersion flowDefVersion) {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResultWithData<FlowDefVersion> result = proxy.save(flowDefVersion);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());

@@ -37,7 +37,7 @@ import java.util.List;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowInstance")
+@RequestMapping(value = "/flowInstance")
 public class FlowInstanceController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -52,9 +52,9 @@ public class FlowInstanceController {
      * @throws JsonProcessingException
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listFlowInstance")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String listFlowInstance(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
@@ -82,9 +82,9 @@ public class FlowInstanceController {
      * @throws JsonProcessingException
      * @throws ParseException
      */
-    @RequestMapping(value = "findFlowHistory")
+    @RequestMapping(value = "listFlowHistory")
     @ResponseBody
-    public String findFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowHistoryPageResult = proxy.findByPage(search);
@@ -95,9 +95,9 @@ public class FlowInstanceController {
      * 查询流程定义版本
      * @return 操作结果
      */
-    @RequestMapping(value = "findAllFlowDefVersionName")
+    @RequestMapping(value = "listAllFlowDefVersion")
     @ResponseBody
-    public String findAllFlowDefVersionName() {
+    public String listAllFlowDefVersion() {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         List<FlowDefVersion> flowDefVersions = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowDefVersions);
