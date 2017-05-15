@@ -34,7 +34,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 colon: false,
                 name: "appModule.name",
                 store: {
-                    url: _ctxPath + "/maindata/businessModel/findAllAppModuleName"
+                    url: _ctxPath + "/businessModel/listAllAppModule"
                 },
                 field: ["appModuleId"],
                 reader: {
@@ -50,7 +50,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     g.appModule = data[0].id;
                     g.appModuleName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/maindata/businessModel/find",
+                        url: _ctxPath + "/businessModel/listBusinessModel",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -183,7 +183,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         msg: g.lang.nowDelMsgText
                     });
                     EUI.Store({
-                        url: _ctxPath + "/maindata/businessModel/delete",
+                        url: _ctxPath + "/businessModel/delete",
                         params: {
                             id: rowData.id
                         },
@@ -398,7 +398,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/businessModel/update",
+            url: _ctxPath + "/businessModel/save",
             params: data,
             success: function (result) {
                 myMask.hide();
@@ -449,7 +449,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     getProperty: function (data) {
         var g = this;
         EUI.Store({
-            url: _ctxPath + "/maindata/businessModel/findConditionProperty",
+            url: _ctxPath + "/businessModel/listAllConditionProperty",
             params: {
                 conditonPojoClassName: data.conditonBean
             },
@@ -567,7 +567,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //     loadonce:true,
-                url: _ctxPath + "/maindata/flowServiceUrl/find",
+                url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                 postData: {
                     "Q_EQ_businessModel.id": data.id,
                     S_code: "ASC"
@@ -629,7 +629,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //loadonce: true,
-                url: _ctxPath + "/maindata/businessModel/findNotSelectEdByAppModuleId",
+                url: _ctxPath + "/businessModel/listAllNotSelectEdByAppModuleId",
                 postData: {
                     appModuleId: g.appModule,
                     businessModelId: data.id
@@ -687,7 +687,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 loadonce: true,
-                url: _ctxPath + "/maindata/businessModel/findSelectEdByAppModuleId",
+                url: _ctxPath + "/businessModel/listAllSelectEdByAppModuleId",
                 postData: {
                     appModuleId: g.appModule,
                     businessModelId: data.id
@@ -802,7 +802,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/businessModel/saveSetWorkPage",
+            url: _ctxPath + "/businessModel/saveSetWorkPage",
             params: {
                 id: data.id,
                 selectWorkPageIds: result
@@ -897,7 +897,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/flowServiceUrl/update",
+            url: _ctxPath + "/flowServiceUrl/save",
             params: data,
             success: function (result) {
                 myMask.hide();
@@ -1010,7 +1010,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         msg: g.lang.nowDelMsgText
                     });
                     EUI.Store({
-                        url: _ctxPath + "/maindata/flowServiceUrl/delete",
+                        url: _ctxPath + "/flowServiceUrl/delete",
                         params: {
                             id: rowData.id
                         },

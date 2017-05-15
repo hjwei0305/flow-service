@@ -36,7 +36,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 //     "appModule.id":"appModule.id"
                 // },
                 store: {
-                    url: _ctxPath + "/maindata/workPageUrl/findAllAppModuleName"
+                    url: _ctxPath + "/workPageUrl/listAllAppModule"
                 },
                 field: ["appModule.id"],
                 reader: {
@@ -52,7 +52,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     g.appModuleId = data[0].id;
                     g.appModuleName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/maindata/workPageUrl/find",
+                        url: _ctxPath + "/workPageUrl/listWorkPageUrl",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -335,7 +335,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/workPageUrl/update",
+            url: _ctxPath + "/workPageUrl/save",
             params: data,
             success: function (result) {
                 myMask.hide();
@@ -359,7 +359,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowDelMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/workPageUrl/delete",
+            url: _ctxPath + "/workPageUrl/delete",
             params: {
                 id: rowData.id
             },

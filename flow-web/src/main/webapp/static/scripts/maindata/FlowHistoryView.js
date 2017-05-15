@@ -52,7 +52,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg : {
            //     loadonce:true,
-                	url : _ctxPath +"/maindata/flowHistory/find",
+                	url : _ctxPath +"/flowHistory/listFlowHistory",
                 postData:{
                     S_createdDate: "ASC"
                 },
@@ -295,7 +295,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         msg: "正在执行"
                     });
                     EUI.Store({
-                        url:  _ctxPath +"/maindata/flowHistory/rollBackTask",
+                        url:  _ctxPath +"/flowHistory/rollBackTask",
                         params: {
                             id: rowData.id
                         },
