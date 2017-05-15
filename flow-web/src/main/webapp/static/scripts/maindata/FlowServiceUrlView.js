@@ -59,7 +59,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //     loadonce:true,
-                url: _ctxPath +"/maindata/flowServiceUrl/find",
+                url: _ctxPath +"/flowServiceUrl/listServiceUrl",
                 postData: {
                     //  Q_EQ_code : "1",
                     S_code: "ASC"
@@ -130,7 +130,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: _ctxPath +"/maindata/flowServiceUrl/delete",
+                            url: _ctxPath +"/flowServiceUrl/delete",
                             params: {
                                 id: rowData.id
                             },
@@ -297,7 +297,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/maindata/flowServiceUrl/update",
+            url: _ctxPath +"/flowServiceUrl/save",
             params: data,
             success: function (result) {
                 myMask.hide();

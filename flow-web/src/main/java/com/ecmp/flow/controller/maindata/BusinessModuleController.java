@@ -41,7 +41,7 @@ import java.util.Map;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/businessModel")
+@RequestMapping(value = "/businessModel")
 public class BusinessModuleController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -56,9 +56,9 @@ public class BusinessModuleController {
      * @return 业务实体清单
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listBusinessModel")
     @ResponseBody
-    public String find(ServletRequest request) throws ParseException {
+    public String listBusinessModel(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         PageResult<BusinessModel> businessModelPageResult = proxy.findByPage(search);
@@ -86,9 +86,9 @@ public class BusinessModuleController {
      * @return 应用模块清单
      * @throws
      */
-    @RequestMapping(value = "findAllAppModuleName")
+    @RequestMapping(value = "listAllAppModule")
     @ResponseBody
-    public String findAllAppModuleName() {
+    public String listAllAppModule() {
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
@@ -101,9 +101,9 @@ public class BusinessModuleController {
      * @return 保存后的业务实体
      * @throws
      */
-    @RequestMapping(value = "update")
+    @RequestMapping(value = "save")
     @ResponseBody
-    public String update(BusinessModel businessModel) {
+    public String save(BusinessModel businessModel) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
@@ -117,9 +117,9 @@ public class BusinessModuleController {
      * @return
      * @throws
      */
-    @RequestMapping(value = "findSelectEdByAppModuleId")
+    @RequestMapping(value = "listAllSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
+    public List<WorkPageUrl> listAllSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -132,9 +132,9 @@ public class BusinessModuleController {
      * @return
      * @throws
      */
-    @RequestMapping(value = "findNotSelectEdByAppModuleId")
+    @RequestMapping(value = "listAllNotSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
+    public List<WorkPageUrl> listAllNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -163,9 +163,9 @@ public class BusinessModuleController {
      * @return
      * @throws ClassNotFoundException
      */
-    @RequestMapping(value = "findConditionProperty")
+    @RequestMapping(value = "listAllConditionProperty")
     @ResponseBody
-    public String findConditionProperty(String conditonPojoClassName) throws  ClassNotFoundException {
+    public String listAllConditionProperty(String conditonPojoClassName) throws  ClassNotFoundException {
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
         return JsonUtil.serialize(result);

@@ -5,6 +5,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     renderTo: "",
     isEdit: false,
     selectedNode: null,  //当前选中的节点
+    selectedNodeId: "",  //当前选中的节点的ID
+    selectedNodeName: "",  //当前选中的节点的name
     flowDefinationId: "",
     flowDefinationName: "",
     initComponent: function () {
@@ -51,7 +53,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: _ctxPath + "/maindata/flowDefination/delete",
+                            url: _ctxPath + "/flowDefination/delete",
                             params: {
                                 id: rowData.id
                             },
@@ -91,7 +93,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: _ctxPath + "/maindata/flowDefination/deleteDefVieson",
+                            url: _ctxPath + "/flowDefination/deleteDefVieson",
                             params: {
                                 id: rowData.id
                             },
@@ -143,7 +145,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            isOverFlow:false,
+            isOverFlow: false,
             border: false,
             items: [{
                 xtype: "TextField",
@@ -187,7 +189,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 // loadonce: true,
-                url: _ctxPath + "/maindata/flowDefination/findDefVersion",
+                url: _ctxPath + "/flowDefination/listDefVersion",
                 postData: {
                     "Q_EQ_flowDefination.id": rowData.id
                 },
@@ -201,7 +203,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         var strVar = "<div class='condetail_defVerOperate'>";
                         if (rowObject.actDeployId) {
                             strVar += "<div class='condetail_updateDefVersion'></div>";
-                        }else{
+                        } else {
                             strVar += "<div class='condetail_updateDefVersion'></div>" +
                                 "<div class='condetail_deleteDefVersion'></div>";
                         }
@@ -321,6 +323,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.startUel
                 }, {
+                    xtype: "TextField",
+                    title: "组织机构ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "orgId",
+                    width: 220,
+                    value: data.orgId,
+                    hidden: true
+                }, {
                     xtype: "TextArea",
                     title: "描述",
                     labelWidth: 90,
@@ -354,13 +365,31 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: "新增流程定义",
-            height: 260,
+            height: 270,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addFlowDefination",
                 padding: 0,
                 items: [{
+                    xtype: "TextField",
+                    title: "组织机构ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "orgId",
+                    width: 220,
+                    value: g.selectedNodeId,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: "组织机构",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "orgName",
+                    width: 220,
+                    readonly: true,
+                    value: g.selectedNodeName
+                }, {
                     xtype: "TextField",
                     title: "流程类型ID",
                     labelWidth: 90,
@@ -549,7 +578,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/flowDefination/update",
+            url: _ctxPath + "/flowDefination/save",
             params: data,
             success: function (result) {
                 myMask.hide();
@@ -573,7 +602,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/maindata/flowDefination/updateDefVersion",
+            url: _ctxPath + "/flowDefination/saveDefVersion",
             params: data,
             success: function (result) {
                 myMask.hide();
@@ -610,7 +639,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             height: 40,
             border: false,
             padding: 0,
-            isOverFlow:false,
+            isOverFlow: false,
             items: ['->', {
                 xtype: "SearchBox",
                 displayText: "请输入名称进行搜索"
@@ -625,11 +654,37 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             border: true,
             id: "treePanel",
             showField: "name",
-            style:{
-                "background":"#fff"
+            style: {
+                "background": "#fff"
             },
             onSelect: function (node) {
-                console.log(node)
+                console.log(node);
+                if (node.children.length) {
+                    console.log("根节点");
+                    g.selectedNodeId = "";
+                    g.selectedNodeName = "";
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/flowDefination/listFlowDefination",
+                        loadonce: false,
+                        datatype: "json",
+                        postData: {
+                            Q_EQ_orgId: g.selectedNodeId
+                        }
+                    }, true)
+                }
+                if (!node.children.length) {
+                    console.log("子节点");
+                    g.selectedNodeId = node.id;
+                    g.selectedNodeName = node.name;
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/flowDefination/listFlowDefination",
+                        loadonce: false,
+                        datatype: "json",
+                        postData: {
+                            Q_EQ_orgId: g.selectedNodeId
+                        }
+                    }, true)
+                }
                 // if (node.parentId) {
                 //     EUI.getCmp("editsave").setDisable(false);
                 //     g.editFormCmp.getCmpByName("name").setReadOnly(false);
@@ -661,11 +716,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var myMask = EUI.LoadMask({
             //queryMaskMessageText: "正在努力获取数据，请稍候...",
-            msg: g.lang.queryMaskMessageText,
+            msg: g.lang.queryMaskMessageText
         });
         EUI.Store({
-            async:false,
-            url: _ctxPath + "/maindata/flowDefination/findAllOrgs",
+            async: false,
+            url: _ctxPath + "/flowDefination/listAllOrgs",
             success: function (data) {
                 myMask.hide();
                 g.treeCmp.setData(data);
@@ -676,7 +731,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     msg: re.msg,
                     success: false,
                     showTime: 6
-                }
+                };
                 EUI.ProcessStatus(status);
             }
         });
@@ -688,12 +743,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "center",
             itemspace: 0,
             layout: "border",
-            border:false,
+            border: false,
             items: [{
                 xtype: "ToolBar",
                 region: "north",
-                isOverFlow:false,
-                padding:0,
+                isOverFlow: false,
+                padding: 0,
                 height: 40,
                 border: false,
                 items: [{
@@ -704,7 +759,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     colon: false,
                     labelWidth: 70,
                     store: {
-                        url: _ctxPath + "/maindata/flowDefination/findAllFlowType"
+                        url: _ctxPath + "/flowDefination/listAllFlowType"
                     },
                     reader: {
                         name: "name",
@@ -719,7 +774,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         g.flowTypeId = data[0].id;
                         g.flowTypeName = data[0].name;
                         var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                            url: _ctxPath + "/maindata/flowDefination/find",
+                            url: _ctxPath + "/flowDefination/listFlowDefination",
                             loadonce: false,
                             datatype: "json",
                             postData: {
@@ -813,6 +868,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         width: "50",
                         title: false
                     }, {
+                        label: "组织机构ID",
+                        name: "orgId",
+                        index: "orgId",
+                        width: "50",
+                        title: false,
+                        hidden: true
+                    }, {
                         label: this.lang.depictText,
                         name: "depict",
                         index: "depict",
@@ -826,5 +888,5 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         }
-    },
+    }
 });

@@ -52,7 +52,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg : {
            //     loadonce:true,
-                	url : _ctxPath +"/maindata/flowTask/find",
+                	url : _ctxPath +"/flowTask/listFlowTask",
                 postData:{
                     S_createdDate: "ASC"
                 },
@@ -262,7 +262,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         msg: "正在执行"
                     });
                     EUI.Store({
-                        url:  _ctxPath +"/maindata/flowTask/completeTask",
+                        url:  _ctxPath +"/flowTask/completeTask",
                         params: {
                             id: rowData.id
                         },
@@ -302,7 +302,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         msg: "正在执行"
                     });
                     EUI.Store({
-                        url:  _ctxPath +"/maindata/flowTask/rejectTask",
+                        url:  _ctxPath +"/flowTask/rejectTask",
                         params: {
                             id: rowData.id
                         },

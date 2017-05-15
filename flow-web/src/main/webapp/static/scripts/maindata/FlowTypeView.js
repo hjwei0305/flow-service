@@ -32,7 +32,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 colon: false,
                 labelWidth: 70,
                 store: {
-                    url: _ctxPath +"/maindata/flowType/findAllBusinessModelName"
+                    url: _ctxPath +"/flowType/listAllBusinessModel"
                 },
                 reader: {
                     name: "name",
@@ -47,7 +47,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     g.businessModel = data[0].id;
                     g.businessModelName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath +"/maindata/flowType/find",
+                        url: _ctxPath +"/flowType/listFlowType",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -161,42 +161,46 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
         $(".condetail_delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath +"/maindata/flowType/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                                if (result.success) {
-                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                                }
-                            },
-                            failure: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
+            g.deleteFlowType(rowData)
+        });
+    },
+    deleteFlowType:function(rowData){
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath +"/flowType/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                             }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+                        },
+                        failure: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     updateFlowType: function (data) {
@@ -361,7 +365,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/maindata/flowType/update",
+            url: _ctxPath +"/flowType/save",
             params: data,
             success: function (result) {
                 myMask.hide();

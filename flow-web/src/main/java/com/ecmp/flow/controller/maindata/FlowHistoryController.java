@@ -37,7 +37,7 @@ import java.text.ParseException;
  * *************************************************************************************************<br>
  */
 @Controller
-@RequestMapping(value = "/maindata/flowHistory")
+@RequestMapping(value = "/flowHistory")
 public class FlowHistoryController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
@@ -52,9 +52,9 @@ public class FlowHistoryController {
      * @throws JsonProcessingException
      * @throws ParseException
      */
-    @RequestMapping(value = "find")
+    @RequestMapping(value = "listFlowHistory")
     @ResponseBody
-    public String find(ServletRequest request) throws JsonProcessingException, ParseException {
+    public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);

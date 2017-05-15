@@ -32,7 +32,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 colon: false,
                 labelWidth: 100,
                 store: {
-                    url: _ctxPath + "/maindata/flowInstance/findAllFlowDefVersionName"
+                    url: _ctxPath + "/flowInstance/listAllFlowDefVersion"
                 },
                 reader: {
                     name: "name",
@@ -47,7 +47,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     g.flowDefVersionId = data[0].id;
                     g.flowDefVersionName = data[0].name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/maindata/flowInstance/find",
+                        url: _ctxPath + "/flowInstance/listFlowInstance",
                         loadonce: false,
                         datatype: "json",
                         postData: {
@@ -205,7 +205,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: _ctxPath + "/maindata/flowInstance/delete",
+                            url: _ctxPath + "/flowInstance/delete",
                             params: {
                                 id: rowData.id
                             },
@@ -285,7 +285,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //   loadonce: true,
-                url: _ctxPath + "/maindata/flowInstance/findFlowHistory",
+                url: _ctxPath + "/flowInstance/listFlowHistory",
                 postData: {
                     "Q_EQ_flowInstance.id": data.id,
                     S_createdDate: "ASC"
