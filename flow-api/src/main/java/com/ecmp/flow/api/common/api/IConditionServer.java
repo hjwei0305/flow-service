@@ -71,7 +71,7 @@ public interface IConditionServer {
     @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体ID获取条件POJO的值",notes = "测试")
+    @ApiOperation(value = "通过业务ID获取条件POJO的值",notes = "测试")
     public Map<String,Object> getConditonPojoMap(@PathParam("conditonPojoClassName") String conditonPojoClassName,@PathParam("daoBeanName") String daoBeanName,@PathParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
@@ -113,6 +113,6 @@ public interface IConditionServer {
     @Path("conditonPojoMapByBusinessModelId/{businessModelId}/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体ID获取条件POJO的值",notes = "测试")
+    @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO的值",notes = "测试")
     public Map<String,Object> getConditonPojoMapByBusinessModelId(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }
