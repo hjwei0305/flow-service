@@ -23,12 +23,22 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
 
     /**
      * 查看业务实体已经选中的工作界面
+     * @param businessModelId  业务实体ID
+     * @return 已选中的工作界面
+     */
+    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where  w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
+    List<com.ecmp.flow.entity.WorkPageUrl> findSelectEdByBusinessModelId(@Param("businessModelId")String businessModelId);
+
+
+    /**
+     * 查看业务实体已经选中的工作界面
      * @param appModuleId 业务模块应用ID
      * @param businessModelId  业务实体ID
      * @return 已选中的工作界面
      */
     @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
     List<com.ecmp.flow.entity.WorkPageUrl> findSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
+
 
     /**
      * 查看业务实体未选中的工作界面

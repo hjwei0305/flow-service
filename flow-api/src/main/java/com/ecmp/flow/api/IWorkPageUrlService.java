@@ -103,4 +103,17 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程类型id查找拥有的工作界面",notes = "测试")
     public List<WorkPageUrl> findByFlowTypeId(String flowTypeId);
+
+
+    /**
+     * 查看对应业务实体已选中的工作界面
+     * @param businessModelId  业务实体ID
+     * @return 已选中的工作界面
+     */
+    @GET
+    @Path("findSelectEdByBusinessModelId/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID查看业务实体已选中的工作界面",notes = "测试")
+    public List<WorkPageUrl> findSelectEdByBusinessModelId(@PathParam("businessModelId")String businessModelId);
 }

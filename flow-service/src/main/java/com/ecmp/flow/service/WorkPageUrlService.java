@@ -54,4 +54,9 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     public List<WorkPageUrl> findByFlowTypeId(String flowTypeId){
         return workPageUrlDao.findByFlowTypeId(flowTypeId);
     }
+
+
+    public List<WorkPageUrl> findSelectEdByBusinessModelId(String businessModelId){
+     return    workPageUrlDao.findSelectEdByBusinessModelId(businessModelId);
+    }
 }
