@@ -25,7 +25,5 @@ public class ExpresstionUtilTestCase {
         String clientClassName = "com.ecmp.flow.vo.conditon.AppModuleCondition";
         String expression = "return id+code";
        System.out.println( ExpressionUtil.validate(clientApiBaseUrl,clientClassName,expression));
-
-//        System.out.println( ExpressionUtil.result(clientApiBaseUrl,clientClassName,expression));
     }
 }
