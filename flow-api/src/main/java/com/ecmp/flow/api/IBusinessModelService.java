@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.annotation.AppModule;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
