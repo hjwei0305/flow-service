@@ -5,6 +5,7 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -69,6 +71,20 @@ public class FlowDesignController {
             status.setData(flowInstance.getId());
         }
         return JsonUtil.serialize(status);
+    }
+
+    /**
+     * 通过业务实体ID获取条件POJO属性说明
+     * @param businessModelId
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @ResponseBody
+    @RequestMapping(value = "getPropertiesForConditionPojoByBusinessModelId", method = RequestMethod.POST)
+    public String getPropertiesForConditionPojoByBusinessModelId(String businessModelId) throws  ClassNotFoundException{
+        IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
+        Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
+        return JsonUtil.serialize(result);
     }
 
 }
