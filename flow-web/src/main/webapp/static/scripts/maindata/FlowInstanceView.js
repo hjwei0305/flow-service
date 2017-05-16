@@ -310,30 +310,25 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }, /*{
                  label : "流程名称",
                  name : "flowName",
-                 index : "flowName",
-                 title : false
+                 index : "flowName"
                  },*/{
                     label: "任务名",
                     name: "flowTaskName",
-                    index: "flowTaskName",
-                    title: false
+                    index: "flowTaskName"
                 }, {
                     label: "流程实例",
                     name: "flowInstance.flowName",
-                    index: "flowInstance.flowName",
-                    title: false
+                    index: "flowInstance.flowName"
                 }, {
                     label: "任务表单URL",
                     name: "taskFormUrl",
                     index: "taskFormUrl",
-                    title: false,
                     hidden: true
                 }, {
                     label: "任务状态",
                     name: "taskStatus",
                     index: "taskStatus",
                     align: "center",
-                    title: false,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
@@ -347,47 +342,39 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: "代理状态",
                     name: "proxyStatus",
-                    index: "proxyStatus",
-                    title: false
+                    index: "proxyStatus"
                 }, /*{
                  label : "流程实例ID" ,
                  name : "flowInstanceId",
-                 index : "flowInstanceId",
-                 title : false
+                 index : "flowInstanceId"
                  },{
                  label : "流程定义ID" ,
                  name : "flowDefinitionId",
-                 index : "flowDefinitionId",
-                 title : false
+                 index : "flowDefinitionId"
                  },*/{
                     label: "执行人名称",
                     name: "executorName",
-                    index: "executorName",
-                    title: false
+                    index: "executorName"
                 }, {
                     label: "执行人账号",
                     name: "executorAccount",
                     index: "executorAccount",
-                    align: "center",
-                    title: false
+                    align: "center"
                 }, {
                     label: "任务开始时间",
                     name: "actStartTime",
                     index: "actStartTime",
-                    align: "center",
-                    title: false
+                    align: "center"
                 }, {
                     label: "任务结束时间",
                     name: "actEndTime",
                     index: "actEndTime",
-                    align: "center",
-                    title: false
+                    align: "center"
                 }, {
                     label: "任务执行时长",
                     name: "actDurationInMillis",
                     index: "actDurationInMillis",
                     align: "center",
-                    title: false,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         var timeMill = rowObject.actDurationInMillis / 1000;
@@ -414,24 +401,20 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: "最后更新时间",
                     name: "lastModifiedDate",
                     index: "lastModifiedDate",
-                    align: "center",
-                    title: false
+                    align: "center"
                 },
                     /*    ,{
                      label : "候选人账号" ,
                      name : "candidateAccount",
-                     index : "candidateAccount",
-                     title : false
+                     index : "candidateAccount"
                      },{
                      label : "执行时间" ,
                      name : "executeDate",
-                     index : "executeDate",
-                     title : false
+                     index : "executeDate"
                      },*/{
                         label: "描述",
                         name: "depict",
-                        index: "depict",
-                        title: false
+                        index: "depict"
                     }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();

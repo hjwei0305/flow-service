@@ -76,29 +76,24 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },/*{
                     label : "流程名称",
                     name : "flowName",
-                    index : "flowName",
-                    title : false
+                    index : "flowName"
                 },*/{
                     label : "任务名",
                     name : "taskName",
-                    index : "taskName",
-                    title : false
+                    index : "taskName"
                 },/*{
                     label : "任务定义KEY",
                     name : "taskDefKey",
-                    index : "taskDefKey",
-                    title : false
+                    index : "taskDefKey"
                 },*/{
                     label : "任务表单URL",
                     name : "taskFormUrl",
                     index : "taskFormUrl",
-                    title : false,
                    hidden : true
                 },{
                     label : "任务状态" ,
                     name : "taskStatus",
                     index : "taskStatus",
-                    title : false,
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = '';
                         if('INIT' == rowObject.taskStatus){
@@ -114,118 +109,95 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },{
                     label : "代理状态" ,
                     name : "proxyStatus",
-                    index : "proxyStatus",
-                    title : false
+                    index : "proxyStatus"
                 },/*{
                     label : "流程实例ID" ,
                     name : "flowInstanceId",
-                    index : "flowInstanceId",
-                    title : false
+                    index : "flowInstanceId"
                 },{
                     label : "流程定义ID" ,
                     name : "flowDefinitionId",
-                    index : "flowDefinitionId",
-                    title : false
+                    index : "flowDefinitionId"
                 },*/{
                     label : "执行人名称" ,
                     name : "executorName",
-                    index : "executorName",
-                    title : false
+                    index : "executorName"
                 },{
                     label : "执行人账号" ,
                     name : "executorAccount",
-                    index : "executorAccount",
-                    title : false
+                    index : "executorAccount"
                 },{
                     label : "候选人账号" ,
                     name : "candidateAccount",
-                    index : "candidateAccount",
-                    title : false
+                    index : "candidateAccount"
                 },/*{
                     label : "执行时间" ,
                     name : "executeDate",
-                    index : "executeDate",
-                    title : false
+                    index : "executeDate"
                 },*/{
                     label : "描述" ,
                     name : "depict",
-                    index : "depict",
-                    title : false
+                    index : "depict"
                 },{
                     label : "创建时间" ,
                     name : "createdDate",
-                    index : "createdDate",
-                    title : false
-                },/*{
+                    index : "createdDate"
+                }/*{
                     label : "创建人" ,
                     name : "createdBy",
-                    index : "createdBy",
-                    title : false
+                    index : "createdBy"
                 },{
                     label : "创建时间" ,
                     name : "createdDate",
-                    index : "createdDate",
-                    title : false
+                    index : "createdDate"
                 },{
                     label : "最后更新者" ,
                     name : "lastModifiedBy",
-                    index : "lastModifiedBy",
-                    title : false
+                    index : "lastModifiedBy"
                 },{
                     label : "最后更新时间" ,
                     name : "lastModifiedDate",
-                    index : "lastModifiedDate",
-                    title : false
+                    index : "lastModifiedDate"
                 },{
                     label : "引擎流程任务ID" ,
                     name : "actTaskId",
-                    index : "actTaskId",
-                    title : false
+                    index : "actTaskId"
                 },{
                     label : "优先级" ,
                     name : "priority",
-                    index : "priority",
-                    title : false
+                    index : "priority"
                 },{
                     label : "所属人" ,
                     name : "ownerAccount",
-                    index : "ownerAccount",
-                    title : false
+                    index : "ownerAccount"
                 },{
                     label : "所属人名称" ,
                     name : "ownerName",
-                    index : "ownerName",
-                    title : false
+                    index : "ownerName"
                 },{
                     label : "实际任务类型" ,
                     name : "actType",
-                    index : "actType",
-                    title : false
+                    index : "actType"
                 },{
                     label : "签收时间" ,
                     name : "actClaimTime",
-                    index : "actClaimTime",
-                    title : false
+                    index : "actClaimTime"
                 },{
                     label : "实际触发时间" ,
                     name : "actDueDate",
-                    index : "actDueDate",
-                    title : false
+                    index : "actDueDate"
                 },{
                     label : "实际任务定义KEY" ,
                     name : "actTaskKey",
-                    index : "actTaskKey",
-                    title : false
+                    index : "actTaskKey"
                 },{
                     label : "关联流程实例的ID(隐藏)" ,
                     name : "flowInstance.id",
-                    index : "flowInstance.id",
-                    title : false
+                    index : "flowInstance.id"
                 },{
                     label : "关联流程实例" ,
                     name : "flowInstance.name",
-                    index : "flowInstance.name",
-                    title : false
+                    index : "flowInstance.name"
                 }*/],
                 ondbClick : function(){
                     var rowData=EUI.getCmp("gridPanel").getSelectRow();

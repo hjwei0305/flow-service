@@ -120,29 +120,24 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.codeText,
                     name: "code",
-                    index: "code",
-                    title: false
+                    index: "code"
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name",
-                    title: false
+                    index: "name"
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict",
-                    title: false
+                    index: "depict"
                 }, {
                     label: "businessModelId",
                     name: "businessModel.id",
                     index: "businessModel.id",
-                    title: false,
                     hidden: true
                 }, {
                     label: this.lang.belongToBusinessModelText,
                     name: "businessModel.name",
-                    index: "businessModel.name",
-                    title: false
+                    index: "businessModel.name"
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
