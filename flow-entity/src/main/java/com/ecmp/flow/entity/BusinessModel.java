@@ -49,10 +49,17 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
     /**
-     * 转换对象
+     * 转换对象，全路径
      */
     @Column(length = 255, name = "conditon_bean")
     private String conditonBean;
+
+    /**
+     * 数据访问对象,spring管理的bean名称
+     */
+    @Column(length = 80, name = "dao_bean")
+    private String daoBean;
+
 
     /**
      * 描述
@@ -129,6 +136,14 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.version = version;
     }
 
+    public String getDaoBean() {
+        return daoBean;
+    }
+
+    public void setDaoBean(String daoBean) {
+        this.daoBean = daoBean;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -150,6 +165,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("name", name)
                 .append("className", className)
                 .append("conditonBean", conditonBean)
+                .append("daoBean", daoBean)
                 .append("depict", depict)
                 .append("appModuleId", appModuleId)
                 .append("flowTypes", flowTypes)

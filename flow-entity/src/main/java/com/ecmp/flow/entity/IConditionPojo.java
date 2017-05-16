@@ -15,7 +15,7 @@ public interface IConditionPojo extends Serializable{
 
     /**
      * 条件表达式初始化，提供给表达式做初始化验证，
-     * 结合具体业务实际
+     * 结合具体业务实现
      */
     public  void init();
 }
