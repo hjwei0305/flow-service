@@ -53,7 +53,7 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     PageResult<WorkPageUrl> findByPage(Search searchConfig);
 
     /**
-     * 根据应用模块id查询业务实体
+     * 根据应用模块id查询业务实体t
      *
      * @return 实体清单
      */
