@@ -1,5 +1,5 @@
 /**
- * 显示页面
+ * 内置审批单页面
  */
 EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
@@ -9,11 +9,11 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             border: false,
             padding: 8,
             itemspace: 0,
-            items: [this.initTbar(), this.initGrid()]
+            items: [this.initTop(), this.initCenter()]
         });
         this.addEvents();
     },
-    initTbar: function () {
+    initTop: function () {
         var g = this;
         return {
             xtype: "ToolBar",
@@ -48,7 +48,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    initGrid: function () {
+    initCenter: function () {
         var g = this;
         return {
             xtype: "GridPanel",
@@ -58,16 +58,16 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                //     loadonce:true,
-                url: _ctxPath + "/builtInApprove/listDefBusinessModel",
+                loadonce:true,
+                /*url: _ctxPath + "/builtInApprove/listDefBusinessModel",
                 postData: {
                     S_createdDate: "ASC"
-                },
+                },*/
                 colModel: [{
                     label: "操作",
                     name: "operate",
                     index: "operate",
-                    width: 100,
+                    width: '20%',
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
@@ -120,6 +120,15 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "workCaption",
                     index: "workCaption"
                 }],
+                data:[{
+                    id:"1",
+                    name:"ddd",
+                    workCaption:"wwww"
+                },{
+                    id:"2",
+                    name:"ccc",
+                    workCaption:"aaaa"
+                }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
@@ -127,9 +136,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             }
         };
     },
+    //编辑和删除按钮的事件添加
     addEvents: function () {
         var g = this;
-        $(".condetail-edit").live("click", function () {
+        $(".condetail-update").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.showBuiltInApproveWin(data);
         });
@@ -138,15 +148,17 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             g.deleteBuiltInApproveWin(data);
         });
     },
+    //编辑按钮
     showBuiltInApproveWin: function (data) {
         var g = this;
         var win = EUI.Window({
             title: "内置审批单",
-            height: 250,
+            height: 190,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBuiltInApprove",
+                height:200,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
@@ -159,18 +171,23 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: "名称",
-                    labelWidth: 90,
+                    labelWidth: 70,
                     name: "name",
                     width: 220,
-                    value: data.name
+                    colon:false,
+                    value: data.name,
+                    allowBlank:false
                 }, {
                     xtype: "TextArea",
                     title: "说明",
-                    readonly: true,
-                    labelWidth: 90,
+                    labelWidth: 70,
                     name: "workCaption",
+                    id:"caption",
+                    colon:false,
                     width: 220,
-                    value: data.workCaption
+                    height:130,
+                    value: data.workCaption,
+                    allowBlank:false
                 }]
             }],
             buttons: [{
@@ -192,18 +209,19 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
+    //删除按钮
     deleteBuiltInApproveWin: function (data) {
         var g = this;
         var infoBox = EUI.MessageBox({
-            title: g.lang.tiShiText,
-            msg: g.lang.ifDelMsgText,
+            title: "提示",
+            msg: "确定删除吗？",
             buttons: [{
                 title: "确定",
                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
-                        msg: g.lang.nowDelMsgText
+                        msg: "正在删除，请稍后..."
                     });
                     EUI.Store({
                         url: _ctxPath + "/builtInApprove/delete",
@@ -231,29 +249,35 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
+    //新增按钮
     addBuiltInApprove: function () {
         var g = this;
         var win = EUI.Window({
             title: "新增内置表单",
-            height: 250,
+            height: 190,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addBuiltInApprove",
+                height:200,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
                     title: "名称",
                     allowBlank:false,
-                    labelWidth: 90,
+                    labelWidth: 70,
                     name: "name",
+                    colon:false,
                     width: 220
                 }, {
                     xtype: "TextArea",
                     title: "说明",
-                    labelWidth: 90,
+                    labelWidth: 70,
                     name: "workCaption",
+                    id:"caption",
                     width: 220,
+                    height:130,
+                    colon:false,
                     allowBlank:false
                 }]
             }],
@@ -277,6 +301,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
+    //保存
     saveBuiltInApprove: function (data) {
         var g = this;
         console.log(data);
