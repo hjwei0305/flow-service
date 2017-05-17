@@ -9,6 +9,7 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.FlowType;
@@ -49,6 +50,7 @@ public class BuiltInApproveController {
 
     /**
      * 查询默认业务实体
+     *
      * @param request
      * @return
      * @throws ParseException
@@ -64,6 +66,7 @@ public class BuiltInApproveController {
 
     /**
      * 删除默认业务实体
+     *
      * @param id
      * @return
      */
@@ -79,15 +82,18 @@ public class BuiltInApproveController {
 
     /**
      * 保存默认业务实体
+     *
      * @param defaultBusinessModel
      * @return
      */
     @RequestMapping(value = "save")
     @ResponseBody
     public String save(DefaultBusinessModel defaultBusinessModel) {
+        defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
         IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
         OperateResultWithData<DefaultBusinessModel> result = proxy.save(defaultBusinessModel);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 }
+
