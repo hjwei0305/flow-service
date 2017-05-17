@@ -31,3 +31,6 @@
 #comboBox span {
     font-weight: bold;
 }
+#caption .ux-field-label{
+    top: 55px;
+}
