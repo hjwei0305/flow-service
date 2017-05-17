@@ -5,9 +5,11 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,6 +87,15 @@ public class FlowDesignController {
     public String getPropertiesForConditionPojoByBusinessModelId(String businessModelId) throws  ClassNotFoundException{
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
+        return JsonUtil.serialize(result);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "listAllWorkPage", method = RequestMethod.POST)
+    public String listAllWorkPage(String businessModelId){
+    IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
+        List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelId);
         return JsonUtil.serialize(result);
     }
 
