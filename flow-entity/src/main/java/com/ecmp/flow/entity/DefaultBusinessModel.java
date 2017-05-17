@@ -3,6 +3,7 @@ package com.ecmp.flow.entity;
 import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -32,7 +33,7 @@ import java.lang.reflect.InvocationTargetException;
  * <p/>
  * *************************************************************************************************
  */
-
+@JsonIgnoreProperties(value={"conditionPojo"})
 @Entity(name = "default_business_model")
 @DynamicInsert
 @DynamicUpdate
