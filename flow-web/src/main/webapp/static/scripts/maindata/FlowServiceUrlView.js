@@ -83,23 +83,19 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.codeText,
                     name: "code",
-                    index: "code",
-                    title: false
+                    index: "code"
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name",
-                    title: false
+                    index: "name"
                 }, {
                     label: this.lang.urlText,
                     name: "url",
-                    index: "url",
-                    title: false
+                    index: "url"
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict",
-                    title: false
+                    index: "depict"
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();

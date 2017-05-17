@@ -847,39 +847,33 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name",
-                        width: "50",
-                        title: false
+                        width: "50"
                     }, {
                         label: "最新版本ID",
                         name: "lastVersionId",
                         index: "lastVersionId",
-                        title: false,
                         hidden: true
                     }, {
                         label: "定义KEY",
                         name: "defKey",
                         index: "defKey",
-                        width: "50",
-                        title: false
+                        width: "50"
                     }, {
                         label: "启动条件UEL",
                         name: "startUel",
                         index: "startUel",
-                        width: "50",
-                        title: false
+                        width: "50"
                     }, {
                         label: "组织机构ID",
                         name: "orgId",
                         index: "orgId",
                         width: "50",
-                        title: false,
                         hidden: true
                     }, {
                         label: this.lang.depictText,
                         name: "depict",
                         index: "depict",
-                        width: "50",
-                        title: false
+                        width: "50"
                     }],
                     ondbClick: function () {
                         var rowData = EUI.getCmp("gridPanel").getSelectRow();

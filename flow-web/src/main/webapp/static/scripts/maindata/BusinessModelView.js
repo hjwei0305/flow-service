@@ -133,28 +133,23 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name",
-                    title: false
+                    index: "name"
                 }, {
                     label: this.lang.classPathText,
                     name: "className",
-                    index: "className",
-                    title: false
+                    index: "className"
                 }, {
                     label: this.lang.conditonBeanText,
                     name: "conditonBean",
-                    index: "conditonBean",
-                    title: false
+                    index: "conditonBean"
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict",
-                    title: false
+                    index: "depict"
                 }, {
                     label: this.lang.workPageText,
                     name: "workPage",
-                    index: "workPage",
-                    title: false
+                    index: "workPage"
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -449,7 +444,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     getProperty: function (data) {
         var g = this;
         EUI.Store({
-            url: _ctxPath + "/businessModel/listAllConditionProperty",
+            url: _ctxPath + "/businessModel/getPropertiesForConditionPojo",
             params: {
                 conditonPojoClassName: data.conditonBean
             },
@@ -591,23 +586,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.codeText,
                     name: "code",
-                    index: "code",
-                    title: false
+                    index: "code"
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name",
-                    title: false
+                    index: "name"
                 }, {
                     label: "URL",
                     name: "url",
-                    index: "url",
-                    title: false
+                    index: "url"
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict",
-                    title: false
+                    index: "depict"
                 }],
                 ondbClick: function () {
                     // var rowData = EUI.getCmp("gridPanel").getSelectRow();
