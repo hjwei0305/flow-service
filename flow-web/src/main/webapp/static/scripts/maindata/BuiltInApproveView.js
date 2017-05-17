@@ -58,22 +58,22 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                loadonce:true,
-                /*url: _ctxPath + "/builtInApprove/listDefBusinessModel",
+                // loadonce:true,
+                url: _ctxPath + "/builtInApprove/listDefBusinessModel",
                 postData: {
                     S_createdDate: "ASC"
-                },*/
+                },
                 colModel: [{
                     label: "操作",
                     name: "operate",
                     index: "operate",
-                    width: '20%',
+                    width: '25%',
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
-                            "<div class='condetail-start'></div>"
-                            + "<div class='condetail-update'></div>"
-                            + "<div class='condetail-delete'></div></div>";
+                            "<div class='condetail-start' title='启动'></div>"
+                            + "<div class='condetail-update' title='编辑'></div>"
+                            + "<div class='condetail-delete' title='删除'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -120,7 +120,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "workCaption",
                     index: "workCaption"
                 }],
-                data:[{
+               /* data:[{
                     id:"1",
                     name:"ddd",
                     workCaption:"wwww"
@@ -128,7 +128,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     id:"2",
                     name:"ccc",
                     workCaption:"aaaa"
-                }],
+                }],*/
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
@@ -153,19 +153,20 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: "内置审批单",
-            height: 190,
+            height: 250,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBuiltInApprove",
-                height:200,
+                height:260,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
                     title: "ID",
                     labelWidth: 90,
                     name: "id",
-                    width: 220,
+                    width: 270,
                     value: data.id,
                     hidden: true
                 }, {
@@ -173,7 +174,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     title: "名称",
                     labelWidth: 70,
                     name: "name",
-                    width: 220,
+                    width: 270,
                     colon:false,
                     value: data.name,
                     allowBlank:false
@@ -182,10 +183,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     title: "说明",
                     labelWidth: 70,
                     name: "workCaption",
-                    id:"caption",
+                    id:"workCaption",
                     colon:false,
-                    width: 220,
-                    height:130,
+                    width: 270,
+                    height:170,
                     value: data.workCaption,
                     allowBlank:false
                 }]
@@ -254,12 +255,13 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: "新增内置表单",
-            height: 190,
+            height: 250,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addBuiltInApprove",
-                height:200,
+                height:260,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
@@ -268,15 +270,15 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "name",
                     colon:false,
-                    width: 220
+                    width: 270
                 }, {
                     xtype: "TextArea",
                     title: "说明",
                     labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
-                    width: 220,
-                    height:130,
+                    width: 270,
+                    height:170,
                     colon:false,
                     allowBlank:false
                 }]
@@ -291,7 +293,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     }
                     var data = form.getFormValue();
                     console.log(data);
-                    g.saveBuiltInApprove(data);
+                    g.saveBuiltInApprove(data,win);
                 }
             }, {
                 title: "取消",
@@ -302,7 +304,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         });
     },
     //保存
-    saveBuiltInApprove: function (data) {
+    saveBuiltInApprove: function (data,winCmp) {
         var g = this;
         console.log(data);
         var myMask = EUI.LoadMask({
@@ -316,7 +318,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
                 if (result.success) {
                     EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                    win.close();
+                    winCmp.remove();
                 }
             },
             failure: function (result) {
