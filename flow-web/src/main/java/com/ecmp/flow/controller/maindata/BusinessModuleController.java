@@ -163,9 +163,9 @@ public class BusinessModuleController {
      * @return
      * @throws ClassNotFoundException
      */
-    @RequestMapping(value = "listAllConditionProperty")
+    @RequestMapping(value = "getPropertiesForConditionPojo")
     @ResponseBody
-    public String listAllConditionProperty(String conditonPojoClassName) throws  ClassNotFoundException {
+    public String getPropertiesForConditionPojo(String conditonPojoClassName) throws  ClassNotFoundException {
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
         return JsonUtil.serialize(result);
