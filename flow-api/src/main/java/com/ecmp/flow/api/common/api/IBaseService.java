@@ -31,10 +31,10 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
      * @return 实体
      */
     @GET
-    @Path("getById")
+    @Path("getById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Id获取实体",notes = "测试 通过Id获取实体")
-    T findOne(ID id);
+    T findOne(@PathParam("id")String id);
 
     /**
      * 获取所有实体
