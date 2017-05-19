@@ -10,6 +10,7 @@
    <!--<import resource="classpath*:ecmp-context.xml"/>
     <import resource="classpath*:ecmp-service.xml"/>-->
 
+
     <context:annotation-config/>
     <bean class="com.ecmp.config.ServiceConfig"/>
 
@@ -36,7 +37,8 @@
             <bean class="com.ecmp.flow.service.ConditionServer"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
-            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="com.ecmp.config.util.ApiRestJsonProvider"/>
+            <bean class="com.ecmp.config.util.SessionContainerRequestFilter"/>
         </jaxrs:providers>
         <jaxrs:features>
             <ref bean="swagger2Feature"/>
