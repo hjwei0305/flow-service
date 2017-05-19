@@ -7,6 +7,12 @@ ext {
 }
 
 apply plugin: 'war'
+war{
+    //包名称
+    archiveName "${baseName}.${extension}"
+    //包存放路径
+    destinationDir = file("${rootProject.projectDir}/build/war")
+}
 
 // 依赖
 dependencies {

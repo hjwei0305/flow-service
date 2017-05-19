@@ -12,8 +12,9 @@ public interface BusinessModelDao extends BaseEntityDao<BusinessModel> {
     /**
      * 根据应用模块的id来查询业务实体
      *
-     * @param appModuleId 应用模块Id
+     * @param appModuleId 应用模块Id,xx
      * @return 岗位清单
      */
     List<BusinessModel> findByAppModuleId(String appModuleId);
+
 }
