@@ -45,9 +45,9 @@ public class LookApproveBillController {
 
     @RequestMapping(value = "getApproveBill")
     @ResponseBody
-    public String getApproveBill(String defBinessModelId) {
+    public String getApproveBill(String id) {
         IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
-        DefaultBusinessModel result = proxy.findOne(defBinessModelId);
+        DefaultBusinessModel result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
         return JsonUtil.serialize(status);
     }

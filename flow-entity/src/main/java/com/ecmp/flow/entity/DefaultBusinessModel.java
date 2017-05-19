@@ -58,7 +58,7 @@ public class DefaultBusinessModel extends com.ecmp.core.entity.BaseAuditableEnti
     /**
      * 当前流程状态
      */
-    @Column(name = "flowStatus",length = 10)
+    @Column(name = "flowStatus",length = 10,nullable = false)
     private FlowStatus flowStatus;
 
     /**
@@ -94,7 +94,7 @@ public class DefaultBusinessModel extends com.ecmp.core.entity.BaseAuditableEnti
     /**
      * 工作说明
      */
-    @Column(name = "workCaption",length = 1000)
+    @Column(name = "workCaption",length = 1000,nullable = false)
     private  String workCaption;
 
 

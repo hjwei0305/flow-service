@@ -29,16 +29,6 @@ var common_lang = {
     deleteMaskMessageText: "正在删除，请稍候...",
     queryMaskMessageText: "正在努力获取数据，请稍候...",
 };
-if (EUI.AppModuleView) {
-    EUI.apply(EUI.AppModuleView.prototype.lang, {
-        addResourceText: "新增",
-        updateAppModuleText: "修改实体模型",
-        inputCodeMsgText: "请输入代码",
-        inputNameMsgText: "请输入名称",
-        inputDepictMsgText: "请输入描述",
-        addNewAppModuleText: "新增实体模型"
-    }, common_lang);
-}
 
 if (EUI.BusinessModelView) {
     EUI.apply(EUI.BusinessModelView.prototype.lang, {
@@ -65,7 +55,13 @@ if (EUI.BusinessModelView) {
         workPageSetText:"工作界面配置",
         typeText:"类型",
         fieldNameText:"字段名",
-        noteText:"注解"
+        noteText:"注解",
+        chooseAppModelText:"请选择应用模块",
+        appModelIdText:"应用模块ID",
+        serviceUrlText:"服务地址管理",
+        addServiceUrlText: "新增服务地址",
+        businessModelIdText: "业务实体ID",
+        updateServiceUrlText:"修改服务地址管理"
     }, common_lang);
 }
 
@@ -119,7 +115,7 @@ if (EUI.FlowDefinationView) {
         inputDepictMsgText: "请输入描述",
         chooseBelongToBusinessModelText: "请选择所属业务实体模型",
         belongToBusinessText: "所属业务实体",
-        addNewFlowTypeText: "新增流程类型"
+        addNewFlowTypeText: "新增流程类型",
     }, common_lang);
 }
 

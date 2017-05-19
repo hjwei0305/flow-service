@@ -1,19 +1,12 @@
 .condetail-operate {
-    width: 90px;
+    width: 55px;
     height: 15px;
     line-height: 15px;
     margin: 0 auto
 }
-.condetail-operate>div{
-    margin: 0 7px;
-}
 
-.condetail-start{
-    width: 15px;
-    height: 15px;
-    float: left;
-    cursor: pointer;
-    background: url("../images/operate_set2.png") no-repeat;
+.condetail-operate > div {
+    margin: 0 6px;
 }
 
 .condetail-update {
@@ -39,15 +32,7 @@
 #comboBox span {
     font-weight: bold;
 }
-#caption .ux-field-label{
-    top: 70px;
-}
-#caption{
-    margin-top: 10px;
-}
-#workCaption{
-    margin-top: 10px;
-}
-#workCaption .ux-field-label{
-    top: 70px;
+
+#caption .ux-field-label {
+    top: 55px;
 }

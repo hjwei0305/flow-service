@@ -105,7 +105,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/lookApproveBill/getApproveBill",
             params: {
-                id: id
+                id: "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7"
             },
             success:function (result) {
                 EUI.ProcessStatus(result);
