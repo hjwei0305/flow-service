@@ -62,7 +62,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     if (!data) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请选择应用模块"
+                            msg: this.lang.chooseAppModelText
                         });
                         return;
                     }
@@ -225,7 +225,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: "应用模块ID",
+                    title: g.lang.appModelIdText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "appModuleId",
@@ -234,7 +234,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: "应用模块",
+                    title: g.lang.modelText,
                     readonly: true,
                     labelWidth: 90,
                     allowBlank: false,
@@ -314,7 +314,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
-                    title: "应用模块ID",
+                    title: g.lang.appModelIdText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "appModuleId",
@@ -323,7 +323,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: "应用模块",
+                    title: g.lang.modelText,
                     readonly: true,
                     labelWidth: 90,
                     allowBlank: false,
@@ -411,7 +411,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     lookPropertyWindow: function (data) {
         var g = this;
         var Wind = EUI.Window({
-            title: "条件属性",
+            title: g.lang.conditionPropertyText,
             id: "propertyWind",
             width: 500,
             items: [{
@@ -507,7 +507,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     showServiceUrlWindow: function (data) {
         var g = this;
         var win = EUI.Window({
-            title: "服务地址管理",
+            title:g.lang.serviceUrlText,
             width: 1000,
             layout: "border",
             height: 650,
@@ -534,7 +534,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText:this.lang.searchNameText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -815,7 +815,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     addFlowServiceUrl: function (data) {
         var g = this;
         var win = EUI.Window({
-            title: "新增服务地址",
+            title:g.lang.addServiceUrlText,
             height: 250,
             padding: 15,
             items: [{
@@ -824,7 +824,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
-                    title: "业务实体ID",
+                    title:g.lang.businessModelIdText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "businessModel.id",
@@ -908,7 +908,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var win = EUI.Window({
-            title: "修改服务地址管理",
+            title: g.lang.updateServiceUrlText,
             height: 250,
             padding: 15,
             items: [{
@@ -926,7 +926,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
-                    title: "业务实体ID",
+                    title: g.lang.businessModelIdText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "businessModel.id",

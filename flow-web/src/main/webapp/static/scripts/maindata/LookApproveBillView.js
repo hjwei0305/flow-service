@@ -109,7 +109,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             },
             success:function (result) {
                 EUI.ProcessStatus(result);
-
+                console.log("kkkkkkkkkkkkkkkk")
 
                 // var showData=EUI.getCmp("")
                 // EUI.getCmp("lookBill").setValue();
