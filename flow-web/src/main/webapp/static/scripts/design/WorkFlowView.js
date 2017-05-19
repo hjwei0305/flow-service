@@ -4,6 +4,7 @@
 EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     count: 0,
+    id:null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -22,6 +23,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "ToolBar",
                 region: "north",
                 border: false,
+                isOverFlow:false,
                 height: 40,
                 padding: 3,
                 items: this.getTopItems()
@@ -257,7 +259,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         css.cursor = "no-drop";
                     }
                     dragDom.css(css);
-
                 }
             },
             "mouseup": function (e) {
@@ -358,7 +359,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 location: 0.2,
                 id: "label",
                 label: null,
-                cssClass: "aLabel"
+                cssClass: "flow-line-note"
             }]],
             Container: "body"
         });
@@ -383,9 +384,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             new EUI.UELSettingView({
                 title: "表达式配置",
+                data: g.uelInfo[connection.sourceId + "," + connection.targetId],
                 businessModelId: g.businessModelId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
+                    connection.getOverlay("label").setLabel(data.name);
                 }
             });
         });

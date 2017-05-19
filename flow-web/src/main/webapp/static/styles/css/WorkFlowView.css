@@ -220,7 +220,7 @@
     display: none;
 }
 
-.flow-event-box .node-dot{
+.flow-event-box .node-dot {
     bottom: 40%;
 }
 
@@ -335,7 +335,6 @@
     height: 36px;
 }
 
-
 .calculate-btn {
     border: 1px solid #eaf1fb;
     border-radius: 4px;
@@ -347,10 +346,12 @@
     width: 90px;
     background: #F2F6FC;
 }
-.property-box{
+
+.property-box {
     text-align: center;
 }
-.property-item{
+
+.property-item {
     background: #f2f6fc none repeat scroll 0 0;
     border: 1px solid #eaf1fb;
     border-radius: 4px;
@@ -362,3 +363,13 @@
     width: 128px;
 }
 
+.flow-line-note {
+    background-color: white;
+    border: 1px dotted gray;
+    color: #444;
+    cursor: pointer;
+    font: 12px sans-serif;
+    opacity: 0.8;
+    padding: 0.4em;
+    z-index: 21;
+}

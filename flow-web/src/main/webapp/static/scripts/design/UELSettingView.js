@@ -2,7 +2,7 @@
  * Created by fly on 2017/4/18.
  */
 EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
-    title: null,
+    data: null,
     afterConfirm: null,
     businessModelId: null,
     properties: null,
@@ -17,15 +17,18 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             items: [{
                 region: "north",
-                height: 50,
-                isOverFlow:false,
-                border:false,
+                height: 40,
+                padding: 0,
+                isOverFlow: false,
+                border: false,
                 items: [{
                     xtype: "TextField",
                     name: "name",
+                    id: "name",
                     title: "表达式名称",
-                    labelWidth:100,
-                    width:200,
+                    labelWidth: 100,
+                    width: 200,
+                    value: this.data ? this.data.name : "",
                     allowBlank: false
                 }]
             },
@@ -37,6 +40,9 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         this.groovyUelCmp = EUI.getCmp("groovyUel");
         this.addEvents();
         this.getProperties();
+        if (this.data && !Object.isEmpty(this.data)) {
+            this.loadData();
+        }
     },
     getButtons: function () {
         var g = this;
@@ -44,7 +50,9 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             title: "保存配置",
             selected: true,
             handler: function () {
+                var name = EUI.getCmp("name").getValue();
                 var data = {
+                    name: name,
                     logicUel: g.logicUelCmp.getValue(),
                     groovyUel: g.groovyUelCmp.getValue()
                 };
@@ -87,9 +95,10 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     if (!g.properties) {
                         return;
                     }
+                    console.log(value);
                     for (var key in g.properties) {
-                        var reg = new RegExp(key, "g");
-                        value = value.replace(reg, g.properties[key]);
+                        var reg = new RegExp(g.properties[key], "g");
+                        value = value.replace(reg, key);
                     }
                     g.groovyUelCmp.setValue(value);
                 }
@@ -123,16 +132,16 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             var uel = " " + $(this).attr("uel") + " ";
             var value = g.logicUelCmp.getValue() + operator;
             g.logicUelCmp.setValue(value);
-            value = g.groovyUelCmp.getValue() + uel;
-            g.groovyUelCmp.setValue(value);
+            // value = g.groovyUelCmp.getValue() + uel;
+            // g.groovyUelCmp.setValue(value);
         });
         $(".property-item").live("click", function () {
             var text = $(this).text();
             var key = $(this).attr("key");
             var value = g.logicUelCmp.getValue() + " " + text + " ";
             g.logicUelCmp.setValue(value);
-            value = g.groovyUelCmp.getValue() + " " + key + " ";
-            g.groovyUelCmp.setValue(value);
+            // value = g.groovyUelCmp.getValue() + " " + key + " ";
+            // g.groovyUelCmp.setValue(value);
         });
     }
     ,
@@ -148,6 +157,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     EUI.ProcessStatus(result);
                     return;
                 }
+                g.properties = result.data;
                 g.showProperties(result.data);
             },
             failure: function (result) {
@@ -162,6 +172,10 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             html += "<div class='property-item' key='" + key + "'>" + data[key] + "</div>";
         }
         $(".property-box").append(html);
+    },
+    loadData:function () {
+        this.logicUelCmp.setValue(this.data.logicUel);
+        this.groovyUelCmp.setValue(this.data.groovyUel);
     }
 })
 ;
