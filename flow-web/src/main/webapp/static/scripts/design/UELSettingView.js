@@ -3,24 +3,36 @@
  */
 EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
+    afterConfirm: null,
+    businessModelId: null,
+    properties: null,
+
     initComponent: function () {
         this.window = EUI.Window({
-            width: 600,
-            height: 460,
-            padding: 15,
+            width: 710,
+            height: 500,
+            padding: 10,
+            title: this.title,
             buttons: this.getButtons(),
+            layout: "border",
             items: [{
-                xtype: "TabPanel",
-                isOverFlow: false,
-                defaultConfig: {
-                    iframe: false,
-                    closable: false
-                },
-                items: [this.getNormalTab(), this.getExcutorTab(),
-                    this.getOperateTab(), this.getNotifyTab()]
-            }]
-        });
-        this.initUEditor();
+                region: "north",
+                height: 40,
+                items: [{
+                    xtype: "TextField",
+                    name: "name",
+                    title: "表达式名称",
+                    allowBlank: false
+                }]
+            },
+                this.initLeft(), this.initCenter()
+            ]
+        })
+        ;
+        this.logicUelCmp = EUI.getCmp("logicUel");
+        this.groovyUelCmp = EUI.getCmp("groovyUel");
+        this.addEvents();
+        this.getProperties();
     },
     getButtons: function () {
         var g = this;
@@ -28,6 +40,12 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             title: "保存配置",
             selected: true,
             handler: function () {
+                var data = {
+                    logicUel: g.logicUelCmp.getValue(),
+                    groovyUel: g.groovyUelCmp.getValue()
+                };
+                g.afterConfirm && g.afterConfirm.call(this, data);
+                g.window.close();
             }
         }, {
             title: "取消",
@@ -36,189 +54,110 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             }
         }];
     },
-    getNormalTab: function () {
+    initLeft: function () {
         return {
-            title: "常规配置",
-            xtype: "FormPanel",
-            padding: 10,
-            defaultConfig: {
-                width: 300,
-                xtype: "TextField",
-                colon: false
-            },
-            style: {
-                padding: "10px 30px"
-            },
-
-            items: [{
-                title: "节点名称",
-                name: "name"
-            }, {
-                title: "节点说明",
-                name: "depict"
-            }, {
-                xtype: "ComboBox",
-                title: "工作界面",
-                name: "",
-                field: [""],
-                store: {
-                    url: _ctxPath + ""
-                }
-            }, {
-                xtype: "ComboBox",
-                title: "服务调用",
-                name: "",
-                field: [""],
-                store: {
-                    url: _ctxPath + ""
-                }
-            }]
+            region: "west",
+            width: 165,
+            html: "<div class='property-box'></div>"
         };
     },
-    getExcutorTab: function () {
+    initCenter: function () {
+        var g = this;
         return {
-            xtype: "FormPanel",
-            title: "执行人配置",
-            style: {
-                padding: "20px 60px"
-            },
-            defaultConfig: {
-                xtype: "FieldGroup",
-                width: 570,
-                labelWidth: 100,
-            },
-            items: [{
-                title: "指定执行人",
-                colon: false,
-                items: [{
-                    xtype: "TextField",
-                    readonly: true,
-                    width: 280,
-                    name: ""
-                }, {
-                    xtype: "Button",
-                    title: "选择",
-                    handler: function () {
-
-                    }
-                }]
-            }, {
-                title: "指定岗位",
-                colon: false,
-                items: [{
-                    xtype: "TextField",
-                    readonly: true,
-                    width: 280,
-                    name: ""
-                }, {
-                    xtype: "Button",
-                    title: "选择",
-                    handler: function () {
-
-                    }
-                }]
-            }, {
-                title: "指定岗位类别",
-                colon: false,
-                items: [{
-                    xtype: "TextField",
-                    readonly: true,
-                    width: 280,
-                    name: ""
-                }, {
-                    xtype: "Button",
-                    title: "选择",
-                    handler: function () {
-
-                    }
-                }]
-            }, {
-                title: "流程发起人",
-                hidden: true,
-                colon: false,
-                items: [{
-                    xtype: "TextField",
-                    readonly: true,
-                    name: ""
-                }, {
-                    xtype: "Button",
-                    title: "选择",
-                    handler: function () {
-
-                    }
-                }]
-            }, {
-                title: "任意执行人",
-                colon: false,
-                items: [{
-                    xtype: "TextField",
-                    readonly: true,
-                    width: 280,
-                    name: ""
-                }, {
-                    xtype: "Button",
-                    title: "选择",
-                    handler: function () {
-
-                    }
-                }]
-            }]
-        };
-    },
-    getOperateTab: function () {
-        return {
-            title: "操作配置",
-            xtype: "FormPanel",
-            padding: 10,
-            defaultConfig: {
-                width: 300,
-                xtype: "TextField",
-                labelWidth: 140,
-                colon: false
-            },
-            style: {
-                padding: "10px 30px"
-            },
-            items: [{
-                xtype: "CheckBox",
-                title: "允许流程发起人终止",
-                name: ""
-            }, {
-                xtype: "CheckBox",
-                title: "允许上步撤回",
-                name: ""
-            }, {
-                xtype: "CheckBox",
-                title: "允许挂起流程",
-                name: ""
-            }, {
-                xtype: "TextField",
-                title: "挂起流程备注",
-                name: "",
-                hidden: true
-            }]
-        };
-    },
-    getNotifyTab: function () {
-        return {
-            title: "通知配置",
-            xtype: "FormPanel",
-            padding: 10,
-            defaultConfig: {
-                width: 300,
-                xtype: "TextField",
-                colon: false
-            },
+            region: "center",
             items: [{
                 xtype: "Container",
-                width: "100%",
-                height: "100%",
-                html: "<script id='editor' type='text/plain' style='width:500px;height:400px;'></script>"
-            }]
+                height: 100,
+                id: "calculate",
+                html: this.initCalculateBtns()
+            }, {
+                xtype: "TextArea",
+                width: 489,
+                height: 140,
+                id: "logicUel",
+                style: {
+                    "margin-left": "10px"
+                },
+                name: "logicUel",
+                afterValidate: function (value) {
+                    if (!g.properties) {
+                        return;
+                    }
+                    for (var key in g.properties) {
+                        var reg = new RegExp(key, "g");
+                        value = value.replace(reg, g.properties[key]);
+                    }
+                    g.groovyUelCmp.setValue(value);
+                }
+            }, {
+                xtype: "TextArea",
+                width: 489,
+                height: 140,
+                name: "groovyUel",
+                style: {
+                    "margin-left": "10px"
+                },
+                id: "groovyUel",
+                readonly: true
+            }
+            ]
         };
     },
-    initUEditor: function () {
-        UE.getEditor('editor');
+    initCalculateBtns: function () {
+        var html = "";
+        for (var i = 0; i < _flowUelBtn.length; i++) {
+            var item = _flowUelBtn[i];
+            html += "<div class='calculate-btn' uel='" + item.uel + "' operator='" + item.operator + "'>" + item.name + " " + item.operator + "</div>";
+        }
+        return html;
+    }
+    ,
+    addEvents: function () {
+        var g = this;
+        $(".calculate-btn").bind("click", function () {
+            var operator = " " + $(this).attr("operator") + " ";
+            var uel = " " + $(this).attr("uel") + " ";
+            var value = g.logicUelCmp.getValue() + operator;
+            g.logicUelCmp.setValue(value);
+            value = g.groovyUelCmp.getValue() + uel;
+            g.groovyUelCmp.setValue(value);
+        });
+        $(".property-item").live("click", function () {
+            var text = $(this).text();
+            var key = $(this).attr("key");
+            var value = g.logicUelCmp.getValue() + " " + text + " ";
+            g.logicUelCmp.setValue(value);
+            value = g.groovyUelCmp.getValue() + " " + key + " ";
+            g.groovyUelCmp.setValue(value);
+        });
+    }
+    ,
+    getProperties: function () {
+        var g = this;
+        EUI.Store({
+            url: _ctxPath + "/design/getProperties",
+            params: {
+                businessModelId: this.businessModelId
+            },
+            success: function (result) {
+                if (!result.success) {
+                    EUI.ProcessStatus(result);
+                    return;
+                }
+                g.showProperties(result.data);
+            },
+            failure: function (result) {
+                EUI.ProcessStatus(result);
+            }
+        });
+    }
+    ,
+    showProperties: function (data) {
+        var html = "";
+        for (var key in data) {
+            html += "<div class='property-item' key='" + key + "'>" + data[key] + "</div>";
+        }
+        $(".property-box").append(html);
     }
 })
 ;

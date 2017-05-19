@@ -7,6 +7,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     uelInfo: {},
+    businessModelId: null,//业务实体ID
+
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -17,11 +19,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 borderCss: "flow-border"
             },
             items: [{
+                xtype: "ToolBar",
                 region: "north",
                 border: false,
-                height: 50,
-                padding: 0,
-                html: this.getTopHtml()
+                height: 40,
+                padding: 3,
+                items: this.getTopItems()
             }, {
                 region: "west",
                 width: 240,
@@ -37,27 +40,88 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.addEvents();
         this.initJSPlumb();
     },
-    getTopHtml: function () {
-        return "<div style='padding:5px 0;'><div class='flow-info'>" +
-            "        <span class='flow-edit'></span>" +
-            "        <span class='flow-info-text'>流程名称</span>" +
-            "    </div>" +
-            "<input type='text' class='flow-input' name='name'/>" +
-            "    <div class='flow-info'>" +
-            "        <span class='flow-edit'></span>" +
-            "        <span class='flow-info-text'>代码</span>" +
-            "    </div>" +
-            "<input type='text' class='flow-input' name='key'/>" +
-            "    <div class='flow-info'>" +
-            "        <span class='flow-edit'></span>" +
-            "        <span class='flow-info-text'>流程类型</span>" +
-            "    </div>" +
-            "<input type='text' class='flow-input' name='flowTypeId'/>" +
-            "    <div class='flow-tbar-right'>" +
-            "        <div class='flow-tbar-btn deploy'>" + this.lang.deployText + "</div>" +
-            "        <div class='flow-tbar-btn save'>" + this.lang.saveText + "</div>" +
-            "        <div class='flow-tbar-btn clear'>" + this.lang.resetText + "</div>" +
-            "    </div></div>";
+    getTopItems: function () {
+        var g = this;
+        return [{
+            xtype: "FormPanel",
+            width: 750,
+            isOverFlow: false,
+            height: 40,
+            padding: 0,
+            layout: "auto",
+            border: false,
+            defaultConfig: {
+                labelWidth: 90,
+                allowBlank: false,
+            },
+            items: [{
+                xtype: "TextField",
+                title: "流程名称",
+                labelWidth: 90,
+                allowBlank: false,
+                name: "name"
+            }, {
+                xtype: "TextField",
+                name: "key",
+                width: 100,
+                labelWidth: 90,
+                allowBlank: false,
+                title: "流程代码"
+            }, {
+                xtype: "ComboGrid",
+                name: "flowTypeName",
+                field: ["flowTypeId"],
+                title: "流程类型",
+                gridCfg: {
+                    url: _ctxPath + "/flowType/listFlowType",
+                    colModel: [{
+                        name: "id",
+                        index: "id",
+                        hidden: true
+                    }, {
+                        name: "businessModel.id",
+                        index: "businessModel.id",
+                        hidden: true
+                    }, {
+                        label: this.lang.codeText,
+                        name: "code",
+                        index: "code"
+                    }, {
+                        label: this.lang.nameText,
+                        name: "name",
+                        index: "name"
+                    }]
+                },
+                labelWidth: 90,
+                allowBlank: false,
+                afterSelect: function (data) {
+                    g.businessModelId = data.data["businessModel.id"];
+                },
+                reader: {
+                    name: "name",
+                    field: ["id"]
+                }
+            }]
+        }, "->", {
+            xtype: "Button",
+            selected: true,
+            title: this.lang.deployText,
+            handler: function () {
+                g.save(true);
+            }
+        }, {
+            xtype: "Button",
+            title: this.lang.saveText,
+            handler: function () {
+                g.save(false);
+            }
+        }, {
+            xtype: "Button",
+            title: this.lang.resetText,
+            handler: function () {
+                g.clear();
+            }
+        }];
     },
     getLeftHtml: function () {
         var html = "";
@@ -148,41 +212,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         return "<div class='flow-content'></div>";
     },
     addEvents: function () {
-        var g = this;
-        this.addTopEvents();
-        this.addFlowEvents();
-    },
-    addTopEvents: function () {
-        var g = this;
-        $(".flow-info").bind("click", function () {
-            var dom = $(this);
-            dom.siblings(".flow-info").show();
-            dom.siblings("input").hide();
-            var nextDom = dom.next();
-            var width = dom.outerWidth();
-            dom.hide();
-            nextDom.show().focus().outerWidth(width);
-            var value = dom.find(".flow-info-text").text();
-            nextDom.val(value);
-        });
-        $(".flow-input").bind("blur", function () {
-            $(".flow-input").hide();
-            var value = $(this).val();
-            var prevDom = $(this).prev().show();
-            prevDom.find(".flow-info-text").text(value);
-        });
-        $(".flow-tbar-btn").bind("click", function () {
-            if ($(this).hasClass("deploy")) {
-                g.save(true);
-            } else if ($(this).hasClass("save")) {
-                g.save(false);
-            }
-            else if ($(this).hasClass("clear")) {
-                g.clear();
-            }
-        });
-    },
-    addFlowEvents: function () {
         var g = this;
         $(".flow-item-title").bind("click", function () {
             if ($(this).hasClass("select")) {
@@ -276,11 +305,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             },
             "dblclick": function () {
-                var input = $(this).find(".node-title");
+                if (!g.businessModelId) {
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: "请先选择流程类型"
+                    });
+                    return;
+                }
+                var dom = $(this);
+                var input = dom.find(".node-title");
                 new EUI.FlowNodeSettingView({
                     title: $(this).find(".node-title").text(),
+                    businessModelId: g.businessModelId,
+                    data: dom.data(),
                     afterConfirm: function (data) {
-                        input.text(data.name);
+                        input.text(data.normal.name);
+                        dom.data(data);
                     }
                 });
             }
@@ -332,7 +372,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("dblclick", function (connection) {
-            g.showUELWin(connection);
+            if (!g.businessModelId) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "请先选择流程类型"
+                });
+                return;
+            }
+            new EUI.UELSettingView({
+                title: "表达式配置",
+                businessModelId: g.businessModelId,
+                afterConfirm: function (data) {
+                    g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
+                }
+            });
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("keyup", function (connection) {
@@ -420,7 +473,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         }
         return true;
-
     }
     ,
     getFlowData: function () {
@@ -445,8 +497,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 x: item.position().left - parentPos.left + 6,
                 y: item.position().top - parentPos.top + 6,
                 id: id,
+                nodeType: "SINGLE",
                 target: [],
-                name: item.find(".node-title").text()
+                name: item.find(".node-title").text(),
+                nodeConfig: item.data()
             };
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {
@@ -596,6 +650,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     save: function (deploy) {
         var data = this.getFlowData();
         console.log(data);
+        return;
         if (!data) {
             return;
         }
@@ -622,36 +677,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         })
     },
     clear: function () {
-    },
-    showUELWin: function (connection) {
-        var g = this;
-        var win = EUI.Window({
-            title: "跳转条件配置",
-            height: 180,
-            items: [{
-                xtype: "TextArea",
-                id: "uel",
-                title: "表达式",
-                name: "uel",
-                width: 240,
-                height: 160,
-                value: g.uelInfo[connection.sourceId + "," + connection.targetId]
-            }],
-            buttons: [{
-                title: "保存配置",
-                selected: true,
-                handler: function () {
-                    var uel = EUI.getCmp("uel").getValue();
-                    g.uelInfo[connection.sourceId + "," + connection.targetId] = uel;
-                    win.close();
-                }
-            }, {
-                title: "取消",
-                handler: function () {
-                    win.close();
-                }
-            }]
-        });
+
     }
+
 })
 ;

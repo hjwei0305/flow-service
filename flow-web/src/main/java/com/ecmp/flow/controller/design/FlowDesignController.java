@@ -39,7 +39,7 @@ import java.util.Map;
 @RequestMapping(value = "/design")
 public class FlowDesignController {
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "show",method = RequestMethod.GET)
     public String show() {
         return "/design/WorkFlowView";
     }
@@ -68,7 +68,7 @@ public class FlowDesignController {
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
             String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
-            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(),"admin","businesskeyId",null);
+            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(), "admin", "businesskeyId", null);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(flowInstance.getId());
@@ -78,16 +78,19 @@ public class FlowDesignController {
 
     /**
      * 通过业务实体ID获取条件POJO属性说明
+     *
      * @param businessModelId
      * @return
      * @throws ClassNotFoundException
      */
     @ResponseBody
-    @RequestMapping(value = "getPropertiesForConditionPojoByBusinessModelId", method = RequestMethod.POST)
-    public String getPropertiesForConditionPojoByBusinessModelId(String businessModelId) throws  ClassNotFoundException{
+    @RequestMapping(value = "getProperties", method = RequestMethod.POST)
+    public String getProperties(String businessModelId) throws ClassNotFoundException {
+        OperateStatus status = OperateStatus.defaultSuccess();
         IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
-        return JsonUtil.serialize(result);
+        status.setData(result);
+        return JsonUtil.serialize(status);
     }
 
 
