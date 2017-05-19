@@ -10,11 +10,15 @@
     <script type="text/javascript"
             data-th-src="@{/static/data/flow_node.js}"></script>
     <script type="text/javascript"
+            data-th-src="@{/static/data/flow_uel_btn.js}"></script>
+    <script type="text/javascript"
             data-th-src="@{/static/ext/jsPlumb/jsplumb-2.2.10.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/scripts/design/WorkFlowView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/scripts/design/FlowNodeSettingView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/design/UELSettingView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
@@ -26,50 +30,8 @@
         });
     </script>
 </head>
-<body>
+<body style="background: white;">
 <div id="content"></div>
 </body>
 </html>
 
-<!--<%&#45;&#45;-->
-<!--Created by IntelliJ IDEA.-->
-<!--User: fly-->
-<!--Date: 2017/4/13-->
-<!--Time: 13:27-->
-<!--To change this template use File | Settings | File Templates.-->
-<!--&#45;&#45;%>-->
-<!--<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"-->
-<!--contentType="text/html; charset=UTF-8" %>-->
-<!--<%@ include file="../base/base.jsp" %>-->
-<!--<html>-->
-<!--<head>-->
-<!--<title>流程设计界面</title>-->
-<!--<link rel="stylesheet" type="text/css" href="<%=basePath%>/static/styles/css/WorkFlowView.css">-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/data/flow_node.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/ext/jsPlumb/jsplumb-2.2.10.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/ext/ueditor/ueditor.config.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/ext/ueditor/ueditor.all.min.js"></script>-->
-<!--<script type="text/javascript" src="<%=basePath%>/static/ext/ueditor/lang/zh-cn/zh-cn.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/scripts/design/WorkFlowView.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/scripts/design/FlowNodeSettingView.js"></script>-->
-<!--<script type="text/javascript"-->
-<!--src="<%=basePath%>/static/lang/lang.js"></script>-->
-<!--<script type="text/javascript">-->
-<!--var flowView;-->
-<!--EUI.onReady(function () {-->
-<!--flowView = new EUI.WorkFlowView({-->
-<!--renderTo: "content"-->
-<!--});-->
-<!--});-->
-<!--</script>-->
-<!--</head>-->
-<!--<body style="background: white">-->
-<!--<div id="content"></div>-->
-<!--</body>-->
-<!--</html>-->

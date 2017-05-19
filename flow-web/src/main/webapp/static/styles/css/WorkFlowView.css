@@ -220,6 +220,10 @@
     display: none;
 }
 
+.flow-event-box .node-dot{
+    bottom: 40%;
+}
+
 .flow-node:hover .node-dot {
     display: block;
 }
@@ -303,16 +307,8 @@
     display: none;
 }
 
-.ux-window-content {
-    border-radius: 6px;
-}
-
-/*.ux-tab-content {*/
-/*border: none;*/
-/*}*/
-
 .ux-tab-li {
-    height: 30px;
+    height: 35px;
     top: -2px;
     border: none;
     font-size: 16px;
@@ -328,8 +324,41 @@
 .ux-tab-title {
     font-size: 16px;
     color: #0088cc;
+    padding: 2px 0 0 15px;
 }
 
 .ux-tab-actived .ux-tab-title {
     color: #555555;
 }
+
+.ux-tab-header {
+    height: 36px;
+}
+
+
+.calculate-btn {
+    border: 1px solid #eaf1fb;
+    border-radius: 4px;
+    cursor: pointer;
+    float: left;
+    margin: 0 5px 10px;
+    padding: 6px 0;
+    text-align: center;
+    width: 90px;
+    background: #F2F6FC;
+}
+.property-box{
+    text-align: center;
+}
+.property-item{
+    background: #f2f6fc none repeat scroll 0 0;
+    border: 1px solid #eaf1fb;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 5px 10px;
+    padding: 7px 0;
+    text-align: center;
+    width: 128px;
+}
+

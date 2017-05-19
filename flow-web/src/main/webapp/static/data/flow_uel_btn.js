@@ -1,0 +1,41 @@
+var _flowUelBtn = [{
+    name: "小于",
+    operator: "<",
+    uel: "<"
+}, {
+    name: "小于等于",
+    operator: "<=",
+    uel: "<="
+}, {
+    name: "大于",
+    operator: ">",
+    uel: ">"
+}, {
+    name: "大于等于",
+    operator: ">=",
+    uel: ">="
+}, {
+    name: "等于",
+    operator: "==",
+    uel: "=="
+}, {
+    name: "不等于",
+    operator: "!=",
+    uel: "!="
+}, {
+    name: "交集",
+    operator: "∩",
+    uel: "and"
+}, {
+    name: "并集",
+    operator: "∪",
+    uel: "or"
+}, {
+    name: "左括号",
+    operator: "(",
+    uel: "("
+}, {
+    name: "右括号",
+    operator: ")",
+    uel: ")"
+}];
