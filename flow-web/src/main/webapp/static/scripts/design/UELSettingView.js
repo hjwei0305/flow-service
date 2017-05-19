@@ -17,11 +17,15 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             items: [{
                 region: "north",
-                height: 40,
+                height: 50,
+                isOverFlow:false,
+                border:false,
                 items: [{
                     xtype: "TextField",
                     name: "name",
                     title: "表达式名称",
+                    labelWidth:100,
+                    width:200,
                     allowBlank: false
                 }]
             },

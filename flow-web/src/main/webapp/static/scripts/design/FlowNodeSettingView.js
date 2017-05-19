@@ -4,6 +4,7 @@
 EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
     data: null,
+    nodeType:null,
     afterConfirm: null,
     businessModelId: null,
 
@@ -138,6 +139,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "FormPanel",
             title: "执行人",
+            height: 375,
             id: "excutor",
             itemspace: 0,
             items: [{

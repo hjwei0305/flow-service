@@ -171,7 +171,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (i == tasks.length - 1) {
                 html += "<div class='flow-task-box last'>"
                     + "<div class='flow-task flow-node' type='" + item.type
-                    + "'><div class='" + item.css + "'></div>"
+                    + "' nodeType='" + item.nodeType + "'><div class='" + item.css + "'></div>"
                     + "<div class='node-title'>" + this.lang[item.name] + "</div>"
                     + "</div></div>";
             } else {
@@ -235,6 +235,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
                 dragDom.attr("id", type + "_" + g.count);
+
                 g.count++;
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
@@ -315,9 +316,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var dom = $(this);
                 var input = dom.find(".node-title");
                 new EUI.FlowNodeSettingView({
-                    title: $(this).find(".node-title").text(),
+                    title: dom.find(".node-title").text(),
                     businessModelId: g.businessModelId,
                     data: dom.data(),
+                    nodeType: dom.attr("nodeType"),
                     afterConfirm: function (data) {
                         input.text(data.normal.name);
                         dom.data(data);
@@ -497,7 +499,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 x: item.position().left - parentPos.left + 6,
                 y: item.position().top - parentPos.top + 6,
                 id: id,
-                nodeType: "SINGLE",
+                nodeType: item.attr("nodeType"),
                 target: [],
                 name: item.find(".node-title").text(),
                 nodeConfig: item.data()
