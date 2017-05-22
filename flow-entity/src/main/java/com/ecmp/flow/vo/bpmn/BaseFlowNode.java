@@ -53,6 +53,9 @@ public class BaseFlowNode extends BaseNode implements Serializable {
     @XmlTransient
     private String[] target;
 
+    @XmlTransient
+    private String nodeConfig;
+
     public String getName() {
         return name;
     }
@@ -99,6 +102,14 @@ public class BaseFlowNode extends BaseNode implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getNodeConfig() {
+        return nodeConfig;
+    }
+
+    public void setNodeConfig(String nodeConfig) {
+        this.nodeConfig = nodeConfig;
     }
 
     public static void main(String[] args) {
