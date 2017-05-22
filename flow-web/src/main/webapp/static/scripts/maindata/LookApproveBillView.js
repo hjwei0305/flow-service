@@ -18,6 +18,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             items: [this.initTop(),this.initCenter()/*,this.initDown()*/]
         });
         this.showFindData();
+        $("#aa").find('input').css("font-weight","bold");
     },
     initTop:function () {
         var g=this;
@@ -33,7 +34,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
     initCenter:function () {
         var g=this;
         return {
-            xtype:"Container",
+            xtype:"FormPanel",
             id:"lookBill",
             border:false,
             region:"center",
@@ -42,8 +43,12 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 title:"<span class='name'>名称</span>",
                 name:"name",
                 width:300,
+                id:"aa",
                 readonly:true,
-                colon:false
+                colon:false,
+                style:{
+                    "font-weight":"bolder"
+                }
             },{
                 xtype:"TextArea",
                 title:"<span class='name'>说明</span>",
@@ -56,52 +61,8 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             }]
         }
     },
-    /*initDown:function () {
-        var g=this;
-        return {
-            xtype:"Container",
-            region:"south",
-            id:"btn",
-            border:false,
-            items:[{
-                xtype:"Button",
-                title:"提交",
-                id:"submit",
-                width:50,
-                height:30
-            },{
-                xtype:"Button",
-                title:"重置",
-                id:"reset",
-                width:50,
-                height:30
-            }]
-        }
-    },*/
-    /*getCenterData:function () {
-        var g=this;
-        EUI.Store({
-            url: _ctxPath + "/lookApproveBill/getApproveBill",
-            params: {
-                S_createdDate: "ASC"
-            },
-            success:function (result) {
-                EUI.ProcessStatus(result);
-                    g.showFindData();
-
-                    // var showData=EUI.getCmp("")
-                    // EUI.getCmp("lookBill").setValue();
-            },
-            failure: function (result) {
-                EUI.ProcessStatus(result);
-            }
-        })
-    },*/
     showFindData:function () {
-        var g=this;
-        var request=g.getRequest();
-        var id=request['id'];
-        console.log(id);
+        var g = this;
         EUI.Store({
             url: _ctxPath + "/lookApproveBill/getApproveBill",
             params: {
@@ -109,29 +70,14 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             },
             success:function (result) {
                 EUI.ProcessStatus(result);
-                console.log("kkkkkkkkkkkkkkkk")
-
-                // var showData=EUI.getCmp("")
-                // EUI.getCmp("lookBill").setValue();
+                if (result.success) {
+                    EUI.getCmp("lookBill").loadData(result.data);
+                }
             },
             failure: function (result) {
                 EUI.ProcessStatus(result);
             }
         })
 
-    },
-    getRequest:function () {
-        var g=this;
-        var url=location.search;//获取url中“？”符后的字符串
-        var theRequest=new Object();
-        if (url.indexOf("?")!=-1){
-            var str=url.substr(1);
-            strs=str.split("&");
-            for (var i=0;i<strs.length;i++){
-                theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
-            }
-        }
-        return theRequest;
     }
-
 });
