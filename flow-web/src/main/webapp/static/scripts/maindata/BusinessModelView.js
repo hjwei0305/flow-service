@@ -660,7 +660,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             region: "center",
             width: 50,
             height: 300,
-            border: true,
+            border: false,
             html: "<div class='arrow-right'></div>" +
             "<div class='arrow-left'></div>"
         }
