@@ -6,10 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 
 /**
@@ -48,6 +45,7 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
      * URL界面地址
      */
     @Lob
+    @Basic(fetch=FetchType.LAZY)
     private String url;
 
     /**
