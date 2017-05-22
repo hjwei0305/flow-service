@@ -4,7 +4,7 @@
 EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
     data: null,
-    nodeType:null,
+    nodeType: null,
     afterConfirm: null,
     businessModelId: null,
 
@@ -89,7 +89,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             style: {
                 padding: "10px 30px"
             },
-
             items: [{
                 title: "节点名称",
                 labelWidth: 100,

@@ -4,6 +4,7 @@
 EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     count: 0,
+    id: null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -22,6 +23,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "ToolBar",
                 region: "north",
                 border: false,
+                isOverFlow: false,
                 height: 40,
                 padding: 3,
                 items: this.getTopItems()
@@ -119,7 +121,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: this.lang.resetText,
             handler: function () {
-                g.clear();
+                var msgBox = EUI.MessageBox({
+                    title: "提示",
+                    msg: "清空设计将不能恢复，确定要继续吗？",
+                    buttons: [{
+                        title: "确定",
+                        selected: true,
+                        handler: function () {
+                            g.clear();
+                        }
+                    }, {
+                        title: "取消",
+                        handler: function () {
+                            msgBox.remove();
+                        }
+                    }]
+                });
             }
         }];
     },
@@ -257,7 +274,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         css.cursor = "no-drop";
                     }
                     dragDom.css(css);
-
                 }
             },
             "mouseup": function (e) {
@@ -358,7 +374,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 location: 0.2,
                 id: "label",
                 label: null,
-                cssClass: "aLabel"
+                cssClass: "flow-line-note"
             }]],
             Container: "body"
         });
@@ -383,18 +399,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             new EUI.UELSettingView({
                 title: "表达式配置",
+                data: g.uelInfo[connection.sourceId + "," + connection.targetId],
                 businessModelId: g.businessModelId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
+                    connection.getOverlay("label").setLabel(data.name);
                 }
             });
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("keyup", function (connection) {
             console.log(arguments);
-            // delete g.connectInfo[connection.sourceId + ","
-            // + connection.targetId];
-            // jsPlumb.detach(connection);
         });
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {
@@ -652,7 +667,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     save: function (deploy) {
         var data = this.getFlowData();
         console.log(data);
-        return;
         if (!data) {
             return;
         }
@@ -679,7 +693,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         })
     },
     clear: function () {
-
+        this.count = 0;
+        this.connectInfo = {};
+        this.uelInfo = {};
+        this.instance.deleteEveryEndpoint();
+        $(".node-choosed").remove();
     }
 
 })

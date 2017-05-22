@@ -1,5 +1,7 @@
 package com.ecmp.flow;
 
+import com.ecmp.context.ContextUtil;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,5 +26,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration("classpath:applicationContext-activiti.xml")
 public abstract class BasicContextTestCase extends AbstractJUnit4SpringContextTests {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    @Before
+    public void setUp() throws Exception {
+        String sessionId = "ecmp_mock_user";
+        ContextUtil.setSessionId(sessionId);
+    }
 }
