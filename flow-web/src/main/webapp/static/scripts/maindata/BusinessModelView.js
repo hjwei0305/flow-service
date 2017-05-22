@@ -146,11 +146,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict"
-                }, {
+                }/*, {
                     label: this.lang.workPageText,
                     name: "workPage",
                     index: "workPage"
-                }],
+                }*/],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValue(rowData.id);
