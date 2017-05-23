@@ -55,6 +55,12 @@ public class Definition implements Serializable {
     private String flowTypeId;
 
     /**
+     * 组织机构ID
+     */
+    @XmlTransient
+    private String orgId;
+
+    /**
      * 流程定义ID
      */
     @XmlTransient
@@ -93,6 +99,13 @@ public class Definition implements Serializable {
         this.id = id;
     }
 
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
 
     public static void main(String[] args) throws JAXBException {
         Definition df = new Definition();
@@ -101,7 +114,7 @@ public class Definition implements Serializable {
         process.setId("1122");
         process.setStartUEL("23sfsfsf");
         df.setDefJson("sdfsdfs");
-        JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":256,\"y\":45,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_1\",\"uel\":\"sdf\"}],\"name\":\"开始\"},\"UserTask_1\":{\"type\":\"UserTask\",\"x\":402,\"y\":93,\"id\":\"UserTask_1\",\"target\":[{\"targetId\":\"UserTask_2\",\"uel\":\"\"}],\"name\":\"审批任务\"},\"UserTask_2\":{\"type\":\"UserTask\",\"x\":639,\"y\":63,\"id\":\"UserTask_2\",\"target\":[{\"targetId\":\"EndEvent_3\",\"uel\":\"\"}],\"name\":\"审批任务\"},\"EndEvent_3\":{\"type\":\"EndEvent\",\"x\":688,\"y\":243,\"id\":\"EndEvent_3\",\"target\":[],\"name\":\"结束\"}}");
+        JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":188,\"y\":136,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_2\",\"uel\":\"\"}],\"name\":\"开始\",\"nodeConfig\":{}},\"EndEvent_1\":{\"type\":\"EndEvent\",\"x\":704,\"y\":232,\"id\":\"EndEvent_1\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}},\"UserTask_2\":{\"type\":\"UserTask\",\"x\":438,\"y\":185,\"id\":\"UserTask_2\",\"target\":[{\"targetId\":\"EndEvent_1\",\"uel\":\"\"}],\"name\":\"普通任务\",\"nodeConfig\":{\"normal\":{\"name\":\"普通任务\",\"executeTime\":\"44\",\"workPageName\":\"默认审批页面\",\"workPageUrl\":\"http://localhost:8081/lookApproveBill/show\",\"allowTerminate\":true,\"allowPreUndo\":true,\"allowReject\":true},\"executor\":{\"userType\":\"AnyOne\"},\"event\":{\"beforeExcuteService\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":null}}}");
         process.setNodes(nodes);
         df.setProcess(process);
         JAXBContext context = JAXBContext.newInstance(df.getClass());
