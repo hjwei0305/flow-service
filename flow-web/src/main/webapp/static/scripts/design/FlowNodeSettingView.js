@@ -79,7 +79,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     normal: normalData,
                     executor: g.getExcutorData(),
                     event: eventData,
-                    notify: null
+                    notify: ""
                 });
                 g.window.close();
             }
