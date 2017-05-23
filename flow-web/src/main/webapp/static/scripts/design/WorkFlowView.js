@@ -56,6 +56,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             height: 40,
             padding: 0,
             layout: "auto",
+            id: "formPanel",
             border: false,
             defaultConfig: {
                 labelWidth: 90,
@@ -501,12 +502,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         if (!this.checkValid()) {
             return;
         }
+        var baseInfo = EUI.getCmp("formPanel").getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
         var process = {
             id: "flow" + new Date().getTime(),
-            name: $(baseDoms[0]).text(),
-            key: $(baseDoms[1]).text(),
+            name: baseInfo.name,
+            key: baseInfo.key,
             isExecutable: true,
             orgId: this.orgId,
             nodes: {}
@@ -536,7 +538,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {flowTypeId: "c0a80168-5bcd-10b6-815b-cd6118490000", process: process};
+        return {flowTypeId: baseInfo.flowTypeId, process: process};
     }
     ,
     loadData: function (data) {
