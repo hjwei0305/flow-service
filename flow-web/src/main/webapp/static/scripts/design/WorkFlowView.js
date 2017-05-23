@@ -200,7 +200,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             } else {
                 html += "<div class='flow-task-box'>"
                     + "<div class='flow-task flow-node' type='" + item.type
-                    + "'><div class='" + item.css + "'></div>"
+                    + "' nodeType='" + item.nodeType + "'><div class='" + item.css + "'></div>"
                     + "<div class='node-title'>" + this.lang[item.name] + "</div>"
                     + "</div></div>";
             }
