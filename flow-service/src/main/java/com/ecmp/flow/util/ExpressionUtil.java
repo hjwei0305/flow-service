@@ -1,11 +1,17 @@
 package com.ecmp.flow.util;
 
+import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.ApiRestJsonProvider;
+import com.ecmp.config.util.SessionClientRequestFilter;
+import com.ecmp.vo.ContextAppModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,50 +30,81 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ExpressionUtil {
-    public static boolean validate(String clientApiBaseUrl,String clientClassName,String expression){
-        boolean result = true;
-        List<Object> providerList = new ArrayList<Object>();
-        providerList.add(new JacksonJsonProvider());
+    /**
+     * 获取条件表达式的属性值对
+     * @param clientApiBaseUrl
+     * @param businessModelId 业务模型ID
+     * @param  businessId 业务ID
+     * @return
+     */
+    public  static Map<String,Object>  getConditonPojoValueMap(String clientApiBaseUrl,String businessModelId,String businessId){
+        //获取API服务的应用模块
+//        ContextAppModule appModule = getAppModule(apiClass);
+        //获取服务基地址
+//        String baseAddress = appModule.getApiBaseAddress();
+        //平台API服务使用的JSON序列化提供类
+        List<Object> providers = new ArrayList<>();
+        providers.add(new ApiRestJsonProvider());
+        //API会话检查的客户端过滤器
+        providers.add(new SessionClientRequestFilter());
+//        return JAXRSClientFactory.create(baseAddress, apiClass,providers);
 
-        Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
-                .path("/{conditonPojoClassName}",clientClassName)
+        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
+                .path("condition/conditonPojoMapByBusinessModelId/{businessModelId}/{id}",businessModelId,businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .get(LinkedHashMap.class);
+        return pvs;
+    }
+
+    /**
+     * 检证表达式语法是否合法
+     * @param clientApiBaseUrl 客户端baseUrl
+     * @param clientClassName 客户端条件类全路径
+     * @param expression 表达式
+     * @return
+     */
+    public static boolean validate(String clientApiBaseUrl,String clientClassName,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        boolean result = true;
+        //平台API服务使用的JSON序列化提供类
+        List<Object> providers = new ArrayList<>();
+        providers.add(new ApiRestJsonProvider());
+        //API会话检查的客户端过滤器
+        providers.add(new SessionClientRequestFilter());
+//
+        Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
+                .path("condition/propertiesAndValues/{conditonPojoClassName}",clientClassName)
 //                .query("conditonPojoClassName",clientClassName)
                 .accept(MediaType.APPLICATION_JSON)
                 .get(Map.class);
-        Binding bind = new Binding();
-        for (Map.Entry<String,Object>  pv: pvs.entrySet()) {
-            bind.setVariable(pv.getKey(), pv.getValue());
-        }
-        GroovyShell shell = new GroovyShell(bind);
-        try {
-            Object obj = shell.evaluate(expression);
-        }catch (Exception e){
-            result=false;
-            e.printStackTrace();
-        }
+
+//        com.ecmp.flow.api.common.api.IConditionServer proxy2 = ApiClient.createProxy(com.ecmp.flow.api.common.api.IConditionServer.class);
+//        Map<String,Object> pvs = proxy2.getPropertiesAndValues(clientClassName);
+
+       result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
-    public static boolean result(String clientApiBaseUrl,String clientClassName,String expression,String businessId){
-        boolean result = true;
-        List<Object> providerList = new ArrayList<Object>();
-        providerList.add(new JacksonJsonProvider());
 
-        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providerList)
-                .path("/properties")
+    /**
+     * 直接获取表达式验证结果
+     * @param clientApiBaseUrl
+     * @param businessModelId  业务模型ID
+     * @param expression
+     * @param businessId  业务ID
+     * @return
+     */
+    public static boolean result(String clientApiBaseUrl,String businessModelId,String businessId,String expression){
+        boolean result = true;
+        //平台API服务使用的JSON序列化提供类
+        List<Object> providers = new ArrayList<>();
+        providers.add(new ApiRestJsonProvider());
+        //API会话检查的客户端过滤器
+        providers.add(new SessionClientRequestFilter());
+
+        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
+                .path("condition/conditonPojoMapByBusinessModelId/{businessModelId}/{id}",businessModelId,businessId)
                 .accept(MediaType.APPLICATION_JSON)
                 .get(LinkedHashMap.class);
-        Binding bind = new Binding();
-        for (Map.Entry<String,Object>  pv: pvs.entrySet()) {
-            bind.setVariable(pv.getKey(), pv.getValue());
-
-        }
-        GroovyShell shell = new GroovyShell(bind);
-        try {
-            Object obj = shell.evaluate(expression);
-        }catch (Exception e){
-            e.printStackTrace();
-            result=false;
-        }
+        result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
 }

@@ -2,15 +2,18 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     data: null,
     menudata: null,
+    dataWait:null,
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
             data: this.data,
             menudata: this.menudata,
+            dataWait:this.dataWait,
             html: this.getHtml()
         });
         this.initChooseDate();
         this.showModelItems(_data);
+        // this.showWaitModelItems(_dataWait);
         // this.getModelList();
         this.getTodo();
         this.showPage();
@@ -27,8 +30,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '            <div class="top-header">' +
             '                <span class="worktable">我的工作台</span>' +
             '                <div class="header-right">' +
-            '                    <span class="wait-work">待办工作</span>' +
-            '                    <span class="taken-work">已办工作</span>' +
+            '                    <span class="wait-work task-work active">待办工作</span>' +
+            '                    <span class="taken-work history-work">已办工作</span>' +
             '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                    <span class="btn">待办项批量处理</span>' +
             '                </div>' +
@@ -55,7 +58,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                    <span class="worktable">我的单据</span>' +
             '                    <div class="header-right">' +
             '                        <span class="wait-work wait-invoices">待办单据</span>' +
-            '                        <span class="taken-work taken-invoices">已办单据</span>' +
+            '                        <span class="taken-work taken-invoices active">已办单据</span>' +
             '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                        <div class="data">' +
             '                            <div id="dateField"></div>' +
@@ -113,6 +116,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     },
     //显示已办中的导航部分子组件
     showModelItems: function (data) {
+        var g=this;
         // console.log(data);
         var html = "";
         // var index=0;
@@ -134,6 +138,30 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         }
         $(".navbar").append(html);
     },
+   /* //显示待办中的导航部分子组件
+    showWaitModelItems: function (dataWait) {
+        // console.log(data);
+        var g=this;
+        var html = "";
+        // var index=0;
+        for (var i = 0; i < dataWait.length; i++) {
+            var item = dataWait[i];
+            if (i == 0) {
+                html += '                        <div class="navber-count">' +
+                    '                            <div class="navbar-circle select">' + item.count + '</div>' +
+                    '                            <div class="navber-text select-text">' + item.name + '</div>' +
+                    '                        </div>';
+            }
+            else {
+                html += '                        <div class="navber-count">' +
+                    '                            <div class="navbar-circle">' + item.count + '</div>' +
+                    '                            <div class="navber-text">' + item.name + '</div>' +
+                    '                        </div>';
+            }
+
+        }
+        $(".navbar").append(html);
+    },*/
     //显示已办中的内容部分子组件
     showTodoContent: function (items) {
         var html = "";
@@ -160,6 +188,51 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '</div>';
         }
         $(".todo-info").html(html);
+    },
+    /*//显示待办中的内容部分子组件
+    showWaitContent: function (items) {
+        var html = "";
+        for (var j = 0; j < items.length; j++) {
+            html += '<div class="info-item">' +
+                '                            <div class="item">' +
+                '                                <span class="flow-text">' + items[j].taskName + '</span>' +
+                '                                <span class="item-right over-text">' + items[j].state + '</span>' +
+                '                            </div>' +
+                '                            <div class="item user">' +
+                '                                <span class="userName">' + items[j].userName + '</span>' +
+                '                                <span class="item-right userName">' + items[j].date + '</span>' +
+                '                            </div>' +
+                '                            <div class="item">' +
+                '                                <div class="end">' +
+                '                                    <i class="end-icon"></i>' +
+                '                                    <span class="end-text">' + items[j].end + '</span>' +
+                '                                </div>' +
+                '                                <span class="item-right">' +
+                '                                    <i class="look-icon"></i>' +
+                '                                    <i class="time-icon"></i>' +
+                '                                </span>' +
+                '                            </div>' +
+                '</div>';
+        }
+        $(".todo-info").html(html);
+    },*/
+    //待办工作的点击事件
+    waitingWorkEvent:function () {
+        var g=this;
+        $(".task-work").live("click",function () {
+            $(".history-work").removeClass("active");
+            $(this).addClass("active");
+        });
+        // g.showWaitModelItems(dataWait);
+    },
+    //已办工作的点击事件
+    todoWorkEvent:function () {
+        var g=this;
+        $(".history-work").live("click",function () {
+            $(".task-work").removeClass("active");
+            $(this).addClass("active");
+        });
+        // g.showModelItems(_data);
     },
     //底部翻页部分
     showPage: function () {
@@ -213,7 +286,25 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
          }
          })*/
     },
-    //显示我的单据中的内容部分
+    //已办单据的点击事件（点击后显示已办单据的数据）
+    todoInvoiceEvent:function () {
+        var g=this;
+        $(".taken-invoices").live("click",function () {
+            $(".wait-invoices").removeClass("active");
+            $(this).addClass("active");
+            g.showInvoiceContent(_menudata);
+        });
+    },
+    //待办单据的点击事件（点击后显示待办单据的数据）
+    waitingInvoiceEvent:function () {
+        var g=this;
+        $(".wait-invoices").live("click",function () {
+            $(".taken-invoices").removeClass("active");
+            $(this).addClass("active");
+            g.showWaitInvoiceContent(_menu);
+        });
+    },
+    //显示我的单据中的已办单据内容部分
     showInvoiceContent: function (menudata) {
         var html = "";
         for (var i = 0; i < menudata.length; i++) {
@@ -235,13 +326,42 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '                            </div>' +
                 '                        </div>';
         }
-        $(".invoice-info").append(html);
+        $(".invoice-info").html(html);
+    },
+    //显示我的单据中的待办单据内容部分
+    showWaitInvoiceContent: function (_menu) {
+        var html = "";
+        for (var i = 0; i < _menu.length; i++) {
+            var item = _menu[i];
+            html += '<div class="info-item">' +
+                '                            <div class="item">' +
+                '                                <span class="flow-text">' + item.flowtext + '</span>' +
+                '                                <span class="item-right general">' + item.general + '</span>' +
+                '                            </div>' +
+                '                            <div class="item user">' +
+                '                                <span class="userName">' + item.useuName + '</span>' +
+                '                                <span class="item-right userName">' + item.date + '</span>' +
+                '                            </div>' +
+                '                            <div class="item">' +
+                '                                <span class="item-right">' +
+                '                                    <i class="look-icon"></i>' +
+                '                                    <i class="time-icon"></i>' +
+                '                                </span>' +
+                '                            </div>' +
+                '                        </div>';
+        }
+        $(".invoice-info").html(html);
     },
     //添加事件
     addEvents: function () {
         var g = this;
         // g.navbarEvent();
         g.arrowEvent();
+        g.todoInvoiceEvent(_menudata);
+        g.waitingInvoiceEvent(_menu);
+        g.waitingWorkEvent(_dataWait);
+        g.todoWorkEvent();
+
     },
     //导航的点击事件
     navbarEvent: function () {

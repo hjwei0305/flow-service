@@ -25,6 +25,7 @@ dependencies {
 //    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.8.7',force:true
     compile(
             "com.ecmp:core-service:$core_version",
+            "com.ecmp:basic-api:1.+",
             "org.apache.cxf:cxf-rt-frontend-jaxrs:$apache_cxf_version",
 //            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$fasterxml_version",
 
