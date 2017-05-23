@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,19 +41,30 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "签收任务",notes = "测试")
     public OperateResult claim(@PathParam("id") String id, @PathParam("userId")String userId);
 
+//    /**
+//     * 完成任务
+//     * @param id 任务id
+//     * @param variables 参数
+//     * @return 操作结果
+//     */
+//    @POST
+//    @Path("complete/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "完成任务",notes = "测试")
+//    public OperateResult complete(@PathParam("id") String id, Map<String, Object> variables);
+
     /**
      * 完成任务
-     * @param id 任务id
-     * @param variables 参数
+     * @param flowTaskCompleteVO 任务传输对象
      * @return 操作结果
      */
     @POST
-    @Path("complete/{id}")
+    @Path("complete")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResult complete(@PathParam("id") String id, Map<String, Object> variables);
-
+    public OperateResult complete(FlowTaskCompleteVO flowTaskCompleteVO);
 
 
     /**
@@ -92,6 +104,16 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowTask> findByPage(Search searchConfig);
 
-
+    /**
+     * 通过任务Id检查当前任务的出口节点是否存在条件表达式
+     * @param id 任务id
+     * @return 结果
+     */
+    @GET
+    @Path("checkHasConditon/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "检查当前任务的出口节点是否存在条件表达式",notes = "测试")
+    public boolean checkHasConditon(@PathParam("id")String id);
 
 }

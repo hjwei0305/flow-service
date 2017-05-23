@@ -1,0 +1,57 @@
+package com.ecmp.flow.vo;
+
+import java.io.Serializable;
+
+/**
+ * *************************************************************************************************
+ * <p/>
+ * 实现功能：定义任务节点信息
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * 版本          变更时间             变更人                     变更原因
+ * ------------------------------------------------------------------------------------------------
+ * 1.0.00      2017/5/23 10:33      谭军(tanjun)                    新建
+ * <p/>
+ * *************************************************************************************************
+ */
+public class NodeInfo implements Serializable{
+    private String id;
+    private String name;
+    private String type;//目前暂时只支持 ----userTask
+    private String uiType;//radiobox\checkbox\readOnly
+    private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
+    
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getUiType() {
+		return uiType;
+	}
+	public void setUiType(String uiType) {
+		this.uiType = uiType;
+	}
+	public String getFlowTaskType() {
+		return flowTaskType;
+	}
+	public void setFlowTaskType(String flowTaskType) {
+		this.flowTaskType = flowTaskType;
+	}
+    
+    
+    
+}

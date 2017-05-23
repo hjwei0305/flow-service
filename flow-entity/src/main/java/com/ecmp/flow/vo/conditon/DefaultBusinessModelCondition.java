@@ -19,6 +19,8 @@ import com.ecmp.flow.entity.IConditionPojo;
 
 public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultBusinessModel implements IConditionPojo {
 
+    private Integer customeInt ;
+
     @ConditionAnnotaion(name="名称")
     public String getName() {
         return super.getName();
@@ -32,11 +34,24 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
     @ConditionAnnotaion(name="工作说明",rank = 1)
     public String getWorkCaption(){return super.getWorkCaption();}
 
+    @ConditionAnnotaion(name="额外属性",rank = 2)
+    public Integer getCustomeInt() {
+        return customeInt;
+    }
+
+    public void setCustomeInt(Integer customeInt) {
+        this.customeInt = customeInt;
+    }
 
     public void init(){
           this.setName("name");
           this.setId("id");
           this.setWorkCaption("work caption");
+          this.setCustomeInt(0);
+    }
+
+    public void customLogic(){
+        customeInt = this.getPriority()+10;
     }
 
 }

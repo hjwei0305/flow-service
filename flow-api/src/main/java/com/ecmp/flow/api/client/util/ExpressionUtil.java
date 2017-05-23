@@ -129,7 +129,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 */
-	public  Map<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public  Map<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
 		return this.getPropertiesAndValues(conditionPojo, null);
 	}
 
@@ -148,12 +148,16 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws IllegalAccessException 
 	 */
 	public  Map<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties)
-			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException ,NoSuchMethodException{
 		Map<String, Object> result = null;
 		// String[] excludeProperties = { "class", "pk", "equalFlag" };//
 		// 不用包括在内的字段
 		if (conditionPojo != null) {
 			Class sourceClass = conditionPojo.getClass();
+			//额外属性值初始化
+			Method customLogicMethod = sourceClass.getMethod("customLogic");
+			customLogicMethod.invoke(conditionPojo);
+
 			Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
 			result = new HashMap<String, Object>();
 			for (Method sourceMethod : sourceMethods) {		
@@ -230,7 +234,6 @@ public class ExpressionUtil<T extends IConditionPojo> {
 				 if(v!=null){
 					 result.put(sourceFieldName, v);
 				 }
-				
 			}
 
 		} 

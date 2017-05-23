@@ -1,5 +1,7 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.annotation.AppModule;
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
@@ -9,11 +11,18 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowVariableDao;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.ConditionUtil;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
+import jodd.util.StringUtil;
+import net.sf.json.JSONObject;
 import org.activiti.engine.history.*;
+import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.*;
 import org.activiti.engine.impl.pvm.PvmActivity;
@@ -107,6 +116,59 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+
+    public OperateResult complete(FlowTaskCompleteVO flowTaskCompleteVO){
+        String taskId =  flowTaskCompleteVO.getTaskId();
+        Map<String, Object> variables = flowTaskCompleteVO.getVariables();
+        List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
+        OperateResult result = null;
+        if(manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()){//非人工选择任务的情况
+            result = this.complete(taskId,variables);
+        }else {//人工选择任务的情况
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            String actTaskId = flowTask.getActTaskId();
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(taskId)
+                    .singleResult();
+            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                    .getDeployedProcessDefinition(currTask
+                            .getProcessDefinitionId());
+            if (definition == null) {
+                logger.error(ContextUtil.getMessage("10003"));
+            }
+            // 取得当前活动定义节点
+            ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+                    .findActivity(currTask.getTaskDefinitionKey());
+            List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
+            List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
+            for (PvmTransition pvmTransition : pvmTransitionList) {
+                oriPvmTransitionList.add(pvmTransition);
+            }
+            pvmTransitionList.clear();
+            // 建立新方向
+            TransitionImpl newTransition = currActivity.createOutgoingTransition();
+            // 定位到人工选择的节点目标
+            for(String nodeId:manualSelectedNodeIds){
+                ActivityImpl destinationActivity  = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
+                newTransition.setDestination(destinationActivity);
+            }
+            //执行任务
+            result = this.complete(taskId,variables);
+            // 恢复方向
+            for(String nodeId:manualSelectedNodeIds){
+                ActivityImpl destinationActivity  = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
+                destinationActivity.getIncomingTransitions().remove(newTransition);
+            }
+            List<PvmTransition> pvmTList = currActivity.getOutgoingTransitions();
+            pvmTList.clear();
+            for (PvmTransition pvmTransition : oriPvmTransitionList) {
+                pvmTransitionList.add(pvmTransition);
+            }
+
+        }
+        return result;
+    }
     /**
      * 完成任务
      *
@@ -844,6 +906,291 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
     }
 
+
+    /**
+     * 通过任务Id检查当前任务的出口节点是否存在条件表达式
+     * @param actTaskId 任务实际ID
+     * @return
+     */
+    public boolean checkHasConditon(String actTaskId){
+        PvmActivity currActivity = this.getActivitNode(actTaskId);
+        return this.checkHasConditon(currActivity);
+    }
+
+    /**
+     * 检查当前任务的出口节点线上是否存在条件表达式
+     * @param currActivity 当前任务
+     * @return
+     */
+    private boolean checkHasConditon(PvmActivity currActivity){
+        boolean result = false;
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+        // 判断出口线上是否存在condtion表达式
+        if(nextTransitionList !=null && !nextTransitionList.isEmpty()){
+            for(PvmTransition pv: nextTransitionList){
+                PvmActivity currTempActivity = pv.getDestination();
+                String nextActivtityType = currTempActivity.getProperty("type").toString();
+//       		 if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)){//排他网关
+//
+//       		 } else if("inclusiveGateway".equalsIgnoreCase(nextActivtityType)){ //包容网关
+//
+//       		 } else
+                if("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { //并行网关,直接忽略
+                    return false;
+                }
+                Boolean ifGateWay = ifGageway(currTempActivity);
+                if (ifGateWay) {
+                    result =  checkHasConditon(currTempActivity);
+                    if (result) {
+                        return result;
+                    }
+                }
+                String type = (String) pv.getDestination().getProperty("type");
+                List<PvmTransition> nextTransitionList2 = currTempActivity.getOutgoingTransitions();
+                String pvId = pv.getId();
+                String conditionText = (String) pv.getProperty("conditionText");
+                String name = (String) pv.getProperty("name");
+                Condition conditon = (Condition) pv.getProperty("condition");
+//                System.out.println(conditon);
+//                System.out.println(type);
+//                System.out.println(conditionText);
+                if(conditon!=null || conditionText!=null){
+                    result=true;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 选择下一步执行的节点信息
+     * @param id
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNextNodes(String id,String businessId) throws NoSuchMethodException {
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String actTaskId = flowTask.getActTaskId();
+        if(checkHasConditon(actTaskId)){
+//            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+//            JSONObject defObj = JSONObject.fromObject(defJson);
+            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            String businessModelId = businessModel.getId();
+            String appModuleId = businessModel.getAppModuleId();
+            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+            String clientApiBaseUrl =  appModule.getApiBaseAddress();
+            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap( clientApiBaseUrl, businessModelId, businessId);
+            return  this.selectQualifiedNode(actTaskId,v);
+        }else{
+            return  this.selectNextAllNodes(actTaskId);
+        }
+    }
+    /**
+     * 获取所有出口节点信息
+     * @param actTaskId
+     * @return
+     */
+    private List<NodeInfo>  selectNextAllNodes(String actTaskId){
+        PvmActivity currActivity = this.getActivitNode(actTaskId);
+        List<PvmActivity> nextNodes = new ArrayList<PvmActivity>();
+        initNextNodes(currActivity,nextNodes);
+        //前端需要的数据出口任务数据
+        List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
+        if(!nextNodes.isEmpty()){
+            //判断网关
+            PvmActivity firstActivity  = nextNodes.get(0);
+            Boolean isSizeBigTwo = nextNodes.size()>1 ? true:false;
+            String nextActivtityType = firstActivity.getProperty("type").toString();
+            if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ){// 排他网关，radiobox,有且只能选择一个
+                if(isSizeBigTwo){
+                    for(int i=1;i<nextNodes.size();i++){
+                        PvmActivity tempActivity  = nextNodes.get(i);
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo,tempActivity);
+                        tempNodeInfo.setUiType("radiobox");
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            }else if("inclusiveGateway".equalsIgnoreCase(nextActivtityType)){ // 包容网关,checkbox,至少选择一个
+                if(isSizeBigTwo){
+                    for(int i=1;i<nextNodes.size();i++){
+                        PvmActivity tempActivity  = nextNodes.get(i);
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo,tempActivity);
+                        tempNodeInfo.setUiType("checkbox");
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            }else if( "parallelGateWay".equalsIgnoreCase(nextActivtityType)){ // 并行网关,checkbox,默认全部选中显示不能修改
+                if(isSizeBigTwo){
+                    for(int i=1;i<nextNodes.size();i++){
+                        PvmActivity tempActivity  = nextNodes.get(i);
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo,tempActivity);
+                        tempNodeInfo.setUiType("readOnly");
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            }else{
+                if(isSizeBigTwo){//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
+                    for(int i=1;i<nextNodes.size();i++){
+                        PvmActivity tempActivity  = nextNodes.get(i);
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo,tempActivity);
+                        tempNodeInfo.setUiType("readOnly");
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }else{//按照惟一分支任务处理，显示一个，只读
+                    PvmActivity tempActivity  = nextNodes.get(0);
+                    NodeInfo tempNodeInfo = new NodeInfo();
+                    tempNodeInfo = convertNodes(tempNodeInfo,tempActivity);
+                    tempNodeInfo.setUiType("readOnly");
+                    nodeInfoList.add(tempNodeInfo);
+                }
+            }
+    }
+       return nodeInfoList;
+    }
+
+    /**
+     * 获取所有出口任务
+     * @param currActivity
+     * @param nextNodes
+     */
+    private void initNextNodes(PvmActivity currActivity,List<PvmActivity> nextNodes){
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+        if(nextTransitionList !=null && !nextTransitionList.isEmpty()){
+            for(PvmTransition pv: nextTransitionList){
+                PvmActivity currTempActivity = pv.getDestination();
+                Boolean ifGateWay = ifGageway(currTempActivity);
+                if (ifGateWay) {//如果是网关，其他直绑节点自行忽略
+                    nextNodes.clear();
+                    nextNodes.add(currTempActivity);//把网关放入第一个节点
+                    initNextNodes(currTempActivity,nextNodes);
+                    break;
+                }else{
+                    nextNodes.add(currTempActivity);
+                }
+
+            }
+        }
+    }
+
+    private NodeInfo convertNodes( NodeInfo tempNodeInfo ,PvmActivity tempActivity){
+        tempNodeInfo.setName(tempActivity.getProperty("name").toString());
+        tempNodeInfo.setType(tempActivity.getProperty("type").toString());
+
+        String assignee = tempActivity.getProperty("activiti:assignee")+"";
+        String candidateUsers = tempActivity.getProperty("activiti:candidateUsers")+"";
+        if (ifMultiInstance(tempActivity)){//会签任务
+            tempNodeInfo.setUiType("checkbox");
+            tempNodeInfo.setFlowTaskType("countersign");
+        }else if(!StringUtil.isEmpty(assignee)){//普通任务
+            tempNodeInfo.setUiType("radiobox");
+            tempNodeInfo.setFlowTaskType("common");
+        }else if(StringUtil.isEmpty(candidateUsers)){//单签任务
+            tempNodeInfo.setFlowTaskType("singleSign");
+            tempNodeInfo.setUiType("checkbox");
+        }else {
+            throw new RuntimeException("流程任务节点配置有错误");
+        }
+        return tempNodeInfo;
+    }
+
+
+
+    /**
+     * 注入符合条件的下一步节点
+     *
+     * @param currActivity
+     * @param v
+     * @param results
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
+    private void checkFuHeConditon(PvmActivity currActivity, Map<String, Object> v, List<PvmActivity> results)
+            throws NoSuchMethodException, SecurityException {
+        boolean result = false;
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+
+        if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+            for (PvmTransition pv : nextTransitionList) {
+                PvmActivity currTempActivity = pv.getDestination();
+                String nextActivtityType = currTempActivity.getProperty("type").toString();
+                // if
+                // ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)){//排他网关
+                //
+                // } else
+                // if("inclusiveGateway".equalsIgnoreCase(nextActivtityType)){
+                // //包容网关
+                //
+                // } else
+                if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关
+                    throw new RuntimeException("存在并行网关非法检查条件表达式异常！");
+                }
+                Boolean ifGateWay = ifGageway(currTempActivity);// 这里改一下，只要排他网关与包容网关，并行网关自动忽略条件表达式
+                if (ifGateWay) {// 一个节点的出口，暂时只允许拥有一个网关节点
+                    results.clear();
+                    checkFuHeConditon(currTempActivity, v, results);
+                    break;
+                }
+
+                String conditionText = (String) pv.getProperty("conditionText");
+//                Condition conditon = (Condition) pv.getProperty("condition");
+                if (conditionText != null) {
+                    if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+                        String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
+                                conditionText.lastIndexOf("}"));
+                        if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                            results.add(currTempActivity);
+                        }
+                    } else {//其他的用UEL表达式验证
+                        Object tempResult = ConditionUtil.uelResult(conditionText, v);
+                        if (tempResult instanceof Boolean) {
+                            Boolean resultB = (Boolean) tempResult;
+                            if (resultB == true) {
+                                results.add(currTempActivity);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 选择符合条件的节点
+     *
+     * @param actTaskId 流程引擎实际任务ID
+     * @param v
+     * @return
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     */
+    private List<NodeInfo> selectQualifiedNode(String actTaskId, Map<String, Object> v)
+            throws NoSuchMethodException, SecurityException {
+        List<NodeInfo> qualifiedNode = new ArrayList<NodeInfo>();
+        PvmActivity currActivity = this.getActivitNode(actTaskId);
+        List<PvmActivity> results = new ArrayList<PvmActivity>();
+        checkFuHeConditon(currActivity, v, results);
+        // 前端需要的数据
+        if (!results.isEmpty()) {
+            for (PvmActivity tempActivity : results) {
+                NodeInfo tempNodeInfo = new NodeInfo();
+                tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                qualifiedNode.add(tempNodeInfo);
+            }
+        }
+        return qualifiedNode;
+    }
 
 //    /**
 //     * 通过流程实例ID,查找对应用户的最近一次流程执行任务ID

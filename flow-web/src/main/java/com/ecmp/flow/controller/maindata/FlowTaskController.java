@@ -8,6 +8,7 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -80,7 +81,10 @@ public class FlowTaskController {
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("intput","2");
         variables.put("reject",0);
-        OperateResult result = proxy.complete(id,variables);
+        FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+        flowTaskCompleteVO.setTaskId(id);
+        flowTaskCompleteVO.setVariables(variables);
+        OperateResult result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }
@@ -96,7 +100,11 @@ public class FlowTaskController {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("reject",1);
-        OperateResult result = proxy.complete(id,variables);
+
+        FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+        flowTaskCompleteVO.setTaskId(id);
+        flowTaskCompleteVO.setVariables(variables);
+        OperateResult result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }
