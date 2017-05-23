@@ -1,5 +1,7 @@
 package com.ecmp.flow.vo.bpmn;
 
+import net.sf.json.JSONObject;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.*;
@@ -54,7 +56,7 @@ public class BaseFlowNode extends BaseNode implements Serializable {
     private String[] target;
 
     @XmlTransient
-    private String nodeConfig;
+    private JSONObject nodeConfig;
 
     public String getName() {
         return name;
@@ -104,11 +106,11 @@ public class BaseFlowNode extends BaseNode implements Serializable {
         this.type = type;
     }
 
-    public String getNodeConfig() {
+    public JSONObject getNodeConfig() {
         return nodeConfig;
     }
 
-    public void setNodeConfig(String nodeConfig) {
+    public void setNodeConfig(JSONObject nodeConfig) {
         this.nodeConfig = nodeConfig;
     }
 

@@ -32,14 +32,14 @@ public class FlowHiVarinst extends com.ecmp.core.entity.BaseAuditableEntity  imp
 	/**
 	 * 关联流程实例
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name = "instance_id")
 	private FlowInstance flowInstance;
 
 	/**
 	 * 关联任务历史
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name = "task_history_id")
 	private FlowHistory flowHistory;
 

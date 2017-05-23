@@ -48,6 +48,11 @@ public class BuiltInApproveController {
         return "maindata/BuiltInApproveView";
     }
 
+    @RequestMapping(value = "show2", method = RequestMethod.GET)
+    public String show2() {
+        return "maindata/LookApproveBillView";
+    }
+
     /**
      * 查询默认业务实体
      *
