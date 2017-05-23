@@ -977,7 +977,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNextNodes(String id,String businessId) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
-        if(checkHasConditon(actTaskId)){
+        if(checkHasConditon(actTaskId)){//判断出口任务节点中是否包含有条件表达式
             if(StringUtils.isEmpty(businessId)){
                 throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
             }
