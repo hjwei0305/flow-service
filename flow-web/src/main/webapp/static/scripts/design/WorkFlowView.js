@@ -5,6 +5,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     count: 0,
     id: null,
+    orgId:null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -12,6 +13,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
 
     initComponent: function () {
         var g = this;
+        this.orgId = EUI.util.getUrlParam("orgId");
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -506,6 +508,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: $(baseDoms[0]).text(),
             key: $(baseDoms[1]).text(),
             isExecutable: true,
+            orgId:this.orgId,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
