@@ -41,6 +41,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp("center").dom.addClass("flow-grid");
         this.addEvents();
         this.initJSPlumb();
+        if (this.id) {
+            this.loadData();
+        }
     },
     getTopItems: function () {
         var g = this;
@@ -534,61 +537,30 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     loadData: function (data) {
-        var data = {
-            "id": "",
-            "name": "",
-            "isExecutable": true,
-            "nodes": {
-                "node0": {
-                    "type": "StartEvent",
-                    "x": 2,
-                    "y": 206,
-                    "id": "node0",
-                    "target": ["node4"],
-                    "name": "开始"
-                },
-                "node1": {
-                    "type": "EndEvent",
-                    "x": 914,
-                    "y": 187,
-                    "id": "node1",
-                    "target": [],
-                    "name": "结束"
-                },
-                "node2": {
-                    "type": "UserTask",
-                    "x": 651,
-                    "y": 92,
-                    "id": "node2",
-                    "target": ["node6", "node1"],
-                    "name": "审批任务"
-                },
-                "node3": {
-                    "type": "usertask",
-                    "x": 663,
-                    "y": 329,
-                    "id": "node3",
-                    "target": ["node6", "node1"],
-                    "name": "审批任务"
-                },
-                "node4": {
-                    "type": "UserTask",
-                    "x": 181,
-                    "y": 215,
-                    "id": "node4",
-                    "target": ["node5"],
-                    "name": "审批任务"
-                },
-                "node5": {
-                    "type": "ExclusiveGateway",
-                    "x": 457,
-                    "y": 204,
-                    "id": "node5",
-                    "target": ["node2", "node3"],
-                    "name": "排他网关"
+        var g = this;
+        var mask = EUI.LoadMask({
+            msg: "正在获取数据，请稍候..."
+        });
+        EUI.Store({
+            url: _ctxPath + "/design/getEntity",
+            params: {
+                id: id
+            },
+            success: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
+                if (status.success) {
+                    g.showDesign(status.data);
                 }
+            },
+            failure: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
             }
-        };
+        });
+    }
+    ,
+    showDesign: function (data) {
         var html = "";
         for (var id in data.nodes) {
             var node = data.nodes[id];
@@ -617,8 +589,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 this.doConect(id, node.target[index]);
             }
         }
-    }
-    ,
+    },
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
             + id

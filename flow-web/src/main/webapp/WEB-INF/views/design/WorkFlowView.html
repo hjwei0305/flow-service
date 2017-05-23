@@ -23,8 +23,10 @@
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
         var flowView;
+        var id = EUI.util.getUrlParam("id");
         EUI.onReady(function () {
             flowView = new EUI.WorkFlowView({
+                id: id,
                 renderTo: "content"
             });
         });

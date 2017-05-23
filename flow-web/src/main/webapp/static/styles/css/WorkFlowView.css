@@ -373,3 +373,20 @@
     padding: 0.4em;
     z-index: 21;
 }
+.condetail-operate {
+    width: 55px;
+    height: 15px;
+    line-height: 15px;
+    margin: 0 auto;
+    text-align: center;
+}
+.condetail-delete {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    display: inline-block;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: -32px -160px;
+}
+
+

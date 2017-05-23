@@ -1,5 +1,9 @@
 package com.ecmp.flow.controller.design;
 
+import com.ecmp.basic.api.IPositionCategoryService;
+import com.ecmp.basic.api.IPositionService;
+import com.ecmp.basic.entity.Position;
+import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
@@ -39,7 +43,7 @@ import java.util.Map;
 @RequestMapping(value = "/design")
 public class FlowDesignController {
 
-    @RequestMapping(value = "show",method = RequestMethod.GET)
+    @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
         return "/design/WorkFlowView";
     }
@@ -63,7 +67,7 @@ public class FlowDesignController {
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(result.getData());
-        } else {
+        } else if(deploy == true){
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
@@ -94,12 +98,57 @@ public class FlowDesignController {
     }
 
 
+    /**
+     * 获取工作界面
+     * @param businessModelId
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "listAllWorkPage", method = RequestMethod.POST)
-    public String listAllWorkPage(String businessModelId){
-    IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
+    public String listAllWorkPage(String businessModelId) {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelId);
-        return JsonUtil.serialize(result);
+        status.setData(result);
+        return JsonUtil.serialize(status);
     }
 
+    /**
+     * 获取流程设计
+     *
+     * @param id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getEntity", method = RequestMethod.POST)
+    public String getEntity(String id) {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+        FlowDefVersion data = proxy.findOne(id);
+        status.setData(data);
+        return JsonUtil.serialize(status);
+    }
+
+    /**
+     * 获取岗位类别列表
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "listPosType")
+    public String listPositonType(){
+        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
+        List<PositionCategory> data = proxy.findAll();
+        return JsonUtil.serialize(data);
+    }
+    /**
+     * 获取岗位列表
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "listPos")
+    public String listPositon(){
+        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
+        List<Position> data = proxy.findAll();
+        return JsonUtil.serialize(data);
+    }
 }
