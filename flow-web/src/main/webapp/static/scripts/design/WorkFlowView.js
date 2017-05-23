@@ -510,7 +510,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: baseInfo.name,
             key: baseInfo.key,
             isExecutable: true,
-            orgId: this.orgId,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
@@ -538,7 +537,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {flowTypeId: baseInfo.flowTypeId, process: process};
+        return {flowTypeId: baseInfo.flowTypeId, orgId: this.orgId, process: process};
     }
     ,
     loadData: function (data) {
