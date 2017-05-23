@@ -36,6 +36,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.*;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,8 +155,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ActivityImpl destinationActivity  = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
                 newTransition.setDestination(destinationActivity);
             }
+
             //执行任务
             result = this.complete(taskId,variables);
+
             // 恢复方向
             for(String nodeId:manualSelectedNodeIds){
                 ActivityImpl destinationActivity  = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
@@ -176,7 +180,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
-    public OperateResult complete(String id, Map<String, Object> variables) {
+    private OperateResult complete(String id, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         this.completeActiviti(actTaskId, variables);
@@ -974,6 +978,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         if(checkHasConditon(actTaskId)){
+            if(StringUtils.isEmpty(businessId)){
+                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
+            }
 //            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
 //            JSONObject defObj = JSONObject.fromObject(defJson);
             BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
@@ -1083,6 +1090,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
     }
 
+    /**
+     * 将流程引擎的流程节点转换为前端需要的节点信息
+     * @param tempNodeInfo
+     * @param tempActivity
+     * @return
+     */
     private NodeInfo convertNodes( NodeInfo tempNodeInfo ,PvmActivity tempActivity){
         tempNodeInfo.setName(tempActivity.getProperty("name").toString());
         tempNodeInfo.setType(tempActivity.getProperty("type").toString());

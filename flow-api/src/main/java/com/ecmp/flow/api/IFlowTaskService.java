@@ -5,12 +5,14 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -115,5 +117,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "检查当前任务的出口节点是否存在条件表达式",notes = "测试")
     public boolean checkHasConditon(@PathParam("id")String id);
+
+
+    /**
+     * 选择下一步执行的节点信息
+     * @param id 任务ID
+     * @param businessId 业务ID
+     * @return
+     * @throws NoSuchMethodException
+     */
+    @POST
+    @Path("findNextNodes/{id}/{businessId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
+    public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
 
 }
