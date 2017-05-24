@@ -739,6 +739,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         if (!data || data.length == 0) {
             return false;
         }
+        return true;
     },
     getExcutorData: function () {
         var data = EUI.getCmp("userType").getValue();
@@ -758,6 +759,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getSelectIds: function (data) {
         var ids = "";
         for (var i = 0; i < data.length; i++) {
+            if (i > 0) {
+                ids += ",";
+            }
             ids += data[i].id;
         }
         return ids;
