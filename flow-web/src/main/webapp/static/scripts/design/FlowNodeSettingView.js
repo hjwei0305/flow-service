@@ -495,7 +495,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var data = EUI.getCmp("selPositionTypeGrid").getSelectRow();
-                    EUI.getCmp("positionTypeGrid").addRowData(data);
+                    EUI.getCmp("positionTypeGrid").setDataInGrid(data);
                     win.close();
                 }
             }, {
