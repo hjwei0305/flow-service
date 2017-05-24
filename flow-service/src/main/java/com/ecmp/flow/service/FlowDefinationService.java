@@ -541,10 +541,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                         for(IdentityLink identityLink:identityLinks){
                             FlowTask  flowTask = new FlowTask();
+                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
-
-//                            flowTask.setFlowDefinitionId();
                             flowTask.setActTaskId(task.getId());
                             flowTask.setOwnerAccount(task.getOwner());
                             flowTask.setPriority(task.getPriority());
@@ -558,6 +557,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         }
                     }else{
                         FlowTask  flowTask = new FlowTask();
+                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());

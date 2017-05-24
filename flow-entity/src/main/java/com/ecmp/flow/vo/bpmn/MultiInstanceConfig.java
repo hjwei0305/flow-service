@@ -55,4 +55,28 @@ public class MultiInstanceConfig implements Serializable {
     public void setSequential(boolean sequential) {
         isSequential = sequential;
     }
+
+    public String getVariable() {
+        return variable;
+    }
+
+    public void setVariable(String variable) {
+        this.variable = variable;
+    }
+
+    public String getLoopCardinality() {
+        return loopCardinality;
+    }
+
+    public void setLoopCardinality(String loopCardinality) {
+        this.loopCardinality = loopCardinality;
+    }
+
+    public String getCompletionCondition() {
+        return completionCondition;
+    }
+
+    public void setCompletionCondition(String completionCondition) {
+        this.completionCondition = completionCondition;
+    }
 }

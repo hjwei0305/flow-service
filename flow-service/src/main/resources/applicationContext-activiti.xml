@@ -34,7 +34,17 @@
 		<property name="labelFontName" value="宋体" />
 		<!-- <property name="deploymentResources" value="classpath*:diagrams/*.bpmn20.xml" 
 			/> -->
+		<!-- 用于更改流程节点的执行行为 -->
+		<property name="activityBehaviorFactory" ref="activityBehaviorFactoryExt"/>
 	</bean>
+
+	<bean id="activityBehaviorFactoryExt" class="com.ecmp.flow.activiti.ext.ActivityBehaviorFactoryExt">
+		<property name="exclusiveGatewayActivityBehaviorExt" ref="exclusiveGatewayActivityBehaviorExt"/>
+	</bean>
+
+	<bean id="exclusiveGatewayActivityBehaviorExt" class="com.ecmp.flow.activiti.ext.ExclusiveGatewayActivityBehaviorExt"  scope="singleton">
+	</bean>
+
 
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
 		<property name="processEngineConfiguration" ref="processEngineConfiguration" />

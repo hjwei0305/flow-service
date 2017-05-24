@@ -143,6 +143,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefination.setDefKey(process.getKey());
             flowDefination.setStartUel(process.getStartUEL());
             flowDefination.setFlowType(flowType);
+            flowDefination.setOrgId(definition.getOrgId());
            // flowDefination.setCurrentFlowDefVersion(1L);
             flowDefinationDao.save(flowDefination);
              entity = new FlowDefVersion();
