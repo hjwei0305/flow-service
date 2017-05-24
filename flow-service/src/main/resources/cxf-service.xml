@@ -14,6 +14,10 @@
     <context:annotation-config/>
     <bean class="com.ecmp.config.ServiceConfig"/>
 
+    <!--<context:component-scan base-package="com.ecmp" use-default-filters="false">-->
+        <!--<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>-->
+    <!--</context:component-scan>-->
+
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
         <property name="basePath" value="/"/>
         <property name="resourcePackage" value="com.ecmp.flow.api"/>

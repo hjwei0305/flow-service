@@ -53,12 +53,12 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     PageResult<DefaultBusinessModel> findByPage(Search searchConfig);
 
 
-    @GET
-    @Path("findOne")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "查询一个应用模块", notes = "查询一个应用模块")
-    DefaultBusinessModel findOne(String defBinessModelId);
+//    @GET
+//    @Path("findOne")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "查询一个应用模块", notes = "查询一个应用模块")
+//    DefaultBusinessModel findOne(String defBinessModelId);
 
 
 }

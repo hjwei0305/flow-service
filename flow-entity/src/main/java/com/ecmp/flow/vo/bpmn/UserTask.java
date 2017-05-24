@@ -2,6 +2,7 @@ package com.ecmp.flow.vo.bpmn;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
@@ -37,6 +38,19 @@ public class UserTask extends BaseFlowNode implements Serializable {
     @XmlElement(name = "multiInstanceLoopCharacteristics")
     private MultiInstanceConfig config;
 
+
+    /**
+     * activti扩展属性，任务监听器之类
+     */
+    @XmlElement(name = "extensionElements")
+    private ExtensionElement extensionElement;
+
+    /**
+     * 前端节点类型
+     */
+    @XmlTransient
+    private String nodeType;//Normal,SingleSign,CounterSign
+
     public String getAssignee() {
         return assignee;
     }
@@ -59,5 +73,21 @@ public class UserTask extends BaseFlowNode implements Serializable {
 
     public void setConfig(MultiInstanceConfig config) {
         this.config = config;
+    }
+
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public ExtensionElement getExtensionElement() {
+        return extensionElement;
+    }
+
+    public void setExtensionElement(ExtensionElement extensionElement) {
+        this.extensionElement = extensionElement;
     }
 }

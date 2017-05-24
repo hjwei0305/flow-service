@@ -133,8 +133,30 @@ public class Process extends BaseNode implements Serializable {
                         endEvent.add((EndEvent) JSONObject.toBean(node, EndEvent.class));
                         break;
                     case "UserTask":
-                        userTask.add((UserTask) JSONObject.toBean(node, UserTask.class));
+                    {
+                       UserTask userTaskTemp = (UserTask) JSONObject.toBean(node, UserTask.class);
+                       if("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                           userTaskTemp.setAssignee("${"+userTaskTemp.getId()+"_Normal}");
+                        }else if("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                           userTaskTemp.setCandidateUsers("${"+userTaskTemp.getId()+"_SingleSign}");
+                        }
+                        else if("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                           MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+                           multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
+                           multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+                           ExtensionElement extensionElement = new ExtensionElement();
+                           //添加默认任务监听器
+                           TaskListener taskListener = new TaskListener();
+                           taskListener.setEvent("complete");
+                           taskListener.setDelegateExpression("${commonCounterSignCompleteListener}");
+                           List<TaskListener> taskListeners = new ArrayList<TaskListener>();
+                           taskListeners.add(taskListener);
+                           extensionElement.setTaskListener(taskListeners);
+                           userTaskTemp.setExtensionElement(extensionElement);
+                        }
+                        userTask.add(userTaskTemp);
                         break;
+                    }
                     case "MailTask":
                         mailTask.add((MailTask) JSONObject.toBean(node, MailTask.class));
                         break;

@@ -205,6 +205,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 .singleResult();
         if (historicTaskInstance != null) {
             FlowHistory flowHistory = new FlowHistory();
+            flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
             flowHistory.setActType(flowTask.getActType());
             flowHistory.setFlowName(flowTask.getFlowName());
             flowHistory.setDepict(flowTask.getDepict());
@@ -316,6 +317,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         taskService.complete(taskId, variables);
     }
 
+    /**
+     * 获取活动节点
+     * @param taskId
+     * @return
+     */
     private PvmActivity getActivitNode(String taskId) {
         // 取得当前任务
         HistoricTaskInstance currTask = historyService
@@ -810,6 +816,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for (IdentityLink identityLink : identityLinks) {
                         FlowTask flowTask = new FlowTask();
+                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
@@ -840,6 +847,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 } else {
                     FlowTask flowTask = new FlowTask();
+                    flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                     flowTask.setActTaskDefKey(actTaskDefKey);
                     flowTask.setFlowName(flowName);
                     flowTask.setTaskName(task.getName());
