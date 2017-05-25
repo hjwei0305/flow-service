@@ -70,7 +70,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: "name"
             }, {
                 xtype: "TextField",
-                name: "key",
+                name: "id",
                 width: 100,
                 labelWidth: 90,
                 allowBlank: false,
@@ -506,9 +506,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
         var process = {
-            id: "flow" + new Date().getTime(),
             name: baseInfo.name,
-            key: baseInfo.key,
+            id: baseInfo.id,
             isExecutable: true,
             nodes: {}
         };

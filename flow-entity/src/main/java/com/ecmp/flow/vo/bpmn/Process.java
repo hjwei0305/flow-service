@@ -27,12 +27,6 @@ public class Process extends BaseNode implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 流程key
-     */
-    @XmlTransient
-    private String key;
-
-    /**
      * 流程名
      */
     @XmlAttribute
@@ -94,14 +88,6 @@ public class Process extends BaseNode implements Serializable {
 
     public void setExecutable(boolean executable) {
         this.executable = executable;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public void setNodes(JSONObject nodes) {
