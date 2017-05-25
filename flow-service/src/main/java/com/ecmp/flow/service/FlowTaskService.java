@@ -1,6 +1,8 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.annotation.AppModule;
+import com.ecmp.basic.api.IPositionService;
+import com.ecmp.basic.entity.Employee;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
@@ -18,6 +20,7 @@ import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResult;
 import jodd.util.StringUtil;
 import net.sf.json.JSONObject;
@@ -977,6 +980,60 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     /**
+     * 获取出口节点信息（带流程设计器初始化的用户）
+     * @param id
+     * @param businessId
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNexNodesWithUserSet(String id,String businessId) throws NoSuchMethodException {
+        List<NodeInfo> nodeInfoList = this.findNextNodes(id,businessId);
+        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+            FlowTask flowTask = flowTaskDao.findOne(id);
+            String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+
+            for(NodeInfo nodeInfo :nodeInfoList){
+                net.sf.json.JSONObject test= definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+                net.sf.json.JSONObject executor= test.getJSONObject("nodeConfig").getJSONObject("executor");
+                if(executor!=null){
+                    String userType = (String)executor.get("userType");
+                    String ids = (String)executor.get("ids");
+                    Set<Employee> employeeSet = new HashSet<Employee>();
+                    List<Employee> employees = null;
+                    if(!StringUtils.isEmpty(ids)){
+                        nodeInfo.setUiUserType(userType);
+                        String[] idsShuZhu = ids.split(",");
+                        List<String> idList = java.util.Arrays.asList(idsShuZhu);
+                        //StartUser、Position、PositionType、SelfDefinition、AnyOne
+                        if("StartUser".equalsIgnoreCase(userType)){
+                            flowTask.getFlowInstance().getCreatedBy();//获取流程实例启动者
+                        }else if("Position".equalsIgnoreCase(userType)){//调用岗位获取用户接口
+                            IPositionService  iPositionService = ApiClient.createProxy(IPositionService.class);
+                            employees = iPositionService.getAssignedEmployeesByPositionIds(idList);
+
+                        }else if("PositionType".equalsIgnoreCase(userType)){//调用岗位类型获取用户接口
+                            IPositionService  iPositionService = ApiClient.createProxy(IPositionService.class);
+                            employees = iPositionService.getAssignedEmployeesByPosCateIds(idList);
+                        }else if("SelfDefinition".equalsIgnoreCase(userType)){//通过业务ID获取自定义用户
+
+                        }else if("AnyOne".equalsIgnoreCase(userType)){//任意执行人不添加用户
+
+                        }
+                        if(employees!=null &&!employees.isEmpty()){
+                            employeeSet.addAll(employees);
+                            nodeInfo.setEmployeeSet(employeeSet);
+                        }
+
+                    }
+                }
+            }
+        }
+        return  nodeInfoList;
+    }
+
+    /**
      * 选择下一步执行的节点信息
      * @param id
      * @return
@@ -1107,7 +1164,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private NodeInfo convertNodes( NodeInfo tempNodeInfo ,PvmActivity tempActivity){
         tempNodeInfo.setName(tempActivity.getProperty("name").toString());
         tempNodeInfo.setType(tempActivity.getProperty("type").toString());
-
+        tempNodeInfo.setId(tempActivity.getId());
         String assignee = tempActivity.getProperty("activiti:assignee")+"";
         String candidateUsers = tempActivity.getProperty("activiti:candidateUsers")+"";
         if (ifMultiInstance(tempActivity)){//会签任务

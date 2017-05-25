@@ -1,5 +1,7 @@
 package com.ecmp.flow.vo.bpmn;
 
+import net.sf.json.JSONObject;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -50,6 +52,25 @@ public class UserTask extends BaseFlowNode implements Serializable {
      */
     @XmlTransient
     private String nodeType;//Normal,SingleSign,CounterSign
+
+//    /**
+//     * 执行人配置信息
+//     */
+//    @XmlTransient
+//    private JSONObject executor;
+//
+//    /**
+//     * 事件
+//     */
+//    @XmlTransient
+//    private JSONObject event;
+//
+//    /**
+//     * 通知
+//     */
+//    @XmlTransient
+//    private JSONObject notify;
+
 
     public String getAssignee() {
         return assignee;
