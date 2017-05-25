@@ -3,33 +3,34 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
-import com.ecmp.flow.entity.BusinessWorkPageUrl;
+import com.ecmp.flow.entity.BusinessSelfDefEmployee;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：工作界面API接口定义
+ * 实现功能：业务实体自定义执行人API接口定义
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * 1.0.00      2017/05/25 09:09      谭军(tanjun)                新建
  * <p/>
  * *************************************************************************************************
  */
-@Path("businessWorkPageUrl")
-@Api(value = "IBusinessWorkPageUrlService 业务实体工作界面配置管理服务API接口")
-public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPageUrl, String> {
+@Path("businessSelfDefEmployee")
+@Api(value = "IBusinessSelfDefEmployeeService 业务实体自定义执行人配置管理服务API接口")
+public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSelfDefEmployee, String> {
 
     /**
      * 保存一个实体
-     * @param businessWorkPageUrl 实体
+     * @param businessSelfDefEmployee 实体
      * @return 保存后的实体
      */
     @POST
@@ -37,7 +38,7 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<BusinessWorkPageUrl> save(BusinessWorkPageUrl businessWorkPageUrl);
+    OperateResultWithData<BusinessSelfDefEmployee> save(BusinessSelfDefEmployee businessSelfDefEmployee);
 
     /**
      * 获取分页数据
@@ -49,21 +50,19 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
-    PageResult<BusinessWorkPageUrl> findByPage(Search searchConfig);
+    PageResult<BusinessSelfDefEmployee> findByPage(Search searchConfig);
+
 
     /**
-     * 保存设置的工作界面
-     * @param id 业务实体id
-     * @param selectWorkPageIds 工作界面的所有id
-     * @param id 流程id
-     * @return 流程实例
+     * 通过业务实体ID获取定义的企业员工
+     * @param businessModelId
+     * @return
      */
-    @POST
-    @Path("saveBusinessWorkPageUrlByIds/{id}")
+    @GET
+    @Path("findByBusinessModelId/{businessModelId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存设置的工作界面",notes = "测试")
-    public void saveBusinessWorkPageUrlByIds(@PathParam("id")String id, String selectWorkPageIds);
-
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    List<BusinessSelfDefEmployee > findByBusinessModelId(@PathParam("businessModelId")String businessModelId);
 
 }

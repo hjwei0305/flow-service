@@ -1,6 +1,9 @@
 package com.ecmp.flow.vo;
 
+import com.ecmp.basic.entity.Employee;
+
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -20,7 +23,10 @@ public class NodeInfo implements Serializable{
     private String type;//目前暂时只支持 ----userTask
     private String uiType;//radiobox\checkbox\readOnly
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
-    
+	private String uiUserType;//流程设计器定义的用户选择类型，StartUser、Position、PositionType、SelfDefinition、AnyOne
+    private Set<Employee> employeeSet;//记录流程设计阶段所选择的员工
+
+
 	public String getId() {
 		return id;
 	}
@@ -51,7 +57,20 @@ public class NodeInfo implements Serializable{
 	public void setFlowTaskType(String flowTaskType) {
 		this.flowTaskType = flowTaskType;
 	}
-    
-    
-    
+
+	public String getUiUserType() {
+		return uiUserType;
+	}
+
+	public void setUiUserType(String uiUserType) {
+		this.uiUserType = uiUserType;
+	}
+
+	public Set<Employee> getEmployeeSet() {
+		return employeeSet;
+	}
+
+	public void setEmployeeSet(Set<Employee> employeeSet) {
+		this.employeeSet = employeeSet;
+	}
 }
