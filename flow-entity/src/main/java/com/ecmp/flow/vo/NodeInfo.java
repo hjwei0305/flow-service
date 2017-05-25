@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo;
 
 import com.ecmp.basic.entity.Employee;
+import com.ecmp.flow.vo.bpmn.MultiInstanceConfig;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -25,6 +26,8 @@ public class NodeInfo implements Serializable{
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
 	private String uiUserType;//流程设计器定义的用户选择类型，StartUser、Position、PositionType、SelfDefinition、AnyOne
     private Set<Employee> employeeSet;//记录流程设计阶段所选择的员工
+	private String userVarName;//流程节点用户变量名称
+//	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
 
 	public String getId() {
@@ -73,4 +76,20 @@ public class NodeInfo implements Serializable{
 	public void setEmployeeSet(Set<Employee> employeeSet) {
 		this.employeeSet = employeeSet;
 	}
+
+	public String getUserVarName() {
+		return userVarName;
+	}
+
+	public void setUserVarName(String userVarName) {
+		this.userVarName = userVarName;
+	}
+
+//	public MultiInstanceConfig getMultiInstanceConfig() {
+//		return multiInstanceConfig;
+//	}
+//
+//	public void setMultiInstanceConfig(MultiInstanceConfig multiInstanceConfig) {
+//		this.multiInstanceConfig = multiInstanceConfig;
+//	}
 }

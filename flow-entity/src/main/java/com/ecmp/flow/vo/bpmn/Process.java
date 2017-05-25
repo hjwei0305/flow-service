@@ -113,7 +113,9 @@ public class Process extends BaseNode implements Serializable {
                 JSONArray targets = node.getJSONArray("target");
                 switch (node.getString("type")) {
                     case "StartEvent":
-                        startEvent.add((StartEvent) JSONObject.toBean(node, StartEvent.class));
+                        StartEvent startEventTemp = (StartEvent) JSONObject.toBean(node, StartEvent.class);
+                        startEventTemp.setInitiator("startUserId");
+                        startEvent.add(startEventTemp);
                         break;
                     case "EndEvent":
                         endEvent.add((EndEvent) JSONObject.toBean(node, EndEvent.class));
@@ -130,6 +132,8 @@ public class Process extends BaseNode implements Serializable {
                            MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
                            multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
                            multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+                           userTaskTemp.setConfig(multiInstanceConfig);
+
                            ExtensionElement extensionElement = new ExtensionElement();
                            //添加默认任务监听器
                            TaskListener taskListener = new TaskListener();
@@ -139,6 +143,7 @@ public class Process extends BaseNode implements Serializable {
                            taskListeners.add(taskListener);
                            extensionElement.setTaskListener(taskListeners);
                            userTaskTemp.setExtensionElement(extensionElement);
+
                         }
                         userTask.add(userTaskTemp);
                         break;

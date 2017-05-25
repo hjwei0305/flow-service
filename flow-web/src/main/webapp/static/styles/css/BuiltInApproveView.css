@@ -1,12 +1,20 @@
 .condetail-operate {
-    width: 55px;
-    height: 15px;
-    line-height: 15px;
+    width: 82px;
+    height: 16px;
+    line-height: 16px;
     margin: 0 auto
 }
 
 .condetail-operate > div {
     margin: 0 6px;
+}
+
+.condetail-start {
+    width: 16px;
+    height: 16px;
+    float: left;
+    cursor: pointer;
+    background: url("../images/btn/flow/flow_start.png") no-repeat 0 0px;
 }
 
 .condetail-update {

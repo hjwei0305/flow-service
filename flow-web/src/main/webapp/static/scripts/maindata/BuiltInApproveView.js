@@ -71,9 +71,9 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
-                            "<div class='condetail-start'></div>"
-                            + "<div class='condetail-update'></div>"
-                            + "<div class='condetail-delete'></div></div>";
+                            "<div class='condetail-start'title='启动流程'></div>"
+                            + "<div class='condetail-update' title='编辑'></div>"
+                            + "<div class='condetail-delete'  title='删除'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -84,12 +84,14 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: "业务名称",
                     name: "name",
-                    index: "name"
+                    index: "name",
+                    width: '20%'
                 }, {
                     label: "当前流程状态",
                     name: "flowStatus",
                     index: "flowStatus",
-                    hidden: true
+                    hidden: false,
+                    width: '10%',
                 }, {
                     label: "组织机构代码",
                     name: "orgCode",
@@ -118,7 +120,8 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: "工作说明",
                     name: "workCaption",
-                    index: "workCaption"
+                    index: "workCaption",
+                    width: '50%'
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -130,6 +133,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
     //编辑和删除按钮的事件添加
     addEvents: function () {
         var g = this;
+        $(".condetail-start").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
+            g.startFlow(data);
+        });
         $(".condetail-update").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.showBuiltInApproveWin(data);
@@ -196,6 +203,48 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 title: "取消",
                 handler: function () {
                     win.remove();
+                }
+            }]
+        });
+    },
+
+    //启动流程
+    startFlow: function (data) {
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: "提示",
+            msg: "确定立即启动流程吗？",
+            buttons: [{
+                title: "确定",
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: "正在启动，请稍后..."
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/builtInApprove/startFlow",
+                        params: {
+                            key:'tjTest255',
+                            businessKey: data.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            }
+                        },
+                        failure: function (result) {
+                            EUI.ProcessStatus(result);
+                            myMask.hide();
+                        }
+                    });
+                }
+            }, {
+                title: "取消",
+                handler: function () {
+                    infoBox.remove();
                 }
             }]
         });

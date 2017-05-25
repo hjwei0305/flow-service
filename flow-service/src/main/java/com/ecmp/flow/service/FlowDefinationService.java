@@ -221,11 +221,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
 
-                String processInstanceName = processInstance.getName();
-                if(processInstanceName == null){
-                    processInstanceName = processInstance.getProcessDefinitionKey();
-                }
-                flowInstance.setFlowName(processInstanceName);
+//                String processInstanceName = processInstance.getName();
+//                if(processInstanceName == null){
+//                    processInstanceName = processInstance.getProcessDefinitionKey();
+//                }
+                flowInstance.setFlowName(flowDefVersion.getName()+":"+businessKey);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
                 initTask(processInstance);
@@ -243,8 +243,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     @Override
     public FlowInstance startByKey(String key,String businessKey, Map<String, Object> variables){
-//        return this.startByKey(key,null, businessKey, variables);
-        return null;
+        return this.startByKey(key,null, businessKey, variables);
+//        return null;
     }
 
     /**
@@ -276,7 +276,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(processInstance.getName());
+                flowInstance.setFlowName(flowDefVersion.getName()+":"+businessKey);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
                 initTask(processInstance);
@@ -531,10 +531,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
-         String flowName = instance.getProcessDefinitionName();
-        if(flowName == null){
-            flowName = instance.getProcessDefinitionKey();
-        }
+         String flowName = flowInstance.getFlowName();
+//        if(flowName == null){
+//            flowName = instance.getProcessDefinitionKey();
+//        }
         if(taskList!=null && taskList.size()>0){
             for(Task task:taskList){
                     if(task.getAssignee()!=null && !"".equals(task.getAssignee())){

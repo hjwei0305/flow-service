@@ -21,7 +21,7 @@ import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
-import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import jodd.util.StringUtil;
 import net.sf.json.JSONObject;
@@ -1003,8 +1003,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
 
             for (NodeInfo nodeInfo : nodeInfoList) {
-                net.sf.json.JSONObject test = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
-                net.sf.json.JSONObject executor = test.getJSONObject("nodeConfig").getJSONObject("executor");
+                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+
+                UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+                if("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                    nodeInfo.setUserVarName(userTaskTemp.getId()+"_Normal");
+                }else if("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                    nodeInfo.setUserVarName(userTaskTemp.getId()+"_SingleSign");
+                }
+                else if("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
+                    nodeInfo.setUserVarName(userTaskTemp.getId()+"_List_CounterSign");
+//                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+//                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
+//                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+                }
+
                 if (executor != null) {
                     String userType = (String) executor.get("userType");
                     String ids = (String) executor.get("ids");
