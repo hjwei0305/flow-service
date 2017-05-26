@@ -7,15 +7,14 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IBusinessModelService;
-import com.ecmp.flow.api.IDefaultBusinessModelService;
-import com.ecmp.flow.api.IFlowDefinationService;
-import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.api.*;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.springframework.stereotype.Controller;
@@ -37,10 +36,12 @@ import java.util.Map;
  * ------------------------------------------------------------------------------------------------
  * <br>
  * 版本          变更时间             变更人                     变更原因
+ *
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
  * 1.0.00      2017/4/26 9:32      詹耀(xxxlimit)                    新建
+ * 1.0.00      2017/5/26 9:32      谭军（tanjun）                    增加启动流程，完成任务
  * <br>
  * *************************************************************************************************<br>
  */
@@ -137,5 +138,56 @@ public class BuiltInApproveController {
         }
         return JsonUtil.serialize(operateStatus);
     }
+
+    /**
+     * 完成任务
+     * @param taskId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "completeTask")
+    @ResponseBody
+    public String completeTask(String taskId,String businessId,List<String> manualSelectedNodeIds,Map<String,Object> v) {
+        OperateStatus operateStatus = null;
+        IDefaultBusinessModelService iDefaultBusinessModelService = ApiClient.createProxy(IDefaultBusinessModelService.class);
+        DefaultBusinessModel defaultBusinessModel = iDefaultBusinessModelService.findOne(businessId);
+        if(defaultBusinessModel != null){
+            FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+            flowTaskCompleteVO.setTaskId(taskId);
+            flowTaskCompleteVO.setManualSelectedNodeIds(manualSelectedNodeIds);
+          //  Map<String,Object> v = new HashMap<String,Object>();
+            flowTaskCompleteVO.setVariables(v);
+            IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+            OperateResultWithData operateResult = proxy.complete(flowTaskCompleteVO);
+            if(FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData()+"")){
+                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+                iDefaultBusinessModelService.save(defaultBusinessModel);
+            }
+            operateStatus = new OperateStatus(true,operateResult.getMessage());
+        }else {
+            operateStatus =  new OperateStatus(false, "业务对象不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 获取下一步的节点信息任务
+     * @param taskId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "nextNodesInfo")
+    @ResponseBody
+    public String nextNodesInfo(String taskId) throws NoSuchMethodException {
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
+        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+            operateStatus = new OperateStatus(true,"成功");
+            operateStatus.setData(nodeInfoList);
+        }else {
+            operateStatus =  new OperateStatus(false, "不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
 }
 
