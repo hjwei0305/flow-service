@@ -157,7 +157,11 @@ public class BuiltInApproveController {
           //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-            OperateResult operateResult = proxy.complete(flowTaskCompleteVO);
+            OperateResultWithData operateResult = proxy.complete(flowTaskCompleteVO);
+            if(FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData()+"")){
+                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+                iDefaultBusinessModelService.save(defaultBusinessModel);
+            }
             operateStatus = new OperateStatus(true,operateResult.getMessage());
         }else {
             operateStatus =  new OperateStatus(false, "业务对象不存在");

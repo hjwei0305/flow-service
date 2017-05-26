@@ -8,6 +8,7 @@ import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -67,7 +68,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResult complete(FlowTaskCompleteVO flowTaskCompleteVO);
+    public OperateResultWithData complete(FlowTaskCompleteVO flowTaskCompleteVO);
 
 
     /**
