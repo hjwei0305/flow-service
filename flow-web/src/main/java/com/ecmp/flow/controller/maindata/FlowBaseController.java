@@ -14,6 +14,7 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
@@ -180,6 +181,26 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         if(nodeInfoList != null && !nodeInfoList.isEmpty()){
             operateStatus = new OperateStatus(true,"成功");
             operateStatus.setData(nodeInfoList);
+        }else {
+            operateStatus =  new OperateStatus(false, "不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 获取任务抬头信息信息任务
+     * @param taskId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "getApprovalHeaderInfo")
+    @ResponseBody
+    public String getApprovalHeaderInfo(String taskId){
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
+        if(approvalHeaderVO != null){
+            operateStatus = new OperateStatus(true,"成功");
+            operateStatus.setData(approvalHeaderVO);
         }else {
             operateStatus =  new OperateStatus(false, "不存在");
         }

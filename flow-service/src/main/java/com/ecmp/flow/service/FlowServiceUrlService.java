@@ -42,4 +42,8 @@ public class FlowServiceUrlService extends BaseEntityService<FlowServiceUrl> imp
     public List<FlowServiceUrl> findByFlowTypeId(String flowTypeId){
         return flowServiceUrlDao.findByFlowTypeId(flowTypeId);
     }
+
+    public List<FlowServiceUrl> findByBusinessModelId(String businessModelId){
+        return flowServiceUrlDao.findByBusinessModelId(businessModelId);
+    }
 }
