@@ -25,6 +25,6 @@ public interface FlowServiceUrlDao extends BaseEntityDao<FlowServiceUrl> {
      * @param businessModelId 流程类型id
      * @return
      */
-    @Query("select w from com.ecmp.flow.entity.FlowServiceUrl w where w.businessModel.id =  :businessModelId ")
+    @Query("select w from com.ecmp.flow.entity.FlowServiceUrl w where w.businessModel.id = :businessModelId ")
     List<com.ecmp.flow.entity.FlowServiceUrl> findByBusinessModelId(@Param("businessModelId")String businessModelId);
 }
