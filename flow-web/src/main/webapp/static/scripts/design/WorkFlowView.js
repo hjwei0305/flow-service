@@ -103,7 +103,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 90,
                 allowBlank: false,
                 afterSelect: function (data) {
-                    g.businessModelId = data.data["businessModel.id"];
+                    g.businessModelId = data.value.flowTypeId;
                 },
                 reader: {
                     name: "name",
