@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
@@ -135,16 +136,42 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 选择下一步执行的节点信息
+     * 通过任务ID与业务ID选择下一步带用户信息的执行的节点信息
      * @param id 任务ID
      * @param businessId 业务ID
      * @return
      * @throws NoSuchMethodException
      */
     @POST
-    @Path("findNexNodesWithUserSet/{id}/{businessId}")
+    @Path("findNexNodesByIdAndBusinessIdWithUserSet/{id}/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
+    @ApiOperation(value = "通过任务ID与业务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
     public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
+
+
+    /**
+     * 只通过任务ID选择下一步带用户信息的执行的节点信息
+     * @param id 任务ID
+     * @return
+     * @throws NoSuchMethodException
+     */
+    @POST
+    @Path("findNexNodesByIdWithUserSet/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
+    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id) throws NoSuchMethodException;
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("getApprovalHeaderVO/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "选择当前流程抬头信息",notes = "测试")
+   public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id")String id);
 }

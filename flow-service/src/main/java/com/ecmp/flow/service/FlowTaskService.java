@@ -19,6 +19,7 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
@@ -50,6 +51,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.ws.rs.PathParam;
 import java.util.*;
 
 /**
@@ -1308,5 +1310,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         return qualifiedNode;
+    }
+
+    public ApprovalHeaderVO getApprovalHeaderVO(String id){
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String preId = flowTask.getPreId();
+        FlowHistory preFlowTask = null;
+        ApprovalHeaderVO result= new ApprovalHeaderVO();
+        result.setBusinessId(flowTask.getFlowInstance().getBusinessId());
+        result.setCreateUser(flowTask.getFlowInstance().getCreatedBy());
+        result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
+        if(!StringUtils.isEmpty(preId)){
+             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
+        }
+        if(preFlowTask == null){//如果没有上一步任务信息,默认上一步为开始节点
+            result.setPrUser(flowTask.getFlowInstance().getCreatedBy());
+            result.setPreCreateTime(flowTask.getFlowInstance().getCreatedDate());
+            result.setPrOpinion("流程启动");
+        }else{
+            result.setPrUser(preFlowTask.getExecutorAccount()+"["+preFlowTask.getExecutorName()+"]");
+            result.setPreCreateTime(preFlowTask.getCreatedDate());
+            result.setPrOpinion(preFlowTask.getDepict());
+        }
+        return result;
+    }
+
+    public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException{
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String businessId = flowTask.getFlowInstance().getBusinessId();
+        return this.findNextNodes(id,businessId);
     }
 }
