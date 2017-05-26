@@ -59,7 +59,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //loadonce:true,
-                url: _ctxPath + "/builtInApprove/listDefBusinessModel",
+                url: _ctxPath + "/builtInApprove/list",
                 // postData: {
                 //     S_createdDate: "ASC"
                 // },
