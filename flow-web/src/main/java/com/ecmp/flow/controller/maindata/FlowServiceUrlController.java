@@ -2,12 +2,17 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
+import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,12 +53,11 @@ public class FlowServiceUrlController {
      */
     @RequestMapping(value = "listServiceUrl")
     @ResponseBody
-    public String listServiceUrl(String busModelId) throws ParseException {
-        OperateStatus status = OperateStatus.defaultSuccess();
+    public String listServiceUrl(ServletRequest request) throws ParseException {
+        Search search = SearchUtil.genSearch(request);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
-        List<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByBusinessModelId(busModelId);
-        status.setData(flowServiceUrlPageResult);
-        return JsonUtil.serialize(status);
+        PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
+        return JsonUtil.serialize(flowServiceUrlPageResult);
     }
 
     /**
