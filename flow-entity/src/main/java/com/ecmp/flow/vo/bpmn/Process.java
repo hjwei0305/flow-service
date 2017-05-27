@@ -2,6 +2,9 @@ package com.ecmp.flow.vo.bpmn;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
@@ -25,6 +28,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Process extends BaseNode implements Serializable {
     private static final long serialVersionUID = 1L;
+    private final Logger logger = LoggerFactory.getLogger(Process.class);
 
     /**
      * 流程名
@@ -120,30 +124,69 @@ public class Process extends BaseNode implements Serializable {
                     case "EndEvent":
                         endEvent.add((EndEvent) JSONObject.toBean(node, EndEvent.class));
                         break;
-                    case "UserTask":
-                    {
-                       UserTask userTaskTemp = (UserTask) JSONObject.toBean(node, UserTask.class);
-                       if("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())){
-                           userTaskTemp.setAssignee("${"+userTaskTemp.getId()+"_Normal}");
-                        }else if("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
-                           userTaskTemp.setCandidateUsers("${"+userTaskTemp.getId()+"_SingleSign}");
+                    case "UserTask": {
+                        UserTask userTaskTemp = (UserTask) JSONObject.toBean(node, UserTask.class);
+                        if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            userTaskTemp.setAssignee("${" + userTaskTemp.getId() + "_Normal}");
+                        } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            userTaskTemp.setCandidateUsers("${" + userTaskTemp.getId() + "_SingleSign}");
+                        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+                            multiInstanceConfig.setUserIds("${" + userTaskTemp.getId() + "_List_CounterSign}");
+                            multiInstanceConfig.setVariable("${" + userTaskTemp.getId() + "_CounterSign}");
+                            userTaskTemp.setConfig(multiInstanceConfig);
+
+                            ExtensionElement extensionElement = new ExtensionElement();
+                            //添加默认任务监听器
+                            TaskListener taskListener = new TaskListener();
+                            taskListener.setEvent("complete");
+                            taskListener.setDelegateExpression("${commonCounterSignCompleteListener}");
+                            List<TaskListener> taskListeners = new ArrayList<TaskListener>();
+                            taskListeners.add(taskListener);
+                            extensionElement.setTaskListener(taskListeners);
+                            userTaskTemp.setExtensionElement(extensionElement);
+
                         }
-                        else if("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())){
-                           MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
-                           multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
-                           multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
-                           userTaskTemp.setConfig(multiInstanceConfig);
-
-                           ExtensionElement extensionElement = new ExtensionElement();
-                           //添加默认任务监听器
-                           TaskListener taskListener = new TaskListener();
-                           taskListener.setEvent("complete");
-                           taskListener.setDelegateExpression("${commonCounterSignCompleteListener}");
-                           List<TaskListener> taskListeners = new ArrayList<TaskListener>();
-                           taskListeners.add(taskListener);
-                           extensionElement.setTaskListener(taskListeners);
-                           userTaskTemp.setExtensionElement(extensionElement);
-
+                        //添加自定义事件监听
+                        try {
+                            net.sf.json.JSONObject event = node.getJSONObject("nodeConfig").getJSONObject("event");
+                            if (event != null) {
+                                String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
+                                ExtensionElement extensionElement  = userTaskTemp.getExtensionElement();
+                                if(extensionElement == null){
+                                    extensionElement = new ExtensionElement();
+                                }
+                                if(!StringUtils.isEmpty(beforeExcuteServiceId)){
+                                    //添加默认任务创建监听器
+                                    TaskListener taskListener = new TaskListener();
+                                    taskListener.setEvent("create");
+                                    taskListener.setDelegateExpression("${commonUserTaskCreateListener}");
+                                    List<TaskListener> taskListeners = extensionElement.getTaskListener();
+                                    if(taskListeners == null){
+                                        taskListeners = new ArrayList<TaskListener>();
+                                    }
+                                    taskListeners.add(taskListener);
+                                    extensionElement.setTaskListener(taskListeners);
+                                    userTaskTemp.setExtensionElement(extensionElement);
+                                }
+                                String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
+                                if(!StringUtils.isEmpty(afterExcuteServiceId)){
+                                    //添加默认任务完成监听器
+                                    TaskListener taskListener = new TaskListener();
+                                    taskListener.setEvent("complete");
+                                    taskListener.setDelegateExpression("${commonUserTaskCompleteListener}");
+                                    List<TaskListener> taskListeners = extensionElement.getTaskListener();
+                                    if(taskListeners == null){
+                                        taskListeners = new ArrayList<TaskListener>();
+                                    }
+                                    taskListeners.add(taskListener);
+                                    extensionElement.setTaskListener(taskListeners);
+                                    userTaskTemp.setExtensionElement(extensionElement);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            logger.error(e.getMessage());
                         }
                         userTask.add(userTaskTemp);
                         break;
