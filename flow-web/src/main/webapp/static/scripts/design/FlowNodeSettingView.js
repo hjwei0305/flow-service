@@ -7,6 +7,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     nodeType: null,
     afterConfirm: null,
     businessModelId: null,
+    flowTypeId: null,
 
     initComponent: function () {
         this.window = EUI.Window({
@@ -40,11 +41,11 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             var id = $(this).attr("id");
             var grid;
             if (userType == "Position") {
-                grid = EUI.getCmp("positionGrid").getGridData();
+                grid = EUI.getCmp("positionGrid");
             } else if (userType == "PositionType") {
-                grid = EUI.getCmp("positionTypeGrid").getGridData();
+                grid = EUI.getCmp("positionTypeGrid");
             } else if (userType == "SelfDefinition") {
-                grid = EUI.getCmp("selfDefGrid").getGridData();
+                grid = EUI.getCmp("selfDefGrid");
             }
             grid.deleteRow(id);
         });
@@ -155,11 +156,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             xtype: "FormPanel",
             title: "执行人",
             height: 375,
+            width: 535,
             id: "excutor",
             itemspace: 0,
             items: [{
                 xtype: "Container",
                 height: 65,
+                width: 532,
                 padding: 0,
                 border: false,
                 items: [this.initUserTypeGroup()]
@@ -172,7 +175,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 hidden: true,
                 defaultConfig: {
                     border: true,
-                    height: 240
+                    height: 240,
+                    width: 520,
                 },
                 items: [{
                     xtype: "ToolBar",
@@ -244,7 +248,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    showChooseUserGrid: function (userType) {
+    showChooseUserGrid: function (userType, rowdata) {
         if (userType == "StartUser") {
             var grid = EUI.getCmp("gridBox");
             grid && grid.hide();
@@ -255,6 +259,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDefGrid").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位");
+            if (rowdata) {
+                EUI.getCmp("positionGrid").setDataInGrid(rowdata);
+            }
         }
         else if (userType == "PositionType") {
             EUI.getCmp("gridBox").show();
@@ -262,12 +269,18 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").show();
             EUI.getCmp("selfDefGrid").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位类别");
+            if (rowdata) {
+                EUI.getCmp("positionTypeGrid").setDataInGrid(rowdata);
+            }
         } else if (userType == "SelfDefinition") {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDefGrid").show();
             EUI.getCmp("chooseBtn").setTitle("选择自定义执行人");
+            if (rowdata) {
+                EUI.getCmp("selfDefGrid").setDataInGrid(rowdata);
+            }
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();
         }
@@ -289,7 +302,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 store: {
                     url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                     params: {
-                        "Q_EQ_businessModel.id": this.businessModelId
+                        "busModelId": this.businessModelId
                     }
                 },
                 reader: {
@@ -307,7 +320,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 store: {
                     url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                     params: {
-                        "Q_EQ_businessModel.id": this.businessModelId
+                        "busModelId": this.businessModelId
                     }
                 },
                 reader: {
@@ -476,7 +489,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "GridPanel",
                 id: "selPositionGrid",
                 gridCfg: {
-                    loadonce: true,
+                    hasPager: false,
                     multiselect: true,
                     url: _ctxPath + "/design/listPos",
                     colModel: this.positionGridColModel()
@@ -495,7 +508,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var data = EUI.getCmp("selPositionTypeGrid").getSelectRow();
-                    EUI.getCmp("positionTypeGrid").setDataInGrid(data);
+                    EUI.getCmp("positionTypeGrid").addRowData(data);
                     win.close();
                 }
             }, {
@@ -508,10 +521,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "GridPanel",
                 id: "selPositionTypeGrid",
                 gridCfg: {
-                    loadonce: true,
                     multiselect: true,
                     hasPager: false,
-                    // url: _ctxPath + "/design/listPosType",
+                    url: _ctxPath + "/design/listPosType",
                     colModel: [{
                         name: "id",
                         index: "id",
@@ -524,169 +536,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name"
-                    }],
-                    data: [{
-                        "id": "07F93AFF-3B91-11E7-B2C2-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495087975000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495087975000,
-                        "code": "10009",
-                        "name": "技术岗",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "0D953B30-3B91-11E7-B2C2-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495087984000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495087984000,
-                        "code": "10010",
-                        "name": "管理岗",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "13087EB1-3B91-11E7-B2C2-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495087993000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495087993000,
-                        "code": "10011",
-                        "name": "总裁/总经理/CEO",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "2B63799B-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": null,
-                        "createdDate": null,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495090432000,
-                        "code": "10013",
-                        "name": "市场助理",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "32F99D1D-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088906000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088906000,
-                        "code": "10014",
-                        "name": "虹信系统管理员",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "337F4A27-3B97-11E7-BF86-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495090625000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495090625000,
-                        "code": "10023",
-                        "name": "程序员/软件工程师",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "340FB1F2-3B91-11E7-B2C2-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088049000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088049000,
-                        "code": "10012",
-                        "name": "财务复核",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "3E6EF69E-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088925000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088925000,
-                        "code": "10015",
-                        "name": "虹信财务扫描",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "47645B00-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088940000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088940000,
-                        "code": "10016",
-                        "name": "虹微高级管理岗",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "4D402451-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088950000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088950000,
-                        "code": "10017",
-                        "name": "华润雪花系统管理员",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "5466E432-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495088962000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495088962000,
-                        "code": "10018",
-                        "name": "电商-总经理",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "6DDBD258-3B98-11E7-BF86-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495091152000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495091152000,
-                        "code": "10024",
-                        "name": "系统分析员",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "76028F44-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495089018000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495089018000,
-                        "code": "10019",
-                        "name": "BRM-董事长-长智光电",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "7E36195E-3B95-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495089891000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495089891000,
-                        "code": "10022",
-                        "name": "网络工程师",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "7E36A076-3B93-11E7-A16A-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495089032000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495089032000,
-                        "code": "10020",
-                        "name": "虹信系统管理员",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "c0a80171-5bcd-1066-815b-cd85c58f0004",
-                        "createdBy": null,
-                        "createdDate": null,
-                        "lastModifiedBy": "anonymous",
-                        "lastModifiedDate": 1493960842000,
-                        "code": "10005",
-                        "name": "有限公司部门领导(正职)",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "c0a80171-5bcd-1066-815b-cd85ea570005",
-                        "createdBy": "anonymous",
-                        "createdDate": 1493801757000,
-                        "lastModifiedBy": "anonymous",
-                        "lastModifiedDate": 1493801757000,
-                        "code": "10006",
-                        "name": "有限公司部门领导(副职)",
-                        "tenantCode": "10011"
-                    }, {
-                        "id": "FF8E896E-3B90-11E7-B2C2-9681B6E77C6A",
-                        "createdBy": "10011,anonymous[anonymous]",
-                        "createdDate": 1495087961000,
-                        "lastModifiedBy": "10011,anonymous[anonymous]",
-                        "lastModifiedDate": 1495087961000,
-                        "code": "10008",
-                        "name": "SPM-HX-中心副总监",
-                        "tenantCode": "10011"
                     }]
                 }
             }]
@@ -747,12 +596,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         if (userType == "Position") {
             rowdata = EUI.getCmp("positionGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         } else if (userType == "PositionType") {
             rowdata = EUI.getCmp("positionTypeGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         } else if (userType == "SelfDefinition") {
             rowdata = EUI.getCmp("selfDefGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         }
         return data;
     },
@@ -775,7 +627,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var userType = this.data.executor.userType;
         var userTypeCmp = EUI.getCmp("userType");
         userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType);
+        this.showChooseUserGrid(userType, this.data.executor.rowdata);
     }
 })
 ;

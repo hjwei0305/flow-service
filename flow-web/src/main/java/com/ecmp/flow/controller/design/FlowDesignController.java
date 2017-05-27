@@ -12,7 +12,6 @@ import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
@@ -61,6 +60,12 @@ public class FlowDesignController {
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         definition.setDefJson(def);
+//        net.sf.json.JSONObject test= definition.getProcess().getNodes().getJSONObject("UserTask_1");
+//        net.sf.json.JSONObject executor= test.getJSONObject("nodeConfig").getJSONObject("executor");
+//         if(executor!=null){
+//            String userType = (String)executor.get("userType");
+//            String ids = (String)executor.get("ids");
+//         }
         if (deploy == false) {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
@@ -72,10 +77,10 @@ public class FlowDesignController {
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
             String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
-            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(), "admin", "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7", null);
+//            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(), "admin", "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7", null);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
-            status.setData(flowInstance.getId());
+            status.setData(deployById);
         }
         return JsonUtil.serialize(status);
     }
@@ -135,7 +140,7 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPosType")
-    public String listPositonType(){
+    public String listPositonType(String notInIds){
         IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
         List<PositionCategory> data = proxy.findAll();
         return JsonUtil.serialize(data);

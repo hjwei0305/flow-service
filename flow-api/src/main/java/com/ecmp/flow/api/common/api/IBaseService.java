@@ -1,5 +1,8 @@
 package com.ecmp.flow.api.common.api;
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.ApiOperation;
@@ -51,12 +54,12 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
      * @param entity 实体
      * @return 保存后的实体
      */
-//    @POST
-//    @Path("save")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-//    OperateResultWithData<T> save(T entity);
+    @POST
+    @Path("save")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    OperateResultWithData<T> save(T entity);
 
 //    /**
 //     * 删除一个实体
@@ -103,4 +106,16 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID集合删除实体集",notes = "测试 通过ID集合删除实体集")
     public void delete(Collection<ID> ids);
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<T> findByPage(Search searchConfig);
 }

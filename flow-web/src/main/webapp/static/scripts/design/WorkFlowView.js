@@ -258,7 +258,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
                 dragDom.attr("id", type + "_" + g.count);
-
                 g.count++;
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
@@ -515,6 +514,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < nodes.length; i++) {
             var item = $(nodes[i]);
             var id = item.attr("id");
+            var nodeConfig = item.data();
+            delete nodeConfig.rowdata;
             var node = {
                 type: item.attr("type"),
                 x: item.position().left - parentPos.left + 6,
@@ -523,7 +524,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 nodeType: item.attr("nodeType"),
                 target: [],
                 name: item.find(".node-title").text(),
-                nodeConfig: item.data()
+                nodeConfig: nodeConfig
             };
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {

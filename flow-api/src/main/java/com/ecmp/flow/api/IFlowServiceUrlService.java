@@ -58,9 +58,21 @@ public interface IFlowServiceUrlService extends IBaseService<FlowServiceUrl, Str
      * @return 服务方法list
      */
     @GET
-    @Path("findByFlowTypeId")
+    @Path("findByFlowTypeId/{flowTypeId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程类型id查找拥有的服务方法",notes = "测试")
-    public List<FlowServiceUrl> findByFlowTypeId(String flowTypeId);
+    public List<FlowServiceUrl> findByFlowTypeId(@PathParam("flowTypeId")String flowTypeId);
+
+    /**
+     * 通过业务实体id查找拥有的服务方法
+     * @param businessModelId 业务实体id
+     * @return 服务方法list
+     */
+    @GET
+    @Path("findByBusinessModelId/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体id查找拥有的服务方法",notes = "测试")
+    public List<FlowServiceUrl> findByBusinessModelId(@PathParam("businessModelId") String businessModelId);
 }

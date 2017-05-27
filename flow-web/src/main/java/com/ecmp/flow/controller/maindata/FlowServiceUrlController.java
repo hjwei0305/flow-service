@@ -2,9 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -50,11 +48,12 @@ public class FlowServiceUrlController {
      */
     @RequestMapping(value = "listServiceUrl")
     @ResponseBody
-    public String listServiceUrl(ServletRequest request) throws ParseException {
-        Search search = SearchUtil.genSearch(request);
+    public String listServiceUrl(String busModelId) throws ParseException {
+        OperateStatus status = OperateStatus.defaultSuccess();
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
-        PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowServiceUrlPageResult);
+        List<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByBusinessModelId(busModelId);
+        status.setData(flowServiceUrlPageResult);
+        return JsonUtil.serialize(status);
     }
 
     /**

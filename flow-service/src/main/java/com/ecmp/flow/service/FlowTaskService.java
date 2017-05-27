@@ -11,6 +11,7 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowVariableDao;
 import com.ecmp.flow.entity.*;
@@ -19,10 +20,12 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import jodd.util.StringUtil;
 import net.sf.json.JSONObject;
 import org.activiti.engine.history.*;
@@ -50,6 +53,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.ws.rs.PathParam;
 import java.util.*;
 
 /**
@@ -123,11 +127,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public OperateResult complete(FlowTaskCompleteVO flowTaskCompleteVO) {
+    public OperateResultWithData complete(FlowTaskCompleteVO flowTaskCompleteVO) {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
         List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
-        OperateResult result = null;
+        OperateResultWithData result = null;
         if (manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()) {//非人工选择任务的情况
             result = this.complete(taskId, variables);
         } else {//人工选择任务的情况
@@ -185,7 +189,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
-    private OperateResult complete(String id, Map<String, Object> variables) {
+    private OperateResultWithData complete(String id, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         this.completeActiviti(actTaskId, variables);
@@ -263,7 +267,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
         }
-        OperateResult result = OperateResult.OperationSuccess("core_00003");
+
+        OperateResultWithData result = OperateResultWithData.OperationSuccess("core_00003");
+        if(instance.isEnded()){
+            result.setData(FlowStatus.COMPLETED);//任务结束
+        }
         return result;
     }
 
@@ -1308,5 +1316,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         return qualifiedNode;
+    }
+
+    public ApprovalHeaderVO getApprovalHeaderVO(String id){
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String preId = flowTask.getPreId();
+        FlowHistory preFlowTask = null;
+        ApprovalHeaderVO result= new ApprovalHeaderVO();
+        result.setBusinessId(flowTask.getFlowInstance().getBusinessId());
+        result.setCreateUser(flowTask.getFlowInstance().getCreatedBy());
+        result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
+        if(!StringUtils.isEmpty(preId)){
+             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
+        }
+        if(preFlowTask == null){//如果没有上一步任务信息,默认上一步为开始节点
+            result.setPrUser(flowTask.getFlowInstance().getCreatedBy());
+            result.setPreCreateTime(flowTask.getFlowInstance().getCreatedDate());
+            result.setPrOpinion("流程启动");
+        }else{
+            result.setPrUser(preFlowTask.getExecutorAccount()+"["+preFlowTask.getExecutorName()+"]");
+            result.setPreCreateTime(preFlowTask.getCreatedDate());
+            result.setPrOpinion(preFlowTask.getDepict());
+        }
+        return result;
+    }
+
+    public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException{
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String businessId = flowTask.getFlowInstance().getBusinessId();
+        return this.findNextNodes(id,businessId);
     }
 }
