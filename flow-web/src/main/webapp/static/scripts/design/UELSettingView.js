@@ -10,7 +10,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.window = EUI.Window({
             width: 710,
-            height: 500,
+            height: 450,
             padding: 10,
             title: this.title,
             buttons: this.getButtons(),
@@ -85,7 +85,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "TextArea",
                 width: 489,
-                height: 140,
+                height: 120,
                 id: "logicUel",
                 style: {
                     "margin-left": "10px"
@@ -105,7 +105,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "TextArea",
                 width: 489,
-                height: 140,
+                height: 120,
                 name: "groovyUel",
                 style: {
                     "margin-left": "10px"

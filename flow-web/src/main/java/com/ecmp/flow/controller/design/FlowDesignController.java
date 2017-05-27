@@ -9,9 +9,11 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -155,5 +158,21 @@ public class FlowDesignController {
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
         List<Position> data = proxy.findAll();
         return JsonUtil.serialize(data);
+    }
+
+    /**
+     * 查询流程服务地址
+     * @param request
+     * @return 服务地址清单
+     * @throws ParseException
+     */
+    @RequestMapping(value = "listAllServiceUrl")
+    @ResponseBody
+    public String listServiceUrl(String busModelId) throws ParseException {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
+        List<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByBusinessModelId(busModelId);
+        status.setData(flowServiceUrlPageResult);
+        return JsonUtil.serialize(status);
     }
 }

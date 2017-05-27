@@ -300,7 +300,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 width: 220,
                 store: {
-                    url: _ctxPath + "/flowServiceUrl/listServiceUrl",
+                    url: _ctxPath + "/design/listAllServiceUrl",
                     params: {
                         "busModelId": this.businessModelId
                     }
@@ -318,7 +318,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 width: 220,
                 store: {
-                    url: _ctxPath + "/flowServiceUrl/listServiceUrl",
+                    url: _ctxPath + "/design/listAllServiceUrl",
                     params: {
                         "busModelId": this.businessModelId
                     }
