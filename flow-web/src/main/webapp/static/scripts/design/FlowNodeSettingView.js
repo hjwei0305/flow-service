@@ -7,6 +7,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     nodeType: null,
     afterConfirm: null,
     businessModelId: null,
+    flowTypeId: null,
 
     initComponent: function () {
         this.window = EUI.Window({
@@ -155,11 +156,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             xtype: "FormPanel",
             title: "执行人",
             height: 375,
+            width: 535,
             id: "excutor",
             itemspace: 0,
             items: [{
                 xtype: "Container",
                 height: 65,
+                width: 532,
                 padding: 0,
                 border: false,
                 items: [this.initUserTypeGroup()]
@@ -172,7 +175,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 hidden: true,
                 defaultConfig: {
                     border: true,
-                    height: 240
+                    height: 240,
+                    width: 520,
                 },
                 items: [{
                     xtype: "ToolBar",
@@ -244,7 +248,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    showChooseUserGrid: function (userType) {
+    showChooseUserGrid: function (userType, rowdata) {
         if (userType == "StartUser") {
             var grid = EUI.getCmp("gridBox");
             grid && grid.hide();
@@ -255,6 +259,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDefGrid").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位");
+            if (rowdata) {
+                EUI.getCmp("positionGrid").setDataInGrid(rowdata);
+            }
         }
         else if (userType == "PositionType") {
             EUI.getCmp("gridBox").show();
@@ -262,12 +269,18 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").show();
             EUI.getCmp("selfDefGrid").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位类别");
+            if (rowdata) {
+                EUI.getCmp("positionTypeGrid").setDataInGrid(rowdata);
+            }
         } else if (userType == "SelfDefinition") {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDefGrid").show();
             EUI.getCmp("chooseBtn").setTitle("选择自定义执行人");
+            if (rowdata) {
+                EUI.getCmp("selfDefGrid").setDataInGrid(rowdata);
+            }
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();
         }
@@ -289,7 +302,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 store: {
                     url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                     params: {
-                        "Q_EQ_businessModel.id": this.businessModelId
+                        "busModelId": this.businessModelId
                     }
                 },
                 reader: {
@@ -307,7 +320,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 store: {
                     url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                     params: {
-                        "Q_EQ_businessModel.id": this.businessModelId
+                        "busModelId": this.businessModelId
                     }
                 },
                 reader: {
@@ -476,7 +489,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "GridPanel",
                 id: "selPositionGrid",
                 gridCfg: {
-                    hasPager:false,
+                    hasPager: false,
                     multiselect: true,
                     url: _ctxPath + "/design/listPos",
                     colModel: this.positionGridColModel()
@@ -583,12 +596,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         if (userType == "Position") {
             rowdata = EUI.getCmp("positionGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         } else if (userType == "PositionType") {
             rowdata = EUI.getCmp("positionTypeGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         } else if (userType == "SelfDefinition") {
             rowdata = EUI.getCmp("selfDefGrid").getGridData();
             data.ids = this.getSelectIds(rowdata);
+            data.rowdata = rowdata;
         }
         return data;
     },
@@ -611,7 +627,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var userType = this.data.executor.userType;
         var userTypeCmp = EUI.getCmp("userType");
         userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType);
+        this.showChooseUserGrid(userType, this.data.executor.rowdata);
     }
 })
 ;
