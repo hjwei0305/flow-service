@@ -16,6 +16,7 @@ war{
 
 // 依赖
 dependencies {
+    compile project(':flow-common-web')
     compile project(':flow-api')
     compile(
             "com.ecmp:core-web:1.+",

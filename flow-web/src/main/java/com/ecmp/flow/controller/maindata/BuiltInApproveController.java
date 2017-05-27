@@ -8,6 +8,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
+import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel;
@@ -47,7 +48,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/builtInApprove")
-public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService,DefaultBusinessModel>{
+public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService,DefaultBusinessModel> {
 
 
     public BuiltInApproveController(){
