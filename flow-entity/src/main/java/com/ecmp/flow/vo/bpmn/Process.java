@@ -28,7 +28,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Process extends BaseNode implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final Logger logger = LoggerFactory.getLogger(Process.class);
+//    private final Logger logger = LoggerFactory.getLogger(Process.class);
 
     /**
      * 流程名
@@ -186,7 +186,7 @@ public class Process extends BaseNode implements Serializable {
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            logger.error(e.getMessage());
+//                            logger.error(e.getMessage());
                         }
                         userTask.add(userTaskTemp);
                         break;
