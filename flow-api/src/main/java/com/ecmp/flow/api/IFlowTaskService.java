@@ -129,11 +129,25 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @throws NoSuchMethodException
      */
     @POST
-    @Path("findNextNodes/{id}/{businessId}")
+    @Path("findNextNodesWithBusinessId/{id}/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
     public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
+
+
+    /**
+     * 选择下一步执行的节点信息
+     * @param id 任务ID
+     * @return
+     * @throws NoSuchMethodException
+     */
+    @POST
+    @Path("findNextNodes/{id}/{businessId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
+    public List<NodeInfo> findNextNodes(@PathParam("id")String id) throws NoSuchMethodException;
 
 
     /**
@@ -163,6 +177,21 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
     public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id) throws NoSuchMethodException;
+
+
+    /**
+     * 只通过任务ID选择下一步带用户信息的执行的节点信息
+     * @param id 任务ID
+     * @param includeNodeIds 只包含此节点
+     * @return
+     * @throws NoSuchMethodException
+     */
+    @POST
+    @Path("findNexNodesByIdWithUserSetAndNodeIds/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
+    public List<NodeInfo> findNexNodesWithUserSet(String id,List<String> includeNodeIds) throws NoSuchMethodException;
 
     /**
      *

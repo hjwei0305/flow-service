@@ -188,6 +188,46 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     public String nextNodesInfo(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
+        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+            operateStatus = new OperateStatus(true,"成功");
+            operateStatus.setData(nodeInfoList);
+        }else {
+            operateStatus =  new OperateStatus(false, "不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 获取下一步的节点信息任务
+     * @param taskId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "getSelectedNodesInfo")
+    @ResponseBody
+    public String getSelectedNodesInfo(String taskId,List<String> includeNodeIds) throws NoSuchMethodException {
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,includeNodeIds);
+        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+            operateStatus = new OperateStatus(true,"成功");
+            operateStatus.setData(nodeInfoList);
+        }else {
+            operateStatus =  new OperateStatus(false, "不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 获取下一步的节点信息任务(带用户信息)
+     * @param taskId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "nextNodesInfoWithUser")
+    @ResponseBody
+    public String nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
         if(nodeInfoList != null && !nodeInfoList.isEmpty()){
             operateStatus = new OperateStatus(true,"成功");

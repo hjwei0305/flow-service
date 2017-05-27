@@ -1003,7 +1003,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws NoSuchMethodException
      */
     public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId) throws NoSuchMethodException {
-        List<NodeInfo> nodeInfoList = this.findNextNodes(id, businessId);
+        return this.findNexNodesWithUserSet(id,businessId,null);
+    }
+
+    /**
+     * 获取出口节点信息（带初始化流程设计器配置用户）
+     *
+     * @param id
+     * @param businessId
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
+        List<NodeInfo> nodeInfoList = this.findNextNodes(id, businessId,includeNodeIds);
+
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             FlowTask flowTask = flowTaskDao.findOne(id);
             String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
@@ -1077,6 +1090,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return nodeInfoList;
     }
 
+
+    public List<NodeInfo> findNextNodes(String id) throws NoSuchMethodException{
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String businessId = flowTask.getFlowInstance().getBusinessId();
+        return this.findNextNodes(id,businessId);
+    }
     /**
      * 选择下一步执行的节点信息
      *
@@ -1085,6 +1104,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws NoSuchMethodException
      */
     public List<NodeInfo> findNextNodes(String id, String businessId) throws NoSuchMethodException {
+          return this.findNexNodesWithUserSet(id,businessId,null);
+    }
+    /**
+     * 选择下一步执行的节点信息
+     *
+     * @param id
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNextNodes(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         if (checkHasConditon(actTaskId)) {//判断出口任务节点中是否包含有条件表达式
@@ -1101,11 +1130,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String clientApiBaseUrl = appModule.getApiBaseAddress();
             clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
             Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-            return this.selectQualifiedNode(actTaskId, v);
+            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
         } else {
-            return this.selectNextAllNodes(actTaskId);
+            return this.selectNextAllNodes(actTaskId, includeNodeIds);
         }
     }
+
 
     /**
      * 获取所有出口节点信息
@@ -1113,7 +1143,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param actTaskId
      * @return
      */
-    private List<NodeInfo> selectNextAllNodes(String actTaskId) {
+    private List<NodeInfo> selectNextAllNodes(String actTaskId,List<String> includeNodeIds) {
         PvmActivity currActivity = this.getActivitNode(actTaskId);
         List<PvmActivity> nextNodes = new ArrayList<PvmActivity>();
         initNextNodes(currActivity, nextNodes);
@@ -1128,6 +1158,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = nextNodes.get(i);
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType("radiobox");
@@ -1139,6 +1174,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = nextNodes.get(i);
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType("checkbox");
@@ -1150,6 +1190,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = nextNodes.get(i);
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType("readOnly");
@@ -1161,6 +1206,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = nextNodes.get(i);
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType("readOnly");
@@ -1168,6 +1218,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 } else {//按照惟一分支任务处理，显示一个，只读
                     PvmActivity tempActivity = nextNodes.get(0);
+                    if(includeNodeIds != null){
+                        if(!includeNodeIds.contains(tempActivity.getId())){
+                            throw new RuntimeException("惟一分支未选中");
+                        }
+                    }
                     NodeInfo tempNodeInfo = new NodeInfo();
                     tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                     tempNodeInfo.setUiType("readOnly");
@@ -1301,7 +1356,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws SecurityException
      * @throws NoSuchMethodException
      */
-    private List<NodeInfo> selectQualifiedNode(String actTaskId, Map<String, Object> v)
+    private List<NodeInfo> selectQualifiedNode(String actTaskId, Map<String, Object> v,List<String> includeNodeIds)
             throws NoSuchMethodException, SecurityException {
         List<NodeInfo> qualifiedNode = new ArrayList<NodeInfo>();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
@@ -1311,6 +1366,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (!results.isEmpty()) {
             for (PvmActivity tempActivity : results) {
                 NodeInfo tempNodeInfo = new NodeInfo();
+                if(includeNodeIds != null){
+                    if(!includeNodeIds.contains(tempActivity.getId())){
+                        continue;
+                    }
+                }
                 tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                 qualifiedNode.add(tempNodeInfo);
             }
@@ -1344,6 +1404,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException{
         FlowTask flowTask = flowTaskDao.findOne(id);
         String businessId = flowTask.getFlowInstance().getBusinessId();
-        return this.findNextNodes(id,businessId);
+        return this.findNexNodesWithUserSet(id,businessId);
+    }
+
+    public List<NodeInfo> findNexNodesWithUserSet(String id,List<String> includeNodeIds) throws NoSuchMethodException{
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String businessId = flowTask.getFlowInstance().getBusinessId();
+        List<NodeInfo> result = this.findNexNodesWithUserSet(id,businessId,includeNodeIds);
+        return result;
     }
 }
