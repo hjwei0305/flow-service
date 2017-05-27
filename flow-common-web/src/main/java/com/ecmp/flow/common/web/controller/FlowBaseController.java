@@ -15,6 +15,7 @@ import com.ecmp.flow.entity.AbstractBusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,14 +143,26 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId,String businessId,List<String> manualSelectedNodeIds,Map<String,Object> v) {
+    public String completeTask(String taskId, String businessId, List<FlowTaskCompleteWebVO> FlowTaskCompleteList) {
         IBaseService  baseService =  ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V)baseService.findOne(businessId);
         if(defaultBusinessModel != null){
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
-            flowTaskCompleteVO.setManualSelectedNodeIds(manualSelectedNodeIds);
+            List<String> selectedNodeIds = new ArrayList<String>();
+            Map<String,Object> v = new HashMap<String,Object>();
+            for(FlowTaskCompleteWebVO f  :FlowTaskCompleteList){
+                selectedNodeIds.add(f.getNodeId());
+               String flowTaskType = f.getFlowTaskType();
+               if("common".equalsIgnoreCase(flowTaskType)){
+                   v.put(f.getUserVarName(),f.getUserIds());
+               }else{
+                   String[] idArray = f.getUserIds().split(",");
+                   v.put(f.getUserVarName(),idArray);
+               }
+            }
+            flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
           //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
