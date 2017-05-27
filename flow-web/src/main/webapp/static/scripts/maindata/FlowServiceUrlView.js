@@ -2,6 +2,8 @@
  * 显示页面
  */
 EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
+    businessModelId: "",
+    businessModelName: "",
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -20,9 +22,49 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            isOverFlow:false,
+            isOverFlow: false,
             border: false,
             items: [{
+                xtype: "ComboBox",
+                title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                id: "coboId",
+                async: false,
+                colon: false,
+                labelWidth: 70,
+                store: {
+                    url: _ctxPath + "/flowType/listAllBusinessModel"
+                },
+                reader: {
+                    name: "name",
+                    filed: ["id"]
+                },
+                afterLoad: function (data) {
+                    if (!data) {
+                        return;
+                    }
+                    var cobo = EUI.getCmp("coboId");
+                    cobo.setValue(data[0].name);
+                    g.businessModelId = data[0].id;
+                    g.businessModelName = data[0].name;
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/flowServiceUrl/listServiceUrl",
+                        loadonce: false,
+                        datatype: "json",
+                        postData: {
+                            "Q_EQ_businessModel.id": data[0].id
+                        }
+                    }, true)
+                },
+                afterSelect: function (data) {
+                    g.businessModel = data.data.id;
+                    g.businessModelName = data.data.name;
+                    EUI.getCmp("gridPanel").setPostParams({
+                            "Q_EQ_businessModel.id": data.data.id
+                        }
+                    ).trigger("reloadGrid");
+                }
+
+            }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
                 selected: true,
@@ -58,12 +100,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 "border-reduis": "3px"
             },
             gridCfg: {
-                //     loadonce:true,
-                url: _ctxPath +"/flowServiceUrl/listServiceUrl",
-                postData: {
-                    //  Q_EQ_code : "1",
-                    S_code: "ASC"
-                },
+                loadonce: true,
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -89,7 +126,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     index: "name"
                 }, {
-                    label: this.lang.urlText,
+                    label: "URL",
                     name: "url",
                     index: "url"
                 }, {
@@ -126,7 +163,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.nowDelMsgText
                         });
                         EUI.Store({
-                            url: _ctxPath +"/flowServiceUrl/delete",
+                            url: _ctxPath + "/flowServiceUrl/delete",
                             params: {
                                 id: rowData.id
                             },
@@ -174,6 +211,24 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "TextField",
+                    title: "业务实体ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: g.businessModel,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: "业务实体",
+                    readonly: true,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModelName",
+                    width: 220,
+                    value: g.businessModelName
+                },{
+                    xtype: "TextField",
                     title: g.lang.codeText,
                     labelWidth: 90,
                     allowBlank: false,
@@ -190,7 +245,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     value: data.name
                 }, {
                     xtype: "TextField",
-                    title: g.lang.urlText,
+                    title: "URL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "url",
@@ -238,6 +293,24 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
+                    title: "业务实体ID",
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: g.businessModel,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: "业务实体",
+                    readonly: true,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    name: "businessModelName",
+                    width: 220,
+                    value: g.businessModelName
+                },{
+                    xtype: "TextField",
                     title: g.lang.codeText,
                     labelWidth: 90,
                     allowBlank: false,
@@ -252,7 +325,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     width: 220
                 }, {
                     xtype: "TextField",
-                    title: g.lang.urlText,
+                    title: "URL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "url",
@@ -293,7 +366,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/flowServiceUrl/save",
+            url: _ctxPath + "/flowServiceUrl/save",
             params: data,
             success: function (result) {
                 myMask.hide();
