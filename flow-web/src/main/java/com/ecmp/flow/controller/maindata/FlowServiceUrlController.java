@@ -49,9 +49,11 @@ public class FlowServiceUrlController {
     @RequestMapping(value = "listServiceUrl")
     @ResponseBody
     public String listServiceUrl(String busModelId) throws ParseException {
+        OperateStatus status = OperateStatus.defaultSuccess();
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         List<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByBusinessModelId(busModelId);
-        return JsonUtil.serialize(flowServiceUrlPageResult);
+        status.setData(flowServiceUrlPageResult);
+        return JsonUtil.serialize(status);
     }
 
     /**
