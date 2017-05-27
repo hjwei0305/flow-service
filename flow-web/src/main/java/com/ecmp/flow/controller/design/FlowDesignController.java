@@ -12,10 +12,8 @@ import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -142,7 +140,7 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPosType")
-    public String listPositonType(){
+    public String listPositonType(String notInIds){
         IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
         List<PositionCategory> data = proxy.findAll();
         return JsonUtil.serialize(data);
