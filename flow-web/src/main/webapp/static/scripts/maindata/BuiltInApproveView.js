@@ -85,13 +85,13 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     label: "业务名称",
                     name: "name",
                     index: "name",
-                    width: '20%'
+                    width: '30%'
                 }, {
                     label: "当前流程状态",
                     name: "flowStatus",
                     index: "flowStatus",
                     hidden: false,
-                    width: '10%',
+                    width: '40%'
                 }, {
                     label: "组织机构代码",
                     name: "orgCode",
@@ -117,6 +117,16 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "priority",
                     index: "priority",
                     hidden: true
+                }, {
+                    label: "单价",
+                    name: "unitPrice",
+                    index: "unitPrice",
+                    width: '50%'
+                }, {
+                    label: "数量",
+                    name: "count",
+                    index: "count",
+                    width: '50%'
                 }, {
                     label: "工作说明",
                     name: "workCaption",
