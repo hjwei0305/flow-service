@@ -38,4 +38,29 @@ import java.lang.reflect.InvocationTargetException;
 @DynamicInsert
 @DynamicUpdate
 public class DefaultBusinessModel extends AbstractBusinessModel{
+    /**
+     * 单价
+     */
+    private double unitPrice;
+
+    /**
+     * 数量
+     */
+    private int count;
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 }

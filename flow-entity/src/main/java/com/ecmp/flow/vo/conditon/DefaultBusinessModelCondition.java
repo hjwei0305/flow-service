@@ -39,6 +39,15 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
         return customeInt;
     }
 
+    @ConditionAnnotaion(name="单价",rank = 3)
+    public double getUnitPrice() {
+        return super.getUnitPrice();
+    }
+    @ConditionAnnotaion(name="数量",rank = 4)
+    public int getCount() {
+        return super.getCount();
+    }
+
     public void setCustomeInt(Integer customeInt) {
         this.customeInt = customeInt;
     }
