@@ -27,6 +27,7 @@
     <jaxrs:server id="userResource" address="/">
         <jaxrs:serviceBeans>
            <!-- <bean class="com.ecmp.flow.service.AppModuleService"/>-->
+            <bean class="com.ecmp.flow.service.BusinessSelfDefEmployeeService"/>
             <bean class="com.ecmp.flow.service.BusinessModelService"/>
             <bean class="com.ecmp.flow.service.DefaultBusinessModelService"/>
             <bean class="com.ecmp.flow.service.FlowTypeService"/>

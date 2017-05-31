@@ -225,7 +225,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     EUI.Store({
                         url: _ctxPath + "/builtInApprove/startFlow",
                         params: {
-                            key:'tjTest255',
+                            key:'test888',
+                            //以后切换成业务实体或者流程类型
+                            //typeId:流程类型ID
+                            //businessModelId:业务实体ID
                             businessKey: data.id
                         },
                         success: function (result) {

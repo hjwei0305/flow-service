@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -119,7 +120,10 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         if(defaultBusinessModel != null){
             defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
             String startUserId = "admin";
-                    String startUserIdTest = ContextUtil.getSessionUser().getUserId();
+                    String startUserIdContext = ContextUtil.getSessionUser().getUserId();
+                    if(!StringUtils.isEmpty(startUserIdContext)){
+                        startUserId = startUserIdContext;
+                    }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String,Object> variables = new HashMap<String,Object>();//UserTask_1_Normal
             variables.put("UserTask_1_Normal",startUserId);

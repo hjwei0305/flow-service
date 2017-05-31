@@ -34,19 +34,22 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
     @ConditionAnnotaion(name="工作说明",rank = 1)
     public String getWorkCaption(){return super.getWorkCaption();}
 
+    @ConditionAnnotaion(name="单价",rank = 3)
+    public double getUnitPrice() {
+        return super.getUnitPrice();
+    }
+
+    @ConditionAnnotaion(name="数量",rank = 4)
+    public int getCount() {
+        return super.getCount();
+    }
+
     @ConditionAnnotaion(name="额外属性",rank = 2)
     public Integer getCustomeInt() {
         return customeInt;
     }
 
-    @ConditionAnnotaion(name="单价",rank = 3)
-    public double getUnitPrice() {
-        return super.getUnitPrice();
-    }
-    @ConditionAnnotaion(name="数量",rank = 4)
-    public int getCount() {
-        return super.getCount();
-    }
+
 
     public void setCustomeInt(Integer customeInt) {
         this.customeInt = customeInt;
@@ -56,6 +59,8 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
           this.setName("name");
           this.setId("id");
           this.setWorkCaption("work caption");
+          this.setCount(0);
+          this.setUnitPrice(0.0);
           this.setCustomeInt(0);
     }
 
