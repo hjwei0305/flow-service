@@ -52,7 +52,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 750,
+            width: 730,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -60,20 +60,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             id: "formPanel",
             border: false,
             defaultConfig: {
-                labelWidth: 90,
+                labelWidth: 85,
                 allowBlank: false,
             },
             items: [{
                 xtype: "TextField",
                 title: "流程名称",
-                labelWidth: 90,
+                labelWidth: 85,
                 allowBlank: false,
                 name: "name"
             }, {
                 xtype: "TextField",
                 name: "id",
-                width: 100,
-                labelWidth: 90,
+                width: 90,
+                labelWidth: 85,
                 allowBlank: false,
                 title: "流程代码"
             }, {
@@ -101,7 +101,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         index: "name"
                     }]
                 },
-                labelWidth: 90,
+                labelWidth: 85,
                 allowBlank: false,
                 afterSelect: function (data) {
                     g.businessModelId = data.data["businessModel.id"];
@@ -113,7 +113,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }]
         }, {
             xtype: "Button",
-            title: "设置流程启动条件",
+            title: "流程启动条件",
             id: "setStartUel",
             handler: function () {
                 if (!g.businessModelId) {
@@ -127,7 +127,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 new EUI.UELSettingView({
                     title: "流程启动条件",
                     data: this.startUEL,
-                    showName:false,
+                    showName: false,
                     businessModelId: g.businessModelId,
                     afterConfirm: function (data) {
                         scope.startUEL = data;
@@ -587,7 +587,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (status.success) {
                     var data = JSON.parse(status.data.defJson);
                     g.showDesign(data);
-                }else{
+                } else {
                     EUI.ProcessStatus(status);
                 }
             },
@@ -625,7 +625,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var id in data.process.nodes) {
             var node = data.process.nodes[id];
             for (var index in node.target) {
-                this.doConect(id, node.target[index].targetId);
+                var target = node.target[index];
+                this.doConect(id, target.targetId);
+                if (target.uel) {
+                    this.uelInfo[id + "," + target.targetId] = target.uel;
+                }
             }
         }
     },

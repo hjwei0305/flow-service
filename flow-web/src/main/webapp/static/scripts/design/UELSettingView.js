@@ -9,7 +9,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     properties: null,
 
     initComponent: function () {
-        var items,height = 450;
+        var items, height = 450;
         if (this.showName) {
             items = [this.initTop(), this.initLeft(), this.initCenter()];
         } else {
@@ -34,7 +34,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             this.loadData();
         }
     },
-    getTop: function () {
+    initTop: function () {
         return {
             region: "north",
             height: 40,
@@ -61,9 +61,17 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             selected: true,
             handler: function () {
                 var name;
-                if(g.showName){
+                if (g.showName) {
                     name = EUI.getCmp("name").getValue();
-                };
+                    if (!name) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: "请先输入表达式名称"
+                        });
+                        return;
+                    }
+                }
+                ;
                 var data = {
                     name: name,
                     logicUel: g.logicUelCmp.getValue(),
