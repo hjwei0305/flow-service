@@ -93,12 +93,16 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
     },
     showFindData:function () {
         var g = this;
+        var myMask=EUI.LoadMask({
+            msg:"正在加载，请稍后..."
+        });
         EUI.Store({
             url: _ctxPath + "/lookApproveBill/getApproveBill",
             params: {
                 id: EUI.util.getUrlParam("id")
             },
             success:function (result) {
+                myMask.hide();
                 if (result.success) {
                     EUI.getCmp("lookBill").loadData(result.data);
                 }else{
@@ -106,6 +110,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 }
             },
             failure: function (result) {
+                myMask.hide();
                 EUI.ProcessStatus(result);
             }
         })
