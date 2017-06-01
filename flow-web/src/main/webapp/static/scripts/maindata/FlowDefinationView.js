@@ -672,7 +672,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             onSelect: function (node) {
                 console.log(node);
                 if (node.children.length) {
-                    console.log("根节点");
+                    g.selectedNode = "根节点"
+                    console.log(g.selectedNode);
                     g.selectedNodeId = "";
                     g.selectedNodeName = "";
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -685,7 +686,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, true)
                 }
                 if (!node.children.length) {
-                    console.log("子节点");
+                    g.selectedNode = "子节点"
+                    console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -808,6 +810,29 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
+                        console.log(g.selectedNodeId)
+                        console.log(g.selectedNode)
+                        if(!g.selectedNodeId){
+                            if(g.selectedNode == "根节点"){
+                                var status = {
+                                    msg: "请选择子节点",
+                                    success: true,
+                                    showTime: true ? 2 : 60
+                                };
+                                EUI.ProcessStatus(status);
+                                return;
+                            }else{
+                                var status = {
+                                    msg: "请选择组织机构",
+                                    success: true,
+                                    showTime: true ? 2 : 60
+                                };
+                                EUI.ProcessStatus(status);
+                                return;
+                            }
+
+                        }
+
                         g.addFlowDefination();
                     }
                 }, '->', {
