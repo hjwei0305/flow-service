@@ -133,7 +133,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
         OperateResultWithData result = null;
         if (manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()) {//非人工选择任务的情况
-            result = this.complete(taskId, variables);
+            result = this.complete(taskId,flowTaskCompleteVO.getOpinion(), variables);
         } else {//人工选择任务的情况
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             String actTaskId = flowTask.getActTaskId();
@@ -165,7 +165,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
             //执行任务
-            result = this.complete(taskId, variables);
+            result = this.complete(taskId,flowTaskCompleteVO.getOpinion(), variables);
 
             // 恢复方向
             for (String nodeId : manualSelectedNodeIds) {
@@ -186,11 +186,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * 完成任务
      *
      * @param id        任务id
+     * @param opinion  审批意见
      * @param variables 参数
      * @return
      */
-    private OperateResultWithData complete(String id, Map<String, Object> variables) {
+    private OperateResultWithData complete(String id,String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        flowTask.setDepict(opinion);
         String actTaskId = flowTask.getActTaskId();
         this.completeActiviti(actTaskId, variables);
         this.saveVariables(variables, flowTask);
@@ -274,6 +276,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
+
 
     private void callInitTaskBack(PvmActivity currentNode, ProcessInstance instance, FlowHistory flowHistory) {
         List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
@@ -439,7 +442,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //完成任务
             variables.put("reject", 1);
-            this.complete(currentTask.getId(), variables);
+            this.complete(currentTask.getId(),"驳回", variables);
 
             //恢复方向
             preActivity.getIncomingTransitions().remove(newTransition);
@@ -1104,7 +1107,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws NoSuchMethodException
      */
     public List<NodeInfo> findNextNodes(String id, String businessId) throws NoSuchMethodException {
-          return this.findNexNodesWithUserSet(id,businessId,null);
+          return this.findNextNodes(id,businessId,null);
     }
     /**
      * 选择下一步执行的节点信息
@@ -1128,7 +1131,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
             com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
             String clientApiBaseUrl = appModule.getApiBaseAddress();
-            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+          //  clientApiBaseUrl =    ContextUtil.getAppModule().getApiBaseAddress();
+           // clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
             Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
             return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
         } else {
