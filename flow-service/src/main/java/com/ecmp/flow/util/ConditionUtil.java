@@ -46,11 +46,14 @@ public class ConditionUtil {
         GroovyShell shell = new GroovyShell(bind);
         try {
             Object obj = shell.evaluate(condition);
+            if(obj instanceof  Boolean){
+                result = (Boolean) obj;
+            }
         } catch (Exception e) {
             result = false;
             e.printStackTrace();
         }
-        result = true;
+
         return result;
     }
 }

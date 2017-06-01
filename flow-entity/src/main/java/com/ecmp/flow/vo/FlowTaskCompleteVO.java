@@ -27,6 +27,11 @@ public class FlowTaskCompleteVO implements Serializable{
      * 手动选择出口分支节点的节点ID
      */
     private List<String> manualSelectedNodeIds ;
+
+    /**
+     * 审批意见
+     */
+    private String opinion;
     /**
      * 额外参数
      */
@@ -55,5 +60,13 @@ public class FlowTaskCompleteVO implements Serializable{
 
     public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
+    }
+
+    public String getOpinion() {
+        return opinion;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
     }
 }

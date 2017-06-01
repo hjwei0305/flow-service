@@ -143,20 +143,24 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     /**
      * 完成任务
      * @param taskId
+     * @param businessId 业务表单ID
+     * @param  opinion 审批意见
+     * @param flowTaskCompleteList 任务完成传输对象
      * @return 操作结果
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, List<FlowTaskCompleteWebVO> FlowTaskCompleteList) {
+    public String completeTask(String taskId, String businessId,String opinion, List<FlowTaskCompleteWebVO> flowTaskCompleteList) {
         IBaseService  baseService =  ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V)baseService.findOne(businessId);
         if(defaultBusinessModel != null){
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
+            flowTaskCompleteVO.setOpinion(opinion);
             List<String> selectedNodeIds = new ArrayList<String>();
             Map<String,Object> v = new HashMap<String,Object>();
-            for(FlowTaskCompleteWebVO f  :FlowTaskCompleteList){
+            for(FlowTaskCompleteWebVO f  :flowTaskCompleteList){
                 selectedNodeIds.add(f.getNodeId());
                String flowTaskType = f.getFlowTaskType();
                if("common".equalsIgnoreCase(flowTaskType)){
@@ -182,8 +186,10 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         return JsonUtil.serialize(operateStatus);
     }
 
+
+
     /**
-     * 获取下一步的节点信息任务
+     * 获取当前审批任务的决策信息
      * @param taskId
      * @return 操作结果
      */
@@ -209,9 +215,14 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId,List<String> includeNodeIds) throws NoSuchMethodException {
+    public String getSelectedNodesInfo(String taskId,String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<String> includeNodeIds = null;
+        if(!StringUtils.isEmpty(includeNodeIdsStr)){
+            String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
+            includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
+        }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,includeNodeIds);
         if(nodeInfoList != null && !nodeInfoList.isEmpty()){
             operateStatus = new OperateStatus(true,"成功");

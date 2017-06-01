@@ -5,20 +5,28 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
-            layout: "border",
-            border: false,
-            padding: 8,
-            width:500,
-            height:360,
-            itemspace: 0,
             style:{
-                "background":"#fff",
-                "border":"1px solid #b5b8c8"
+                "background":"#fff"
             },
-            items: [this.initTop(),this.initCenter()/*,this.initDown()*/]
+            items:[{
+                xtype:"Container",
+                layout: "border",
+                border: false,
+                padding: 8,
+                width:500,
+                height:450,
+                itemspace: 0,
+                style:{
+                    "background":"#fff",
+                    "border":"1px solid #b5b8c8",
+                    "margin":"0 auto"
+                },
+                items: [this.initTop(),this.initCenter()/*,this.initDown()*/]
+            }]
+
         });
         this.showFindData();
-        $("#aa").find('input').css("font-weight","bold");
+        $("#name").find('input').css("font-weight","bold");
     },
     initTop:function () {
         var g=this;
@@ -43,7 +51,29 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 title:"<span class='name'>名称</span>",
                 name:"name",
                 width:300,
-                id:"aa",
+                id:"name",
+                readonly:true,
+                colon:false,
+                style:{
+                    "font-weight":"bolder"
+                }
+            },{
+                xtype:"TextField",
+                title:"<span class='name'>单价</span>",
+                name:"unitPrice",
+                width:300,
+                id:"unitPrice",
+                readonly:true,
+                colon:false,
+                style:{
+                    "font-weight":"bolder"
+                }
+            },{
+                xtype:"TextField",
+                title:"<span class='name'>数量</span>",
+                name:"count",
+                width:300,
+                id:"count",
                 readonly:true,
                 colon:false,
                 style:{
@@ -63,21 +93,34 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
     },
     showFindData:function () {
         var g = this;
+        var myMask=EUI.LoadMask({
+            msg:"正在加载，请稍后..."
+        });
         EUI.Store({
             url: _ctxPath + "/lookApproveBill/getApproveBill",
             params: {
-                id: "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7"
+                id: EUI.util.getUrlParam("id")
             },
             success:function (result) {
-                EUI.ProcessStatus(result);
+                myMask.hide();
                 if (result.success) {
                     EUI.getCmp("lookBill").loadData(result.data);
+                }else{
+                    EUI.ProcessStatus(result);
                 }
             },
             failure: function (result) {
+                myMask.hide();
                 EUI.ProcessStatus(result);
             }
         })
 
+    },
+    checkIsValid:function () {
+        EUI.ProcessStatus({
+           success:true,
+            msg:"表单验证成功"
+        });
+        return true;
     }
 });

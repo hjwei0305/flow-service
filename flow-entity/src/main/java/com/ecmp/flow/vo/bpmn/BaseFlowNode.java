@@ -1,5 +1,6 @@
 package com.ecmp.flow.vo.bpmn;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import javax.xml.bind.JAXBContext;
@@ -53,7 +54,7 @@ public class BaseFlowNode extends BaseNode implements Serializable {
     private List<BaseFlowNode> targetNodes;
 
     @XmlTransient
-    private String[] target;
+    private JSONArray target;
 
     @XmlTransient
     private JSONObject nodeConfig;
@@ -90,11 +91,11 @@ public class BaseFlowNode extends BaseNode implements Serializable {
         this.targetNodes = targetNodes;
     }
 
-    public String[] getTarget() {
+    public JSONArray getTarget() {
         return target;
     }
 
-    public void setTarget(String[] target) {
+    public void setTarget(JSONArray target) {
         this.target = target;
     }
 

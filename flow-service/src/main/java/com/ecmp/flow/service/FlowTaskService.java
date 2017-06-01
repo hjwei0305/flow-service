@@ -5,6 +5,7 @@ import com.ecmp.basic.api.IEmployeeService;
 import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Employee;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.GlobalParam;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
@@ -133,7 +134,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
         OperateResultWithData result = null;
         if (manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()) {//非人工选择任务的情况
-            result = this.complete(taskId, variables);
+            result = this.complete(taskId,flowTaskCompleteVO.getOpinion(), variables);
         } else {//人工选择任务的情况
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             String actTaskId = flowTask.getActTaskId();
@@ -165,7 +166,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
             //执行任务
-            result = this.complete(taskId, variables);
+            result = this.complete(taskId,flowTaskCompleteVO.getOpinion(), variables);
 
             // 恢复方向
             for (String nodeId : manualSelectedNodeIds) {
@@ -186,11 +187,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * 完成任务
      *
      * @param id        任务id
+     * @param opinion  审批意见
      * @param variables 参数
      * @return
      */
-    private OperateResultWithData complete(String id, Map<String, Object> variables) {
+    private OperateResultWithData complete(String id,String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        flowTask.setDepict(opinion);
         String actTaskId = flowTask.getActTaskId();
         this.completeActiviti(actTaskId, variables);
         this.saveVariables(variables, flowTask);
@@ -274,6 +277,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
+
 
     private void callInitTaskBack(PvmActivity currentNode, ProcessInstance instance, FlowHistory flowHistory) {
         List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
@@ -439,7 +443,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //完成任务
             variables.put("reject", 1);
-            this.complete(currentTask.getId(), variables);
+            this.complete(currentTask.getId(),"驳回", variables);
 
             //恢复方向
             preActivity.getIncomingTransitions().remove(newTransition);
@@ -1104,7 +1108,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws NoSuchMethodException
      */
     public List<NodeInfo> findNextNodes(String id, String businessId) throws NoSuchMethodException {
-          return this.findNexNodesWithUserSet(id,businessId,null);
+          return this.findNextNodes(id,businessId,null);
     }
     /**
      * 选择下一步执行的节点信息
@@ -1127,8 +1131,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String appModuleId = businessModel.getAppModuleId();
             com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
             com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = appModule.getApiBaseAddress();
-            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+           System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
+//            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
+//            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
+
+            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+//            clientApiBaseUrl =    ContextUtil.getHost();
+//            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
             Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
             return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
         } else {

@@ -173,19 +173,20 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         var g = this;
          win = EUI.Window({
             title: "内置审批单",
-            height: 190,
+            height: 250,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBuiltInApprove",
-                height:200,
+                height:260,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
                     title: "ID",
                     labelWidth: 90,
                     name: "id",
-                    width: 220,
+                    width: 270,
                     value: data.id,
                     hidden: true
                 }, {
@@ -193,9 +194,27 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     title: "名称",
                     labelWidth: 70,
                     name: "name",
-                    width: 220,
+                    width: 270,
                     colon:false,
                     value: data.name,
+                    allowBlank:false
+                }, {
+                    xtype: "TextField",
+                    title: "单价",
+                    labelWidth: 70,
+                    name: "unitPrice",
+                    width: 270,
+                    colon:false,
+                    value: data.unitPrice,
+                    allowBlank:false
+                }, {
+                    xtype: "TextField",
+                    title: "数量",
+                    labelWidth: 70,
+                    name: "count",
+                    width: 270,
+                    colon:false,
+                    value: data.count,
                     allowBlank:false
                 }, {
                     xtype: "TextArea",
@@ -204,7 +223,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "workCaption",
                     id:"caption",
                     colon:false,
-                    width: 220,
+                    width: 270,
                     height:130,
                     value: data.workCaption,
                     allowBlank:false
@@ -247,7 +266,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     EUI.Store({
                         url: _ctxPath + "/builtInApprove/startFlow",
                         params: {
-                            key:'test888',
+                            key:'test997',
                             //以后切换成业务实体或者流程类型
                             //typeId:流程类型ID
                             //businessModelId:业务实体ID
@@ -319,12 +338,13 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         var g = this;
          win = EUI.Window({
             title: "新增内置表单",
-            height: 190,
+            height: 250,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addBuiltInApprove",
-                height:200,
+                height:260,
                 padding: 0,
                 items: [{
                     xtype: "TextField",
@@ -333,14 +353,30 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "name",
                     colon:false,
-                    width: 220
+                    width: 270
+                },{
+                    xtype: "TextField",
+                    title: "单价",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "unitPrice",
+                    colon:false,
+                    width: 270
+                },{
+                    xtype: "TextField",
+                    title: "数量",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "count",
+                    colon:false,
+                    width: 270
                 }, {
                     xtype: "TextArea",
                     title: "说明",
                     labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
-                    width: 220,
+                    width: 270,
                     height:130,
                     colon:false,
                     allowBlank:false

@@ -100,7 +100,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         var reg = new RegExp(g.properties[key], "g");
                         value = value.replace(reg, key);
                     }
-                    g.groovyUelCmp.setValue(value);
+                    g.groovyUelCmp.setValue("#{" + value + "}");
                 }
             }, {
                 xtype: "TextArea",
@@ -173,7 +173,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         }
         $(".property-box").append(html);
     },
-    loadData:function () {
+    loadData: function () {
         this.logicUelCmp.setValue(this.data.logicUel);
         this.groovyUelCmp.setValue(this.data.groovyUel);
     }

@@ -33,6 +33,7 @@ public class FlowTaskCompleteWebVO implements Serializable{
      */
     private String userIds;
 
+
     /**'
      * 流程节点用户变量名称
      */
@@ -70,4 +71,5 @@ public class FlowTaskCompleteWebVO implements Serializable{
     public void setUserVarName(String userVarName) {
         this.userVarName = userVarName;
     }
+
 }

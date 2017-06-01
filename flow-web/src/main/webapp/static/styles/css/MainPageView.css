@@ -1,0 +1,335 @@
+@CHARSET "UTF-8";
+/*通用样式*/
+html{
+    /*font-size: 125%;*/
+    font-family: microsoft-yahei;
+    width: 100%;
+}
+body{
+    font-size: 16px;
+    margin: 0;
+    /*padding: 0 20px;*/
+    padding: 0;
+}
+div,span,p{
+    margin: 0;
+    padding: 0;
+}
+
+/*上面内容部分的样式*/
+
+/*上面部分的头部内容样式*/
+.taken-top{
+    background: #FFFFFF;
+}
+.top-header{
+    height: 60px;
+}
+.worktable{
+    font-size: 16px;
+    color: #333333;
+    line-height: 60px;
+    border-left: 2px solid #45b7ff;
+    padding-left: 10px;
+}
+.header-right{
+    display: inline-block;
+    float: right;
+    line-height: 60px;
+    vertical-align: middle;
+}
+.wait-work{
+    font-size: 14px;
+    color: #999999;
+    border-right: 2px solid #999999;
+    padding-right: 25px;
+    cursor: pointer;
+}
+.wait-work:hover{
+    color: #45b7ff;
+}
+.taken-work{
+    font-size: 14px;
+    color: #999999;
+    padding: 0 25px;
+    cursor: pointer;
+}
+.taken-work:hover{
+    color: #45b7ff;
+}
+.search{
+    width: 198px;
+    height: 24px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #cccccc;
+    border: 1px solid #cccccc;
+    margin-right: 25px;
+    padding-left: 39px;
+    background: url("../images/search.png") no-repeat 15px 6px;
+    vertical-align: middle;
+}
+.btn{
+    font-size: 12px;
+    width: 110px;
+    height: 24px;
+    color: #ffffff;
+    border-radius: 2px;
+    background-color: #45b7ff;
+    padding: 5px 13px;
+    cursor: pointer;
+}
+/*上面部分的中间内容部分样式*/
+.top-content{
+    width: 100%;
+    border: 1px solid #dddddd;
+    border-radius: 2px;
+}
+.content-navbar{
+    height: 70px;
+    margin: 20px 20px;
+}
+.arrow-left{
+    background: url("../images/arrow-left.png") no-repeat;
+    float: left;
+    width: 19px;
+    height: 49px;
+    margin-top: 10.5px;
+    cursor: pointer;
+}
+.arrow-right{
+    background: url("../images/arrow-right.png") no-repeat;
+    float: right;
+    width: 19px;
+    height: 49px;
+    margin-top: -60.5px;
+    cursor: pointer;
+}
+.navber-count{
+    float: left;
+    width: 15%;
+    margin-left: 1%;
+    cursor: pointer;
+}
+.navber-count:hover .navbar-circle{
+    background-color: #45b7ff;
+    border: 1px solid #45b7ff;
+    color: #FFFFFF;
+}
+.navber-count:hover .navber-text{
+    color: #45b7ff;
+}
+.navbar-circle{
+    width: 38px;
+    height: 38px;
+    border: 1px solid #333333;
+    text-align: center;
+    line-height: 38px;
+    margin: 0 auto;
+    border-radius: 50%;
+    color: #333333;
+    font-size: 20px;
+    cursor: pointer;
+}
+.navber-text{
+    font-size: 14px;
+    color: #666666;
+    text-align: center;
+    margin-top: 10px;
+}
+.select{
+    background-color: #45b7ff;
+    border: 1px solid #45b7ff;
+    color: #FFFFFF;
+}
+.select-text{
+    color: #45b7ff;
+}
+.content-info{
+    margin: 0 10px;
+    border-top: 1px solid #eeeeee;
+    overflow: hidden;
+    /*width: 100%;*/
+}
+.info-left{
+    width: 100%;
+    line-height: 100%;
+    overflow: auto;
+}
+.info-item:nth-child(odd){
+    margin-right: 6.8%;
+}
+.info-item{
+    width: 45%;
+    float: left;
+    border-bottom: 1px solid #eeeeee;
+    padding: 20px 10px 16px;
+    overflow: hidden;
+}
+.flow-text{
+    font-size: 14px;
+    font-weight: bold;
+    color: #333333;
+}
+.item-right{
+    float: right;
+}
+.over-text{
+    font-size: 14px;
+    color: #ff0000;
+}
+.user{
+    margin: 20px 0;
+}
+.userName{
+    font-size: 12px;
+    color: #999999;
+}
+.end{
+    display: inline-block;
+}
+.end-text{
+    font-size: 12px;
+    color: #999999;
+}
+.end-icon{
+    width: 12px;
+    height: 12px;
+    background: url("../images/end-icon.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.reject-icon{
+    width: 12px;
+    height: 12px;
+    background: url("../images/reject-icon.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.look-icon{
+    display: inline-block;
+    background: url("../images/look_icon.png") no-repeat;
+    background-size: cover;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.time-icon{
+    display: inline-block;
+    background: url("../images/time_icon.png") no-repeat;
+    background-size: cover;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+.content-page{
+    height: 50px;
+    padding: 0 20px;
+    overflow: hidden;
+}
+.record-total{
+    font-size: 12px;
+    color: #999999;
+    line-height: 50px;
+    float:left;
+}
+.pege-right{
+    font-size: 12px;
+    line-height: 50px;
+    float: right;
+}
+.pege-right>a{
+    text-decoration: none;
+    outline: none;
+    color: #999999;
+    display: block;
+    float: left;
+    line-height: 50px;
+}
+.pege-right>a:hover{
+    color: #45b7ff;
+    font-weight: bold;
+}
+.pege-right>.one{
+    color: #45b7ff;
+    width: 8px;
+}
+.num{
+    margin-left: 24px;
+    width: 8px;
+}
+.next-page{
+    margin-left: 30px;
+    width: 54px;
+}
+.end-page{
+    margin-left: 20px;
+    width: 38px;
+}
+.approve-node{
+    font-size: 14px;
+    color: #ff7d1e;
+}
+/*中间部分的内容部分的样式（很多样式与上面内容部分共用）*/
+
+.taken-center{
+    padding-top: 30px;
+    background: #FFFFFF;
+}
+.data{
+    display: inline-block;
+    height: 30px;
+    vertical-align: middle;
+    overflow: hidden;
+}
+#dateField{
+    float: right;
+    overflow: hidden;
+}
+.center-content{
+    width: 100%;
+    border: 1px solid #dddddd;
+    margin-bottom: 50px;
+    border-radius: 2px;
+}
+.center-info{
+    padding: 0;
+    border: none;
+}
+.taken-invoices{
+    font-size: 14px;
+    /*color: #45b7ff;*/
+    padding-right: 25px;
+}
+.wait-invoices{
+    font-size: 14px;
+    color: #999999;
+    padding: 0 25px;
+}
+.general{
+    font-size: 14px;
+    color: #999999;
+}
+.ux-field-element .ux-trigger-box{
+    height: 24px;
+}
+.ux-trigger-box .ux-date-trigger{
+    margin-top: 4px;
+}
+/*导航部分的样式*/
+.navbar{
+    /*width:98%;*/
+    height: 70px;
+    overflow: hidden;
+}
+.active{
+    color: #45b7ff;
+}
+

@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResultWithData;
@@ -134,5 +135,13 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
     public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+
+
+    @GET
+    @Path("getFlowDefVersion/{id}/{versionCode}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
+    public FlowDefVersion getFlowDefVersion(@PathParam("id") String id, @PathParam("versionCode") Integer versionCode);
 
 }
