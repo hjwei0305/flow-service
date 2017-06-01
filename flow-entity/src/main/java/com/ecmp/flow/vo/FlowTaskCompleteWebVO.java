@@ -33,6 +33,11 @@ public class FlowTaskCompleteWebVO implements Serializable{
      */
     private String userIds;
 
+    /**
+     * 审批意见
+     */
+    private String opinion;
+
     /**'
      * 流程节点用户变量名称
      */
@@ -69,5 +74,13 @@ public class FlowTaskCompleteWebVO implements Serializable{
 
     public void setUserVarName(String userVarName) {
         this.userVarName = userVarName;
+    }
+
+    public String getOpinion() {
+        return opinion;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
     }
 }
