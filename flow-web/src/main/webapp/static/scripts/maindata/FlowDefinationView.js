@@ -157,13 +157,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 title: this.lang.addResourceText,
                 selected: true,
                 handler: function () {
-                    if (!g.selectedNodeId) {
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg: "请先选择组织机构"
-                        });
-                        return;
-                    }
+                    // if (!g.selectedNodeId) {
+                    //     EUI.ProcessStatus({
+                    //         success: false,
+                    //         msg: "请先选择组织机构"
+                    //     });
+                    //     return;
+                    // }
                     g.addFlowDefVersion();
                 }
             }, '->', {
@@ -472,116 +472,22 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         });
     },
     addFlowDefVersion: function () {
-        var g = this;
-        parent.homeView.addTab({
-            title: "新增流程定义",
-            id: g.selectedNodeId,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
-        });
-        // win = EUI.Window({
-        //     title: "新增流程定义版本",
-        //     height: 350,
-        //     padding: 15,
-        //     items: [{
-        //         xtype: "FormPanel",
-        //         id: "addFlowDefVersion",
-        //         padding: 0,
-        //         items: [{
-        //             xtype: "TextField",
-        //             title: "流程定义ID",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "flowDefination.id",
-        //             width: 220,
-        //             value: g.flowDefinationId,
-        //             hidden: true
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "流程定义NAME",
-        //             readonly: true,
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "flowDefination.name",
-        //             width: 220,
-        //             value: g.flowDefinationName,
-        //             hidden: true
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "名称",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "name",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "定义ID",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "actDefId",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "定义KEY",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "defKey",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "部署ID",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "actDeployId",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "启动UEL",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "startUel",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "版本号",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "versionCode",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextField",
-        //             title: "优先级",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "priority",
-        //             width: 220
-        //         }, {
-        //             xtype: "TextArea",
-        //             title: "描述",
-        //             labelWidth: 90,
-        //             allowBlank: false,
-        //             name: "depict",
-        //             width: 220
-        //         }]
-        //     }],
-        //     buttons: [{
-        //         title: g.lang.saveText,
-        //         selected: true,
-        //         handler: function () {
-        //             var form = EUI.getCmp("addFlowDefVersion");
-        //             if (!form.isValid()) {
-        //                 return;
-        //             }
-        //             var data = form.getFormValue();
-        //             console.log(data);
-        //             g.saveFlowDefVersion(data);
-        //         }
-        //     }, {
-        //         title: g.lang.cancelText,
-        //         handler: function () {
-        //             win.remove();
-        //         }
-        //     }]
+        // var g = this;
+        // parent.homeView.addTab({
+        //     title: "新增流程定义",
+        //     id: g.selectedNodeId,
+        //     url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
         // });
+        var g = this;
+        var tab = {
+            title: "流程审计界面",
+            url: _ctxPath + "/design/show?id=" + g.selectedNodeId,
+            id: g.selectedNodeId
+        };
+        g.addTab(tab);
+    },
+    addTab: function (tab) {
+        window.open(tab.url);
     },
     saveFlowDefination: function (data) {
         var g = this;
@@ -672,7 +578,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             onSelect: function (node) {
                 console.log(node);
                 if (node.children.length) {
-                    console.log("根节点");
+                    g.selectedNode = "根节点"
+                    console.log(g.selectedNode);
                     g.selectedNodeId = "";
                     g.selectedNodeName = "";
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -685,7 +592,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, true)
                 }
                 if (!node.children.length) {
-                    console.log("子节点");
+                    g.selectedNode = "子节点"
+                    console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -808,6 +716,29 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
+                        console.log(g.selectedNodeId)
+                        console.log(g.selectedNode)
+                        if(!g.selectedNodeId){
+                            if(g.selectedNode == "根节点"){
+                                var status = {
+                                    msg: "请选择子节点",
+                                    success: false,
+                                    showTime: 6
+                                };
+                                EUI.ProcessStatus(status);
+                                return;
+                            }else{
+                                var status = {
+                                    msg: "请选择组织机构",
+                                    success: false,
+                                    showTime: 6
+                                };
+                                EUI.ProcessStatus(status);
+                                return;
+                            }
+
+                        }
+
                         g.addFlowDefination();
                     }
                 }, '->', {
