@@ -1,5 +1,6 @@
 package com.ecmp.flow.vo.bpmn;
 
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -46,7 +47,9 @@ public class SequenceFlow extends BaseNode implements Serializable {
         this.sourceRef = sourceRef;
         this.targetRef = targetRef;
         if (StringUtils.isNotBlank(uel)) {
-            this.conditionExpression = new ConditionExpression(uel);
+            JSONObject uelObject = JSONObject.fromObject(uel);
+            String uelValue = (String) uelObject.get("groovyUel");
+            this.conditionExpression = new ConditionExpression(uelValue);
         }
     }
 

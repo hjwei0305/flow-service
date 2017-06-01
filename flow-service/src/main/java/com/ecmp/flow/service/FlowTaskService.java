@@ -5,6 +5,7 @@ import com.ecmp.basic.api.IEmployeeService;
 import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Employee;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.GlobalParam;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
@@ -1130,9 +1131,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String appModuleId = businessModel.getAppModuleId();
             com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
             com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = appModule.getApiBaseAddress();
-          //  clientApiBaseUrl =    ContextUtil.getAppModule().getApiBaseAddress();
-           // clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+           System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
+//            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
+//            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
+
+            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+//            clientApiBaseUrl =    ContextUtil.getHost();
+//            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
             Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
             return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
         } else {
