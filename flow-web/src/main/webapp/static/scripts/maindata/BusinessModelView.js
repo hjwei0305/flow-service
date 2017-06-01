@@ -637,8 +637,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     index: "name"
                 }, {
                     label: g.lang.urlViewAddressText,
-                    name: "className",
-                    index: "className"
+                    name: "url",
+                    index: "url"
                 }]
                 //添加固定数据测试
                 // data: [{
