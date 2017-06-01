@@ -147,7 +147,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, List<FlowTaskCompleteWebVO> FlowTaskCompleteList) {
+    public String completeTask(String taskId, String businessId, List<FlowTaskCompleteWebVO> flowTaskCompleteList) {
         IBaseService  baseService =  ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V)baseService.findOne(businessId);
@@ -156,7 +156,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
             flowTaskCompleteVO.setTaskId(taskId);
             List<String> selectedNodeIds = new ArrayList<String>();
             Map<String,Object> v = new HashMap<String,Object>();
-            for(FlowTaskCompleteWebVO f  :FlowTaskCompleteList){
+            for(FlowTaskCompleteWebVO f  :flowTaskCompleteList){
                 selectedNodeIds.add(f.getNodeId());
                String flowTaskType = f.getFlowTaskType();
                if("common".equalsIgnoreCase(flowTaskType)){
@@ -183,7 +183,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     }
 
     /**
-     * 获取下一步的节点信息任务
+     * 获取当前审批任务的决策信息
      * @param taskId
      * @return 操作结果
      */
