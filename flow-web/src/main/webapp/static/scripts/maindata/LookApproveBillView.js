@@ -99,9 +99,10 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 id: EUI.util.getUrlParam("id")
             },
             success:function (result) {
-                EUI.ProcessStatus(result);
                 if (result.success) {
                     EUI.getCmp("lookBill").loadData(result.data);
+                }else{
+                    EUI.ProcessStatus(result);
                 }
             },
             failure: function (result) {
@@ -109,5 +110,12 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             }
         })
 
+    },
+    checkIsValid:function () {
+        EUI.ProcessStatus({
+           success:true,
+            msg:"表单验证成功"
+        });
+        return true;
     }
 });
