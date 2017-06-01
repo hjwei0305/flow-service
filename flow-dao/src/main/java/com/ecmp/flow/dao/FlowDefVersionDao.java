@@ -15,7 +15,7 @@ import java.util.List;
 public interface FlowDefVersionDao extends BaseEntityDao<FlowDefVersion> {
 
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.versionCode = :versionCode ")
-    public FlowDefVersion findByDefIdAndVersionCode(@Param("defId")String defId,@Param("versionCode")String versionCode);
+    public FlowDefVersion findByDefIdAndVersionCode(@Param("defId")String defId,@Param("versionCode")Integer versionCode);
 
     public List<FlowDefVersion> findByFlowDefinationId(String flowDefinationId);
 

@@ -316,6 +316,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
     }
 
+    public FlowDefVersion getFlowDefVersion(String id,Integer versionCode){
+        FlowDefVersion flowDefVersion = null;
+        if(versionCode > -1){
+            flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id,versionCode);
+        }else {
+            FlowDefination  flowDefination = flowDefinationDao.findOne(id);           ;
+            flowDefVersion = flowDefVersionDao.findOne( flowDefination.getLastVersionId());
+        }
+        return  flowDefVersion;
+    }
+
 
 //    /**
 //     * 主键删除
