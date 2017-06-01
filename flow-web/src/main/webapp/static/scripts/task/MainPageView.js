@@ -261,15 +261,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                     </div>';
         $(".content-page").append(html);
     },
-    //每个任务前添加复选框
-    initCheckBox: function () {
-        EUI.FieldGroup({
-            renderTo: "checkbox",
-            items: [{
-                xtype: "CheckBox"
-            }]
-        })
-    },
+
     //我的单据中的日历
     initChooseDate: function () {
         EUI.FieldGroup({
