@@ -2,16 +2,17 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     data: null,
     menudata: null,
-    dataWait:null,
+    dataWait: null,
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
             data: this.data,
             menudata: this.menudata,
-            dataWait:this.dataWait,
+            dataWait: this.dataWait,
             html: this.getHtml()
         });
         this.initChooseDate();
+        // this.initCheckBox();
         this.showModelItems(_data);
         // this.showWaitModelItems(_dataWait);
         // this.getModelList();
@@ -74,16 +75,16 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '   </div>';
     },
-    //已办界面导航部分的数据调用
+    //已办界面导航部分的数据调用0hg
     getModelList: function () {
         var g = this;
         // g.showModelItems(this.data);
         // g.showTodoContent(this.data[0].items);
         EUI.Store({
-            url: _ctxPath + "/maindata/flowTask/find",
+            url: _ctxPath + "/flowTask/listFlowTask",
             params: {},
             success: function (status) {
-                if (!status.success){
+                if (!status.success) {
                     EUI.ProcessStatus(status);
                     return;
                 }
@@ -91,7 +92,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 // g.showTodoContent(status.items);
 
             },
-            failurle:function (result) {
+            failurle: function (result) {
                 EUI.ProcessStatus(result);
             }
         })
@@ -100,7 +101,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     getTodo: function (modelId) {
         var g = this;
         EUI.Store({
-            url: _ctxPath + "/maindata/flowTask/find",
+            url: _ctxPath + "/flowTask/listFlowTask",
             params: {
                 modelId: modelId
             },
@@ -116,7 +117,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     },
     //显示已办中的导航部分子组件
     showModelItems: function (data) {
-        var g=this;
+        var g = this;
         // console.log(data);
         var html = "";
         // var index=0;
@@ -138,97 +139,109 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         }
         $(".navbar").append(html);
     },
-   /* //显示待办中的导航部分子组件
-    showWaitModelItems: function (dataWait) {
-        // console.log(data);
-        var g=this;
-        var html = "";
-        // var index=0;
-        for (var i = 0; i < dataWait.length; i++) {
-            var item = dataWait[i];
-            if (i == 0) {
-                html += '                        <div class="navber-count">' +
-                    '                            <div class="navbar-circle select">' + item.count + '</div>' +
-                    '                            <div class="navber-text select-text">' + item.name + '</div>' +
-                    '                        </div>';
-            }
-            else {
-                html += '                        <div class="navber-count">' +
-                    '                            <div class="navbar-circle">' + item.count + '</div>' +
-                    '                            <div class="navber-text">' + item.name + '</div>' +
-                    '                        </div>';
-            }
+    /* //显示待办中的导航部分子组件
+     showWaitModelItems: function (dataWait) {
+     // console.log(data);
+     var g=this;
+     var html = "";
+     // var index=0;
+     for (var i = 0; i < dataWait.length; i++) {
+     var item = dataWait[i];
+     if (i == 0) {
+     html += '                        <div class="navber-count">' +
+     '                            <div class="navbar-circle select">' + item.count + '</div>' +
+     '                            <div class="navber-text select-text">' + item.name + '</div>' +
+     '                        </div>';
+     }
+     else {
+     html += '                        <div class="navber-count">' +
+     '                            <div class="navbar-circle">' + item.count + '</div>' +
+     '                            <div class="navber-text">' + item.name + '</div>' +
+     '                        </div>';
+     }
 
-        }
-        $(".navbar").append(html);
-    },*/
+     }
+     $(".navbar").append(html);
+     },*/
     //显示已办中的内容部分子组件
     showTodoContent: function (items) {
-        var html = "";
+        var g = this;
         for (var j = 0; j < items.length; j++) {
-            html += '<div class="info-item">' +
+            /* var status = items[j].taskStatus;
+             var statusStr = "待办";
+             if (status == "INPROCESS") {
+             statusStr = "处理中";
+             } else if (status == "COMPLETE") {
+             statusStr = "结束";
+             }*/
+            var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
+                '                                <span id="checkbox"></span>' +
                 '                                <span class="flow-text">' + items[j].taskName + '</span>' +
-                '                                <span class="item-right over-text">' + items[j].state + '</span>' +
+                // '                                <span class="item-right over-text">' + statusStr + '</span>' +
                 '                            </div>' +
-                '                            <div class="item user">' +
-                '                                <span class="userName">' + items[j].userName + '</span>' +
-                '                                <span class="item-right userName">' + items[j].date + '</span>' +
+                '                            <div class="item user">'
+                +
+                '                                <span class="userName">' + items[j].createdBy + '</span>' +
+                '                                <span class="item-right userName">' + items[j].createdDate + '</span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
                 '                                    <i class="end-icon"></i>' +
-                '                                    <span class="end-text">' + items[j].end + '</span>' +
+                '                                    <i class="reject-icon"></i>' +
+                // '                                    <span class="end-text">' + items[j].end + '</span>' +
                 '                                </div>' +
                 '                                <span class="item-right">' +
                 '                                    <i class="look-icon"></i>' +
-                '                                    <i class="time-icon"></i>' +
+                '                                    <i class="time-icon look-approve"></i>' +
                 '                                </span>' +
                 '                            </div>' +
-                '</div>';
+                '</div>');
+            itemdom.data(items[j]);
+            $(".todo-info").append(itemdom);
+            // g.judgeState();
         }
-        $(".todo-info").html(html);
     },
     /*//显示待办中的内容部分子组件
-    showWaitContent: function (items) {
-        var html = "";
-        for (var j = 0; j < items.length; j++) {
-            html += '<div class="info-item">' +
-                '                            <div class="item">' +
-                '                                <span class="flow-text">' + items[j].taskName + '</span>' +
-                '                                <span class="item-right over-text">' + items[j].state + '</span>' +
-                '                            </div>' +
-                '                            <div class="item user">' +
-                '                                <span class="userName">' + items[j].userName + '</span>' +
-                '                                <span class="item-right userName">' + items[j].date + '</span>' +
-                '                            </div>' +
-                '                            <div class="item">' +
-                '                                <div class="end">' +
-                '                                    <i class="end-icon"></i>' +
-                '                                    <span class="end-text">' + items[j].end + '</span>' +
-                '                                </div>' +
-                '                                <span class="item-right">' +
-                '                                    <i class="look-icon"></i>' +
-                '                                    <i class="time-icon"></i>' +
-                '                                </span>' +
-                '                            </div>' +
-                '</div>';
-        }
-        $(".todo-info").html(html);
-    },*/
+     showWaitContent: function (items) {
+     var html = "";
+     for (var j = 0; j < items.length; j++) {
+     html += '<div class="info-item">' +
+     '                            <div class="item">' +
+     '                                <span class="flow-text">' + items[j].taskName + '</span>' +
+     '                                <span class="item-right over-text">' + items[j].state + '</span>' +
+     '                            </div>' +
+     '                            <div class="item user">' +
+     '                                <span class="userName">' + items[j].userName + '</span>' +
+     '                                <span class="item-right userName">' + items[j].date + '</span>' +
+     '                            </div>' +
+     '                            <div class="item">' +
+     '                                <div class="end">' +
+     '                                    <i class="end-icon"></i>' +
+     '                                    <span class="end-text">' + items[j].end + '</span>' +
+     '                                </div>' +
+     '                                <span class="item-right">' +
+     '                                    <i class="look-icon"></i>' +
+     '                                    <i class="time-icon"></i>' +
+     '                                </span>' +
+     '                            </div>' +
+     '</div>';
+     }
+     $(".todo-info").html(html);
+     },*/
     //待办工作的点击事件
-    waitingWorkEvent:function () {
-        var g=this;
-        $(".task-work").live("click",function () {
+    waitingWorkEvent: function () {
+        var g = this;
+        $(".task-work").live("click", function () {
             $(".history-work").removeClass("active");
             $(this).addClass("active");
         });
         // g.showWaitModelItems(dataWait);
     },
     //已办工作的点击事件
-    todoWorkEvent:function () {
-        var g=this;
-        $(".history-work").live("click",function () {
+    todoWorkEvent: function () {
+        var g = this;
+        $(".history-work").live("click", function () {
             $(".task-work").removeClass("active");
             $(this).addClass("active");
         });
@@ -247,6 +260,15 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                        <a href="#" class="end-page">尾页></a>' +
             '                     </div>';
         $(".content-page").append(html);
+    },
+    //每个任务前添加复选框
+    initCheckBox: function () {
+        EUI.FieldGroup({
+            renderTo: "checkbox",
+            items: [{
+                xtype: "CheckBox"
+            }]
+        })
     },
     //我的单据中的日历
     initChooseDate: function () {
@@ -275,30 +297,30 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
          url:_ctxPath + "/maindata/flowTask/find",
          params: {},
          success: function (status) {
-             if (!status.success){
-                 EUI.ProcessStatus(status);
-                 return;
-             }
+         if (!status.success){
+         EUI.ProcessStatus(status);
+         return;
+         }
          g.navbarEvent(status.menudata);
          },
          failurle:function(result){
-            EUI.ProcessStatus(result);
+         EUI.ProcessStatus(result);
          }
          })*/
     },
     //已办单据的点击事件（点击后显示已办单据的数据）
-    todoInvoiceEvent:function () {
-        var g=this;
-        $(".taken-invoices").live("click",function () {
+    todoInvoiceEvent: function () {
+        var g = this;
+        $(".taken-invoices").live("click", function () {
             $(".wait-invoices").removeClass("active");
             $(this).addClass("active");
             g.showInvoiceContent(_menudata);
         });
     },
     //待办单据的点击事件（点击后显示待办单据的数据）
-    waitingInvoiceEvent:function () {
-        var g=this;
-        $(".wait-invoices").live("click",function () {
+    waitingInvoiceEvent: function () {
+        var g = this;
+        $(".wait-invoices").live("click", function () {
             $(".taken-invoices").removeClass("active");
             $(this).addClass("active");
             g.showWaitInvoiceContent(_menu);
@@ -361,6 +383,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         g.waitingInvoiceEvent(_menu);
         g.waitingWorkEvent(_dataWait);
         g.todoWorkEvent();
+        g.approveViewWindow();
+        g.flowInstanceWindow();
 
     },
     //导航的点击事件
@@ -383,9 +407,41 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             })
         })
     },
+    //点击打开审批界面的新页签
+    approveViewWindow: function () {
+        var g = this;
+        $(".look-approve").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var tab = {
+                title: "审批界面",
+                url: _ctxPath + "/lookApproveBill/show?id=" + data.flowInstance.businessId,
+                id: data.flowInstance.businessId
+            };
+            g.addTab(tab);
+        });
+    },
+    //点击打开流程实例的新页签
+    flowInstanceWindow: function () {
+        var g = this;
+        $(".reject-icon").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var tab = {
+                title: "流程实例",
+                url: _ctxPath + "/flowInstance/show?id="+data.flowInstance.id,
+                id: data.flowInstance.id
+            };
+            g.addTab(tab);
+        });
+    },
     //导航左右箭头的翻页效果
     arrowEvent: function (data) {
-        var g=this;
+        var g = this;
 
+    },
+    //在新的窗口打开（模拟新页签的打开方式）
+    addTab: function (tab) {
+        window.open(tab.url);
     }
 });
