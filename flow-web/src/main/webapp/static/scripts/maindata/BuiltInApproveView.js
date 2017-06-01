@@ -91,7 +91,19 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "flowStatus",
                     index: "flowStatus",
                     hidden: false,
-                    width: '40%'
+                    width: '40%',
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        if('INIT' == rowObject.flowStatus){
+                            strVar = "未启动";
+                        }
+                        else if('INPROCESS' == rowObject.flowStatus){
+                            strVar = "处理中";
+                        }else if('COMPLETED' == rowObject.flowStatus){
+                            strVar = "流程结束";
+                        }
+                        return strVar;
+                    }
                 }, {
                     label: "组织机构代码",
                     name: "orgCode",
