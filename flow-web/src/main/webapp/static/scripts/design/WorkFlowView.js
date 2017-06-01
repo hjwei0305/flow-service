@@ -111,6 +111,29 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     field: ["id"]
                 }
             }]
+        }, {
+            xtype: "Button",
+            title: "设置流程启动条件",
+            id: "setStartUel",
+            handler: function () {
+                if (!g.businessModelId) {
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: "请先选择流程类型"
+                    });
+                    return;
+                }
+                var scope = this;
+                new EUI.UELSettingView({
+                    title: "流程启动条件",
+                    data: this.startUEL,
+                    showName:false,
+                    businessModelId: g.businessModelId,
+                    afterConfirm: function (data) {
+                        scope.startUEL = data;
+                    }
+                });
+            }
         }, "->", {
             xtype: "Button",
             selected: true,
@@ -509,6 +532,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: baseInfo.name,
             id: baseInfo.id,
             isExecutable: true,
+            startUEL: EUI.getCmp("setStartUel").startUEL,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
@@ -560,10 +584,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             },
             success: function (status) {
                 mask.hide();
-                EUI.ProcessStatus(status);
                 if (status.success) {
                     var data = JSON.parse(status.data.defJson);
                     g.showDesign(data);
+                }else{
+                    EUI.ProcessStatus(status);
                 }
             },
             failure: function (status) {

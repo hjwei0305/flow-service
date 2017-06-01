@@ -3,37 +3,27 @@
  */
 EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     data: null,
+    showName: true,
     afterConfirm: null,
     businessModelId: null,
     properties: null,
 
     initComponent: function () {
+        var items,height = 450;
+        if (this.showName) {
+            items = [this.initTop(), this.initLeft(), this.initCenter()];
+        } else {
+            items = [this.initLeft(), this.initCenter()];
+            height = 400;
+        }
         this.window = EUI.Window({
             width: 710,
-            height: 450,
+            height: height,
             padding: 10,
             title: this.title,
             buttons: this.getButtons(),
             layout: "border",
-            items: [{
-                region: "north",
-                height: 40,
-                padding: 0,
-                isOverFlow: false,
-                border: false,
-                items: [{
-                    xtype: "TextField",
-                    name: "name",
-                    id: "name",
-                    title: "表达式名称",
-                    labelWidth: 100,
-                    width: 200,
-                    value: this.data ? this.data.name : "",
-                    allowBlank: false
-                }]
-            },
-                this.initLeft(), this.initCenter()
-            ]
+            items: items
         })
         ;
         this.logicUelCmp = EUI.getCmp("logicUel");
@@ -44,13 +34,36 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             this.loadData();
         }
     },
+    getTop: function () {
+        return {
+            region: "north",
+            height: 40,
+            padding: 0,
+            hidden: !this.showName,
+            isOverFlow: false,
+            border: false,
+            items: [{
+                xtype: "TextField",
+                name: "name",
+                id: "name",
+                title: "表达式名称",
+                labelWidth: 100,
+                width: 200,
+                value: this.data ? this.data.name : "",
+                allowBlank: false
+            }]
+        };
+    },
     getButtons: function () {
         var g = this;
         return [{
             title: "保存配置",
             selected: true,
             handler: function () {
-                var name = EUI.getCmp("name").getValue();
+                var name;
+                if(g.showName){
+                    name = EUI.getCmp("name").getValue();
+                };
                 var data = {
                     name: name,
                     logicUel: g.logicUelCmp.getValue(),
