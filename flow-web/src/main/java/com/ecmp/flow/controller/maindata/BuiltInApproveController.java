@@ -1,33 +1,11 @@
 package com.ecmp.flow.controller.maindata;
 
-import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
-import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.*;
+import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
-import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowType;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.NodeInfo;
-import com.ecmp.vo.OperateResult;
-import com.ecmp.vo.OperateResultWithData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.ServletRequest;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -62,6 +40,11 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
     @RequestMapping(value = "show2", method = RequestMethod.GET)
     public String show2() {
         return "maindata/LookApproveBillView";
+    }
+
+    @RequestMapping(value = "approve", method = RequestMethod.GET)
+    public String showApprove(){
+        return "approve/ApproveView";
     }
 }
 

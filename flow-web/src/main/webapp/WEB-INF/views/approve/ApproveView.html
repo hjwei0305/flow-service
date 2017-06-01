@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base::base_head"></th:block>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>流程设计界面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/FlowApprove.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/approve/FlowApprove.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var flowView;
+        var id = "93BD67AE-45DA-11E7-BA0E-6C498F234A3D";//EUI.util.getUrlParam("id");
+        //        var instanceId = EUI.util.getUrlParam("instanceId");
+        EUI.onReady(function () {
+            flowView = Flow.FlowApprove({
+                busId: id,
+                taskId: "73672228-46AB-11E7-A5D4-6C498F234A3D",
+//                instanceId:instanceId,
+                iframeHeight:500,
+                renderTo: "content",
+                goNext: function () {
+                    return this.iframe.lookApproveBillView.checkIsValid();
+                },
+                pageUrl: _ctxPath + "/lookApproveBill/show?id=" + id
+            });
+        });
+    </script>
+</head>
+<body style="background: white;">
+<div id="content"></div>
+</body>
+</html>
+

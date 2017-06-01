@@ -1,0 +1,229 @@
+/**
+ * *************************************************************************************************
+ * <br>
+ * 实现功能：
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 版本          变更时间             变更人                     变更原因
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 1.0.00      2017/5/24 14:20      陈飞(fly)                    新建
+ * <br>
+ * *************************************************************************************************<br>
+ */
+.flow-approve {
+    border: 1px solid #dddddd;
+}
+
+.flow-info {
+    height: 130px;
+    color: #333333;
+    border-bottom: 1px solid #dddddd;
+    background: #F8F9F9;
+}
+
+.flow-info-item {
+    float: left;
+    width: 49%;
+    height: 100%;
+}
+
+.flow-ordernum {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.flow-info-creater {
+    font-size: 18px;
+    float: left;
+}
+
+.flow-info-createtime {
+    color: #666666;
+    float: left;
+    margin: 4px 0 0 40px;
+}
+
+.flow-info-text {
+    font-size: 16px;
+    float: left;
+}
+
+.flow-info-excutor {
+    font-size: 16px;
+    font-weight: bold;
+    float: left;
+}
+
+.flow-info-remark {
+    float: left;
+    color: #06c595;
+    font-size: 16px;
+}
+
+.flow-info-item > div {
+    display: inline-block;
+    width: 100%;
+    padding: 20px 0 20px 20px;
+}
+
+.flow-nodetitle {
+    color: #333333;
+    float: left;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.flow-remark {
+    margin: 0 20px;
+    height: 100px;
+    width: 400px;
+    resize: none;
+    border: 1px solid #dddddd;
+}
+
+.flow-next {
+    background: #71d1fe none repeat scroll 0 0;
+    color: white;
+    margin-left: 40px;
+}
+
+.flow-iframe {
+    border: 1px solid #dddddd;
+    width: 100%;
+}
+
+.flow-order-titlebox {
+    padding: 15px;
+    color: #333333;
+    border-top: 1px solid #dddddd;
+    cursor: pointer;
+}
+
+.flow-order-titlebox .expand, .close {
+    float: right;
+}
+
+.flow-order-titlebox .expand::after {
+    background: url("../images/trigger.png") no-repeat;
+    content: "";
+    display: inline-block;
+    height: 5px;
+    margin: 0 0 2px 10px;
+    width: 10px;
+}
+
+.flow-order-titlebox .close::after {
+    background: url("../images/trigger.png") no-repeat scroll -10px 0;
+    content: "";
+    display: inline-block;
+    height: 5px;
+    margin: 0 0 2px 10px;
+    width: 10px;
+}
+
+.chooseuser-title {
+    border-bottom: 2px solid #5cc0ff;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+.flow-node-box {
+    border: 1px solid #eaeaea;
+    margin: 20px;
+}
+
+.flow-excutor-title {
+    background: #f8f9f9 none repeat scroll 0 0;
+    border-bottom: 1px solid #eaeaea;
+    color: #222222;
+    font-weight: bold;
+    padding: 12px;
+}
+
+.choose-icon {
+    display: inline-block;
+    float: left;
+    height: 17px;
+    margin: 2px 10px 0 0;
+    width: 17px;
+    cursor: pointer;
+}
+
+.choose-radio {
+    background: url("../images/radio.png");
+}
+
+.flow-excutor-content {
+    padding: 5px 0 20px;
+}
+
+.flow-excutor-content > div {
+    padding: 15px 0 0 20px;
+}
+
+.add-excutor {
+    background: #f2f6fc none repeat scroll 0 0;
+    border: 1px solid #5cc0ff;
+    border-radius: 6px;
+    display: inline-block;
+    float: right;
+    margin: 20px;
+    padding: 8px 0;
+    text-align: center;
+    width: 100px;
+    cursor: pointer;
+}
+
+.excutor-item-title {
+    cursor: pointer;
+    display: inline-block;
+}
+
+.flow-operate {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.flow-btn {
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 10px 30px;
+    display: inline-block;
+}
+
+.flow-operate .submit {
+    background: #71d1fe none repeat scroll 0 0;
+    color: white;
+    padding: 10px 37px;
+    margin-left: 40px;
+}
+
+.flow-operate .pre-step {
+    border: 1px solid #eaeaea;
+}
+
+.flow-chooseuser{
+    display: none;
+}
+
+.flow-decision {
+    float: left;
+    height: 100%;
+    width: 49%;
+}
+
+.flow-decision-box {
+    float: left;
+    height: 50px;
+    margin-top: 22px;
+    width: 80%;
+}
+
+.flow-decision-item{
+    float: left;
+}

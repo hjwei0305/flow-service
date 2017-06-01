@@ -49,10 +49,15 @@ public class Definition implements Serializable {
     private String defJson;
 
     /**
-     * 流程类型
+     * 流程类型Id
      */
     @XmlTransient
     private String flowTypeId;
+    /**
+     * 流程类型Name
+     */
+    @XmlTransient
+    private String flowTypeName;
 
     /**
      * 组织机构ID
@@ -105,6 +110,14 @@ public class Definition implements Serializable {
 
     public void setOrgId(String orgId) {
         this.orgId = orgId;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
     }
 
     public static void main(String[] args) throws JAXBException {

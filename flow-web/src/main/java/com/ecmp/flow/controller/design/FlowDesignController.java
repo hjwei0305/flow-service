@@ -75,7 +75,7 @@ public class FlowDesignController {
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(result.getData());
-        } else if(deploy == true){
+        } else if (deploy == true) {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
@@ -108,6 +108,7 @@ public class FlowDesignController {
 
     /**
      * 获取工作界面
+     *
      * @param businessModelId
      * @return
      */
@@ -129,32 +130,35 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "getEntity", method = RequestMethod.POST)
-    public String getEntity(String id) {
+    public String getEntity(String id, int versionCode) {
         OperateStatus status = OperateStatus.defaultSuccess();
-        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
-        FlowDefVersion data = proxy.findOne(id);
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        FlowDefVersion data = proxy.getFlowDefVersion(id, versionCode);
         status.setData(data);
         return JsonUtil.serialize(status);
     }
 
     /**
      * 获取岗位类别列表
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "listPosType")
-    public String listPositonType(String notInIds){
+    public String listPositonType(String notInIds) {
         IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
         List<PositionCategory> data = proxy.findAll();
         return JsonUtil.serialize(data);
     }
+
     /**
      * 获取岗位列表
+     *
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "listPos")
-    public String listPositon(){
+    public String listPositon() {
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
         List<Position> data = proxy.findAll();
         return JsonUtil.serialize(data);
@@ -162,6 +166,7 @@ public class FlowDesignController {
 
     /**
      * 查询流程服务地址
+     *
      * @return 服务地址清单
      * @throws ParseException
      */
@@ -174,4 +179,5 @@ public class FlowDesignController {
         status.setData(flowServiceUrlPageResult);
         return JsonUtil.serialize(status);
     }
+
 }

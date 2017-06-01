@@ -5,6 +5,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     count: 0,
     id: null,
+    versionCode: null,
     orgId: null,
     instance: null,
     connectInfo: {},
@@ -537,7 +538,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             process.nodes[id] = node;
         }
-        return {flowTypeId: baseInfo.flowTypeId, orgId: this.orgId, process: process};
+        return {
+            flowTypeId: baseInfo.flowTypeId,
+            flowTypeName: baseInfo.flowTypeName,
+            orgId: this.orgId,
+            id: this.id,
+            process: process
+        };
     }
     ,
     loadData: function (data) {
@@ -548,13 +555,15 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/design/getEntity",
             params: {
-                id: id
+                id: this.id,
+                versionCode: this.versionCode
             },
             success: function (status) {
                 mask.hide();
                 EUI.ProcessStatus(status);
                 if (status.success) {
-                    g.showDesign(status.data);
+                    var data = JSON.parse(status.data.defJson);
+                    g.showDesign(data);
                 }
             },
             failure: function (status) {
@@ -565,9 +574,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showDesign: function (data) {
+        this.loadHead(data);
         var html = "";
-        for (var id in data.nodes) {
-            var node = data.nodes[id];
+        for (var id in data.process.nodes) {
+            var node = data.process.nodes[id];
             var type = node.type;
             if (type == "StartEvent") {
                 html += this.showStartNode(id, node);
@@ -587,12 +597,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < doms.length; i++) {
             this.initNode(doms[i]);
         }
-        for (var id in data.nodes) {
-            var node = data.nodes[id];
+        for (var id in data.process.nodes) {
+            var node = data.process.nodes[id];
             for (var index in node.target) {
-                this.doConect(id, node.target[index]);
+                this.doConect(id, node.target[index].targetId);
             }
         }
+    },
+    loadHead: function (data) {
+        var headData = {
+            name: data.process.name,
+            id: data.process.id,
+            flowTypeId: data.flowTypeId,
+            flowTypeName: data.flowTypeName
+        };
+        EUI.getCmp("formPanel").loadData(headData);
     },
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
