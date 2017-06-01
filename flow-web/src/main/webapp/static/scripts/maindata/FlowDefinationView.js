@@ -237,11 +237,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     label: "部署ID",
                     name: "actDeployId",
                     index: "actDeployId"
-                }, {
+                }/*, {
                     label: "启动条件UEL",
                     name: "startUel",
                     index: "startUel"
-                }, {
+                }*/, {
                     label: "版本号",
                     name: "versionCode",
                     index: "versionCode",
@@ -321,7 +321,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "defKey",
                     width: 220,
                     value: data.defKey
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: "启动UEL",
                     labelWidth: 90,
@@ -329,7 +329,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "startUel",
                     width: 220,
                     value: data.startUel
-                }, {
+                }*/, {
                     xtype: "TextField",
                     title: "组织机构ID",
                     labelWidth: 90,
@@ -435,14 +435,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "defKey",
                     width: 220
-                }, {
+                }/*, {
                     xtype: "TextField",
                     title: "启动UEL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "startUel",
                     width: 220
-                }, {
+                }*/, {
                     xtype: "TextArea",
                     title: this.lang.depictText,
                     labelWidth: 90,
@@ -481,8 +481,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: "流程审计界面",
-            url: _ctxPath + "/design/show?id=" + g.selectedNodeId,
-            id: g.selectedNodeId
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId,
+            orgId: g.selectedNodeId
         };
         g.addTab(tab);
     },
@@ -801,12 +801,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "defKey",
                         index: "defKey",
                         width: "50"
-                    }, {
+                    }/*, {
                         label: "启动条件UEL",
                         name: "startUel",
                         index: "startUel",
                         width: "50"
-                    }, {
+                    }*/, {
                         label: "组织机构ID",
                         name: "orgId",
                         index: "orgId",
