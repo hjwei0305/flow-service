@@ -43,6 +43,11 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                    <div class="navbar"></div>' +
             '                    <i class="arrow-right next"></i>' +
             '                </div>' +
+            '                <div class="content-skip">' +
+            '		            <input type="checkbox" class="checkbox check-all">全选' +
+            '		            <div class="end-icon end-all"></div>' +
+            '		            <div class="reject-icon"></div>' +
+            '	             </div>' +
             '               <div class="content-info">' +
             '                    <div class="info-left todo-info"></div>' +
             '               </div>' +
@@ -176,7 +181,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
              }*/
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
-                '                                <span id="checkbox"></span>' +
+                '                                <input type="checkbox" class="checkbox">' +
                 '                                <span class="flow-text">' + items[j].taskName + '</span>' +
                 // '                                <span class="item-right over-text">' + statusStr + '</span>' +
                 '                            </div>' +
@@ -189,11 +194,13 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '                                <div class="end">' +
                 '                                    <i class="end-icon"></i>' +
                 '                                    <i class="reject-icon"></i>' +
+                '                                    <i class="look-icon"></i>' +
+                '                                    <i class="time-icon look-approve"></i>' +
                 // '                                    <span class="end-text">' + items[j].end + '</span>' +
                 '                                </div>' +
                 '                                <span class="item-right">' +
-                '                                    <i class="look-icon"></i>' +
-                '                                    <i class="time-icon look-approve"></i>' +
+                /*'                                    <i class="look-icon"></i>' +
+                 '                                    <i class="time-icon look-approve"></i>' +*/
                 '                                </span>' +
                 '                            </div>' +
                 '</div>');
@@ -261,7 +268,6 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                     </div>';
         $(".content-page").append(html);
     },
-
     //我的单据中的日历
     initChooseDate: function () {
         EUI.FieldGroup({
@@ -329,7 +335,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '                                <span class="item-right general">' + item.general + '</span>' +
                 '                            </div>' +
                 '                            <div class="item user">' +
-                '                                <span class="userName">' + item.useuName + '</span>' +
+                '                                <span class="user-name">' + item.useuName + '</span>' +
                 '                                <span class="item-right userName">' + item.date + '</span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
@@ -421,7 +427,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var tab = {
                 title: "流程实例",
-                url: _ctxPath + "/flowInstance/show?id="+data.flowInstance.id,
+                url: _ctxPath + "/flowInstance/show?id=" + data.flowInstance.id,
                 id: data.flowInstance.id
             };
             g.addTab(tab);
