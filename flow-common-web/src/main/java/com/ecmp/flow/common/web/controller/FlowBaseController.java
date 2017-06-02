@@ -222,6 +222,8 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         if(!StringUtils.isEmpty(includeNodeIdsStr)){
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
+        }else {
+            throw new RuntimeException("至少要传入一个节点ID！");
         }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,includeNodeIds);
         if(nodeInfoList != null && !nodeInfoList.isEmpty()){
