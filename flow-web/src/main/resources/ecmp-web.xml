@@ -4,10 +4,10 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:annotation-config/>
-    <bean class="com.ecmp.config.ContextConfig"/>
-    <context:component-scan base-package="com.ecmp" use-default-filters="false">
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
-    </context:component-scan>
-    <bean id="casFilter" class="com.ecmp.core.security.filter.CasFilter"/>
+    <!--<context:annotation-config/>-->
+    <!--<bean class="com.ecmp.config.ContextConfig"/>-->
+    <!--<context:component-scan base-package="com.ecmp" use-default-filters="false">-->
+        <!--<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>-->
+    <!--</context:component-scan>-->
+    <!--<bean id="casFilter" class="com.ecmp.core.security.filter.CasFilter"/>-->
 </beans>

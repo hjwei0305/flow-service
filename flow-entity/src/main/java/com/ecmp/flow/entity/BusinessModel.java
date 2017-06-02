@@ -81,6 +81,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     private String appModuleId;
 
     /**
+     * 关联的应用模块Code
+     */
+    @Column(length = 20,name = "app_module_code")
+    private String appModuleCode;
+
+    /**
      * 拥有的流程类型
      */
     @Transient
@@ -144,6 +150,14 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.daoBean = daoBean;
     }
 
+    public String getAppModuleCode() {
+        return appModuleCode;
+    }
+
+    public void setAppModuleCode(String appModuleCode) {
+        this.appModuleCode = appModuleCode;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -168,6 +182,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("daoBean", daoBean)
                 .append("depict", depict)
                 .append("appModuleId", appModuleId)
+                .append("appModuleCode", appModuleCode)
                 .append("flowTypes", flowTypes)
                 .toString();
     }
