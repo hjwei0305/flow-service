@@ -195,6 +195,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTask = flowTaskDao.findOne(id);
         flowTask.setDepict(opinion);
         String actTaskId = flowTask.getActTaskId();
+
+        //获取当前业务实体表单的条件表达式信息
+        String businessId = flowTask.getFlowInstance().getBusinessId();
+        BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        String businessModelId = businessModel.getId();
+        String appModuleId = businessModel.getAppModuleId();
+        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+        if(v!=null && !v.isEmpty()){
+            if(variables == null){
+                variables = new HashMap<String,Object>();
+            }
+            variables.putAll(v);
+        }
+
         this.completeActiviti(actTaskId, variables);
         this.saveVariables(variables, flowTask);
         Integer reject = null;
