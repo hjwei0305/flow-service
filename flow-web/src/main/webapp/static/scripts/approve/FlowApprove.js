@@ -45,8 +45,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     initHtml: function () {
         var firstHtml = '<div class="flow-approve">' + this.initTopHtml() + this.initOperateHtml() + this.initFrameHtml() + '</div>';
-        var secondHtml = '<div class="flow-chooseuser"></div>';
-        return firstHtml + secondHtml + this.initChooseUserHtml();
+        return firstHtml + this.initChooseUserHtml();
     },
     initTopHtml: function () {
         return '<div class="flow-info">' +
@@ -105,7 +104,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            提交' +
             '        </div>' +
             '    </div>';
-
     },
     addEvents: function () {
         var g = this;
@@ -123,6 +121,26 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }, function () {
             $(".flow-iframe").hide();
             $(".expand").text("展开").addClass("expand");
+        });
+        //决策选择
+        $(".flow-decision-item").live("click", function () {
+            if ($(this).hasClass("select")) {
+                $(this).removeClass("select");
+            } else {
+                $(this).addClass("select");
+            }
+        });
+        //执行人选择
+        $(".flow-user-item").live("click", function () {
+            if ($(this).hasClass("select")) {
+                $(this).removeClass("select");
+            } else {
+                $(this).addClass("select");
+            }
+        });
+
+        $(".submit").bind("click", function () {
+            g.submit();
         });
     },
     getHeadData: function () {
@@ -196,7 +214,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getDesionIds: function () {
         var includeNodeIds = "";
         var doms;
-        if (this.desionType != 0) {
+        if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
             for (var i = 0; i < doms.length; i++) {
                 includeNodeIds += $(doms[i]).attr("id");
@@ -204,7 +222,39 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return includeNodeIds;
     },
+    //检查审批输入是否有效
+    checkIsValid: function () {
+        if (this.desionType == 2) {
+            return true;
+        }
+        if (this.desionType == 1) {
+            var doms = $(".select", ".flow-decision-box");
+            if (doms.length != 1) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "请选择下一步执行节点"
+                })
+                return false;
+            }
+            return true;
+        }
+        if (this.desionType == 0) {
+            var doms = $(".select", ".flow-decision-box");
+            if (doms.length == 0) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "请选择下一步执行节点"
+                })
+                return false;
+            }
+            return true;
+        }
+        return false;
+    },
     goToNext: function () {
+        if (!this.checkIsValid()) {
+            return;
+        }
         //执行子窗口方法
         if (this.goNext && !this.goNext.call(this)) {
             return;
@@ -239,6 +289,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var data = this.toChooseUserData;
         $(".flow-approve").hide();
         $(".flow-chooseuser").show();
+        $(".flow-node-box").remove();
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
@@ -253,17 +304,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
-            for (var j = 0; j < data.employeeSet.length; j++) {
-                var item = data.employeeSet[j];
+            for (var j = 0; j < node.employeeSet.length; j++) {
+                var item = node.employeeSet[j];
                 nodeHtml += '<div class="flow-user-item" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + '，岗位：' + '，组织机构：' + '，编号：' + '</div>'
-                '</div>';
+                    '<div class="excutor-item-title">姓名：' + item.user.userName + '，岗位：' + '，组织机构：' + '，编号：' + '</div>' +
+                    '</div>';
             }
             nodeHtml += "</div></div>";
             html += nodeHtml;
         }
-        $(".flow-chooseuser").append(html);
+        $(".chooseuser-title").after(html);
     },
     getSelectedUser: function () {
         var users = [];
@@ -290,18 +341,46 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return users;
     },
+    checkUserValid: function () {
+        var nodeDoms = $(".flow-node-box");
+        for (var i = 0; i < nodeDoms.length; i++) {
+            var nodeDom = $(nodeDoms[i]);
+            var index = nodeDom.attr("index");
+            var data = this.toChooseUserData[index];
+            var itemDoms = $(".select", nodeDom);
+            if (data.flowTaskType == 0) {
+                if (itemDoms.length != 1) {
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: "请选择[" + data.name + "]的执行人"
+                    });
+                    return false;
+                }
+            } else if (data.flowTaskType == 1) {
+                if (itemDoms.length == 0) {
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: "请选择[" + data.name + "]的执行人"
+                    });
+                    return false;
+                }
+            }
+        }
+        return true;
+    },
     submit: function () {
         var g = this;
         var mask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });
+        console.log(this.getSelectedUser());
         EUI.Store({
             url: _ctxPath + "/builtInApprove/completeTask",
             params: {
                 taskId: this.taskId,
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
-                flowTaskCompleteList: this.getSelectedUser()
+                taskList: JSON.stringify(this.getSelectedUser())
             },
             success: function (status) {
                 mask.hide();

@@ -158,6 +158,17 @@
     background: url("../images/radio.png");
 }
 
+.select .choose-radio{
+    background: url("../images/radio-select.png");
+}
+.choose-checkbox {
+    background: url("../images/checkbox.png");
+}
+
+.select .choose-checkbox{
+    background: url("../images/checkbox-select.png");
+}
+
 .flow-excutor-content {
     padding: 5px 0 20px;
 }
