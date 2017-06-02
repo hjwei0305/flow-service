@@ -140,7 +140,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String actTaskId = flowTask.getActTaskId();
             // 取得当前任务
             HistoricTaskInstance currTask = historyService
-                    .createHistoricTaskInstanceQuery().taskId(taskId)
+                    .createHistoricTaskInstanceQuery().taskId(actTaskId)
                     .singleResult();
             ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                     .getDeployedProcessDefinition(currTask
