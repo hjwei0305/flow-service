@@ -2,6 +2,7 @@ package com.ecmp.flow.activiti.ext;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.util.ConditionUtil;
+import com.ecmp.flow.util.ExpressionUtil;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
@@ -39,7 +40,7 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
         repositoryService = (RepositoryService) applicationContext.getBean("repositoryService");
         String processInstanceId = execution.getProcessInstanceId();
         String processDefId = execution.getProcessDefinitionId();
-
+        //execution.getId()
         List<PvmTransition> outSequenceList = execution.getActivity().getOutgoingTransitions();
         if (outSequenceList != null && outSequenceList.size() > 0) {
             for (PvmTransition pv : outSequenceList) {
