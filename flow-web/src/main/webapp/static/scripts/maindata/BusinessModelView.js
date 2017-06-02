@@ -5,6 +5,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     appModuleName: "",
     appModule: "",
     businessModelId: "",
+    appModuleCode:"",
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -49,6 +50,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     cobo.setValue(data[0].name);
                     g.appModule = data[0].id;
                     g.appModuleName = data[0].name;
+                    g.appModuleCode = data[0].code;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/businessModel/listBusinessModel",
                         loadonce: false,
@@ -69,6 +71,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     // console.log(data);
                     g.appModule = data.data.id;
                     g.appModuleName = data.data.name;
+                    g.appModuleCode = data.data.code;
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_EQ_appModuleId: data.data.id
                         }
@@ -143,6 +146,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonBean",
                     index: "conditonBean"
                 }, {
+                    label: "应用模块Code",
+                    name: "appModuleCode",
+                    index: "appModuleCode"
+                }, {
+                    label: "数据访问对象",
+                    name: "daoBean",
+                    index: "daoBean"
+                }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict"
@@ -208,7 +219,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
-            height: 250,
+            height: 350,
+            width:380,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -217,7 +229,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TextField",
                     title: "ID",
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "id",
                     width: 220,
@@ -226,25 +238,34 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleId",
                     width: 220,
                     value: g.appModule,
                     hidden: true
-                }, {
+                },{
                     xtype: "TextField",
                     title: g.lang.modelText,
                     readonly: true,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleName",
                     width: 220,
                     value: g.appModuleName
                 }, {
                     xtype: "TextField",
+                    title: "应用模块code",
+                    readonly: true,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "appModuleCode",
+                    width: 220,
+                    value: data.appModuleCode,
+                },  {
+                    xtype: "TextField",
                     title: g.lang.nameText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "name",
                     width: 220,
@@ -252,7 +273,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "className",
                     width: 220,
@@ -260,15 +281,23 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.conditonBeanText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "conditonBean",
                     width: 220,
                     value: data.conditonBean
+                },{
+                    xtype: "TextField",
+                    title: "数据访问对象",
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "daoBean",
+                    width: 220,
+                    value: data.daoBean
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "depict",
                     width: 220,
@@ -276,7 +305,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }/*, {
                  xtype: "TextField",
                  title: g.lang.workPageText,
-                 labelWidth: 90,
+                 labelWidth: 115,
                  name: "workPage",
                  width: 220,
                  value: data.workPage
@@ -306,7 +335,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: g.lang.addNewBusinessModelText,
-            height: 250,
+            height: 350,
+            width:380,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -315,7 +345,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleId",
                     width: 220,
@@ -325,36 +355,52 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     title: g.lang.modelText,
                     readonly: true,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleName",
                     width: 220,
                     value: g.appModuleName
+                },{
+                    xtype: "TextField",
+                    title: "应用模块code",
+                    readonly: true,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "appModuleCode",
+                    width: 220,
+                    value: g.appModuleCode
                 }, {
                     title: g.lang.nameText,
                     xtype: "TextField",
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "name",
                     width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "className",
                     width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.conditonBeanText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "conditonBean",
                     width: 220
                 }, {
                     xtype: "TextField",
+                    title: "数据访问对象",
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "daoBean",
+                    width: 220
+                }, {
+                    xtype: "TextArea",
                     title: g.lang.depictText,
-                    labelWidth: 90,
+                    labelWidth: 115,
                     allowBlank: false,
                     name: "depict",
                     width: 220
