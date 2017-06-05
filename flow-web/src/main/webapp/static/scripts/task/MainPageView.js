@@ -48,7 +48,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '		            <div class="end-icon end-all"></div>' +
             '		            <div class="reject-icon"></div>' +
             '	             </div>' +
-            '               <div class="content-info">' +
+            '               <div class="content-info" id="content-info">' +
             '                    <div class="info-left todo-info"></div>' +
             '               </div>' +
             '               <div class="content-page"></div>' +
@@ -192,10 +192,10 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
-                '                                    <i class="end-icon"></i>' +
-                '                                    <i class="reject-icon"></i>' +
-                '                                    <i class="look-icon"></i>' +
-                '                                    <i class="time-icon look-approve"></i>' +
+                '                                    <i class="end-icon" title="审批"></i>' +
+                '                                    <i class="reject-icon" title="驳回"></i>' +
+                '                                    <i class="look-icon look-approve" title="查看表单"></i>' +
+                '                                    <i class="time-icon flowInstance" title="流程历史"></i>' +
                 // '                                    <span class="end-text">' + items[j].end + '</span>' +
                 '                                </div>' +
                 '                                <span class="item-right">' +
@@ -382,6 +382,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         g.todoWorkEvent();
         g.approveViewWindow();
         g.flowInstanceWindow();
+        g.lookApproveViewWindow();
+        g.showRejectWindow();
 
     },
     //导航的点击事件
@@ -407,7 +409,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     //点击打开审批界面的新页签
     approveViewWindow: function () {
         var g = this;
-        $(".look-approve").live("click", function () {
+        $(".end-icon").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var tab = {
@@ -418,18 +420,92 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             g.addTab(tab);
         });
     },
-    //点击打开流程实例的新页签
-    flowInstanceWindow: function () {
+    //点击打开查看审批界面的新页签
+    lookApproveViewWindow: function () {
         var g = this;
-        $(".reject-icon").live("click", function () {
+        $(".look-approve").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var tab = {
-                title: "流程实例",
+                title: "审批界面",
+                url: _ctxPath + "/lookApproveBill/show?id=" + data.flowInstance.businessId,
+                id: data.flowInstance.businessId
+            };
+            g.addTab(tab);
+        });
+    },
+    //点击打开流程历史的新页签
+    flowInstanceWindow: function () {
+        var g = this;
+        $(".flowInstance").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var tab = {
+                title: "流程历史",
                 url: _ctxPath + "/flowInstance/show?id=" + data.flowInstance.id,
                 id: data.flowInstance.id
             };
             g.addTab(tab);
+        });
+    },
+    //驳回
+    showRejectWindow:function () {
+        var g=this;
+        $(".reject-icon").live("click",function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var win=EUI.Window({
+                title:"驳回意见",
+                height:100,
+                items:[{
+                    xtype:"FormPanel",
+                    id:"reject",
+                    padding:0,
+                    items:[{
+                        xtype:"TextArea",
+                        title:"驳回意见",
+                        labelWidth:90,
+                        width:220,
+                        height:80,
+                        allowBlank:false
+                    }]
+                }],
+                buttons: [{
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        var form = EUI.getCmp("reject");
+                        if (!form.isValid()) {
+                            return;
+                        }
+                        var myMask = EUI.LoadMask({
+                            msg: "正在删除，请稍后.."
+                        });
+                        EUI.Store({
+                            url: _ctxPath + "/flowTask/rejectTask",
+                            params: {
+                                id: data.id
+                            },
+                            success: function (result) {
+                                myMask.hide();
+                                if (result.success) {
+                                    EUI.getCmp("content-info").refresh();
+                                    win.close();
+                                }
+                            },
+                            failure: function (result) {
+                                myMask.hide();
+                                EUI.ProcessStatus(result);
+                            }
+                        })
+                    }
+                }, {
+                    title: "取消",
+                    handler: function () {
+                        win.remove();
+                    }
+                }]
+            })
         });
     },
     //导航左右箭头的翻页效果
