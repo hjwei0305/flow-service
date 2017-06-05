@@ -10,6 +10,8 @@ import com.ecmp.flow.entity.FlowHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -30,5 +32,10 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     protected BaseEntityDao<FlowHistory> getDao(){
         return this.flowHistoryDao;
+    }
+
+    @Override
+    public List<FlowHistory> findByInstanceId(String instanceId) {
+        return flowHistoryDao.findByInstanceId(instanceId);
     }
 }
