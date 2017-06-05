@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="base/base :: base_head"/>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/MainPageView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/EUI/jquery-1.8.min.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/MainPageData.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/MainPageView2.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/TodoTaskView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/CompleteTaskView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/TodoOrderView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/CompleteOrderView.js}"></script>
+
+    <title>已办界面</title>
+    <script type="text/javascript">
+        var mainPageView;
+        EUI.onReady(function () {
+            mainPageView = new EUI.MainPageView({
+                renderTo: "content",
+                data: _data,
+                menudata: _menudata,
+                dataWait: _dataWait,
+                menu: _menu
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
