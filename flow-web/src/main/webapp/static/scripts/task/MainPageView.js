@@ -80,7 +80,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '   </div>';
     },
-    //已办界面导航部分的数据调用0hg
+    //已办界面导航部分的数据调用
     getModelList: function () {
         var g = this;
         // g.showModelItems(this.data);
@@ -206,36 +206,35 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 '</div>');
             itemdom.data(items[j]);
             $(".todo-info").append(itemdom);
-            // g.judgeState();
         }
     },
-    /*//显示待办中的内容部分子组件
-     showWaitContent: function (items) {
-     var html = "";
-     for (var j = 0; j < items.length; j++) {
-     html += '<div class="info-item">' +
-     '                            <div class="item">' +
-     '                                <span class="flow-text">' + items[j].taskName + '</span>' +
-     '                                <span class="item-right over-text">' + items[j].state + '</span>' +
-     '                            </div>' +
-     '                            <div class="item user">' +
-     '                                <span class="userName">' + items[j].userName + '</span>' +
-     '                                <span class="item-right userName">' + items[j].date + '</span>' +
-     '                            </div>' +
-     '                            <div class="item">' +
-     '                                <div class="end">' +
-     '                                    <i class="end-icon"></i>' +
-     '                                    <span class="end-text">' + items[j].end + '</span>' +
-     '                                </div>' +
-     '                                <span class="item-right">' +
-     '                                    <i class="look-icon"></i>' +
-     '                                    <i class="time-icon"></i>' +
-     '                                </span>' +
-     '                            </div>' +
-     '</div>';
-     }
-     $(".todo-info").html(html);
-     },*/
+    //显示待办中的内容部分子组件
+    showWaitContent: function (items) {
+        var html = "";
+        for (var j = 0; j < items.length; j++) {
+            html += '<div class="info-item">' +
+                '                            <div class="item">' +
+                '                                <span class="flow-text">' + items[j].taskName + '</span>' +
+                '                                <span class="item-right over-text">' + items[j].state + '</span>' +
+                '                            </div>' +
+                '                            <div class="item user">' +
+                '                                <span class="userName">' + items[j].userName + '</span>' +
+                '                                <span class="item-right userName">' + items[j].date + '</span>' +
+                '                            </div>' +
+                '                            <div class="item">' +
+                '                                <div class="end">' +
+                '                                    <i class="end-icon"></i>' +
+                '                                    <span class="end-text">' + items[j].end + '</span>' +
+                '                                </div>' +
+                '                                <span class="item-right">' +
+                '                                    <i class="look-icon"></i>' +
+                '                                    <i class="time-icon"></i>' +
+                '                                </span>' +
+                '                            </div>' +
+                '</div>';
+        }
+        $(".todo-info").append(html);
+    },
     //待办工作的点击事件
     waitingWorkEvent: function () {
         var g = this;
@@ -259,10 +258,10 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         var html = "";
         html += '<div class="record-total">共23条记录</div>' +
             '                    <div class="pege-right">' +
+            // '                        <a href="#" class="one">1</a>' +
+            '                        <a href="#" class="num"><首页</a>' +
+            '                        <a href="#" class="num"><上一页</a>' +
             '                        <a href="#" class="one">1</a>' +
-            '                        <a href="#" class="num">2</a>' +
-            '                        <a href="#" class="num">3</a>' +
-            '                        <a href="#" class="num">4</a>' +
             '                        <a href="#" class="next-page">下一页></a>' +
             '                        <a href="#" class="end-page">尾页></a>' +
             '                     </div>';
