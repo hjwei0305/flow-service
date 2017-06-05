@@ -1,0 +1,340 @@
+.container {
+	width: 600px;
+	height: 450px;
+	border: 1px solid #000;
+}
+
+.top {
+	width: 600px;
+	height: 100px;
+	/*border: 1px solid #000;*/
+	overflow: hidden;
+}
+
+.top-left {
+	width: 200px;
+	height: 100px;
+	float: left;
+	text-align: center;
+	/*border: 1px solid #000;*/
+}
+
+.flow-line {
+	height: 58px;
+	width: 1px;
+	float: left;
+	margin-top: 18px;
+	border-left: 1px solid #8edede;
+}
+
+.flow-status {
+	width: 200px;
+	height: 70px;
+	margin: 0 auto;
+	margin-top: 15px;
+	cursor: pointer;
+	/*border: 1px solid #000;*/
+}
+
+.flow-statusimg {
+	background: url(../images/img/flowstatusImg.png) no-repeat;
+}
+
+.select .flow-statusimg {
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+}
+
+.navbar:hover .flow-statusimg {
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+}
+
+
+/*.flow-statusimg:hover{
+	width: 40px;
+	height: 40px;
+	 margin:0 auto;
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+}*/
+
+.navbar:hover .text {
+	color: #45b7ff;
+}
+
+.select .text {
+	color: #45b7ff;
+}
+
+.flow-tabicon {
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+	margin-top: 20px;
+}
+
+.top-center {
+	width: 200px;
+	height: 100px;
+	float: left;
+	/*border: 1px solid #000;*/
+}
+
+.flow-history {
+	width: 190px;
+	height: 70px;
+	margin: 0 auto;
+	margin-top: 15px;
+	cursor: pointer;
+}
+
+.navbar:hover .flow-historyimg {
+	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+}
+
+.flow-historyimg {
+	background: url(../images/img/flowhistoryImg.png)
+}
+
+.select .flow-historyimg {
+	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+}
+
+
+/*.flow-historyimg:hover{
+	width: 40px;
+	height: 40px;
+	 margin:0 auto;
+	background:url(../images/img/flowhistorySelImg.png)
+}*/
+
+.select-text {
+	margin-top: 10px;
+	text-align: center;
+	font-size: 14px;
+	color: #45b7ff;
+}
+
+.top-right {
+	width: 190px;
+	height: 100px;
+	float: left;
+	/*border: 1px solid #000;*/
+}
+
+.flow-info {
+	width: 190px;
+	height: 70px;
+	margin: 0 auto;
+	margin-top: 15px;
+	/*border: 1px solid #000;*/
+}
+
+.navbar:hover .flow-infoimg {
+	background: url(../images/img/flowSelDesgin.png) no-repeat;
+}
+
+.flow-infoimg {
+	background: url(../images/img/flowDesgin.png)
+}
+
+.select .flow-infoimg {
+	background: url(../images/img/flowSelDesgin.png)
+}
+
+.flow-hsitorycenter {
+//height: 290px;
+	margin: 0px 20px 20px;
+	padding: 20px;
+	background-color: #f8f9f9;
+	overflow-y:auto;
+}
+
+.center-info {
+	height: 290px;
+	/*border: 1px solid #000000;*/
+}
+
+.flow-start {
+	height: 52px;
+	/*border: 1px solid #000000;*/
+	overflow: hidden;
+	border-bottom: 1px solid #EEEEEE;
+}
+
+.flow-startimg {
+	width: 16px;
+	height: 16px;
+	float: left;
+	margin-top: 5px;
+	background: url(../images/img/flowstartImg.png);
+}
+
+.flow-startfield{
+	font-size: 14px;
+	color: #45b7ff;
+	font-weight: bold;
+	margin-top: 5px;
+	margin-left: 10px;
+	float: left;
+}
+
+.text {
+	color: #666666;
+	font-size: 14px;
+
+	/*    margin-left: 10px;*/
+	margin-top: 5px;
+	text-align: center;
+}
+
+.flow-startright {
+	float: right;
+	margin-top: 5px;
+	overflow: hidden;
+}
+
+.flow-startuser {
+	font-size: 14px;
+	color: #333333;
+	float: left;
+}
+
+.flow-startline {
+	height: 13px;
+	width: 1px;
+	float: left;
+	margin-top: 4px;
+	margin-left: 10px;
+	border-left: 1px solid #000000;
+}
+
+.flow-starttime {
+	float: left;
+	font-size: 14px;
+	margin-left: 10px;
+	color: #333333;
+}
+
+.flow-historyprogress {
+	margin-left: 20px;
+}
+
+.flow-historyinfoone {
+	height: 110px;
+	border-top: 1px solid #EEEEEE;
+	border-left: 1px solid #EEEEEE;
+	border-bottom: 1px solid #EEEEEE;
+	position: relative;
+}
+
+.flow-historyinfotwo {
+	height: 110px;
+	border: 1px solid #000000;
+}
+
+.flow-historyinfotop {
+	height: 18px;
+	margin-top: 20px;
+	overflow: hidden;
+	/*border: 1px solid #000000;*/
+}
+
+.flow-historydot {
+	width: 16px;
+	height: 16px;
+	background: url(../images/img/flowDot.png);
+	float: left;
+	position: absolute;
+	top: 20px;
+	left: -9px;
+	z-index: 1;
+}
+
+.flow-historystatus {
+	margin-left: 18px;
+	font-size: 14px;
+	color: #333333;
+	font-weight: bold;
+	float: left;
+}
+
+.flow-historyright {
+	float: right;
+	font-size: 14px;
+	color: #999;
+}
+
+.flow-usetime {
+	margin-top: 15px;
+	font-size: 14px;
+	color: #999;
+	text-align: right;
+}
+
+.flow-remark {
+	margin-top: 15px;
+	font-size: 14px;
+	color: #999;
+	text-align: right;
+}
+
+.flow-statuscenter {
+	/*height: 290px;*/
+	margin: 0px 20px 20px;
+	padding: 20px;
+	background-color: #f8f9f9;
+	overflow-y:auto;
+}
+
+.statuscenter-info {
+	width: 520px;
+	height: 290px;
+	/*border:1px solid #000000;*/
+}
+
+.flow-progress {
+	width: 520px;
+	height: 60px;
+	/*border:1px solid #000000;*/
+	border-bottom: 1px solid #eeeeee;
+}
+
+.flow-progresstitle {
+	width: 520px;
+	height: 25px;
+	/*border:1px solid #000000;*/
+	font-size: 14px;
+	color: #45b7ff;
+	font-weight: bold;
+}
+
+.flow-progressinfo {
+	width: 520px;
+	height: 25px;
+	/*border:1px solid #000000;*/
+	font-size: 14px;
+	color: #333;
+	overflow: hidden;
+}
+
+.flow-progressinfoleft {
+	width: 30%;
+	height: 25px;
+	/*border:1px solid #000000;*/
+	float: left;
+}
+
+.flow-progressline {
+	height: 15px;
+	width: 1px;
+	margin-top: 3px;
+	margin-left: 10px;
+	float: left;
+	border-left: 1px solid #000000;
+}
+
+.flow-progressinforight {
+	height: 25px;
+	margin-left: 10px;
+	/*border:1px solid #000000;*/
+	float: left;
+}
