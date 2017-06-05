@@ -22,15 +22,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             padding: 0,
             isOverFlow: false,
             border: false,
-            items: [{
-                xtype: "Button",
-                title: "流程信息",
-                handler: function () {
-                   Flow.FlowHistory({
-                        instanceId: "DE3412A7-3FBE-11E7-9EFA-6C498F234A3D"
-                    })
-                }
-            }, '->', {
+            items: [ '->', {
                 xtype: "SearchBox",
                 displayText: "请输入任务名进行搜索",
                 onSearch: function (value) {
