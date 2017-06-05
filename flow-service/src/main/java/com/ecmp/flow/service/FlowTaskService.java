@@ -385,9 +385,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return 结果
      */
-    public OperateResult taskReject(String id, Map<String, Object> variables) {
+    public OperateResult taskReject(String id,String opinion, Map<String, Object> variables) {
         OperateResult result = OperateResult.OperationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
+        flowTask.setDepict(opinion);
         if (flowTask != null) {
             FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
             if (preFlowTask == null) {
@@ -460,7 +461,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //完成任务
             variables.put("reject", 1);
-            this.complete(currentTask.getId(),"驳回", variables);
+            this.complete(currentTask.getId(),"驳回:"+currentTask.getDepict(), variables);
 
             //恢复方向
             preActivity.getIncomingTransitions().remove(newTransition);
