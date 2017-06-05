@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo;
 
 import com.ecmp.basic.entity.Employee;
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.flow.vo.bpmn.MultiInstanceConfig;
 
 import java.io.Serializable;
@@ -25,8 +26,10 @@ public class NodeInfo implements Serializable{
     private String uiType;//radiobox\checkbox\readOnly
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
 	private String uiUserType;//流程设计器定义的用户选择类型，StartUser、Position、PositionType、SelfDefinition、AnyOne
-    private Set<Employee> employeeSet;//记录流程设计阶段所选择的员工
+//    private Set<Employee> employeeSet;//记录流程设计阶段所选择的员工
+	private Set<Executor> executorSet;//记录流程设计阶段所选择的执行人
 	private String userVarName;//流程节点用户变量名称
+
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
 
@@ -69,13 +72,13 @@ public class NodeInfo implements Serializable{
 		this.uiUserType = uiUserType;
 	}
 
-	public Set<Employee> getEmployeeSet() {
-		return employeeSet;
-	}
-
-	public void setEmployeeSet(Set<Employee> employeeSet) {
-		this.employeeSet = employeeSet;
-	}
+//	public Set<Employee> getEmployeeSet() {
+//		return employeeSet;
+//	}
+//
+//	public void setEmployeeSet(Set<Employee> employeeSet) {
+//		this.employeeSet = employeeSet;
+//	}
 
 	public String getUserVarName() {
 		return userVarName;
@@ -85,7 +88,15 @@ public class NodeInfo implements Serializable{
 		this.userVarName = userVarName;
 	}
 
-//	public MultiInstanceConfig getMultiInstanceConfig() {
+	public Set<Executor> getExecutorSet() {
+		return executorSet;
+	}
+
+	public void setExecutorSet(Set<Executor> executorSet) {
+		this.executorSet = executorSet;
+	}
+
+	//	public MultiInstanceConfig getMultiInstanceConfig() {
 //		return multiInstanceConfig;
 //	}
 //

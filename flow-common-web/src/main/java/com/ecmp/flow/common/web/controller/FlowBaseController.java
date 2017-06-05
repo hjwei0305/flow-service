@@ -221,7 +221,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     public String  rejectTask(String taskId,String opinion){
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result =  proxy.taskReject(taskId,opinion,null);
+        OperateResult result =  proxy.taskReject(taskId,opinion, null);
         operateStatus = new OperateStatus(true, result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }

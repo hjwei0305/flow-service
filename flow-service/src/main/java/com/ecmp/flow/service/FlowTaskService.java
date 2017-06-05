@@ -4,6 +4,7 @@ import com.ecmp.annotation.AppModule;
 import com.ecmp.basic.api.IEmployeeService;
 import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Employee;
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.GlobalParam;
 import com.ecmp.context.ContextUtil;
@@ -1065,8 +1066,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (executor != null) {
                     String userType = (String) executor.get("userType");
                     String ids = (String) executor.get("ids");
-                    Set<Employee> employeeSet = new HashSet<Employee>();
-                    List<Employee> employees = null;
+                    Set<Executor> employeeSet = new HashSet<Executor>();
+                    List<Executor>  employees = null;
                     if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
                         ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                                 .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
@@ -1074,7 +1075,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                            Map<String,Object> v = instance.getProcessVariables();
                         String startUserId = historicProcessInstance.getStartUserId();
                         IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        employees = iEmployeeService.findByIds(java.util.Arrays.asList(startUserId));
+                        employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 //                            if(v != null){
 //                                startUserId = (String) v.get("startUserId");
 //                            }
@@ -1090,18 +1091,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             //StartUser、Position、PositionType、SelfDefinition、AnyOne
                             if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
                                 IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                employees = iPositionService.getAssignedEmployeesByPositionIds(idList);
+                                employees = iPositionService.getExecutorsByPositionIds(idList);
                             } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
                                 IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                employees = iPositionService.getAssignedEmployeesByPosCateIds(idList);
+                                employees = iPositionService.getExecutorsByPosCateIds(idList);
                             } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
                                 IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                                employees = iEmployeeService.findByIds(idList);
+                                employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
                             } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
                             }
                             if (employees != null && !employees.isEmpty()) {
                                 employeeSet.addAll(employees);
-                                nodeInfo.setEmployeeSet(employeeSet);
+                                nodeInfo.setExecutorSet(employeeSet);
                             }
 
                         }
