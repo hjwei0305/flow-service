@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
@@ -26,5 +27,13 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
     public long  deleteByActTaskId(String actTaskId);
 
     public  FlowTask findByActTaskId(String actTaskId);
+
+    /**
+     * 根据流程实例id查询待办
+     * @param instanceId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.id  = :instanceId")
+    public List<FlowTask> findByInstanceId(@Param("instanceId")String instanceId);
 
 }

@@ -113,7 +113,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '							<div class="flow-remark">处理摘要：' + item.flowHistoryTaskRemark + '</div>' +
                 '							 <div class="clear"></div> ' +
                 '						</div>';
-
         }
         $(".flow-historyprogress").append(html);
     },

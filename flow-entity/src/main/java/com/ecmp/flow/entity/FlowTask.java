@@ -60,6 +60,8 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 任务表单URL
 	 */
+	@Lob
+	@Basic(fetch=FetchType.LAZY)
 	@Column(name = "task_form_url", length = 65535)
 	private String taskFormUrl;
 
@@ -114,6 +116,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 执行时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "execute_date",length = 19)
 	private Date executeDate;
 
@@ -134,6 +137,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 流程任务引擎实际的任务签收时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "act_claim_time")
 	private Date actClaimTime;
 
@@ -160,6 +164,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 流程引擎的实际触发时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "act_due_date")
 	private Date actDueDate;
 

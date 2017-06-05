@@ -65,4 +65,11 @@ public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSe
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     List<BusinessSelfDefEmployee > findByBusinessModelId(@PathParam("businessModelId")String businessModelId);
 
+    @POST
+    @Path("saveCustomExecutor/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "保存设置的自由执行人",notes = "测试")
+    public void saveCustomExecutor(@PathParam("businessModelId")String businessModelId,List<BusinessSelfDefEmployee> customExecutorList);
+
 }

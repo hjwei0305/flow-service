@@ -30,6 +30,7 @@
             <bean class="com.ecmp.flow.service.BusinessSelfDefEmployeeService"/>
             <bean class="com.ecmp.flow.service.BusinessModelService"/>
             <bean class="com.ecmp.flow.service.DefaultBusinessModelService"/>
+            <bean class="com.ecmp.flow.service.BusinessSelfDefEmployeeService"/>
             <bean class="com.ecmp.flow.service.FlowTypeService"/>
             <bean class="com.ecmp.flow.service.FlowDefinationService"/>
             <bean class="com.ecmp.flow.service.FlowDefVersionService"/>

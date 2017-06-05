@@ -93,18 +93,24 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 	/**
 	 * 流程JSON文本
 	 */
+	@Lob
+	@Basic(fetch=FetchType.LAZY)
 	@Column(name = "def_json", length = 65535)
 	private String defJson;
 
 	/**
 	 * 流程BPMN文本
 	 */
+	@Lob
+	@Basic(fetch=FetchType.LAZY)
 	@Column(name = "def_bpmn", length = 65535)
 	private String defBpmn;
 
 	/**
 	 * 最终定义XML
 	 */
+	@Lob
+	@Basic(fetch=FetchType.LAZY)
 	@Column(name = "def_xml", length = 65535)
 	private String defXml;
 

@@ -1,13 +1,6 @@
 package com.ecmp.flow.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -83,6 +76,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	 * 流程任务引擎实际开始时间，
 	 * Time when the task started.
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "act_start_time")
 	private Date actStartTime;
 
@@ -90,6 +84,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	 * 流程任务引擎实际结束时间，
 	 * Time when the task was deleted or completed.
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "act_end_time")
 	private Date actEndTime;
 
@@ -112,6 +107,7 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	/**
 	 * 流程任务引擎实际的任务签收时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "act_claim_time")
 	private Date actClaimTime;
 

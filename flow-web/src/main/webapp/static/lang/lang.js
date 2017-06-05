@@ -77,6 +77,18 @@ if (EUI.FlowServiceUrlView) {
     }, common_lang);
 }
 
+if (EUI.CustomExecutorView) {
+    EUI.apply(EUI.CustomExecutorView.prototype.lang, {
+        addResourceText: "新增",
+        updateFlowServiceUrlText: "修改服务地址管理",
+        inputCodeMsgText: "请输入代码",
+        inputNameMsgText: "请输入名称",
+        inputUrlMsgText: "请输入URL",
+        inputDepictMsgText: "请输入描述",
+        addNewFlowServiceUrlText: "新增服务地址管理"
+    }, common_lang);
+}
+
 if (EUI.FlowTypeView) {
     EUI.apply(EUI.FlowTypeView.prototype.lang, {
         addResourceText: "新增",
@@ -152,7 +164,7 @@ if (EUI.FlowDefinationView) {
         rootText: "根节点",
         queryMaskMessageText: "正在努力获取数据，请稍候...",
         closeText: "关闭",
-        searchDisplayText: "请输入代码或名称查询",
+        searchDisplayText: "请输入名称查询",
         processMaskMessageText: "正在处理，请稍候...",
         operateHintMessage: "请选择一条要操作的行项目!",
         processMaskMessageText: "正在处理，请稍候..."

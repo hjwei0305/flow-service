@@ -32,4 +32,5 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return this.defaultBusinessModelDao;
     }
 
+
 }

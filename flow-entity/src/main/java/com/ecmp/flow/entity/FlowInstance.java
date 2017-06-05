@@ -56,12 +56,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 开始时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "start_date", nullable = false, length = 19)
 	private Date startDate;
 
 	/**
 	 * 结束时间
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "end_date", nullable = false, length = 19)
 	private Date endDate;
 
