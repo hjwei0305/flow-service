@@ -26,9 +26,9 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: "流程信息",
                 handler: function () {
-                    new EUI.FlowHistoryComponentView({
+                   Flow.FlowHistory({
                         instanceId: "DE3412A7-3FBE-11E7-9EFA-6C498F234A3D"
-                    });
+                    })
                 }
             }, '->', {
                 xtype: "SearchBox",

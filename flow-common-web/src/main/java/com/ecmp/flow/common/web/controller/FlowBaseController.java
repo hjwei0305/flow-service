@@ -192,6 +192,40 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 回退（撤销）任务
+     *
+     * @param preTaskId      上一个任务ID
+     * @param opinion              意见
+     * @return 操作结果
+     */
+    @RequestMapping(value = "cancelTask")
+    @ResponseBody
+   public String  rollBackTo(String preTaskId,String opinion){
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result =  proxy.rollBackTo(preTaskId);
+        operateStatus = new OperateStatus(true, result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+   }
+
+    /**
+     * 任务驳回
+     *
+     * @param taskId      任务ID
+     * @param opinion              意见
+     * @return 操作结果
+     */
+    @RequestMapping(value = "rejectTask")
+    @ResponseBody
+    public String  rejectTask(String taskId,String opinion){
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result =  proxy.taskReject(taskId,opinion,null);
+        operateStatus = new OperateStatus(true, result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
+
 
     /**
      * 获取当前审批任务的决策信息

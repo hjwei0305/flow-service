@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base :: base_head"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/FlowHistoryComponentView.css}">
+    <!--<script type="text/javascript" data-th-src="@{/static/EUI/jquery-1.8.min.js}"></script>-->
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/FlowHistory.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var flowHistoryComponentView;
+        EUI.onReady(function () {
+            flowHistoryComponentView = Flow.FlowHistory({
+                instanceId:null
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
