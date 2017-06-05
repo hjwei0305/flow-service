@@ -1,8 +1,12 @@
 /**
  * 显示页面
  */
-
-EUI.FlowHistoryComponentView = EUI.extend(EUI.CustomUI, {
+window.Flow = {};
+EUI.ns("Flow.flow");
+Flow.FlowHistory = function (options) {
+    return new Flow.flow.FlowHistory(options);
+};
+Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     // width: null,
     // height: null,
     instanceId: null,
