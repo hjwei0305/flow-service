@@ -1129,6 +1129,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNextNodes(String id, String businessId) throws NoSuchMethodException {
           return this.findNextNodes(id,businessId,null);
     }
+
+
+
     /**
      * 选择下一步执行的节点信息
      *
@@ -1441,5 +1444,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String businessId = flowTask.getFlowInstance().getBusinessId();
         List<NodeInfo> result = this.findNexNodesWithUserSet(id,businessId,includeNodeIds);
         return result;
+    }
+
+    /**
+     * 根据流程实例Id获取待办
+     * @param instanceId
+     * @return
+     */
+    @Override
+    public List<FlowTask> findByInstanceId(String instanceId) {
+        return flowTaskDao.findByInstanceId(instanceId);
     }
 }
