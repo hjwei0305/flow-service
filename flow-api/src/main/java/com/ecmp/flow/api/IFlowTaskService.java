@@ -135,6 +135,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
     public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
 
+    /**
+     * 根据流程实例ID查询待办
+     * @param instanceId
+     * @return
+     */
+    @POST
+    @Path("findByInstanceId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询待办", notes = "查询待办")
+    List<FlowTask> findByInstanceId(String instanceId);
 
     /**
      * 选择下一步执行的节点信息
