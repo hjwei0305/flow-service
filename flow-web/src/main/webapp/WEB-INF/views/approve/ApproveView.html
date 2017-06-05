@@ -12,14 +12,13 @@
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
         var flowView;
-        var id = "73672228-46AB-11E7-A5D4-6C498F234A3D";//EUI.util.getUrlParam("id");
-        //        var instanceId = EUI.util.getUrlParam("instanceId");
+        var id = EUI.util.getUrlParam("id");
+        var taskId = EUI.util.getUrlParam("taskId");
         EUI.onReady(function () {
             flowView = Flow.FlowApprove({
                 busId: id,
-                taskId: "73672228-46AB-11E7-A5D4-6C498F234A3D",
-//                instanceId:instanceId,
-                iframeHeight:500,
+                taskId: taskId,
+                iframeHeight: 500,
                 renderTo: "content",
                 goNext: function () {
                     return this.iframe.lookApproveBillView.checkIsValid();

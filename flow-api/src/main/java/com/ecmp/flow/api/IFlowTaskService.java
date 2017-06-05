@@ -90,11 +90,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 操作结果
      */
     @POST
-    @Path("reject/{id}")
+    @Path("reject/{id}/{opinion}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "驳回任务（动态驳回）",notes = "测试")
-    public OperateResult taskReject(@PathParam("id")String id, Map<String, Object> variables);
+    public OperateResult taskReject(@PathParam("id")String id,@PathParam("opinion")String opinion, Map<String, Object> variables);
 
     /**
      * 获取分页数据

@@ -184,9 +184,15 @@ div,span,p{
 .userName{
     font-size: 12px;
     color: #999999;
+    margin-left: 20px;
+}
+.user-name{
+    font-size: 12px;
+    color: #999999;
 }
 .end{
     display: inline-block;
+    margin-left: 20px;
 }
 .end-text{
     font-size: 12px;
@@ -213,6 +219,27 @@ div,span,p{
     cursor: pointer;
 }
 .look-icon{
+    width: 12px;
+    height: 12px;
+    background: url("../images/look_icon.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.time-icon{
+    width: 12px;
+    height: 12px;
+    background: url("../images/time_icon.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+}
+/*
+.look-icon{
     display: inline-block;
     background: url("../images/look_icon.png") no-repeat;
     background-size: cover;
@@ -229,6 +256,7 @@ div,span,p{
     height: 12px;
     cursor: pointer;
 }
+*/
 .content-page{
     height: 50px;
     padding: 0 20px;
@@ -332,4 +360,24 @@ div,span,p{
 .active{
     color: #45b7ff;
 }
+.checkbox{
+    vertical-align: middle;
+}
+.content-skip{
+    height: 40px;
+    line-height: 40px;
+    border-top: 1px solid #dddddd;
+    margin: 0 10px;
+    padding: 0 10px;
+}
+.check-all{
+    margin-right: 7px;
+    color: #ff7d1e;
+}
+.end-all{
+    margin-left: 10px;
+}
+
+
+
 

@@ -412,7 +412,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var tab = {
                 title: "审批界面",
-                url: _ctxPath + "/lookApproveBill/show?id=" + data.flowInstance.businessId,
+                url: _ctxPath + "/builtInApprove/approve?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
