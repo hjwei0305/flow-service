@@ -135,10 +135,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initWindTbar(), this.initWindGrid(rowData)]
+            items: [this.initWindTbar(rowData), this.initWindGrid(rowData)]
         });
     },
-    initWindTbar: function () {
+    initWindTbar: function (rowData) {
         var g = this;
         return {
             xtype: "ToolBar",
@@ -164,7 +164,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     //     });
                     //     return;
                     // }
-                    g.addFlowDefVersion();
+                    g.addFlowDefVersion(rowData);
                 }
             }, '->', {
                 xtype: "SearchBox",
@@ -471,18 +471,18 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    addFlowDefVersion: function () {
+    addFlowDefVersion: function (rowData) {
         // var g = this;
         // parent.homeView.addTab({
         //     title: "新增流程定义",
         //     id: g.selectedNodeId,
         //     url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
         // });
+        console.log(rowData)
         var g = this;
         var tab = {
             title: "流程审计界面",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId,
-            orgId: g.selectedNodeId
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&flowDefinationName="+ rowData.name+"&flowDefinationDefKey="+rowData.defKey+"&flowTypeId="+g.flowTypeId,
         };
         g.addTab(tab);
     },
@@ -559,8 +559,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             padding: 0,
             isOverFlow: false,
             items: ['->', {
-                xtype: "SearchBox",
-                displayText: "请输入名称进行搜索"
+                xtype:"SearchBox",
+                width:159,
+                displayText:g.lang.searchDisplayText,
+                onSearch: function (v) {
+                    g.treeCmp.search(v);
+                },
+                afterClear: function () {
+                    g.treeCmp.reset();
+                }
+
             }]
         };
     },
@@ -571,6 +579,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             region: "center",
             border: true,
             id: "treePanel",
+            searchField:["name"],
             showField: "name",
             style: {
                 "background": "#fff"
@@ -578,7 +587,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             onSelect: function (node) {
                 console.log(node);
                 if (node.children.length) {
-                    g.selectedNode = "根节点"
+                    g.selectedNode = "根节点";
                     console.log(g.selectedNode);
                     g.selectedNodeId = "";
                     g.selectedNodeName = "";
@@ -716,8 +725,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
-                        console.log(g.selectedNodeId)
-                        console.log(g.selectedNode)
+                        // console.log(g.selectedNodeId)
+                        // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
                             if(g.selectedNode == "根节点"){
                                 var status = {

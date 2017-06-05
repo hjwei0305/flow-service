@@ -124,17 +124,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
         //决策选择
         $(".flow-decision-item").live("click", function () {
-            if ($(this).hasClass("select")) {
-                $(this).removeClass("select");
-            } else {
-                $(this).addClass("select");
-            }
+            $(".flow-decision-item").removeClass("select");
+            $(this).addClass("select");
         });
         //执行人选择
         $(".flow-user-item").live("click", function () {
-            if ($(this).hasClass("select")) {
-                $(this).removeClass("select");
-            } else {
+            var type = $(this).attr("type");
+            if(type != "countersign"){
+                $(".flow-user-item").removeClass("select");
                 $(this).addClass("select");
             }
         });
@@ -306,7 +303,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 ']</div><div class="flow-excutor-content">';
             for (var j = 0; j < node.employeeSet.length; j++) {
                 var item = node.employeeSet[j];
-                nodeHtml += '<div class="flow-user-item" id="' + item.id + '">' +
+                nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
                     '<div class="excutor-item-title">姓名：' + item.user.userName + '，岗位：' + '，组织机构：' + '，编号：' + '</div>' +
                     '</div>';
@@ -373,7 +370,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var mask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });
-        console.log(this.getSelectedUser());
         EUI.Store({
             url: _ctxPath + "/builtInApprove/completeTask",
             params: {
