@@ -301,8 +301,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
-            for (var j = 0; j < node.employeeSet.length; j++) {
-                var item = node.employeeSet[j];
+            for (var j = 0; j < node.executorSet.length; j++) {
+                var item = node.executorSet[j];
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
                     '<div class="excutor-item-title">姓名：' + item.user.userName + '，岗位：' + '，组织机构：' + '，编号：' + '</div>' +
