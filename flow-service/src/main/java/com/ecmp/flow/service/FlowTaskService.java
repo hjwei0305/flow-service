@@ -196,7 +196,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.setDepict(opinion);
         String actTaskId = flowTask.getActTaskId();
 
-        //获取当前业务实体表单的条件表达式信息
+        //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = flowTask.getFlowInstance().getBusinessId();
         BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         String businessModelId = businessModel.getId();
@@ -1398,6 +1398,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
                 tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+//                tempNodeInfo.setUiType("readOnly");
                 qualifiedNode.add(tempNodeInfo);
             }
         }

@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,7 +39,7 @@ import java.util.Map;
  * ------------------------------------------------------------------------------------------------
  * <br>
  * 版本          变更时间             变更人                     变更原因
- *
+ * <p>
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
@@ -46,15 +47,16 @@ import java.util.Map;
  * <br>
  * *************************************************************************************************<br>
  */
-public abstract class FlowBaseController<T extends IBaseService,V extends AbstractBusinessModel> {
+public abstract class FlowBaseController<T extends IBaseService, V extends AbstractBusinessModel> {
 
 
     protected Class<T> apiClass;
-    public FlowBaseController(){
+
+    public FlowBaseController() {
 
     }
 
-    public FlowBaseController(Class<T> apiClass){
+    public FlowBaseController(Class<T> apiClass) {
         this.apiClass = apiClass;
     }
 
@@ -68,7 +70,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     @RequestMapping(value = "list")
     @ResponseBody
     public String list(ServletRequest request) {
-        IBaseService  baseService =  ApiClient.createProxy(apiClass);
+        IBaseService baseService = ApiClient.createProxy(apiClass);
         Search search = SearchUtil.genSearch(request);
         PageResult<V> defaultBusinessModelPageResult = baseService.findByPage(search);
         return JsonUtil.serialize(defaultBusinessModelPageResult);
@@ -83,7 +85,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     @RequestMapping(value = "delete")
     @ResponseBody
     public String delete(String id) {
-        IBaseService  baseService =  ApiClient.createProxy(apiClass);
+        IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateResult result = baseService.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
@@ -99,7 +101,7 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
     @RequestMapping(value = "save")
     @ResponseBody
     public String save(V defaultBusinessModel) {
-        IBaseService  baseService =  ApiClient.createProxy(apiClass);
+        IBaseService baseService = ApiClient.createProxy(apiClass);
         defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
         OperateResultWithData<V> result = baseService.save(defaultBusinessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
@@ -108,88 +110,92 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
 
     /**
      * 通过流程定义key启动流程
+     *
      * @param key
      * @return 操作结果
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String key,String businessKey) {
-        IBaseService  baseService =  ApiClient.createProxy(apiClass);
+    public String startFlow(String key, String businessKey) {
+        IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
-        V defaultBusinessModel = (V)baseService.findOne(businessKey);
-        if(defaultBusinessModel != null){
+        V defaultBusinessModel = (V) baseService.findOne(businessKey);
+        if (defaultBusinessModel != null) {
             defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
             String startUserId = "admin";
-                    String startUserIdContext = ContextUtil.getSessionUser().getUserId();
-                    if(!StringUtils.isEmpty(startUserIdContext)){
-                        startUserId = startUserIdContext;
-                    }
+            String startUserIdContext = ContextUtil.getSessionUser().getUserId();
+            if (!StringUtils.isEmpty(startUserIdContext)) {
+                startUserId = startUserIdContext;
+            }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-            Map<String,Object> variables = new HashMap<String,Object>();//UserTask_1_Normal
-            variables.put("UserTask_1_Normal",startUserId);
-            FlowInstance result = proxy.startByKey( key,  startUserId, businessKey,variables);
-            if(result != null){
+            Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
+            variables.put("UserTask_1_Normal", startUserId);
+            FlowInstance result = proxy.startByKey(key, startUserId, businessKey, variables);
+            if (result != null) {
                 baseService.save(defaultBusinessModel);
-                operateStatus = new OperateStatus(true, "启动流程："+result.getFlowName()+",成功");
-            }else{
+                operateStatus = new OperateStatus(true, "启动流程：" + result.getFlowName() + ",成功");
+            } else {
                 new OperateStatus(false, "启动流程失败");
             }
-        }else {
-            operateStatus =  new OperateStatus(false, "业务对象不存在");
+        } else {
+            operateStatus = new OperateStatus(false, "业务对象不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
 
     /**
      * 完成任务
+     *
      * @param taskId
-     * @param businessId 业务表单ID
-     * @param  opinion 审批意见
-     * @param flowTaskCompleteList 任务完成传输对象
+     * @param businessId           业务表单ID
+     * @param opinion              审批意见
+     * @param taskList 任务完成传输对象
      * @return 操作结果
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId,String opinion, List<FlowTaskCompleteWebVO> flowTaskCompleteList) {
-        IBaseService  baseService =  ApiClient.createProxy(apiClass);
+    public String completeTask(String taskId, String businessId, String opinion, String taskList) {
+        JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray,FlowTaskCompleteWebVO.class);
+        IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
-        V defaultBusinessModel = (V)baseService.findOne(businessId);
-        if(defaultBusinessModel != null){
+        V defaultBusinessModel = (V) baseService.findOne(businessId);
+        if (defaultBusinessModel != null) {
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
             flowTaskCompleteVO.setOpinion(opinion);
             List<String> selectedNodeIds = new ArrayList<String>();
-            Map<String,Object> v = new HashMap<String,Object>();
-            for(FlowTaskCompleteWebVO f  :flowTaskCompleteList){
+            Map<String, Object> v = new HashMap<String, Object>();
+            for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                 selectedNodeIds.add(f.getNodeId());
-               String flowTaskType = f.getFlowTaskType();
-               if("common".equalsIgnoreCase(flowTaskType)){
-                   v.put(f.getUserVarName(),f.getUserIds());
-               }else{
-                   String[] idArray = f.getUserIds().split(",");
-                   v.put(f.getUserVarName(),idArray);
-               }
+                String flowTaskType = f.getFlowTaskType();
+                if ("common".equalsIgnoreCase(flowTaskType)) {
+                    v.put(f.getUserVarName(), f.getUserIds());
+                } else {
+                    String[] idArray = f.getUserIds().split(",");
+                    v.put(f.getUserVarName(), idArray);
+                }
             }
             flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
-          //  Map<String,Object> v = new HashMap<String,Object>();
+            //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData operateResult = proxy.complete(flowTaskCompleteVO);
-            if(FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData()+"")){
+            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
                 defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
                 baseService.save(defaultBusinessModel);
             }
-            operateStatus = new OperateStatus(true,operateResult.getMessage());
-        }else {
-            operateStatus =  new OperateStatus(false, "业务对象不存在");
+            operateStatus = new OperateStatus(true, operateResult.getMessage());
+        } else {
+            operateStatus = new OperateStatus(false, "业务对象不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
 
 
-
     /**
      * 获取当前审批任务的决策信息
+     *
      * @param taskId
      * @return 操作结果
      */
@@ -199,42 +205,46 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
-        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
-            operateStatus = new OperateStatus(true,"成功");
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
-        }else {
-            operateStatus =  new OperateStatus(false, "不存在");
+        } else {
+            operateStatus = new OperateStatus(false, "不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
 
     /**
      * 获取下一步的节点信息任务
+     *
      * @param taskId
      * @return 操作结果
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId,String includeNodeIdsStr) throws NoSuchMethodException {
+    public String getSelectedNodesInfo(String taskId, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
-        if(!StringUtils.isEmpty(includeNodeIdsStr)){
+        if (!StringUtils.isEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
-        }
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,includeNodeIds);
-        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
-            operateStatus = new OperateStatus(true,"成功");
-            operateStatus.setData(nodeInfoList);
         }else {
-            operateStatus =  new OperateStatus(false, "不存在");
+            throw new RuntimeException("至少要传入一个节点ID！");
+        }
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            operateStatus = new OperateStatus(true, "成功");
+            operateStatus.setData(nodeInfoList);
+        } else {
+            operateStatus = new OperateStatus(false, "不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
 
     /**
      * 获取下一步的节点信息任务(带用户信息)
+     *
      * @param taskId
      * @return 操作结果
      */
@@ -244,31 +254,32 @@ public abstract class FlowBaseController<T extends IBaseService,V extends Abstra
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
-        if(nodeInfoList != null && !nodeInfoList.isEmpty()){
-            operateStatus = new OperateStatus(true,"成功");
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
-        }else {
-            operateStatus =  new OperateStatus(false, "不存在");
+        } else {
+            operateStatus = new OperateStatus(false, "不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
 
     /**
      * 获取任务抬头信息信息任务
+     *
      * @param taskId
      * @return 操作结果
      */
     @RequestMapping(value = "getApprovalHeaderInfo")
     @ResponseBody
-    public String getApprovalHeaderInfo(String taskId){
+    public String getApprovalHeaderInfo(String taskId) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
-        if(approvalHeaderVO != null){
-            operateStatus = new OperateStatus(true,"成功");
+        if (approvalHeaderVO != null) {
+            operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(approvalHeaderVO);
-        }else {
-            operateStatus =  new OperateStatus(false, "不存在");
+        } else {
+            operateStatus = new OperateStatus(false, "不存在");
         }
         return JsonUtil.serialize(operateStatus);
     }
