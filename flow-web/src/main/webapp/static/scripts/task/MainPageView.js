@@ -479,7 +479,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                             return;
                         }
                         var myMask = EUI.LoadMask({
-                            msg: "正在删除，请稍后.."
+                            msg: "处理中，请稍后.."
                         });
                         EUI.Store({
                             url: _ctxPath + "/flowTask/rejectTask",
