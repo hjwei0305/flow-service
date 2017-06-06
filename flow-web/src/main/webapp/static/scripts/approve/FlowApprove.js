@@ -213,9 +213,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var doms;
         if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
-            for (var i = 0; i < doms.length; i++) {
-                includeNodeIds += $(doms[i]).attr("id");
-            }
+        }else{
+            doms = $(".flow-decision-box");
+        }
+        for (var i = 0; i < doms.length; i++) {
+            includeNodeIds += $(doms[i]).attr("id");
         }
         return includeNodeIds;
     },
@@ -294,6 +296,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var iconCss = "choose-radio";
             if (node.flowTaskType == "singleSign") {
                 nodeType = "单签任务";
+                iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "countersign") {
                 nodeType = "会签任务";
                 iconCss = "choose-checkbox";
@@ -346,22 +349,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var index = nodeDom.attr("index");
             var data = this.toChooseUserData[index];
             var itemDoms = $(".select", nodeDom);
-            if (data.flowTaskType == 0) {
-                if (itemDoms.length != 1) {
-                    EUI.ProcessStatus({
-                        success: false,
-                        msg: "请选择[" + data.name + "]的执行人"
-                    });
-                    return false;
-                }
-            } else if (data.flowTaskType == 1) {
-                if (itemDoms.length == 0) {
-                    EUI.ProcessStatus({
-                        success: false,
-                        msg: "请选择[" + data.name + "]的执行人"
-                    });
-                    return false;
-                }
+            if (itemDoms.length == 0) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "请选择[" + data.name + "]的执行人"
+                });
+                return false;
             }
         }
         return true;
