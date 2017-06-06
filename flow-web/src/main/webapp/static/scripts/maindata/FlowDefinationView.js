@@ -197,7 +197,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: "定义ID",
                     name: "actDefId",
-                    index: "actDefId"
+                    index: "actDefId",
+                    hidden: true
                 }, {
                     label: "定义KEY",
                     name: "defKey",
@@ -205,7 +206,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: "部署ID",
                     name: "actDeployId",
-                    index: "actDeployId"
+                    index: "actDeployId",
+                    hidden: true
                 }/*, {
                     label: "启动条件UEL",
                     name: "startUel",
@@ -328,7 +330,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, true)
                 }
                 if (!node.children.length) {
-                    g.selectedNode = "子节点"
+                    g.selectedNode = "子节点";
                     console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
@@ -414,7 +416,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 height: 40,
                 border: false,
-                items: [{
+                items: [/*{
                     xtype: "ComboBox",
                     title: "<span style='font-weight: bold'>" + "流程类型" + "</span>",
                     id: "coboId",
@@ -454,7 +456,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             }
                         ).trigger("reloadGrid");
                     }
-                }, {
+                }, */{
                     xtype: "Button",
                     title: this.lang.addResourceText,
                     selected: true,
@@ -532,6 +534,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: "定义KEY",
                         name: "defKey",
                         index: "defKey",
+                        width: "50"
+                    }, {
+                        label: "流程类型",
+                        name: "flowType.name",
+                        index: "flowType.name",
                         width: "50"
                     }/*, {
                         label: "启动条件UEL",
