@@ -55,10 +55,11 @@ public class FlowDefinationController {
      */
     @ResponseBody
     @RequestMapping("listAllOrgs")
-    public List<Organization> listAllOrgs() {
+    public String listAllOrgs() {
         IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
         List<Organization> result = proxy.findAllOrgs();
-        return result;
+        OperateStatus operateStatus = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
+        return JsonUtil.serialize(operateStatus);
     }
 
     /**
