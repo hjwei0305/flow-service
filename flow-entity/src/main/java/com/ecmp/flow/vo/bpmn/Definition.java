@@ -31,10 +31,13 @@ public class Definition implements Serializable {
     private String xmlns = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 
     @XmlAttribute
-    private String typeLanguage = "http://www.w3.org/2001/XMLSchema";
+    private String xsd = "http://www.w3.org/2001/XMLSchema";
 
     @XmlAttribute
     private String expressionLanguage = "http://www.w3.org/1999/XPath";
+
+    @XmlAttribute
+    private String typeLanguage = "http://www.w3.org/2001/XMLSchema";
 
     @XmlAttribute
     private String targetNamespace = "bpmn";

@@ -40,16 +40,15 @@ public class BusinessSelfDefEmployeeService extends BaseService<BusinessSelfDefE
     }
 
     @Override
-    public void saveCustomExecutor(String businessModelId,List<BusinessSelfDefEmployee> customExecutorList) {
+    public void saveCustomExecutor(String businessModelId,String selectedCustomExecutorIds) {
         businessSelfDefEmployeeDao.deleteBybusinessModuleId(businessModelId);
-        if(customExecutorList.size() == 0){
+        if(StringUtils.isBlank(selectedCustomExecutorIds)){
             return;
         }else{
-            for(int i=0;i<customExecutorList.size();i++){
-                System.out.println(customExecutorList.get(i));
+            String[] str = selectedCustomExecutorIds.split(",");
+            for(int i=0;i<str.length;i++){
                 BusinessSelfDefEmployee businessSelfDefEmployee = new BusinessSelfDefEmployee();
-                businessSelfDefEmployee.setEmployeeId(customExecutorList.get(i).getEmployeeId());
-                businessSelfDefEmployee.setEmployeeName(customExecutorList.get(i).getEmployeeName());
+                businessSelfDefEmployee.setEmployeeId(str[i]);
                 businessSelfDefEmployee.setBusinessModuleId(businessModelId);
                 businessSelfDefEmployeeDao.save(businessSelfDefEmployee);
             }
