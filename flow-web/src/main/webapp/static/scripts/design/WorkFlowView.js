@@ -436,9 +436,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             });
         });
-        // 双击连线弹出UEL配置界面
-        this.instance.bind("keyup", function (connection) {
-            console.log(arguments);
+        //delete删除连线
+        this.instance.bind("mouseover", function (connection) {
+            // connection.addOverlay(["Label", {
+            //     width: 20,
+            //     height: 20,
+            //     id: "delete",
+            //     label: "&times",
+            //     cssClass: "node-delete"
+            // }]);
+        });
+        this.instance.bind("mouseout", function (connection) {
+            // connection.removeOverlay("delete");
         });
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {

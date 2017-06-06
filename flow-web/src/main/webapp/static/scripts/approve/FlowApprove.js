@@ -130,7 +130,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
-            if(type != "countersign"){
+            if (type != "countersign") {
                 $(".flow-user-item").removeClass("select");
                 $(this).addClass("select");
             }
@@ -305,7 +305,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 var item = node.executorSet[j];
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item.user.userName + '，岗位：' + '，组织机构：' + '，编号：' + '</div>' +
+                    '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
+                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
                     '</div>';
             }
             nodeHtml += "</div></div>";

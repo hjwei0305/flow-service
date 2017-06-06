@@ -390,3 +390,14 @@
 }
 
 
+.node-delete{
+    background-color: white;
+    border: 1px dotted gray;
+    color: red;
+    cursor: pointer;
+    font: 12px sans-serif;
+    font-weight:bold;
+    padding: 0.4em;
+    z-index: 21;
+}
+
