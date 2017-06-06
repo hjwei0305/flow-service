@@ -20,7 +20,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         this.gridCmp = EUI.getCmp("gridPanel");
         this.treeCmp = EUI.getCmp("treePanel");
         this.editFormCmp = EUI.getCmp("editForm");
-        this.getOrgTreeData();
+       // this.getOrgTreeData();
         this.addEvents();
     },
     addEvents: function () {
@@ -232,7 +232,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         var tab = {
             title: "流程审计界面",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&flowDefinationId="+ data.id,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id,
         };
         g.addTab(tab);
     },
@@ -303,6 +303,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "TreePanel",
             region: "center",
+            url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             id: "treePanel",
             searchField:["name"],
@@ -315,8 +316,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 if (node.children.length) {
                     g.selectedNode = "根节点";
                     console.log(g.selectedNode);
-                    g.selectedNodeId = "";
-                    g.selectedNodeName = "";
+                    g.selectedNodeId = node.id;
+                    g.selectedNodeName = node.name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/flowDefination/listFlowDefination",
                         loadonce: false,
@@ -364,36 +365,40 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     itemCmp.addClass("ux-tree-freeze");
                     itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
                 }
+            },
+            afterShowTree:function(data){
+                this.setSelect(data[0].id);
             }
         }
     },
-    getOrgTreeData: function (rowData) {
-        var g = this;
-        var myMask = EUI.LoadMask({
-            //queryMaskMessageText: "正在努力获取数据，请稍候...",
-            msg: g.lang.queryMaskMessageText
-        });
-        EUI.Store({
-            async: false,
-            url: _ctxPath + "/flowDefination/listAllOrgs",
-            success: function (result) {
-                myMask.hide();
-                if(result.success){
-                    g.treeCmp.setData(result.data,true);
-                }
-
-            },
-            failure: function (re) {
-                myMask.hide();
-                var status = {
-                    msg: re.msg,
-                    success: false,
-                    showTime: 6
-                };
-                EUI.ProcessStatus(status);
-            }
-        });
-    },
+    // getOrgTreeData: function (rowData) {
+    //     var g = this;
+    //     var myMask = EUI.LoadMask({
+    //         //queryMaskMessageText: "正在努力获取数据，请稍候...",
+    //         msg: g.lang.queryMaskMessageText
+    //     });
+    //     EUI.Store({
+    //         async: false,
+    //         url: _ctxPath + "/flowDefination/listAllOrgs",
+    //         success: function (result) {
+    //             myMask.hide();
+    //             if(result.success){
+    //                 g.treeCmp.setData(result.data,true);
+    //                 g.treeCmp.setSelect(result.data[0].id)
+    //             }
+    //
+    //         },
+    //         failure: function (re) {
+    //             myMask.hide();
+    //             var status = {
+    //                 msg: re.msg,
+    //                 success: false,
+    //                 showTime: 6
+    //             };
+    //             EUI.ProcessStatus(status);
+    //         }
+    //     });
+    // },
     initCenterContainer: function () {
         var g = this;
         return {
@@ -454,18 +459,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
-                        // console.log(g.selectedNodeId)
+                         console.log(g.selectedNodeId)
                         // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
-                            if(g.selectedNode == "根节点"){
-                                var status = {
-                                    msg: "请选择子节点",
-                                    success: false,
-                                    showTime: 6
-                                };
-                                EUI.ProcessStatus(status);
-                                return;
-                            }else{
                                 var status = {
                                     msg: "请选择组织机构",
                                     success: false,
@@ -474,9 +470,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                                 EUI.ProcessStatus(status);
                                 return;
                             }
-
-                        }
-
                         g.addFlowDefination();
 
                     }
