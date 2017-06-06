@@ -96,6 +96,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     label: "任务状态",
                     name: "taskStatus",
                     index: "taskStatus",
+                    align:"center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {

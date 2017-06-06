@@ -1,0 +1,48 @@
+.condetail_operate {
+    width: 55px;
+    height: 15px;
+    line-height: 15px;
+    margin: 0 auto;
+}
+.condetail_operate>div{
+    margin: 0 auto;
+}
+.condetail_update {
+    width: 15px;
+    height: 15px;
+    float: left;
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: 0 -160px;
+}
+
+.condetail_delete {
+    width: 15px;
+    height: 15px;
+
+    cursor: pointer;
+    background: url("../images/operate_bg.png") no-repeat;
+    background-position: -32px -160px;
+}
+
+#content .ux-bar-right .ux-toolbar-item {
+    margin-right: 0;
+}
+
+.arrow-right{
+    background: url("../images/operate_arrow_right.png") no-repeat;
+    width: 22px;
+    height: 22px;
+    margin: 159px auto 0;
+    /*margin-top: 200px;*/
+    cursor: pointer;
+}
+.arrow-left {
+    background: url("../images/operate_arrow_left.png") no-repeat;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    margin: 10px auto 0
+}
+/*margin-top: 10px;*/
+
