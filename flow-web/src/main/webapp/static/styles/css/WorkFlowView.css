@@ -403,13 +403,14 @@
 
 
 .node-delete{
-    background-color: white;
-    border: 1px dotted gray;
-    color: red;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
     cursor: pointer;
-    font: 12px sans-serif;
-    font-weight:bold;
-    padding: 0.4em;
+    font: bold 16px sans-serif;
+    height: 20px;
+    text-align: center;
+    width: 20px;
     z-index: 21;
 }
 

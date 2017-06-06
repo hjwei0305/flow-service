@@ -81,6 +81,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: "flowTypeName",
                 field: ["flowTypeId"],
                 title: "流程类型",
+                listWidth: 400,
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
                     colModel: [{
@@ -404,6 +405,19 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 id: "label",
                 label: null,
                 cssClass: "flow-line-note"
+            }], ["Label", {
+                location: 0.8,
+                id: "delete",
+                label: "&times",
+                visible: false,
+                cssClass: "node-delete",
+                events: {
+                    click: function (overlay, originalEvent) {
+                        var connection = overlay.component;
+                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                        g.instance.detach(connection);
+                    }
+                }
             }]],
             Container: "body"
         });
@@ -438,16 +452,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         //delete删除连线
         this.instance.bind("mouseover", function (connection) {
-            // connection.addOverlay(["Label", {
-            //     width: 20,
-            //     height: 20,
-            //     id: "delete",
-            //     label: "&times",
-            //     cssClass: "node-delete"
-            // }]);
+            connection.getOverlay("delete").show();
         });
         this.instance.bind("mouseout", function (connection) {
-            // connection.removeOverlay("delete");
+            connection.hideOverlay("delete");
         });
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {
