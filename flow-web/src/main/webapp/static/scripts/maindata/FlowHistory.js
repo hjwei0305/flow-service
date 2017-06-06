@@ -40,7 +40,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     },
     getTopHtml: function () {
         return '<div class="top">' +
-            '				<div class="top-left navbar select">' +
+            '				<div class="top-left navbar flowselect">' +
             '					<div class="flow-tabicon flow-statusimg"></div>' +
             '					<div class="flow-stutsfield text">' +
             '						当前处理状态' +
@@ -154,7 +154,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     },
     topEvent: function () {
         $(".navbar").click(function () {
-            $(this).addClass("select").siblings().removeClass("select");
+            $(this).addClass("flowselect").siblings().removeClass("flowselect");
         });
         $(".top-left").click(function () {
             $(".flow-statuscenter").css("display", "block");
