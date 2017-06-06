@@ -177,6 +177,18 @@
     height: 20px;
     width: 16px;
 }
+.flow-task .singletask {
+    background: url("../images/singletask.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 16px;
+}
+.flow-task .countertask {
+    background: url("../images/countertask.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 16px;
+}
 
 .flow-task .servicetask {
     background: url("../images/flow_task_service.png") no-repeat;
