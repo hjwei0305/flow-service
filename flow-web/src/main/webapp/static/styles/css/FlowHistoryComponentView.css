@@ -40,7 +40,7 @@
 	background: url(../images/img/flowstatusImg.png) no-repeat;
 }
 
-.select .flow-statusimg {
+.flowselect .flow-statusimg {
 	background: url(../images/img/flowstatusSelImg.png) no-repeat;
 }
 
@@ -60,7 +60,7 @@
 	color: #45b7ff;
 }
 
-.select .text {
+.flowselect .text {
 	color: #45b7ff;
 }
 
@@ -94,7 +94,7 @@
 	background: url(../images/img/flowhistoryImg.png)
 }
 
-.select .flow-historyimg {
+.flowselect .flow-historyimg {
 	background: url(../images/img/flowhistorySelImg.png) no-repeat;
 }
 
@@ -136,7 +136,7 @@
 	background: url(../images/img/flowDesgin.png)
 }
 
-.select .flow-infoimg {
+.flowselect .flow-infoimg {
 	background: url(../images/img/flowSelDesgin.png)
 }
 
