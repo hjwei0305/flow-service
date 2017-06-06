@@ -16,12 +16,12 @@ var _flownode = {
     }, {
         name: "singleSignTaskText",
         type: "UserTask",
-        css: "usertask",
+        css: "singletask",
         nodeType: "SingleSign"
     }, {
         name: "counterSignTaskText",
         type: "UserTask",
-        css: "usertask",
+        css: "countertask",
         nodeType: "CounterSign"
     }],
     gateway: [{

@@ -1,6 +1,5 @@
 @XmlSchema(xmlns = {
         @XmlNs(namespaceURI = "http://www.w3.org/2001/XMLSchema-instance", prefix = "xsi"),
-        @XmlNs(namespaceURI = "http://www.w3.org/2001/XMLSchema-instance", prefix = "xsi"),
         @XmlNs(namespaceURI = "http://www.w3.org/2001/XMLSchema", prefix = "xsd"),
         @XmlNs(namespaceURI = "http://activiti.org/bpmn", prefix = "activiti"),
         @XmlNs(namespaceURI = "http://www.omg.org/spec/BPMN/20100524/DI", prefix = "bpmndi"),

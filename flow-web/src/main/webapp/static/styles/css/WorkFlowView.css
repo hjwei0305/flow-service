@@ -177,6 +177,18 @@
     height: 20px;
     width: 16px;
 }
+.flow-task .singletask {
+    background: url("../images/singletask.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 16px;
+}
+.flow-task .countertask {
+    background: url("../images/countertask.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 16px;
+}
 
 .flow-task .servicetask {
     background: url("../images/flow_task_service.png") no-repeat;
@@ -391,13 +403,14 @@
 
 
 .node-delete{
-    background-color: white;
-    border: 1px dotted gray;
-    color: red;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
     cursor: pointer;
-    font: 12px sans-serif;
-    font-weight:bold;
-    padding: 0.4em;
+    font: bold 16px sans-serif;
+    height: 20px;
+    text-align: center;
+    width: 20px;
     z-index: 21;
 }
 
