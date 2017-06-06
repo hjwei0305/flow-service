@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base :: base_head"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>自定义执行人管理页面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/CustomExecutorView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/CustomExecutorView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var customExecutorView;
+        EUI.onReady(function () {
+            customExecutorView = new EUI.CustomExecutorView({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
