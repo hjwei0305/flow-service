@@ -403,10 +403,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }], ["Label", {
                 location: 0.2,
                 id: "label",
+                visible:false,
                 label: null,
                 cssClass: "flow-line-note"
             }], ["Label", {
-                location: 0.8,
+                location: 0.6,
                 id: "delete",
                 label: "&times",
                 visible: false,
@@ -446,7 +447,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 businessModelId: g.businessModelId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
-                    connection.getOverlay("label").setLabel(data.name);
+                    connection.getOverlay("label").setLabel(data.name).show();
                 }
             });
         });
