@@ -218,25 +218,25 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 title: "驳回意见",
                 height: 100,
                 items: [{
-                    xtype: "FormPanel",
-                    id: "reject",
-                    padding: 0,
-                    items: [{
-                        xtype: "TextArea",
-                        title: "驳回意见",
-                        name:'opinion',
-                        labelWidth: 90,
-                        width: 220,
-                        height: 80,
-                        allowBlank: false
-                    }]
+                    xtype: "TextArea",
+                    title: "驳回意见",
+                    name: 'opinion',
+                    id: "opinion",
+                    labelWidth: 90,
+                    width: 220,
+                    height: 80,
+                    allowBlank: false
                 }],
                 buttons: [{
                     title: "确定",
                     selected: true,
                     handler: function () {
-                        var form = EUI.getCmp("reject");
-                        if (!form.isValid()) {
+                        var opinion = EUI.getCmp("opinion");
+                        if (!opinion) {
+                            EUI.ProcessStatus({
+                                success:false,
+                                msg:"请输入驳回意见"
+                            })
                             return;
                         }
                         var myMask = EUI.LoadMask({
@@ -246,13 +246,15 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/builtInApprove/rejectTask",
                             params: {
                                 taskId: data.id,
-                                opinion:form.getFormValue().opinion
+                                opinion: opinion
                             },
                             success: function (result) {
                                 myMask.hide();
                                 if (result.success) {
-                                    EUI.getCmp("content-info").refresh();
+                                    //TODO:刷新当前页
                                     win.close();
+                                }else{
+                                    EUI.ProcessStatus(result);
                                 }
                             },
                             failure: function (result) {
@@ -272,9 +274,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //在新的窗口打开（模拟新页签的打开方式）
     addTab: function (tab) {
-        if(parent.homeView){
+        if (parent.homeView) {
             parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
-        }else{
+        } else {
             window.open(tab.url);
         }
     },
