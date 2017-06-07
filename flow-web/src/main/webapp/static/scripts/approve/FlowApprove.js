@@ -108,7 +108,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".flow-next").bind("click", function () {
-            g.goToNext();
+            if ($(this).text() == "完成") {
+                g.submit(true);
+            } else {
+                g.goToNext();
+            }
         });
         $(".pre-step").bind("click", function () {
             $(".flow-approve").show();
@@ -379,9 +383,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return true;
     },
-    submit: function () {
+    submit: function (isEnd) {
         var g = this;
-        if(!this.checkUserValid()){
+        if (!isEnd && !this.checkUserValid()) {
             return;
         }
         var mask = EUI.LoadMask({
@@ -393,7 +397,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 taskId: this.taskId,
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
-                taskList: JSON.stringify(this.getSelectedUser())
+                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser())
             },
             success: function (status) {
                 mask.hide();
