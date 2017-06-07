@@ -116,7 +116,6 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     if (!g.properties) {
                         return;
                     }
-                    console.log(value);
                     for (var key in g.properties) {
                         var reg = new RegExp(g.properties[key], "g");
                         value = value.replace(reg, key);
