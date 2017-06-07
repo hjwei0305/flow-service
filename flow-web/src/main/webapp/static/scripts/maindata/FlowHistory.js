@@ -75,7 +75,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     },
     getFlowHistoryHtml: function () {
         return '<div class="flow-hsitorycenter" style="display: none;">' +
-            '					<div class="center-info">' +
+            '					<div class="historycenter-info">' +
             '						<div class="flow-start">' +
             '						</div>' +
             '						<div class="flow-historyprogress">' +
