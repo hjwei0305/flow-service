@@ -30,7 +30,7 @@ public class Definition implements Serializable {
     @XmlAttribute
     private String xmlns = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 
-    @XmlAttribute
+    @XmlAttribute(name = "xmlns:xsd")
     private String xsd = "http://www.w3.org/2001/XMLSchema";
 
     @XmlAttribute
@@ -125,14 +125,16 @@ public class Definition implements Serializable {
 
     public static void main(String[] args) throws JAXBException {
         Definition df = new Definition();
-        Process process = new Process();
-        process.setName("测试");
-        process.setId("1122");
-        process.setStartUEL("23sfsfsf");
-        df.setDefJson("sdfsdfs");
-        JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":188,\"y\":136,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_2\",\"uel\":\"\"}],\"name\":\"开始\",\"nodeConfig\":{}},\"EndEvent_1\":{\"type\":\"EndEvent\",\"x\":704,\"y\":232,\"id\":\"EndEvent_1\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}},\"UserTask_2\":{\"type\":\"UserTask\",\"x\":438,\"y\":185,\"id\":\"UserTask_2\",\"target\":[{\"targetId\":\"EndEvent_1\",\"uel\":\"\"}],\"name\":\"普通任务\",\"nodeConfig\":{\"normal\":{\"name\":\"普通任务\",\"executeTime\":\"44\",\"workPageName\":\"默认审批页面\",\"workPageUrl\":\"http://localhost:8081/lookApproveBill/show\",\"allowTerminate\":true,\"allowPreUndo\":true,\"allowReject\":true},\"executor\":{\"userType\":\"AnyOne\"},\"event\":{\"beforeExcuteService\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":null}}}");
-        process.setNodes(nodes);
-        df.setProcess(process);
+        JSONObject json = JSONObject.fromObject("{\"flowTypeId\":\"C35B0B09-3640-11E7-9617-3C970EA9E0F7\",\"orgId\":\"c0a80171-5bcd-1066-815b-cd83f5a20002\",\"id\"\n" +
+                ":null,\"process\":{\"name\":\"test0607\",\"id\":\"test0607\",\"isExecutable\":true,\"nodes\":{\"StartEvent_0\":{\"type\"\n" +
+                ":\"StartEvent\",\"x\":71,\"y\":107,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_1\",\"uel\":\"\"}],\"name\"\n" +
+                ":\"开始\",\"nodeConfig\":{}},\"UserTask_1\":{\"type\":\"UserTask\",\"x\":189,\"y\":104,\"id\":\"UserTask_1\",\"nodeType\":\"Normal\"\n" +
+                ",\"target\":[{\"targetId\":\"EndEvent_5\",\"uel\":\"\"}],\"name\":\"普通任务\",\"nodeConfig\":{\"normal\":{\"name\":\"普通任务\",\"executeTime\"\n" +
+                ":\"\",\"workPageName\":\"默认审批页面\",\"workPageUrl\":\"http://localhost:8081/lookApproveBill/show\",\"allowTerminate\"\n" +
+                ":false,\"allowPreUndo\":false,\"allowReject\":false},\"executor\":{\"userType\":\"StartUser\"},\"event\":{\"beforeExcuteService\"\n" +
+                ":\"\",\"beforeExcuteServiceId\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":\"\"}},\"EndEvent_5\"\n" +
+                ":{\"type\":\"EndEvent\",\"x\":780,\"y\":94,\"id\":\"EndEvent_5\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}}}}}\n");
+        df = (Definition) JSONObject.toBean(json,Definition.class);
         JAXBContext context = JAXBContext.newInstance(df.getClass());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
