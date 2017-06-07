@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface FlowHistoryDao extends BaseEntityDao<FlowHistory> {
 
-    @Query("select fh from com.ecmp.flow.entity.FlowHistory fh where fh.flowInstance.id  = :instanceId")
+    @Query("select fh from com.ecmp.flow.entity.FlowHistory fh where fh.flowInstance.id  = :instanceId order by fh.actEndTime asc")
     public List<FlowHistory> findByInstanceId(@Param("instanceId")String instanceId);
 }

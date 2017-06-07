@@ -1,5 +1,8 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
@@ -564,22 +567,30 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if(taskList!=null && taskList.size()>0){
             for(Task task:taskList){
                     if(task.getAssignee()!=null && !"".equals(task.getAssignee())){
-                        List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                        for(IdentityLink identityLink:identityLinks){
-                            FlowTask  flowTask = new FlowTask();
-                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                            flowTask.setFlowName(flowName);
-                            flowTask.setTaskName(task.getName());
-                            flowTask.setActTaskId(task.getId());
-                            flowTask.setOwnerAccount(task.getOwner());
-                            flowTask.setPriority(task.getPriority());
-                            flowTask.setExecutorAccount(identityLink.getUserId());
-                            flowTask.setActType(identityLink.getType());
-                            flowTask.setDepict(task.getDescription());
-                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                            flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
-                            flowTask.setFlowInstance(flowInstance);
-                            flowTaskDao.save(flowTask);
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(task.getAssignee()));
+                        if(employees!=null && !employees.isEmpty()){
+                            Executor executor = employees.get(0);
+                            List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
+                            for(IdentityLink identityLink:identityLinks){
+                                FlowTask  flowTask = new FlowTask();
+                                flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                                flowTask.setFlowName(flowName);
+                                flowTask.setTaskName(task.getName());
+                                flowTask.setActTaskId(task.getId());
+                                flowTask.setOwnerAccount(executor.getCode());
+                                flowTask.setOwnerName(executor.getName());
+                                flowTask.setExecutorAccount(executor.getCode());
+                                flowTask.setExecutorName(executor.getName());
+                                flowTask.setPriority(task.getPriority());
+//                                flowTask.setExecutorAccount(identityLink.getUserId());
+                                flowTask.setActType(identityLink.getType());
+                                flowTask.setDepict(task.getDescription());
+                                flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                                flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
+                                flowTask.setFlowInstance(flowInstance);
+                                flowTaskDao.save(flowTask);
+                            }
                         }
                     }else{
                         FlowTask  flowTask = new FlowTask();

@@ -256,11 +256,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowHistory.setActEndTime(historicTaskInstance.getEndTime());
             flowHistory.setActHistoryId(historicTaskInstance.getId());
             flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
+            flowHistory.setPreId(flowTask.getPreId());
             if (reject != null && reject == 1) {
-                flowHistory.setDepict("被驳回");
+                flowHistory.setDepict("被驳回:"+flowHistory.getDepict());
                 flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
             } else {
-                flowHistory.setDepict(null);
                 flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
             }
             flowHistoryDao.save(flowHistory);
@@ -462,7 +462,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //完成任务
             variables.put("reject", 1);
-            this.complete(currentTask.getId(),"驳回:"+currentTask.getDepict(), variables);
+            this.complete(currentTask.getId(),currentTask.getDepict(), variables);
 
             //恢复方向
             preActivity.getIncomingTransitions().remove(newTransition);
@@ -812,7 +812,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         List<PvmTransition> currentInTransitionList = currActivity.getIncomingTransitions();
         for (PvmTransition currentInTransition : currentInTransitionList) {
-            PvmActivity currentInActivity = currentInTransition.getDestination();
+            PvmActivity currentInActivity = currentInTransition.getSource();
             if (currentInActivity.getId().equals(preActivity.getId())) {
                 result = true;
                 break;
@@ -852,6 +852,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
                 if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
+                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(task.getAssignee()));
+                    if(employees!=null && !employees.isEmpty()){
+                        Executor executor = employees.get(0);
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for (IdentityLink identityLink : identityLinks) {
                         FlowTask flowTask = new FlowTask();
@@ -860,31 +864,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
-                        flowTask.setOwnerAccount(task.getOwner());
+                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerName(executor.getName());
+                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorName(executor.getName());
                         flowTask.setPriority(task.getPriority());
-                        flowTask.setExecutorAccount(identityLink.getUserId());
+//                                flowTask.setExecutorAccount(identityLink.getUserId());
                         flowTask.setActType(identityLink.getType());
                         flowTask.setDepict(task.getDescription());
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         if (preTask != null) {
-                            if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
-                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
-                                FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
-                                if (oldPreFlowHistory != null) {
-                                    flowTask.setPreId(oldPreFlowHistory.getId());
-                                } else {
-                                    flowTask.setPreId(null);
-                                }
-                            } else {
-                                flowTask.setPreId(preTask.getId());
-                            }
+//                            if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
+//                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
+////                                if(!StringUtils.isEmpty(oldPreId)){
+////                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
+////                                    if (oldPreFlowHistory != null) {
+////                                        flowTask.setPreId(oldPreFlowHistory.getId());
+////                                    } else {
+////                                        flowTask.setPreId(null);
+////                                    }
+////                                }
+//                            } else {
+//                                flowTask.setPreId(preTask.getId());
+//                            }
+                            flowTask.setPreId(preTask.getId());
                             flowTask.setDepict(preTask.getDepict());
                         }
                         flowTask.setFlowInstance(flowInstance);
 
                         flowTaskDao.save(flowTask);
                     }
-                } else {
+                }} else {
                     FlowTask flowTask = new FlowTask();
                     flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                     flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1104,12 +1114,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
                             } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
                             }
-                            if (employees != null && !employees.isEmpty()) {
-                                employeeSet.addAll(employees);
-                                nodeInfo.setExecutorSet(employeeSet);
-                            }
+
 
                         }
+                    }
+                    if (employees != null && !employees.isEmpty()) {
+                        employeeSet.addAll(employees);
+                        nodeInfo.setExecutorSet(employeeSet);
                     }
                 }
             }
