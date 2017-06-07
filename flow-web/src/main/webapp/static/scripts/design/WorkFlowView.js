@@ -14,7 +14,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
 
     initComponent: function () {
         var g = this;
-        this.orgId = EUI.util.getUrlParam("orgId");
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
