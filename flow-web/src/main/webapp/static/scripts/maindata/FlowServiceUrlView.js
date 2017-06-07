@@ -25,45 +25,109 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             isOverFlow: false,
             border: false,
             items: [{
-                xtype: "ComboBox",
+                // xtype: "ComboBox",
+                // title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                // id: "coboId",
+                // async: false,
+                // colon: false,
+                // labelWidth: 70,
+                // store: {
+                //     url: _ctxPath + "/flowType/listAllBusinessModel"
+                // },
+                // reader: {
+                //     name: "name",
+                //     filed: ["id"]
+                // },
+                // afterLoad: function (data) {
+                //     if (!data) {
+                //         return;
+                //     }
+                //     var cobo = EUI.getCmp("coboId");
+                //     cobo.setValue(data[0].name);
+                //     g.businessModelId = data[0].id;
+                //     g.businessModelName = data[0].name;
+                //     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                //         url: _ctxPath + "/flowServiceUrl/listServiceUrl",
+                //         loadonce: false,
+                //         datatype: "json",
+                //         postData: {
+                //             "Q_EQ_businessModel.id": data[0].id
+                //         }
+                //     }, true)
+                // },
+                // afterSelect: function (data) {
+                //     g.businessModel = data.data.id;
+                //     g.businessModelName = data.data.name;
+                //     EUI.getCmp("gridPanel").setPostParams({
+                //             "Q_EQ_businessModel.id": data.data.id
+                //         }
+                //     ).trigger("reloadGrid");
+                // }
+                xtype: "ComboGrid",
                 title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                name: "bussinessModelName",
                 id: "coboId",
-                async: false,
+                //async: false,
                 colon: false,
-                labelWidth: 70,
-                store: {
-                    url: _ctxPath + "/flowType/listAllBusinessModel"
+                field: ["id"],
+                listWidth: 400,
+                labelWidth: 85,
+                editable:true,
+                value:"全部",
+                showSearch:true,
+                onSearch:function(value){
+                    this.grid.localSearch(value);
+                },
+                gridCfg: {
+                    url: _ctxPath + "/flowType/listAllBusinessModel",
+                    loadonce:true,
+                    // loadComplete: function (data) {
+                    //     console.log(data.rows[0]);
+                    //     if (typeof(data.rows[0]) == "undefined") {
+                    //         return;
+                    //     }
+                    //     var cobo = EUI.getCmp("coboId");
+                    //     cobo.setValue(data.rows[0].name);
+                    //     g.businessModel = data.rows[0].id;
+                    //     g.businessModelName = data.rows[0].name;
+                    //     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                    //         url: _ctxPath + "/flowType/listFlowType",
+                    //         loadonce: false,
+                    //         datatype: "json",
+                    //         postData: {
+                    //             "Q_EQ_businessModel.id": data.rows[0].id
+                    //         }
+                    //     }, true)
+                    // },
+                    colModel: [{
+                        name: "id",
+                        index: "id",
+                        hidden: true
+                    }, {
+                        label: this.lang.nameText,
+                        name: "name",
+                        index: "name"
+                    }]
                 },
                 reader: {
                     name: "name",
                     filed: ["id"]
                 },
-                afterLoad: function (data) {
-                    if (!data) {
-                        return;
-                    }
-                    var cobo = EUI.getCmp("coboId");
-                    cobo.setValue(data[0].name);
-                    g.businessModelId = data[0].id;
-                    g.businessModelName = data[0].name;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/flowServiceUrl/listServiceUrl",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_businessModel.id": data[0].id
-                        }
-                    }, true)
-                },
                 afterSelect: function (data) {
+                    console.log(data);
                     g.businessModel = data.data.id;
                     g.businessModelName = data.data.name;
                     EUI.getCmp("gridPanel").setPostParams({
-                            "Q_EQ_businessModel.id": data.data.id
-                        }
-                    ).trigger("reloadGrid");
+                        "Q_EQ_businessModel.id": data.data.id
+                    },true);
+                },
+                afterClear:function(){
+                    var cobo = EUI.getCmp("coboId");
+                    cobo.setValue("全部");
+                    EUI.getCmp("gridPanel").setPostParams({
+                        "Q_EQ_businessModel.id": null
+                    },true);
                 }
-
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
@@ -100,7 +164,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 "border-reduis": "3px"
             },
             gridCfg: {
-                loadonce: true,
+                //loadonce: true,
+                url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -133,6 +198,15 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict"
+                },{
+                    label: "businessModelId",
+                    name: "businessModel.id",
+                    index: "businessModel.id",
+                    hidden: true
+                }, {
+                    label: "所属业务实体模型",
+                    name: "businessModel.name",
+                    index: "businessModel.name"
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -207,26 +281,37 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    value: data.id,
                     hidden: true
                 }, {
-                    xtype: "TextField",
-                    title: "业务实体ID",
+                    xtype: "ComboGrid",
+                    title:  "业务实体",
+                    name: "businessModel.name",
+                    field: ["businessModel.id"],
+                    listWidth: 400,
                     labelWidth: 90,
-                    allowBlank: false,
-                    name: "businessModel.id",
                     width: 220,
-                    value: g.businessModel,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: "业务实体",
-                    readonly: true,
-                    labelWidth: 90,
                     allowBlank: false,
-                    name: "businessModelName",
-                    width: 220,
-                    value: g.businessModelName
+                    showSearch:true,
+                    onSearch:function(value){
+                        this.grid.localSearch(value);
+                    },
+                    gridCfg: {
+                        url: _ctxPath + "/flowType/listAllBusinessModel",
+                        loadonce:true,
+                        colModel: [{
+                            name: "id",
+                            index: "id",
+                            hidden: true
+                        }, {
+                            label: this.lang.nameText,
+                            name: "name",
+                            index: "name"
+                        }]
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
+                    }
                 },{
                     xtype: "TextField",
                     title: g.lang.codeText,
@@ -234,7 +319,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "code",
                     width: 220,
-                    value: data.code
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
@@ -242,7 +326,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "name",
                     width: 220,
-                    value: data.name
                 }, {
                     xtype: "TextField",
                     title: "URL",
@@ -250,7 +333,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "url",
                     width: 220,
-                    value: data.url
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
@@ -258,7 +340,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "depict",
                     width: 220,
-                    value: data.depict
                 }]
             }],
             buttons: [{
@@ -280,6 +361,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+        EUI.getCmp("updateFlowServiceUrl").loadData(data);
     },
     addFlowServiceUrl: function () {
         var g = this;
@@ -292,23 +374,35 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 id: "addFlowServiceUrl",
                 padding: 0,
                 items: [{
-                    xtype: "TextField",
-                    title: "业务实体ID",
-                    labelWidth: 90,
-                    allowBlank: false,
-                    name: "businessModel.id",
-                    width: 220,
-                    value: g.businessModel,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: "业务实体",
-                    readonly: true,
-                    labelWidth: 90,
-                    allowBlank: false,
+                    xtype: "ComboGrid",
+                    title:  "业务实体",
                     name: "businessModelName",
+                    field: ["businessModel.id"],
+                    listWidth: 400,
+                    labelWidth: 90,
                     width: 220,
-                    value: g.businessModelName
+                    allowBlank: false,
+                    showSearch:true,
+                    onSearch:function(value){
+                        this.grid.localSearch(value);
+                    },
+                    gridCfg: {
+                        url: _ctxPath + "/flowType/listAllBusinessModel",
+                        loadonce:true,
+                        colModel: [{
+                            name: "id",
+                            index: "id",
+                            hidden: true
+                        }, {
+                            label: this.lang.nameText,
+                            name: "name",
+                            index: "name"
+                        }]
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
+                    }
                 },{
                     xtype: "TextField",
                     title: g.lang.codeText,
@@ -373,6 +467,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
                 if (result.success) {
                     EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                    win.close();
                 }
             },
             failure: function (result) {
@@ -380,7 +475,5 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
             }
         });
-        win.close();
-        myMask.hide();
     }
 });

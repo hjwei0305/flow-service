@@ -25,10 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -110,7 +107,7 @@ public class FlowHistoryComponentController {
          */
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         List<FlowHistory> flowHistories = proxy.findByInstanceId(instanceId);
-        Set<FlowHandleHistoryVO> flowHandleHistoryVOSet = new HashSet();
+        List<FlowHandleHistoryVO> flowHandleHistoryVOSet = new ArrayList<>();
         for(int i=0;i<flowHistories.size();i++){
             FlowHandleHistoryVO flowHandleHistoryVO = new FlowHandleHistoryVO();
             flowHandleHistoryVO.setFlowHistoryTaskName(flowHistories.get(i).getFlowTaskName());
@@ -126,7 +123,7 @@ public class FlowHistoryComponentController {
          */
         IFlowTaskService proxy2 = ApiClient.createProxy(IFlowTaskService.class);
         List<FlowTask>  flowTasks= proxy2.findByInstanceId(instanceId);
-        Set<FlowHandleStatusVO> flowHandleStatusVOSet = new HashSet();
+        List<FlowHandleStatusVO> flowHandleStatusVOSet = new ArrayList<>();
         for(int i=0;i<flowTasks.size();i++){
             FlowHandleStatusVO flowHandleStatusVO = new FlowHandleStatusVO();
             flowHandleStatusVO.setFlowCurHandleStatusTaskName(flowTasks.get(i).getTaskName());
