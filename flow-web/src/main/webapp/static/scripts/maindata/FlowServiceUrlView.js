@@ -204,7 +204,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     index: "businessModel.id",
                     hidden: true
                 }, {
-                    label: this.lang.belongToBusinessModelText,
+                    label: "所属业务实体模型",
                     name: "businessModel.name",
                     index: "businessModel.name"
                 }],
