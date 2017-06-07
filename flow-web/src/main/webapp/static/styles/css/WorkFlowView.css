@@ -51,14 +51,14 @@
 }
 
 .flow-task {
+    background: #fefed9 none repeat scroll 0 0;
     border: 1px solid #45b7ff;
     border-radius: 4px;
     display: inline-block;
-    height: 55px;
+    height: 50px;
     margin-top: 20px;
-    padding-top: 10px;
-    width: 100px;
-    background: #FEFED9;
+    padding-top: 8px;
+    width: 90px;
 }
 
 .flow-item-space {
@@ -77,7 +77,7 @@
 }
 
 .flow-gateway-box {
-    height: 90px;
+    height: 80px;
     padding-top: 20px;
 }
 
@@ -89,90 +89,90 @@
 .flow-event-start {
     background: url("../images/flow_start.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 40px;
-    width: 40px;
+    height: 35px;
+    width: 35px;
     vertical-align: middle;
 }
 
 .flow-event-start:hover {
     background: url("../images/flow_start_select.png") no-repeat scroll 0 0/cover;
-    height: 55px;
-    width: 55px;
+    height: 45px;
+    width: 45px;
 }
 
 .flow-event-end {
     background: url("../images/flow_end.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 40px;
-    width: 40px;
-    line-height: 40px;
+    height: 35px;
+    width: 35px;
+    line-height: 35px;
     vertical-align: middle;
 }
 
 .flow-event-iconbox {
     display: inline-block;
-    height: 60px;
-    line-height: 60px;
+    height: 55px;
+    line-height: 55px;
     text-align: center;
-    width: 60px;
+    width: 55px;
 }
 
 .flow-event-end:hover {
     background: url("../images/flow_end_select.png") no-repeat scroll 0 0/cover;
-    height: 55px;
-    width: 55px;
+    height: 45px;
+    width: 45px;
 }
 
 .parallelgateway {
     background: url("../images/flow_gateway_sync.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 55px;
-    width: 55px;
+    height: 48px;
+    width: 48px;
 }
 
 .parallelgateway:hover {
     background: url("../images/flow_gateway_sync_select.png") no-repeat scroll 0 0/cover;
-    height: 56px;
-    width: 56px;
+    height: 51px;
+    width: 51px;
 }
 
 .exclusivegateway {
     background: url("../images/flow_gateway_fork.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 55px;
-    width: 55px;
+    height: 48px;
+    width: 48px;
 }
 
 .exclusivegateway:hover {
-    background: url("../images/flow_gateway_fork.png") no-repeat scroll 0 0/cover;
-    height: 56px;
-    width: 56px;
+    background: url("../images/flow_gateway_fork_select.png") no-repeat scroll 0 0/cover;
+    height: 51px;
+    width: 51px;
 }
 
 .inclusivegateway {
     background: url("../images/flow_gateway_condition.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 55px;
-    width: 55px;
+    height: 48px;
+    width: 48px;
 }
 
 .inclusivegateway:hover {
-    background: url("../images/flow_gateway_condition.png") no-repeat scroll 0 0/cover;
-    height: 56px;
-    width: 56px;
+    background: url("../images/flow_gateway_condition_select.png") no-repeat scroll 0 0/cover;
+    height: 51px;
+    width: 51px;
 }
 
 .eventgateway {
     background: url("../images/flow_gateway_event.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 55px;
-    width: 55px;
+    height: 48px;
+    width: 48px;
 }
 
 .eventgateway:hover {
-    background: url("../images/flow_gateway_event.png") no-repeat scroll 0 0/cover;
-    height: 56px;
-    width: 56px;
+    background: url("../images/flow_gateway_event_select.png") no-repeat scroll 0 0/cover;
+    height: 51px;
+    width: 51px;
 }
 
 .flow-task .usertask {
@@ -228,16 +228,21 @@
     bottom: 45%;
     box-shadow: 0 0 2px black;
     cursor: pointer;
-    height: 16px;
+    height: 14px;
     position: absolute;
     right: 5px;
     transition: box-shadow 0.25s ease-in 0s;
-    width: 16px;
+    width: 14px;
     display: none;
 }
 
 .flow-event-box .node-dot {
-    bottom: 40%;
+    bottom: 46%;
+}
+
+.flow-gateway-box .node-dot{
+    bottom: 62%;
+    right: 0px;
 }
 
 .flow-node:hover .node-dot {
@@ -255,6 +260,7 @@
     opacity: 0.5;
     cursor: no-drop;
     margin-top: 0;
+    padding-top: 5px;
 }
 
 .flow-info {
