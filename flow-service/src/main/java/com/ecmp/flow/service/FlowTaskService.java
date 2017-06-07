@@ -258,7 +258,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
             flowHistory.setPreId(flowTask.getPreId());
             if (reject != null && reject == 1) {
-                flowHistory.setDepict("被驳回:"+flowHistory.getDepict());
+                flowHistory.setDepict("【被驳回】"+flowHistory.getDepict());
                 flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
             } else {
                 flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
@@ -283,14 +283,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //初始化新的任务
             PvmActivity currentNode = this.getActivitNode(actTaskId);
-            if (currentNode != null &&  (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type")+""))) {
+            if (instance!=null && currentNode != null &&  (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type")+""))) {
                 callInitTaskBack(currentNode, instance, flowHistory);
             }
 
         }
 
         OperateResultWithData result = OperateResultWithData.OperationSuccess("core_00003");
-        if(instance.isEnded()){
+        if(instance==null||instance.isEnded()){
             result.setData(FlowStatus.COMPLETED);//任务结束
         }
         return result;
@@ -874,19 +874,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         flowTask.setDepict(task.getDescription());
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         if (preTask != null) {
-//                            if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
+                            if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
 //                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
-////                                if(!StringUtils.isEmpty(oldPreId)){
-////                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
-////                                    if (oldPreFlowHistory != null) {
-////                                        flowTask.setPreId(oldPreFlowHistory.getId());
-////                                    } else {
-////                                        flowTask.setPreId(null);
-////                                    }
-////                                }
-//                            } else {
-//                                flowTask.setPreId(preTask.getId());
-//                            }
+//                                if(!StringUtils.isEmpty(oldPreId)){
+//                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
+//                                    if (oldPreFlowHistory != null) {
+//                                        flowTask.setPreId(oldPreFlowHistory.getId());
+//                                    } else {
+//                                        flowTask.setPreId(null);
+//                                    }
+//                                }
+                                flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                            } else {
+                                flowTask.setPreId(preTask.getId());
+                            }
                             flowTask.setPreId(preTask.getId());
                             flowTask.setDepict(preTask.getDepict());
                         }
