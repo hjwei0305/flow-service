@@ -26,10 +26,13 @@ import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
+import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import jodd.util.StringUtil;
 import net.sf.json.JSONObject;
+import org.activiti.bpmn.model.*;
+import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.history.*;
 import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -39,6 +42,7 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
+import org.activiti.engine.impl.task.TaskDefinition;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -911,16 +915,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     flowTask.setFlowInstance(flowInstance);
                     if (preTask != null) {
                         if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
-                            String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
-                            FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
-                            if (oldPreFlowHistory != null) {
-                                flowTask.setPreId(oldPreFlowHistory.getId());
-                            } else {
-                                flowTask.setPreId(null);
-                            }
+//                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
+//                                if(!StringUtils.isEmpty(oldPreId)){
+//                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
+//                                    if (oldPreFlowHistory != null) {
+//                                        flowTask.setPreId(oldPreFlowHistory.getId());
+//                                    } else {
+//                                        flowTask.setPreId(null);
+//                                    }
+//                                }
+                            flowTask.setTaskStatus(TaskStatus.REJECT.toString());
                         } else {
                             flowTask.setPreId(preTask.getId());
                         }
+                        flowTask.setPreId(preTask.getId());
                         flowTask.setDepict(preTask.getDepict());
                     }
                     flowTaskDao.save(flowTask);
@@ -1316,15 +1324,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         tempNodeInfo.setName(tempActivity.getProperty("name").toString());
         tempNodeInfo.setType(tempActivity.getProperty("type").toString());
         tempNodeInfo.setId(tempActivity.getId());
-        String assignee = tempActivity.getProperty("activiti:assignee") + "";
-        String candidateUsers = tempActivity.getProperty("activiti:candidateUsers") + "";
+        String assignee = null;
+        String candidateUsers = null;
+        if("endEvent".equalsIgnoreCase(tempActivity.getProperty("type")+"")){
+            tempNodeInfo.setType("EndEvent");
+            return tempNodeInfo;
+        }
+        try {
+            org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity processDefinitionEntity = (org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity) tempActivity.getProcessDefinition();
+            org.activiti.engine.impl.task.TaskDefinition taskDefinition = processDefinitionEntity.getTaskDefinitions().get(tempActivity.getId());
+            org.activiti.engine.delegate.Expression assigneeExpression = taskDefinition.getAssigneeExpression();
+            Set<org.activiti.engine.delegate.Expression> candidateUserIdExpressionSet = taskDefinition.getCandidateUserIdExpressions();
+            if (assigneeExpression != null) {
+                assignee = assigneeExpression.getExpressionText();
+            }
+            if (candidateUserIdExpressionSet != null && !candidateUserIdExpressionSet.isEmpty()) {
+                candidateUsers = ((org.activiti.engine.delegate.Expression) candidateUserIdExpressionSet.toArray()[0]).getExpressionText();
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+
         if (ifMultiInstance(tempActivity)) {//会签任务
             tempNodeInfo.setUiType("checkbox");
             tempNodeInfo.setFlowTaskType("countersign");
-        } else if (!StringUtil.isEmpty(assignee)) {//普通任务
+        } else if (!StringUtil.isEmpty(assignee)&& (!"null".equalsIgnoreCase(assignee))) {//普通任务
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("common");
-        } else if (StringUtil.isEmpty(candidateUsers)) {//单签任务
+        } else if (!StringUtil.isEmpty(candidateUsers) && (!"null".equalsIgnoreCase(candidateUsers))) {//单签任务
             tempNodeInfo.setFlowTaskType("singleSign");
             tempNodeInfo.setUiType("checkbox");
         } else {
