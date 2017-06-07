@@ -283,7 +283,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             //初始化新的任务
             PvmActivity currentNode = this.getActivitNode(actTaskId);
-            if (currentNode != null) {
+            if (currentNode != null &&  (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type")+""))) {
                 callInitTaskBack(currentNode, instance, flowHistory);
             }
 
