@@ -126,6 +126,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-item").live("click", function () {
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
+            var type = $(this).attr("type");
+            if (type == "endEvent") {
+                $(".flow-next").text("完成");
+            } else {
+                $(".flow-next").text("下一步");
+            }
         });
         //执行人选择
         $(".flow-user-item").live("click", function () {
@@ -165,6 +171,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-info-excutor").text(data.prUser);
         $(".flow-info-remark").text(data.preCreateTime);
 
+
     },
     getNodeInfo: function () {
         var g = this;
@@ -202,9 +209,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            html += '<div class="flow-decision-item" id="' + item.id + '">' +
+            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div class="excutor-item-title">' + item.name + '</div></div>';
+        }
+        if (data.length == 1 && data[0].type == "endEvent") {
+            $(".flow-next").text("完成");
         }
         $(".flow-decision-box").append(html);
     },
@@ -213,8 +223,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var doms;
         if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
-        }else{
-            doms = $(".flow-decision-box");
+        } else {
+            doms = $(".flow-decision-item");
         }
         for (var i = 0; i < doms.length; i++) {
             includeNodeIds += $(doms[i]).attr("id");

@@ -131,6 +131,11 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         if(definition.getId()!=null){
             flowDefination = flowDefinationDao.findOne(definition.getId());
         }
+        //暂时通过key来查找对应的流程定义
+        if(flowDefination == null){
+            flowDefination = flowDefinationDao.findByDefKey(process.getId());
+        }
+
 
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
