@@ -1051,6 +1051,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
 
                 UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+                if("EndEvent".equalsIgnoreCase(userTaskTemp.getType())){
+                    nodeInfo.setType("EndEvent");
+                    continue;
+                }
                 if("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())){
                     nodeInfo.setUserVarName(userTaskTemp.getId()+"_Normal");
                 }else if("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())){

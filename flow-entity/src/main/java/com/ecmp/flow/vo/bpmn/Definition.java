@@ -30,8 +30,8 @@ public class Definition implements Serializable {
     @XmlAttribute
     private String xmlns = "http://www.omg.org/spec/BPMN/20100524/MODEL";
 
-    @XmlAttribute
-    private String xsd = "http://www.w3.org/2001/XMLSchema";
+//    @XmlAttribute
+//    private String xs = "http://www.w3.org/2001/XMLSchema";
 
     @XmlAttribute
     private String expressionLanguage = "http://www.w3.org/1999/XPath";
