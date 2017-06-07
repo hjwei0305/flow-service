@@ -415,7 +415,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 events: {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
-                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                        delete g.uelInfo[connection.sourceId + "," + connection.targetId];
                         g.instance.detach(connection);
                     }
                 }
