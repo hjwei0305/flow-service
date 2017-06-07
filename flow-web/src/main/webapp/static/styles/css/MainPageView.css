@@ -157,7 +157,7 @@ div,span,p{
     overflow: auto;
 }
 .info-item:nth-child(odd){
-    margin-right: 6.8%;
+    margin-right: 5.5%;
 }
 .info-item{
     width: 45%;

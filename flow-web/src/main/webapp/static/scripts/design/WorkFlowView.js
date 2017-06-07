@@ -706,7 +706,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     save: function (deploy) {
         var data = this.getFlowData();
-        console.log(data);
         if (!data) {
             return;
         }

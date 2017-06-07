@@ -34,18 +34,19 @@ public class UserTask extends BaseFlowNode implements Serializable {
     @XmlAttribute(name = "activiti:candidateUsers")
     private String candidateUsers;
 
-    /**
-     * 会签配置
-     */
-    @XmlElement(name = "multiInstanceLoopCharacteristics")
-    private MultiInstanceConfig config;
-
 
     /**
      * activti扩展属性，任务监听器之类
      */
     @XmlElement(name = "extensionElements")
     private ExtensionElement extensionElement;
+
+
+    /**
+     * 会签配置
+     */
+    @XmlElement(name = "multiInstanceLoopCharacteristics")
+    private MultiInstanceConfig config;
 
     /**
      * 前端节点类型

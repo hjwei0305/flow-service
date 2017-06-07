@@ -113,7 +113,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "name",
                 value: this.title
             }, {
+                xtype:"NumberField",
                 title: "额定工时",
+                allowNegative:false,
                 name: "executeTime",
                 width: 262,
                 labelWidth: 100,

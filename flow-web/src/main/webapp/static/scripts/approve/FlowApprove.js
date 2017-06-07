@@ -137,8 +137,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
             if (type != "countersign") {
-                $(".flow-user-item").removeClass("select");
+                if ($(this).hasClass("select")) {
+                    return;
+                }
                 $(this).addClass("select");
+                $(this).siblings().removeClass("select");
+            } else {
+                if ($(this).hasClass("select")) {
+                    $(this).removeClass("select");
+                } else {
+                    $(this).addClass("select");
+                }
             }
         });
 
@@ -169,9 +178,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-ordernum").text("业务单号：" + data.businessId);
         $(".flow-info-creater").text("制单人：" + data.createUser);
         $(".flow-info-excutor").text(data.prUser);
-        $(".flow-info-remark").text(data.preCreateTime);
-
-
+        $(".flow-info-remark").text(data.prOpinion);
     },
     getNodeInfo: function () {
         var g = this;
@@ -282,6 +289,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
+                    if ($(".flow-next").text() == "完成") {
+                        g.close();
+                    }
                     g.toChooseUserData = status.data;
                     g.showChooseUser();
                 } else {
@@ -371,6 +381,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     submit: function () {
         var g = this;
+        if(!this.checkUserValid()){
+            return;
+        }
         var mask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });
@@ -395,5 +408,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(response);
             }
         });
+    },
+    close: function () {
+        if (parent.homeView) {
+            parent.homeView.closeNowTab();
+        } else {
+            window.close();
+        }
     }
 });
