@@ -14,14 +14,15 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 border: false,
                 padding: 8,
                 width:500,
-                height:450,
+                height:500,
+                id:"lookApprove",
                 itemspace: 0,
                 style:{
                     "background":"#fff",
                     "border":"1px solid #b5b8c8",
                     "margin":"0 auto"
                 },
-                items: [this.initTop(),this.initCenter()/*,this.initDown()*/]
+                items: [this.initTop(),this.initCenter(),this.initDown()]
             }]
 
         });
@@ -52,7 +53,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name:"name",
                 width:300,
                 id:"name",
-                readonly:true,
+                // readonly:true,
                 colon:false,
                 style:{
                     "font-weight":"bolder"
@@ -63,7 +64,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name:"unitPrice",
                 width:300,
                 id:"unitPrice",
-                readonly:true,
+                // readonly:true,
                 colon:false,
                 style:{
                     "font-weight":"bolder"
@@ -74,7 +75,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name:"count",
                 width:300,
                 id:"count",
-                readonly:true,
+                // readonly:true,
                 colon:false,
                 style:{
                     "font-weight":"bolder"
@@ -84,10 +85,40 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 title:"<span class='name'>说明</span>",
                 id:"workCaption",
                 name:"workCaption",
-                readonly:true,
+                // readonly:true,
                 width:300,
                 height:170,
                 colon:false
+            }]
+        }
+    },
+    initDown:function () {
+        var g=this;
+        return{
+            xtype:"Container",
+            region:"south",
+            height:55,
+            id:"btn",
+            border:false,
+            padding:0,
+            items:[{
+                xtype:"Button",
+                title:"保存",
+                id:"save",
+                selected:true,
+                handler:function () {
+                    var form = EUI.getCmp("lookBill");
+                    if (!form.isValid()) {
+                        return;
+                    }
+                    var data = form.getFormValue();
+                    console.log(data);
+                    g.saveLookApprove(data);
+                }
+            },{
+                xtype:"Button",
+                title:"取消",
+                id:"cancel"
             }]
         }
     },
@@ -122,5 +153,23 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             msg:"表单验证成功"
         });
         return true;
+    },
+    saveLookApprove: function (data) {
+        var g = this;
+        var mask = EUI.LoadMask({
+            msg: "正在保存，请稍候..."
+        });
+        EUI.Store({
+            url: _ctxPath + "/builtInApprove/save",
+            params: data,
+            success: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
+            },
+            failure: function (status) {
+                mask.hide();
+                EUI.ProcessStatus(status);
+            }
+        });
     }
 });

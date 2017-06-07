@@ -18,12 +18,6 @@ html{
 #btn .ux-line-row{
     display: inline-block;
 }
-#submit{
-    font-size: 16px;
-    margin-left: 70px;
-    margin-right: 150px;
-    line-height: 30px;
-}
-#reset{
-    font-size: 16px;
+#save{
+    margin-left: 190px;
 }
