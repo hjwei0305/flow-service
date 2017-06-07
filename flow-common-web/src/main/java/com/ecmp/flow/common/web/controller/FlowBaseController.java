@@ -116,7 +116,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String key, String businessKey) {
+    public String startFlow(String businessModelCode, String businessKey) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
@@ -130,7 +130,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
             variables.put("UserTask_1_Normal", startUserId);
-            FlowInstance result = proxy.startByKey(key, startUserId, businessKey, variables);
+            FlowInstance result = proxy.startByBusinessModelCode(businessModelCode, startUserId, businessKey, variables);
             if (result != null) {
                 baseService.save(defaultBusinessModel);
                 operateStatus = new OperateStatus(true, "启动流程：" + result.getFlowName() + ",成功");

@@ -137,11 +137,30 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
 
+
+
+
     @GET
     @Path("getFlowDefVersion/{id}/{versionCode}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
     public FlowDefVersion getFlowDefVersion(@PathParam("id") String id, @PathParam("versionCode") Integer versionCode);
+
+
+    /**
+     * 通过businessModelCode启动流程实体
+     * @param businessModelCode businessModelCode
+     * @param startUserId 流程启动人
+     * @param businessKey 业务KEY
+     * @param variables  其他参数
+     * @return 流程实例
+     */
+    @POST
+    @Path("startByBusinessModelWithStartUserId/{businessModelCode}/{startUserId}/{businessKey}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过businessModelCode启动流程实体,附加启动用户ID",notes = "测试")
+    public FlowInstance startByBusinessModelCode(@PathParam("businessModelCode") String businessModelCode,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
 }
