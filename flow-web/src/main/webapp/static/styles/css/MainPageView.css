@@ -80,7 +80,7 @@ div,span,p{
     cursor: pointer;
 }
 /*上面部分的中间内容部分样式*/
-.top-content{
+#todoTask-content{
     width: 100%;
     border: 1px solid #dddddd;
     border-radius: 2px;
@@ -157,7 +157,7 @@ div,span,p{
     overflow: auto;
 }
 .info-item:nth-child(odd){
-    margin-right: 6.8%;
+    margin-right: 6%;
 }
 .info-item{
     width: 45%;
@@ -211,7 +211,7 @@ div,span,p{
 .reject-icon{
     width: 12px;
     height: 12px;
-    background: url("../images/reject-icon.png") no-repeat;
+    background: url("../images/back.png") no-repeat;
     background-size: cover;
     vertical-align: middle;
     display: inline-block;
@@ -281,24 +281,42 @@ div,span,p{
     float: left;
     line-height: 50px;
 }
+.pege-right>input{
+    text-decoration: none;
+    outline: none;
+    color: #999999;
+    display: block;
+    float: left;
+    line-height: 50px;
+}
 .pege-right>a:hover{
     color: #45b7ff;
     font-weight: bold;
 }
 .pege-right>.one{
     color: #45b7ff;
-    width: 8px;
+    height: 20px;
+    margin-left: 10px;
+    margin-top: 15px;
+    text-align: center;
+    width: 13px;
 }
-.num{
+.pege-right>.first-page{
+    width: 50px;
+}
+.pege-right>.prev-page{
+    width: 53px;
+}
+/*.num{
     margin-left: 24px;
     width: 8px;
-}
+}*/
 .next-page{
-    margin-left: 30px;
+    margin-left: 10px;
     width: 54px;
 }
 .end-page{
-    margin-left: 20px;
+    margin-left: 10px;
     width: 38px;
 }
 .approve-node{
@@ -321,10 +339,10 @@ div,span,p{
     float: right;
     overflow: hidden;
 }
-.center-content{
+#completeOrder-content{
     width: 100%;
     border: 1px solid #dddddd;
-    margin-bottom: 50px;
+    /*margin-bottom: 50px;*/
     border-radius: 2px;
 }
 .center-info{
@@ -360,8 +378,42 @@ div,span,p{
 .active{
     color: #45b7ff;
 }
-.checkbox{
+.checkbox {
+    display: inline-block;
+    background: url("../images/check.png") no-repeat;
+    background-size: cover;
+    width: 14px;
+    height: 14px;
     vertical-align: middle;
+}
+.check-all{
+    display: inline-block;
+    background: url("../images/check.png") no-repeat;
+    background-size: cover;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+/*.checkbox:hover{
+    background: url("../images/checked.png") no-repeat;
+    background-size: cover;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}*/
+.checked{
+    background: url("../images/checked.png") no-repeat;
+    background-size: cover;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+.check-box{
+    display: inline-block;
+    width: 50px;
+}
+label{
+    color: #ff7d1e;
 }
 .content-skip{
     height: 40px;
@@ -372,10 +424,23 @@ div,span,p{
 }
 .check-all{
     margin-right: 7px;
-    color: #ff7d1e;
 }
 .end-all{
     margin-left: 10px;
+}
+#completeTask-content .content-info{
+    border-top: none;
+}
+/*#completeTask-content{
+    border: none;
+}
+#todoOrder-content{
+    border: none;
+}*/
+.rim{
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    width: 100%;
 }
 
 

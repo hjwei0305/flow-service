@@ -233,15 +233,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var tab = {
-            title: "流程审计界面",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id
+            title: "编辑流程定义:"+data.name,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id,
+            id:data.id
         };
         g.addTab(tab);
     },
     addFlowDefination: function () {
         var g = this;
         var tab = {
-            title: "流程审计界面",
+            title: "新增流程定义",
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
         };
         g.addTab(tab);
