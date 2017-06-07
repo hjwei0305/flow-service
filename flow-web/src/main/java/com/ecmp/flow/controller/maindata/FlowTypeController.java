@@ -12,10 +12,7 @@ import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,11 +80,11 @@ public class FlowTypeController {
      */
     @RequestMapping(value = "listAllBusinessModel")
     @ResponseBody
-    public String listAllBusinessModel() {
+    public List<BusinessModel> listAllBusinessModel() {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
-        return JsonUtil.serialize(operateStatus);
+        return businessModelList;
     }
 
     /**
