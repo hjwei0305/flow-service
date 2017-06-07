@@ -134,7 +134,7 @@ public class Definition implements Serializable {
                 ":false,\"allowPreUndo\":false,\"allowReject\":false},\"executor\":{\"userType\":\"StartUser\"},\"event\":{\"beforeExcuteService\"\n" +
                 ":\"\",\"beforeExcuteServiceId\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":\"\"}},\"EndEvent_5\"\n" +
                 ":{\"type\":\"EndEvent\",\"x\":780,\"y\":94,\"id\":\"EndEvent_5\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}}}}}\n");
-        df = (Definition) JSONObject.toBean(json,Definition.class);
+        df = (Definition) JSONObject.toBean(json, Definition.class);
         JAXBContext context = JAXBContext.newInstance(df.getClass());
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
