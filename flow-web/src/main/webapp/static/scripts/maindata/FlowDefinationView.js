@@ -234,7 +234,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         var tab = {
             title: "流程审计界面",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id
         };
         g.addTab(tab);
     },
@@ -242,29 +242,21 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: "流程审计界面",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
         };
         g.addTab(tab);
     },
-
-    // addFlowDefVersion: function (rowData) {
-    //     // var g = this;
-    //     // parent.homeView.addTab({
-    //     //     title: "新增流程定义",
-    //     //     id: g.selectedNodeId,
-    //     //     url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
-    //     // });
-    //     console.log(rowData)
-    //     var g = this;
-    //     var tab = {
-    //         title: "流程审计界面",
-    //         url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&flowDefinationName="+ rowData.name+"&flowDefinationDefKey="+rowData.defKey+"&flowTypeId="+g.flowTypeId,
-    //     };
-    //     g.addTab(tab);
-    // },
     addTab: function (tab) {
-        window.open(tab.url);
+        if(parent.homeView){
+            parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+        }else{
+            window.open(tab.url);
+        }
     },
+
+    // addTab: function (tab) {
+    //     window.open(tab.url);
+    // },
     initLeft: function () {
         var g = this;
         return {

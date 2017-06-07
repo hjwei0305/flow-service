@@ -81,10 +81,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private TaskService taskService;
 
     @Autowired
+    private FlowTypeDao flowTypeDao;
+
+    @Autowired
     private HistoryService historyService;
 
     @Autowired
     private ProcessEngine processEngine;
+
+    @Autowired
+    private BusinessModelDao businessModelDao;
 
     /**
      * 新增修改操作
@@ -283,6 +289,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
         }
         return flowInstance;
+    }
+
+    public FlowInstance startByBusinessModelCode(String businessModelCode,String startUserId,String businessKey, Map<String, Object> variables){
+       // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
+//        FlowType   flowType = flowTypeDao.findByProperty("code","")
+
+        List<FlowDefination>  flowDefinationList = flowDefinationDao.findByTypeCode("ecmp-flow-flowType2_1494902655299");
+        String defKey = flowDefinationList.get(0).getDefKey();
+        return startByKey(defKey,startUserId,businessKey,variables);
     }
 
     /**

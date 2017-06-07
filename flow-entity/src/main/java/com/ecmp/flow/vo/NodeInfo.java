@@ -22,7 +22,7 @@ import java.util.Set;
 public class NodeInfo implements Serializable{
     private String id;
     private String name;
-    private String type;//目前暂时只支持 ----userTask
+    private String type;//目前暂时只支持 ----userTask、EndEvent（结束节点）
     private String uiType;//radiobox\checkbox\readOnly
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
 	private String uiUserType;//流程设计器定义的用户选择类型，StartUser、Position、PositionType、SelfDefinition、AnyOne
