@@ -5,10 +5,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css"
           data-th-href="@{/static/styles/css/MainPageView.css}">
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/FlowHistoryComponentView.css}">
     <script type="text/javascript"
             data-th-src="@{/static/scripts/task/MainPageData.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/scripts/task/MainPageView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/TodoTaskView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/CompleteTaskView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/TodoOrderView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/FlowHistory.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/CompleteOrderView.js}"></script>
 
     <title>已办界面</title>
     <script type="text/javascript">
@@ -18,7 +30,8 @@
                 renderTo: "content",
                 data: _data,
                 menudata: _menudata,
-                dataWait:_dataWait
+                dataWait: _dataWait,
+                menu: _menu
             });
         });
     </script>
