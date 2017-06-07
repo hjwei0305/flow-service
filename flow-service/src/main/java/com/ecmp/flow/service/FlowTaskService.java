@@ -855,13 +855,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
-                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(task.getAssignee()));
-                    if(employees!=null && !employees.isEmpty()){
-                        Executor executor = employees.get(0);
+//                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for (IdentityLink identityLink : identityLinks) {
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                        if(employees!=null && !employees.isEmpty()){
+                            Executor executor = employees.get(0);
                         FlowTask flowTask = new FlowTask();
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
@@ -899,44 +899,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                         flowTaskDao.save(flowTask);
                     }
-                }} else {
-                    FlowTask flowTask = new FlowTask();
-                    flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                    flowTask.setActTaskDefKey(actTaskDefKey);
-                    flowTask.setFlowName(flowName);
-                    flowTask.setTaskName(task.getName());
-                    flowTask.setActTaskId(task.getId());
-                    flowTask.setOwnerAccount(task.getOwner());
-                    flowTask.setPriority(task.getPriority());
-                    flowTask.setExecutorAccount(task.getAssignee());
-                    flowTask.setDepict(task.getDescription());
-                    flowTask.setActType("assignee");
-                    flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                    flowTask.setFlowInstance(flowInstance);
-                    if (preTask != null) {
-                        if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
-//                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
-//                                if(!StringUtils.isEmpty(oldPreId)){
-//                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
-//                                    if (oldPreFlowHistory != null) {
-//                                        flowTask.setPreId(oldPreFlowHistory.getId());
-//                                    } else {
-//                                        flowTask.setPreId(null);
-//                                    }
-//                                }
-                            flowTask.setTaskStatus(TaskStatus.REJECT.toString());
-                        } else {
-                            flowTask.setPreId(preTask.getId());
-                        }
-                        flowTask.setPreId(preTask.getId());
-                        flowTask.setDepict(preTask.getDepict());
-                    }
-                    flowTaskDao.save(flowTask);
-                }
+                }}
 //                flowTask.setCandidateAccount(instance.get);
 
             }
-        }
 
     }
 
