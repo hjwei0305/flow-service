@@ -224,6 +224,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     items: [{
                         xtype: "TextArea",
                         title: "驳回意见",
+                        name:'opinion',
                         labelWidth: 90,
                         width: 220,
                         height: 80,
@@ -242,9 +243,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "处理中，请稍后.."
                         });
                         EUI.Store({
-                            url: _ctxPath + "/flowTask/rejectTask",
+                            url: _ctxPath + "/builtInApprove/rejectTask",
                             params: {
-                                id: data.id
+                                taskId: data.id,
+                                opinion:form.getFormValue().opinion
                             },
                             success: function (result) {
                                 myMask.hide();

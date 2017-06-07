@@ -111,7 +111,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     /**
      * 通过流程定义key启动流程
      *
-     * @param key
+     * @param businessModelCode
      * @return 操作结果
      */
     @RequestMapping(value = "startFlow")
