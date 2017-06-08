@@ -25,7 +25,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTask",
-            params: {},
+            params: {
+
+            },
             success: function (status) {
                 if (!status.success) {
                     EUI.ProcessStatus(status);
@@ -83,7 +85,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTask",
             params: {
                 modelId: modelId,
-                S_createdDate: "DESC"
+                S_createdDate: "DESC",
+                Q_EQ_executorAccount:__SessionUser.userId
             },
             success: function (result) {
                 myMask.hide();
