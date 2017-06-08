@@ -26,7 +26,7 @@ import java.util.Date;
 public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	/**
-	 * 乐观锁-版本
+	 * 乐观锁- 版本
 	 */
 //	@Version
 	@Column(name = "version")
