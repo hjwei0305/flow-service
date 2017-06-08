@@ -85,8 +85,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTask",
             params: {
                 modelId: modelId,
-                S_createdDate: "DESC",
-                Q_EQ_executorAccount:__SessionUser.userId
+                S_createdDate: "DESC"
             },
             success: function (result) {
                 myMask.hide();
