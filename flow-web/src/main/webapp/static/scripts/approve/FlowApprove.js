@@ -108,7 +108,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".flow-next").bind("click", function () {
-            g.goToNext();
+            if ($(this).text() == "完成") {
+                g.submit(true);
+            } else {
+                g.goToNext();
+            }
         });
         $(".pre-step").bind("click", function () {
             $(".flow-approve").show();
@@ -127,7 +131,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
             var type = $(this).attr("type");
-            if (type == "endEvent") {
+            if (type.toLowerCase() == "endevent") {
                 $(".flow-next").text("完成");
             } else {
                 $(".flow-next").text("下一步");
@@ -136,7 +140,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
-            if (type != "countersign") {
+            if (type == "common") {
                 if ($(this).hasClass("select")) {
                     return;
                 }
@@ -216,11 +220,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type + '">' +
+            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div class="excutor-item-title">' + item.name + '</div></div>';
         }
-        if (data.length == 1 && data[0].type == "endEvent") {
+        if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
             $(".flow-next").text("完成");
         }
         $(".flow-decision-box").append(html);
@@ -379,9 +383,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return true;
     },
-    submit: function () {
+    submit: function (isEnd) {
         var g = this;
-        if(!this.checkUserValid()){
+        if (!isEnd && !this.checkUserValid()) {
             return;
         }
         var mask = EUI.LoadMask({
@@ -393,7 +397,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 taskId: this.taskId,
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
-                taskList: JSON.stringify(this.getSelectedUser())
+                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser())
             },
             success: function (status) {
                 mask.hide();

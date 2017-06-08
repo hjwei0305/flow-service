@@ -22,53 +22,109 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             region: "north",
             height: 40,
             padding: 0,
-            isOverFlow:false,
+            isOverFlow: false,
             border: false,
             items: [{
-                xtype: "ComboBox",
+                // xtype: "ComboBox",
+                // title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                // id: "coboId",
+                // async: false,
+                // colon: false,
+                // labelWidth: 70,
+                // store: {
+                //     url: _ctxPath +"/flowType/listAllBusinessModel"
+                // },
+                // reader: {
+                //     name: "name",
+                //     filed: ["id"]
+                // },
+                // afterLoad: function (data) {
+                //     if (!data) {
+                //         return;
+                //     }
+                //     var cobo = EUI.getCmp("coboId");
+                //     cobo.setValue(data[0].name);
+                //     g.businessModel = data[0].id;
+                //     g.businessModelName = data[0].name;
+                //     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                //         url: _ctxPath +"/flowType/listFlowType",
+                //         loadonce: false,
+                //         datatype: "json",
+                //         postData: {
+                //             "Q_EQ_businessModel.id": data[0].id
+                //         }
+                //     }, true)
+                // },
+                // afterSelect: function (data) {
+                //     //console.log(data);
+                //     g.businessModel = data.data.id;
+                //     g.businessModelName = data.data.name;
+                //     EUI.getCmp("gridPanel").setPostParams({
+                //             "Q_EQ_businessModel.id": data.data.id
+                //         }
+                //     ).trigger("reloadGrid");
+                // }
+                xtype: "ComboGrid",
                 title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                name: "bussinessModelName",
                 id: "coboId",
-                async: false,
+               //async: false,
                 colon: false,
-                labelWidth: 70,
-                store: {
-                    url: _ctxPath +"/flowType/listAllBusinessModel"
+                field: ["id"],
+                listWidth: 400,
+                labelWidth: 85,
+                editable:true,
+                value:"全部",
+                showSearch:true,
+                onSearch:function(value){
+                    this.grid.localSearch(value);
+                },
+                gridCfg: {
+                    url: _ctxPath + "/flowType/listAllBusinessModel",
+                    loadonce:true,
+                    colModel: [{
+                        name: "id",
+                        index: "id",
+                        hidden: true
+                    }, {
+                        label: this.lang.nameText,
+                        name: "name",
+                        index: "name"
+                    }]
                 },
                 reader: {
                     name: "name",
                     filed: ["id"]
                 },
-                afterLoad: function (data) {
-                    if (!data) {
-                        return;
-                    }
-                    var cobo = EUI.getCmp("coboId");
-                    cobo.setValue(data[0].name);
-                    g.businessModel = data[0].id;
-                    g.businessModelName = data[0].name;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath +"/flowType/listFlowType",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_businessModel.id": data[0].id
-                        }
-                    }, true)
-                },
                 afterSelect: function (data) {
-                    //console.log(data);
+                    console.log(data);
                     g.businessModel = data.data.id;
                     g.businessModelName = data.data.name;
                     EUI.getCmp("gridPanel").setPostParams({
                             "Q_EQ_businessModel.id": data.data.id
-                        }
-                    ).trigger("reloadGrid");
-                }
+                        },true);
+                },
+               afterClear:function(){
+                       var cobo = EUI.getCmp("coboId");
+                       cobo.setValue("全部");
+                   EUI.getCmp("gridPanel").setPostParams({
+                       "Q_EQ_businessModel.id": null
+                   },true);
+               }
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
                 selected: true,
                 handler: function () {
+                    // if(!g.businessModel){
+                    //     var status = {
+                    //         msg: "请选择业务实体",
+                    //         success: false,
+                    //         showTime: 4
+                    //     };
+                    //     EUI.ProcessStatus(status);
+                    //     return;
+                    // }
                     g.addFlowType();
                 }
             }, '->', {
@@ -100,7 +156,11 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                loadonce: true,
+              //  loadonce: true,
+                url: _ctxPath + "/flowType/listFlowType",
+                postData: {
+                    //S_createdDate: "ASC"
+                },
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -159,7 +219,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             g.deleteFlowType(rowData)
         });
     },
-    deleteFlowType:function(rowData){
+    deleteFlowType: function (rowData) {
         var g = this;
         var infoBox = EUI.MessageBox({
             title: g.lang.tiShiText,
@@ -173,7 +233,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                         msg: g.lang.nowDelMsgText
                     });
                     EUI.Store({
-                        url: _ctxPath +"/flowType/delete",
+                        url: _ctxPath + "/flowType/delete",
                         params: {
                             id: rowData.id
                         },
@@ -201,6 +261,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
     updateFlowType: function (data) {
         var g = this;
         console.log(data);
+
         win = EUI.Window({
             title: g.lang.updateFlowTypeText,
             height: 250,
@@ -216,50 +277,58 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "id",
                     width: 220,
-                    value: data.id,
                     hidden: true
                 }, {
-                    xtype: "TextField",
-                    title: "业务实体ID",
+                    xtype: "ComboGrid",
+                    title:  "业务实体",
+                    name: "businessModel.name",
+                    field: ["businessModel.id"],
+                    listWidth: 400,
                     labelWidth: 90,
-                    allowBlank: false,
-                    name: "businessModel.id",
                     width: 220,
-                    value: g.businessModel,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: "业务实体",
-                    readonly: true,
-                    labelWidth: 90,
                     allowBlank: false,
-                    name: "businessModelName",
-                    width: 220,
-                    value: g.businessModelName
+                    showSearch:true,
+                    onSearch:function(value){
+                        this.grid.localSearch(value);
+                    },
+                    gridCfg: {
+                        url: _ctxPath + "/flowType/listAllBusinessModel",
+                        loadonce:true,
+                        colModel: [{
+                            name: "id",
+                            index: "id",
+                            hidden: true
+                        }, {
+                            label: this.lang.nameText,
+                            name: "name",
+                            index: "name"
+                        }]
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
+                    }
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "code",
-                    width: 220,
-                    value: data.code
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "name",
-                    width: 220,
-                    value: data.name
+                    width: 220
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
-                    width: 220,
-                    value: data.depict
+                    width: 220
                 }]
             }],
             buttons: [{
@@ -281,6 +350,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+        EUI.getCmp("updateFlowType").loadData(data);
     },
     addFlowType: function () {
         var g = this;
@@ -293,23 +363,35 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 id: "addFlowType",
                 padding: 0,
                 items: [{
-                    xtype: "TextField",
-                    title: "业务实体ID",
-                    labelWidth: 90,
-                    allowBlank: false,
-                    name: "businessModel.id",
-                    width: 220,
-                    value: g.businessModel,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: "业务实体",
-                    readonly: true,
-                    labelWidth: 90,
-                    allowBlank: false,
+                    xtype: "ComboGrid",
+                    title:  "业务实体",
                     name: "businessModelName",
+                    field: ["businessModel.id"],
+                    listWidth: 400,
+                    labelWidth: 90,
                     width: 220,
-                    value: g.businessModelName
+                    allowBlank: false,
+                    showSearch:true,
+                    onSearch:function(value){
+                        this.grid.localSearch(value);
+                    },
+                    gridCfg: {
+                        url: _ctxPath + "/flowType/listAllBusinessModel",
+                        loadonce:true,
+                        colModel: [{
+                            name: "id",
+                            index: "id",
+                            hidden: true
+                        }, {
+                            label: this.lang.nameText,
+                            name: "name",
+                            index: "name"
+                        }]
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
+                    }
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,
@@ -360,7 +442,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath +"/flowType/save",
+            url: _ctxPath + "/flowType/save",
             params: data,
             success: function (result) {
                 myMask.hide();

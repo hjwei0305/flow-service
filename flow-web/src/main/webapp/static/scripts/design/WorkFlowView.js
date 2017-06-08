@@ -14,7 +14,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
 
     initComponent: function () {
         var g = this;
-        this.orgId = EUI.util.getUrlParam("orgId");
         EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
@@ -403,11 +402,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }], ["Label", {
                 location: 0.2,
                 id: "label",
-                visible:false,
+                visible: false,
                 label: null,
                 cssClass: "flow-line-note"
             }], ["Label", {
-                location: 0.6,
+                location: 0.7,
                 id: "delete",
                 label: "&times",
                 visible: false,
@@ -415,7 +414,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 events: {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
-                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                        delete g.uelInfo[connection.sourceId + "," + connection.targetId];
                         g.instance.detach(connection);
                     }
                 }
@@ -447,7 +446,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 businessModelId: g.businessModelId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
-                    connection.getOverlay("label").setLabel(data.name).show();
+                    var overlay = connection.getOverlay("label");
+                    overlay.setLabel(data.name);
+                    overlay.show();
                 }
             });
         });

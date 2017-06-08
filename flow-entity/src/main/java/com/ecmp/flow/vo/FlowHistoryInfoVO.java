@@ -27,7 +27,7 @@ public class FlowHistoryInfoVO implements Serializable {
     /**
      * 流程当前处理状态
      */
-    private Set<FlowHandleStatusVO> flowHandleStatusVOList;
+    private List<FlowHandleStatusVO> flowHandleStatusVOList;
 
     /**
      * 流程启动人
@@ -42,13 +42,13 @@ public class FlowHistoryInfoVO implements Serializable {
     /**
      * 流程处理历史
      */
-    private Set<FlowHandleHistoryVO> flowHandleHistoryVOList;
+    private List<FlowHandleHistoryVO> flowHandleHistoryVOList;
 
-    public Set<FlowHandleStatusVO> getFlowHandleStatusVOList() {
+    public List<FlowHandleStatusVO> getFlowHandleStatusVOList() {
         return flowHandleStatusVOList;
     }
 
-    public void setFlowHandleStatusVOList(Set<FlowHandleStatusVO> flowHandleStatusVOList) {
+    public void setFlowHandleStatusVOList(List<FlowHandleStatusVO> flowHandleStatusVOList) {
         this.flowHandleStatusVOList = flowHandleStatusVOList;
     }
 
@@ -68,12 +68,22 @@ public class FlowHistoryInfoVO implements Serializable {
         this.flowStartTime = flowStartTime;
     }
 
-    public Set<FlowHandleHistoryVO> getFlowHandleHistoryVOList() {
+    public List<FlowHandleHistoryVO> getFlowHandleHistoryVOList() {
         return flowHandleHistoryVOList;
     }
 
-    public void setFlowHandleHistoryVOList(Set<FlowHandleHistoryVO> flowHandleHistoryVOList) {
+    public void setFlowHandleHistoryVOList(List<FlowHandleHistoryVO> flowHandleHistoryVOList) {
         this.flowHandleHistoryVOList = flowHandleHistoryVOList;
+    }
+
+    public FlowHistoryInfoVO(List<FlowHandleStatusVO> flowHandleStatusVOList, String flowStarter, Date flowStartTime, List<FlowHandleHistoryVO> flowHandleHistoryVOList) {
+        this.flowHandleStatusVOList = flowHandleStatusVOList;
+        this.flowStarter = flowStarter;
+        this.flowStartTime = flowStartTime;
+        this.flowHandleHistoryVOList = flowHandleHistoryVOList;
+    }
+
+    public FlowHistoryInfoVO() {
     }
 }
 

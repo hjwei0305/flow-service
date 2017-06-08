@@ -234,7 +234,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         var tab = {
             title: "编辑流程定义:"+data.name,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
             id:data.id
         };
         g.addTab(tab);
@@ -533,6 +533,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "flowType.name",
                         index: "flowType.name",
                         width: "50"
+                    }, {
+                        label: "业务实体ID",
+                        name: "flowType.businessModel.id",
+                        index: "flowType.businessModel.id",
+                        width: "50",
+                        hidden: true
                     }/*, {
                         label: "启动条件UEL",
                         name: "startUel",

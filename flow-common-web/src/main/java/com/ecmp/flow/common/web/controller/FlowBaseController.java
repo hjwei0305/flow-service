@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -143,20 +144,39 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         return JsonUtil.serialize(operateStatus);
     }
 
+
+    /**
+     * 签收任务
+     * @param taskId  任务id
+     * @param userId  用户id
+     * @return
+     */
+    @RequestMapping(value = "listFlowTask")
+    @ResponseBody
+    public String claimTask(String taskId, String userId){
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result =  proxy.claim(taskId,userId);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
+
     /**
      * 完成任务
      *
      * @param taskId
-     * @param businessId           业务表单ID
-     * @param opinion              审批意见
-     * @param taskList 任务完成传输对象
+     * @param businessId 业务表单ID
+     * @param opinion    审批意见
+     * @param taskList   任务完成传输对象
      * @return 操作结果
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
     public String completeTask(String taskId, String businessId, String opinion, String taskList) {
-        JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray,FlowTaskCompleteWebVO.class);
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        if (StringUtils.isNotEmpty(taskList)) {
+            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+        }
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessId);
@@ -166,16 +186,19 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             flowTaskCompleteVO.setOpinion(opinion);
             List<String> selectedNodeIds = new ArrayList<String>();
             Map<String, Object> v = new HashMap<String, Object>();
-            for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                selectedNodeIds.add(f.getNodeId());
-                String flowTaskType = f.getFlowTaskType();
-                if ("common".equalsIgnoreCase(flowTaskType)) {
-                    v.put(f.getUserVarName(), f.getUserIds());
-                } else {
-                    String[] idArray = f.getUserIds().split(",");
-                    v.put(f.getUserVarName(), idArray);
+            if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                    selectedNodeIds.add(f.getNodeId());
+                    String flowTaskType = f.getFlowTaskType();
+                    if ("common".equalsIgnoreCase(flowTaskType)) {
+                        v.put(f.getUserVarName(), f.getUserIds());
+                    } else {
+                        String[] idArray = f.getUserIds().split(",");
+                        v.put(f.getUserVarName(), idArray);
+                    }
                 }
             }
+
             flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
             //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
@@ -195,33 +218,33 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     /**
      * 回退（撤销）任务
      *
-     * @param preTaskId      上一个任务ID
-     * @param opinion              意见
+     * @param preTaskId 上一个任务ID
+     * @param opinion   意见
      * @return 操作结果
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-   public String  rollBackTo(String preTaskId,String opinion){
+    public String rollBackTo(String preTaskId, String opinion) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result =  proxy.rollBackTo(preTaskId);
+        OperateResult result = proxy.rollBackTo(preTaskId);
         operateStatus = new OperateStatus(true, result.getMessage());
         return JsonUtil.serialize(operateStatus);
-   }
+    }
 
     /**
      * 任务驳回
      *
-     * @param taskId      任务ID
-     * @param opinion              意见
+     * @param taskId  任务ID
+     * @param opinion 意见
      * @return 操作结果
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public String  rejectTask(String taskId,String opinion){
+    public String rejectTask(String taskId, String opinion) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result =  proxy.taskReject(taskId,opinion, null);
+        OperateResult result = proxy.taskReject(taskId, opinion, null);
         operateStatus = new OperateStatus(true, result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
@@ -263,7 +286,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         if (!StringUtils.isEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
-        }else {
+        } else {
             throw new RuntimeException("至少要传入一个节点ID！");
         }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
