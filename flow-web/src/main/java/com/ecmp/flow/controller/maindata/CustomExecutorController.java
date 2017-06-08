@@ -11,7 +11,9 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
+import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -48,6 +50,19 @@ public class CustomExecutorController {
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
         return "maindata/CustomExecutorView";
+    }
+
+    /**
+     * 查询所有业务实体
+     * @return 操作结果
+     */
+    @RequestMapping(value = "listAllBusinessModel")
+    @ResponseBody
+    public String listAllBusinessModel() {
+        IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
+        List<BusinessModel> businessModelList = proxy.findAll();
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
+        return  JsonUtil.serialize(operateStatus);
     }
 
     /**

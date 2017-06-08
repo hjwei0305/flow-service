@@ -402,7 +402,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
-                    window.close();
+                    g.close();
                 } else {
                     EUI.ProcessStatus(status);
                 }

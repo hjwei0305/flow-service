@@ -34,89 +34,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             console.log(data);
             g.updateFlowDefnation(data);
         });
-        $(".condetail_updateDefVersion").live("click", function () {
-            var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
-        });
-
         $(".condetail_delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath + "/flowDefination/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                                if (result.success) {
-                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                                }
-                            },
-                            failure: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                            }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
-        });
-        $(".condetail_deleteDefVersion").live("click", function () {
-            var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
-            console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath + "/flowDefination/deleteDefVieson",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                                if (result.success) {
-                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                                }
-                            },
-                            failure: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                            }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+            g.deleteFlowDefinationWind(rowData);
         });
         $(".condetail_look").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -124,6 +44,45 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             g.flowDefinationId = rowData.id;
             g.flowDefinationName = rowData.name;
             g.lookPropertyWindow(rowData);
+        });
+    },
+    deleteFlowDefinationWind:function(rowData){
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/flowDefination/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            }
+                        },
+                        failure: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     lookPropertyWindow: function (rowData) {
@@ -184,7 +143,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 // loadonce: true,
                 url: _ctxPath + "/flowDefination/listDefVersion",
                 postData: {
-                    "Q_EQ_flowDefination.id": rowData.id
+                    "Q_EQ_flowDefination.id": rowData.id,
+                    S_versionCode:"ASC"
                 },
                 colModel: [{
                     name: "id",

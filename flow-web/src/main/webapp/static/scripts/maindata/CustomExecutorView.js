@@ -31,7 +31,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 colon: false,
                 labelWidth: 70,
                 store: {
-                    url: _ctxPath + "/flowType/listAllBusinessModel"
+                    url: _ctxPath + "/customExecutor/listAllBusinessModel"
                 },
                 reader: {
                     name: "name",
@@ -120,17 +120,21 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     label: "用户名称",
                     name: "userName",
                     index: "userName",
+                    width:150,
                     align: "center"
                 }, {
                     label: "员工编号",
                     name: "code",
                     index: "code",
+                    width:200
                 }, {
                     label: "组织机构",
                     name: "organization.name",
                     index: "organization.name",
+                    width:150,
                     align: "center"
                 }],
+                shrinkToFit: false,
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
