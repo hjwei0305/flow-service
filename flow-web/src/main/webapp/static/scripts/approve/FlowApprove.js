@@ -131,7 +131,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
             var type = $(this).attr("type");
-            if (type == "endEvent") {
+            if (type.toLowerCase() == "endevent") {
                 $(".flow-next").text("完成");
             } else {
                 $(".flow-next").text("下一步");
@@ -220,11 +220,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type + '">' +
+            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div class="excutor-item-title">' + item.name + '</div></div>';
         }
-        if (data.length == 1 && data[0].type == "endEvent") {
+        if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
             $(".flow-next").text("完成");
         }
         $(".flow-decision-box").append(html);
