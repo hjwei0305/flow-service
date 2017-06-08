@@ -140,7 +140,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
-            if (type != "countersign") {
+            if (type == "common") {
                 if ($(this).hasClass("select")) {
                     return;
                 }
