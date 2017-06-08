@@ -60,9 +60,9 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             gridCfg: {
                 //loadonce:true,
                 url: _ctxPath + "/builtInApprove/list",
-                // postData: {
-                //     S_createdDate: "ASC"
-                // },
+                postData: {
+                    S_createdDate: "DESC"
+                },
                 colModel: [{
                     label: "操作",
                     name: "operate",
@@ -187,7 +187,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     name: "id",
                     width: 270,
-                    value: data.id,
                     hidden: true
                 }, {
                     xtype: "TextField",
@@ -196,7 +195,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     width: 270,
                     colon:false,
-                    value: data.name,
                     allowBlank:false
                 }, {
                     xtype: "TextField",
@@ -205,7 +203,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "unitPrice",
                     width: 270,
                     colon:false,
-                    value: data.unitPrice,
                     allowBlank:false
                 }, {
                     xtype: "TextField",
@@ -214,7 +211,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     name: "count",
                     width: 270,
                     colon:false,
-                    value: data.count,
                     allowBlank:false
                 }, {
                     xtype: "TextArea",
@@ -225,7 +221,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     colon:false,
                     width: 270,
                     height:130,
-                    value: data.workCaption,
                     allowBlank:false
                 }]
             }],
@@ -247,6 +242,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+        EUI.getCmp("updateBuiltInApprove").loadData(data);
     },
 
     //启动流程

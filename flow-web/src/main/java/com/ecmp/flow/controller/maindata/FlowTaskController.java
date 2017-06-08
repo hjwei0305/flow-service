@@ -1,9 +1,11 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
@@ -64,6 +66,8 @@ public class FlowTaskController {
     @ResponseBody
     public String listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
+        String account = ContextUtil.getSessionUser().getAccount();
+        search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
