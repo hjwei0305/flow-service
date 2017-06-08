@@ -1,6 +1,9 @@
 // 待办部分
 EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
+    todoData:null,
+    pageSize:8,
+    pageNum:1,
     initComponent: function () {
         this.initHtml();
         this.getNavHtml(_data);
@@ -25,9 +28,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTask",
-            params: {
-
-            },
+            params: {},
             success: function (status) {
                 if (!status.success) {
                     EUI.ProcessStatus(status);
@@ -73,7 +74,16 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             '               <div class="content-info">' +
             '                    <div class="info-left todo-info"></div>' +
             '               </div>' +
-            '               <div class="content-page"></div>';
+            '               <div class="content-page">' +
+            '                   <div class="record-total">共条记录</div>' +
+            '                    <div class="pege-right">' +
+            '                        <a href="#" class="first-page"><首页</a>' +
+            '                        <a href="#" class="prev-page"><上一页</a>' +
+            '                        <input value="1" class="one">' +
+            '                        <a href="#" class="next-page">下一页></a>' +
+            '                        <a href="#" class="end-page">尾页></a>' +
+            '                     </div>'+
+            '               </div>';
     },
     //待办内容部分的数据调用
     getTodoData: function (modelId) {
@@ -85,12 +95,16 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTask",
             params: {
                 modelId: modelId,
-                S_createdDate: "DESC"
+                S_createdDate: "DESC",
+                page: this.pageNum,
+                rows: this.pageSize
             },
             success: function (result) {
                 myMask.hide();
                 if (result.rows) {
                     g.getTodoHtml(result.rows);
+                    g.showPage(result.records);
+                    g.pagingEvent(result.page,result.total);
                 }
             },
             failurle: function (result) {
@@ -103,6 +117,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办里面内容部分的循环
     getTodoHtml: function (items) {
         var g = this;
+        $(".todo-info", '#' + this.renderTo).empty();
         for (var j = 0; j < items.length; j++) {
             /* var status = items[j].taskStatus;
              var statusStr = "待办";
@@ -138,18 +153,30 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         }
     },
     //底部翻页部分
-    showPage: function () {
-        var html = "";
-        html += '<div class="record-total">共23条记录</div>' +
-            '                    <div class="pege-right">' +
-            // '                        <a href="#" class="one">1</a>' +
-            '                        <a href="#" class="first-page"><首页</a>' +
-            '                        <a href="#" class="prev-page"><上一页</a>' +
-            '                        <input value="1" class="one">' +
-            '                        <a href="#" class="next-page">下一页></a>' +
-            '                        <a href="#" class="end-page">尾页></a>' +
-            '                     </div>';
-        $(".content-page", '#' + this.renderTo).append(html);
+    showPage: function (records) {
+        $(".record-total").text("共"+records+"条记录");
+    },
+    //底部翻页绑定事件
+    pagingEvent: function (page,total) {
+        var g = this;
+        var n = $(".one").val();
+        //首页
+        $(".first-page").live("click", function () {
+
+        });
+        //上一页
+        $(".prev-page").live("click", function () {
+
+        });
+        //下一页
+        $(".next-page").live("click", function (page,total) {
+
+        });
+        //尾页
+        $(".end-page").live("click", function (total) {
+            this.pageNum=total;
+            g.getTodoData(this.pageNum);
+        });
     },
     show: function () {
         $("#" + this.renderTo).css("display", "block");
@@ -164,6 +191,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         g.flowInstanceWindow();
         g.showRejectWindow();
         g.checkBoxEvents();
+        g.pagingEvent();
     },
     //点击打开审批界面的新页签
     approveViewWindow: function () {
@@ -220,25 +248,25 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 title: "驳回意见",
                 height: 100,
                 items: [{
-                    xtype: "FormPanel",
-                    id: "reject",
-                    padding: 0,
-                    items: [{
-                        xtype: "TextArea",
-                        title: "驳回意见",
-                        name:'opinion',
-                        labelWidth: 90,
-                        width: 220,
-                        height: 80,
-                        allowBlank: false
-                    }]
+                    xtype: "TextArea",
+                    title: "驳回意见",
+                    name: 'opinion',
+                    id: "opinion",
+                    labelWidth: 90,
+                    width: 220,
+                    height: 80,
+                    allowBlank: false
                 }],
                 buttons: [{
                     title: "确定",
                     selected: true,
                     handler: function () {
-                        var form = EUI.getCmp("reject");
-                        if (!form.isValid()) {
+                        var opinion = EUI.getCmp("opinion");
+                        if (!opinion) {
+                            EUI.ProcessStatus({
+                                success:false,
+                                msg:"请输入驳回意见"
+                            })
                             return;
                         }
                         var myMask = EUI.LoadMask({
@@ -248,13 +276,15 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/builtInApprove/rejectTask",
                             params: {
                                 taskId: data.id,
-                                opinion:form.getFormValue().opinion
+                                opinion: opinion
                             },
                             success: function (result) {
                                 myMask.hide();
                                 if (result.success) {
-                                    EUI.getCmp("content-info").refresh();
+                                    //TODO:刷新当前页
                                     win.close();
+                                }else{
+                                    EUI.ProcessStatus(result);
                                 }
                             },
                             failure: function (result) {
@@ -274,9 +304,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //在新的窗口打开（模拟新页签的打开方式）
     addTab: function (tab) {
-        if(parent.homeView){
+        if (parent.homeView) {
             parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
-        }else{
+        } else {
             window.open(tab.url);
         }
     },
