@@ -145,8 +145,8 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
                     title : false
                 },/*{
                     label : "创建人" ,
-                    name : "createdBy",
-                    index : "createdBy",
+                    name : "creatorName",
+                    index : "creatorName",
                     title : false
                 },{
                     label : "创建时间" ,
@@ -331,9 +331,9 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
                     xtype : "TextField",
                     title : "创建人",
                     labelWidth : 90,
-                    name : "createdBy",
+                    name : "creatorName",
                     width : 220,
-                    value:data.createdBy
+                    value:data.creatorName
                 }, {
                     xtype : "TextField",
                     title : "创建时间",
@@ -392,7 +392,7 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
-                 /*   if (!data.createdBy) {
+                 /*   if (!data.creatorName) {
                         EUI.ProcessStatus({
                             success : false,
                             msg : "请输入创建人"
@@ -478,7 +478,7 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
                     xtype : "TextField",
                     title : "创建人",
                     labelWidth : 90,
-                    name : "createdBy",
+                    name : "creatorName",
                     width : 220
                 }, {
                     xtype : "TextField",

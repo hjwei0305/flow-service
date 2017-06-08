@@ -145,8 +145,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     index : "createdDate"
                 }/*{
                     label : "创建人" ,
-                    name : "createdBy",
-                    index : "createdBy"
+                    name : "creatorName",
+                    index : "creatorName"
                 },{
                     label : "创建时间" ,
                     name : "createdDate",

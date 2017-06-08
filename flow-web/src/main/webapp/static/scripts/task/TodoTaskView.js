@@ -134,7 +134,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                            </div>' +
                 '                            <div class="item user">'
                 +
-                '                                <span class="userName">' + items[j].createdBy + '</span>' +
+                '                                <span class="userName">' + items[j].creatorName + '</span>' +
                 '                                <span class="item-right userName">' + items[j].createdDate + '</span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
