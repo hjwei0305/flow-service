@@ -137,7 +137,7 @@ public class FlowHistoryComponentController {
          */
         IFlowInstanceService proxy3 = ApiClient.createProxy(IFlowInstanceService.class);
         FlowInstance  flowInstance = proxy3.findOne(instanceId);
-        flowHistoryInfoVO.setFlowStarter(flowInstance.getCreatedBy());
+        flowHistoryInfoVO.setFlowStarter(flowInstance.getCreatorName());
         flowHistoryInfoVO.setFlowStartTime(flowInstance.getStartDate());
         return JsonUtil.serialize(flowHistoryInfoVO, JsonUtil.DATE_TIME);
     }
