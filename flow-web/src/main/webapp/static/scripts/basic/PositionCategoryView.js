@@ -159,8 +159,8 @@ EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
                     title : false
                 },{
                     label : "最后更新时间" ,
-                    name : "lastModifiedDate",
-                    index : "lastModifiedDate",
+                    name : "lastEditedDate",
+                    index : "lastEditedDate",
                     title : false
                 },*/{
                     label : "引擎流程任务ID" ,
@@ -351,9 +351,9 @@ EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
                     xtype : "TextField",
                     title : "最后更新时间",
                     labelWidth : 90,
-                    name : "lastModifiedDate",
+                    name : "lastEditedDate",
                     width : 220,
-                    value:data.lastModifiedDate
+                    value:data.lastEditedDate
                 }*/]
             }],
             buttons : [{
@@ -412,7 +412,7 @@ EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
-                    if (!data.lastModifiedDate) {
+                    if (!data.lastEditedDate) {
                         EUI.ProcessStatus({
                             success : false,
                             msg : "请输入代最后更新时间"
@@ -495,7 +495,7 @@ EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
                     xtype : "TextField",
                     title : "最后更新时间",
                     labelWidth : 90,
-                    name : "lastModifiedDate",
+                    name : "lastEditedDate",
                     width : 220
                 }*/]
             }],

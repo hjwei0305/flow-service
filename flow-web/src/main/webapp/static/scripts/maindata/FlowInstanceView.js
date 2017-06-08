@@ -399,8 +399,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
 
                 }, {
                     label: "最后更新时间",
-                    name: "lastModifiedDate",
-                    index: "lastModifiedDate",
+                    name: "lastEditedDate",
+                    index: "lastEditedDate",
                     align: "center"
                 },
                     /*    ,{

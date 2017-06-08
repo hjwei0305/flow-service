@@ -163,8 +163,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
 
                 }, {
                     label: "最后更新时间",
-                    name: "lastModifiedDate",
-                    index: "lastModifiedDate"
+                    name: "lastEditedDate",
+                    index: "lastEditedDate"
                 },
                     /*    ,{
                      label : "候选人账号" ,
@@ -192,8 +192,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                      index : "lastModifiedBy"
                      },{
                      label : "最后更新时间" ,
-                     name : "lastModifiedDate",
-                     index : "lastModifiedDate"
+                     name : "lastEditedDate",
+                     index : "lastEditedDate"
                      },{
                      label : "引擎流程任务ID" ,
                      name : "actTaskId",

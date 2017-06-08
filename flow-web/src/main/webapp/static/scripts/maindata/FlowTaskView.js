@@ -157,8 +157,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     index : "lastModifiedBy"
                 },{
                     label : "最后更新时间" ,
-                    name : "lastModifiedDate",
-                    index : "lastModifiedDate"
+                    name : "lastEditedDate",
+                    index : "lastEditedDate"
                 },{
                     label : "引擎流程任务ID" ,
                     name : "actTaskId",
