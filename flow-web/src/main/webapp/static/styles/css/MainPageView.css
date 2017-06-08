@@ -295,11 +295,11 @@ div,span,p{
 }
 .pege-right>.one{
     color: #45b7ff;
-    height: 20px;
+    height: 17px;
     margin-left: 10px;
-    margin-top: 15px;
+    margin-top: 16px;
     text-align: center;
-    width: 13px;
+    width: 17px;
 }
 .pege-right>.first-page{
     width: 50px;
@@ -410,7 +410,7 @@ div,span,p{
 }
 .check-box{
     display: inline-block;
-    width: 50px;
+    width: 55px;
 }
 label{
     color: #ff7d1e;
