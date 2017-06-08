@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -140,6 +141,22 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+
+    /**
+     * 签收任务
+     * @param taskId  任务id
+     * @param userId  用户id
+     * @return
+     */
+    @RequestMapping(value = "listFlowTask")
+    @ResponseBody
+    public String claimTask(String taskId, String userId){
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result =  proxy.claim(taskId,userId);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
