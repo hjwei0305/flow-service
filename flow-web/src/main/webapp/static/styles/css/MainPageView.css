@@ -32,6 +32,14 @@ div,span,p{
     border-left: 2px solid #45b7ff;
     padding-left: 10px;
 }
+.workOrder{
+    font-size: 16px;
+    color: #333333;
+    line-height: 60px;
+    border-left: 2px solid #999;
+    padding: 0 25px;
+    cursor: pointer;
+}
 .header-right{
     display: inline-block;
     float: right;
@@ -64,10 +72,10 @@ div,span,p{
     font-size: 12px;
     color: #cccccc;
     border: 1px solid #cccccc;
-    margin-right: 25px;
+    /*margin-right: 25px;*/
     padding-left: 39px;
     background: url("../images/search.png") no-repeat 15px 6px;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
 }
 .btn{
     font-size: 12px;
@@ -137,12 +145,12 @@ div,span,p{
     text-align: center;
     margin-top: 10px;
 }
-.select{
+.nav-select .navbar-circle{
     background-color: #45b7ff;
     border: 1px solid #45b7ff;
     color: #FFFFFF;
 }
-.select-text{
+.nav-select .navber-text{
     color: #45b7ff;
 }
 .content-info{
@@ -151,28 +159,51 @@ div,span,p{
     overflow: hidden;
     /*width: 100%;*/
 }
+#completeTask-content .content-info{
+    border-top: none;
+}
 .info-left{
     width: 100%;
     line-height: 100%;
     overflow: auto;
 }
-.info-item:nth-child(odd){
+.info-items:nth-child(odd){
     margin-right: 5.5%;
 }
 .info-item{
+    width: 100%;
+    float: left;
+    border-bottom: 1px solid #eeeeee;
+    /*padding: 20px 10px 16px;*/
+    overflow: hidden;
+}
+.info-items{
     width: 45%;
     float: left;
     border-bottom: 1px solid #eeeeee;
     padding: 20px 10px 16px;
     overflow: hidden;
 }
+.item{
+    margin-top: 10px;
+    padding: 0 10px;
+}
 .flow-text{
     font-size: 14px;
     font-weight: bold;
     color: #333333;
 }
+.flow-text>.digest{
+    font-size: 14px;
+    color: #333333;
+}
 .item-right{
     float: right;
+}
+.task-item-right{
+    float: right;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 .over-text{
     font-size: 14px;
@@ -182,17 +213,40 @@ div,span,p{
     margin: 20px 0;
 }
 .userName{
+    display: inline-block;
     font-size: 12px;
     color: #999999;
-    margin-left: 20px;
+    /*margin-left: 20px;*/
+}
+.todo-date{
+    display: inline-block;
 }
 .user-name{
     font-size: 12px;
     color: #999999;
 }
+
+.content-state{
+    color: #999999;
+    font-size: 12px;
+    width: 50%;
+    display: inline;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
 .end{
     display: inline-block;
-    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.end>.todo-btn{
+    display: inline-block;
+    border: 1px solid #ddd;
+    width: 55px;
+    height: 20px;
+    border-radius: 2px;
 }
 .end-text{
     font-size: 12px;
@@ -203,40 +257,55 @@ div,span,p{
     height: 12px;
     background: url("../images/end-icon.png") no-repeat;
     background-size: cover;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 5px;
     cursor: pointer;
+    margin-left: 5px;
 }
 .reject-icon{
     width: 12px;
     height: 12px;
     background: url("../images/back.png") no-repeat;
     background-size: cover;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     display: inline-block;
     margin-right: 10px;
     cursor: pointer;
+    margin-left: 21px;
+}
+.backout-icon{
+    width: 13px;
+    height: 13px;
+    background: url("../images/backout.png") no-repeat;
+    background-size: cover;
+    /*vertical-align: middle;*/
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+    margin-left: 21px;
 }
 .look-icon{
     width: 12px;
     height: 12px;
     background: url("../images/look_icon.png") no-repeat;
     background-size: cover;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     display: inline-block;
     margin-right: 10px;
     cursor: pointer;
+    margin-left: 21px;
 }
 .time-icon{
     width: 12px;
     height: 12px;
     background: url("../images/time_icon.png") no-repeat;
     background-size: cover;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     display: inline-block;
     margin-right: 10px;
     cursor: pointer;
+    margin-left: 21px;
 }
 /*
 .look-icon{
@@ -295,29 +364,29 @@ div,span,p{
 }
 .pege-right>.one{
     color: #45b7ff;
-    height: 17px;
+    height: 18px;
     margin-left: 10px;
     margin-top: 16px;
     text-align: center;
-    width: 17px;
+    width: 30px;
 }
 .pege-right>.first-page{
-    width: 50px;
+    width: 52px;
 }
 .pege-right>.prev-page{
-    width: 53px;
+    width: 55px;
 }
 /*.num{
     margin-left: 24px;
     width: 8px;
 }*/
 .next-page{
-    margin-left: 10px;
+    margin-left: 12px;
     width: 54px;
 }
 .end-page{
     margin-left: 10px;
-    width: 38px;
+    width: 40px;
 }
 .approve-node{
     font-size: 14px;
@@ -326,7 +395,7 @@ div,span,p{
 /*中间部分的内容部分的样式（很多样式与上面内容部分共用）*/
 
 .taken-center{
-    padding-top: 30px;
+    /*padding-top: 30px;*/
     background: #FFFFFF;
 }
 .data{
@@ -341,14 +410,9 @@ div,span,p{
 }
 #completeOrder-content{
     width: 100%;
-    border: 1px solid #dddddd;
-    /*margin-bottom: 50px;*/
     border-radius: 2px;
 }
-.center-info{
-    padding: 0;
-    border: none;
-}
+
 .taken-invoices{
     font-size: 14px;
     /*color: #45b7ff;*/
@@ -394,13 +458,7 @@ div,span,p{
     height: 14px;
     vertical-align: middle;
 }
-/*.checkbox:hover{
-    background: url("../images/checked.png") no-repeat;
-    background-size: cover;
-    width: 14px;
-    height: 14px;
-    vertical-align: middle;
-}*/
+
 .checked{
     background: url("../images/checked.png") no-repeat;
     background-size: cover;
@@ -412,9 +470,9 @@ div,span,p{
     display: inline-block;
     width: 55px;
 }
-label{
+/*label{
     color: #ff7d1e;
-}
+}*/
 .content-skip{
     height: 40px;
     line-height: 40px;
@@ -428,20 +486,15 @@ label{
 .end-all{
     margin-left: 10px;
 }
-#completeTask-content .content-info{
-    border-top: none;
-}
-/*#completeTask-content{
-    border: none;
-}
-#todoOrder-content{
-    border: none;
-}*/
 .rim{
     border: 1px solid #ddd;
     border-radius: 2px;
     width: 100%;
 }
+.approve-btn{
+    cursor: pointer;
+}
+
 
 
 
