@@ -51,31 +51,19 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 730,
+            width: 760,
             isOverFlow: false,
             height: 40,
             padding: 0,
             layout: "auto",
             id: "formPanel",
             border: false,
+            itemspace: 5,
             defaultConfig: {
-                labelWidth: 85,
+                labelWidth: 88,
                 allowBlank: false,
             },
             items: [{
-                xtype: "TextField",
-                title: "流程名称",
-                labelWidth: 85,
-                allowBlank: false,
-                name: "name"
-            }, {
-                xtype: "TextField",
-                name: "id",
-                width: 90,
-                labelWidth: 85,
-                allowBlank: false,
-                title: "流程代码"
-            }, {
                 xtype: "ComboGrid",
                 name: "flowTypeName",
                 field: ["flowTypeId"],
@@ -110,10 +98,24 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     field: ["id"]
                 }
+            }, {
+                xtype: "TextField",
+                name: "id",
+                width: 90,
+                labelWidth: 85,
+                allowBlank: false,
+                title: "流程代码"
+            }, {
+                xtype: "TextField",
+                title: "流程名称",
+                labelWidth: 85,
+                width: 200,
+                allowBlank: false,
+                name: "name"
             }]
         }, {
             xtype: "Button",
-            title: "流程启动条件",
+            title: "启动条件",
             id: "setStartUel",
             handler: function () {
                 if (!g.businessModelId) {
@@ -241,13 +243,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
             if (i == gateways.length - 1) {
-                html += "<div class='flow-gateway-box flow-node last' type='"
-                    + item.type + "'><div class='" + item.css + "'></div>"
+                html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
+                    + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
                     + "</div></div>";
             } else {
-                html += "<div class='flow-gateway-box flow-node' type='"
-                    + item.type + "'><div class='" + item.css + "'></div>"
+                html += "<div class='flow-gateway-box flow-node' bustype='" + item.busType + "' type='"
+                    + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
                     + "</div></div>";
             }
@@ -281,8 +283,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 preNode = $(this);
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
-                dragDom.attr("id", type + "_" + g.count);
                 g.count++;
+                dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
             }
@@ -351,6 +353,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             },
             "dblclick": function () {
+                var dom = $(this);
+                var type = dom.attr("type");
+                if (type == "StartEvent" || type == "EndEvent") {
+                    return;
+                }
                 if (!g.businessModelId) {
                     EUI.ProcessStatus({
                         success: false,
@@ -358,18 +365,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                var dom = $(this);
                 var input = dom.find(".node-title");
-                new EUI.FlowNodeSettingView({
-                    title: dom.find(".node-title").text(),
-                    businessModelId: g.businessModelId,
-                    data: dom.data(),
-                    nodeType: dom.attr("nodeType"),
-                    afterConfirm: function (data) {
-                        input.text(data.normal.name);
-                        dom.data(data);
-                    }
-                });
+                if (type.endsWith("Gateway")) {
+                    g.showSimpleNodeConfig(input,input.text());
+                } else {
+                    new EUI.FlowNodeSettingView({
+                        title: input.text(),
+                        businessModelId: g.businessModelId,
+                        data: dom.data(),
+                        nodeType: dom.attr("nodeType"),
+                        afterConfirm: function (data) {
+                            input.text(data.normal.name);
+                            dom.data(data);
+                        }
+                    });
+                }
             }
         });
         $(".jtk-connector").live("keyup", function (e) {
@@ -425,10 +435,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.registerConnectionType("basic", {
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [40, 60],
-                gap: 10,
+                stub: [5, 5],
+                // gap: 10,
                 cornerRadius: 5,
-                alwaysRespectStubs: true
+                // alwaysRespectStubs: false
             }]
         });
         // 双击连线弹出UEL配置界面
@@ -462,6 +472,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {
             g.connectInfo[connection.sourceId + "," + connection.targetId] = true;
+            var uel = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            if (uel) {
+                var overlay = connection.connection.getOverlay("label");
+                overlay.setLabel(uel.name);
+                overlay.show();
+            }
         });
     }
     ,
@@ -472,10 +488,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             filter: ".node-dot",
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [40, 60],
-                gap: 10,
+                stub: [5, 5],
+                // gap: 10,
                 cornerRadius: 5,
-                alwaysRespectStubs: true
+                // alwaysRespectStubs: true
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
@@ -570,6 +586,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: item.find(".node-title").text(),
                 nodeConfig: nodeConfig
             };
+            if(node.type.endsWidth("Gateway")){
+                node.busType = item.attr("bustype");
+            }
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {
                     var item = {
@@ -640,15 +659,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var doms = $(".node-choosed");
         for (var i = 0; i < doms.length; i++) {
             this.initNode(doms[i]);
+            var item = $(doms[i]);
+            var id = item.attr("id");
+            item.data(data.process.nodes[id]);
         }
         for (var id in data.process.nodes) {
             var node = data.process.nodes[id];
             for (var index in node.target) {
                 var target = node.target[index];
-                this.doConect(id, target.targetId);
                 if (target.uel) {
                     this.uelInfo[id + "," + target.targetId] = target.uel;
                 }
+                this.doConect(id, target.targetId);
             }
         }
     },
@@ -698,10 +720,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showGatewayNode: function (id, node) {
         return "<div tabindex=0 id='" + id
-            + "' class='flow-event-box flow-node node-choosed' type='"
+            + "' class='flow-event-box flow-node node-choosed' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div>"
+            + "<div class='flow-gateway-iconbox'>"
+            + "<div class='" + node.type.toLowerCase() + "'></div></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
@@ -739,6 +762,35 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.uelInfo = {};
         this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
+    },
+    showSimpleNodeConfig: function (input,title) {
+        var win = EUI.Window({
+            height:30,
+            padding:30,
+            items: [{
+                xtype: "TextField",
+                title: "节点名称",
+                labelWidth: 100,
+                width:220,
+                id:"nodeName",
+                name: "name",
+                value: title
+            }],
+            buttons: [{
+                title: "保存配置",
+                selected: true,
+                handler: function () {
+                    var name = EUI.getCmp("nodeName").getValue();
+                    input.text(name);
+                    win.close();
+                }
+            }, {
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            }]
+        });
     }
 
 })

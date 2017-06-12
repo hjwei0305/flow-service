@@ -27,18 +27,27 @@ var _flownode = {
     gateway: [{
         name: "exclusiveGatewayText",
         type: "ExclusiveGateway",
-        css: "exclusivegateway"
+        css: "exclusivegateway",
+        busType: "ExclusiveGateway"
+    }, {
+        name: "manualExclusiveGatewayText",
+        type: "ExclusiveGateway",
+        css: "exclusivegateway",
+        busType: "ManualExclusiveGateway"
     }, {
         name: "parallelGatewayText",
         type: "ParallelGateway",
-        css: "parallelgateway"
+        css: "parallelgateway",
+        busType: "ParallelGateway"
     }, {
         name: "inclusiveGatewayText",
         type: "InclusiveGateway",
-        css: "inclusivegateway"
+        css: "inclusivegateway",
+        busType: "InclusiveGateway"
     }, {
         name: "eventGatewayText",
         type: "EventGateway",
-        css: "eventgateway"
+        css: "eventgateway",
+        busType: "EventGateway"
     }]
 };

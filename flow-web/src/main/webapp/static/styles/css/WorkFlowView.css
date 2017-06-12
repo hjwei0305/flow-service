@@ -145,8 +145,8 @@
 
 .exclusivegateway:hover {
     background: url("../images/flow_gateway_fork_select.png") no-repeat scroll 0 0/cover;
-    height: 51px;
-    width: 51px;
+    height: 53px;
+    width: 53px;
 }
 
 .inclusivegateway {
@@ -158,8 +158,8 @@
 
 .inclusivegateway:hover {
     background: url("../images/flow_gateway_condition_select.png") no-repeat scroll 0 0/cover;
-    height: 51px;
-    width: 51px;
+    height: 53px;
+    width: 53px;
 }
 
 .eventgateway {
@@ -171,8 +171,8 @@
 
 .eventgateway:hover {
     background: url("../images/flow_gateway_event_select.png") no-repeat scroll 0 0/cover;
-    height: 51px;
-    width: 51px;
+    height: 53px;
+    width: 53px;
 }
 
 .flow-task .usertask {
@@ -185,13 +185,13 @@
     background: url("../images/singletask.png") no-repeat;
     display: inline-block;
     height: 20px;
-    width: 16px;
+    width: 22px;
 }
 .flow-task .countertask {
     background: url("../images/countertask.png") no-repeat;
     display: inline-block;
     height: 20px;
-    width: 16px;
+    width: 24px;
 }
 
 .flow-task .servicetask {
@@ -241,8 +241,7 @@
 }
 
 .flow-gateway-box .node-dot{
-    bottom: 56%;
-    right: 0px;
+    right: 10px;
 }
 
 .flow-node:hover .node-dot {
@@ -433,5 +432,17 @@
 
 .node-choosed .node-title{
     max-width: 130px;
+}
+
+.flow-gateway-iconbox{
+    display: inline-block;
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+    width: 55px;
+}
+
+.flow-gateway-iconbox div{
+    vertical-align: middle;
 }
 

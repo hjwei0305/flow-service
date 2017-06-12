@@ -38,6 +38,11 @@ public class BaseFlowNode extends BaseNode implements Serializable {
     @XmlTransient
     private String type;
     /**
+     * 扩展节点类型
+     */
+    @XmlTransient
+    private String busType;
+    /**
      * 节点x坐标
      */
     @XmlTransient
@@ -113,6 +118,14 @@ public class BaseFlowNode extends BaseNode implements Serializable {
 
     public void setNodeConfig(JSONObject nodeConfig) {
         this.nodeConfig = nodeConfig;
+    }
+
+    public String getBusType() {
+        return busType;
+    }
+
+    public void setBusType(String busType) {
+        this.busType = busType;
     }
 
     public static void main(String[] args) {

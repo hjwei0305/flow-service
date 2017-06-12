@@ -113,9 +113,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "name",
                 value: this.title
             }, {
-                xtype:"NumberField",
+                xtype: "NumberField",
                 title: "额定工时",
-                allowNegative:false,
+                allowNegative: false,
                 name: "executeTime",
                 width: 262,
                 labelWidth: 100,
@@ -625,11 +625,21 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var executorForm = EUI.getCmp("excutor");
         var eventForm = EUI.getCmp("event");
         var notifyForm = EUI.getCmp("notify");
-        normalForm.loadData(this.data.normal);
-        var userType = this.data.executor.userType;
+        var nodeConfig = this.data.nodeConfig;
+        if (!nodeConfig) {
+            return;
+        }
+        //加载常规配置
+        normalForm.loadData(nodeConfig.normal);
+
+        //加载执行人配置
+        var userType = nodeConfig.executor.userType;
         var userTypeCmp = EUI.getCmp("userType");
         userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType, this.data.executor.rowdata);
+        this.showChooseUserGrid(userType, nodeConfig.executor.rowdata);
+
+        //加载事件配置
+        eventForm.loadData(nodeConfig.event);
     }
 })
 ;
