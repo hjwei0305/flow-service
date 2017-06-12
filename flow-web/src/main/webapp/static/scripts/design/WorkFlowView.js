@@ -109,7 +109,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 title: "流程名称",
                 labelWidth: 85,
-                width:200,
+                width: 200,
                 allowBlank: false,
                 name: "name"
             }]
@@ -243,13 +243,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
             if (i == gateways.length - 1) {
-                html += "<div class='flow-gateway-box flow-node last' type='"
-                    + item.type + "'><div class='" + item.css + "'></div>"
+                html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
+                    + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
                     + "</div></div>";
             } else {
-                html += "<div class='flow-gateway-box flow-node' type='"
-                    + item.type + "'><div class='" + item.css + "'></div>"
+                html += "<div class='flow-gateway-box flow-node' bustype='" + item.busType + "' type='"
+                    + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
                     + "</div></div>";
             }
@@ -355,7 +355,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             "dblclick": function () {
                 var dom = $(this);
                 var type = dom.attr("type");
-                if(type == "StartEvent" || type == "EndEvent"){
+                if (type == "StartEvent" || type == "EndEvent") {
                     return;
                 }
                 if (!g.businessModelId) {
@@ -366,16 +366,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     return;
                 }
                 var input = dom.find(".node-title");
-                new EUI.FlowNodeSettingView({
-                    title: dom.find(".node-title").text(),
-                    businessModelId: g.businessModelId,
-                    data: dom.data(),
-                    nodeType: dom.attr("nodeType"),
-                    afterConfirm: function (data) {
-                        input.text(data.normal.name);
-                        dom.data(data);
-                    }
-                });
+                if (type.endsWith("Gateway")) {
+                    g.showSimpleNodeConfig(input,input.text());
+                } else {
+                    new EUI.FlowNodeSettingView({
+                        title: input.text(),
+                        businessModelId: g.businessModelId,
+                        data: dom.data(),
+                        nodeType: dom.attr("nodeType"),
+                        afterConfirm: function (data) {
+                            input.text(data.normal.name);
+                            dom.data(data);
+                        }
+                    });
+                }
             }
         });
         $(".jtk-connector").live("keyup", function (e) {
@@ -582,6 +586,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: item.find(".node-title").text(),
                 nodeConfig: nodeConfig
             };
+            if(node.type.endsWidth("Gateway")){
+                node.busType = item.attr("bustype");
+            }
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {
                     var item = {
@@ -713,10 +720,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showGatewayNode: function (id, node) {
         return "<div tabindex=0 id='" + id
-            + "' class='flow-event-box flow-node node-choosed' type='"
+            + "' class='flow-event-box flow-node node-choosed' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div>"
+            + "<div class='flow-gateway-iconbox'>"
+            + "<div class='" + node.type.toLowerCase() + "'></div></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
@@ -754,6 +762,35 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.uelInfo = {};
         this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
+    },
+    showSimpleNodeConfig: function (input,title) {
+        var win = EUI.Window({
+            height:30,
+            padding:30,
+            items: [{
+                xtype: "TextField",
+                title: "节点名称",
+                labelWidth: 100,
+                width:220,
+                id:"nodeName",
+                name: "name",
+                value: title
+            }],
+            buttons: [{
+                title: "保存配置",
+                selected: true,
+                handler: function () {
+                    var name = EUI.getCmp("nodeName").getValue();
+                    input.text(name);
+                    win.close();
+                }
+            }, {
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            }]
+        });
     }
 
 })
