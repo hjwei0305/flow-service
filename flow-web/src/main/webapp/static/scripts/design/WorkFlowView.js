@@ -51,7 +51,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 730,
+            width: 760,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -283,8 +283,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 preNode = $(this);
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
-                dragDom.attr("id", type + "_" + g.count);
                 g.count++;
+                dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
             }
@@ -431,10 +431,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.registerConnectionType("basic", {
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [40, 60],
-                gap: 10,
+                stub: [5, 5],
+                // gap: 10,
                 cornerRadius: 5,
-                alwaysRespectStubs: true
+                // alwaysRespectStubs: false
             }]
         });
         // 双击连线弹出UEL配置界面
@@ -484,10 +484,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             filter: ".node-dot",
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [40, 60],
-                gap: 10,
+                stub: [5, 5],
+                // gap: 10,
                 cornerRadius: 5,
-                alwaysRespectStubs: true
+                // alwaysRespectStubs: true
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
