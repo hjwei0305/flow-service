@@ -295,6 +295,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (status.success) {
                     if ($(".flow-next").text() == "完成") {
                         g.close();
+                        return;
                     }
                     g.toChooseUserData = status.data;
                     g.showChooseUser();

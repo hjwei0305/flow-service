@@ -58,24 +58,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             layout: "auto",
             id: "formPanel",
             border: false,
+            itemspace: 5,
             defaultConfig: {
-                labelWidth: 85,
+                labelWidth: 88,
                 allowBlank: false,
             },
             items: [{
-                xtype: "TextField",
-                title: "流程名称",
-                labelWidth: 85,
-                allowBlank: false,
-                name: "name"
-            }, {
-                xtype: "TextField",
-                name: "id",
-                width: 90,
-                labelWidth: 85,
-                allowBlank: false,
-                title: "流程代码"
-            }, {
                 xtype: "ComboGrid",
                 name: "flowTypeName",
                 field: ["flowTypeId"],
@@ -110,10 +98,23 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     field: ["id"]
                 }
+            }, {
+                xtype: "TextField",
+                name: "id",
+                width: 90,
+                labelWidth: 85,
+                allowBlank: false,
+                title: "流程代码"
+            }, {
+                xtype: "TextField",
+                title: "流程名称",
+                labelWidth: 85,
+                allowBlank: false,
+                name: "name"
             }]
         }, {
             xtype: "Button",
-            title: "流程启动条件",
+            title: "启动条件",
             id: "setStartUel",
             handler: function () {
                 if (!g.businessModelId) {
