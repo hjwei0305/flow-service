@@ -2,10 +2,14 @@
 //已办单据
 EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
+    pageInfo: {
+        page: 1,
+        rows: 15,
+        total: 1
+    },
     initComponent: function () {
         this.initHtml();
         this.getTodoOrderView();
-        this.showPage();
         this.addEvents();
     },
     initHtml: function () {
@@ -22,14 +26,23 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         return '             <div class="content-info center-info">' +
             '                    <div class="info-left invoice-info"></div>' +
             '                </div>' +
-            '                <div class="content-page"></div>';
+            '               <div class="content-page">' +
+            '                   <div class="record-total">共0条记录</div>' +
+            '                    <div class="pege-right">' +
+            '                        <a href="#" class="first-page"><首页</a>' +
+            '                        <a href="#" class="prev-page"><上一页</a>' +
+            '                        <input value="1" class="one">' +
+            '                        <a href="#" class="next-page">下一页></a>' +
+            '                        <a href="#" class="end-page">尾页></a>' +
+            '                    </div>' +
+            '               </div>';
     },
     //已办单据界面内容部分的循环
     showTodoOrderView: function (menu) {
         var html = "";
         for (var i = 0; i < _menu.length; i++) {
             var item = _menu[i];
-            html += '<div class="info-item">' +
+            html += '<div class="info-items">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + item.flowtext + '</span>' +
                 '                                <span class="item-right general">' + item.general + '</span>' +
@@ -49,18 +62,8 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         $(".invoice-info",'#'+this.renderTo).html(html);
     },
     //底部翻页部分
-    showPage: function () {
-        var html = "";
-        html += '<div class="record-total">共23条记录</div>' +
-            '                    <div class="pege-right">' +
-            // '                        <a href="#" class="one">1</a>' +
-            '                        <a href="#" class="first-page"><首页</a>' +
-            '                        <a href="#" class="prev-page"><上一页</a>' +
-            '                        <input value="1" class="one">' +
-            '                        <a href="#" class="next-page">下一页></a>' +
-            '                        <a href="#" class="end-page">尾页></a>' +
-            '                     </div>';
-        $(".content-page",'#'+this.renderTo).append(html);
+    showPage: function (records) {
+        $(".record-total").text("共" + records + "条记录");
     },
     show: function () {
         $("#"+this.renderTo).css("display", "block");
