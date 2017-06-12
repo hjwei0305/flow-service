@@ -225,42 +225,46 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
         $(".condetail_delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath + "/flowServiceUrl/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                                if (result.success) {
-                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                                }
-                            },
-                            failure: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
+            g.deleteFlowServiceUrl(rowData)
+        });
+    },
+    deleteFlowServiceUrl:function (rowData) {
+      var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/flowServiceUrl/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                             }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+                        },
+                        failure: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     updateFlowServiceUrl: function (data) {
