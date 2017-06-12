@@ -109,6 +109,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 title: "流程名称",
                 labelWidth: 85,
+                width:200,
                 allowBlank: false,
                 name: "name"
             }]
@@ -352,6 +353,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             },
             "dblclick": function () {
+                var dom = $(this);
+                var type = dom.attr("type");
+                if(type == "StartEvent" || type == "EndEvent"){
+                    return;
+                }
                 if (!g.businessModelId) {
                     EUI.ProcessStatus({
                         success: false,
@@ -359,7 +365,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                var dom = $(this);
                 var input = dom.find(".node-title");
                 new EUI.FlowNodeSettingView({
                     title: dom.find(".node-title").text(),
@@ -463,6 +468,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {
             g.connectInfo[connection.sourceId + "," + connection.targetId] = true;
+            var uel = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            if (uel) {
+                var overlay = connection.connection.getOverlay("label");
+                overlay.setLabel(uel.name);
+                overlay.show();
+            }
         });
     }
     ,
@@ -641,15 +652,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var doms = $(".node-choosed");
         for (var i = 0; i < doms.length; i++) {
             this.initNode(doms[i]);
+            var item = $(doms[i]);
+            var id = item.attr("id");
+            item.data(data.process.nodes[id]);
         }
         for (var id in data.process.nodes) {
             var node = data.process.nodes[id];
             for (var index in node.target) {
                 var target = node.target[index];
-                this.doConect(id, target.targetId);
                 if (target.uel) {
                     this.uelInfo[id + "," + target.targetId] = target.uel;
                 }
+                this.doConect(id, target.targetId);
             }
         }
     },
