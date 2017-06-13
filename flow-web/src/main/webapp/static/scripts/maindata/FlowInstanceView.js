@@ -193,42 +193,46 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         $(".deleteBtn").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        var myMask = EUI.LoadMask({
-                            msg: g.lang.nowDelMsgText
-                        });
-                        EUI.Store({
-                            url: _ctxPath + "/flowInstance/delete",
-                            params: {
-                                id: rowData.id
-                            },
-                            success: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
-                                if (result.success) {
-                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                                }
-                            },
-                            failure: function (result) {
-                                myMask.hide();
-                                EUI.ProcessStatus(result);
+            g.deleteFlowInstance(rowData);
+        });
+    },
+    deleteFlowInstance:function (rowData) {
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/flowInstance/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                             }
-                        });
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+                        },
+                        failure: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     showTaskHistoryWind: function (data) {
@@ -239,10 +243,9 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             width: 1400,
             height: 500,
-            padding: 15,
             padding: 8,
             itemspace: 0,
-            items: [this.initWindTbar(), this.initWindGrid(data)],
+            items: [this.initWindTbar(), this.initWindGrid(data)]
         });
     },
     initWindTbar: function () {

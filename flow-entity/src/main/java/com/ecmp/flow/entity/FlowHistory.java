@@ -175,6 +175,27 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	private String taskStatus;
 
 
+	/**
+	 * 是否允许撤销任务
+	 */
+	@Column(name = "canCancel")
+	private Boolean canCancel;
+
+
+	/**
+	 * 任务定义JSON
+	 */
+	@Column(name = "taskJsonDef")
+	@Lob
+	private String taskJsonDef;
+
+	/**
+	 * 业务摘要(工作说明)
+	 */
+	@Transient
+	private String businessModelRemark;
+
+
 
 	public FlowHistory() {
 	}
@@ -389,6 +410,29 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 		this.taskStatus = taskStatus;
 	}
 
+	public Boolean getCanCancel() {
+		return canCancel;
+	}
+
+	public void setCanCancel(Boolean canCancel) {
+		this.canCancel = canCancel;
+	}
+
+	public String getTaskJsonDef() {
+		return taskJsonDef;
+	}
+
+	public void setTaskJsonDef(String taskJsonDef) {
+		this.taskJsonDef = taskJsonDef;
+	}
+
+	public String getBusinessModelRemark() {
+		return businessModelRemark;
+	}
+
+	public void setBusinessModelRemark(String businessModelRemark) {
+		this.businessModelRemark = businessModelRemark;
+	}
 
 	@Override
 	public int hashCode() {

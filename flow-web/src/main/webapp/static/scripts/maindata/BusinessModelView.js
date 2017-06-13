@@ -261,7 +261,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "appModuleCode",
                     width: 220,
-                    value: data.appModuleCode,
+                    value: data.appModuleCode
                 },  {
                     xtype: "TextField",
                     title: g.lang.nameText,
@@ -508,6 +508,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     },
     //js将从后台获取到的object数据转化为数组
     handleProperty: function (data) {
+        console.log(data);
         var properties = [];
         for (var key in data) {
             properties.push({
@@ -762,7 +763,6 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         });
         $(".condetail_look").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data);
             g.lookPropertyWindow(data);
             g.getProperty(data);
         });
@@ -774,7 +774,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         $(".condetail_setServiceUrl").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
-            g.businessModelId = data.id
+            g.businessModelId = data.id;
             g.showServiceUrlWindow(data);
         });
         $(".condetail_deleteServiceUrl").live("click", function () {

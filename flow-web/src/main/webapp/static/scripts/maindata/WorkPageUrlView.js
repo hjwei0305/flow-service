@@ -159,23 +159,46 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         });
         $(".condetail-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            var infoBox = EUI.MessageBox({
-                title: g.lang.tiShiText,
-                msg: g.lang.ifDelMsgText,
-                buttons: [{
-                    title: g.lang.sureText,
-                    selected: true,
-                    handler: function () {
-                        infoBox.remove();
-                        g.deleteGridData();
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    handler: function () {
-                        infoBox.remove();
-                    }
-                }]
-            });
+            g.deleteWorkPageUrl(rowData);
+        });
+    },
+    deleteWorkPageUrl:function (rowData) {
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/workPageUrl/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            }
+                        },
+                        failure: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     updateWorkPageUrl: function (data) {
@@ -342,32 +365,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
                 if (result.success) {
                     EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                }
-            },
-            failure: function (result) {
-                myMask.hide();
-                EUI.ProcessStatus(result);
-            }
-        });
-        win.close();
-        myMask.hide();
-    },
-    deleteGridData: function () {
-        var g = this;
-        var rowData = EUI.getCmp("gridPanel").getSelectRow();
-        var myMask = EUI.LoadMask({
-            msg: g.lang.nowDelMsgText
-        });
-        EUI.Store({
-            url: _ctxPath + "/workPageUrl/delete",
-            params: {
-                id: rowData.id
-            },
-            success: function (result) {
-                myMask.hide();
-                EUI.ProcessStatus(result);
-                if (result.success) {
-                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                    win.close();
                 }
             },
             failure: function (result) {

@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * *************************************************************************************************
@@ -59,6 +59,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Column(name = "last_version_id",length = 36)
 	private String lastVersionId;
 
+
 	/**
 	 * 启动条件UEL
 	 */
@@ -70,6 +71,18 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	 */
 	@Column(name = "depict")
 	private String depict;
+
+	/**
+	 * 当前流程定义状态
+	 */
+	@Column(name = "flowDefinationStatus",length = 10,nullable = false)
+	private FlowDefinationStatus flowDefinationStatus;
+
+	/**
+	 * 优先级
+	 */
+	@Column(name = "priority")
+	private Integer priority;
 
 	/**
 	 * 组织机构id
@@ -84,8 +97,8 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 //	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefination")
 	private Set<FlowDefVersion> flowDefVersions = new HashSet<FlowDefVersion>(0);
 
-	/**
 
+	/**
 	 * 当前对应的流程版本
 	 */
 	@Transient
@@ -116,6 +129,21 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
 
+	public FlowDefinationStatus getFlowDefinationStatus() {
+		return flowDefinationStatus;
+	}
+
+	public void setFlowDefinationStatus(FlowDefinationStatus flowDefinationStatus) {
+		this.flowDefinationStatus = flowDefinationStatus;
+	}
+
+	public Integer getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
 
 	public FlowType getFlowType() {
 		return this.flowType;

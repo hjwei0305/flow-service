@@ -54,6 +54,12 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	private String businessId;
 
 	/**
+	 * 业务摘要(工作说明)
+	 */
+	@Column(name = "businessModelRemark")
+	private String businessModelRemark;
+
+	/**
 	 * 开始时间
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
@@ -83,6 +89,10 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	 * 是否结束
 	 */
 	private boolean ended;
+
+
+
+
 
 	/**
 	 * 拥有的流程历史
@@ -212,7 +222,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.version = version;
 	}
 
+	public String getBusinessModelRemark() {
+		return businessModelRemark;
+	}
 
+	public void setBusinessModelRemark(String businessModelRemark) {
+		this.businessModelRemark = businessModelRemark;
+	}
 
 	@Override
 	public int hashCode() {

@@ -270,7 +270,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 console.log(node);
                 if (node.children.length) {
                     g.selectedNode = "根节点";
-                    console.log(g.selectedNode);
+                   // console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -284,7 +284,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
                 if (!node.children.length) {
                     g.selectedNode = "子节点";
-                    console.log(g.selectedNode);
+                  //  console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -414,7 +414,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
-                         console.log(g.selectedNodeId)
                         // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
                                 var status = {
@@ -514,6 +513,27 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.depictText,
                         name: "depict",
                         index: "depict",
+                        width: "50"
+                    }, {
+                        label: "流程定义状态",
+                        name: "flowDefinationStatus",
+                        index: "flowDefinationStatus",
+                        width: "50",
+                        align:"center",
+                        formatter : function(cellvalue, options, rowObject) {
+                            var strVar = '';
+                            if('Activate' == rowObject.flowDefinationStatus){
+                                strVar = "激活";
+                            }
+                            else if('Freeze' == rowObject.flowDefinationStatus){
+                                strVar = "冻结 ";
+                            }
+                            return strVar;
+                        }
+                    }, {
+                        label: "优先级",
+                        name: "priority",
+                        index: "priority",
                         width: "50"
                     }],
                     ondbClick: function () {

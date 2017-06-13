@@ -216,7 +216,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
             variables.putAll(v);
         }
-
+        flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
         this.completeActiviti(actTaskId, variables);
         this.saveVariables(variables, flowTask);
         Integer reject = null;
@@ -238,9 +238,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 .processInstanceId(historicTaskInstance.getProcessInstanceId())
                 .singleResult();
         if (historicTaskInstance != null) {
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            String businessModelRemark;
+            Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
             FlowHistory flowHistory = new FlowHistory();
             flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
             flowHistory.setActType(flowTask.getActType());
+            flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
+            flowHistory.setCanCancel(canCancel);
             flowHistory.setFlowName(flowTask.getFlowName());
             flowHistory.setDepict(flowTask.getDepict());
             flowHistory.setActClaimTime(flowTask.getActClaimTime());
@@ -851,10 +858,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
         String flowName = instance.getProcessDefinitionName();
         if (flowName == null) {
-            flowName = instance.getProcessDefinitionKey();
+            flowName = instance.getName();
         }
+
+        String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(flowDefJson);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+        net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        Integer executeTime = normalInfo.getInt("executeTime");
+        Boolean canReject = normalInfo.getBoolean("allowReject");
+        Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+        String businessModelRemark;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
+
+
+
 //                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for (IdentityLink identityLink : identityLinks) {
@@ -863,6 +883,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if(employees!=null && !employees.isEmpty()){
                             Executor executor = employees.get(0);
                         FlowTask flowTask = new FlowTask();
+                        flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
                         flowTask.setFlowName(flowName);

@@ -13,10 +13,7 @@ import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AbstractBusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.vo.ApprovalHeaderVO;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -117,10 +114,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String businessModelCode, String businessKey) {
+    public String startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (defaultBusinessModel != null) {
             defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
             String startUserId = "admin";
@@ -129,12 +127,34 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 startUserId = startUserIdContext;
             }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-            Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
-            variables.put("UserTask_1_Normal", startUserId);
-            FlowInstance result = proxy.startByBusinessModelCode(businessModelCode, startUserId, businessKey, variables);
-            if (result != null) {
+            Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+//            userMap.put("UserTask_1_Normal", startUserId);
+            FlowStartVO flowStartVO = new FlowStartVO();
+            flowStartVO.setBusinessKey(businessKey);
+            flowStartVO.setBusinessModelCode(businessModelCode);
+            flowStartVO.setFlowTypeId(typeId);
+            if (StringUtils.isNotEmpty(taskList)) {
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+
+                if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        String flowTaskType = f.getFlowTaskType();
+                        if ("common".equalsIgnoreCase(flowTaskType)) {
+                            userMap.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            userMap.put(f.getUserVarName(), idArray);
+                        }
+                    }
+                }
+            }
+            flowStartVO.setVariables(userMap);
+            FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
+            if (flowStartResultVO != null) {
                 baseService.save(defaultBusinessModel);
-                operateStatus = new OperateStatus(true, "启动流程：" + result.getFlowName() + ",成功");
+                operateStatus = new OperateStatus(true, "成功");
+                operateStatus.setData(flowStartResultVO);
             } else {
                 new OperateStatus(false, "启动流程失败");
             }

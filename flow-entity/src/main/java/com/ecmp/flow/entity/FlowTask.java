@@ -182,6 +182,38 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	private String preId;
 
 
+	/**
+	 * 是否允许驳回
+	 */
+	@Column(name = "canReject")
+	private Boolean canReject;
+
+	/**
+	 * 是否允许流程中止（退出流程）
+	 */
+	@Column(name = "canSuspension")
+	private Boolean canSuspension;
+
+	/**
+	 * 任务定义JSON
+	 */
+	@Column(name = "taskJsonDef")
+	@Lob
+	private String taskJsonDef;
+
+//	/**
+//	 * 业务摘要(工作说明)
+//	 */
+//	@Transient
+//	private String businessModelRemark;
+
+	/**
+	 * 额定工时（分钟）
+	 */
+	@Column(name = "executeTime")
+	private Integer executeTime;
+
+
 	public FlowTask() {
 	}
 
@@ -416,6 +448,29 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.version = version;
 	}
 
+	public Boolean getCanReject() {
+		return canReject;
+	}
+
+	public void setCanReject(Boolean canReject) {
+		this.canReject = canReject;
+	}
+
+	public Boolean getCanSuspension() {
+		return canSuspension;
+	}
+
+	public void setCanSuspension(Boolean canSuspension) {
+		this.canSuspension = canSuspension;
+	}
+
+	public String getTaskJsonDef() {
+		return taskJsonDef;
+	}
+
+	public void setTaskJsonDef(String taskJsonDef) {
+		this.taskJsonDef = taskJsonDef;
+	}
 
 	@Override
 	public int hashCode() {
