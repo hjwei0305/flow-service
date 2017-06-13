@@ -13,9 +13,9 @@
     <script type="text/javascript"
             data-th-src="@{/static/ext/jsPlumb/jsplumb-2.2.10.js}"></script>
     <script type="text/javascript"
-            data-th-src="@{/static/scripts/design/LookWorkFlowView.js}"></script>
+            data-th-src="@{/static/scripts/design/WorkFlowView.js}"></script>
     <script type="text/javascript"
-            data-th-src="@{/static/scripts/design/LookFlowNodeSettingView.js}"></script>
+            data-th-src="@{/static/scripts/design/FlowNodeSettingView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/scripts/design/UELSettingView.js}"></script>
     <script type="text/javascript"
@@ -27,7 +27,7 @@
         var versionCode = EUI.util.getUrlParam("versionCode");
         var businessModelId = EUI.util.getUrlParam("businessModelId");
         EUI.onReady(function () {
-            flowView = new EUI.LookWorkFlowView({
+            flowView = new EUI.WorkFlowView({
                 id: id,
                 orgId: orgId,
                 businessModelId: businessModelId,
