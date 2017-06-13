@@ -257,6 +257,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 displayText:g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
+                    g.selectedNodeId = null;
+                    g.selectedNodeName = null;
+                    g.selectedNodeTenantCode = null;
+                    g.selectedNodeCodePath = null;
                 },
                 afterClear: function () {
                     g.treeCmp.reset();
@@ -345,6 +349,15 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     title: "新增",
                     selected: true,
                     handler: function () {
+                        if(!g.selectedNodeId){
+                            var status = {
+                                msg:"请选择组织机构",
+                                success: false,
+                                showTime: 4
+                            };
+                            EUI.ProcessStatus(status);
+                            return;
+                        }
                         g.addBuiltInApprove();
                     }
                 }, '->', {
