@@ -118,6 +118,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (defaultBusinessModel != null) {
             defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
             String startUserId = "admin";
@@ -126,16 +127,30 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 startUserId = startUserIdContext;
             }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-            Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
-            variables.put("UserTask_1_Normal", startUserId);
+            Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+//            userMap.put("UserTask_1_Normal", startUserId);
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
-            flowStartVO.setVariables(variables);
+            flowStartVO.setFlowTypeId(typeId);
+            if (StringUtils.isNotEmpty(taskList)) {
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+
+                if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        String flowTaskType = f.getFlowTaskType();
+                        if ("common".equalsIgnoreCase(flowTaskType)) {
+                            userMap.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            userMap.put(f.getUserVarName(), idArray);
+                        }
+                    }
+                }
+            }
+            flowStartVO.setVariables(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
-//            if(flowStartResultVO.getFlowTypeList() !=null && flowStartResultVO.getFlowTypeList().size() >1){
-//
-//            }
             if (flowStartResultVO != null) {
                 baseService.save(defaultBusinessModel);
                 operateStatus = new OperateStatus(true, "成功");
