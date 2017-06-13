@@ -446,3 +446,16 @@
     vertical-align: middle;
 }
 
+.manualExclusivegateway {
+    background: url("../images/flow_gateway_manual.png") no-repeat scroll 0 0/cover;
+    display: inline-block;
+    height: 51px;
+    width: 51px;
+}
+
+.manualExclusivegateway:hover {
+    background: url("../images/flow_gateway_manual_select.png") no-repeat scroll 0 0/cover;
+    height: 53px;
+    width: 53px;
+}
+
