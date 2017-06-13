@@ -276,6 +276,11 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },
                 afterClear: function () {
                     g.treeCmp.reset();
+                    g.selectedNodeId = null;
+                    g.selectedNodeName = null;
+                    g.selectedNodeCode = null;
+                    g.selectedNodeTenantCode = null;
+                    g.selectedNodeCodePath = null;
                 }
 
             }]

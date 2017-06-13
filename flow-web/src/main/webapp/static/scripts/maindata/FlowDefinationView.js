@@ -7,6 +7,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     selectedNode: null,  //当前选中的节点
     selectedNodeId: "",  //当前选中的节点的ID
     selectedNodeName: "",  //当前选中的节点的name
+    selectedNodeOrgCode: "",  //当前选中的节点的组织机构代码
     flowDefinationId: "",
     flowDefinationName: "",
     initComponent: function () {
@@ -194,7 +195,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         var tab = {
             title: "编辑流程定义:"+data.name,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
             id:data.id
         };
         g.addTab(tab);
@@ -203,7 +204,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: "新增流程定义",
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId+"&orgCode="+g.selectedNodeOrgCode
         };
         g.addTab(tab);
     },
@@ -245,9 +246,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 displayText:g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
+                    g.selectedNodeId = null;
+                    g.selectedNodeOrgCode = null;
+                    g.selectedNodeName = null;
                 },
                 afterClear: function () {
                     g.treeCmp.reset();
+                    g.selectedNodeId = null;
+                    g.selectedNodeOrgCode = null;
+                    g.selectedNodeName = null;
                 }
 
             }]
@@ -273,6 +280,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                    // console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
+                    g.selectedNodeOrgCode = node.code;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/flowDefination/listFlowDefination",
                         loadonce: false,
@@ -287,6 +295,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                   //  console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
+                    g.selectedNodeOrgCode = node.code;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/flowDefination/listFlowDefination",
                         loadonce: false,
@@ -416,14 +425,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
-                                var status = {
-                                    msg: "请选择组织机构",
-                                    success: false,
-                                    showTime: 6
-                                };
-                                EUI.ProcessStatus(status);
-                                return;
-                            }
+                            var status = {
+                                msg:"请选择组织机构",
+                                success: false,
+                                showTime: 4
+                            };
+                            EUI.ProcessStatus(status);
+                            return;
+                        }
                         g.addFlowDefination();
 
                     }
@@ -507,6 +516,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: "组织机构ID",
                         name: "orgId",
                         index: "orgId",
+                        width: "50",
+                        hidden: true
+                    }, {
+                        label: "组织机构code",
+                        name: "orgCode",
+                        index: "orgCode",
                         width: "50",
                         hidden: true
                     }, {
