@@ -1,6 +1,7 @@
 package com.ecmp.flow.entity;
 
 import com.ecmp.core.entity.BaseEntity;
+import com.ecmp.flow.constant.ConditionAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
