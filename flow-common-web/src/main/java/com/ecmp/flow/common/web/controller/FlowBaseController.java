@@ -13,10 +13,7 @@ import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AbstractBusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.vo.ApprovalHeaderVO;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -131,10 +128,18 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
             variables.put("UserTask_1_Normal", startUserId);
-            FlowInstance result = proxy.startByBusinessModelCode(businessModelCode, startUserId, businessKey, variables);
-            if (result != null) {
+            FlowStartVO flowStartVO = new FlowStartVO();
+            flowStartVO.setBusinessKey(businessKey);
+            flowStartVO.setBusinessModelCode(businessModelCode);
+            flowStartVO.setVariables(variables);
+            FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
+//            if(flowStartResultVO.getFlowTypeList() !=null && flowStartResultVO.getFlowTypeList().size() >1){
+//
+//            }
+            if (flowStartResultVO != null) {
                 baseService.save(defaultBusinessModel);
-                operateStatus = new OperateStatus(true, "启动流程：" + result.getFlowName() + ",成功");
+                operateStatus = new OperateStatus(true, "成功");
+                operateStatus.setData(flowStartResultVO);
             } else {
                 new OperateStatus(false, "启动流程失败");
             }

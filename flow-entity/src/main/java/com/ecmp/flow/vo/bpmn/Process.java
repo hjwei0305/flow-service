@@ -233,4 +233,101 @@ public class Process extends BaseNode implements Serializable {
             sequenceFlow.add(sf);
         }
     }
+
+
+    public List<StartEvent> getStartEvent() {
+        return startEvent;
+    }
+
+    public void setStartEvent(List<StartEvent> startEvent) {
+        this.startEvent = startEvent;
+    }
+
+    public List<EndEvent> getEndEvent() {
+        return endEvent;
+    }
+
+    public void setEndEvent(List<EndEvent> endEvent) {
+        this.endEvent = endEvent;
+    }
+
+    public List<UserTask> getUserTask() {
+        return userTask;
+    }
+
+    public void setUserTask(List<UserTask> userTask) {
+        this.userTask = userTask;
+    }
+
+    public List<MailTask> getMailTask() {
+        return mailTask;
+    }
+
+    public void setMailTask(List<MailTask> mailTask) {
+        this.mailTask = mailTask;
+    }
+
+    public List<ManualTask> getManualTask() {
+        return manualTask;
+    }
+
+    public void setManualTask(List<ManualTask> manualTask) {
+        this.manualTask = manualTask;
+    }
+
+    public List<ScriptTask> getScriptTask() {
+        return scriptTask;
+    }
+
+    public void setScriptTask(List<ScriptTask> scriptTask) {
+        this.scriptTask = scriptTask;
+    }
+
+    public List<ServiceTask> getServiceTask() {
+        return serviceTask;
+    }
+
+    public void setServiceTask(List<ServiceTask> serviceTask) {
+        this.serviceTask = serviceTask;
+    }
+
+    public List<ExclusiveGateway> getExclusiveGateway() {
+        return exclusiveGateway;
+    }
+
+    public void setExclusiveGateway(List<ExclusiveGateway> exclusiveGateway) {
+        this.exclusiveGateway = exclusiveGateway;
+    }
+
+    public List<InclusiveGateway> getInclusiveGateway() {
+        return inclusiveGateway;
+    }
+
+    public void setInclusiveGateway(List<InclusiveGateway> inclusiveGateway) {
+        this.inclusiveGateway = inclusiveGateway;
+    }
+
+    public List<ParallelGateway> getParallelGateway() {
+        return parallelGateway;
+    }
+
+    public void setParallelGateway(List<ParallelGateway> parallelGateway) {
+        this.parallelGateway = parallelGateway;
+    }
+
+    public List<EventGateway> getEventGateway() {
+        return eventGateway;
+    }
+
+    public void setEventGateway(List<EventGateway> eventGateway) {
+        this.eventGateway = eventGateway;
+    }
+
+    public List<SequenceFlow> getSequenceFlow() {
+        return sequenceFlow;
+    }
+
+    public void setSequenceFlow(List<SequenceFlow> sequenceFlow) {
+        this.sequenceFlow = sequenceFlow;
+    }
 }
