@@ -245,9 +245,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 displayText:g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
+                    g.selectedNodeId = null;
+                    g.selectedNodeName = null;
                 },
                 afterClear: function () {
                     g.treeCmp.reset();
+                    g.selectedNodeId = null;
+                    g.selectedNodeName = null;
                 }
 
             }]
@@ -416,14 +420,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
-                                var status = {
-                                    msg: "请选择组织机构",
-                                    success: false,
-                                    showTime: 6
-                                };
-                                EUI.ProcessStatus(status);
-                                return;
-                            }
+                            var status = {
+                                msg:"请选择组织机构",
+                                success: false,
+                                showTime: 4
+                            };
+                            EUI.ProcessStatus(status);
+                            return;
+                        }
                         g.addFlowDefination();
 
                     }
