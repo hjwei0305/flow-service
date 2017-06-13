@@ -5,8 +5,9 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
     renderTo: "",
     selectedNodeId: "",  //当前选中的节点的ID
     selectedNodeName: "",  //当前选中的节点的name
-    selectedNodeTenantCode:"",
-    selectedNodeCodePath:"",
+    selectedNodeCode:"",   //当前选中节点的code
+    selectedNodeTenantCode:"",  //当前选中节点的租户代码
+    selectedNodeCodePath:"",    //当前选中节点的codePath
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -71,6 +72,15 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     allowBlank:false,
                     name: "orgName",
                     width: 270
+                },{
+                    xtype: "TextField",
+                    title: "组织机构code",
+                    labelWidth: 80,
+                    colon:false,
+                    allowBlank:false,
+                    name: "orgCode",
+                    width: 270,
+                    hidden: true
                 },{
                     xtype: "TextField",
                     title: "组织机构orgPath",
@@ -259,6 +269,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     g.treeCmp.search(v);
                     g.selectedNodeId = null;
                     g.selectedNodeName = null;
+                    g.selectedNodeCode = null;
                     g.selectedNodeTenantCode = null;
                     g.selectedNodeCodePath = null;
                 },
@@ -287,6 +298,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 if (node.children.length) {
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
+                    g.selectedNodeCode = node.code;
                     g.selectedNodeTenantCode = node.tenantCode;
                     g.selectedNodeCodePath = node.codePath;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -301,6 +313,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 if (!node.children.length) {
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
+                    g.selectedNodeCode = node.code;
                     g.selectedNodeTenantCode = node.tenantCode;
                     g.selectedNodeCodePath = node.codePath;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
@@ -520,6 +533,17 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     width: 270,
                     readonly:true,
                     value:g.selectedNodeName
+                },{
+                    xtype: "TextField",
+                    title: "组织机构code",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "orgCode",
+                    colon:false,
+                    width: 270,
+                    readonly:true,
+                    value:g.selectedNodeCode,
+                    hidden:true
                 },{
                     xtype: "TextField",
                     title: "组织机构租户代码",
