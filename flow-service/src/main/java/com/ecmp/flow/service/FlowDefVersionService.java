@@ -5,6 +5,7 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefVersionService;
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowTypeDao;
@@ -150,6 +151,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefination.setFlowType(flowType);
             flowDefination.setOrgId(definition.getOrgId());
            // flowDefination.setCurrentFlowDefVersion(1L);
+            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
             flowDefinationDao.save(flowDefination);
              entity = new FlowDefVersion();
             entity.setActDefId(process.getId());
