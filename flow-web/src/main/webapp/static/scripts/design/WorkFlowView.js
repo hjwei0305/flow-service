@@ -586,7 +586,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: item.find(".node-title").text(),
                 nodeConfig: nodeConfig
             };
-            if(node.type.endsWidth("Gateway")){
+            if(node.type.endsWith("Gateway")){
                 node.busType = item.attr("bustype");
             }
             for (var key in this.connectInfo) {
