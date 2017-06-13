@@ -6,6 +6,8 @@ import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.vo.FlowStartResultVO;
+import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -150,17 +152,28 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
     /**
      * 通过businessModelCode启动流程实体
-     * @param businessModelCode businessModelCode
+     * @param typeCode typeCode 类型代码
      * @param startUserId 流程启动人
      * @param businessKey 业务KEY
      * @param variables  其他参数
      * @return 流程实例
      */
     @POST
-    @Path("startByBusinessModelWithStartUserId/{businessModelCode}/{startUserId}/{businessKey}")
+    @Path("startByBusinessModelWithStartUserId/{typeCode}/{startUserId}/{businessKey}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过businessModelCode启动流程实体,附加启动用户ID",notes = "测试")
-    public FlowInstance startByBusinessModelCode(@PathParam("businessModelCode") String businessModelCode,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startByTypeCode(@PathParam("typeCode") String typeCode,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
+
+    /**
+     * 通过vo对象启动流程实体
+     * @return FlowStartResultVO 启动结果
+     */
+    @POST
+    @Path("startByVO")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过vo对象启动流程实体",notes = "测试")
+    public FlowStartResultVO startByVO(FlowStartVO flowStartVO);
 }
