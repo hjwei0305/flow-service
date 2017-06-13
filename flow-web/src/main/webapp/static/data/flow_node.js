@@ -32,7 +32,7 @@ var _flownode = {
     }, {
         name: "manualExclusiveGatewayText",
         type: "ExclusiveGateway",
-        css: "exclusivegateway",
+        css: "manualExclusivegateway",
         busType: "ManualExclusiveGateway"
     }, {
         name: "parallelGatewayText",

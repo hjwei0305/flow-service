@@ -51,7 +51,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 760,
+            width: 660,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -100,7 +100,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "TextField",
                 name: "id",
-                width: 90,
+                width: 100,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -133,7 +133,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var scope = this;
                 new EUI.UELSettingView({
                     title: "流程启动条件",
-                    data: this.startUEL,
+                    data: g.startUEL,
                     showName: false,
                     businessModelId: g.businessModelId,
                     afterConfirm: function (data) {
@@ -166,6 +166,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         selected: true,
                         handler: function () {
                             g.clear();
+                            msgBox.remove();
                         }
                     }, {
                         title: "取消",
