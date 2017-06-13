@@ -25,13 +25,10 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
         return super.getName();
     }
 
-    @ConditionAnnotaion(name="id序号",rank = -1)
-    public String getId() {
-        return super.getId();
-    }
-
-    @ConditionAnnotaion(name="工作说明",rank = 1)
-    public String getWorkCaption(){return super.getWorkCaption();}
+//    @ConditionAnnotaion(name="id序号",rank = -1)
+//    public String getId() {
+//        return super.getId();
+//    }
 
     @ConditionAnnotaion(name="单价",rank = 3)
     public double getUnitPrice() {
@@ -47,18 +44,6 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
     public Integer getCustomeInt() {
         return customeInt;
     }
-
-    @ConditionAnnotaion(name="组织机构id",rank = 2)
-    public String getOrgId() {
-        return super.getOrgId();
-    }
-    @ConditionAnnotaion(name="组织机构路径",rank = 2)
-    public String getOrgPath() {
-        return super.getOrgPath();
-    }
-
-
-
 
     public void setCustomeInt(Integer customeInt) {
         this.customeInt = customeInt;

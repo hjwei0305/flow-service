@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.flow.constant.ConditionAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -149,19 +150,10 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         this.flowStatus = flowStatus;
     }
 
-    @Override
-    public String getOrgCode() {
-        return orgCode;
-    }
 
     @Override
     public void setOrgCode(String orgCode) {
         this.orgCode = orgCode;
-    }
-
-    @Override
-    public String getOrgId() {
-        return orgId;
     }
 
     @Override
@@ -179,10 +171,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         this.orgName = orgName;
     }
 
-    @Override
-    public String getOrgPath() {
-        return orgPath;
-    }
 
     @Override
     public void setOrgPath(String orgPath) {
@@ -199,23 +187,42 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         this.priority = priority;
     }
 
-    @Override
-    public String getWorkCaption() {
-        return workCaption;
-    }
 
     @Override
     public void setWorkCaption(String workCaption) {
         this.workCaption = workCaption;
     }
 
-    public String getTenantCode() {
-        return tenantCode;
-    }
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }
+
+
+    @ConditionAnnotaion(name="组织机构id",rank = -10000)
+    public String getOrgId() {
+        return this.orgId;
+    }
+
+    @Override
+    @ConditionAnnotaion(name="组织机构代码",rank = -10000)
+    public String getOrgCode() {
+        return orgCode;
+    }
+
+    @ConditionAnnotaion(name="组织机构路径",rank = -10000)
+    public String getOrgPath() {
+        return this.orgPath;
+    }
+
+    @ConditionAnnotaion(name="租户代码",rank = -10000)
+    public String getTenantCode() {
+        return this.tenantCode;
+    }
+
+    @ConditionAnnotaion(name="工作说明",rank = -10000)
+    public String getWorkCaption(){return this.workCaption;}
+
 
     @Override
     public int hashCode() {
