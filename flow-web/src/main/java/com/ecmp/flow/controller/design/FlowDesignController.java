@@ -50,6 +50,11 @@ public class FlowDesignController {
         return "/design/WorkFlowView";
     }
 
+    @RequestMapping(value = "showLook", method = RequestMethod.GET)
+    public String look() {
+        return "/design/LookWorkFlowView";
+    }
+
     /**
      * 流程设计保存
      *

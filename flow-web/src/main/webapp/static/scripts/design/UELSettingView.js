@@ -50,7 +50,6 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 title: "表达式名称",
                 labelWidth: 100,
                 width: 200,
-                readonly:this.readOnly,
                 value: this.data ? this.data.name : "",
                 allowBlank: false
             }]
