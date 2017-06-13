@@ -58,7 +58,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             layout: "auto",
             id: "formPanel",
             border: false,
-            itemspace: 5,
             defaultConfig: {
                 labelWidth: 88,
                 allowBlank: false
@@ -67,7 +66,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "ComboGrid",
                 name: "flowTypeName",
                 field: ["flowTypeId"],
-                title: "流程类型",
+                displayText: "请选择流程类型",
                 listWidth: 400,
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
@@ -104,14 +103,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 width: 90,
                 labelWidth: 85,
                 allowBlank: false,
-                title: "流程代码"
+                displayText: "请输入流程代码"
             }, {
                 xtype: "TextField",
-                title: "流程名称",
+                displayText: "请输入流程名称",
                 labelWidth: 85,
                 width: 200,
                 allowBlank: false,
                 name: "name"
+            }, {
+                xtype: "NumberField",
+                displayText: "请输入优先级",
+                labelWidth: 85,
+                width: 90,
+                name: "priority"
             }]
         }, {
             xtype: "Button",
@@ -367,7 +372,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
                 var input = dom.find(".node-title");
                 if (type.endsWith("Gateway")) {
-                    g.showSimpleNodeConfig(input,input.text());
+                    g.showSimpleNodeConfig(input, input.text());
                 } else {
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
@@ -586,7 +591,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 name: item.find(".node-title").text(),
                 nodeConfig: nodeConfig
             };
-            if(node.type.endsWith("Gateway")){
+            if (node.type.endsWith("Gateway")) {
                 node.busType = item.attr("bustype");
             }
             for (var key in this.connectInfo) {
@@ -605,6 +610,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeName: baseInfo.flowTypeName,
             orgId: this.orgId,
             id: this.id,
+            priority: baseInfo.priority,
             process: process
         };
     }
@@ -679,7 +685,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: data.process.name,
             id: data.process.id,
             flowTypeId: data.flowTypeId,
-            flowTypeName: data.flowTypeName
+            flowTypeName: data.flowTypeName,
+            baseInfo: data.baseInfo
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
@@ -764,16 +771,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
-    showSimpleNodeConfig: function (input,title) {
+    showSimpleNodeConfig: function (input, title) {
         var win = EUI.Window({
-            height:30,
-            padding:30,
+            height: 30,
+            padding: 30,
             items: [{
                 xtype: "TextField",
                 title: "节点名称",
                 labelWidth: 100,
-                width:220,
-                id:"nodeName",
+                width: 220,
+                id: "nodeName",
                 name: "name",
                 value: title
             }],
