@@ -11,6 +11,8 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.util.ConditionUtil;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
@@ -291,7 +293,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String versionId = flowDefination.getLastVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
-                String proessDefId = flowDefVersion.getActDefId();
+//                String proessDefId = flowDefVersion.getActDefId();
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
                     processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
@@ -301,6 +303,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                 flowInstance = new FlowInstance();
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
+
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
                 flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
@@ -312,12 +315,73 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowInstance;
     }
 
-    public FlowInstance startByTypeCode(String typeCode, String startUserId, String businessKey, Map<String, Object> variables) {
+    /**
+     * 路由流程定义
+     * @param businessModelMap  业务单据数据Map
+     * @param flowType  流程定义
+     * @param orgCodes  代码路径数组
+     * @param level   遍历层次
+     * @return
+     */
+    private FlowDefination  flowDefLuYou(Map<String,Object> businessModelMap,FlowType flowType ,String[] orgCodes,int level){
+        FlowDefination finalFlowDefination = null;
+        String orgCode =orgCodes[orgCodes.length-level];
+        List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(),orgCode);
+        if(flowDefinationList!=null && flowDefinationList.size()>0){
+            if(flowDefinationList.size() == 1){
+                finalFlowDefination = flowDefinationList.get(0);
+            }else{
+                for(FlowDefination flowDefination:flowDefinationList){
+                    String startUelStr = flowDefination.getStartUel();
+                    if(!StringUtils.isEmpty(startUelStr)){
+                        JSONObject startUelObject = JSONObject.fromObject(startUelStr);
+                        String expression = startUelObject.getString("groovyUel");
+                        if(ConditionUtil.groovyTest(expression,businessModelMap)){
+                            finalFlowDefination = flowDefination;
+                            break;
+                        }
+                    }
+                }
+            }
+        }else {//同级组织机构找不到流程定义，自动向上级组织机构查找所属类型的流程定义
+            level++;
+            return this.flowDefLuYou( businessModelMap, flowType, orgCodes , level);
+        }
+        return finalFlowDefination;
+//        if(finalFlowDefination == null){
+//            finalFlowDefination = flowDefinationList.get(0);
+//        }
+    }
+    private FlowInstance startByTypeCode( FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) {
         // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
 //        FlowType   flowType = flowTypeDao.findByProperty("code","")
         //  typeCode="ecmp-flow-flowType2_1494902655299";
-        List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCode(typeCode);
-        String defKey = flowDefinationList.get(0).getDefKey();
+
+        //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
+        String businessId = businessKey;
+         FlowDefination finalFlowDefination = null;
+        BusinessModel businessModel = flowType.getBusinessModel();
+        String businessModelId = businessModel.getId();
+        String appModuleId = businessModel.getAppModuleId();
+        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+//        v.get("workCaption")
+//        String orgId = v.get("orgId")+"";
+//        String orgCode = v.get("orgCode")+"";
+        String orgCodePath = v.get("orgPath")+"";
+        String[] orgCodes =  orgCodePath.split("|");
+        finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
+
+        if(v!=null && !v.isEmpty()){
+            if(variables == null){
+                variables = new HashMap<String,Object>();
+            }
+            variables.putAll(v);
+        }
+        //flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
+        String defKey = finalFlowDefination.getDefKey();
         return startByKey(defKey, startUserId, businessKey, variables);
     }
 
@@ -326,7 +390,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         Map<String, String> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
-        if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的类型
+        if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
             List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 flowStartResultVO = new FlowStartResultVO();
@@ -347,7 +411,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 Map<String, Object> v = new HashMap<String, Object>();
                 v.putAll(userMap);
                 v.putAll(flowStartVO.getVariables());
-                FlowInstance flowInstance = this.startByTypeCode(flowType.getCode(), flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
+                FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
             List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCode(flowType.getCode());
