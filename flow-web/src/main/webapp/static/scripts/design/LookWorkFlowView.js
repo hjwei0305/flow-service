@@ -90,7 +90,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 var scope = this;
                 new EUI.UELSettingView({
                     title: "流程启动条件",
-                    data: this.startUEL,
+                    data: g.startUEL,
                     showName: false,
                     readOnly: true,
                     businessModelId: g.businessModelId,
@@ -179,8 +179,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     initNode: function (el) {
-        this.instance.draggable(el);
-
         this.instance.makeSource(el, {
             filter: ".node-dot",
             anchor: "Continuous",

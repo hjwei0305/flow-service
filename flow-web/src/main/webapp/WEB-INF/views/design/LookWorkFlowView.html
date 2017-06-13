@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base::base_head"></th:block>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>流程设计界面</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/WorkFlowView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/data/flow_node.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/data/flow_uel_btn.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/ext/jsPlumb/jsplumb-2.2.10.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/design/LookWorkFlowView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/design/LookFlowNodeSettingView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/design/UELSettingView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var flowView;
+        var id = EUI.util.getUrlParam("id");
+        var orgId = EUI.util.getUrlParam("orgId");
+        var versionCode = EUI.util.getUrlParam("versionCode");
+        var businessModelId = EUI.util.getUrlParam("businessModelId");
+        EUI.onReady(function () {
+            flowView = new EUI.LookWorkFlowView({
+                id: id,
+                orgId: orgId,
+                businessModelId: businessModelId,
+                versionCode: versionCode || -1,
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body style="background: white;min-width: 1260px;overflow: auto;">
+<div id="content"></div>
+</body>
+</html>
+
