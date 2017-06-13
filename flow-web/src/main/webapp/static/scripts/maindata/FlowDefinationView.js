@@ -498,12 +498,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         index: "flowType.businessModel.id",
                         width: "50",
                         hidden: true
-                    }/*, {
+                    }, {
                         label: "启动条件UEL",
                         name: "startUel",
                         index: "startUel",
                         width: "50"
-                    }*/, {
+                    }, {
                         label: "组织机构ID",
                         name: "orgId",
                         index: "orgId",
