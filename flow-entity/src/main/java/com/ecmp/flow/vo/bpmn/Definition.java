@@ -134,7 +134,7 @@ public class Definition implements Serializable {
         Process process = new Process();
         process.setName("测试");
         process.setId("1122");
-        process.setStartUEL("23sfsfsf");
+      //  process.setStartUEL("{23sfsfsf}");
         df.setDefJson("sdfsdfs");
         JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":188,\"y\":136,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_2\",\"uel\":\"\"}],\"name\":\"开始\",\"nodeConfig\":{}},\"EndEvent_1\":{\"type\":\"EndEvent\",\"x\":704,\"y\":232,\"id\":\"EndEvent_1\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}},\"UserTask_2\":{\"type\":\"UserTask\",\"x\":438,\"y\":185,\"id\":\"UserTask_2\",\"target\":[{\"targetId\":\"EndEvent_1\",\"uel\":\"\"}],\"name\":\"普通任务\",\"nodeConfig\":{\"normal\":{\"name\":\"普通任务\",\"executeTime\":\"44\",\"workPageName\":\"默认审批页面\",\"workPageUrl\":\"http://localhost:8081/lookApproveBill/show\",\"allowTerminate\":true,\"allowPreUndo\":true,\"allowReject\":true},\"executor\":{\"userType\":\"AnyOne\"},\"event\":{\"beforeExcuteService\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":null}}}");
         process.setNodes(nodes);
@@ -146,5 +146,13 @@ public class Definition implements Serializable {
         StringWriter writer = new StringWriter();
         marshaller.marshal(df, writer);
         System.out.println(writer.toString());
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 }

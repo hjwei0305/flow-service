@@ -33,12 +33,12 @@ public class DefaultBusinessModel3Condition extends com.ecmp.flow.entity.Default
     @ConditionAnnotaion(name="工作说明",rank = 1)
     public String getWorkCaption(){return super.getWorkCaption();}
 
-    @ConditionAnnotaion(name="单价",rank = 3)
+    @ConditionAnnotaion(name="销售单价",rank = 3)
     public double getUnitPrice() {
         return super.getUnitPrice();
     }
 
-    @ConditionAnnotaion(name="数量",rank = 4)
+    @ConditionAnnotaion(name="销售数量",rank = 4)
     public int getCount() {
         return super.getCount();
     }

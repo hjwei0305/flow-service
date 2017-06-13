@@ -48,6 +48,16 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
         return customeInt;
     }
 
+    @ConditionAnnotaion(name="组织机构id",rank = 2)
+    public String getOrgId() {
+        return super.getOrgId();
+    }
+    @ConditionAnnotaion(name="组织机构路径",rank = 2)
+    public String getOrgPath() {
+        return super.getOrgPath();
+    }
+
+
 
 
     public void setCustomeInt(Integer customeInt) {

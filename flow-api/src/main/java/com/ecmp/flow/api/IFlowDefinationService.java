@@ -150,20 +150,20 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     public FlowDefVersion getFlowDefVersion(@PathParam("id") String id, @PathParam("versionCode") Integer versionCode);
 
 
-    /**
-     * 通过businessModelCode启动流程实体
-     * @param typeCode typeCode 类型代码
-     * @param startUserId 流程启动人
-     * @param businessKey 业务KEY
-     * @param variables  其他参数
-     * @return 流程实例
-     */
-    @POST
-    @Path("startByBusinessModelWithStartUserId/{typeCode}/{startUserId}/{businessKey}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过businessModelCode启动流程实体,附加启动用户ID",notes = "测试")
-    public FlowInstance startByTypeCode(@PathParam("typeCode") String typeCode,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+//    /**
+//     * 通过businessModelCode启动流程实体
+//     * @param typeCode typeCode 类型代码
+//     * @param startUserId 流程启动人
+//     * @param businessKey 业务KEY
+//     * @param variables  其他参数
+//     * @return 流程实例
+//     */
+//    @POST
+//    @Path("startByBusinessModelWithStartUserId/{typeCode}/{startUserId}/{businessKey}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "通过businessModelCode启动流程实体,附加启动用户ID",notes = "测试")
+//    public FlowInstance startByTypeCode(@PathParam("typeCode") String typeCode,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
 
 
     /**

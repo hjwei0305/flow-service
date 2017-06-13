@@ -55,6 +55,12 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     private FlowStatus flowStatus;
 
     /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code",length = 10)
+    private String tenantCode;
+
+    /**
      * 组织机构代码
      */
     @Column(name = "orgCode",length = 20)
@@ -201,6 +207,14 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     @Override
     public void setWorkCaption(String workCaption) {
         this.workCaption = workCaption;
+    }
+
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 
     @Override

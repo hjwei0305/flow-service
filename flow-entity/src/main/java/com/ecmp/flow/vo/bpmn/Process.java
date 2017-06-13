@@ -45,7 +45,7 @@ public class Process extends BaseNode implements Serializable {
      * 启动条件
      */
     @XmlTransient
-    private String startUEL;
+    private JSONObject startUEL;
 
     @XmlTransient
     private JSONObject nodes;
@@ -74,11 +74,11 @@ public class Process extends BaseNode implements Serializable {
         this.name = name;
     }
 
-    public String getStartUEL() {
+    public JSONObject getStartUEL() {
         return startUEL;
     }
 
-    public void setStartUEL(String startUEL) {
+    public void setStartUEL(JSONObject startUEL) {
         this.startUEL = startUEL;
     }
 
@@ -150,7 +150,7 @@ public class Process extends BaseNode implements Serializable {
                         //添加自定义事件监听
                         try {
                             net.sf.json.JSONObject event = node.getJSONObject("nodeConfig").getJSONObject("event");
-                            if (event != null) {
+                            if (event != null && !event.isEmpty()) {
                                 String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
                                 ExtensionElement extensionElement  = userTaskTemp.getExtensionElement();
                                 if(extensionElement == null){
