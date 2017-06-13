@@ -685,7 +685,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: data.process.name,
             id: data.process.id,
             flowTypeId: data.flowTypeId,
-            flowTypeName: data.flowTypeName
+            flowTypeName: data.flowTypeName,
+            baseInfo: data.baseInfo
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
