@@ -625,21 +625,20 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var executorForm = EUI.getCmp("excutor");
         var eventForm = EUI.getCmp("event");
         var notifyForm = EUI.getCmp("notify");
-        var nodeConfig = this.data.nodeConfig;
-        if (!nodeConfig) {
+        if (!this.data) {
             return;
         }
         //加载常规配置
-        normalForm.loadData(nodeConfig.normal);
+        normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        var userType = nodeConfig.executor.userType;
+        var userType = this.data.executor.userType;
         var userTypeCmp = EUI.getCmp("userType");
         userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType, nodeConfig.executor.rowdata);
+        this.showChooseUserGrid(userType, this.data.executor.rowdata);
 
         //加载事件配置
-        eventForm.loadData(nodeConfig.event);
+        eventForm.loadData(this.data.event);
     }
 })
 ;
