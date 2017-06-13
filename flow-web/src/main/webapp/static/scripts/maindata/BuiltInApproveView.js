@@ -70,6 +70,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 80,
                     colon:false,
                     allowBlank:false,
+                    readonly:true,
                     name: "orgName",
                     width: 270
                 },{
