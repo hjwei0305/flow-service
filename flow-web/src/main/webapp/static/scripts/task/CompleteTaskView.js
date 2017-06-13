@@ -56,7 +56,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
             },
-            failurle: function (result) {
+            failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
             }
