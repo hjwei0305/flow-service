@@ -111,7 +111,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
             },
-            failurle: function (result) {
+            failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
             }
@@ -136,30 +136,30 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var time=date-start;
             console.log(time);
             var itemdom = $('<div class="info-item">' +
-                '                            <div class="item">' +
-                // '                                <div class="checkbox"></div>' +
-                '                                <span class="flow-text">' + items[j].flowName+'_'+items[j].taskName +':'+ '<span class="digest">111</span></span>' +
-                // '                                <span class="item-right over-text">' + statusStr + '</span>' +
-                // '                                <span class="item-right">创建时间</span>' +
-                '                            </div>' +
-                /*'                            <div class="item user">'
+                '                 <div class="item">' +
+                // '                  <div class="checkbox"></div>' +
+                '                     <span class="flow-text">' + items[j].flowName+'_'+items[j].taskName +':'+ '<span class="digest">111</span></span>' +
+                // '                  <span class="item-right over-text">' + statusStr + '</span>' +
+                // '                  <span class="item-right">创建时间</span>' +
+                '                 </div>' +
+                /*'               <div class="item user">'
                 +
-                '                                <span class="userName">创建人：' + items[j].creatorName + '</span>' +
-                // '                                <span class="content-state">说明：' + items[j].creatorName + '</span>' +
-                '                                <span class="item-right userName">' + items[j].createdDate + '</span>' +
-                '                            </div>' +*/
-                '                            <div class="item">' +
-                '                                <div class="end">' +
-                '                                    <label class="todo-btn approve-btn"><i class="end-icon" title="审批"></i>处理</label>' +
-                '                                    <div class="todo-btn"><i class="reject-icon" title="驳回"></i></div>' +
-                '                                    <div class="todo-btn"><i class="look-icon look-approve" title="查看表单"></i></div>' +
-                '                                    <div class="todo-btn"><i class="time-icon flowInstance" title="流程历史"></i></div>' +
-                '                                </div>' +
-                '                                <span class="item-right task-item-right">' +
-                '                                    <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                                    <div class="todo-date"><i class="time-icon" title="流程历史"></i>'+items[j].createdDate+'</div>' +
-                '                                </span>' +
-                '                            </div>' +
+                '                     <span class="userName">创建人：' + items[j].creatorName + '</span>' +
+                // '                  <span class="content-state">说明：' + items[j].creatorName + '</span>' +
+                '                     <span class="item-right userName">' + items[j].createdDate + '</span>' +
+                '                 </div>' +*/
+                '                 <div class="item">' +
+                '                     <div class="end">' +
+                '                          <label class="todo-btn approve-btn"><i class="end-icon" title="审批"></i>处理</label>' +
+                '                          <div class="todo-btn"><i class="reject-icon" title="驳回"></i></div>' +
+                '                          <div class="todo-btn"><i class="look-icon look-approve" title="查看表单"></i></div>' +
+                '                          <div class="todo-btn"><i class="time-icon flowInstance" title="流程历史"></i></div>' +
+                '                     </div>' +
+                '                     <span class="item-right task-item-right">' +
+                '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
+                '                          <div class="todo-date"><i class="time-icon" title="流程历史"></i>'+items[j].createdDate+'</div>' +
+                '                     </span>' +
+                '                 </div>' +
                 '</div>');
             itemdom.data(items[j]);
             $(".todo-info", '#' + this.renderTo).append(itemdom);
