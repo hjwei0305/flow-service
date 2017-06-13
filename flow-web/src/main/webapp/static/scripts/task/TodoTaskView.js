@@ -111,7 +111,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
                 EUI.ProcessStatus(result);
             }
-        })
+        });
     },
 
     //待办里面内容部分的循环

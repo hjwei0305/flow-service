@@ -7,6 +7,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     properties: null,
+    readOnly:false,
 
     initComponent: function () {
         var items, height = 450;
@@ -21,7 +22,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             height: height,
             padding: 10,
             title: this.title,
-            buttons: this.getButtons(),
+            buttons: this.readOnly ? null : this.getButtons(),
             layout: "border",
             items: items
         })
@@ -49,6 +50,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 title: "表达式名称",
                 labelWidth: 100,
                 width: 200,
+                readonly:this.readOnly,
                 value: this.data ? this.data.name : "",
                 allowBlank: false
             }]
@@ -108,11 +110,15 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 width: 489,
                 height: 120,
                 id: "logicUel",
+                readonly:this.readOnly,
                 style: {
                     "margin-left": "10px"
                 },
                 name: "logicUel",
                 afterValidate: function (value) {
+                    if(g.readOnly){
+                        return;
+                    }
                     if (!g.properties) {
                         return;
                     }
@@ -147,6 +153,9 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     ,
     addEvents: function () {
         var g = this;
+        if(this.readOnly){
+            return;
+        }
         $(".calculate-btn").bind("click", function () {
             var operator = " " + $(this).attr("operator") + " ";
             var uel = " " + $(this).attr("uel") + " ";

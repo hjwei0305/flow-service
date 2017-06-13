@@ -61,7 +61,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             itemspace: 5,
             defaultConfig: {
                 labelWidth: 88,
-                allowBlank: false,
+                allowBlank: false
             },
             items: [{
                 xtype: "ComboGrid",
@@ -681,6 +681,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: data.flowTypeId,
             flowTypeName: data.flowTypeName
         };
+        this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
     },
     showStartNode: function (id, node) {

@@ -198,3 +198,30 @@ if (EUI.WorkFlowView) {
     }, common_lang);
 }
 
+if (EUI.LookWorkFlowView) {
+    EUI.apply(EUI.LookWorkFlowView.prototype.lang, {
+        eventTitleText: "事件",
+        taskTitleText: "任务",
+        gatewayTitleText: "网关",
+        noConnectLineText: "{0}节点没有进行连线",
+        startEventText: "开始",
+        endEventText: "结束",
+        normalTaskText: "普通任务",
+        singleSignTaskText: "单签任务",
+        counterSignTaskText: "会签任务",
+        userTaskText: "审批任务",
+        serviceTaskText: "服务任务",
+        scriptTaskText: "脚本任务",
+        emailTaskText: "邮件任务",
+        manualTaskText: "手工任务",
+        exclusiveGatewayText: "系统排他网关",
+        manualExclusiveGatewayText: "人工排他网关",
+        parallelGatewayText: "并行网关",
+        inclusiveGatewayText: "包容网关",
+        eventGatewayText: "事件网关",
+        saveText: "保存",
+        resetText: "清空",
+        deployText: "发布"
+    }, common_lang);
+}
+
