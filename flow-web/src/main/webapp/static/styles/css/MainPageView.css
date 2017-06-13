@@ -1,17 +1,19 @@
 @CHARSET "UTF-8";
 /*通用样式*/
-html{
+html {
     /*font-size: 125%;*/
     font-family: microsoft-yahei;
     width: 100%;
 }
-body{
+
+body {
     font-size: 16px;
     margin: 0;
     /*padding: 0 20px;*/
     padding: 0;
 }
-div,span,p{
+
+div, span, p {
     margin: 0;
     padding: 0;
 }
@@ -19,20 +21,23 @@ div,span,p{
 /*上面内容部分的样式*/
 
 /*上面部分的头部内容样式*/
-.taken-top{
+.taken-top {
     background: #FFFFFF;
 }
-.top-header{
+
+.top-header {
     height: 60px;
 }
-.worktable{
+
+.worktable {
     font-size: 16px;
     color: #333333;
     line-height: 60px;
     border-left: 2px solid #45b7ff;
     padding-left: 10px;
 }
-.workOrder{
+
+.workOrder {
     font-size: 16px;
     color: #333333;
     line-height: 60px;
@@ -40,32 +45,38 @@ div,span,p{
     padding: 0 25px;
     cursor: pointer;
 }
-.header-right{
+
+.header-right {
     display: inline-block;
     float: right;
     line-height: 60px;
     vertical-align: middle;
 }
-.wait-work{
+
+.wait-work {
     font-size: 14px;
     color: #999999;
     border-right: 2px solid #999999;
     padding-right: 25px;
     cursor: pointer;
 }
-.wait-work:hover{
+
+.wait-work:hover {
     color: #45b7ff;
 }
-.taken-work{
+
+.taken-work {
     font-size: 14px;
     color: #999999;
     padding: 0 25px;
     cursor: pointer;
 }
-.taken-work:hover{
+
+.taken-work:hover {
     color: #45b7ff;
 }
-.search{
+
+.search {
     width: 198px;
     height: 24px;
     border-radius: 12px;
@@ -77,7 +88,8 @@ div,span,p{
     background: url("../images/search.png") no-repeat 15px 6px;
     /*vertical-align: middle;*/
 }
-.btn{
+
+.btn {
     font-size: 12px;
     width: 110px;
     height: 24px;
@@ -87,17 +99,20 @@ div,span,p{
     padding: 5px 13px;
     cursor: pointer;
 }
+
 /*上面部分的中间内容部分样式*/
-#todoTask-content{
+#todoTask-content {
     width: 100%;
     border: 1px solid #dddddd;
     border-radius: 2px;
 }
-.content-navbar{
+
+.content-navbar {
     height: 70px;
     margin: 20px 20px;
 }
-.arrow-left{
+
+.arrow-left {
     background: url("../images/arrow-left.png") no-repeat;
     float: left;
     width: 19px;
@@ -105,7 +120,8 @@ div,span,p{
     margin-top: 10.5px;
     cursor: pointer;
 }
-.arrow-right{
+
+.arrow-right {
     background: url("../images/arrow-right.png") no-repeat;
     float: right;
     width: 19px;
@@ -113,21 +129,25 @@ div,span,p{
     margin-top: -60.5px;
     cursor: pointer;
 }
-.navber-count{
+
+.navber-count {
     float: left;
     width: 15%;
     margin-left: 1%;
     cursor: pointer;
 }
-.navber-count:hover .navbar-circle{
+
+.navber-count:hover .navbar-circle {
     background-color: #45b7ff;
     border: 1px solid #45b7ff;
     color: #FFFFFF;
 }
-.navber-count:hover .navber-text{
+
+.navber-count:hover .navber-text {
     color: #45b7ff;
 }
-.navbar-circle{
+
+.navbar-circle {
     width: 38px;
     height: 38px;
     border: 1px solid #333333;
@@ -139,120 +159,142 @@ div,span,p{
     font-size: 20px;
     cursor: pointer;
 }
-.navber-text{
+
+.navber-text {
     font-size: 14px;
     color: #666666;
     text-align: center;
     margin-top: 10px;
 }
-.nav-select .navbar-circle{
+
+.nav-select .navbar-circle {
     background-color: #45b7ff;
     border: 1px solid #45b7ff;
     color: #FFFFFF;
 }
-.nav-select .navber-text{
+
+.nav-select .navber-text {
     color: #45b7ff;
 }
-.content-info{
+
+.content-info {
     margin: 0 10px;
     border-top: 1px solid #eeeeee;
     overflow: hidden;
     /*width: 100%;*/
 }
-#completeTask-content .content-info{
+
+#completeTask-content .content-info {
     border-top: none;
 }
-.info-left{
+
+.info-left {
     width: 100%;
     line-height: 100%;
     overflow: auto;
 }
-.info-items:nth-child(odd){
+
+.info-items:nth-child(odd) {
     margin-right: 5.5%;
 }
-.info-item{
+
+.info-item {
     width: 100%;
     float: left;
     border-bottom: 1px solid #eeeeee;
     /*padding: 20px 10px 16px;*/
     overflow: hidden;
 }
-.info-items{
+
+.info-items {
     width: 45%;
     float: left;
     border-bottom: 1px solid #eeeeee;
     padding: 20px 10px 16px;
     overflow: hidden;
 }
-.item{
+
+.item {
     margin-top: 10px;
     padding: 0 10px;
 }
-.flow-text{
+
+.flow-text {
     font-size: 14px;
     font-weight: bold;
     color: #333333;
 }
-.flow-text>.digest{
+
+.flow-text > .digest {
     font-size: 14px;
     color: #333333;
 }
-.item-right{
+
+.item-right {
     float: right;
 }
-.task-item-right{
+
+.task-item-right {
     float: right;
     margin-bottom: 10px;
     margin-top: 20px;
 }
-.over-text{
+
+.over-text {
     font-size: 14px;
     color: #ff0000;
 }
-.user{
+
+.user {
     margin: 20px 0;
 }
-.userName{
+
+.userName {
     display: inline-block;
     font-size: 12px;
     color: #999999;
     /*margin-left: 20px;*/
 }
-.todo-date{
+
+.todo-date {
     display: inline-block;
 }
-.user-name{
+
+.user-name {
     font-size: 12px;
     color: #999999;
 }
 
-.content-state{
+.content-state {
     color: #999999;
     font-size: 12px;
     width: 50%;
     display: inline;
     white-space: nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.end{
+.end {
     display: inline-block;
     margin-top: 20px;
     margin-bottom: 10px;
 }
-.end>.todo-btn{
+
+.end > .todo-btn {
     display: inline-block;
     border: 1px solid #ddd;
     width: 55px;
     height: 20px;
     border-radius: 2px;
 }
-.end-text{
+
+.end-text {
     font-size: 12px;
     color: #999999;
 }
-.end-icon{
+
+.end-icon {
     width: 12px;
     height: 12px;
     background: url("../images/end-icon.png") no-repeat;
@@ -263,7 +305,8 @@ div,span,p{
     cursor: pointer;
     margin-left: 5px;
 }
-.reject-icon{
+
+.reject-icon {
     width: 12px;
     height: 12px;
     background: url("../images/back.png") no-repeat;
@@ -274,7 +317,8 @@ div,span,p{
     cursor: pointer;
     margin-left: 21px;
 }
-.backout-icon{
+
+.backout-icon {
     width: 13px;
     height: 13px;
     background: url("../images/backout.png") no-repeat;
@@ -285,7 +329,8 @@ div,span,p{
     cursor: pointer;
     margin-left: 21px;
 }
-.look-icon{
+
+.look-icon {
     width: 12px;
     height: 12px;
     background: url("../images/look_icon.png") no-repeat;
@@ -296,7 +341,8 @@ div,span,p{
     cursor: pointer;
     margin-left: 21px;
 }
-.time-icon{
+
+.time-icon {
     width: 12px;
     height: 12px;
     background: url("../images/time_icon.png") no-repeat;
@@ -307,6 +353,7 @@ div,span,p{
     cursor: pointer;
     margin-left: 21px;
 }
+
 /*
 .look-icon{
     display: inline-block;
@@ -326,23 +373,26 @@ div,span,p{
     cursor: pointer;
 }
 */
-.content-page{
+.content-page {
     height: 50px;
     padding: 0 20px;
     overflow: hidden;
 }
-.record-total{
+
+.record-total {
     font-size: 12px;
     color: #999999;
     line-height: 50px;
-    float:left;
+    float: left;
 }
-.pege-right{
+
+.pege-right {
     font-size: 12px;
     line-height: 50px;
     float: right;
 }
-.pege-right>a{
+
+.pege-right > a {
     text-decoration: none;
     outline: none;
     color: #999999;
@@ -350,7 +400,8 @@ div,span,p{
     float: left;
     line-height: 50px;
 }
-.pege-right>input{
+
+.pege-right > input {
     text-decoration: none;
     outline: none;
     color: #999999;
@@ -358,11 +409,13 @@ div,span,p{
     float: left;
     line-height: 50px;
 }
-.pege-right>a:hover{
+
+.pege-right > a:hover {
     color: #45b7ff;
     font-weight: bold;
 }
-.pege-right>.one{
+
+.pege-right > .one {
     color: #45b7ff;
     height: 18px;
     margin-left: 10px;
@@ -370,78 +423,94 @@ div,span,p{
     text-align: center;
     width: 30px;
 }
-.pege-right>.first-page{
+
+.pege-right > .first-page {
     width: 52px;
 }
-.pege-right>.prev-page{
+
+.pege-right > .prev-page {
     width: 55px;
 }
+
 /*.num{
     margin-left: 24px;
     width: 8px;
 }*/
-.next-page{
+.next-page {
     margin-left: 12px;
     width: 54px;
 }
-.end-page{
+
+.end-page {
     margin-left: 10px;
     width: 40px;
 }
-.approve-node{
+
+.approve-node {
     font-size: 14px;
     color: #ff7d1e;
 }
+
 /*中间部分的内容部分的样式（很多样式与上面内容部分共用）*/
 
-.taken-center{
+.taken-center {
     /*padding-top: 30px;*/
     background: #FFFFFF;
 }
-.data{
+
+.data {
     display: inline-block;
     height: 30px;
     vertical-align: middle;
     overflow: hidden;
 }
-#dateField{
+
+#dateField {
     float: right;
     overflow: hidden;
 }
-#completeOrder-content{
+
+#completeOrder-content {
     width: 100%;
     border-radius: 2px;
 }
 
-.taken-invoices{
+.taken-invoices {
     font-size: 14px;
     /*color: #45b7ff;*/
     padding-right: 25px;
 }
-.wait-invoices{
+
+.wait-invoices {
     font-size: 14px;
     color: #999999;
     padding: 0 25px;
 }
-.general{
+
+.general {
     font-size: 14px;
     color: #999999;
 }
-.ux-field-element .ux-trigger-box{
+
+.ux-field-element .ux-trigger-box {
     height: 24px;
 }
-.ux-trigger-box .ux-date-trigger{
+
+.ux-trigger-box .ux-date-trigger {
     margin-top: 4px;
 }
+
 /*导航部分的样式*/
-.navbar{
+.navbar {
     /*width:98%;*/
     height: 70px;
     overflow: hidden;
 }
-.active{
+
+.active {
     color: #45b7ff;
 }
+
 .checkbox {
     display: inline-block;
     background: url("../images/check.png") no-repeat;
@@ -450,7 +519,8 @@ div,span,p{
     height: 14px;
     vertical-align: middle;
 }
-.check-all{
+
+.check-all {
     display: inline-block;
     background: url("../images/check.png") no-repeat;
     background-size: cover;
@@ -459,39 +529,45 @@ div,span,p{
     vertical-align: middle;
 }
 
-.checked{
+.checked {
     background: url("../images/checked.png") no-repeat;
     background-size: cover;
     width: 14px;
     height: 14px;
     vertical-align: middle;
 }
-.check-box{
+
+.check-box {
     display: inline-block;
     width: 55px;
 }
+
 /*label{
     color: #ff7d1e;
 }*/
-.content-skip{
+.content-skip {
     height: 40px;
     line-height: 40px;
     border-top: 1px solid #dddddd;
     margin: 0 10px;
     padding: 0 10px;
 }
-.check-all{
+
+.check-all {
     margin-right: 7px;
 }
-.end-all{
+
+.end-all {
     margin-left: 10px;
 }
-.rim{
+
+.rim {
     border: 1px solid #ddd;
     border-radius: 2px;
     width: 100%;
 }
-.approve-btn{
+
+.approve-btn {
     cursor: pointer;
 }
 
