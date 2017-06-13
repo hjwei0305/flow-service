@@ -82,7 +82,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	 * 优先级
 	 */
 	@Column(name = "priority")
-	private Integer priority;
+	private Integer priority=0;
 
 	/**
 	 * 组织机构id

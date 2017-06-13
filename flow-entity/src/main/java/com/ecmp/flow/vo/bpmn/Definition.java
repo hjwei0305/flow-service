@@ -74,6 +74,12 @@ public class Definition implements Serializable {
     @XmlTransient
     private String id;
 
+    /**
+     * 优先级
+     */
+    @XmlTransient
+    private Integer priority;
+
 
     public Process getProcess() {
         return process;

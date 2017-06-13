@@ -14,6 +14,6 @@ import java.util.List;
 public interface FlowDefinationDao extends BaseEntityDao<FlowDefination> {
     public FlowDefination findByDefKey(String defKey);
 
-    @Query("select f from com.ecmp.flow.entity.FlowDefination f where f.flowType.id = (select ft.id from com.ecmp.flow.entity.FlowType ft where ft.code  = :typeCode)  order by f.lastEditedDate desc")
+    @Query("select f from com.ecmp.flow.entity.FlowDefination f where f.flowType.id = (select ft.id from com.ecmp.flow.entity.FlowType ft where ft.code  = :typeCode)  order by f.priority desc,f.lastEditedDate desc")
     public List<FlowDefination> findByTypeCode(@Param("typeCode")String typeCode);
 }
