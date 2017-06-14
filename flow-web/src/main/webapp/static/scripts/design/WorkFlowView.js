@@ -90,8 +90,37 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 },
                 labelWidth: 85,
                 allowBlank: false,
+                beforeSelect: function (data) {
+                    var scope = this;
+                    var busModelId = data.data["businessModel.id"];
+                    if (g.businessModelId && g.businessModelId != busModelId) {
+                        var msgBox = EUI.MessageBox({
+                            title: "操作提示",
+                            msg:"切换流程类型将清空所有流程设计，请确定是否继续?",
+                            buttons: [{
+                                title: "确定",
+                                handler: function () {
+                                    g.businessModelId = busModelId;
+                                    scope.loadData({
+                                        flowTypeName:data.data.name,
+                                        flowTypeId:busModelId
+                                    });
+                                    g.clear();
+                                    msgBox.remove();
+                                }
+                            }, {
+                                title: "取消",
+                                handler: function () {
+                                    msgBox.remove();
+                                }
+                            }]
+                        });
+                        return false;
+                    }
+                },
                 afterSelect: function (data) {
-                    g.businessModelId = data.data["businessModel.id"];
+                    var busModelId = data.data["businessModel.id"];
+                    g.businessModelId = busModelId;
                 },
                 reader: {
                     name: "name",
@@ -130,14 +159,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                var scope = this;
                 new EUI.UELSettingView({
                     title: "流程启动条件",
                     data: g.startUEL,
                     showName: false,
                     businessModelId: g.businessModelId,
                     afterConfirm: function (data) {
-                        scope.startUEL = data;
+                        g.startUEL = data;
                     }
                 });
             }
@@ -573,7 +601,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: baseInfo.name,
             id: baseInfo.id,
             isExecutable: true,
-            startUEL: EUI.getCmp("setStartUel").startUEL,
+            startUEL: g.startUEL,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
@@ -769,7 +797,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.count = 0;
         this.connectInfo = {};
         this.uelInfo = {};
-        this.instance.deleteEveryEndpoint();
+        this.startUEL = null,
+            this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
     showSimpleNodeConfig: function (input, title) {
