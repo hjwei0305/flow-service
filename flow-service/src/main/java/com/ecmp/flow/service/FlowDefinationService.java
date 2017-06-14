@@ -347,10 +347,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             level++;
             return this.flowDefLuYou( businessModelMap, flowType, orgCodes , level);
         }
+       if(finalFlowDefination == null && flowDefinationList!=null && !flowDefinationList.isEmpty()){
+            finalFlowDefination = flowDefinationList.get(0);
+        }
         return finalFlowDefination;
-//        if(finalFlowDefination == null){
-//            finalFlowDefination = flowDefinationList.get(0);
-//        }
+
     }
     private FlowInstance startByTypeCode( FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) {
         // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
