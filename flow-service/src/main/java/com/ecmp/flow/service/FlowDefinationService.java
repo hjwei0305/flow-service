@@ -381,6 +381,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = businessKey;
         FlowDefination finalFlowDefination = null;
+        if(startUserId==null){
+            startUserId = ContextUtil.getUserId();
+        }
         BusinessModel businessModel = flowType.getBusinessModel();
         String businessModelId = businessModel.getId();
         String appModuleId = businessModel.getAppModuleId();
@@ -407,7 +410,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
         FlowStartResultVO flowStartResultVO = null;
-        Map<String, String> userMap = flowStartVO.getUserMap();
+        Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
         if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
@@ -430,7 +433,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
                 Map<String, Object> v = new HashMap<String, Object>();
                 v.putAll(userMap);
-                v.putAll(flowStartVO.getVariables());
+                if(flowStartVO.getVariables()!=null && !flowStartVO.getVariables().isEmpty()){
+                    v.putAll(flowStartVO.getVariables());
+                }
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
@@ -535,8 +540,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
                                 } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
                                 }
-
-
                             }
                         }
                         if (employees != null && !employees.isEmpty()) {

@@ -69,6 +69,12 @@ public class Definition implements Serializable {
     private String orgId;
 
     /**
+     * 组织机构ID
+     */
+    @XmlTransient
+    private String orgCode;
+
+    /**
      * 流程定义ID
      */
     @XmlTransient
@@ -121,6 +127,14 @@ public class Definition implements Serializable {
         this.orgId = orgId;
     }
 
+    public String getOrgCode() {
+        return orgCode;
+    }
+
+    public void setOrgCode(String orgCode) {
+        this.orgCode = orgCode;
+    }
+
     public String getFlowTypeName() {
         return flowTypeName;
     }
@@ -128,6 +142,8 @@ public class Definition implements Serializable {
     public void setFlowTypeName(String flowTypeName) {
         this.flowTypeName = flowTypeName;
     }
+
+
 
     public static void main(String[] args) throws JAXBException {
         Definition df = new Definition();
