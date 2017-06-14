@@ -7,6 +7,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     id: null,
     versionCode: null,
     orgId: null,
+    orgCode:null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -638,6 +639,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: baseInfo.flowTypeId,
             flowTypeName: baseInfo.flowTypeName,
             orgId: this.orgId,
+            orgCode:this.orgCode,
             id: this.id,
             priority: baseInfo.priority,
             process: process

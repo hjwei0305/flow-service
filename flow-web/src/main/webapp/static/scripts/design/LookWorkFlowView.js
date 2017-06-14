@@ -6,7 +6,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     id: null,
     versionCode: null,
-    orgId: null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -143,19 +142,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 visible: false,
                 label: null,
                 cssClass: "flow-line-note"
-            }], ["Label", {
-                location: 0.7,
-                id: "delete",
-                label: "&times",
-                visible: false,
-                cssClass: "node-delete",
-                events: {
-                    click: function (overlay, originalEvent) {
-                        var connection = overlay.component;
-                        delete g.uelInfo[connection.sourceId + "," + connection.targetId];
-                        g.instance.detach(connection);
-                    }
-                }
             }]],
             Container: "body"
         });
