@@ -60,4 +60,11 @@ public class StringDeploymentByContextTest extends ActivitiContextTestCase {
         assert(count>=1);
     }
 
+    @Test
+    public void testS(){
+        String old = "1001|1003|1993|322";
+        String[] result = old.split("\\|");
+        System.out.println(result.length);
+    }
+
 }
