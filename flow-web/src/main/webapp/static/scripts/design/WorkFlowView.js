@@ -696,7 +696,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             this.initNode(doms[i]);
             var item = $(doms[i]);
             var id = item.attr("id");
-            item.data(data.process.nodes[id]);
+            item.data(data.process.nodes[id].nodeConfig);
         }
         for (var id in data.process.nodes) {
             var node = data.process.nodes[id];
