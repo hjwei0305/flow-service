@@ -198,29 +198,32 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         this.tenantCode = tenantCode;
     }
 
-
-    @ConditionAnnotaion(name="组织机构id",rank = -10000)
+    @Override
+    @ConditionAnnotaion(name="组织机构id",rank = -10000,canSee=false)
     public String getOrgId() {
         return this.orgId;
     }
 
     @Override
-    @ConditionAnnotaion(name="组织机构代码",rank = -10000)
+    @ConditionAnnotaion(name="组织机构代码",rank = -10000,canSee=false)
     public String getOrgCode() {
         return orgCode;
     }
 
-    @ConditionAnnotaion(name="组织机构路径",rank = -10000)
+    @Override
+    @ConditionAnnotaion(name="组织机构路径",rank = -10000,canSee=false)
     public String getOrgPath() {
         return this.orgPath;
     }
 
-    @ConditionAnnotaion(name="租户代码",rank = -10000)
+    @Override
+    @ConditionAnnotaion(name="租户代码",rank = -10000,canSee=false)
     public String getTenantCode() {
         return this.tenantCode;
     }
 
-    @ConditionAnnotaion(name="工作说明",rank = -10000)
+    @Override
+    @ConditionAnnotaion(name="工作说明",rank = -10000,canSee=false)
     public String getWorkCaption(){return this.workCaption;}
 
 

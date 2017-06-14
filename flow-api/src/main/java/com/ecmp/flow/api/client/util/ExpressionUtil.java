@@ -85,7 +85,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 			for (Method sourceMethod : sourceMethods) {
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
 				String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
-				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
+				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName) || conditionAnnatation.canSee()==false) {
 					continue;
 				}
 				String annationName = conditionAnnatation.name();
