@@ -131,6 +131,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 100,
+                readonly:this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -146,6 +147,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 displayText: "请输入优先级",
                 labelWidth: 85,
                 width: 90,
+                allowNegative:false,
                 name: "priority"
             }]
         }, {
@@ -602,7 +604,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: baseInfo.name,
             id: baseInfo.id,
             isExecutable: true,
-            startUEL: g.startUEL,
+            startUEL: this.startUEL,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
