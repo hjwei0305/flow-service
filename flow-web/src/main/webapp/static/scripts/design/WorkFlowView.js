@@ -147,6 +147,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 displayText: "请输入优先级",
                 labelWidth: 85,
                 width: 90,
+                allowNegative:false,
                 name: "priority"
             }]
         }, {
