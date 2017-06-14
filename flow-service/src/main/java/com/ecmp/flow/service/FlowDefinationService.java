@@ -452,7 +452,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination);
             flowStartResultVO.setNodeInfoList(nodeInfoList);
         }
-        return flowStartResultVO;
+         return flowStartResultVO;
     }
 
     private List<NodeInfo> findStartNextNodes(FlowDefination flowDefination) {
@@ -502,14 +502,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         List<Executor> employees = null;
                         if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
-                            continue;
+                           // continue;
 //                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
 //                                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
 //                            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
 ////                            Map<String,Object> v = instance.getProcessVariables();
 //                            String startUserId = historicProcessInstance.getStartUserId();
-//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                           String  startUserId =  ContextUtil.getSessionUser().getUserId();
+                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 //                            if(v != null){
 //                                startUserId = (String) v.get("startUserId");
 //                            }
