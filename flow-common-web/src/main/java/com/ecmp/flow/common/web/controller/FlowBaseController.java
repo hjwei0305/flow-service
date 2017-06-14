@@ -128,8 +128,8 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
-            userMap.put("UserTask_1_Normal", startUserId);
-            userMap.put("UserTask_2_Normal", startUserId);
+//            userMap.put("UserTask_1_Normal", startUserId);
+//            userMap.put("UserTask_2_Normal", startUserId);
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
@@ -152,11 +152,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             }
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
-            if (flowStartResultVO != null) {
+            if (flowStartResultVO != null && flowStartResultVO.getFlowInstance()!=null) {
                 baseService.save(defaultBusinessModel);
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
-            } else {
+            } else if(flowStartResultVO == null){
                 new OperateStatus(false, "启动流程失败");
             }
         } else {
