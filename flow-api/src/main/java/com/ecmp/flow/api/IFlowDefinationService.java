@@ -175,5 +175,5 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过vo对象启动流程实体",notes = "测试")
-    public FlowStartResultVO startByVO(FlowStartVO flowStartVO);
+    public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException;
 }

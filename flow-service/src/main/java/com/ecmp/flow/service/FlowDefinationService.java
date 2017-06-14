@@ -25,6 +25,7 @@ import com.ecmp.flow.vo.bpmn.StartEvent;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -323,7 +324,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @param level   遍历层次
      * @return
      */
-    private FlowDefination  flowDefLuYou(Map<String,Object> businessModelMap,FlowType flowType ,String[] orgCodes,int level){
+    private FlowDefination  flowDefLuYou(Map<String,Object> businessModelMap,FlowType flowType ,String[] orgCodes,int level) throws NoSuchMethodException, SecurityException{
         FlowDefination finalFlowDefination = null;
         String orgCode =orgCodes[orgCodes.length-level];
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(),orgCode);
@@ -335,11 +336,27 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String startUelStr = flowDefination.getStartUel();
                     if(!StringUtils.isEmpty(startUelStr)){
                         JSONObject startUelObject = JSONObject.fromObject(startUelStr);
-                        String expression = startUelObject.getString("groovyUel");
-                        if(ConditionUtil.groovyTest(expression,businessModelMap)){
-                            finalFlowDefination = flowDefination;
-                            break;
+                        String conditionText = startUelObject.getString("groovyUel");
+                        if (conditionText != null) {
+                            if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+                                String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
+                                        conditionText.lastIndexOf("}"));
+                                if (ConditionUtil.groovyTest(conditonFinal, businessModelMap)) {
+                                    finalFlowDefination = flowDefination;
+                                    break;
+                                }
+                            } else {//其他的用UEL表达式验证
+                                Object tempResult = ConditionUtil.uelResult(conditionText, businessModelMap);
+                                if (tempResult instanceof Boolean) {
+                                    Boolean resultB = (Boolean) tempResult;
+                                    if (resultB == true) {
+                                        finalFlowDefination = flowDefination;
+                                        break;
+                                    }
+                                }
+                            }
                         }
+
                     }
                 }
             }
@@ -356,7 +373,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return finalFlowDefination;
 
     }
-    private FlowInstance startByTypeCode( FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) {
+    private FlowInstance startByTypeCode( FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) throws NoSuchMethodException, SecurityException{
         // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
 //        FlowType   flowType = flowTypeDao.findByProperty("code","")
         //  typeCode="ecmp-flow-flowType2_1494902655299";
@@ -388,7 +405,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return startByKey(defKey, startUserId, businessKey, variables);
     }
 
-    public FlowStartResultVO startByVO(FlowStartVO flowStartVO) {
+    public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
         FlowStartResultVO flowStartResultVO = null;
         Map<String, String> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
@@ -435,7 +452,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination);
             flowStartResultVO.setNodeInfoList(nodeInfoList);
         }
-        return flowStartResultVO;
+         return flowStartResultVO;
     }
 
     private List<NodeInfo> findStartNextNodes(FlowDefination flowDefination) {
@@ -450,15 +467,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<StartEvent> startEventList = definition.getProcess().getStartEvent();
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
-                List<BaseFlowNode> targetNodes = startEvent.getTargetNodes();
-                for (BaseFlowNode targetNode : targetNodes) {
+                JSONArray targetNodes = startEvent.getTarget();
+                for(int i=0;i<targetNodes.size();i++){
+                    JSONObject jsonObject = targetNodes.getJSONObject(i);
+                    String targetId = jsonObject.getString("targetId");
+//                }
+//                for (BaseFlowNode targetNode : targetNodes) {
                     NodeInfo nodeInfo = new NodeInfo();
-                    nodeInfo.setId(targetNode.getId());
-                    nodeInfo.setName(targetNode.getName());
-                    nodeInfo.setType(targetNode.getType());
+                    nodeInfo.setId(targetId);
+
                     net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
                     net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+                    nodeInfo.setName(userTaskTemp.getName());
+                    nodeInfo.setType(userTaskTemp.getType());
                     if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
                         nodeInfo.setType("EndEvent");
                         continue;
@@ -480,14 +502,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         List<Executor> employees = null;
                         if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
-                            continue;
+                           // continue;
 //                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
 //                                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
 //                            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
 ////                            Map<String,Object> v = instance.getProcessVariables();
 //                            String startUserId = historicProcessInstance.getStartUserId();
-//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                           String  startUserId =  ContextUtil.getSessionUser().getUserId();
+                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 //                            if(v != null){
 //                                startUserId = (String) v.get("startUserId");
 //                            }
