@@ -69,10 +69,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办的外层
     getTodoTaskHtml: function () {
         // return '             <div class="content-skip">' +
-            // '		            <div class="check-box"><div class="check-all"></div><label>全选</label></div>' +
-            // '		            <div class="end-icon end-all"></div>' +
-            // '		            <div class="reject-icon"></div>' +
-            // '	             </div>' +
+        // '		            <div class="check-box"><div class="check-all"></div><label>全选</label></div>' +
+        // '		            <div class="end-icon end-all"></div>' +
+        // '		            <div class="reject-icon"></div>' +
+        // '	             </div>' +
         return '            <div class="content-info">' +
             '                    <div class="info-left todo-info"></div>' +
             '               </div>' +
@@ -107,6 +107,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.getTodoHtml(result.rows);
+                    g.judgeReject(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
@@ -117,12 +118,21 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-
+    //判断是否有驳回按钮
+    judgeReject: function (rows) {
+        var g = this;
+        var status = rows.canReject;
+        if (status == true) {
+            $(".reject-btn", "#" + this.renderTo).show();
+        } else {
+            $(".reject-btn", "#" + this.renderTo).hide();
+        }
+    },
     //待办里面内容部分的循环
     getTodoHtml: function (items) {
         var g = this;
-        var date=new Date().format("yy-MM-dd hh:mm:ss");
-        console.log(date);
+        var date = new Date();
+        var endTime = date.getTime();
         $(".todo-info", '#' + this.renderTo).empty();
         for (var j = 0; j < items.length; j++) {
             /* var status = items[j].taskStatus;
@@ -132,32 +142,43 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var start=items[j].createdDate;
-            var time=date-start;
-            console.log(time);
+            var startTime = items[j].createdDate;
+            startTime = new Date(startTime).getTime();
+            var time = endTime - startTime;
+            if (time < 0) {//如果结束时间小于开始时间
+                return;
+            } else {
+                //计算出相差天数
+                var days = Math.floor(time / (24 * 3600 * 1000));
+                //计算出小时数
+                var leave1 = time % (24 * 3600 * 1000);   //计算天数后剩余的毫秒数
+                if (leave1 == 0) {//如果leave1=0就不需要在做计算，直接把0赋给hours
+                    return hours = 0;
+                } else {
+                    var hours = Math.floor(leave1 / (3600 * 1000));
+                }
+                //计算相差分钟数
+                var leave2 = leave1 % (3600 * 1000);        //计算小时数后剩余的毫秒数
+                var minutes = Math.floor(leave2 / (60 * 1000));
+            }
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
-                '                     <span class="flow-text">' + items[j].flowName+'_'+items[j].taskName +':'+ '<span class="digest">111</span></span>' +
-                // '                  <span class="item-right over-text">' + statusStr + '</span>' +
-                // '                  <span class="item-right">创建时间</span>' +
+                '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
-                /*'               <div class="item user">'
-                +
-                '                     <span class="userName">创建人：' + items[j].creatorName + '</span>' +
-                // '                  <span class="content-state">说明：' + items[j].creatorName + '</span>' +
-                '                     <span class="item-right userName">' + items[j].createdDate + '</span>' +
-                '                 </div>' +*/
+                '                 <div class="item flow-digest">' +
+                '                     <span class="digest">啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦</span></span>' +
+                '                 </div>' +
                 '                 <div class="item">' +
                 '                     <div class="end">' +
-                '                          <label class="todo-btn approve-btn"><i class="end-icon" title="审批"></i>处理</label>' +
-                '                          <div class="todo-btn"><i class="reject-icon" title="驳回"></i></div>' +
-                '                          <div class="todo-btn"><i class="look-icon look-approve" title="查看表单"></i></div>' +
-                '                          <div class="todo-btn"><i class="time-icon flowInstance" title="流程历史"></i></div>' +
+                '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>' +
+                '                          <div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' +
+                '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程处理</span></div>' +
                 '                     </div>' +
                 '                     <span class="item-right task-item-right">' +
                 '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                          <div class="todo-date"><i class="time-icon" title="流程历史"></i>'+items[j].createdDate+'</div>' +
+                '                          <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i><span>' + days + '天' + hours + '小时' + minutes + '分钟前</span></div>' +
                 '                     </span>' +
                 '                 </div>' +
                 '</div>');
@@ -222,9 +243,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         g.navbarEvent();
     },
     //导航的点击事件
-    navbarEvent:function () {
+    navbarEvent: function () {
         $(document).ready(function () {
-            $(".navber-count").live("click",function () {
+            $(".navber-count").live("click", function () {
                 $(this).addClass("nav-select").siblings().removeClass("nav-select");
 
             })
@@ -247,7 +268,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开查看审批界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
-        $(".look-approve").live("click", function () {
+        $(".look-approve-btn").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var tab = {
@@ -261,7 +282,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开流程历史的新页签
     flowInstanceWindow: function () {
         var g = this;
-        $(".flowInstance").live("click", function () {
+        $(".flowInstance-btn").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             Flow.FlowHistory({
@@ -278,7 +299,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //驳回
     showRejectWindow: function () {
         var g = this;
-        $(".reject-icon").live("click", function () {
+        $(".reject-btn").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var win = EUI.Window({
@@ -348,28 +369,28 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         }
     }
     /*//选项框的点击事件
-    checkBoxEvents: function () {
-        var g = this;
-        //点击单个选项框
-        $(".checkbox").live("click", function () {
-            if (!$(this).hasClass("checked")) {
-                $(this).addClass("checked");
+     checkBoxEvents: function () {
+     var g = this;
+     //点击单个选项框
+     $(".checkbox").live("click", function () {
+     if (!$(this).hasClass("checked")) {
+     $(this).addClass("checked");
 
-            } else {
-                $(this).removeClass("checked");
-            }
-        });
+     } else {
+     $(this).removeClass("checked");
+     }
+     });
 
-        //点击全选框
-        $(".check-all").click(function () {
-            if (!$(this).hasClass("checked")) {
-                $(this).addClass("checked");
-                $(".checkbox").addClass("checked");
-            } else {
-                $(this).removeClass("checked");
-                $(".checkbox").removeClass("checked");
-            }
-        })
-    }*/
+     //点击全选框
+     $(".check-all").click(function () {
+     if (!$(this).hasClass("checked")) {
+     $(this).addClass("checked");
+     $(".checkbox").addClass("checked");
+     } else {
+     $(this).removeClass("checked");
+     $(".checkbox").removeClass("checked");
+     }
+     })
+     }*/
 })
 ;

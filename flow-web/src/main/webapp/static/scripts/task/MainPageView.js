@@ -3,14 +3,14 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     data: null,
     menudata: null,
     dataWait: null,
-    menu:null,
+    menu: null,
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
             data: this.data,
             menudata: this.menudata,
             dataWait: this.dataWait,
-            menu:this.menu,
+            menu: this.menu,
             html: this.getHtml()
         });
         this.showTodoTaskView(true);
@@ -42,18 +42,18 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     //添加事件
     addEvents: function () {
         var g = this;
-        $(".task-work").bind("click",function () {
+        $(".task-work").bind("click", function () {
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showTodoTaskView(true);
         });
-        $(".history-work").bind("click",function () {
+        $(".history-work").bind("click", function () {
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showCompleteTaskView(true);
             $("#completeTask-content").addClass("rim");
         });
-        $(".workOrder").bind("click",function () {
+        $(".workOrder").bind("click", function () {
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showMyOrderView(true);
@@ -93,18 +93,18 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         }
     },
     //我的单据
-    showMyOrderView:function (visiable) {
-        if (visiable){
+    showMyOrderView: function (visiable) {
+        if (visiable) {
             this.showTodoTaskView(false);
             this.showCompleteTaskView(false);
-            if (this.myOrderView){
+            if (this.myOrderView) {
                 this.myOrderView.show();
                 return;
             }
-            this.myOrderView=new EUI.MyOrderView({
-                renderTo:"order-content"
+            this.myOrderView = new EUI.MyOrderView({
+                renderTo: "order-content"
             });
-        }else  if (this.myOrderView){
+        } else if (this.myOrderView) {
             this.myOrderView.hide();
         }
     }
