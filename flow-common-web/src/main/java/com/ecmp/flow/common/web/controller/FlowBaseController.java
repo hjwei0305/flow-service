@@ -152,11 +152,13 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             }
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
-            if (flowStartResultVO != null && flowStartResultVO.getFlowInstance()!=null) {
-                baseService.save(defaultBusinessModel);
+            if (flowStartResultVO != null) {
+               if( flowStartResultVO.getFlowInstance()!=null){
+                   baseService.save(defaultBusinessModel);
+               }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
-            } else if(flowStartResultVO == null){
+            } else {
                 new OperateStatus(false, "启动流程失败");
             }
         } else {
