@@ -602,7 +602,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: baseInfo.name,
             id: baseInfo.id,
             isExecutable: true,
-            startUEL: g.startUEL,
+            startUEL: this.startUEL,
             nodes: {}
         };
         var parentPos = $(".flow-content").position();
