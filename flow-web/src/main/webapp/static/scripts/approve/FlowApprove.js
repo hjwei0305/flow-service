@@ -361,6 +361,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     submit: function () {
         var g = this;
+        if(!this.checkIsValid()){
+            return;
+        }
         var mask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });
