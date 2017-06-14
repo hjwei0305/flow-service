@@ -7,6 +7,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -215,4 +216,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择当前流程抬头信息",notes = "测试")
    public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id")String id);
+
+    @GET
+    @Path("findTaskSumHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    public List<TodoBusinessSummaryVO> findTaskSumHeader();
 }
