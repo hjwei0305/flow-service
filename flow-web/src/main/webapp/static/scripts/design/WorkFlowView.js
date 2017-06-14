@@ -131,6 +131,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 100,
+                readonly:this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
