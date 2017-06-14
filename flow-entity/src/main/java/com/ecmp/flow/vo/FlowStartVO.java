@@ -57,7 +57,7 @@ public class FlowStartVO implements Serializable{
      /**
      * 启动时，下一步的用户
      */
-    private Map<String, String> userMap;
+    private Map<String, Object> userMap;
 
 
 
@@ -117,11 +117,11 @@ public class FlowStartVO implements Serializable{
         this.opinion = opinion;
     }
 
-    public Map<String, String> getUserMap() {
+    public Map<String, Object> getUserMap() {
         return userMap;
     }
 
-    public void setUserMap(Map<String, String> userMap) {
+    public void setUserMap(Map<String, Object> userMap) {
         this.userMap = userMap;
     }
 }

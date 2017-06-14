@@ -152,6 +152,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             }
             flowDefination.setFlowType(flowType);
             flowDefination.setOrgId(definition.getOrgId());
+            flowDefination.setOrgCode(definition.getOrgCode());
            // flowDefination.setCurrentFlowDefVersion(1L);
             flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
             flowDefination.setPriority(definition.getPriority());

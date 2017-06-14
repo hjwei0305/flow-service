@@ -128,7 +128,8 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             }
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
-//            userMap.put("UserTask_1_Normal", startUserId);
+            userMap.put("UserTask_1_Normal", startUserId);
+            userMap.put("UserTask_2_Normal", startUserId);
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
@@ -149,7 +150,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                     }
                 }
             }
-            flowStartVO.setVariables(userMap);
+            flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
                 baseService.save(defaultBusinessModel);
