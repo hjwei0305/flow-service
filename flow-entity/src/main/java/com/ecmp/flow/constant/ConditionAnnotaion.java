@@ -32,4 +32,10 @@ public @interface ConditionAnnotaion {
      * @return
      */
     public int rank() default 0;
+
+    /**
+     * 前端表达式是否可见
+     * @return
+     */
+    public boolean canSee() default true;
 }
