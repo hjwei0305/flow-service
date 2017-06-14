@@ -419,10 +419,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowStartResultVO = new FlowStartResultVO();
                 if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
                     flowStartResultVO.setFlowTypeList(flowTypeList);
-                    return flowStartResultVO;
-                } else {
-                    flowType = flowTypeList.get(0);
+//                    return flowStartResultVO;
                 }
+                flowType = flowTypeList.get(0);
             } else {
                 flowStartResultVO = null;
             }
