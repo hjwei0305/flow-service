@@ -4,12 +4,9 @@
 EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     renderTo: "",
     isEdit: false,
-    selectedNode: null,  //当前选中的节点
     selectedNodeId: "",  //当前选中的节点的ID
     selectedNodeName: "",  //当前选中的节点的name
     selectedNodeOrgCode: "",  //当前选中的节点的组织机构代码
-    flowDefinationId: "",
-    flowDefinationName: "",
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -42,8 +39,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         $(".condetail_look").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
-            g.flowDefinationId = rowData.id;
-            g.flowDefinationName = rowData.name;
             g.lookPropertyWindow(rowData);
         });
     },
@@ -274,10 +269,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 "background": "#fff"
             },
             onSelect: function (node) {
-                console.log(node);
                 if (node.children.length) {
-                    g.selectedNode = "根节点";
-                   // console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     g.selectedNodeOrgCode = node.code;
@@ -291,8 +283,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, true)
                 }
                 if (!node.children.length) {
-                    g.selectedNode = "子节点";
-                  //  console.log(g.selectedNode);
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     g.selectedNodeOrgCode = node.code;
@@ -423,7 +413,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     title: this.lang.addResourceText,
                     selected: true,
                     handler: function () {
-                        // console.log(g.selectedNode)
                         if(!g.selectedNodeId){
                             var status = {
                                 msg:"请选择组织机构",
