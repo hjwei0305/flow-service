@@ -339,7 +339,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     if(!StringUtils.isEmpty(startUelStr)){
                         JSONObject startUelObject = JSONObject.fromObject(startUelStr);
                         String conditionText = startUelObject.getString("groovyUel");
-                        if (conditionText != null) {
+                        if (StringUtils.isNotEmpty(conditionText)) {
                             ifAllNoStartUel = false;
                             if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                                 String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
