@@ -250,6 +250,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
             flowHistory.setActType(flowTask.getActType());
             flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
+//            flowHistory.setBusinessModelRemark();
             flowHistory.setCanCancel(canCancel);
             flowHistory.setFlowName(flowTask.getFlowName());
             flowHistory.setDepict(flowTask.getDepict());

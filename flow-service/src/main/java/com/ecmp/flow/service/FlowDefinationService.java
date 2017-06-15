@@ -491,10 +491,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                     if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+                        nodeInfo.setUiType("radiobox");
+                        nodeInfo.setFlowTaskType("common");
                     } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                        nodeInfo.setUiType("checkbox");
+                        nodeInfo.setFlowTaskType("singleSign");
                     } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                        nodeInfo.setUiType("checkbox");
+                        nodeInfo.setFlowTaskType("countersign");
 //                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
 //                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
 //                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
