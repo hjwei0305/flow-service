@@ -132,8 +132,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var type = $(this).attr("type");
             if (type != "countersign") {
                 $(".flow-user-item").removeClass("select");
-                $(this).addClass("select");
             }
+            $(this).addClass("select");
         });
 
         $(".submit").bind("click", function () {
@@ -214,7 +214,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var doms;
         if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
-        }else{
+        } else {
             doms = $(".flow-decision-box");
         }
         for (var i = 0; i < doms.length; i++) {
@@ -362,7 +362,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     submit: function () {
         var g = this;
-        if(!this.checkIsValid()){
+        if (!this.checkIsValid()) {
             return;
         }
         var mask = EUI.LoadMask({
