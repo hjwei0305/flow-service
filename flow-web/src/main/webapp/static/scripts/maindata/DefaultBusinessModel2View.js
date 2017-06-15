@@ -22,6 +22,11 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
+        // $(".condetail-flowHistory").live("click", function () {
+        //    Flow.FlowHistory({
+        //        instanceId: null,
+        //    })
+        // });
         $(".condetail-start").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.startFlow(data);
@@ -182,11 +187,33 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                         },
                         success: function (result) {
                             myMask.hide();
-                            EUI.ProcessStatus(result);
-                            if (result.success) {
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                if(!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList){
+                                    var status = {
+                                        msg:"找不到流程定义",
+                                        success: false,
+                                        showTime: 4
+                                    };
+                                    EUI.ProcessStatus(status);
+                                    return;
+                                }
+                            if(result.data.flowTypeList && !result.data.nodeInfoList){
+                                var status = {
+                                    msg:"流程配置有误",
+                                    success: false,
+                                    showTime: 4
+                                };
+                                EUI.ProcessStatus(status);
+                                return;
                             }
-                        },
+                                if(result.data.nodeInfoList){
+                                    var flowTypeList  = result.data.flowTypeList;
+                                    Flow.FlowStart({
+                                        businessKey: data.id,
+                                        data:result.data
+                                    })
+                                }
+                         //       EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                            },
                         failure: function (result) {
                             EUI.ProcessStatus(result);
                             myMask.hide();
@@ -416,10 +443,20 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                         width: '25%',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            var strVar = "<div class='condetail-operate'>" +
-                                "<div class='condetail-start'title='启动流程'></div>"
-                                + "<div class='condetail-update' title='编辑'></div>"
-                                + "<div class='condetail-delete'  title='删除'></div></div>";
+                            if(	"INIT" == rowObject.flowStatus){
+                                var strVar = "<div class='condetail-operate'>" +
+                                    "<div class='condetail-start'title='启动流程'></div>"
+                                    + "<div class='condetail-update' title='编辑'></div>"
+                                    + "<div class='condetail-delete'  title='删除'></div>" +
+                                    "</div>";
+                            }
+                            if(	"INPROCESS" == rowObject.flowStatus){
+                                var strVar = "<div class='condetail-operate'>"+
+                                "<div class='condetail-flowHistory'title='流程历史'></div>"
+                                    + "<div class='condetail-update' title='编辑'></div>"
+                                    + "<div class='condetail-delete'  title='删除'></div>" +
+                                    "</div>";
+                            }
                             return strVar;
                         }
                     }, {

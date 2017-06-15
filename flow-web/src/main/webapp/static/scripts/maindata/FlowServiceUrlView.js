@@ -322,28 +322,28 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "code",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "name",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: "URL",
                     labelWidth: 90,
                     allowBlank: false,
                     name: "url",
-                    width: 220,
+                    width: 220
                 }, {
                     xtype: "TextField",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
-                    width: 220,
+                    width: 220
                 }]
             }],
             buttons: [{
