@@ -14,17 +14,15 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowVariableDao;
+import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ConditionUtil;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
-import com.ecmp.flow.dao.FlowHistoryDao;
-import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResult;
@@ -54,6 +52,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -104,6 +104,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private FlowDefinationDao flowDefinationDao;
 
     @Autowired
     private HistoryService historyService;
@@ -1484,5 +1487,48 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Override
     public List<FlowTask> findByInstanceId(String instanceId) {
         return flowTaskDao.findByInstanceId(instanceId);
+    }
+
+    /**
+     *    查询当前用户待办业务单据汇总信息
+     * @return
+     */
+    public List<TodoBusinessSummaryVO> findTaskSumHeader(){
+        List<TodoBusinessSummaryVO> voList = null;
+        String executorAccount = ContextUtil.getUserAccount();
+        if("admin".equalsIgnoreCase(executorAccount)){
+            executorAccount = "666666";
+        }
+        List groupResultList  = flowTaskDao.findByexecutorAccountGroup(executorAccount);
+        Map<BusinessModel,Integer> businessModelCountMap = new HashMap<BusinessModel,Integer>();
+        if(groupResultList!=null && !groupResultList.isEmpty()){
+            Iterator it= groupResultList.iterator();
+            while(it.hasNext()){
+                Object[] res=(Object[]) it.next();
+                int count= ((Number)res[0]).intValue();
+                String flowDefinationId = res[1]+"";
+                FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
+                Integer oldCount = businessModelCountMap.get(businessModel);
+                if(oldCount == null){
+                    oldCount = 0;
+                }
+                businessModelCountMap.put(businessModel,oldCount+count);
+//                System.out.println("count"+count);
+//                System.out.println(res[0]+"    "+res[1]);
+            }
+        }
+        if(businessModelCountMap !=null && !businessModelCountMap.isEmpty()){
+            voList = new ArrayList<TodoBusinessSummaryVO>();
+            for(Map.Entry<BusinessModel,Integer> map:businessModelCountMap.entrySet()){
+                TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
+                todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
+                todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
+                todoBusinessSummaryVO.setCount(map.getValue());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName());
+                voList.add(todoBusinessSummaryVO);
+            }
+        }
+        return voList;
     }
 }

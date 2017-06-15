@@ -36,4 +36,14 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
     @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.id  = :instanceId")
     public List<FlowTask> findByInstanceId(@Param("instanceId")String instanceId);
 
+    /**
+     * 根据流程实例id查询待办
+     * @param executorAccount
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount group by ft.flowDefinitionId")
+    public List findByexecutorAccountGroup(@Param("executorAccount")String executorAccount);
+
+
+
 }
