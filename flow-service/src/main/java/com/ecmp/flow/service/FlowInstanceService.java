@@ -5,9 +5,11 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowInstanceService;
+import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowHiVarinst;
+import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
@@ -46,6 +48,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private FlowTaskDao flowTaskDao;
 
+    @Autowired
+    private FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -130,6 +134,23 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
         return nodeIds;
+    }
+
+  public List<FlowHistory>  findAllByBusinessId(String businessId){
+          return flowHistoryDao.findAllByBusinessId(businessId);
+  }
+
+    public List<FlowHistory>  findLastByBusinessId(String businessId){
+        return flowHistoryDao.findLastByBusinessId(businessId);
+    }
+
+    public FlowInstance  findLastInstanceByBusinessId(String businessId){
+        List<FlowInstance> list =flowInstanceDao.findByBusinessIdOrder(businessId);
+        if(list!=null){
+            return list.get(0);
+        }else {
+            return null;
+        }
     }
 
 //    /**

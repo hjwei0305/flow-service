@@ -56,8 +56,8 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
 
         return pageResult;
     }
-    public List<FlowHistory> findLastByBusinessModelIdAndBuId(String businessId){
-        TypedQuery<FlowInstance> instanceQuery = entityManager.createQuery("select ft.id from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc", FlowInstance.class);
+    public List<FlowHistory> findLastByBusinessId(String businessId){
+        TypedQuery<FlowInstance> instanceQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc", FlowInstance.class);
         instanceQuery.setParameter("businessId",businessId);
         FlowInstance flowInstance = instanceQuery.getSingleResult();
 

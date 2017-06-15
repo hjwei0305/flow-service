@@ -33,5 +33,5 @@ public interface CustomFlowHistoryDao {
      * @return
      */
 //    @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id = (select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-    public List<FlowHistory> findLastByBusinessModelIdAndBuId(String businessId);
+    public List<FlowHistory> findLastByBusinessId(String businessId);
 }
