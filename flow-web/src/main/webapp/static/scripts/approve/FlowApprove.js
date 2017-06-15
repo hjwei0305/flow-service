@@ -133,6 +133,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (type != "countersign") {
                 $(".flow-user-item").removeClass("select");
                 $(this).addClass("select");
+            }else{
+                $(this).addClass("select");
             }
         });
 
