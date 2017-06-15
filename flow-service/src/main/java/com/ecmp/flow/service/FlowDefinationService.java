@@ -329,16 +329,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         FlowDefination finalFlowDefination = null;
         String orgCode =orgCodes[orgCodes.length-level];
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(),orgCode);
+        Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
         if(flowDefinationList!=null && flowDefinationList.size()>0){
-            if(flowDefinationList.size() == 1){
-                finalFlowDefination = flowDefinationList.get(0);
-            }else{
+
                 for(FlowDefination flowDefination:flowDefinationList){
                     String startUelStr = flowDefination.getStartUel();
                     if(!StringUtils.isEmpty(startUelStr)){
                         JSONObject startUelObject = JSONObject.fromObject(startUelStr);
                         String conditionText = startUelObject.getString("groovyUel");
                         if (conditionText != null) {
+                            ifAllNoStartUel = false;
                             if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                                 String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                         conditionText.lastIndexOf("}"));
@@ -360,17 +360,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                     }
                 }
-            }
-        }else {//同级组织机构找不到流程定义，自动向上级组织机构查找所属类型的流程定义
+                if(ifAllNoStartUel){
+                    finalFlowDefination = flowDefinationList.get(0);
+                }
+        }
+        if(finalFlowDefination == null) {//同级组织机构找不到流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;
             if(level>orgCodes.length){
                 return null;
             }
             return this.flowDefLuYou( businessModelMap, flowType, orgCodes , level);
         }
-       if(finalFlowDefination == null && flowDefinationList!=null && !flowDefinationList.isEmpty()){
-            finalFlowDefination = flowDefinationList.get(0);
-        }
+//       if(finalFlowDefination == null && flowDefinationList!=null && !flowDefinationList.isEmpty()){
+//            finalFlowDefination = flowDefinationList.get(0);
+//        }
         return finalFlowDefination;
 
     }
@@ -398,7 +401,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //        String workCaption = v.get("workCaption")+"";//工作说明
         String[] orgCodes =  orgCodePath.split("\\|");
         finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
-
         if(v!=null && !v.isEmpty()){
             if(variables == null){
                 variables = new HashMap<String,Object>();
@@ -419,10 +421,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 flowStartResultVO = new FlowStartResultVO();
-                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
+//                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
                     flowStartResultVO.setFlowTypeList(flowTypeList);
 //                    return flowStartResultVO;
-                }
+//                }
                 flowType = flowTypeList.get(0);
             } else {
                 flowStartResultVO = null;
