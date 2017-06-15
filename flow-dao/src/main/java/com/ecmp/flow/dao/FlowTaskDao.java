@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
+public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
     /**
      * 删除没有进行任务签收的任务
      * @param actTaskId  关联流程引擎实际的任务ID
@@ -37,12 +37,13 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask> {
     public List<FlowTask> findByInstanceId(@Param("instanceId")String instanceId);
 
     /**
-     * 根据流程实例id查询待办
+     * 根据执行人账号归类查询
      * @param executorAccount
      * @return
      */
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount group by ft.flowDefinitionId")
     public List findByexecutorAccountGroup(@Param("executorAccount")String executorAccount);
+
 
 
 

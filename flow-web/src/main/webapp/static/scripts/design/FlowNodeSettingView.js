@@ -29,6 +29,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     this.getNotifyTab()]
             }]
         });
+        this.initNotify();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
@@ -48,6 +49,38 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 grid = EUI.getCmp("selfDefGrid");
             }
             grid.deleteRow(id);
+        });
+
+        $(".west-navbar").live("click",function () {
+            if($(this).hasClass("select-navbar")){
+                return;
+            }
+            $(this).addClass("select-navbar").siblings().removeClass("select-navbar");
+
+        });
+
+        $(".notify-user-item").live("click",function () {
+            if($(this).hasClass("select")){
+                return;
+            }
+            $(this).addClass("select").siblings().removeClass("select");
+            EUI.getCmp("notifyExcutor").hide();
+            EUI.getCmp("notifyStarter").hide();
+            EUI.getCmp("notifyPosition").hide();
+            var index = $(this).index();
+            switch (index){
+                case 0:
+                    EUI.getCmp("notifyExcutor").show();
+                    break;
+                case 1:
+                    EUI.getCmp("notifyStarter").show();
+                    break;
+                case 2:
+                    EUI.getCmp("notifyPosition").show();
+                    break;
+                default:
+                    break;
+            }
         });
     },
     getButtons: function () {
@@ -336,7 +369,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getNotifyTab: function () {
         return {
             title: "通知",
-            xtype: "FormPanel",
             id: "notify",
             padding: 10,
             defaultConfig: {
@@ -344,10 +376,75 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 colon: false
             },
-            items: []
+            html: '<div class="notify-west">' +
+            '<div class="west-navbar select-navbar">任务达到时</div>' +
+            '<div class="west-navbar">任务执行后</div>' +
+            '</div>' +
+            '<div class="notify-center">' +
+            '<div class="notify-user">' +
+            '<div class="notify-user-item select">通知执行人</div>' +
+            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-tab"></div>' +
+            '</div>'
         };
     }
     ,
+    initNotify: function () {
+        EUI.FormPanel({
+            width: 445,
+            height: 365,
+            renderTo: "notify-tab",
+            defaultConfig: {
+                iframe: false,
+                xtype: "Container",
+                width: 425,
+                height: 345,
+                itemspace:10
+            },
+            items: [{
+                id: "notifyExcutor",
+                items: this.getNotifyItem()
+            }, {
+                id: "notifyStarter",
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                id: "notifyPosition",
+                hidden: true,
+                items: this.getNotifyItem()
+            }]
+        });
+    },
+    getNotifyItem: function () {
+        return [{
+            xtype: "CheckBoxGroup",
+            title: "通知方式",
+            labelWidth: 80,
+            name: "type",
+            defaultConfig: {
+                labelWidth: 60
+            },
+            items: [{
+                title: "邮件",
+                name: "EMAIL"
+            }, {
+                title: "短信",
+                name: "SMS"
+            }, {
+                title: "APP",
+                name: "APP"
+            }]
+        }, {
+            xtype: "TextArea",
+            width: 320,
+            height: 220,
+            labelWidth: 80,
+            title: "通知备注",
+            name: ""
+        }];
+    },
     getPositionGrid: function () {
         var colModel = [{
             label: this.lang.operateText,
