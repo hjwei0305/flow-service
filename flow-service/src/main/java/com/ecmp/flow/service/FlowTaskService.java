@@ -28,6 +28,7 @@ import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import jodd.util.StringUtil;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.bpmn.model.*;
 import org.activiti.engine.delegate.Expression;
@@ -877,9 +878,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String businessModelRemark;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
-
-
-
 //                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                     List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                     for (IdentityLink identityLink : identityLinks) {
@@ -1160,39 +1158,110 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNextNodes(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
-        if (checkHasConditon(actTaskId)) {//判断出口任务节点中是否包含有条件表达式
-            if (StringUtils.isEmpty(businessId)) {
-                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
-            }
-//            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-//            JSONObject defObj = JSONObject.fromObject(defJson);
-            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-           System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
-//            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
-//            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
-
-            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-//            clientApiBaseUrl =    ContextUtil.getHost();
-//            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
-            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
-        } else {
-            return this.selectNextAllNodes(actTaskId, includeNodeIds);
-        }
+        return this.selectNextAllNodes(flowTask , includeNodeIds);
+//        this.checkManualExclusiveGateway(flowTask);
+//        if (checkHasConditon(actTaskId)) {//判断出口任务节点中是否包含有条件表达式
+//            if (StringUtils.isEmpty(businessId)) {
+//                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
+//            }
+////            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+////            JSONObject defObj = JSONObject.fromObject(defJson);
+//            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+//            String businessModelId = businessModel.getId();
+//            String appModuleId = businessModel.getAppModuleId();
+//            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+//            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+//           System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
+////            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
+////            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
+//
+//            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+////            clientApiBaseUrl =    ContextUtil.getHost();
+////            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+//            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+//            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
+//        } else {
+//            return this.selectNextAllNodes(actTaskId, includeNodeIds);
+//        }
     }
 
+    /**
+     * 检查是否下一节点存在网关
+     * @param flowTask
+     * @return
+     */
+    private boolean checkGateway(FlowTask flowTask){
+        boolean result = false;
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONArray targetNodes = currentNode.getJSONArray("target");
+        for(int i=0;i<targetNodes.size();i++){
+            JSONObject jsonObject = targetNodes.getJSONObject(i);
+            String targetId = jsonObject.getString("targetId");
+            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            String busType = nextNode.getString("busType");
+            if("ManualExclusiveGateway".equalsIgnoreCase(busType) ||  //人工排他网关
+                    "exclusiveGateway".equalsIgnoreCase(busType) ||  //排他网关
+                    "inclusiveGateway".equalsIgnoreCase(busType)  //包容网关
+                    || "parallelGateWay".equalsIgnoreCase(busType)) { //并行网关
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 检查是否下一节点存在人工排他网关
+     * @param flowTask
+     * @return
+     */
+    private boolean checkManualExclusiveGateway(FlowTask flowTask){
+        boolean result = false;
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONArray targetNodes = currentNode.getJSONArray("target");
+        for(int i=0;i<targetNodes.size();i++){
+            JSONObject jsonObject = targetNodes.getJSONObject(i);
+            String targetId = jsonObject.getString("targetId");
+            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            if("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 检查是否下一节点存在人工排他网关
+     * @param flowTask
+     * @return
+     */
+    private boolean checkManualExclusiveGateway(FlowTask flowTask,String manualExclusiveGatewayId){
+        boolean result = false;
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+         net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(manualExclusiveGatewayId);
+        if("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
+                result = true;
+        }
+        return result;
+    }
 
     /**
      * 获取所有出口节点信息
      *
-     * @param actTaskId
+     * @param flowTask
      * @return
      */
-    private List<NodeInfo> selectNextAllNodes(String actTaskId,List<String> includeNodeIds) {
+    private List<NodeInfo> selectNextAllNodes(FlowTask flowTask,List<String> includeNodeIds) {
+        String actTaskId = flowTask.getActTaskId();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
         List<PvmActivity> nextNodes = new ArrayList<PvmActivity>();
         initNextNodes(currActivity, nextNodes);
@@ -1203,7 +1272,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             PvmActivity firstActivity = nextNodes.get(0);
             Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
             String nextActivtityType = firstActivity.getProperty("type").toString();
+            String uiType = "readOnly";
             if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
+                if(this.checkManualExclusiveGateway(flowTask,firstActivity.getId())){//如果人工网关
+                    uiType =  "radiobox";
+                }
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = nextNodes.get(i);
@@ -1212,9 +1285,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 continue;
                             }
                         }
+
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
-                        tempNodeInfo.setUiType("radiobox");
+                        String gateWayName = firstActivity.getProperty("name")+"";
+                        tempNodeInfo.setName(gateWayName + tempNodeInfo.getName());
+                        tempNodeInfo.setUiType(uiType);
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1230,7 +1306,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
-                        tempNodeInfo.setUiType("checkbox");
+                        tempNodeInfo.setUiType(uiType);
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1246,7 +1322,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
-                        tempNodeInfo.setUiType("readOnly");
+                        tempNodeInfo.setUiType(uiType);
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1262,7 +1338,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
-                        tempNodeInfo.setUiType("readOnly");
+                        tempNodeInfo.setUiType(uiType);
                         nodeInfoList.add(tempNodeInfo);
                     }
                 } else {//按照惟一分支任务处理，显示一个，只读
@@ -1274,7 +1350,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     NodeInfo tempNodeInfo = new NodeInfo();
                     tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
-                    tempNodeInfo.setUiType("readOnly");
+                    tempNodeInfo.setUiType(uiType);
                     nodeInfoList.add(tempNodeInfo);
                 }
             }

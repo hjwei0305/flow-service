@@ -364,7 +364,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     finalFlowDefination = flowDefinationList.get(0);
                 }
         }
-        if(finalFlowDefination == null) {//同级组织机构找不到流程定义，自动向上级组织机构查找所属类型的流程定义
+        if(finalFlowDefination == null) {//同级组织机构找不到符合条件流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;
             if(level>orgCodes.length){
                 return null;
