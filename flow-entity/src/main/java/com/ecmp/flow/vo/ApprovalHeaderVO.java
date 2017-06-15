@@ -17,9 +17,14 @@ import java.util.Date;
  */
 public class ApprovalHeaderVO implements Serializable{
     /**
-     * 业务单号
+     * 业务单据ID
      */
     private String businessId;
+
+    /**
+     * 业务单号
+     */
+    private String businessCode;
     /**
      * 创单人
      */
@@ -89,5 +94,13 @@ public class ApprovalHeaderVO implements Serializable{
 
     public void setPreCreateTime(Date preCreateTime) {
         this.preCreateTime = preCreateTime;
+    }
+
+    public String getBusinessCode() {
+        return businessCode;
+    }
+
+    public void setBusinessCode(String businessCode) {
+        this.businessCode = businessCode;
     }
 }

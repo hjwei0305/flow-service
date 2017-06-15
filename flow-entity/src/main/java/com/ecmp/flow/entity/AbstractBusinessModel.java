@@ -206,9 +206,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     }
 
 
-    public String getBusinessCode() {
-        return businessCode;
-    }
 
     public void setBusinessCode(String businessCode) {
         this.businessCode = businessCode;
@@ -241,6 +238,11 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     @Override
     @ConditionAnnotaion(name="工作说明",rank = -10000,canSee=false)
     public String getWorkCaption(){return this.workCaption;}
+
+    @ConditionAnnotaion(name="业务单号",rank = -10000,canSee=false)
+    public String getBusinessCode() {
+        return businessCode;
+    }
 
 
     @Override

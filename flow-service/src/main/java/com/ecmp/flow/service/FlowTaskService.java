@@ -245,7 +245,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
             net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-            String businessModelRemark;
             Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
             FlowHistory flowHistory = new FlowHistory();
             flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
@@ -875,7 +874,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Boolean canReject = normalInfo.getBoolean("allowReject");
         Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
         flowName = definition.getProcess().getName();
-        String businessModelRemark;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
 //                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
@@ -886,8 +884,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if(employees!=null && !employees.isEmpty()){
                             Executor executor = employees.get(0);
                         FlowTask flowTask = new FlowTask();
-                            flowTask.setCanReject(canReject);
-                            flowTask.setCanSuspension(canSuspension);
+                        flowTask.setCanReject(canReject);
+                        flowTask.setCanSuspension(canSuspension);
                         flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1529,6 +1527,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowHistory preFlowTask = null;
         ApprovalHeaderVO result= new ApprovalHeaderVO();
         result.setBusinessId(flowTask.getFlowInstance().getBusinessId());
+        result.setBusinessCode(flowTask.getFlowInstance().getBusinessCode());
         result.setCreateUser(flowTask.getFlowInstance().getCreatorName());
         result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
         if(!StringUtils.isEmpty(preId)){

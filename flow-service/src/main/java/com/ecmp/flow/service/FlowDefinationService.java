@@ -306,6 +306,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
                 String workCaption = variables.get("workCaption")+"";//工作说明
                 flowInstance.setBusinessModelRemark(workCaption);
+                String businessCode = variables.get("businessCode")+"";//工作说明
+                flowInstance.setBusinessCode(businessCode);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
                 flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
