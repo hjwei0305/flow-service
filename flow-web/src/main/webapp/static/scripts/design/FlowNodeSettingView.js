@@ -29,6 +29,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     this.getNotifyTab()]
             }]
         });
+        this.initNotify();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
@@ -336,7 +337,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getNotifyTab: function () {
         return {
             title: "通知",
-            xtype: "FormPanel",
             id: "notify",
             padding: 10,
             defaultConfig: {
@@ -344,10 +344,83 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 colon: false
             },
-            items: []
+            html: '<div class="notify-west">' +
+            '<div class="west-navbar select-navbar">任务达到时</div>' +
+            '<div class="west-navbar">任务执行后</div>' +
+            '</div>' +
+            '<div class="notify-center">' +
+            '<div class="notify-user">' +
+            '<div class="notify-user-item select">通知执行人</div>' +
+            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-tab"></div>' +
+            '</div>'
         };
     }
     ,
+    initNotify: function () {
+        EUI.FormPanel({
+            width: 445,
+            height: 365,
+            renderTo: "notify-tab",
+            defaultConfig: {
+                iframe: false,
+                xtype: "Container",
+                width: 425,
+                height: 345
+            },
+            items: [{
+                id: "notifyExcutor",
+                items: this.getNotifyItem()
+            }, {
+                id: "notifyStarter",
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                id: "notifyPosition",
+                hidden: true,
+                items: this.getNotifyItem()
+            }]
+        });
+    },
+    getNotifyItem: function () {
+        return [{
+            xtype: "CheckBoxGroup",
+            title: "通知方式",
+            labelWidth: 80,
+            name: "type",
+            defaultConfig: {
+                labelWidth: 60
+            },
+            items: [{
+                title: "邮件",
+                name: "",
+                onChecked: function (value) {
+
+                }
+            }, {
+                title: "短信",
+                name: "content",
+                onChecked: function (value) {
+
+                }
+            }, {
+                title: "APP",
+                name: "content",
+                onChecked: function (value) {
+
+                }
+            }]
+        }, {
+            xtype: "TextArea",
+            width: 300,
+            height: 200,
+            labelWidth: 80,
+            title: "通知备注",
+            name: ""
+        }];
+    },
     getPositionGrid: function () {
         var colModel = [{
             label: this.lang.operateText,
