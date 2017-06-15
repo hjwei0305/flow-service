@@ -64,7 +64,7 @@
 .flow-item-space {
     background: url("../images/flow_space.png") no-repeat;
     height: 1px;
-    width: 208px;
+    width: 100%;
 }
 
 .flow-event-box {
@@ -459,3 +459,86 @@
     width: 53px;
 }
 
+
+/*兼容*/
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: #D6D6D6;
+    font-size: 14px;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+    color: #D6D6D6;
+    font-size: 14px;
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+    color: #D6D6D6;
+    font-size: 14px;
+}
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    color: #D6D6D6;
+    font-size: 14px;
+}
+
+/*左边部分*/
+.notify-west {
+    display: inline-block;
+    overflow: hidden;
+    width: 100px;
+    border: 1px solid #EAEAEA;
+    position: absolute;
+    top: 15px;
+    left: 0;
+    z-index: 100;
+    border-right: none;
+}
+
+.notify-center {
+    background-color: #f3f8fb;
+    border: 1px solid #eaeaea;
+    display: inline-block;
+    height: 365px;
+    left: 100px;
+    overflow: hidden;
+    position: absolute;
+    top: 15px;
+    width: 445px;
+}
+
+.west-navbar {
+    text-align: center;
+    background-color: #f9f9f9;
+    height: 35px;
+    line-height: 35px;
+    cursor: pointer;
+    color: #888888;
+    border-right: 1px solid #EAEAEA;
+}
+
+.west-navbar:not(:first-child) {
+    border-top: 1px solid #EAEAEA;
+}
+
+.west-navbar:hover {
+    background-color: #f3f8fb;
+    border-right: 1px solid #EAEAEA;
+    color: #237DBC;
+}
+
+.notify-user {
+    padding: 12px;
+}
+
+.notify-user .select {
+    background: #bed5f3 none repeat scroll 0 0;
+    color: white;
+}
+.notify-user-item {
+    border: 1px solid #bed5f3;
+    cursor: pointer;
+    float: left;
+    padding: 8px 0;
+    text-align: center;
+    width: 110px;
+}
