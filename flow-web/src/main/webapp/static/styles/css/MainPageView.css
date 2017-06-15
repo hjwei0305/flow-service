@@ -232,7 +232,7 @@ div, span, p {
     overflow: hidden;
     text-overflow: ellipsis;/*针对Opera*/
     white-space: nowrap;
-    width: 50%;
+    width: 70%;
     vertical-align: middle;
 }
 
