@@ -167,7 +167,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
 					continue;
 				}
-				 Object v = sourceMethod.invoke(conditionPojo, (Object) null);
+				 Object v = sourceMethod.invoke(conditionPojo,  null);
 				 if(v!=null){
 					 result.put(sourceFieldName, v);
 				 }

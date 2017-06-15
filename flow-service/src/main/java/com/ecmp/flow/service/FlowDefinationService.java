@@ -304,7 +304,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                 flowInstance = new FlowInstance();
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
-
+                String workCaption = variables.get("workCaption")+"";//工作说明
+                flowInstance.setBusinessModelRemark(workCaption);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
                 flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
@@ -394,6 +395,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //        String orgId = v.get("orgId")+"";
 //        String orgCode = v.get("orgCode")+"";
         String orgCodePath = v.get("orgPath")+"";
+//        String workCaption = v.get("workCaption")+"";//工作说明
         String[] orgCodes =  orgCodePath.split("\\|");
         finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
 
