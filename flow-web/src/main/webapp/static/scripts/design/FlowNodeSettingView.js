@@ -50,6 +50,38 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
             grid.deleteRow(id);
         });
+
+        $(".west-navbar").live("click",function () {
+            if($(this).hasClass("select-navbar")){
+                return;
+            }
+            $(this).addClass("select-navbar").siblings().removeClass("select-navbar");
+
+        });
+
+        $(".notify-user-item").live("click",function () {
+            if($(this).hasClass("select")){
+                return;
+            }
+            $(this).addClass("select").siblings().removeClass("select");
+            EUI.getCmp("notifyExcutor").hide();
+            EUI.getCmp("notifyStarter").hide();
+            EUI.getCmp("notifyPosition").hide();
+            var index = $(this).index();
+            switch (index){
+                case 0:
+                    EUI.getCmp("notifyExcutor").show();
+                    break;
+                case 1:
+                    EUI.getCmp("notifyStarter").show();
+                    break;
+                case 2:
+                    EUI.getCmp("notifyPosition").show();
+                    break;
+                default:
+                    break;
+            }
+        });
     },
     getButtons: function () {
         var g = this;
@@ -368,7 +400,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 iframe: false,
                 xtype: "Container",
                 width: 425,
-                height: 345
+                height: 345,
+                itemspace:10
             },
             items: [{
                 id: "notifyExcutor",
@@ -395,27 +428,18 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             },
             items: [{
                 title: "邮件",
-                name: "",
-                onChecked: function (value) {
-
-                }
+                name: "EMAIL"
             }, {
                 title: "短信",
-                name: "content",
-                onChecked: function (value) {
-
-                }
+                name: "SMS"
             }, {
                 title: "APP",
-                name: "content",
-                onChecked: function (value) {
-
-                }
+                name: "APP"
             }]
         }, {
             xtype: "TextArea",
-            width: 300,
-            height: 200,
+            width: 320,
+            height: 220,
             labelWidth: 80,
             title: "通知备注",
             name: ""

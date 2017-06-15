@@ -509,8 +509,8 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .west-navbar {
     text-align: center;
     background-color: #f9f9f9;
-    height: 35px;
-    line-height: 35px;
+    height: 50px;
+    line-height: 50px;
     cursor: pointer;
     color: #888888;
     border-right: 1px solid #EAEAEA;
@@ -526,6 +526,12 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     color: #237DBC;
 }
 
+.select-navbar {
+    background-color: #f3f8fb;
+    border-right: 1px solid #f3f8fb;
+    color: #237DBC;
+}
+
 .notify-user {
     padding: 12px;
 }
@@ -534,11 +540,17 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     background: #bed5f3 none repeat scroll 0 0;
     color: white;
 }
+
 .notify-user-item {
     border: 1px solid #bed5f3;
     cursor: pointer;
     float: left;
     padding: 8px 0;
     text-align: center;
-    width: 110px;
+    width: 136px;
+}
+
+.notify-user-item:nth-child(2){
+    border-left: none;
+    border-right: none;
 }
