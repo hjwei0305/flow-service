@@ -163,7 +163,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-ordernum").text("业务单号：" + data.businessId);
         $(".flow-info-creater").text("制单人：" + data.createUser);
         $(".flow-info-excutor").text(data.prUser);
-        $(".flow-info-remark").text(data.preCreateTime);
+        $(".flow-info-remark").text(data.prOpinion);
 
     },
     getNodeInfo: function () {
@@ -192,16 +192,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     showNodeInfo: function (data) {
         var html = "";
+        console.log(data);
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             var iconCss = "choose-radio";
-            // if (item.uiType == "checkbox") {
-            //     iconCss = "choose-checkbox";
-            //     this.desionType = 1;
-            // } else if (item.uiType == "readOnly") {
-            //     iconCss = "";
-            //     this.desionType = 2;
-            // }
+            if (item.uiType == "checkbox") {
+                iconCss = "choose-checkbox";
+                this.desionType = 1;
+            } else if (item.uiType == "readOnly") {
+                iconCss = "";
+                this.desionType = 2;
+            }
             html += '<div class="flow-decision-item" id="' + item.id + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div class="excutor-item-title">' + item.name + '</div></div>';
