@@ -95,7 +95,14 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
      * 工作说明
      */
     @Column(name = "workCaption",length = 1000,nullable = false)
+    @Lob
     private  String workCaption;
+
+    /**
+     * 业务单号
+     */
+    @Column(name = "business_code",length = 20,nullable = false)
+    private  String businessCode;
 
 
 
@@ -196,6 +203,15 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+
+    public String getBusinessCode() {
+        return businessCode;
+    }
+
+    public void setBusinessCode(String businessCode) {
+        this.businessCode = businessCode;
     }
 
     @Override
