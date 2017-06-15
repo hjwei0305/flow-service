@@ -215,7 +215,7 @@ div, span, p {
 }
 
 .item {
-    margin-top: 10px;
+    margin-top: 5px;
     padding: 0 10px;
 }
 
@@ -225,9 +225,15 @@ div, span, p {
     color: #333333;
 }
 
-.flow-text > .digest {
-    font-size: 14px;
+.digest {
     color: #333333;
+    display: inline-block;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;/*针对Opera*/
+    white-space: nowrap;
+    width: 70%;
+    vertical-align: middle;
 }
 
 .item-right {
@@ -237,7 +243,6 @@ div, span, p {
 .task-item-right {
     float: right;
     margin-bottom: 10px;
-    margin-top: 20px;
 }
 
 .over-text {
@@ -259,6 +264,9 @@ div, span, p {
 .todo-date {
     display: inline-block;
 }
+.todo-date>span {
+    font-size: 12px;
+}
 
 .user-name {
     font-size: 12px;
@@ -277,81 +285,92 @@ div, span, p {
 
 .end {
     display: inline-block;
-    margin-top: 20px;
     margin-bottom: 10px;
 }
 
 .end > .todo-btn {
     display: inline-block;
-    border: 1px solid #ddd;
-    width: 55px;
     height: 20px;
-    border-radius: 2px;
+    cursor: pointer;
+    margin-right: 30px;
 }
-
+.todo-btn>span{
+    line-height: 20px;
+    vertical-align: middle;
+}
 .end-text {
     font-size: 12px;
     color: #999999;
 }
 
 .end-icon {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: url("../images/end-icon.png") no-repeat;
     background-size: cover;
-    /*vertical-align: middle;*/
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.reject-icon {
+    width: 14px;
+    height: 14px;
+    background: url("../images/back.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
     display: inline-block;
     margin-right: 5px;
     cursor: pointer;
     margin-left: 5px;
 }
 
-.reject-icon {
-    width: 12px;
-    height: 12px;
-    background: url("../images/back.png") no-repeat;
-    background-size: cover;
-    /*vertical-align: middle;*/
-    display: inline-block;
-    margin-right: 10px;
-    cursor: pointer;
-    margin-left: 21px;
-}
-
 .backout-icon {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     background: url("../images/backout.png") no-repeat;
     background-size: cover;
-    /*vertical-align: middle;*/
+    vertical-align: middle;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 5px;
     cursor: pointer;
-    margin-left: 21px;
+    margin-left: 5px;
 }
 
 .look-icon {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: url("../images/look_icon.png") no-repeat;
     background-size: cover;
-    /*vertical-align: middle;*/
+    vertical-align: middle;
     display: inline-block;
-    margin-right: 10px;
+    margin-right: 5px;
     cursor: pointer;
-    margin-left: 21px;
+    margin-left: 5px;
 }
 
 .time-icon {
+    width: 14px;
+    height: 14px;
+    background: url("../images/time_icon.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.flow-time-icon {
     width: 12px;
     height: 12px;
     background: url("../images/time_icon.png") no-repeat;
     background-size: cover;
-    /*vertical-align: middle;*/
+    vertical-align: middle;
     display: inline-block;
-    margin-right: 10px;
-    cursor: pointer;
-    margin-left: 21px;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
 /*

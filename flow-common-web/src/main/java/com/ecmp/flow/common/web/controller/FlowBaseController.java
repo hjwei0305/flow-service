@@ -130,6 +130,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
             userMap.put("UserTask_1_Normal", startUserId);
             userMap.put("UserTask_2_Normal", startUserId);
+            userMap.put("UserTask_3_Normal", startUserId);
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
@@ -153,7 +154,9 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
-                baseService.save(defaultBusinessModel);
+               if( flowStartResultVO.getFlowInstance()!=null){
+                   baseService.save(defaultBusinessModel);
+               }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {

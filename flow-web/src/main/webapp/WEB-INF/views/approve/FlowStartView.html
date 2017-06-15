@@ -3,22 +3,20 @@
 <head>
     <th:block th:include="base/base :: base_head"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>采购页面</title>
+    <title></title>
     <link rel="stylesheet" type="text/css"
-          data-th-href="@{/static/styles/css/BuiltInApproveView.css}">
-    <link rel="stylesheet" type="text/css"
-          data-th-href="@{/static/styles/css/FlowStart.css}">
+              data-th-href="@{/static/styles/css/FlowStart.css}">
+    <!--<script type="text/javascript" data-th-src="@{/static/EUI/jquery-1.8.min.js}"></script>-->
     <script type="text/javascript"
             data-th-src="@{/static/scripts/approve/FlowStart.js}"></script>
     <script type="text/javascript"
-            data-th-src="@{/static/scripts/maindata/DefaultBusinessModel2View.js}"></script>
-    <script type="text/javascript"
-            data-th-src="@{/static/lang/lang.js}"></script>
+            data-th-src="@{/static/lang/lang.js}"></script>W
     <script type="text/javascript">
-        var defaultBusinessModel2View;
+        var flowStart;
         EUI.onReady(function () {
-           defaultBusinessModel2View = new EUI.DefaultBusinessModel2View({
-                renderTo: "content"
+            flowStart = Flow.FlowStart({
+                data:null,
+                businessKey:null
             });
         });
     </script>
@@ -27,4 +25,3 @@
 <div id="content"></div>
 </body>
 </html>
-

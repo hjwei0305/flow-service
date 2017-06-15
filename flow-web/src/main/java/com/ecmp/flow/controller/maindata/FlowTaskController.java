@@ -11,7 +11,9 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +75,22 @@ public class FlowTaskController {
         return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
     }
 
+    /**
+     * 查询流程待办和任务汇总列表
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "listFlowTaskHeader")
+    @ResponseBody
+    public String listFlowTaskHeader(ServletRequest request) throws JsonProcessingException, ParseException {
+
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<TodoBusinessSummaryVO>  result = proxy.findTaskSumHeader();
+        return JsonUtil.serialize(result,JsonUtil.DATE_TIME);
+    }
+
 
     /**
      * 通过流程
@@ -89,7 +107,7 @@ public class FlowTaskController {
         FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
         flowTaskCompleteVO.setTaskId(id);
         flowTaskCompleteVO.setVariables(variables);
-        OperateResult result = proxy.complete(flowTaskCompleteVO);
+        OperateResultWithData result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }
@@ -109,7 +127,7 @@ public class FlowTaskController {
         FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
         flowTaskCompleteVO.setTaskId(id);
         flowTaskCompleteVO.setVariables(variables);
-        OperateResult result = proxy.complete(flowTaskCompleteVO);
+        OperateResultWithData result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return JsonUtil.serialize(status);
     }

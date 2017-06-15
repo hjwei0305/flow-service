@@ -59,17 +59,17 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                 '                            </div>' +
                 '                        </div>';
         }
-        $(".invoice-info",'#'+this.renderTo).html(html);
+        $(".invoice-info", '#' + this.renderTo).html(html);
     },
     //底部翻页部分
     showPage: function (records) {
         $(".record-total").text("共" + records + "条记录");
     },
     show: function () {
-        $("#"+this.renderTo).css("display", "block");
+        $("#" + this.renderTo).css("display", "block");
     },
     hide: function () {
-        $("#"+this.renderTo).css("display", "none");
+        $("#" + this.renderTo).css("display", "none");
     },
     addEvents: function () {
 

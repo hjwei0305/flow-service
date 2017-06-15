@@ -8,29 +8,29 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         this.addEvents();
     },
     initHtml: function () {
-        var html=this.getMyOrderHtml();
+        var html = this.getMyOrderHtml();
         $("#" + this.renderTo).append(html);
     },
     //拼接我的单据界面的html
     getMyOrderHtml: function () {
-     return '<div class="taken-center">' +
-     '            <div class="center-top">' +
-     '                <div class="top-header">' +
-     '                    <span class="worktable">我的单据</span>' +
-     '                    <div class="header-right">' +
-     '                        <span class="wait-work wait-invoices">待办单据</span>' +
-     '                        <span class="taken-work taken-invoices active">已办单据</span>' +
-     '                        <div class="data">' +
-     '                            <div id="dateField"></div>' +
-     '                        </div>' +
-         '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
-     '                    </div>' +
-     '                </div>' +
-     '            </div>' +
-     '            <div id="todoOrder-content" class="center-content"></div>' +
-     '            <div id="completeOrder-content" class="center-content"></div>' +
-     '   </div>';
-     },
+        return '<div class="taken-center">' +
+            '            <div class="center-top">' +
+            '                <div class="top-header">' +
+            '                    <span class="worktable">我的单据</span>' +
+            '                    <div class="header-right">' +
+            '                        <span class="wait-work wait-invoices">待办单据</span>' +
+            '                        <span class="taken-work taken-invoices active">已办单据</span>' +
+            '                        <div class="data">' +
+            '                            <div id="dateField"></div>' +
+            '                        </div>' +
+            '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            '                    </div>' +
+            '                </div>' +
+            '            </div>' +
+            '            <div id="todoOrder-content" class="center-content"></div>' +
+            '            <div id="completeOrder-content" class="center-content"></div>' +
+            '   </div>';
+    },
     //我的单据中的日历
     initChooseDate: function () {
         EUI.FieldGroup({
@@ -51,19 +51,19 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         })
     },
     show: function () {
-        $("#"+this.renderTo).css("display", "block");
+        $("#" + this.renderTo).css("display", "block");
     },
     hide: function () {
-        $("#"+this.renderTo).css("display", "none");
+        $("#" + this.renderTo).css("display", "none");
     },
     addEvents: function () {
-        var g=this;
-        $(".wait-invoices").bind("click",function () {
+        var g = this;
+        $(".wait-invoices").bind("click", function () {
             $(".taken-invoices").removeClass("active");
             $(this).addClass("active");
             g.showTodoOrderView(true);
         });
-        $(".taken-invoices").bind("click",function () {
+        $(".taken-invoices").bind("click", function () {
             $(".wait-invoices").removeClass("active");
             $(this).addClass("active");
             g.showCompleteOrderView(true);

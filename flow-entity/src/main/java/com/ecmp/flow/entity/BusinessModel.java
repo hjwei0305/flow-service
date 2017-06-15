@@ -87,6 +87,13 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     private String appModuleCode;
 
     /**
+     * 查看单据的URL
+     */
+    @Column(length = 6000,name = "look_url")
+    @Lob
+    private String lookUrl;
+
+    /**
      * 拥有的流程类型
      */
     @Transient
@@ -158,6 +165,14 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.appModuleCode = appModuleCode;
     }
 
+    public String getLookUrl() {
+        return lookUrl;
+    }
+
+    public void setLookUrl(String lookUrl) {
+        this.lookUrl = lookUrl;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -184,6 +199,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("appModuleId", appModuleId)
                 .append("appModuleCode", appModuleCode)
                 .append("flowTypes", flowTypes)
+                .append("lookUrl", lookUrl)
                 .toString();
     }
 

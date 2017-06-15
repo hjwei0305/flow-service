@@ -13,7 +13,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         this.addEvents();
     },
     initHtml: function () {
-        var html =this.getCompleteTaskHtml();
+        var html = this.getCompleteTaskHtml();
         $("#" + this.renderTo).append(html);
     },
     //已办界面的外层容器部分
@@ -76,7 +76,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              }*/
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
-                '                                <span class="flow-text">' + items[j].flowName+'_'+items[j].flowTaskName +':'+'<span class="digest">111</span></span>' +
+                '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + ':' + '<span class="digest">111</span></span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
@@ -86,12 +86,12 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                                </div>' +
                 '                                <span class="item-right task-item-right">' +
                 '                                    <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                                    <div class="todo-date"><i class="time-icon" title="流程历史"></i>处理时间：'+items[j].actEndTime+'</div>' +
+                '                                    <div class="todo-date"><i class="time-icon" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
                 '                                </span>' +
                 '                            </div>' +
                 '</div>');
             itemdom.data(items[j]);
-            $(".todo-info",'#'+this.renderTo).append(itemdom);
+            $(".todo-info", '#' + this.renderTo).append(itemdom);
         }
     },
     //底部翻页部分
@@ -135,13 +135,13 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     show: function () {
-        $("#"+this.renderTo).css("display","block");
+        $("#" + this.renderTo).css("display", "block");
     },
     hide: function () {
-        $("#"+this.renderTo).css("display", "none");
+        $("#" + this.renderTo).css("display", "none");
     },
     addEvents: function () {
-        var g=this;
+        var g = this;
         g.pagingEvent();
     }
 });

@@ -304,7 +304,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                 flowInstance = new FlowInstance();
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
-
+                String workCaption = variables.get("workCaption")+"";//工作说明
+                flowInstance.setBusinessModelRemark(workCaption);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
                 flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
@@ -328,16 +329,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         FlowDefination finalFlowDefination = null;
         String orgCode =orgCodes[orgCodes.length-level];
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(),orgCode);
+        Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
         if(flowDefinationList!=null && flowDefinationList.size()>0){
-            if(flowDefinationList.size() == 1){
-                finalFlowDefination = flowDefinationList.get(0);
-            }else{
+
                 for(FlowDefination flowDefination:flowDefinationList){
                     String startUelStr = flowDefination.getStartUel();
                     if(!StringUtils.isEmpty(startUelStr)){
                         JSONObject startUelObject = JSONObject.fromObject(startUelStr);
                         String conditionText = startUelObject.getString("groovyUel");
                         if (conditionText != null) {
+                            ifAllNoStartUel = false;
                             if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                                 String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                         conditionText.lastIndexOf("}"));
@@ -359,17 +360,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                     }
                 }
-            }
-        }else {//同级组织机构找不到流程定义，自动向上级组织机构查找所属类型的流程定义
+                if(ifAllNoStartUel){
+                    finalFlowDefination = flowDefinationList.get(0);
+                }
+        }
+        if(finalFlowDefination == null) {//同级组织机构找不到符合条件流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;
             if(level>orgCodes.length){
                 return null;
             }
             return this.flowDefLuYou( businessModelMap, flowType, orgCodes , level);
         }
-       if(finalFlowDefination == null && flowDefinationList!=null && !flowDefinationList.isEmpty()){
-            finalFlowDefination = flowDefinationList.get(0);
-        }
+//       if(finalFlowDefination == null && flowDefinationList!=null && !flowDefinationList.isEmpty()){
+//            finalFlowDefination = flowDefinationList.get(0);
+//        }
         return finalFlowDefination;
 
     }
@@ -394,9 +398,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //        String orgId = v.get("orgId")+"";
 //        String orgCode = v.get("orgCode")+"";
         String orgCodePath = v.get("orgPath")+"";
+//        String workCaption = v.get("workCaption")+"";//工作说明
         String[] orgCodes =  orgCodePath.split("\\|");
         finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
-
         if(v!=null && !v.isEmpty()){
             if(variables == null){
                 variables = new HashMap<String,Object>();
@@ -417,10 +421,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 flowStartResultVO = new FlowStartResultVO();
-                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
+//                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
                     flowStartResultVO.setFlowTypeList(flowTypeList);
 //                    return flowStartResultVO;
-                }
+//                }
                 flowType = flowTypeList.get(0);
             } else {
                 flowStartResultVO = null;
@@ -491,10 +495,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                     if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+                        nodeInfo.setUiType("radiobox");
+                        nodeInfo.setFlowTaskType("common");
                     } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                        nodeInfo.setUiType("checkbox");
+                        nodeInfo.setFlowTaskType("singleSign");
                     } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                         nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                        nodeInfo.setUiType("checkbox");
+                        nodeInfo.setFlowTaskType("countersign");
 //                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
 //                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
 //                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
@@ -824,60 +834,55 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void initTask(ProcessInstance instance) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-        List<Task> tasks = new ArrayList<Task>();
+        if (instance.isEnded()) {//流程结束
+            flowInstance.setEnded(true);
+            flowInstance.setEndDate(new Date());
+            flowInstanceDao.save(flowInstance);
+            return;
+        }
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
-        String flowName = flowInstance.getFlowName();
-//        if(flowName == null){
-//            flowName = instance.getProcessDefinitionKey();
-//        }
+        String flowName = null;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
-                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
+                String actTaskDefKey = task.getTaskDefinitionKey();
+                String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+                JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                flowName = definition.getProcess().getName();
+                net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+                Integer executeTime = normalInfo.getInt("executeTime");
+                Boolean canReject = normalInfo.getBoolean("allowReject");
+                Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+                List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
+                for (IdentityLink identityLink : identityLinks) {
                     IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(task.getAssignee()));
-                    if (employees != null && !employees.isEmpty()) {
+                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                    if(employees!=null && !employees.isEmpty()){
                         Executor executor = employees.get(0);
-                        List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                        for (IdentityLink identityLink : identityLinks) {
-                            FlowTask flowTask = new FlowTask();
-                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                            flowTask.setFlowName(flowName);
-                            flowTask.setTaskName(task.getName());
-                            flowTask.setActTaskId(task.getId());
-                            flowTask.setOwnerAccount(executor.getCode());
-                            flowTask.setOwnerName(executor.getName());
-                            flowTask.setExecutorAccount(executor.getCode());
-                            flowTask.setExecutorName(executor.getName());
-                            flowTask.setPriority(task.getPriority());
+                        FlowTask flowTask = new FlowTask();
+                        flowTask.setCanReject(canReject);
+                        flowTask.setCanSuspension(canSuspension);
+                        flowTask.setTaskJsonDef(currentNode.toString());
+                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                        flowTask.setActTaskDefKey(actTaskDefKey);
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
+                        flowTask.setActTaskId(task.getId());
+                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerName(executor.getName());
+                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorName(executor.getName());
+                        flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
-                            flowTask.setActType(identityLink.getType());
-                            flowTask.setDepict(task.getDescription());
-                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                            flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
-                            flowTask.setFlowInstance(flowInstance);
-                            flowTaskDao.save(flowTask);
-                        }
+                        flowTask.setActType(identityLink.getType());
+                        flowTask.setDepict(task.getDescription());
+                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        flowTask.setFlowInstance(flowInstance);
+                        flowTaskDao.save(flowTask);
                     }
-                } else {
-                    FlowTask flowTask = new FlowTask();
-                    flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                    flowTask.setFlowName(flowName);
-                    flowTask.setTaskName(task.getName());
-                    flowTask.setActTaskId(task.getId());
-                    flowTask.setOwnerAccount(task.getOwner());
-                    flowTask.setPriority(task.getPriority());
-                    flowTask.setExecutorAccount(task.getAssignee());
-                    flowTask.setDepict(task.getDescription());
-                    flowTask.setActType("assignee");
-                    flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                    flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
-                    flowTask.setFlowInstance(flowInstance);
-                    flowTaskDao.save(flowTask);
                 }
-
-
-//                flowTask.setCandidateAccount(instance.get);
 
             }
         }

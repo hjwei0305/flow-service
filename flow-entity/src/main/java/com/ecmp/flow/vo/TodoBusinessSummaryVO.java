@@ -15,10 +15,25 @@ import java.io.Serializable;
  * *************************************************************************************************
  */
 public class TodoBusinessSummaryVO implements Serializable {
+    /**
+     * 业务实体类型id
+     */
     private String businessModeId;
+
+    /**
+     * 业务实体类型代码(类全路径)
+     */
     private String businessModelCode;
+
+    /**
+     * 业务单据数据
+     */
     private int count;
-    private String getBusinessName;
+
+    /**
+     * 业务实体类型名称
+     */
+    private String businessModelName;
 
     public String getBusinessModeId() {
         return businessModeId;
@@ -44,11 +59,11 @@ public class TodoBusinessSummaryVO implements Serializable {
         this.count = count;
     }
 
-    public String getGetBusinessName() {
-        return getBusinessName;
+    public String getBusinessModelName() {
+        return businessModelName;
     }
 
-    public void setGetBusinessName(String getBusinessName) {
-        this.getBusinessName = getBusinessName;
+    public void setBusinessModelName(String businessModelName) {
+        this.businessModelName = businessModelName;
     }
 }
