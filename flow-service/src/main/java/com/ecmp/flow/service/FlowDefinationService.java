@@ -824,60 +824,55 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void initTask(ProcessInstance instance) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-        List<Task> tasks = new ArrayList<Task>();
+        if (instance.isEnded()) {//流程结束
+            flowInstance.setEnded(true);
+            flowInstance.setEndDate(new Date());
+            flowInstanceDao.save(flowInstance);
+            return;
+        }
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
-        String flowName = flowInstance.getFlowName();
-//        if(flowName == null){
-//            flowName = instance.getProcessDefinitionKey();
-//        }
+        String flowName = null;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
-                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
+                String actTaskDefKey = task.getTaskDefinitionKey();
+                String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+                JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                flowName = definition.getProcess().getName();
+                net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+                Integer executeTime = normalInfo.getInt("executeTime");
+                Boolean canReject = normalInfo.getBoolean("allowReject");
+                Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+                List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
+                for (IdentityLink identityLink : identityLinks) {
                     IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(task.getAssignee()));
-                    if (employees != null && !employees.isEmpty()) {
+                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                    if(employees!=null && !employees.isEmpty()){
                         Executor executor = employees.get(0);
-                        List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                        for (IdentityLink identityLink : identityLinks) {
-                            FlowTask flowTask = new FlowTask();
-                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                            flowTask.setFlowName(flowName);
-                            flowTask.setTaskName(task.getName());
-                            flowTask.setActTaskId(task.getId());
-                            flowTask.setOwnerAccount(executor.getCode());
-                            flowTask.setOwnerName(executor.getName());
-                            flowTask.setExecutorAccount(executor.getCode());
-                            flowTask.setExecutorName(executor.getName());
-                            flowTask.setPriority(task.getPriority());
+                        FlowTask flowTask = new FlowTask();
+                        flowTask.setCanReject(canReject);
+                        flowTask.setCanSuspension(canSuspension);
+                        flowTask.setTaskJsonDef(currentNode.toString());
+                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                        flowTask.setActTaskDefKey(actTaskDefKey);
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
+                        flowTask.setActTaskId(task.getId());
+                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerName(executor.getName());
+                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorName(executor.getName());
+                        flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
-                            flowTask.setActType(identityLink.getType());
-                            flowTask.setDepict(task.getDescription());
-                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                            flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
-                            flowTask.setFlowInstance(flowInstance);
-                            flowTaskDao.save(flowTask);
-                        }
+                        flowTask.setActType(identityLink.getType());
+                        flowTask.setDepict(task.getDescription());
+                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        flowTask.setFlowInstance(flowInstance);
+                        flowTaskDao.save(flowTask);
                     }
-                } else {
-                    FlowTask flowTask = new FlowTask();
-                    flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                    flowTask.setFlowName(flowName);
-                    flowTask.setTaskName(task.getName());
-                    flowTask.setActTaskId(task.getId());
-                    flowTask.setOwnerAccount(task.getOwner());
-                    flowTask.setPriority(task.getPriority());
-                    flowTask.setExecutorAccount(task.getAssignee());
-                    flowTask.setDepict(task.getDescription());
-                    flowTask.setActType("assignee");
-                    flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                    flowTask.setActTaskDefKey(task.getTaskDefinitionKey());
-                    flowTask.setFlowInstance(flowInstance);
-                    flowTaskDao.save(flowTask);
                 }
-
-
-//                flowTask.setCandidateAccount(instance.get);
 
             }
         }

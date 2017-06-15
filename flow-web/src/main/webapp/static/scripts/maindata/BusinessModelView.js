@@ -154,6 +154,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "daoBean",
                     index: "daoBean"
                 }, {
+                    label: "表单URL",
+                    name: "lookUrl",
+                    index: "lookUrl"
+                }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict"
@@ -219,7 +223,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         console.log(data);
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
-            height: 350,
+            height: 400,
             width:380,
             padding: 15,
             items: [{
@@ -296,6 +300,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     value: data.daoBean
                 }, {
                     xtype: "TextArea",
+                    title: "表单URL",
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "lookUrl",
+                    width: 220,
+                    value: data.lookUrl
+                }, {
+                    xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 115,
                     allowBlank: false,
@@ -335,7 +347,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: g.lang.addNewBusinessModelText,
-            height: 350,
+            height: 400,
             width:380,
             padding: 15,
             items: [{
@@ -396,6 +408,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 115,
                     allowBlank: false,
                     name: "daoBean",
+                    width: 220
+                }, {
+                    xtype: "TextArea",
+                    title: "表单URL",
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "lookUrl",
                     width: 220
                 }, {
                     xtype: "TextArea",

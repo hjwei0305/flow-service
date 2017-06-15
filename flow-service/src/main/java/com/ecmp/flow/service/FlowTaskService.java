@@ -872,6 +872,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Integer executeTime = normalInfo.getInt("executeTime");
         Boolean canReject = normalInfo.getBoolean("allowReject");
         Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+        flowName = definition.getProcess().getName();
         String businessModelRemark;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
@@ -886,6 +887,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if(employees!=null && !employees.isEmpty()){
                             Executor executor = employees.get(0);
                         FlowTask flowTask = new FlowTask();
+                            flowTask.setCanReject(canReject);
+                            flowTask.setCanSuspension(canSuspension);
                         flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
