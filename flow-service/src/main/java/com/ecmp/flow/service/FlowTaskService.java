@@ -1289,7 +1289,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         String gateWayName = firstActivity.getProperty("name")+"";
-                        tempNodeInfo.setName(gateWayName + tempNodeInfo.getName());
+                       // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
+                        tempNodeInfo.setGateWayName(gateWayName);
                         tempNodeInfo.setUiType(uiType);
                         nodeInfoList.add(tempNodeInfo);
                     }

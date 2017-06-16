@@ -1,10 +1,9 @@
 // 已办部分
 EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
-    modelId: null,
     pageInfo: {
         page: 1,
-        rows: 15,
+        rows: 10,
         total: 1
     },
     initComponent: function () {
@@ -41,7 +40,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowHistory/listFlowHistory",
             params: {
-                modelId: modelId,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
                 rows: this.pageInfo.rows
@@ -76,17 +74,20 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              }*/
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
-                '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + ':' + '<span class="digest">111</span></span>' +
+                '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
+                '                            </div>' +
+                '                            <div class="item flow-digest">' +
+                '                               <span class="digest">' + items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
-                '                                    <div class="todo-btn"><i class="backout-icon" title="撤销"></i></div>' +
-                '                                    <div class="todo-btn"><i class="look-icon look-approve" title="查看表单"></i></div>' +
-                '                                    <div class="todo-btn"><i class="time-icon flowInstance" title="流程历史"></i></div>' +
+                '                                    <div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>' +
+                '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                '                                    <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                                </div>' +
                 '                                <span class="item-right task-item-right">' +
                 '                                    <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                                    <div class="todo-date"><i class="time-icon" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
+                '                                    <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
                 '                                </span>' +
                 '                            </div>' +
                 '</div>');
@@ -143,5 +144,94 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         g.pagingEvent();
+        g.lookApproveViewWindow();
+        g.flowInstanceWindow();
+        g.backOutWindow();
+    },
+    //点击打开查看表单界面的新页签
+    lookApproveViewWindow: function () {
+        var g = this;
+        $(".look-approve-btn").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var temps = url.split("\/");
+            var lookApproveUrl = temps[3] + "/" + temps[4];
+            var tab = {
+                title: "查看表单",
+                url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.flowInstance.businessId,
+                id: data.flowInstance.businessId
+            };
+            g.addTab(tab);
+        });
+    },
+    //点击打开流程历史的新页签
+    flowInstanceWindow: function () {
+        var g = this;
+        $(".flowInstance-btn").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            Flow.FlowHistory({
+                instanceId: data.flowInstance.id
+            })
+        });
+    },
+    //撤销
+    backOutWindow: function () {
+        var g = this;
+        $(".flow-backout-btn").live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var win = EUI.Window({
+                title: "撤销",
+                height: 30,
+                width:250,
+                html:"<div>确定撤销吗？</div>",
+                buttons: [{
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        // var opinion = EUI.getCmp("opinion");
+                        win.close();
+                        var myMask = EUI.LoadMask({
+                            msg: "处理中，请稍后.."
+                        });
+                        EUI.Store({
+                            url: _ctxPath + "/flowHistory/cancelTask",
+                            params: {
+                                preTaskId: data.id,
+                                opinion: ""
+                            },
+                            success: function (result) {
+                                myMask.hide();
+                                if (result.success) {
+                                    //TODO:刷新当前页
+                                    window.location.reload()
+                                } else {
+                                    EUI.ProcessStatus(result);
+                                }
+                            },
+                            failure: function (result) {
+                                myMask.hide();
+                                EUI.ProcessStatus(result);
+                            }
+                        })
+                    }
+                }, {
+                    title: "取消",
+                    handler: function () {
+                        win.remove();
+                    }
+                }]
+            })
+        });
+    },
+    //在新的窗口打开（模拟新页签的打开方式）
+    addTab: function (tab) {
+        if (parent.homeView) {
+            parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+        } else {
+            window.open(tab.url);
+        }
     }
 });
