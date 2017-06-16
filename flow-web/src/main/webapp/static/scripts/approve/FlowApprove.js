@@ -129,7 +129,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
         //执行人选择
         $(".flow-user-item").live("click", function () {
-            var type = $(this).attr("type");
+            var type = $(this).attr("type").toLowerCase();
             if (type != "countersign" && type != "singlesign") {
                 $(".flow-user-item").removeClass("select");
             }
