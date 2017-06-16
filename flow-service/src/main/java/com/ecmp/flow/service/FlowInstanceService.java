@@ -162,6 +162,25 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
+    /**
+     * 通过业务单据id获取最新流程实例在线任务id列表
+     * @param businessId
+     */
+    public Set<String>  getLastNodeIdsByBusinessId(String businessId){
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        Set<String> nodeIds = new HashSet<String>();
+        List<FlowTask> flowTaskList = null;
+        if(flowInstance != null && !flowInstance.isEnded()){
+            flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        }
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            for(FlowTask flowTask:flowTaskList){
+                nodeIds.add(flowTask.getActTaskDefKey());
+            }
+        }
+        return nodeIds;
+    }
+
 //    /**
 //     * 获取流程实例在线任务id列表
 //     * @param businessModelId  业务实体类型id

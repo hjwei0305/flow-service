@@ -124,4 +124,16 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次待办列表", notes = "测试")
     public List<FlowTask>  findCurrentTaskByBusinessId(String businessId);
+
+
+    /**
+     * 通过业务单据id获取最新流程实例待办任务id列表
+     * @param businessId
+     */
+    @GET
+    @Path("getLastNodeIdsByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id获取最新流程实例待办任务id列表", notes = "测试")
+    public Set<String>  getLastNodeIdsByBusinessId(String businessId);
 }
