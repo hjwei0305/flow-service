@@ -63,7 +63,7 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public String save(String def, boolean deploy) throws JAXBException, UnsupportedEncodingException {
+    public String save(String def, boolean deploy) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -74,13 +74,13 @@ public class FlowDesignController {
 //            String userType = (String)executor.get("userType");
 //            String ids = (String)executor.get("ids");
 //         }
-        if (deploy == false) {
+        if (!deploy) {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(result.getData());
-        } else if (deploy == true) {
+        } else {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
