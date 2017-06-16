@@ -513,6 +513,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
 //                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
 //                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+                    }else {
+                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
                     }
 
                     if (executor != null && !executor.isEmpty()) {
