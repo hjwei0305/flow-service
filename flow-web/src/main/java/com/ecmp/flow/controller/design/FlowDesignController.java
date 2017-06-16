@@ -185,4 +185,15 @@ public class FlowDesignController {
         return JsonUtil.serialize(status);
     }
 
+    /**
+     * 根据流程实例获取当前流程所在节点
+     * @param instanceId
+     * @return
+     */
+    @RequestMapping(value = "getCurrentNodes")
+    @ResponseBody
+    public String getCurrentNodes(String instanceId){
+        return "";
+    }
+
 }

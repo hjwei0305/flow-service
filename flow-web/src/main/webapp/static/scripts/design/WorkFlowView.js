@@ -7,7 +7,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     id: null,
     versionCode: null,
     orgId: null,
-    orgCode:null,
+    orgCode: null,
     instance: null,
     connectInfo: {},
     uelInfo: {},
@@ -97,14 +97,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     if (g.businessModelId && g.businessModelId != busModelId) {
                         var msgBox = EUI.MessageBox({
                             title: "操作提示",
-                            msg:"切换流程类型将清空所有流程设计，请确定是否继续?",
+                            msg: "切换流程类型将清空所有流程设计，请确定是否继续?",
                             buttons: [{
                                 title: "确定",
                                 handler: function () {
                                     g.businessModelId = busModelId;
                                     scope.loadData({
-                                        flowTypeName:data.data.name,
-                                        flowTypeId:busModelId
+                                        flowTypeName: data.data.name,
+                                        flowTypeId: busModelId
                                     });
                                     g.clear();
                                     msgBox.remove();
@@ -131,7 +131,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 100,
-                readonly:this.id ? true : false,
+                readonly: this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -147,7 +147,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 displayText: "请输入优先级",
                 labelWidth: 85,
                 width: 90,
-                allowNegative:false,
+                allowNegative: false,
                 name: "priority"
             }]
         }, {
@@ -599,7 +599,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var headForm = EUI.getCmp("formPanel");
-        if(!headForm.isValid()){
+        if (!headForm.isValid()) {
             EUI.ProcessStatus({
                 success: false,
                 msg: "请将流程信息填写完整"
@@ -650,7 +650,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: baseInfo.flowTypeId,
             flowTypeName: baseInfo.flowTypeName,
             orgId: this.orgId,
-            orgCode:this.orgCode,
+            orgCode: this.orgCode,
             id: this.id,
             priority: baseInfo.priority,
             process: process
@@ -729,7 +729,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: data.flowTypeId,
             flowTypeName: data.flowTypeName,
             baseInfo: data.baseInfo,
-            priority:data.priority
+            priority: data.priority
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);

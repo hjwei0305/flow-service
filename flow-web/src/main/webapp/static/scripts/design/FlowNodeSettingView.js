@@ -115,11 +115,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     event: eventData,
                     notify: ""
                 });
+                EUI.getCmp("notify-tab").remove();
                 g.window.close();
             }
         }, {
             title: "取消",
             handler: function () {
+                EUI.getCmp("notify-tab").remove();
                 g.window.close();
             }
         }];
