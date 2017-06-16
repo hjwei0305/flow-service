@@ -278,7 +278,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         loadonce: false,
                         datatype: "json",
                         postData: {
-                            Q_EQ_orgId: g.selectedNodeId
+                            Q_EQ_orgId: g.selectedNodeId,
+                            S_lastEditedDate:"DESC"
                         }
                     }, true)
                 }
@@ -291,7 +292,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         loadonce: false,
                         datatype: "json",
                         postData: {
-                            Q_EQ_orgId: g.selectedNodeId
+                            Q_EQ_orgId: g.selectedNodeId,
+                            S_lastEditedDate:"DESC"
                         }
                     }, true)
                 }
