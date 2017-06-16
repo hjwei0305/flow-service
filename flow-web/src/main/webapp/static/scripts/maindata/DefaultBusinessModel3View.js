@@ -172,7 +172,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         businessKey: data.id,
                         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel3',
                       //  data:result.data,
-                        url: _ctxPath + "/defaultBusinessModel3/startFlow",
+                        url: _ctxPath + "/defaultBusinessModel3/startFlow"
                     })
                     // var myMask = EUI.LoadMask({
                     //     msg: "正在启动，请稍后..."
