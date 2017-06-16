@@ -18,6 +18,12 @@ import com.ecmp.annotation.Remark;
  * *************************************************************************************************<br>
  */
 public enum FlowDefinationStatus {
+
+    /**
+     * 未发布
+     */
+    @Remark("未发布")
+    INTT,
     /**
      * 激活
      */

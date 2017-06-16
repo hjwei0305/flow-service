@@ -181,6 +181,8 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 //                    entity.setVersionCode(entity.getVersionCode()+1);
                 }
                 flowDefVersionDao.save(entity);
+                flowDefination.setPriority(definition.getPriority());
+                flowDefinationDao.save(flowDefination);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());
             }else {//版本为空
                 entity = new FlowDefVersion();
@@ -195,6 +197,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 flowDefVersionDao.save(entity);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());
                 flowDefination.setLastVersionId(entity.getId());
+                flowDefination.setPriority(definition.getPriority());
                 flowDefinationDao.save(flowDefination);
                 logger.info("Saved FlowDefination id is {}", flowDefination.getId());
             }
