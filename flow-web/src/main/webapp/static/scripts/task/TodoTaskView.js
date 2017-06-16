@@ -4,12 +4,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     modelId: null,
     pageInfo: {
         page: 1,
-        rows: 15,
+        rows: 10,
         total: 1
     },
     initComponent: function () {
         this.initHtml();
-        this.getNavHtml(_data);
+        this.getModelList();
         this.getTodoData();
         this.addEvents();
     },
@@ -29,17 +29,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     getModelList: function () {
         var g = this;
         EUI.Store({
-            url: _ctxPath + "/flowTask/listFlowTask",
-            params: {},
+            url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                if (!status.success) {
-                    EUI.ProcessStatus(status);
-                    return;
-                }
-                g.getNavHtml(status.data);
-
+                g.getNavHtml(status);
+                //默认显示第一个模块的列表
+                g.modelId = status[0].businessModeId;
             },
-            failurle: function (result) {
+            failure: function (result) {
                 EUI.ProcessStatus(result);
             }
         })
@@ -51,15 +47,15 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (i == 0) {
-                html += '                    <div class="navber-count nav-select">' +
+                html += '                    <div class="navber-count nav-select" data-id="' + item.businessModeId + '">' +
                     '                            <div class="navbar-circle">' + item.count + '</div>' +
-                    '                            <div class="navber-text">' + item.name + '</div>' +
+                    '                            <div class="navber-text">' + item.businessModelName + '</div>' +
                     '                        </div>';
             }
             else {
-                html += '                    <div class="navber-count">' +
+                html += '                    <div class="navber-count" data-id="' + item.businessModeId + '">' +
                     '                            <div class="navbar-circle">' + item.count + '</div>' +
-                    '                            <div class="navber-text">' + item.name + '</div>' +
+                    '                            <div class="navber-text">' + item.businessModelName + '</div>' +
                     '                        </div>';
             }
 
@@ -107,7 +103,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.getTodoHtml(result.rows);
-                    g.judgeReject(result.rows);
+                    // g.countDate(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
@@ -118,21 +114,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    //判断是否有驳回按钮
-    judgeReject: function (rows) {
-        var g = this;
-        var status = rows.canReject;
-        if (status == true) {
-            $(".reject-btn", "#" + this.renderTo).show();
-        } else {
-            $(".reject-btn", "#" + this.renderTo).hide();
-        }
-    },
     //待办里面内容部分的循环
     getTodoHtml: function (items) {
         var g = this;
-        var date = new Date();
-        var endTime = date.getTime();
         $(".todo-info", '#' + this.renderTo).empty();
         for (var j = 0; j < items.length; j++) {
             /* var status = items[j].taskStatus;
@@ -142,48 +126,61 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var startTime = items[j].createdDate;
-            startTime = new Date(startTime).getTime();
-            var time = endTime - startTime;
-            if (time < 0) {//如果结束时间小于开始时间
-                return;
-            } else {
-                //计算出相差天数
-                var days = Math.floor(time / (24 * 3600 * 1000));
-                //计算出小时数
-                var leave1 = time % (24 * 3600 * 1000);   //计算天数后剩余的毫秒数
-                if (leave1 == 0) {//如果leave1=0就不需要在做计算，直接把0赋给hours
-                    return hours = 0;
-                } else {
-                    var hours = Math.floor(leave1 / (3600 * 1000));
-                }
-                //计算相差分钟数
-                var leave2 = leave1 % (3600 * 1000);        //计算小时数后剩余的毫秒数
-                var minutes = Math.floor(leave2 / (60 * 1000));
-            }
+            var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
                 '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
                 '                 <div class="item flow-digest">' +
-                '                     <span class="digest">啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦啦</span></span>' +
+                '                     <span class="digest">' + items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                 </div>' +
                 '                 <div class="item">' +
                 '                     <div class="end">' +
-                '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>' +
-                '                          <div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' +
+                '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
+                +rejectHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程处理</span></div>' +
                 '                     </div>' +
                 '                     <span class="item-right task-item-right">' +
                 '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                          <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i><span>' + days + '天' + hours + '小时' + minutes + '分钟前</span></div>' +
+                '                          <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i><span>' + this.countDate(items[j].createdDate) + '</span></div>' +
                 '                     </span>' +
                 '                 </div>' +
                 '</div>');
             itemdom.data(items[j]);
             $(".todo-info", '#' + this.renderTo).append(itemdom);
+        }
+    },
+    //计算时间几天前
+    countDate: function (startTime) {
+        var g = this;
+        var date = new Date();
+        var endTime = date.getTime();
+        startTime = new Date(startTime).getTime();
+        var time = endTime - startTime;
+        if (time <= 60000) {//如果结束时间小于开始时间
+            return "刚刚";
+        } else {
+            //计算出相差天数
+            var days = Math.floor(time / (24 * 3600 * 1000));
+            if (days > 0) {
+                return days + '天';
+            }
+            //计算出小时数
+            var leave1 = time % (24 * 3600 * 1000);   //计算天数后剩余的毫秒数
+            if (leave1 == 0) {//如果leave1=0就不需要在做计算，直接把0赋给hours
+                return hours = 0;
+            } else {
+                var hours = Math.floor(leave1 / (3600 * 1000));
+                if (hours > 0) {
+                    return hours + '小时';
+                }
+            }
+            //计算相差分钟数
+            var leave2 = leave1 % (3600 * 1000);        //计算小时数后剩余的毫秒数
+            var minutes = Math.floor(leave2 / (60 * 1000));
+            return minutes + '分钟前';
         }
     },
     //底部翻页部分
@@ -244,10 +241,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //导航的点击事件
     navbarEvent: function () {
+        var g = this;
         $(document).ready(function () {
             $(".navber-count").live("click", function () {
                 $(this).addClass("nav-select").siblings().removeClass("nav-select");
-
+                var id = $(this).attr("data-id");
+                g.modelId = id;
+                //重新获取数据
+                g.getTodoData();
             })
         })
     },
@@ -271,9 +272,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".look-approve-btn").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
+            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var s = url.indexOf("/");
+            var s2 = url.indexOf("/", s + 2);
+            var s3 = url.indexOf("/", s2 + 1);
+            var lookApproveUrl = url.substring(++s2);
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/lookApproveBill/showApprove?id=" + data.flowInstance.businessId,
+                url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.flowInstance.businessId,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
