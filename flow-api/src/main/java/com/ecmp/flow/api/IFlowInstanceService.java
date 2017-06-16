@@ -5,6 +5,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -87,7 +88,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Path("findAllByBusinessId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "过业务单据id获取单据生命周期所有任务历史记录", notes = "测试")
+    @ApiOperation(value = "通过业务单据id获取单据生命周期所有任务历史记录", notes = "测试")
     public List<FlowHistory> findAllByBusinessId(String businessId);
 
     /**
@@ -112,4 +113,27 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例", notes = "测试")
     public FlowInstance  findLastInstanceByBusinessId(String businessId);
+
+    /**
+     * 通过业务单据id获取单据最近一次流程实例
+     * @param businessId
+     */
+    @GET
+    @Path("findCurrentTaskByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id获取单据最近一次待办列表", notes = "测试")
+    public List<FlowTask>  findCurrentTaskByBusinessId(String businessId);
+
+
+    /**
+     * 通过业务单据id获取最新流程实例待办任务id列表
+     * @param businessId
+     */
+    @GET
+    @Path("getLastNodeIdsByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id获取最新流程实例待办任务id列表", notes = "测试")
+    public Set<String>  getLastNodeIdsByBusinessId(String businessId);
 }
