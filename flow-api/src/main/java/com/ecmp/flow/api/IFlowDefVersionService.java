@@ -63,6 +63,6 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
-    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException;
+    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException;
 
 }
