@@ -512,9 +512,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
                     }
 
-                    if (executor != null) {
-                        String userType = (String) executor.get("userType");
-                        String ids = (String) executor.get("ids");
+                    if (executor != null && !executor.isEmpty()) {
+                        String userType =  executor.get("userType")+"";
+                        String ids = executor.get("ids")+"";
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         List<Executor> employees = null;
                         if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
