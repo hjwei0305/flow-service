@@ -8,12 +8,14 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModel2Service;
+import com.ecmp.flow.api.IDefaultBusinessModel3Service;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
+import com.ecmp.flow.entity.DefaultBusinessModel3;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -64,8 +66,8 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
     @ResponseBody
     public String getApproveBill2(String id) {
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
-        IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
-        DefaultBusinessModel result = proxy.findOne(id);
+        IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
+        DefaultBusinessModel2 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
         return JsonUtil.serialize(status);
     }

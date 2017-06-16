@@ -215,7 +215,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
         } else {
-            doms = $(".flow-decision-box");
+            doms = $(".flow-decision-item");
         }
         for (var i = 0; i < doms.length; i++) {
             includeNodeIds += $(doms[i]).attr("id");

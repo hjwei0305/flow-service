@@ -137,7 +137,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                 <div class="item">' +
                 '                     <div class="end">' +
                 '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
-                +rejectHtml +
+                + rejectHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程处理</span></div>' +
                 '                     </div>' +
@@ -257,9 +257,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".approve-btn").live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
+            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var temps = url.split("\/");
+            var lookApproveUrl = temps[3] + "/" + temps[4];
             var tab = {
                 title: "审批界面",
-                url: _ctxPath + "/builtInApprove/approve?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: _ctxPath + "/builtInApprove/approve?id=" + data.flowInstance.businessId + "&taskId=" + data.id+"&busUrl="+lookApproveUrl,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
@@ -272,10 +275,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var s = url.indexOf("/");
-            var s2 = url.indexOf("/", s + 2);
-            var s3 = url.indexOf("/", s2 + 1);
-            var lookApproveUrl = url.substring(++s2);
+            var temps = url.split("\/");
+            var lookApproveUrl = temps[3] + "/" + temps[4];
             var tab = {
                 title: "查看表单",
                 url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.flowInstance.businessId,

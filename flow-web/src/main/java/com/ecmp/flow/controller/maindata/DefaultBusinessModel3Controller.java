@@ -54,8 +54,8 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
     @ResponseBody
     public String getApproveBill3(String id) {
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
-        IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
-        DefaultBusinessModel result = proxy.findOne(id);
+        IDefaultBusinessModel3Service proxy = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
+        DefaultBusinessModel3 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
         return JsonUtil.serialize(status);
     }

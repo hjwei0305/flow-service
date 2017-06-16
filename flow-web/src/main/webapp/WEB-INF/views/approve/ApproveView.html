@@ -14,16 +14,17 @@
         var flowView;
         var id = EUI.util.getUrlParam("id");
         var taskId = EUI.util.getUrlParam("taskId");
+        var busUrl = EUI.util.getUrlParam("busUrl");
         EUI.onReady(function () {
             flowView = Flow.FlowApprove({
                 busId: id,
                 taskId: taskId,
                 iframeHeight: 550,
                 renderTo: "content",
-                goNext: function () {
-                    return this.iframe.lookApproveBillView.checkIsValid();
-                },
-                pageUrl: _ctxPath + "/lookApproveBill/show?id=" + id
+//                goNext: function () {
+//                    return this.iframe.lookApproveBillView.checkIsValid();
+//                },
+                pageUrl: _ctxPath + "/" + busUrl + "?id=" + id
             });
         });
     </script>
