@@ -94,7 +94,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var g = this;
         //执行人选择
         $(".flow-user-item").live("click", function () {
-            var type = $(this).attr("type");
+            var type = $(this).attr("type").toLowerCase();
             if (type != "countersign" && type != "singlesign") {
                 $(".flow-user-item").removeClass("select");
             }
