@@ -12,16 +12,14 @@ import com.ecmp.flow.entity.FlowHiVarinst;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.activiti.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -203,5 +201,27 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     private  void  deleteActiviti(String processInstanceId){
         runtimeService.deleteProcessInstance(processInstanceId,null);
+    }
+
+    /**
+     * 通过单据id，获取流程实例及关联待办及任务历史
+     * @param businessId
+     * @return
+     */
+    public List<ProcessTrackVO> getProcessTrackVO(String businessId){
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessIdOrder(businessId);
+        List<ProcessTrackVO> result = null;
+        if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
+            result = new ArrayList<ProcessTrackVO>();
+            for(FlowInstance flowInstance:flowInstanceList){
+                ProcessTrackVO pv = new ProcessTrackVO();
+                pv.setFlowInstance(flowInstance);
+                List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+                pv.setFlowHistoryList(flowHistoryList);
+                pv.setFlowTaskList(flowTaskList);
+            }
+        }
+        return result;
     }
 }

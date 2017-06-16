@@ -6,6 +6,7 @@ import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -136,4 +137,16 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取最新流程实例待办任务id列表", notes = "测试")
     public Set<String>  getLastNodeIdsByBusinessId(String businessId);
+
+    /**
+     * 通过单据id，获取流程实例及关联待办及任务历史
+     * @param businessId
+     * @return
+     */
+    @GET
+    @Path("getProcessTrackVO")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "测试")
+    public List<ProcessTrackVO> getProcessTrackVO(String businessId);
 }
