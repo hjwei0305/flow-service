@@ -762,7 +762,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     showTaskNode: function (id, node) {
         return "<div tabindex=0 id='" + id
             + "' class='flow-task flow-node node-choosed' type='"
-            + node.type + "' style='cursor: pointer; left: "
+            + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='" + node.type.toLowerCase() + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
