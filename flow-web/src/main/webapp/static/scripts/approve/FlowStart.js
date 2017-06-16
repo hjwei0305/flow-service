@@ -95,11 +95,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
-            if (type != "countersign") {
+            if (type != "countersign" && type != "singlesign") {
                 $(".flow-user-item").removeClass("select");
             }
             $(this).addClass("select");
         });
+
 
         // $(".submit").bind("click", function () {
         //     g.submit();
