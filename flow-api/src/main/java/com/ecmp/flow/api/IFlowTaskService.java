@@ -224,7 +224,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public List<TodoBusinessSummaryVO> findTaskSumHeader();
 
-    @GET
+    @POST
     @Path("findByBusinessModelId/{businessModelId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
