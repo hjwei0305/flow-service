@@ -27,15 +27,20 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //导航部分的数据调用
     getModelList: function () {
         var g = this;
+        var myMask = EUI.LoadMask({
+            msg: "正在加载请稍候..."
+        });
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
+                myMask.hide();
                 g.getNavHtml(status);
                 //默认显示第一个模块的列表
                 g.modelId = status[0].businessModeId;
                 g.getTodoData();
             },
             failure: function (result) {
+                myMask.hide();
                 EUI.ProcessStatus(result);
             }
         })
@@ -125,7 +130,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
+            var rejectHtml = !items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
@@ -268,7 +273,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             g.addTab(tab);
         });
     },
-    //点击打开查看审批界面的新页签
+    //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
         $(".look-approve-btn").live("click", function () {
@@ -325,7 +330,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     title: "确定",
                     selected: true,
                     handler: function () {
-                        var opinion = EUI.getCmp("opinion");
+                        var opinion = EUI.getCmp("opinion").getValue();
                         if (!opinion) {
                             EUI.ProcessStatus({
                                 success: false,
@@ -333,6 +338,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             });
                             return;
                         }
+                        win.close();
                         var myMask = EUI.LoadMask({
                             msg: "处理中，请稍后.."
                         });
@@ -345,8 +351,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             success: function (result) {
                                 myMask.hide();
                                 if (result.success) {
-                                    //TODO:刷新当前页
-                                    win.close();
+                                    //TODO:刷新当前页+
+                                    window.location.reload();
+
                                 } else {
                                     EUI.ProcessStatus(result);
                                 }
