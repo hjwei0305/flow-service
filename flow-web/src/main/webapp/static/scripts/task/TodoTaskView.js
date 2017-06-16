@@ -10,7 +10,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.initHtml();
         this.getModelList();
-        this.getTodoData();
         this.addEvents();
     },
     initHtml: function () {
@@ -34,6 +33,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.getNavHtml(status);
                 //默认显示第一个模块的列表
                 g.modelId = status[0].businessModeId;
+                g.getTodoData();
             },
             failure: function (result) {
                 EUI.ProcessStatus(result);
@@ -103,7 +103,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.getTodoHtml(result.rows);
-                    // g.countDate(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
