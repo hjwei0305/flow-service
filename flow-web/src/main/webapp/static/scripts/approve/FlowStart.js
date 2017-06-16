@@ -18,7 +18,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         this.addEvents();
         g.getData();
     },
-    getData:function () {
+    getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
             msg: "正在启动，请稍后..."
@@ -26,31 +26,31 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: g.url,
             params: {
-                businessModelCode:g.businessModelCode,
-                businessKey:g.businessKey
+                businessModelCode: g.businessModelCode,
+                businessKey: g.businessKey
             },
             success: function (result) {
                 myMask.hide();
-                if(!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList){
+                if (!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList) {
                     var status = {
-                        msg:"找不到流程定义",
+                        msg: "找不到流程定义",
                         success: false,
                         showTime: 4
                     };
                     EUI.ProcessStatus(status);
                     return;
                 }
-                if(!result.data.flowTypeList){
+                if (!result.data.flowTypeList) {
                     var status = {
-                        msg:"找不到流程类型",
+                        msg: "找不到流程类型",
                         success: false,
                         showTime: 4
                     };
                     EUI.ProcessStatus(status);
                     return;
                 }
-                if(result.data.flowTypeList){
-                    var flowTypeList  = result.data.flowTypeList;
+                if (result.data.flowTypeList) {
+                    var flowTypeList = result.data.flowTypeList;
                     g.data = result.data;
                     g.showWind();
                     g.showChooseUser();
@@ -62,7 +62,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    showWind:function(){
+    showWind: function () {
         var g = this;
         var item = [];
         if (this.data.flowTypeList.length == 1) {
@@ -199,7 +199,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     showChooseUser: function () {
         var data = this.data.nodeInfoList;
-        if(data == null){
+        if (data == null) {
             var status = {
                 msg: "流程定义未找到",
                 success: false,
@@ -208,7 +208,16 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             EUI.ProcessStatus(status);
             return;
         }
-        $(".flow-approve",this.win.dom).hide();
+        // if(this.data.nodeInfoList.executorSet == null){
+        //         var status = {
+        //             msg: "流程定义未找到",
+        //             success: false,
+        //             showTime: 4
+        //         };
+        //         EUI.ProcessStatus(status);
+        //         return;
+        // }
+        $(".flow-approve", this.win.dom).hide();
         $(".flow-chooseuser").show();
         $(".flow-node-box").remove();
         var html = "";
@@ -227,6 +236,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
             for (var j = 0; j < node.executorSet.length; j++) {
+
                 var item = node.executorSet[j];
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
@@ -266,7 +276,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     checkUserValid: function () {
         var nodeDoms = $(".flow-node-box");
-        if(nodeDoms.length == 0){
+        if (nodeDoms.length == 0) {
             return false;
         }
         for (var i = 0; i < nodeDoms.length; i++) {

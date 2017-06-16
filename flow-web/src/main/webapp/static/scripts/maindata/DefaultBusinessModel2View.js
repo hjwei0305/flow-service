@@ -22,11 +22,12 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
-        // $(".condetail-flowHistory").live("click", function () {
-        //    Flow.FlowHistory({
-        //        instanceId: null,
-        //    })
-        // });
+        $(".condetail-flowHistory").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
+            Flow.FlowBillHistory({
+                businessId: data.id
+            })
+        });
         $(".condetail-start").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.startFlow(data);
@@ -174,10 +175,10 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
-                                            businessKey: data.id,
-                                            businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel2',
-                                            // data:result.data,
-                                              url: _ctxPath + "/defaultBusinessModel2/startFlow"
+                                businessKey: data.id,
+                                businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel2',
+                                // data:result.data,
+                                  url: _ctxPath + "/defaultBusinessModel2/startFlow"
                                         })
                     // var myMask = EUI.LoadMask({
                     //     msg: "正在启动，请稍后..."
