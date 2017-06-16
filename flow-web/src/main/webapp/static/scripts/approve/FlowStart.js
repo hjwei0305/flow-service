@@ -71,7 +71,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
-            title: "流程信息",
+            title: "流程启动",
             width: 600,
             isOverFlow: false,
             padding: 0,
