@@ -223,4 +223,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public List<TodoBusinessSummaryVO> findTaskSumHeader();
+
+    @GET
+    @Path("findByBusinessModelId/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    public PageResult<FlowTask> findByBusinessModelId(@PathParam("businessModelId") String businessModelId, Search searchConfig);
 }

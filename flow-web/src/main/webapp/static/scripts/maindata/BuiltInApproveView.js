@@ -168,30 +168,60 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     infoBox.remove();
-                    var myMask = EUI.LoadMask({
-                        msg: "正在启动，请稍后..."
-                    });
-                    EUI.Store({
+                    Flow.FlowStart({
+                        businessKey: data.id,
+                        businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',
+                        // data:result.data,
                         url: _ctxPath + "/builtInApprove/startFlow",
-                        params: {
-                            //  key:'test0607',
-                            //以后切换成业务实体或者流程类型
-                            //typeId:流程类型ID
-                            businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',//业务实体Code
-                            businessKey: data.id
-                        },
-                        success: function (result) {
-                            myMask.hide();
-                            EUI.ProcessStatus(result);
-                            if (result.success) {
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                            }
-                        },
-                        failure: function (result) {
-                            EUI.ProcessStatus(result);
-                            myMask.hide();
-                        }
-                    });
+                    })
+                    // var myMask = EUI.LoadMask({
+                    //     msg: "正在启动，请稍后..."
+                    // });
+                    // EUI.Store({
+                    //     url: _ctxPath + "/builtInApprove/startFlow",
+                    //     params: {
+                    //         //  key:'test0607',
+                    //         //以后切换成业务实体或者流程类型
+                    //         //typeId:流程类型ID
+                    //         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',//业务实体Code
+                    //         businessKey: data.id
+                    //     },
+                    //     success: function (result) {
+                    //         myMask.hide();
+                    //         if(!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList){
+                    //     var status = {
+                    //                 msg:"找不到流程定义",
+                    //                 success: false,
+                    //                 showTime: 4
+                    //             };
+                    //             EUI.ProcessStatus(status);
+                    //             return;
+                    //         }
+                    //         if(result.data.flowTypeList && !result.data.nodeInfoList){
+                    //             var status = {
+                    //                 msg:"流程配置有误",
+                    //                 success: false,
+                    //                 showTime: 4
+                    //             };
+                    //             EUI.ProcessStatus(status);
+                    //             return;
+                    //         }
+                    //         if(result.data.nodeInfoList){
+                    //             var flowTypeList  = result.data.flowTypeList;
+                    //             Flow.FlowStart({
+                    //                 businessKey: data.id,
+                    //                 businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',
+                    //                 data:result.data,
+                    //                 url:"builtInApprove"
+                    //             })
+                    //         }
+                    //         //       EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                    //     },
+                    //     failure: function (result) {
+                    //         EUI.ProcessStatus(result);
+                    //         myMask.hide();
+                    //     }
+                    // });
                 }
             }, {
                 title: "取消",
@@ -419,8 +449,24 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                             var strVar = "<div class='condetail-operate'>" +
                                 "<div class='condetail-start'title='启动流程'></div>"
                                 + "<div class='condetail-update' title='编辑'></div>"
-                                + "<div class='condetail-delete'  title='删除'></div></div>";
+                                + "<div class='condetail-delete'  title='删除'></div>" +
+                                "</div>";
                             return strVar;
+                            // if(	"INIT" == rowObject.flowStatus){
+                            //     var strVar = "<div class='condetail-operate'>" +
+                            //         "<div class='condetail-start'title='启动流程'></div>"
+                            //         + "<div class='condetail-update' title='编辑'></div>"
+                            //         + "<div class='condetail-delete'  title='删除'></div>" +
+                            //         "</div>";
+                            // }
+                            // if(	"INPROCESS" == rowObject.flowStatus){
+                            //     var strVar = "<div class='condetail-operate'>"+
+                            //         "<div class='condetail-flowHistory'title='流程历史'></div>"
+                            //         + "<div class='condetail-update' title='编辑'></div>"
+                            //         + "<div class='condetail-delete'  title='删除'></div>" +
+                            //         "</div>";
+                            // }
+                            // return strVar;
                         }
                     }, {
                         label: "ID",

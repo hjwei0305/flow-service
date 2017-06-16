@@ -5,16 +5,23 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowInstanceService;
+import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowHiVarinst;
+import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import org.activiti.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -41,6 +48,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private FlowTaskDao flowTaskDao;
 
+    @Autowired
+    private FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -110,6 +119,47 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResult result =  OperateResult.OperationSuccess("00001");
         return result;
     }
+
+    /**
+     * 获取流程实例在线任务id列表
+     * @param id
+     */
+    public Set<String>  currentNodeIds(String id){
+        FlowInstance flowInstance = flowInstanceDao.findOne(id);
+        Set<String> nodeIds = new HashSet<String>();
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            for(FlowTask flowTask:flowTaskList){
+                nodeIds.add(flowTask.getActTaskDefKey());
+            }
+        }
+        return nodeIds;
+    }
+
+  public List<FlowHistory>  findAllByBusinessId(String businessId){
+          return flowHistoryDao.findAllByBusinessId(businessId);
+  }
+
+    public List<FlowHistory>  findLastByBusinessId(String businessId){
+        return flowHistoryDao.findLastByBusinessId(businessId);
+    }
+
+    public FlowInstance  findLastInstanceByBusinessId(String businessId){
+        List<FlowInstance> list =flowInstanceDao.findByBusinessIdOrder(businessId);
+        if(list!=null){
+            return list.get(0);
+        }else {
+            return null;
+        }
+    }
+
+//    /**
+//     * 获取流程实例在线任务id列表
+//     * @param businessModelId  业务实体类型id
+//     */
+//    public Set<String>  currentNodeIdsByBusinessModelId(String businessModelId,String businessId){
+//                      flowInstanceDao.
+//    }
 
     /**
      * 将流程实例挂起

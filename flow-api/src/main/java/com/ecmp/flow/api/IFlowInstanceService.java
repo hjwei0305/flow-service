@@ -3,17 +3,17 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -66,4 +66,50 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowInstance> findByPage(Search searchConfig);
+
+
+    /**
+     * 获取流程实例在线任务id列表
+     * @param id
+     */
+    @GET
+    @Path("currentNodeIds")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取流程实例在线任务节点定义ID列表", notes = "用于流程跟踪图")
+    public Set<String> currentNodeIds(String id);
+
+    /**
+     * 通过业务单据id获取单据生命周期所有任务历史记录
+     * @param businessId
+     */
+    @GET
+    @Path("findAllByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "过业务单据id获取单据生命周期所有任务历史记录", notes = "测试")
+    public List<FlowHistory> findAllByBusinessId(String businessId);
+
+    /**
+     * 通过业务单据id获取单据最近一次流程实例流程历史记录
+     * @param businessId
+     */
+    @GET
+    @Path("findLastByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例流程历史记录", notes = "测试")
+    public List<FlowHistory>  findLastByBusinessId(String businessId);
+
+
+    /**
+     * 通过业务单据id获取单据最近一次流程实例
+     * @param businessId
+     */
+    @GET
+    @Path("findLastInstanceByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例", notes = "测试")
+    public FlowInstance  findLastInstanceByBusinessId(String businessId);
 }

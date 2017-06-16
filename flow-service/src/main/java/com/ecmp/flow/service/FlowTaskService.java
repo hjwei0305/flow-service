@@ -10,6 +10,8 @@ import com.ecmp.config.util.GlobalParam;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowTaskService;
@@ -1609,5 +1611,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         return voList;
+    }
+
+    public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
+        String executorAccount = ContextUtil.getUserAccount();
+       return  flowTaskDao.findByPageByBusinessModelId( businessModelId, executorAccount,  searchConfig);
     }
 }

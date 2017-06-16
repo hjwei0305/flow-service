@@ -32,7 +32,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 items: this.getTopItems()
             }, {
                 region: "west",
-                width: 240,
+                width: 160,
                 html: this.getLeftHtml()
             }, {
                 region: "center",
@@ -462,6 +462,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
                         delete g.uelInfo[connection.sourceId + "," + connection.targetId];
+                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                         g.instance.detach(connection);
                     }
                 }
@@ -597,7 +598,15 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         if (!this.checkValid()) {
             return;
         }
-        var baseInfo = EUI.getCmp("formPanel").getFormValue();
+        var headForm = EUI.getCmp("formPanel");
+        if(!headForm.isValid()){
+            EUI.ProcessStatus({
+                success: false,
+                msg: "请将流程信息填写完整"
+            });
+            return;
+        }
+        var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
         var process = {
@@ -719,7 +728,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             id: data.process.id,
             flowTypeId: data.flowTypeId,
             flowTypeName: data.flowTypeName,
-            baseInfo: data.baseInfo
+            baseInfo: data.baseInfo,
+            priority:data.priority
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
