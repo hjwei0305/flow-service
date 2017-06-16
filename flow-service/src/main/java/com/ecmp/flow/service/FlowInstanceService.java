@@ -153,6 +153,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
+    public List<FlowTask>  findCurrentTaskByBusinessId(String businessId){
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance == null || flowInstance.isEnded()){
+            return null;
+        }else {
+            return flowTaskDao.findByInstanceId(flowInstance.getId());
+        }
+    }
+
 //    /**
 //     * 获取流程实例在线任务id列表
 //     * @param businessModelId  业务实体类型id
