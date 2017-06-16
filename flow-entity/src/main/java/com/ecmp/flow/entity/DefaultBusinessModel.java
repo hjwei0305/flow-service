@@ -42,12 +42,12 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
     /**
      * 单价
      */
-    private double unitPrice;
+    private double unitPrice=0;
 
     /**
      * 数量
      */
-    private int count;
+    private int count=0;
 
     public double getUnitPrice() {
         return unitPrice;

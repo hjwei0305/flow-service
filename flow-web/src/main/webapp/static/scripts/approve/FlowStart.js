@@ -7,14 +7,12 @@ Flow.FlowStart = function (options) {
     return new Flow.flow.FlowStart(options);
 };
 Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
-    id:null,
     data: null,
     businessKey: null,
     businessModelCode: null,
     typeId: null,
     url: null,
     afterSubmit: null,
-
     initComponent: function () {
         var g = this;
         this.addEvents();
@@ -162,7 +160,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                             myMask.hide();
                             if (!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList) {
                                 var status = {
-                                    msg: "找不到流程定义",
+                                    msg: "流程定义未找到",
                                     success: false,
                                     showTime: 4
                                 };
@@ -203,7 +201,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var data = this.data.nodeInfoList;
         if(data == null){
             var status = {
-                msg:"找不到流程定义",
+                msg: "流程定义未找到",
                 success: false,
                 showTime: 4
             };

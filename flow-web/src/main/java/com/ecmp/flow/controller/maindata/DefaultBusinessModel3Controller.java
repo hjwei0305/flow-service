@@ -1,13 +1,19 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModel2Service;
 import com.ecmp.flow.api.IDefaultBusinessModel3Service;
+import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
+import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * *************************************************************************************************
@@ -37,6 +43,22 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         return "maindata/DefaultBusinessModel3View";
     }
 
+
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "maindata/ReadyOnlyApproveView3";
+    }
+
+
+    @RequestMapping(value = "getApproveBill3")
+    @ResponseBody
+    public String getApproveBill3(String id) {
+        // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
+        IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
+        DefaultBusinessModel result = proxy.findOne(id);
+        OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
+        return JsonUtil.serialize(status);
+    }
 //    @RequestMapping(value = "list")
 //    @ResponseBody
 //    public PageResult<DefaultBusinessModel2> list(ServletRequest request) {

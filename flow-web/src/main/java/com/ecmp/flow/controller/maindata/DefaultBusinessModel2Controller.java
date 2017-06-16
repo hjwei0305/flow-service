@@ -8,9 +8,11 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModel2Service;
+import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.vo.OperateResult;
@@ -53,6 +55,20 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         return "maindata/DefaultBusinessModel2View";
     }
 
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "maindata/ReadyOnlyApproveView2";
+    }
+
+    @RequestMapping(value = "getApproveBill2")
+    @ResponseBody
+    public String getApproveBill2(String id) {
+        // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
+        IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
+        DefaultBusinessModel result = proxy.findOne(id);
+        OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
+        return JsonUtil.serialize(status);
+    }
 //    @RequestMapping(value = "list")
 //    @ResponseBody
 //    public PageResult<DefaultBusinessModel2> list(ServletRequest request) {

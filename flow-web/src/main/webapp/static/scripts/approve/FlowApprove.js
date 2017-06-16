@@ -160,7 +160,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     },
     showHeadData: function (data) {
-        $(".flow-ordernum").text("业务单号：" + data.businessId);
+        $(".flow-ordernum").text("业务单号：" + data.businessCode);
         $(".flow-info-creater").text("制单人：" + data.createUser);
         $(".flow-info-excutor").text(data.prUser);
         $(".flow-info-remark").text(data.prOpinion);
