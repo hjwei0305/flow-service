@@ -36,12 +36,12 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorAccount, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
 
-        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) ", Integer.class);
+        TypedQuery<Long> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) ", Long.class);
         queryTotal.setParameter("executorAccount",executorAccount);
         queryTotal.setParameter("businessModelId",businessModelId);
-        Integer total = queryTotal.getSingleResult();
+        Long total = queryTotal.getSingleResult();
 
-        TypedQuery<FlowTask> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowTask.class);
+        TypedQuery<FlowTask> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowTask.class);
         query.setParameter("executorAccount",executorAccount);
         query.setParameter("businessModelId",businessModelId);
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
@@ -52,7 +52,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
         pageResult.setRecords(result.size());
-        pageResult.setTotal(total);
+        pageResult.setTotal(total.intValue());
 
         return pageResult;
     }
