@@ -47,4 +47,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
 
 
 
+
+
+
 }
