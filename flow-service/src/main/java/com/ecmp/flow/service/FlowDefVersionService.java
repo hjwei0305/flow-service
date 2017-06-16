@@ -1,9 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
@@ -11,7 +9,6 @@ import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
-import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.XmlUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -27,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBException;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -121,7 +117,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
      * @param definition
      * @return
      */
-    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException {
+    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException {
         String flowTypeId =definition.getFlowTypeId();
         FlowType flowType = flowTypeDao.findOne(flowTypeId);
         if(flowType == null){ //流程版本必须指定流程类型
