@@ -77,7 +77,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
                 '                            </div>' +
                 '                            <div class="item flow-digest">' +
-                '                               <span class="digest">' + items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '                               <span class="digest">' +items[j].flowInstance.businessCode+'-'+items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +

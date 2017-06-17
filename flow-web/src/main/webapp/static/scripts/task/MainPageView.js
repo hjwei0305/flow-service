@@ -24,11 +24,10 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     getTodoHtml: function () {
         return ' <div class="taken-top">' +
             '            <div class="top-header">' +
-            '                <span class="worktable">我的工作台</span>' +
-            '                <div class="header-right">' +
             '                    <span class="wait-work task-work active">待办工作</span>' +
             '                    <span class="taken-work history-work">已办工作</span>' +
             '                    <span class="workOrder">我的单据</span>' +
+            '                <div class="header-right">' +
             '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             // '                    <span class="btn">待办项批量处理</span>' +
             '                </div>' +
