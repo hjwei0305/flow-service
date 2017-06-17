@@ -178,7 +178,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "allowTerminate"
             }, {
                 xtype: "CheckBox",
-                title: "允许上步撤回",
+                title: "允许撤回",
                 name: "allowPreUndo"
             }, {
                 xtype: "CheckBox",

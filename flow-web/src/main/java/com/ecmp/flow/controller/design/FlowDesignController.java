@@ -7,10 +7,7 @@ import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IFlowDefVersionService;
-import com.ecmp.flow.api.IFlowDefinationService;
-import com.ecmp.flow.api.IFlowServiceUrlService;
-import com.ecmp.flow.api.IWorkPageUrlService;
+import com.ecmp.flow.api.*;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -18,6 +15,7 @@ import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -187,13 +186,23 @@ public class FlowDesignController {
 
     /**
      * 根据流程实例获取当前流程所在节点
+     *
      * @param instanceId
      * @return
      */
-    @RequestMapping(value = "getCurrentNodes")
+    @RequestMapping(value = "getLookInfo")
     @ResponseBody
-    public String getCurrentNodes(String instanceId){
-        return "";
+    public String getLookInfo(String id, int versionCode, String instanceId) {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        Map<String, Object> data = new HashedMap();
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        FlowDefVersion def = proxy.getFlowDefVersion(id, versionCode);
+        data.put("def", def);
+        IFlowInstanceService proxy2 = ApiClient.createProxy(IFlowInstanceService.class);
+        Set<String> nodeIds = proxy2.currentNodeIds(instanceId);
+        data.put("currentNodes", nodeIds);
+        status.setData(data);
+        return JsonUtil.serialize(status);
     }
 
 }

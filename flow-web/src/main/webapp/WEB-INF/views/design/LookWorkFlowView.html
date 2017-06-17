@@ -23,13 +23,11 @@
     <script type="text/javascript">
         var flowView;
         var id = EUI.util.getUrlParam("id");
-        var versionCode = EUI.util.getUrlParam("versionCode");
-        var businessModelId = EUI.util.getUrlParam("businessModelId");
+        var instanceId = EUI.util.getUrlParam("instanceId");
         EUI.onReady(function () {
             flowView = new EUI.LookWorkFlowView({
                 id: id,
-                businessModelId: businessModelId,
-                versionCode: versionCode || -1,
+                instanceId:instanceId,
                 renderTo: "content"
             });
         });

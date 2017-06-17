@@ -50,8 +50,6 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	@Column(name = "flow_run_id", length = 36,nullable = true)
 	private String flowRunId;
 
-
-
 	/**
 	 * 流程定义ID
 	 */

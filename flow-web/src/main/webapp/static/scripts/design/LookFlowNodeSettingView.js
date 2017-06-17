@@ -10,14 +10,21 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     flowTypeId: null,
 
     initComponent: function () {
+        var g = this;
         this.window = EUI.Window({
             width: 550,
-            height: 420,
-            title: "节点配置",
+            height: 370,
             padding: 15,
             afterRender: function () {
                 this.dom.find(".ux-window-content").css("border-radius", "6px");
             },
+            buttons:[{
+                title:"确定",
+                selected:true,
+                handler:function () {
+                    g.window.close();
+                }
+            }],
             items: [{
                 xtype: "TabPanel",
                 isOverFlow: false,

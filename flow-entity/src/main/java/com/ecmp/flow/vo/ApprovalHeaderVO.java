@@ -47,6 +47,11 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private Date preCreateTime;
 
+    /**
+     * 工作流根路径
+     */
+    private String flowBaseUrl;
+
 
     public String getBusinessId() {
         return businessId;
@@ -102,5 +107,13 @@ public class ApprovalHeaderVO implements Serializable{
 
     public void setBusinessCode(String businessCode) {
         this.businessCode = businessCode;
+    }
+
+    public String getFlowBaseUrl() {
+        return flowBaseUrl;
+    }
+
+    public void setFlowBaseUrl(String flowBaseUrl) {
+        this.flowBaseUrl = flowBaseUrl;
     }
 }

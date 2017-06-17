@@ -29,11 +29,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     instanceId: null,
     iframeHeight: 400,
     pageUrl: null,
+    submitUrl: null,
     goNext: null,
     iframe: null,
     toChooseUserData: null,
 
     initComponent: function () {
+        this.pageUrl += "?id=" + this.busId;
         EUI.Container({
             renderTo: this.renderTo,
             html: this.initHtml()
@@ -369,7 +371,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             msg: "正在保存，请稍候..."
         });
         EUI.Store({
-            url: _ctxPath + "/builtInApprove/completeTask",
+            url: this.submitUrl,
             params: {
                 taskId: this.taskId,
                 businessId: this.busId,

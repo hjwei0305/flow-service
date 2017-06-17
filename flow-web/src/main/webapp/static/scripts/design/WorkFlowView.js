@@ -6,6 +6,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     id: null,
     versionCode: null,
+    flowDefVersionId:null,
     orgId: null,
     orgCode: null,
     instance: null,
@@ -90,6 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
+                readonly:this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -612,6 +614,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var process = {
             name: baseInfo.name,
             id: baseInfo.id,
+            flowDefVersionId:this.flowDefVersionId,
             isExecutable: true,
             startUEL: this.startUEL,
             nodes: {}
@@ -621,6 +624,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var nodeConfig = item.data();
+            if(!nodeConfig.normal){
+                nodeConfig = this.defaultTaskConfig();
+            }
             delete nodeConfig.rowdata;
             var node = {
                 type: item.attr("type"),
@@ -652,6 +658,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             orgId: this.orgId,
             orgCode: this.orgCode,
             id: this.id,
+            versionCode: this.versionCode,
             priority: baseInfo.priority,
             process: process
         };
@@ -671,6 +678,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
+                    g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     g.showDesign(data);
                 } else {
@@ -844,6 +852,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }]
         });
     }
-
+    , defaultTaskConfig: function () {
+        return {
+            "normal": {
+                "name": "普通任务",
+                "executeTime": 0,
+                "workPageName": "",
+                "workPageUrl": "",
+                "allowTerminate": false,
+                "allowPreUndo": false,
+                "allowReject": false
+            },
+            "executor": {"userType": "StartUser"},
+            "event": {},
+            "notify": {}
+        };
+    }
 })
 ;
