@@ -149,8 +149,8 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefination.setFlowType(flowType);
             flowDefination.setOrgId(definition.getOrgId());
             flowDefination.setOrgCode(definition.getOrgCode());
-           // flowDefination.setCurrentFlowDefVersion(1L);
-            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.INTT);
+           // flowDefination.setCurrentFlowDefVersion(1L);I
+            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.INIT);
             flowDefination.setPriority(definition.getPriority());
             flowDefinationDao.save(flowDefination);
              entity = new FlowDefVersion();
@@ -161,7 +161,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setFlowDefination(flowDefination);
             entity.setDefJson(definition.getDefJson());
             entity.setDefBpmn(defBpm);
-            entity.setDefXml(defBpm);//后期添加自定义UEL转换
+            entity.setDefXml(defBpm);
             flowDefVersionDao.save(entity);
             logger.info("Saved FlowDefVersion id is {}", entity.getId());
             flowDefination.setLastVersionId(entity.getId());
@@ -173,16 +173,21 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             }
             if(entity!=null){//版本不为空
                 if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
-                    entity = (FlowDefVersion)entity.clone();
-                    entity.setId(null);
-                    entity.setActDeployId(null);
-                    entity.setVersionCode(null);
+                    FlowDefVersion old = entity;
+                    entity  = new FlowDefVersion();
+                    entity.setActDefId(old.getId());
+                    entity.setDefKey(old.getDefKey());
+                }else{
+                    entity.setActDefId(process.getId());
+                    entity.setDefKey(process.getId());
                 }
+                entity.setFlowDefination(flowDefination);
                 entity.setDefJson(definition.getDefJson());
                 entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 entity.setName(process.getName());
                 flowDefVersionDao.save(entity);
+                flowDefination.setLastVersionId(entity.getId());
                 flowDefination.setPriority(definition.getPriority());
                 flowDefinationDao.save(flowDefination);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());

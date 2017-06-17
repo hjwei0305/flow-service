@@ -59,6 +59,13 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Column(name = "last_version_id",length = 36)
 	private String lastVersionId;
 
+	/**
+	 * 最新已发布版本ID
+	 */
+	@Column(name = "last_deloy_version_id",length = 36)
+	private String lastDeloyVersionId;
+
+
 
 	/**
 	 * 启动条件UEL
@@ -75,7 +82,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 当前流程定义状态
 	 */
-	@Column(name = "flowDefinationStatus",length = 10,nullable = false)
+	@Column(name = "flowDefinationStatus",length = 2,nullable = false)
 	private FlowDefinationStatus flowDefinationStatus;
 
 	/**
@@ -237,6 +244,14 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setOrgCode(String orgCode) {
 		this.orgCode = orgCode;
+	}
+
+	public String getLastDeloyVersionId() {
+		return lastDeloyVersionId;
+	}
+
+	public void setLastDeloyVersionId(String lastDeloyVersionId) {
+		this.lastDeloyVersionId = lastDeloyVersionId;
 	}
 
 	@Override

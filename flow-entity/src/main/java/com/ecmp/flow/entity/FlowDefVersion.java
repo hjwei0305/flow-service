@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -112,6 +113,12 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      */
     @Column(name = "depict")
     private String depict;
+
+    /**
+     * 当前流程版本状态
+     */
+    @Column(name = "flowDefinationStatus",length = 2,nullable = false)
+    private FlowDefinationStatus flowDefinationStatus;
 
     /**
      * 拥有的流程实例

@@ -23,16 +23,16 @@ public enum FlowDefinationStatus {
      * 未发布
      */
     @Remark("未发布")
-    INTT,
+    INIT,
     /**
      * 激活
      */
-    @Remark("激活")
+    @Remark("激活")//已经发布并可用
     Activate,
 
     /**
      * 冻结
      */
-    @Remark("冻结")
+    @Remark("冻结")//已经发布，并手动冻结
     Freeze;
 }

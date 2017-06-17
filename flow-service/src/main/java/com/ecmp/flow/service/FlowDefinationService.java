@@ -181,6 +181,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String versionId = flowDefination.getLastVersionId();
             deployId = deployByVersionId(versionId);
             flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+            flowDefination.setLastDeloyVersionId(versionId);
             flowDefinationDao.save(flowDefination);
         }
         return deployId;
@@ -204,7 +205,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         ProcessDefinitionEntity activtiFlowDef = getProcessDefinitionByDeployId(deployId);
         flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
         flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
-        flowDefVersionDao.save(flowDefVersion);
+//        FlowDefination flowDefination = flowDefVersion.getFlowDefination();
+//        flowDefination.setLastDeloyVersionId(flowDefination.getId());
+//        flowDefVersionDao.save(flowDefVersion);
+//        flowDefinationDao.save(flowDefination);
         return deployId;
     }
 
@@ -236,7 +240,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if (flowDefination != null) {
-            String versionId = flowDefination.getLastVersionId();
+            String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
                 String proessDefId = flowDefVersion.getActDefId();
@@ -294,7 +298,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         FlowDefination flowDefination = flowDefinationDao.findByDefKey(key);
         if (flowDefination != null) {
-            String versionId = flowDefination.getLastVersionId();
+            String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
 //                String proessDefId = flowDefVersion.getActDefId();
@@ -348,16 +352,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                         conditionText.lastIndexOf("}"));
                                 if (ConditionUtil.groovyTest(conditonFinal, businessModelMap)) {
-                                    finalFlowDefination = flowDefination;
-                                    break;
+                                    if(flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
+                                        finalFlowDefination = flowDefination;
+                                        break;
+                                    }
                                 }
                             } else {//其他的用UEL表达式验证
                                 Object tempResult = ConditionUtil.uelResult(conditionText, businessModelMap);
                                 if (tempResult instanceof Boolean) {
                                     Boolean resultB = (Boolean) tempResult;
                                     if (resultB == true) {
-                                        finalFlowDefination = flowDefination;
-                                        break;
+                                        if(flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
+                                            finalFlowDefination = flowDefination;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -472,7 +480,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination != null) {
             result = new ArrayList<NodeInfo>();
             String startUEL = flowDefination.getStartUel();
-            String versionId = flowDefination.getLastVersionId();
+            String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
             JSONObject defObj = JSONObject.fromObject(flowDefVersion.getDefJson());
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -612,8 +620,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (versionCode > -1) {
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
         } else {
-            FlowDefination flowDefination = flowDefinationDao.findOne(id);
-            ;
+            FlowDefination flowDefination = flowDefinationDao.findOne(id);            ;
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         }
         return flowDefVersion;

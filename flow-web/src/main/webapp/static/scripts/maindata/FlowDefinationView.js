@@ -530,6 +530,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             var strVar = '';
                             if('Activate' == rowObject.flowDefinationStatus){
                                 strVar = "激活";
+                            }  else if('INIT' == rowObject.flowDefinationStatus){
+                                strVar = "未发布 ";
                             }
                             else if('Freeze' == rowObject.flowDefinationStatus){
                                 strVar = "冻结 ";
