@@ -789,6 +789,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     save: function (deploy) {
+        var g = this;
         var data = this.getFlowData();
         if (!data) {
             return;
@@ -806,7 +807,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 mask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-
+                       g.flowDefVersionId = result.data.id;
                 }
             },
             failure: function (result) {
