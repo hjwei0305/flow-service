@@ -11,6 +11,7 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.util.ConditionUtil;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
@@ -179,6 +180,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination != null) {
             String versionId = flowDefination.getLastVersionId();
             deployId = deployByVersionId(versionId);
+            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+            flowDefinationDao.save(flowDefination);
         }
         return deployId;
     }

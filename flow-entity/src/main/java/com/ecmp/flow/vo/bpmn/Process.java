@@ -47,6 +47,12 @@ public class Process extends BaseNode implements Serializable {
     @XmlTransient
     private JSONObject startUEL;
 
+    /**
+     * 流程定义版本ID
+     */
+    @XmlTransient
+    private String flowDefVersionId;
+
     @XmlTransient
     private JSONObject nodes;
 
@@ -329,5 +335,13 @@ public class Process extends BaseNode implements Serializable {
 
     public void setSequenceFlow(List<SequenceFlow> sequenceFlow) {
         this.sequenceFlow = sequenceFlow;
+    }
+
+    public String getFlowDefVersionId() {
+        return flowDefVersionId;
+    }
+
+    public void setFlowDefVersionId(String flowDefVersionId) {
+        this.flowDefVersionId = flowDefVersionId;
     }
 }

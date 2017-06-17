@@ -150,7 +150,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefination.setOrgId(definition.getOrgId());
             flowDefination.setOrgCode(definition.getOrgCode());
            // flowDefination.setCurrentFlowDefVersion(1L);
-            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.INTT);
             flowDefination.setPriority(definition.getPriority());
             flowDefinationDao.save(flowDefination);
              entity = new FlowDefVersion();
@@ -168,8 +168,8 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefinationDao.save(flowDefination);
             logger.info("Saved FlowDefination id is {}", flowDefination.getId());
         } else {
-            if(process.getId()!=null){
-                entity =  flowDefVersionDao.findOne(process.getId());
+            if(StringUtils.isNoneEmpty(process.getFlowDefVersionId())){
+                entity =  flowDefVersionDao.findOne(process.getFlowDefVersionId());
             }
             if(entity!=null){//版本不为空
                 entity.setDefJson(definition.getDefJson());
