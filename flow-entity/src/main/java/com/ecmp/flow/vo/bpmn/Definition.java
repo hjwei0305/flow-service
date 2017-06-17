@@ -86,6 +86,12 @@ public class Definition implements Serializable {
     @XmlTransient
     private Integer priority;
 
+    /**
+     * 流程版本
+     */
+    @XmlTransient
+    private int versionCode;
+
 
     public Process getProcess() {
         return process;
@@ -143,7 +149,13 @@ public class Definition implements Serializable {
         this.flowTypeName = flowTypeName;
     }
 
+    public int getVersionCode() {
+        return versionCode;
+    }
 
+    public void setVersionCode(int versionCode) {
+        this.versionCode = versionCode;
+    }
 
     public static void main(String[] args) throws JAXBException {
         Definition df = new Definition();

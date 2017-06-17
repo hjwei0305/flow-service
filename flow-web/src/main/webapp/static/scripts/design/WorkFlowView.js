@@ -621,6 +621,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var nodeConfig = item.data();
+            if(!nodeConfig.normal){
+                nodeConfig = this.defaultTaskConfig();
+            }
             delete nodeConfig.rowdata;
             var node = {
                 type: item.attr("type"),
@@ -652,6 +655,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             orgId: this.orgId,
             orgCode: this.orgCode,
             id: this.id,
+            versionCode: this.versionCode,
             priority: baseInfo.priority,
             process: process
         };
@@ -844,6 +848,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }]
         });
     }
-
+    , defaultTaskConfig: function () {
+        return {
+            "normal": {
+                "name": "普通任务",
+                "executeTime": 0,
+                "workPageName": "",
+                "workPageUrl": "",
+                "allowTerminate": false,
+                "allowPreUndo": false,
+                "allowReject": false
+            },
+            "executor": {"userType": "StartUser"},
+            "event": null,
+            "notify": null
+        };
+    }
 })
 ;

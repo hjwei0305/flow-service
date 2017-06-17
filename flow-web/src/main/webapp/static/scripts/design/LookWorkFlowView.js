@@ -5,6 +5,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     count: 0,
     id: null,
+    instanceId: null,
     versionCode: null,
     instance: null,
     connectInfo: {},
@@ -79,10 +80,10 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             title: "启动条件",
             id: "setStartUel",
             handler: function () {
-                if(!g.startUEL){
+                if (!g.startUEL) {
                     EUI.ProcessStatus({
-                        success:false,
-                        msg:"该流程未配置启动条件"
+                        success: false,
+                        msg: "该流程未配置启动条件"
                     });
                     return;
                 }
@@ -157,7 +158,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.bind("dblclick", function (connection) {
             new EUI.UELSettingView({
                 title: "表达式配置",
-                readOnly:true,
+                readOnly: true,
                 data: g.uelInfo[connection.sourceId + "," + connection.targetId],
                 businessModelId: g.businessModelId
             });
@@ -205,19 +206,15 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             msg: "正在获取数据，请稍候..."
         });
         EUI.Store({
-            url: _ctxPath + "/design/getEntity",
+            url: _ctxPath + "/design/getLookInfo",
             params: {
                 id: this.id,
                 versionCode: this.versionCode
             },
             success: function (status) {
                 mask.hide();
-                if (status.success) {
-                    var data = JSON.parse(status.data.defJson);
-                    g.showDesign(data);
-                } else {
-                    EUI.ProcessStatus(status);
-                }
+                var data = JSON.parse(status.data);
+                g.showDesign(data);
             },
             failure: function (status) {
                 mask.hide();
@@ -226,7 +223,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         });
     }
     ,
-    showDesign: function (data) {
+    showDesign: function (defData) {
+        var data = defData.defJson;
+        var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
@@ -237,9 +236,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             } else if (type == "EndEvent") {
                 html += this.showEndNode(id, node);
             } else if (type.indexOf("Task") != -1) {
-                html += this.showTaskNode(id, node);
+                html += this.showTaskNode(id, node, currentNodes);
             } else if (type.indexOf("Gateway") != -1) {
-                html += this.showGatewayNode(id, node);
+                html += this.showGatewayNode(id, node, currentNodes);
             }
             var tmps = id.split("_");
             var count = parseInt(tmps[1]);
@@ -299,7 +298,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
     }
     ,
-    showTaskNode: function (id, node) {
+    showTaskNode: function (id, node, currentNodes) {
         return "<div tabindex=0 id='" + id
             + "' class='flow-task flow-node node-choosed' type='"
             + node.type + "' style='cursor: pointer; left: "
@@ -309,7 +308,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + "</div>";
     }
     ,
-    showGatewayNode: function (id, node) {
+    showGatewayNode: function (id, node, currentNodes) {
         return "<div tabindex=0 id='" + id
             + "' class='flow-event-box flow-node node-choosed' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "

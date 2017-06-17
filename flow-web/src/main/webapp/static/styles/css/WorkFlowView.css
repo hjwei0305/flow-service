@@ -554,3 +554,10 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border-left: none;
     border-right: none;
 }
+
+.node-choosed .currentNode{
+    background: red none repeat scroll 0 0;
+    box-shadow: 0 0 8px red;
+    color: white;
+    border: 1px solid red;
+}
