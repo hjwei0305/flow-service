@@ -72,6 +72,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
+            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED")?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>':"";
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
@@ -81,7 +82,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
-                '                                    <div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>' +
+                 backoutHtml+
                 '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                                    <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                                </div>' +
@@ -151,7 +152,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
-        $(".look-approve-btn").live("click", function () {
+        $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
@@ -168,7 +169,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开流程历史的新页签
     flowInstanceWindow: function () {
         var g = this;
-        $(".flowInstance-btn").live("click", function () {
+        $(".flowInstance-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             Flow.FlowHistory({
@@ -179,7 +180,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //撤销
     backOutWindow: function () {
         var g = this;
-        $(".flow-backout-btn").live("click", function () {
+        $(".flow-backout-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var win = EUI.Window({

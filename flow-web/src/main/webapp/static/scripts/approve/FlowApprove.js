@@ -35,7 +35,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     toChooseUserData: null,
 
     initComponent: function () {
-        this.pageUrl += "?id=" + this.id;
+        this.pageUrl += "?id=" + this.busId;
         EUI.Container({
             renderTo: this.renderTo,
             html: this.initHtml()
