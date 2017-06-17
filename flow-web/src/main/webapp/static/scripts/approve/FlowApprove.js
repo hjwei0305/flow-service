@@ -29,12 +29,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     instanceId: null,
     iframeHeight: 400,
     pageUrl: null,
-    submitUrl:null,
+    submitUrl: null,
     goNext: null,
     iframe: null,
     toChooseUserData: null,
 
     initComponent: function () {
+        this.pageUrl += "?id=" + this.id;
         EUI.Container({
             renderTo: this.renderTo,
             html: this.initHtml()

@@ -263,11 +263,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var temps = url.split("\/");
-            var lookApproveUrl = temps[3] + "/" + temps[4];
+            var workUrl=data.taskJsonDef;
+            console.log(workUrl);
             var tab = {
                 title: "审批界面",
-                url: _ctxPath + "/builtInApprove/approve?id=" + data.flowInstance.businessId + "&taskId=" + data.id+"&busUrl="+lookApproveUrl,
+                url: workPageUrl+"?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
@@ -343,7 +343,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "处理中，请稍后.."
                         });
                         EUI.Store({
-                            url: _ctxPath + "/builtInApprove/rejectTask",
+                            url: _ctxPath + "/flowClient/rejectTask",
                             params: {
                                 taskId: data.id,
                                 opinion: opinion

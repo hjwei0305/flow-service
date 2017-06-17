@@ -14,7 +14,6 @@
         var flowView;
         var id = EUI.util.getUrlParam("id");
         var taskId = EUI.util.getUrlParam("taskId");
-        var submitUrl = EUI.util.getUrlParam("submitUrl");
         EUI.onReady(function () {
             flowView = Flow.FlowApprove({
                 busId: id,
@@ -24,8 +23,8 @@
 //                goNext: function () {
 //                    return this.iframe.lookApproveBillView.checkIsValid();
 //                },
-                pageUrl: "http://10.4.68.45:8081/flow-web/lookApproveBill/show?id=" + id,
-                submitUrl:submitUrl
+                pageUrl: _ctxPath+"/lookApproveBill/showApprove?id=" + id,
+                submitUrl:""
             });
         });
     </script>
