@@ -861,8 +861,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 "allowReject": false
             },
             "executor": {"userType": "StartUser"},
-            "event": null,
-            "notify": null
+            "event": {},
+            "notify": {}
         };
     }
 })
