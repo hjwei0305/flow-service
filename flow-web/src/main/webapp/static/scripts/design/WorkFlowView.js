@@ -614,7 +614,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var process = {
             name: baseInfo.name,
             id: baseInfo.id,
-            flowDefVersionId:this.flowDefVersionId,
+            flowDefVersionId:this.flowDefVersionId || "",
             isExecutable: true,
             startUEL: this.startUEL,
             nodes: {}
