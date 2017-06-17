@@ -91,6 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
+                readonly:this.busId ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
