@@ -172,14 +172,16 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity =  flowDefVersionDao.findOne(process.getFlowDefVersionId());
             }
             if(entity!=null){//版本不为空
-                entity.setDefJson(definition.getDefJson());
-                entity.setDefBpmn(defBpm);
-                entity.setDefXml(defBpm);//后期添加自定义UEL转换
                 if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
                     entity = (FlowDefVersion)entity.clone();
                     entity.setId(null);
-//                    entity.setVersionCode(entity.getVersionCode()+1);
+                    entity.setActDeployId(null);
+                    entity.setVersionCode(null);
                 }
+                entity.setDefJson(definition.getDefJson());
+                entity.setDefBpmn(defBpm);
+                entity.setDefXml(defBpm);
+                entity.setName(process.getName());
                 flowDefVersionDao.save(entity);
                 flowDefination.setPriority(definition.getPriority());
                 flowDefinationDao.save(flowDefination);

@@ -304,9 +304,9 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        FlowDefination o = null;
+        FlowDefVersion o = null;
         // Object中的clone()识别出你要复制的是哪一个对象。
-        o = (FlowDefination) super.clone();
+        o = (FlowDefVersion) super.clone();
         return o;
     }
 }

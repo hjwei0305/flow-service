@@ -584,10 +584,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         List<FlowDefVersion> flowDefVersions = flowDefVersionDao.findByFlowDefinationId(id);
         for (FlowDefVersion flowDefVersion : flowDefVersions) {
             String actDeployId = flowDefVersion.getActDeployId();
+            flowDefVersionDao.delete(flowDefVersion);
             if ((actDeployId != null) && (!"".equals(actDeployId))) {
                 this.deleteActivtiProcessDefinition(actDeployId, false);
             }
-            flowDefVersionDao.delete(flowDefVersion);
+
         }
         flowDefinationDao.delete(id);
         OperateResult result = OperateResult.OperationSuccess("core_00003");

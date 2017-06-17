@@ -143,6 +143,22 @@ public class FlowDesignController {
     }
 
     /**
+     * 通过流程版本获取流程设计内容，提供编辑
+     *
+     * @param flowDefVersionId
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getEntityByVersionId", method = RequestMethod.POST)
+    public String getEntity(String flowDefVersionId) {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+        FlowDefVersion data = proxy.findOne(flowDefVersionId);
+        status.setData(data);
+        return JsonUtil.serialize(status);
+    }
+
+    /**
      * 获取岗位类别列表
      *
      * @return
