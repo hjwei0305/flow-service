@@ -7,6 +7,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         rows: 10,
         total: 1
     },
+    records:null,
     initComponent: function () {
         this.initHtml();
         this.getModelList();
@@ -107,6 +108,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
+                    g.records=result.records;
+                    $(".nav-select>.navbar-circle").text(g.records);
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
@@ -259,12 +262,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开审批界面的新页签
     approveViewWindow: function () {
         var g = this;
-        $(".approve-btn").live("click", function () {
+        $(".approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var workUrl=data.taskJsonDef;
-            console.log(workUrl);
+            var taskConfig =JSON.parse(data.taskJsonDef);
+            var workPageUrl=taskConfig.nodeConfig.normal.workPageUrl;
+            console.log(workPageUrl);
             var tab = {
                 title: "审批界面",
                 url: workPageUrl+"?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
@@ -276,7 +280,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
-        $(".look-approve-btn").live("click", function () {
+        $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
@@ -293,11 +297,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //点击打开流程历史的新页签
     flowInstanceWindow: function () {
         var g = this;
-        $(".flowInstance-btn").live("click", function () {
+        $(".flowInstance-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             Flow.FlowHistory({
-                instanceId: data.flowInstance.id
+                businessId: data.flowInstance.businessId
             })
             // var tab = {
             //     title: "流程历史",
@@ -310,7 +314,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //驳回
     showRejectWindow: function () {
         var g = this;
-        $(".reject-btn").live("click", function () {
+        $(".reject-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var win = EUI.Window({
