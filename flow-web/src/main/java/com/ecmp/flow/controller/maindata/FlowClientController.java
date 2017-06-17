@@ -1,6 +1,7 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
@@ -162,6 +163,7 @@ public class FlowClientController {
         ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
         if (approvalHeaderVO != null) {
             operateStatus = new OperateStatus(true, "成功");
+            approvalHeaderVO.setFlowBaseUrl(ContextUtil.getAppModule().getWebBaseAddress());
             operateStatus.setData(approvalHeaderVO);
         } else {
             operateStatus = new OperateStatus(false, "不存在");

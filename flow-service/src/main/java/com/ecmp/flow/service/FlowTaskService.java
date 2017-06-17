@@ -862,11 +862,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
-        String flowName = instance.getProcessDefinitionName();
-        if (flowName == null) {
-            flowName = instance.getName();
-        }
-
+        String flowName =null;
         String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
         JSONObject defObj = JSONObject.fromObject(flowDefJson);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);

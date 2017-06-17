@@ -313,7 +313,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setBusinessCode(businessCode);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
+                flowInstance.setFlowName(flowDefVersion.getName());
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
                 initTask(processInstance);
@@ -418,14 +418,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
-        FlowStartResultVO flowStartResultVO = null;
+        FlowStartResultVO  flowStartResultVO =  new FlowStartResultVO();
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
         if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
             List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
-                flowStartResultVO = new FlowStartResultVO();
 //                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
                     flowStartResultVO.setFlowTypeList(flowTypeList);
 //                    return flowStartResultVO;
@@ -447,9 +446,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
-            if(flowStartResultVO == null){
-                flowStartResultVO =  new FlowStartResultVO();
-            }
             //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
             FlowDefination finalFlowDefination = null;
@@ -590,8 +586,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String actDeployId = flowDefVersion.getActDeployId();
             if ((actDeployId != null) && (!"".equals(actDeployId))) {
                 this.deleteActivtiProcessDefinition(actDeployId, false);
-                flowDefVersionDao.delete(flowDefVersion);
             }
+            flowDefVersionDao.delete(flowDefVersion);
         }
         flowDefinationDao.delete(id);
         OperateResult result = OperateResult.OperationSuccess("core_00003");
