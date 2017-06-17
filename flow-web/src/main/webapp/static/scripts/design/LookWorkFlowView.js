@@ -209,12 +209,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/design/getLookInfo",
             params: {
                 id: this.id,
-                versionCode: this.versionCode
+                instanceId:this.instanceId,
+                versionCode: 1
             },
             success: function (status) {
                 mask.hide();
-                var data = JSON.parse(status.data);
-                g.showDesign(data);
+                g.showDesign(status.data);
             },
             failure: function (status) {
                 mask.hide();
@@ -224,7 +224,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showDesign: function (defData) {
-        var data = defData.defJson;
+        var data = JSON.parse(defData.def.defJson);
         var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
         this.loadHead(data);
         var html = "";
@@ -299,8 +299,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showTaskNode: function (id, node, currentNodes) {
+        var nodeCss = "flow-task flow-node node-choosed";
+        if (currentNodes.indexOf(id) != -1) {
+            nodeCss += " currentNode";
+        }
         return "<div tabindex=0 id='" + id
-            + "' class='flow-task flow-node node-choosed' type='"
+            + "' class='" + nodeCss + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='" + node.type.toLowerCase() + "'></div>"
@@ -309,8 +313,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showGatewayNode: function (id, node, currentNodes) {
+        var nodeCss = "flow-event-box flow-node node-choosed";
+        if (currentNodes.indexOf(id) != -1) {
+            nodeCss += " currentNode";
+        }
         return "<div tabindex=0 id='" + id
-            + "' class='flow-event-box flow-node node-choosed' bustype='" + node.busType + "' type='"
+            + "' class='" + nodeCss + "' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
