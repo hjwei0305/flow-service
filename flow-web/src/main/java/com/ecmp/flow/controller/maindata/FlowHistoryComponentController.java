@@ -15,6 +15,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowHandleHistoryVO;
 import com.ecmp.flow.vo.FlowHandleStatusVO;
 import com.ecmp.flow.vo.FlowHistoryInfoVO;
+import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -93,53 +94,60 @@ public class FlowHistoryComponentController {
 
     /**
      * 根据流程实例id获取流程信息
-     * @param instanceId
+     *
+     * @param
      * @return
      * @throws JsonProcessingException
      * @throws ParseException
      */
+//    @RequestMapping(value = "getFlowHistoryInfo")
+//    @ResponseBody
+//    public String getFlowHistoryInfo(String instanceId) throws JsonProcessingException{
+//        FlowHistoryInfoVO flowHistoryInfoVO = new FlowHistoryInfoVO();
+//        /**
+//         * 根据流程实例id获取流程历史
+//         */
+//        IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
+//        List<FlowHistory> flowHistories = proxy.findByInstanceId(instanceId);
+//        List<FlowHandleHistoryVO> flowHandleHistoryVOSet = new ArrayList<>();
+//        for(int i=0;i<flowHistories.size();i++){
+//            FlowHandleHistoryVO flowHandleHistoryVO = new FlowHandleHistoryVO();
+//            flowHandleHistoryVO.setFlowHistoryTaskName(flowHistories.get(i).getFlowTaskName());
+//            flowHandleHistoryVO.setFlowHistoryTaskExecutorName(flowHistories.get(i).getExecutorName());
+//            flowHandleHistoryVO.setFlowHistoryTaskEndTime(flowHistories.get(i).getActEndTime());
+//            flowHandleHistoryVO.setFlowHistoryTaskDurationInMillis(flowHistories.get(i).getActDurationInMillis());
+//            flowHandleHistoryVO.setFlowHistoryTaskRemark(flowHistories.get(i).getDepict());
+//            flowHandleHistoryVOSet.add(flowHandleHistoryVO);
+//        }
+//        flowHistoryInfoVO.setFlowHandleHistoryVOList(flowHandleHistoryVOSet);
+//        /**
+//         * 根据流程实例id获取待办
+//         */
+//        IFlowTaskService proxy2 = ApiClient.createProxy(IFlowTaskService.class);
+//        List<FlowTask>  flowTasks= proxy2.findByInstanceId(instanceId);
+//        List<FlowHandleStatusVO> flowHandleStatusVOSet = new ArrayList<>();
+//        for(int i=0;i<flowTasks.size();i++){
+//            FlowHandleStatusVO flowHandleStatusVO = new FlowHandleStatusVO();
+//            flowHandleStatusVO.setFlowCurHandleStatusTaskName(flowTasks.get(i).getTaskName());
+//            flowHandleStatusVO.setFlowWaitingPerson(flowTasks.get(i).getExecutorName());
+//            flowHandleStatusVO.setFlowTaskArriveTime(flowTasks.get(i).getCreatedDate());
+//            flowHandleStatusVOSet.add(flowHandleStatusVO);
+//        }
+//        flowHistoryInfoVO.setFlowHandleStatusVOList(flowHandleStatusVOSet);
+//        /**
+//         * 根据流程实例id获取流程启动信息
+//         */
+//        IFlowInstanceService proxy3 = ApiClient.createProxy(IFlowInstanceService.class);
+//        FlowInstance  flowInstance = proxy3.findOne(instanceId);
+//        flowHistoryInfoVO.setFlowStarter(flowInstance.getCreatorName());
+//        flowHistoryInfoVO.setFlowStartTime(flowInstance.getStartDate());
+//        return JsonUtil.serialize(flowHistoryInfoVO, JsonUtil.DATE_TIME);
+//    }
     @RequestMapping(value = "getFlowHistoryInfo")
     @ResponseBody
-    public String getFlowHistoryInfo(String instanceId) throws JsonProcessingException{
-        FlowHistoryInfoVO flowHistoryInfoVO = new FlowHistoryInfoVO();
-        /**
-         * 根据流程实例id获取流程历史
-         */
-        IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
-        List<FlowHistory> flowHistories = proxy.findByInstanceId(instanceId);
-        List<FlowHandleHistoryVO> flowHandleHistoryVOSet = new ArrayList<>();
-        for(int i=0;i<flowHistories.size();i++){
-            FlowHandleHistoryVO flowHandleHistoryVO = new FlowHandleHistoryVO();
-            flowHandleHistoryVO.setFlowHistoryTaskName(flowHistories.get(i).getFlowTaskName());
-            flowHandleHistoryVO.setFlowHistoryTaskExecutorName(flowHistories.get(i).getExecutorName());
-            flowHandleHistoryVO.setFlowHistoryTaskEndTime(flowHistories.get(i).getActEndTime());
-            flowHandleHistoryVO.setFlowHistoryTaskDurationInMillis(flowHistories.get(i).getActDurationInMillis());
-            flowHandleHistoryVO.setFlowHistoryTaskRemark(flowHistories.get(i).getDepict());
-            flowHandleHistoryVOSet.add(flowHandleHistoryVO);
-        }
-        flowHistoryInfoVO.setFlowHandleHistoryVOList(flowHandleHistoryVOSet);
-        /**
-         * 根据流程实例id获取待办
-         */
-        IFlowTaskService proxy2 = ApiClient.createProxy(IFlowTaskService.class);
-        List<FlowTask>  flowTasks= proxy2.findByInstanceId(instanceId);
-        List<FlowHandleStatusVO> flowHandleStatusVOSet = new ArrayList<>();
-        for(int i=0;i<flowTasks.size();i++){
-            FlowHandleStatusVO flowHandleStatusVO = new FlowHandleStatusVO();
-            flowHandleStatusVO.setFlowCurHandleStatusTaskName(flowTasks.get(i).getTaskName());
-            flowHandleStatusVO.setFlowWaitingPerson(flowTasks.get(i).getExecutorName());
-            flowHandleStatusVO.setFlowTaskArriveTime(flowTasks.get(i).getCreatedDate());
-            flowHandleStatusVOSet.add(flowHandleStatusVO);
-        }
-        flowHistoryInfoVO.setFlowHandleStatusVOList(flowHandleStatusVOSet);
-        /**
-         * 根据流程实例id获取流程启动信息
-         */
-        IFlowInstanceService proxy3 = ApiClient.createProxy(IFlowInstanceService.class);
-        FlowInstance  flowInstance = proxy3.findOne(instanceId);
-        flowHistoryInfoVO.setFlowStarter(flowInstance.getCreatorName());
-        flowHistoryInfoVO.setFlowStartTime(flowInstance.getStartDate());
-        return JsonUtil.serialize(flowHistoryInfoVO, JsonUtil.DATE_TIME);
+    public String getFlowHistoryInfo(String businessId) throws JsonProcessingException {
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        List<ProcessTrackVO> result = proxy.getProcessTrackVO(businessId);
+        return JsonUtil.serialize(result, JsonUtil.DATE_TIME);
     }
-
 }

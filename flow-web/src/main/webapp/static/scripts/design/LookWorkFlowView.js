@@ -118,7 +118,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.showSimpleNodeConfig(input.text());
                 } else {
                     new EUI.LookFlowNodeSettingView({
-                        title: input.text(),
                         businessModelId: g.businessModelId,
                         data: dom.data(),
                         nodeType: dom.attr("nodeType")
