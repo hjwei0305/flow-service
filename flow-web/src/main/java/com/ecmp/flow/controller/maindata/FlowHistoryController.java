@@ -9,6 +9,7 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.OperateResult;
@@ -39,7 +40,7 @@ import java.text.ParseException;
  */
 @Controller
 @RequestMapping(value = "/flowHistory")
-public class FlowHistoryController {
+public class FlowHistoryController extends FlowBaseController{
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
@@ -75,6 +76,23 @@ public class FlowHistoryController {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 回退（撤销）任务
+     *
+     * @param preTaskId 上一个任务ID
+     * @param opinion   意见
+     * @return 操作结果
+     */
+    @RequestMapping(value = "cancelTask")
+    @ResponseBody
+    public String rollBackTo(String preTaskId, String opinion) {
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result = proxy.rollBackTo(preTaskId);
+        operateStatus = new OperateStatus(true, result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
