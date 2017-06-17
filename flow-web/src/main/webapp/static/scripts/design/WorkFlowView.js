@@ -6,6 +6,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     id: null,
     versionCode: null,
+    versionId:null,
     orgId: null,
     orgCode: null,
     instance: null,

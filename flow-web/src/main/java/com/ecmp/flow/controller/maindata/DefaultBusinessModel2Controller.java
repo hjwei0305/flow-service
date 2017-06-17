@@ -62,6 +62,11 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         return "maindata/ReadyOnlyApproveView2";
     }
 
+    @RequestMapping(value = "approve", method = RequestMethod.GET)
+    public String showApprove(){
+        return "approve/ApproveView2";
+    }
+
     @RequestMapping(value = "getApproveBill2")
     @ResponseBody
     public String getApproveBill2(String id) {

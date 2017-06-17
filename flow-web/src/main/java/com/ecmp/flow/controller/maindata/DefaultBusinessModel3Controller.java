@@ -49,6 +49,11 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         return "maindata/ReadyOnlyApproveView3";
     }
 
+    @RequestMapping(value = "approve", method = RequestMethod.GET)
+    public String showApprove(){
+        return "approve/ApproveView3";
+    }
+
 
     @RequestMapping(value = "getApproveBill3")
     @ResponseBody

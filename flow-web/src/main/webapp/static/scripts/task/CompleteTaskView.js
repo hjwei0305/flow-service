@@ -197,7 +197,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "处理中，请稍后.."
                         });
                         EUI.Store({
-                            url: _ctxPath + "/flowHistory/cancelTask",
+                            url: _ctxPath + "/flowClient/cancelTask",
                             params: {
                                 preTaskId: data.id,
                                 opinion: ""
