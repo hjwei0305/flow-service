@@ -137,14 +137,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
                 '                 <div class="item flow-digest">' +
-                '                     <span class="digest">' + items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '                     <span class="digest">' +items[j].flowInstance.businessCode+'-'+items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                 </div>' +
                 '                 <div class="item">' +
                 '                     <div class="end">' +
                 '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
                 + rejectHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
-                '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程处理</span></div>' +
+                '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                     </div>' +
                 '                     <span class="item-right task-item-right">' +
                 '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
