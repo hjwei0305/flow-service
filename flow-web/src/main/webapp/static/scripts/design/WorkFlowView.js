@@ -6,7 +6,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     id: null,
     versionCode: null,
-    versionId:null,
+    flowDefVersionId:null,
     orgId: null,
     orgCode: null,
     instance: null,
@@ -91,6 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
+                readonly:this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -613,6 +614,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var process = {
             name: baseInfo.name,
             id: baseInfo.id,
+            flowDefVersionId:this.flowDefVersionId,
             isExecutable: true,
             startUEL: this.startUEL,
             nodes: {}
@@ -676,6 +678,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
+                    g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     g.showDesign(data);
                 } else {

@@ -313,7 +313,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setBusinessCode(businessCode);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
+                flowInstance.setFlowName(flowDefVersion.getName());
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
                 initTask(processInstance);
