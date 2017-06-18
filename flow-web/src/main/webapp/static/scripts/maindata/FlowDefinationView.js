@@ -41,6 +41,53 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             console.log(rowData);
             g.lookPropertyWindow(rowData);
         });
+
+
+
+        $(".condetail_updateDefVersion").live("click", function () {
+            var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
+        });
+
+        $(".condetail_deleteDefVersion").live("click", function () {
+            var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            console.log(rowData);
+            var infoBox = EUI.MessageBox({
+                title: g.lang.tiShiText,
+                msg: g.lang.ifDelMsgText,
+                buttons: [{
+                    title: g.lang.sureText,
+                    selected: true,
+                    handler: function () {
+                        infoBox.remove();
+                        var myMask = EUI.LoadMask({
+                            msg: g.lang.nowDelMsgText
+                        });
+                        EUI.Store({
+                            url: _ctxPath + "/flowDefination/deleteDefVieson",
+                            params: {
+                                id: rowData.id
+                            },
+                            success: function (result) {
+                                myMask.hide();
+                                EUI.ProcessStatus(result);
+                                if (result.success) {
+                                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                }
+                            },
+                            failure: function (result) {
+                                myMask.hide();
+                                EUI.ProcessStatus(result);
+                            }
+                        });
+                    }
+                }, {
+                    title: g.lang.cancelText,
+                    handler: function () {
+                        infoBox.remove();
+                    }
+                }]
+            });
+        });
     },
     deleteFlowDefinationWind:function(rowData){
         var g = this;
@@ -143,9 +190,39 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     S_versionCode:"ASC"
                 },
                 colModel: [{
+                    label: this.lang.operateText,
+                    name: "operate",
+                    index: "operate",
+                    width: "60",
+                    align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
+                        var strVar = "<div class='condetail_operateDefVersion'>"
+                            + "<div class='condetail_updateDefVersion'></div>"
+                            + "<div class='condetail_deleteDefVersion'></div></div>";
+                        return strVar;
+                    }
+                },{
                     name: "id",
                     index: "id",
                     hidden: true
+                }, {
+                    label: "状态",
+                    name: "flowDefinationStatus",
+                    index: "flowDefinationStatus",
+                    width: "50",
+                    align:"center",
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        if('Activate' == rowObject.flowDefinationStatus){
+                            strVar = "激活";
+                        }  else if('INIT' == rowObject.flowDefinationStatus){
+                            strVar = "未发布 ";
+                        }
+                        else if('Freeze' == rowObject.flowDefinationStatus){
+                            strVar = "冻结 ";
+                        }
+                        return strVar;
+                    }
                 }, {
                     label: "名称",
                     name: "name",
@@ -164,23 +241,26 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "actDeployId",
                     index: "actDeployId",
                     hidden: true
-                }/*, {
-                    label: "启动条件UEL",
-                    name: "startUel",
-                    index: "startUel"
-                }*/, {
+                }, {
                     label: "版本号",
                     name: "versionCode",
                     index: "versionCode",
+                    width: "45",
                     align: "right"
                 }, {
                     label: "优先级",
                     name: "priority",
-                    index: "priority"
+                    index: "priority",
+                    width: "45"
                 }, {
+                    label: "启动条件UEL",
+                    name: "startUel",
+                    index: "startUel"
+                },{
                     label: "描述",
                     name: "depict",
-                    index: "depict"
+                    index: "depict",
+                    hidden:true
                 }]
             }
         };
@@ -458,7 +538,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.operateText,
                         name: "operate",
                         index: "operate",
-                        width: "30",
+                        width: "40",
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             var strVar = "<div class='condetail_operate'>"
@@ -477,6 +557,24 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "name",
                         index: "name",
                         width: "50"
+                    }, {
+                        label: "状态",
+                        name: "flowDefinationStatus",
+                        index: "flowDefinationStatus",
+                        width: "50",
+                        align:"center",
+                        formatter : function(cellvalue, options, rowObject) {
+                            var strVar = '';
+                            if('Activate' == rowObject.flowDefinationStatus){
+                                strVar = "激活";
+                            }  else if('INIT' == rowObject.flowDefinationStatus){
+                                strVar = "未发布 ";
+                            }
+                            else if('Freeze' == rowObject.flowDefinationStatus){
+                                strVar = "冻结 ";
+                            }
+                            return strVar;
+                        }
                     }, {
                         label: "最新版本ID",
                         name: "lastVersionId",
@@ -499,11 +597,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         width: "50",
                         hidden: true
                     }, {
-                        label: "启动条件UEL",
-                        name: "startUel",
-                        index: "startUel",
-                        width: "50"
-                    }, {
                         label: "组织机构ID",
                         name: "orgId",
                         index: "orgId",
@@ -516,33 +609,21 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         width: "50",
                         hidden: true
                     }, {
-                        label: this.lang.depictText,
-                        name: "depict",
-                        index: "depict",
-                        width: "50"
-                    }, {
-                        label: "流程定义状态",
-                        name: "flowDefinationStatus",
-                        index: "flowDefinationStatus",
-                        width: "50",
-                        align:"center",
-                        formatter : function(cellvalue, options, rowObject) {
-                            var strVar = '';
-                            if('Activate' == rowObject.flowDefinationStatus){
-                                strVar = "激活";
-                            }  else if('INIT' == rowObject.flowDefinationStatus){
-                                strVar = "未发布 ";
-                            }
-                            else if('Freeze' == rowObject.flowDefinationStatus){
-                                strVar = "冻结 ";
-                            }
-                            return strVar;
-                        }
-                    }, {
                         label: "优先级",
                         name: "priority",
                         index: "priority",
                         width: "50"
+                    }, {
+                        label: "启动条件UEL",
+                        name: "startUel",
+                        index: "startUel",
+                        width: "50"
+                    }, {
+                        label: this.lang.depictText,
+                        name: "depict",
+                        index: "depict",
+                        width: "50",
+                        hidden:true
                     }],
                     ondbClick: function () {
                         var rowData = EUI.getCmp("gridPanel").getSelectRow();

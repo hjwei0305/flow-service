@@ -87,7 +87,7 @@ public class FlowDesignController {
 //            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(), "admin", "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7", null);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
-            status.setData(deployById);
+            status.setData(result);
         }
         return JsonUtil.serialize(status);
     }

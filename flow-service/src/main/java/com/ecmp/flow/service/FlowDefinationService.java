@@ -180,9 +180,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination != null) {
             String versionId = flowDefination.getLastVersionId();
             deployId = deployByVersionId(versionId);
-            flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
-            flowDefination.setLastDeloyVersionId(versionId);
-            flowDefinationDao.save(flowDefination);
         }
         return deployId;
     }
@@ -205,10 +202,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         ProcessDefinitionEntity activtiFlowDef = getProcessDefinitionByDeployId(deployId);
         flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
         flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
-//        FlowDefination flowDefination = flowDefVersion.getFlowDefination();
-//        flowDefination.setLastDeloyVersionId(flowDefination.getId());
-//        flowDefVersionDao.save(flowDefVersion);
-//        flowDefinationDao.save(flowDefination);
+        flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+        flowDefVersionDao.save(flowDefVersion);
+
+        FlowDefination flowDefination = flowDefVersion.getFlowDefination();
+        flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+        flowDefination.setLastDeloyVersionId(flowDefVersion.getId());
+        flowDefination.setStartUel(flowDefVersion.getStartUel());
+        flowDefination.setName(flowDefVersion.getName());
+        flowDefinationDao.save(flowDefination);
+
         return deployId;
     }
 
@@ -315,6 +318,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setBusinessModelRemark(workCaption);
                 String businessCode = variables.get("businessCode")+"";//工作说明
                 flowInstance.setBusinessCode(businessCode);
+                String businessName = variables.get("name")+"";//业务单据名称
+                flowInstance.setBusinessName(businessName);
+
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setStartDate(new Date());
                 flowInstance.setFlowName(flowDefVersion.getName());

@@ -1,13 +1,16 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,5 +108,40 @@ public class FlowInstanceController {
         return JsonUtil.serialize(operateStatus);
     }
 
+
+    /**
+     * 获取我的单据（已办/待办）
+     * @return
+     */
+    public String getMyBills(ServletRequest request)  throws JsonProcessingException, ParseException{
+        String creatorId = ContextUtil.getUserId();
+        Search search = SearchUtil.genSearch(request);
+        SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
+       // SearchFilter searchFilterEnded = new SearchFilter("ended",true, SearchFilter.Operator.EQ);
+        search.addFilter(searchFilterCreatorId);
+       // search.addFilter(searchFilterEnded);
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
+        List<FlowInstance>  flowInstanceList = flowInstancePageResult.getRows();
+        List<MyBillVO> results  = null;
+        if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
+            results = new ArrayList<MyBillVO>();
+            for(FlowInstance f:flowInstanceList){
+                MyBillVO  myBillVO = new MyBillVO();
+                myBillVO.setBusinessCode(f.getBusinessCode());
+                myBillVO.setBusinessId(f.getBusinessId());
+                myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
+                myBillVO.setBusinessName(f.getBusinessName());
+                myBillVO.setCreatedDate(f.getCreatedDate());
+                myBillVO.setCreatorAccount(f.getCreatorAccount());
+                myBillVO.setCreatorName(f.getCreatorName());
+                myBillVO.setCreatorId(f.getCreatorId());
+                myBillVO.setFlowName(f.getFlowName());
+                results.add(myBillVO);
+            }
+        }
+
+        return JsonUtil.serialize(results,JsonUtil.DATE_TIME);
+    }
 
 }

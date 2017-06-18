@@ -59,6 +59,12 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Column(name = "business_code", nullable = false, length = 20)
 	private String businessCode;
 
+	/**
+	 * 业务单据名称
+	 */
+	@Column(name = "business_name", nullable = false, length = 100)
+	private String businessName;
+
 
 	/**
 	 * 业务摘要(工作说明)
@@ -96,9 +102,6 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	 * 是否结束
 	 */
 	private boolean ended;
-
-
-
 
 
 	/**
@@ -243,6 +246,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setBusinessModelRemark(String businessModelRemark) {
 		this.businessModelRemark = businessModelRemark;
+	}
+
+	public String getBusinessName() {
+		return businessName;
+	}
+
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
 	}
 
 	@Override

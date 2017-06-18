@@ -129,10 +129,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         return conditionPojo;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
+
 
     @Override
     public void setName(String name) {
@@ -238,6 +235,12 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     @Override
     @ConditionAnnotaion(name="工作说明",rank = -10000,canSee=false)
     public String getWorkCaption(){return this.workCaption;}
+
+    @Override
+    @ConditionAnnotaion(name="业务名称",rank = -10000,canSee=false)
+    public String getName() {
+        return name;
+    }
 
     @ConditionAnnotaion(name="业务单号",rank = -10000,canSee=false)
     public String getBusinessCode() {

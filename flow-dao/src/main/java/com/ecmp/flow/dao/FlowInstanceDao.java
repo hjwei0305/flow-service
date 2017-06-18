@@ -20,5 +20,14 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     public List<FlowInstance> findByBusinessIdOrder(@Param("businessId")String businessId);
 
 
+    /**
+     * 根据启动人id查询流程实例
+     * @param creatorId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended ")
+    public List<FlowInstance> findByCreatorId(@Param("creatorId")String creatorId,@Param("ended")Boolean ended);
+
+
 
 }

@@ -278,6 +278,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.version = version;
     }
 
+    public FlowDefinationStatus getFlowDefinationStatus() {
+        return flowDefinationStatus;
+    }
+
+    public void setFlowDefinationStatus(FlowDefinationStatus flowDefinationStatus) {
+        this.flowDefinationStatus = flowDefinationStatus;
+    }
 
     @Override
     public int hashCode() {

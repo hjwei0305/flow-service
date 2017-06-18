@@ -677,7 +677,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             },
             success: function (status) {
                 mask.hide();
-                if (status.success) {
+                if (status.success && status.data) {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     g.showDesign(data);
