@@ -75,11 +75,11 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param id
      */
     @GET
-    @Path("currentNodeIds")
+    @Path("currentNodeIds/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取流程实例在线任务节点定义ID列表", notes = "用于流程跟踪图")
-    public Set<String> currentNodeIds(String id);
+    public Set<String> currentNodeIds(@PathParam("id") String id);
 
     /**
      * 通过业务单据id获取单据生命周期所有任务历史记录
@@ -97,11 +97,11 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param businessId
      */
     @GET
-    @Path("findLastByBusinessId")
+    @Path("findLastByBusinessId/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例流程历史记录", notes = "测试")
-    public List<FlowHistory>  findLastByBusinessId(String businessId);
+    public List<FlowHistory>  findLastByBusinessId(@PathParam("businessId")String businessId);
 
 
     /**
@@ -109,22 +109,22 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param businessId
      */
     @GET
-    @Path("findLastInstanceByBusinessId")
+    @Path("findLastInstanceByBusinessId/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例", notes = "测试")
-    public FlowInstance  findLastInstanceByBusinessId(String businessId);
+    public FlowInstance  findLastInstanceByBusinessId(@PathParam("businessId")String businessId);
 
     /**
      * 通过业务单据id获取单据最近一次流程实例
      * @param businessId
      */
     @GET
-    @Path("findCurrentTaskByBusinessId")
+    @Path("findCurrentTaskByBusinessId/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次待办列表", notes = "测试")
-    public List<FlowTask>  findCurrentTaskByBusinessId(String businessId);
+    public List<FlowTask>  findCurrentTaskByBusinessId(@PathParam("businessId")String businessId);
 
 
     /**
@@ -132,11 +132,11 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param businessId
      */
     @GET
-    @Path("getLastNodeIdsByBusinessId")
+    @Path("getLastNodeIdsByBusinessId/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取最新流程实例待办任务id列表", notes = "测试")
-    public Set<String>  getLastNodeIdsByBusinessId(String businessId);
+    public Set<String>  getLastNodeIdsByBusinessId(@PathParam("businessId")String businessId);
 
     /**
      * 通过单据id，获取流程实例及关联待办及任务历史
@@ -144,9 +144,9 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @return
      */
     @GET
-    @Path("getProcessTrackVO")
+    @Path("getProcessTrackVO/{businessId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "测试")
-    public List<ProcessTrackVO> getProcessTrackVO(String businessId);
+    public List<ProcessTrackVO> getProcessTrackVO(@PathParam("businessId")String businessId);
 }
