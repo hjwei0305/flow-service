@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base :: base_head"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>内置审批单-查看页</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/LookApproveView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/LookApproveView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var lookApproveView;
+        EUI.onReady(function () {
+            lookApproveView = new EUI.LookApproveView({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
+

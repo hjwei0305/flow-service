@@ -43,6 +43,12 @@ public class LookApproveBillController {
         return "maindata/LookApproveBillView";
     }
 
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "maindata/LookApproveView";
+    }
+
+
     @RequestMapping(value = "showApprove", method = RequestMethod.GET)
     public String showApprove() {
         return "maindata/ReadyOnlyApproveView";

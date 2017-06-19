@@ -1,0 +1,23 @@
+html{
+    font-size: 16px;
+}
+#top{
+    text-align: center;
+}
+.title{
+    font-size: 34px;
+    font-weight: bold;
+    display: inline-block;
+}
+.name{
+    font-size: 22px;
+}
+#workCaption .ux-field-label{
+    top: 60px;
+}
+#btn .ux-line-row{
+    display: inline-block;
+}
+#save{
+    margin-left: 190px;
+}

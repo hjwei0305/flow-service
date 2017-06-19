@@ -173,7 +173,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             Flow.FlowHistory({
-                instanceId: data.flowInstance.id
+                businessId: data.flowInstance.businessId
             })
         });
     },
