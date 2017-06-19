@@ -1,8 +1,6 @@
 /**
- * 显示页面
+ * 流程历史页面
  */
-window.Flow = {};
-EUI.ns("Flow.flow");
 Flow.FlowHistory = function (options) {
     return new Flow.flow.FlowHistory(options);
 };
