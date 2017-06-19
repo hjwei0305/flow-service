@@ -162,6 +162,16 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 businessModelId: g.businessModelId
             });
         });
+        // 连接事件
+        this.instance.bind("connection", function (connection, originalEvent) {
+            g.connectInfo[connection.sourceId + "," + connection.targetId] = true;
+            var uel = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            if (uel) {
+                var overlay = connection.connection.getOverlay("label");
+                overlay.setLabel(uel.name);
+                overlay.show();
+            }
+        });
     }
     ,
     initNode: function (el) {
@@ -213,7 +223,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             },
             success: function (status) {
                 mask.hide();
-                g.businessModelId = status.data;
                 g.showDesign(status.data);
             },
             failure: function (status) {
@@ -225,6 +234,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showDesign: function (defData) {
         var data = JSON.parse(defData.def.defJson);
+        this.businessModelId = data.businessModelId;
         var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
         this.loadHead(data);
         var html = "";

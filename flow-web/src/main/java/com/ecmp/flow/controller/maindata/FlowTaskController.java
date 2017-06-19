@@ -86,10 +86,11 @@ public class FlowTaskController {
     @RequestMapping(value = "listFlowTaskHeader")
     @ResponseBody
     public String listFlowTaskHeader(ServletRequest request) throws JsonProcessingException, ParseException {
-
+        OperateStatus status = OperateStatus.defaultSuccess();
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<TodoBusinessSummaryVO>  result = proxy.findTaskSumHeader();
-        return JsonUtil.serialize(result,JsonUtil.DATE_TIME);
+        status.setData(result);
+        return JsonUtil.serialize(status);
     }
 
 

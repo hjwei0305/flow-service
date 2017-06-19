@@ -62,14 +62,52 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         return "maindata/LookApproveBillView2";
     }
 
-    @RequestMapping(value = "look", method = RequestMethod.GET)
-    public String look() {
-        return "maindata/ReadyOnlyApproveView2";
-    }
+
 
     @RequestMapping(value = "approve", method = RequestMethod.GET)
     public String showApprove(){
         return "approve/ApproveView2";
+    }
+
+
+    /**
+     * 采购申请审批界面(查看)
+     *
+     * @return
+     */
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "approve/ApproveView2";
+    }
+
+    /**
+     * 采购申请表单查看
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderLook", method = RequestMethod.GET)
+    public String orderLook() {
+        return "maindata/ReadyOnlyApproveView2";
+    }
+
+    /**
+     * 采购申请审批界面(编辑)
+     *
+     * @return
+     */
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    public String edit() {
+        return "approve/ApproveEditView2";
+    }
+
+    /**
+     * 采购申请表单编辑
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderEdit", method = RequestMethod.GET)
+    public String orderEdit() {
+        return "maindata/DefauleOrderEditView2";
     }
 
     @RequestMapping(value = "getApproveBill2")

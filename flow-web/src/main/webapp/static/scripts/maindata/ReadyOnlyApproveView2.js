@@ -37,7 +37,7 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
             id:"top",
             border:false,
             height:70,
-            html:"<div class='title'>内置审批单</div>"
+            html:"<div class='title'>采购申请单</div>"
         }
     },
     initCenter:function () {
