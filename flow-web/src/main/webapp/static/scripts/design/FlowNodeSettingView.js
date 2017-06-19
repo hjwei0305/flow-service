@@ -159,6 +159,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "ComboBox",
                 title: "工作界面",
                 labelWidth: 100,
+                allowBlank: false,
                 name: "workPageName",
                 field: ["workPageUrl"],
                 async: false,
