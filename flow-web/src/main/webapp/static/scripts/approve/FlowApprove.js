@@ -300,8 +300,22 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         g.close();
                         return;
                     }
-                    if(status.data == "EndEvent"){
-                        g.submit(true);
+                    if (status.data == "EndEvent") {
+                        var msgbox = EUI.MessageBox({
+                            title: "操作提示",
+                            msg:"当前操作流程将会结束，是否继续？",
+                            buttons: [{
+                                title: "确定",
+                                handler: function () {
+                                    g.submit(true);
+                                    msgbox.remove();
+                                }
+                            }, {
+                                title: "取消", handler: function () {
+                                    msgbox.remove();
+                                }
+                            }]
+                        })
                         return;
                     }
                     g.toChooseUserData = status.data;
