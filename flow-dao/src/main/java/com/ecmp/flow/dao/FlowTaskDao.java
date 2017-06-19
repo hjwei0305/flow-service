@@ -45,23 +45,23 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
     public List findByexecutorAccountGroup(@Param("executorAccount")String executorAccount);
 
 
-    /**
-     * 根据业务实体类型id，业务单据id，获取所有业务执行的待办，包括撤销之前的历史任务
-     * @param businessModelId
-     * @param businessId
-     * @return
-     */
-    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-    public List<FlowTask> findAllByBusinessModelIdAndBuId(String businessModelId,String businessId);
-
-    /**
-     * 根据业务实体类型id，业务单据id，获取最新流程实体执行的待办，不包括撤销之前的历史任务
-     * @param businessModelId
-     * @param businessId
-     * @return
-     */
-    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-    public List<FlowTask> findLastByBusinessModelIdAndBuId(String businessModelId,String businessId);
+//    /**
+//     * 根据业务实体类型id，业务单据id，获取所有业务执行的待办，包括撤销之前的历史任务
+//     * @param businessModelId
+//     * @param businessId
+//     * @return
+//     */
+//    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
+//    public List<FlowTask> findAllByBusinessModelIdAndBuId(String businessModelId,String businessId);
+//
+//    /**
+//     * 根据业务实体类型id，业务单据id，获取最新流程实体执行的待办，不包括撤销之前的历史任务
+//     * @param businessModelId
+//     * @param businessId
+//     * @return
+//     */
+//    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
+//    public List<FlowTask> findLastByBusinessModelIdAndBuId(String businessModelId,String businessId);
 
 
 }
