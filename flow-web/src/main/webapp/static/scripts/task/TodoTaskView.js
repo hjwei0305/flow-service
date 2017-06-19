@@ -38,9 +38,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 if(!status.data){
                     return;
                 }
-                g.getNavHtml(status);
+                g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
-                g.modelId = status[0].businessModeId;
+                g.modelId = status.data[0].businessModeId;
                 g.getTodoData();
             },
             failure: function (result) {
