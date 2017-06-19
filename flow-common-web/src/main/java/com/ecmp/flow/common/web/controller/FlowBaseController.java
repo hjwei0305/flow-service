@@ -312,7 +312,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");
-            operateStatus.setData(nodeInfoList);
+            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
+                operateStatus.setData("EndEvent");
+            }else {
+                operateStatus.setData(nodeInfoList);
+            }
         } else {
             operateStatus = new OperateStatus(false, "不存在");
         }
