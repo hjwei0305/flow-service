@@ -22,6 +22,12 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
+        $(".condetail-flowHistory").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
+            Flow.FlowHistory({
+                businessId: data.id
+            })
+        });
         $(".condetail-start").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.startFlow(data);
@@ -446,27 +452,21 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                         width: '25%',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            var strVar = "<div class='condetail-operate'>" +
-                                "<div class='condetail-start'title='启动流程'></div>"
-                                + "<div class='condetail-update' title='编辑'></div>"
-                                + "<div class='condetail-delete'  title='删除'></div>" +
-                                "</div>";
+                            if(	"INIT" == rowObject.flowStatus){
+                                var strVar = "<div class='condetail-operate'>" +
+                                    "<div class='condetail-start'title='启动流程'></div>"
+                                    + "<div class='condetail-update' title='编辑'></div>"
+                                    + "<div class='condetail-delete'  title='删除'></div>" +
+                                    "</div>";
+                            }
+                            if(	"INPROCESS" == rowObject.flowStatus){
+                                var strVar = "<div class='condetail-operate'>"+
+                                    "<div class='condetail-flowHistory'title='流程历史'></div>"
+                                    + "<div class='condetail-update' title='编辑'></div>"
+                                    + "<div class='condetail-delete'  title='删除'></div>" +
+                                    "</div>";
+                            }
                             return strVar;
-                            // if(	"INIT" == rowObject.flowStatus){
-                            //     var strVar = "<div class='condetail-operate'>" +
-                            //         "<div class='condetail-start'title='启动流程'></div>"
-                            //         + "<div class='condetail-update' title='编辑'></div>"
-                            //         + "<div class='condetail-delete'  title='删除'></div>" +
-                            //         "</div>";
-                            // }
-                            // if(	"INPROCESS" == rowObject.flowStatus){
-                            //     var strVar = "<div class='condetail-operate'>"+
-                            //         "<div class='condetail-flowHistory'title='流程历史'></div>"
-                            //         + "<div class='condetail-update' title='编辑'></div>"
-                            //         + "<div class='condetail-delete'  title='删除'></div>" +
-                            //         "</div>";
-                            // }
-                            // return strVar;
                         }
                     }, {
                         label: "ID",
