@@ -48,14 +48,51 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         return "maindata/LookApproveBillView3";
     }
 
-    @RequestMapping(value = "look", method = RequestMethod.GET)
-    public String look() {
-        return "maindata/ReadyOnlyApproveView3";
-    }
 
     @RequestMapping(value = "approve", method = RequestMethod.GET)
     public String showApprove(){
         return "approve/ApproveView3";
+    }
+
+
+    /**
+     * 销售申请审批界面(查看)
+     *
+     * @return
+     */
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "approve/ApproveView3";
+    }
+
+    /**
+     * 销售申请表单查看
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderLook", method = RequestMethod.GET)
+    public String orderLook() {
+        return "maindata/ReadyOnlyApproveView3";
+    }
+
+    /**
+     * 销售申请审批界面(编辑)
+     *
+     * @return
+     */
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    public String edit() {
+        return "approve/ApproveEditView3";
+    }
+
+    /**
+     * 销售申请表单编辑
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderEdit", method = RequestMethod.GET)
+    public String orderEdit() {
+        return "maindata/DefauleOrderEditView3";
     }
 
 

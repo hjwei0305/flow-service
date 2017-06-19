@@ -113,6 +113,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
+                shrinkToFit:true,//固定宽度
                 loadonce: true,
                 colModel: [{
                     label: this.lang.operateText,

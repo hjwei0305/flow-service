@@ -7,7 +7,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         rows: 10,
         total: 1
     },
-    records:null,
+    records: null,
     initComponent: function () {
         this.initHtml();
         this.getModelList();
@@ -108,7 +108,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
-                    g.records=result.records;
+                    g.records = result.records;
                     $(".nav-select>.navbar-circle").text(g.records);
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
@@ -140,7 +140,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
                 '                 <div class="item flow-digest">' +
-                '                     <span class="digest">' +items[j].flowInstance.businessCode+'-'+items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '                     <span class="digest">' + items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                 </div>' +
                 '                 <div class="item">' +
                 '                     <div class="end">' +
@@ -265,13 +265,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
-            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var taskConfig =JSON.parse(data.taskJsonDef);
-            var workPageUrl=taskConfig.nodeConfig.normal.workPageUrl;
+            //var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var taskConfig = JSON.parse(data.taskJsonDef);
+            var workPageUrl = taskConfig.nodeConfig.normal.workPageUrl;
             console.log(workPageUrl);
             var tab = {
                 title: "审批界面",
-                url: workPageUrl+"?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: _ctxPath + workPageUrl + "?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
@@ -284,11 +284,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var temps = url.split("\/");
-            var lookApproveUrl = temps[3] + "/" + temps[4];
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.flowInstance.businessId,
+                url: _ctxPath + url + "?id=" + data.flowInstance.businessId,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
