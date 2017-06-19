@@ -22,7 +22,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             padding: 0,
             isOverFlow: false,
             border: false,
-            items: [ '->', {
+            items: ['->', {
                 xtype: "SearchBox",
                 displayText: "请输入任务名进行搜索",
                 onSearch: function (value) {
@@ -163,8 +163,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
 
                 }, {
                     label: "最后更新时间",
-                    name: "lastEditedDate",
-                    index: "lastEditedDate"
+                    name: "lastModifiedDate",
+                    index: "lastModifiedDate"
                 },
                     /*    ,{
                      label : "候选人账号" ,
@@ -180,8 +180,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         index: "depict"
                     }/*{
                      label : "创建人" ,
-                     name : "creatorName",
-                     index : "creatorName"
+                     name : "createdBy",
+                     index : "createdBy"
                      },{
                      label : "创建时间" ,
                      name : "createdDate",
@@ -192,8 +192,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                      index : "lastModifiedBy"
                      },{
                      label : "最后更新时间" ,
-                     name : "lastEditedDate",
-                     index : "lastEditedDate"
+                     name : "lastModifiedDate",
+                     index : "lastModifiedDate"
                      },{
                      label : "引擎流程任务ID" ,
                      name : "actTaskId",
