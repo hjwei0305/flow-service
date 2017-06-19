@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * *************************************************************************************************
  * <br>
- * 实现功能：
+ * 实现功能：默认表单（业务申请）控制器
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
  * 版本          变更时间             变更人                     变更原因
- *
+ * <p>
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
@@ -26,25 +26,56 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 @RequestMapping(value = "/builtInApprove")
-public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService,DefaultBusinessModel> {
+public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService, DefaultBusinessModel> {
 
 
-    public BuiltInApproveController(){
+    public BuiltInApproveController() {
         super(IDefaultBusinessModelService.class);
     }
+
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
         return "maindata/BuiltInApproveView";
     }
 
-    @RequestMapping(value = "show2", method = RequestMethod.GET)
-    public String show2() {
-        return "maindata/LookApproveBillView";
+    /**
+     * 业务申请审批界面(查看)
+     *
+     * @return
+     */
+    @RequestMapping(value = "look", method = RequestMethod.GET)
+    public String look() {
+        return "approve/ApproveView";
     }
 
-    @RequestMapping(value = "approve", method = RequestMethod.GET)
-    public String showApprove(){
-        return "approve/ApproveView";
+    /**
+     * 业务申请表单查看
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderLook", method = RequestMethod.GET)
+    public String orderLook() {
+        return "maindata/ReadyOnlyApproveView";
+    }
+
+    /**
+     * 业务申请审批界面(编辑)
+     *
+     * @return
+     */
+    @RequestMapping(value = "edit", method = RequestMethod.GET)
+    public String edit() {
+        return "approve/ApproveEditView";
+    }
+
+    /**
+     * 业务申请表单编辑
+     *
+     * @return
+     */
+    @RequestMapping(value = "orderEdit", method = RequestMethod.GET)
+    public String orderEdit() {
+        return "maindata/DefauleOrderEditView";
     }
 }
 
