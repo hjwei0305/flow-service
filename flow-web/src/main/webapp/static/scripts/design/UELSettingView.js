@@ -115,10 +115,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 name: "logicUel",
                 afterValidate: function (value) {
-                    if(g.readOnly){
-                        return;
-                    }
-                    if (!g.properties) {
+                    if (g.readOnly || !g.properties || !value) {
                         return;
                     }
                     for (var key in g.properties) {
