@@ -78,13 +78,13 @@
     padding: 20px;
 }
 
-.flow-remark {
-    margin: 0 20px;
-    height: 100px;
-    width: 400px;
-    resize: none;
-    border: 1px solid #dddddd;
-}
+/*.flow-remark {*/
+    /*margin: 0 20px;*/
+    /*height: 100px;*/
+    /*width: 400px;*/
+    /*resize: none;*/
+    /*border: 1px solid #dddddd;*/
+/*}*/
 
 .flow-next {
     background: #71d1fe none repeat scroll 0 0;
