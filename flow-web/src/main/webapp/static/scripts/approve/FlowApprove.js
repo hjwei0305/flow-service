@@ -302,6 +302,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     }
                     if(status.data == "EndEvent"){
                         g.submit(true);
+                        return;
                     }
                     g.toChooseUserData = status.data;
                     g.showChooseUser();
