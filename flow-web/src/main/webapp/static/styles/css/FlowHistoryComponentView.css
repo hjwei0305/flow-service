@@ -306,6 +306,13 @@
 	/*border:1px solid #000000;*/
 }
 
+.text-center{
+	text-align: center;
+	font-weight: 200;
+	font-size: 25px;
+	line-height:270px
+}
+
 .flow-progress {
 	width: 520px;
 	height: 60px;

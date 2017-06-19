@@ -575,9 +575,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title:g.lang.serviceUrlText,
-            width: 1000,
+            width: 800,
             layout: "border",
-            height: 650,
+            height: 450,
             padding: 8,
             itemspace: 0,
             items: [this.initWindTbar(data), this.initWindGrid(data)]

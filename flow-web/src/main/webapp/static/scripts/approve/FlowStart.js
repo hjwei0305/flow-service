@@ -100,11 +100,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
             $(this).addClass("select");
         });
-
-
-        // $(".submit").bind("click", function () {
-        //     g.submit();
-        // });
     },
     showChooseFlowTypeAndExecutorWind: function (flowTypeList) {
         var g = this;
@@ -236,26 +231,49 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
-            for (var j = 0; j < node.executorSet.length; j++) {
-                var item = node.executorSet[j];
-               if(!item.positionId){
-                   nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-                       '<div class="choose-icon ' + iconCss + '"></div>' +
-                       '<div class="excutor-item-title">姓名：' + item.name +
-                       '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
-                       '</div>';
-               }else{
-                   nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-                       '<div class="choose-icon ' + iconCss + '"></div>' +
-                       '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                       '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
-                       '</div>';
-               }
+            if(node.executorSet.length == 1){
+                for (var j = 0; j < node.executorSet.length; j++) {
+                    var item = node.executorSet[j];
+                    if(!item.positionId){
+                        nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                            '<div class="choose-icon ' + iconCss + '"></div>' +
+                            '<div class="excutor-item-title">姓名：' + item.name +
+                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '</div>';
+                    }else{
+                        nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                            '<div class="choose-icon ' + iconCss + '"></div>' +
+                            '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
+                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '</div>';
+                    }
+                }
+                nodeHtml += "</div></div>";
+                html += nodeHtml;
+                $(".chooseExecutor").after(html);
+                $(".flow-user-item").addClass("select");
+            }else{
+                for (var j = 0; j < node.executorSet.length; j++) {
+                    var item = node.executorSet[j];
+                    if(!item.positionId){
+                        nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                            '<div class="choose-icon ' + iconCss + '"></div>' +
+                            '<div class="excutor-item-title">姓名：' + item.name +
+                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '</div>';
+                    }else{
+                        nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                            '<div class="choose-icon ' + iconCss + '"></div>' +
+                            '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
+                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '</div>';
+                    }
+                }
+                nodeHtml += "</div></div>";
+                html += nodeHtml;
+                $(".chooseExecutor").after(html);
             }
-            nodeHtml += "</div></div>";
-            html += nodeHtml;
         }
-        $(".chooseExecutor").after(html);
     },
     getSelectedUser: function () {
         var users = [];
