@@ -33,7 +33,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 var flag = true;
                 g.initData(result);
                 g.showWind();
-                // g.showFlowHistoryTopData(g.defaultData.data.flowTaskList);
+               g.showFlowHistoryTopData(g.defaultData.data.flowInstance);
                 g.showFlowHistoryData(g.defaultData.data.flowHistoryList);
                 g.showFlowStatusData(g.defaultData.data.flowTaskList);
                  myMask.hide();
@@ -55,7 +55,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             instanceData.push(instanceItem);
             if(this.instanceId == item.id){
                 this.defaultData = instanceItem;
-               // console.log(instanceItem)
                 this.designInstanceId = instanceItem.id;
                 this.designFlowDefinationId = instanceItem.data.flowInstance.flowDefVersion.flowDefination.id
             }
@@ -63,7 +62,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         this.instanceData = instanceData;
         if(!this.instanceId ){
             this.defaultData = instanceData[0];
-          //  console.log(instanceData[0])
             this.designInstanceId = instanceData[0].id;
             this.designFlowDefinationId = instanceData[0].data.flowInstance.flowDefVersion.flowDefination.id
         }
@@ -73,14 +71,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         g.win = EUI.Window({
             title: "流程信息",
             width: 650,
-            height: 500,
+            height: 512,
             padding: 0,
             xtype: "Container",
             layout: "border",
             border: false,
             items: [this.initTop(), this.initCenter()]
         });
-        EUI.getCmp("flowInstanceId").loadData(this.defaultData);
+      EUI.getCmp("flowInstanceId").loadData(this.defaultData);
         g.topEvent();
     },
     initTop: function () {
@@ -88,14 +86,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "ToolBar",
             region: "north",
-            height: 40,
+            height: 50,
             padding: 8,
             isOverFlow: false,
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + "流程" + "</span>",
-                width: 450,
+                title: "<span style='font-weight: bold'>" + "启动历史" + "</span>",
+                width: 418,
                 field: ["id"],
                 labelWidth: 80,
                 name: "name",
@@ -114,6 +112,13 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                     $(".flow-historyprogress").html("");
                     g.showFlowHistoryData(data.data.data.flowHistoryList);
                     g.showFlowStatusData(data.data.data.flowTaskList);
+                }
+            },{
+                xtype: "Button",
+                title: "查看流程图",
+                handler: function () {
+                    $(".toptop-right").addClass("flowselect");
+                    g.showDesgin()
                 }
             }]
         };
@@ -142,13 +147,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '						流程处理历史' +
             '					</div>' +
             '				</div>' +
-            '				<div class="flow-line"></div>' +
-            '				<div class="top-right navbar">' +
-            '					<div class="flow-tabicon flow-infoimg"></div>' +
-            '					<div class="flow-infofield text">' +
-            '						流程图' +
-            '					</div>' +
-            '				</div>' +
             '			</div>';
 
     },
@@ -174,18 +172,18 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     },
 
     //拼接流程历史头部数据的html
-    // showFlowHistoryTopData: function (data) {
-    //     var g = this;
-    //     var html = "";
-    //     html = '<div class="flow-startimg"></div>' +
-    //         '							<div class="flow-startfield">流程启动</div>' +
-    //         '							<div class="flow-startright">' +
-    //         '								<div class="flow-startuser">' + data.flowStarter + '</div>' +
-    //         '								<div class="flow-startline"></div>' +
-    //         '								<div class="flow-starttime">' + data.flowStartTime + '</div>' +
-    //         '							</div>';
-    //     $(".flow-start").html(html);
-    // },
+    showFlowHistoryTopData: function (data) {
+        var g = this;
+        var html = "";
+        html = '<div class="flow-startimg"></div>' +
+            '							<div class="flow-startfield">流程启动</div>' +
+            '							<div class="flow-startright">' +
+            '								<div class="flow-startuser">' + data.creatorName + '</div>' +
+            '								<div class="flow-startline"></div>' +
+            '								<div class="flow-starttime">' + data.createdDate + '</div>' +
+            '							</div>';
+        $(".flow-start").html(html);
+    },
     //拼接流程历史数据的html
     showFlowHistoryData: function (data) {
         var g = this;
@@ -245,6 +243,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".navbar").click(function () {
             $(this).addClass("flowselect").siblings().removeClass("flowselect");
+            $(".toptop-right").removeClass("flowselect");
         });
         $(".top-left").click(function () {
             $(".flow-statuscenter").css("display", "block");
@@ -254,9 +253,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             $(".flow-statuscenter").css("display", "none");
             $(".flow-hsitorycenter").css("display", "block");
         });
-        $(".top-right").click(function () {
-            g.showDesgin()
-        })
     },
     showDesgin: function () {
         var g = this;
