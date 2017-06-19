@@ -69,7 +69,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '        </div>' +
             '    </div>';
-        ;
     },
     initOperateHtml: function () {
         return '<div style="height: 200px;">' +
@@ -110,7 +109,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".flow-next").bind("click", function () {
-            g.goToNext();
+            if ($(this).text() == "完成") {
+                g.submit(true);
+            } else {
+                g.goToNext();
+            }
         });
         $(".pre-step").bind("click", function () {
             $(".flow-approve").show();
@@ -128,14 +131,29 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-item").live("click", function () {
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
+            var type = $(this).attr("type");
+            if (type.toLowerCase() == "endevent") {
+                $(".flow-next").text("完成");
+            } else {
+                $(".flow-next").text("下一步");
+            }
         });
         //执行人选择
         $(".flow-user-item").live("click", function () {
-            var type = $(this).attr("type").toLowerCase();
-            if (type != "countersign" && type != "singlesign") {
-                $(".flow-user-item").removeClass("select");
+            var type = $(this).attr("type");
+            if (type == "common") {
+                if ($(this).hasClass("select")) {
+                    return;
+                }
+                $(this).addClass("select");
+                $(this).siblings().removeClass("select");
+            } else {
+                if ($(this).hasClass("select")) {
+                    $(this).removeClass("select");
+                } else {
+                    $(this).addClass("select");
+                }
             }
-            $(this).addClass("select");
         });
 
         $(".submit").bind("click", function () {
@@ -194,7 +212,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     showNodeInfo: function (data) {
         var html = "";
-        console.log(data);
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             var iconCss = "choose-radio";
@@ -205,9 +222,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            html += '<div class="flow-decision-item" id="' + item.id + '">' +
+            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div class="excutor-item-title">' + item.name + '</div></div>';
+        }
+        if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
+            $(".flow-next").text("完成");
         }
         $(".flow-decision-box").append(html);
     },
@@ -235,7 +255,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus({
                     success: false,
                     msg: "请选择下一步执行节点"
-                })
+                });
                 return false;
             }
             return true;
@@ -246,7 +266,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus({
                     success: false,
                     msg: "请选择下一步执行节点"
-                })
+                });
                 return false;
             }
             return true;
@@ -275,6 +295,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
+                    if ($(".flow-next").text() == "完成") {
+                        g.close();
+                        return;
+                    }
                     g.toChooseUserData = status.data;
                     g.showChooseUser();
                 } else {
@@ -362,9 +386,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return true;
     },
-    submit: function () {
+    submit: function (isEnd) {
         var g = this;
-        if (!this.checkIsValid()) {
+        if (!isEnd && !this.checkUserValid()) {
             return;
         }
         var mask = EUI.LoadMask({
@@ -376,12 +400,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 taskId: this.taskId,
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
-                taskList: JSON.stringify(this.getSelectedUser())
+                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser())
             },
             success: function (status) {
                 mask.hide();
                 if (status.success) {
-                    window.close();
+                    g.close();
                 } else {
                     EUI.ProcessStatus(status);
                 }
@@ -391,5 +415,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(response);
             }
         });
+    },
+    close: function () {
+        if (parent.homeView) {
+            parent.homeView.closeNowTab();
+        } else {
+            window.close();
+        }
     }
 });
