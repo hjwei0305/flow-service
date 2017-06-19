@@ -12,11 +12,9 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AbstractBusinessModel;
-import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -310,8 +308,6 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         if (!StringUtils.isEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
-        } else {
-            throw new RuntimeException("至少要传入一个节点ID！");
         }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {

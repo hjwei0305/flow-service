@@ -129,6 +129,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
         //决策选择
         $(".flow-decision-item").live("click", function () {
+            if (g.desionType == 2) {
+                return;
+            }
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
             var type = $(this).attr("type");
@@ -234,13 +237,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getDesionIds: function () {
         var includeNodeIds = "";
         var doms;
-        if (this.desionType != 2) {
+        if (this.desionType = 2) {
             doms = $(".select", ".flow-decision-box");
-        } else {
-            doms = $(".flow-decision-item");
-        }
-        for (var i = 0; i < doms.length; i++) {
-            includeNodeIds += $(doms[i]).attr("id");
+            for (var i = 0; i < doms.length; i++) {
+                includeNodeIds += $(doms[i]).attr("id");
+            }
         }
         return includeNodeIds;
     },
@@ -295,7 +296,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
-                    if ($(".flow-next").text() == "完成") {
+                    if ($(".flow-next").text() == "完成" || status.data == "end") {
                         g.close();
                         return;
                     }
