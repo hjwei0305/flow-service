@@ -138,7 +138,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.urlViewAddressText,
                     name: "url",
                     index: "url",
-                    width: '95%'
+                    width: '150%'
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
@@ -207,6 +207,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateWorkPageUrlText,
             height: 250,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -217,7 +218,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     title: "ID",
                     labelWidth: 90,
                     name: "id",
-                    width: 220,
+                    width: 270,
                     value: data.id,
                     hidden: true
                 }, {
@@ -225,7 +226,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
                     name: "appModuleId",
-                    width: 220,
+                    width: 270,
                     value: g.appModuleId,
                     hidden: true
                 }, {
@@ -234,7 +235,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     readonly: true,
                     labelWidth: 90,
                     name: "appModuleName",
-                    width: 220,
+                    width: 270,
                     value: g.appModuleName
                 }, {
                     xtype: "TextField",
@@ -242,15 +243,15 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "name",
-                    width: 220,
+                    width: 270,
                     value: data.name
                 }, {
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: g.lang.urlViewAddressText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "url",
-                    width: 220,
+                    width: 270,
                     value: data.url
                 }, {
                     xtype: "TextArea",
@@ -258,7 +259,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
-                    width: 220,
+                    width: 270,
                     value: data.depict
                 }]
             }],

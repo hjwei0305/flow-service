@@ -1,7 +1,8 @@
-LookApproveBillView.js/*
+/*
 * 查看内置审批单
 * */
 EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
+    id: EUI.util.getUrlParam("id"),
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -128,7 +129,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             msg:"正在加载，请稍后..."
         });
         EUI.Store({
-            url: _ctxPath + "/lookApproveBill/getApproveBill",
+            url: _ctxPath + "/defaultBusinessModel3/getApproveBill3",
             params: {
                 id: EUI.util.getUrlParam("id")
             },
@@ -159,8 +160,9 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
         var mask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });
+        data.id = this.id;
         EUI.Store({
-            url: _ctxPath + "/builtInApprove/save",
+            url: _ctxPath + "/defaultBusinessModel3/save",
             params: data,
             success: function (status) {
                 mask.hide();

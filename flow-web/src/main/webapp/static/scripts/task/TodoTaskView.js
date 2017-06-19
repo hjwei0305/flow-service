@@ -112,7 +112,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.records = result.records;
-                    $(".nav-select>.navbar-circle").text(g.records);
+                    if (g.records>0){
+                        $(".nav-select>.navbar-circle").text(g.records);
+                    }else{
+                        $(".nav-select").css("display","none");
+                    }
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
@@ -259,7 +263,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.modelId = id;
                 //重新获取数据
                 g.getTodoData();
-
             })
         })
     },
