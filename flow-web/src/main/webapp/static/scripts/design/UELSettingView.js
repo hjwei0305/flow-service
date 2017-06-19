@@ -115,12 +115,16 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 name: "logicUel",
                 afterValidate: function (value) {
-                    if (g.readOnly || !g.properties || !value) {
+                    if (g.readOnly || !g.properties) {
                         return;
                     }
                     for (var key in g.properties) {
                         var reg = new RegExp(g.properties[key], "g");
                         value = value.replace(reg, key);
+                    }
+                    if(!value){
+                        g.groovyUelCmp.setValue("");
+                        return;
                     }
                     g.groovyUelCmp.setValue("#{" + value + "}");
                 }
