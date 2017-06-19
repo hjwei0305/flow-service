@@ -43,6 +43,10 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         return "maindata/DefaultBusinessModel3View";
     }
 
+    @RequestMapping(value = "showBill", method = RequestMethod.GET)
+    public String showBill() {
+        return "maindata/LookApproveBillView3";
+    }
 
     @RequestMapping(value = "look", method = RequestMethod.GET)
     public String look() {
