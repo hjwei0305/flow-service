@@ -3,7 +3,7 @@
 <head>
     <th:block th:include="base/base::base_head"></th:block>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>流程设计界面</title>
+    <title>流程查看界面</title>
     <link rel="stylesheet" type="text/css"
           data-th-href="@{/static/styles/css/WorkFlowView.css}">
     <script type="text/javascript"
@@ -24,10 +24,12 @@
         var flowView;
         var id = EUI.util.getUrlParam("id");
         var instanceId = EUI.util.getUrlParam("instanceId");
+        var versionCode = EUI.util.getUrlParam("versionCode");
         EUI.onReady(function () {
             flowView = new EUI.LookWorkFlowView({
                 id: id,
                 instanceId:instanceId,
+                versionCode:versionCode,
                 renderTo: "content"
             });
         });

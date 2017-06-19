@@ -213,6 +213,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             },
             success: function (status) {
                 mask.hide();
+                g.businessModelId = status.data;
                 g.showDesign(status.data);
             },
             failure: function (status) {

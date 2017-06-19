@@ -660,6 +660,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             id: this.id,
             versionCode: this.versionCode,
             priority: baseInfo.priority,
+            businessModelId:this.businessModelId,
             process: process
         };
     }
@@ -693,6 +694,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showDesign: function (data) {
+        console.log(data);
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
