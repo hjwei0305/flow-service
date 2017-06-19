@@ -113,6 +113,12 @@ public class FlowInstanceController {
      * 获取我的单据（已办/待办）
      * @return
      */
+    /**
+     * 查询流程定义版本
+     * @return 操作结果
+     */
+    @RequestMapping(value = "getMyBills")
+    @ResponseBody
     public String getMyBills(ServletRequest request)  throws JsonProcessingException, ParseException{
         String creatorId = ContextUtil.getUserId();
         Search search = SearchUtil.genSearch(request);

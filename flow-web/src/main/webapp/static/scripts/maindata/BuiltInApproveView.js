@@ -177,8 +177,10 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     Flow.FlowStart({
                         businessKey: data.id,
                         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',
-                        // data:result.data,
                         url: _ctxPath + "/builtInApprove/startFlow",
+                        afterSubmit:function(){
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                        }
                     })
                     // var myMask = EUI.LoadMask({
                     //     msg: "正在启动，请稍后..."
@@ -449,7 +451,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: '25%',
+                        width: '25',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){

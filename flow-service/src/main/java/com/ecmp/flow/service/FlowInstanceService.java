@@ -222,6 +222,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
                 pv.setFlowHistoryList(flowHistoryList);
                 pv.setFlowTaskList(flowTaskList);
+                result.add(pv);
             }
         }
         return result;

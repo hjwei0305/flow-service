@@ -5,9 +5,9 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
     renderTo: "",
     selectedNodeId: "",  //当前选中的节点的ID
     selectedNodeName: "",  //当前选中的节点的name
-    selectedNodeCode:"",   //当前选中节点的code
-    selectedNodeTenantCode:"",  //当前选中节点的租户代码
-    selectedNodeCodePath:"",    //当前选中节点的codePath
+    selectedNodeCode: "",   //当前选中节点的code
+    selectedNodeTenantCode: "",  //当前选中节点的租户代码
+    selectedNodeCodePath: "",    //当前选中节点的codePath
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -47,7 +47,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: "内置审批单",
             height: 350,
-            width:420,
+            width: 420,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -57,52 +57,52 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                     title: "ID",
                     labelWidth: 80,
                     name: "id",
-                    allowBlank:false,
+                    allowBlank: false,
                     width: 270,
-                    colon:false,
+                    colon: false,
                     hidden: true
-                },{
+                }, {
                     xtype: "TextField",
                     title: "组织机构Id",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 80,
-                    colon:false,
+                    colon: false,
                     name: "orgId",
                     width: 270,
                     hidden: true
-                },{
+                }, {
                     xtype: "TextField",
                     title: "组织机构",
                     labelWidth: 80,
-                    colon:false,
-                    allowBlank:false,
-                    readonly:true,
+                    colon: false,
+                    allowBlank: false,
+                    readonly: true,
                     name: "orgName",
                     width: 270
-                },{
+                }, {
                     xtype: "TextField",
                     title: "组织机构code",
                     labelWidth: 80,
-                    colon:false,
-                    allowBlank:false,
+                    colon: false,
+                    allowBlank: false,
                     name: "orgCode",
                     width: 270,
                     hidden: true
-                },{
+                }, {
                     xtype: "TextField",
                     title: "组织机构orgPath",
                     labelWidth: 80,
-                    colon:false,
-                    allowBlank:false,
+                    colon: false,
+                    allowBlank: false,
                     name: "orgPath",
                     width: 270,
                     hidden: true
-                },{
+                }, {
                     xtype: "TextField",
                     title: "租户代码",
                     labelWidth: 80,
-                    colon:false,
-                    allowBlank:false,
+                    colon: false,
+                    allowBlank: false,
                     name: "tenantCode",
                     width: 270,
                     hidden: true
@@ -112,34 +112,34 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 80,
                     name: "name",
                     width: 270,
-                    colon:false,
-                    allowBlank:false
+                    colon: false,
+                    allowBlank: false
                 }, {
                     xtype: "TextField",
                     title: "单价",
                     labelWidth: 80,
                     name: "unitPrice",
                     width: 270,
-                    colon:false,
-                    allowBlank:false
+                    colon: false,
+                    allowBlank: false
                 }, {
                     xtype: "TextField",
                     title: "数量",
                     labelWidth: 80,
                     name: "count",
                     width: 270,
-                    colon:false,
-                    allowBlank:false
+                    colon: false,
+                    allowBlank: false
                 }, {
                     xtype: "TextArea",
                     title: "说明",
                     labelWidth: 80,
                     name: "workCaption",
-                    id:"caption",
-                    colon:false,
+                    id: "caption",
+                    colon: false,
                     width: 270,
-                    height:130,
-                    allowBlank:false
+                    height: 130,
+                    allowBlank: false
                 }]
             }],
             buttons: [{
@@ -175,11 +175,13 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
-                                businessKey: data.id,
-                                businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel2',
-                                // data:result.data,
-                                  url: _ctxPath + "/defaultBusinessModel2/startFlow"
-                                        })
+                        businessKey: data.id,
+                        businessModelCode: 'com.ecmp.flow.entity.DefaultBusinessModel2',
+                        url: _ctxPath + "/defaultBusinessModel2/startFlow",
+                        afterSubmit:function(){
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                        }
+                    })
                     // var myMask = EUI.LoadMask({
                     //     msg: "正在启动，请稍后..."
                     // });
@@ -299,9 +301,9 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
             padding: 0,
             isOverFlow: false,
             items: ['->', {
-                xtype:"SearchBox",
-                width:159,
-                displayText:g.lang.searchDisplayText,
+                xtype: "SearchBox",
+                width: 159,
+                displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
                     g.selectedNodeId = null;
@@ -330,7 +332,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             id: "treePanel",
-            searchField:["name"],
+            searchField: ["name"],
             showField: "name",
             style: {
                 "background": "#fff"
@@ -379,7 +381,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                     itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
                 }
             },
-            afterShowTree:function(data){
+            afterShowTree: function (data) {
                 this.setSelect(data[0].id);
             }
         }
@@ -404,9 +406,9 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                     title: "新增",
                     selected: true,
                     handler: function () {
-                        if(!g.selectedNodeId){
+                        if (!g.selectedNodeId) {
                             var status = {
-                                msg:"请选择组织机构",
+                                msg: "请选择组织机构",
                                 success: false,
                                 showTime: 4
                             };
@@ -449,19 +451,19 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: '25%',
+                        width: '25',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            if(	"INIT" == rowObject.flowStatus){
+                            if ("INIT" == rowObject.flowStatus) {
                                 var strVar = "<div class='condetail-operate'>" +
                                     "<div class='condetail-start'title='启动流程'></div>"
                                     + "<div class='condetail-update' title='编辑'></div>"
                                     + "<div class='condetail-delete'  title='删除'></div>" +
                                     "</div>";
                             }
-                            if(	"INPROCESS" == rowObject.flowStatus){
-                                var strVar = "<div class='condetail-operate'>"+
-                                "<div class='condetail-flowHistory'title='流程历史'></div>"
+                            if ("INPROCESS" == rowObject.flowStatus) {
+                                var strVar = "<div class='condetail-operate'>" +
+                                    "<div class='condetail-flowHistory'title='流程历史'></div>"
                                     + "<div class='condetail-update' title='编辑'></div>"
                                     + "<div class='condetail-delete'  title='删除'></div>" +
                                     "</div>";
@@ -484,14 +486,14 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                         index: "flowStatus",
                         hidden: false,
                         width: '40%',
-                        formatter : function(cellvalue, options, rowObject) {
+                        formatter: function (cellvalue, options, rowObject) {
                             var strVar = '';
-                            if('INIT' == rowObject.flowStatus){
+                            if ('INIT' == rowObject.flowStatus) {
                                 strVar = "未启动";
                             }
-                            else if('INPROCESS' == rowObject.flowStatus){
+                            else if ('INPROCESS' == rowObject.flowStatus) {
                                 strVar = "处理中";
-                            }else if('COMPLETED' == rowObject.flowStatus){
+                            } else if ('COMPLETED' == rowObject.flowStatus) {
                                 strVar = "流程结束";
                             }
                             return strVar;
@@ -559,7 +561,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: "新增内置表单",
             height: 360,
-            width:400,
+            width: 400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -568,94 +570,94 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TextField",
                     title: "组织机构ID",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "orgId",
-                    colon:false,
+                    colon: false,
                     width: 270,
-                    value:g.selectedNodeId,
-                    hidden:true
-                },{
+                    value: g.selectedNodeId,
+                    hidden: true
+                }, {
                     xtype: "TextField",
                     title: "组织机构",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "orgName",
-                    colon:false,
+                    colon: false,
                     width: 270,
-                    readonly:true,
-                    value:g.selectedNodeName
-                },{
+                    readonly: true,
+                    value: g.selectedNodeName
+                }, {
                     xtype: "TextField",
                     title: "组织机构code",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "orgCode",
-                    colon:false,
+                    colon: false,
                     width: 270,
-                    readonly:true,
-                    value:g.selectedNodeCode,
-                    hidden:true
-                },{
+                    readonly: true,
+                    value: g.selectedNodeCode,
+                    hidden: true
+                }, {
                     xtype: "TextField",
                     title: "组织机构租户代码",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "tenantCode",
-                    colon:false,
+                    colon: false,
                     width: 270,
-                    readonly:true,
-                    value:g.selectedNodeTenantCode,
-                    hidden:true
-                },{
+                    readonly: true,
+                    value: g.selectedNodeTenantCode,
+                    hidden: true
+                }, {
                     xtype: "TextField",
                     title: "组织机构codePath",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "orgPath",
-                    colon:false,
+                    colon: false,
                     width: 270,
-                    readonly:true,
-                    value:g.selectedNodeCodePath,
-                    hidden:true
-                },{
+                    readonly: true,
+                    value: g.selectedNodeCodePath,
+                    hidden: true
+                }, {
                     xtype: "TextField",
                     title: "名称",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "name",
-                    colon:false,
+                    colon: false,
                     width: 270
-                },{
+                }, {
                     xtype: "TextField",
                     title: "单价",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "unitPrice",
-                    colon:false,
+                    colon: false,
                     width: 270
-                },{
+                }, {
                     xtype: "TextField",
                     title: "数量",
-                    allowBlank:false,
+                    allowBlank: false,
                     labelWidth: 70,
                     name: "count",
-                    colon:false,
+                    colon: false,
                     width: 270
                 }, {
                     xtype: "TextArea",
                     title: "说明",
                     labelWidth: 70,
                     name: "workCaption",
-                    id:"caption",
+                    id: "caption",
                     width: 270,
-                    height:130,
-                    colon:false,
-                    allowBlank:false
+                    height: 130,
+                    colon: false,
+                    allowBlank: false
                 }]
             }],
             buttons: [{
-                title:"保存",
+                title: "保存",
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBuiltInApprove");

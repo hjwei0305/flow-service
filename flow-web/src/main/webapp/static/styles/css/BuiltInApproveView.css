@@ -17,6 +17,14 @@
     background: url("../images/btn/flow/flow_start.png") no-repeat 0 0px;
 }
 
+.condetail-flowHistory {
+    width: 16px;
+    height: 16px;
+    float: left;
+    cursor: pointer;
+    background: url("../images/time_icon.png") no-repeat;
+}
+
 .condetail-update {
     width: 15px;
     height: 15px;

@@ -177,8 +177,10 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     Flow.FlowStart({
                         businessKey: data.id,
                         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel3',
-                      //  data:result.data,
-                        url: _ctxPath + "/defaultBusinessModel3/startFlow"
+                        url: _ctxPath + "/defaultBusinessModel3/startFlow",
+                        afterSubmit:function(){
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                        }
                     })
                     // var myMask = EUI.LoadMask({
                     //     msg: "正在启动，请稍后..."
@@ -453,7 +455,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: '25%',
+                        width: '25',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){
