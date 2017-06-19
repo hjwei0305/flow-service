@@ -202,7 +202,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("findNexNodesByIdWithUserSetAndNodeIds/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
+    @ApiOperation(value = "通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
     public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id,List<String> includeNodeIds) throws NoSuchMethodException;
 
     /**

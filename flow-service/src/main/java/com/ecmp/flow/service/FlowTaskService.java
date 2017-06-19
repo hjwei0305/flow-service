@@ -1045,7 +1045,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @throws NoSuchMethodException
      */
     public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
-        List<NodeInfo> nodeInfoList = this.findNextNodes(id, businessId,includeNodeIds);
+        List<NodeInfo> nodeInfoList = this.findNextNodesWithCondition(id, businessId,includeNodeIds);
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             FlowTask flowTask = flowTaskDao.findOne(id);
@@ -1141,7 +1141,40 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNextNodes(String id, String businessId) throws NoSuchMethodException {
           return this.findNextNodes(id,businessId,null);
     }
+    /**
+     * 选择下一步执行的节点信息
+     *
+     * @param id
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNextNodesWithCondition(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        String actTaskId = flowTask.getActTaskId();
+        if(this.checkSystemExclusiveGateway(flowTask)){//判断是否存在系统排他网关
+            if (StringUtils.isEmpty(businessId)) {
+                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
+            }
+//            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+//            JSONObject defObj = JSONObject.fromObject(defJson);
+            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            String businessModelId = businessModel.getId();
+            String appModuleId = businessModel.getAppModuleId();
+            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+            System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
+//            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
+//            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
 
+            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+//            clientApiBaseUrl =    ContextUtil.getHost();
+//            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
+            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
+        }else {
+            return this.selectNextAllNodes(flowTask , includeNodeIds);
+        }
+    }
 
 
     /**
@@ -1226,6 +1259,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String targetId = jsonObject.getString("targetId");
             net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             if("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 检查是否下一节点存在系统排他网关
+     * @param flowTask
+     * @return
+     */
+    private boolean checkSystemExclusiveGateway(FlowTask flowTask){
+        boolean result = false;
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONArray targetNodes = currentNode.getJSONArray("target");
+        for(int i=0;i<targetNodes.size();i++){
+            JSONObject jsonObject = targetNodes.getJSONObject(i);
+            String targetId = jsonObject.getString("targetId");
+            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            if("exclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
                 result = true;
                 break;
             }
@@ -1556,6 +1613,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeInfo> result = this.findNexNodesWithUserSet(id,businessId,includeNodeIds);
         return result;
     }
+
 
     /**
      * 根据流程实例Id获取待办
