@@ -1,6 +1,10 @@
 /**
  * 流程历史页面
  */
+if(!window.Flow){
+    window.Flow = {};
+    EUI.ns("Flow.flow");
+}
 Flow.FlowHistory = function (options) {
     return new Flow.flow.FlowHistory(options);
 };
@@ -13,6 +17,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     instanceData: null,
     designInstanceId:null,
     designFlowDefinationId:null,
+    versionCode:null,
     initComponent: function () {
         var g = this;
         g.getData();
@@ -55,13 +60,15 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 this.defaultData = instanceItem;
                 this.designInstanceId = instanceItem.id;
                 this.designFlowDefinationId = instanceItem.data.flowInstance.flowDefVersion.flowDefination.id
+                this.versionCode = instanceItem.data.flowInstance.flowDefVersion.versionCode
             }
         }
         this.instanceData = instanceData;
         if(!this.instanceId ){
             this.defaultData = instanceData[0];
             this.designInstanceId = instanceData[0].id;
-            this.designFlowDefinationId = instanceData[0].data.flowInstance.flowDefVersion.flowDefination.id
+            this.designFlowDefinationId = instanceData[0].data.flowInstance.flowDefVersion.flowDefination.id;
+            this.versionCode = instanceData[0].data.flowInstance.flowDefVersion.versionCode;
         }
     },
     showWind: function () {
@@ -105,7 +112,8 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 afterSelect: function (data) {
                     console.log(data.data.id);
                     this.designInstanceId = data.data.id;
-                    this.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id
+                    this.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id;
+                    this.versionCode  = data.data.data.flowInstance.flowDefVersion.versionCode;
                     $(".statuscenter-info").html("");
                     $(".flow-historyprogress").html("");
                     g.showFlowHistoryData(data.data.data.flowHistoryList);
@@ -256,7 +264,8 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: "流程图",
-            url: _ctxPath + "/design/showLook?id="+ this.designFlowDefinationId+ "&instanceId="+this.designInstanceId
+            url: _ctxPath + "/design/showLook?id="+ this.designFlowDefinationId+ "&instanceId="+this.designInstanceId+"&versionCode="+this.versionCode,
+            id : this.designInstanceId
         };
         g.addTab(tab);
     },
