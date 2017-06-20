@@ -110,7 +110,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-next").bind("click", function () {
             if ($(this).text() == "完成") {
-                g.submit(true);
+                var endEventId = $(".select", ".flow-decision-box").attr("id");
+                g.submit(true, endEventId);
             } else {
                 g.goToNext();
             }
@@ -237,7 +238,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getDesionIds: function () {
         var includeNodeIds = "";
         var doms;
-        if (this.desionType = 2) {
+        if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
             for (var i = 0; i < doms.length; i++) {
                 includeNodeIds += $(doms[i]).attr("id");
@@ -300,8 +301,22 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         g.close();
                         return;
                     }
-                    if(status.data == "EndEvent"){
-                        g.submit(true);
+                    if (status.data == "EndEvent") {
+                        var msgbox = EUI.MessageBox({
+                            title: "操作提示",
+                            msg: "当前操作流程将会结束，是否继续？",
+                            buttons: [{
+                                title: "确定",
+                                handler: function () {
+                                    g.submit(true);
+                                    msgbox.remove();
+                                }
+                            }, {
+                                title: "取消", handler: function () {
+                                    msgbox.remove();
+                                }
+                            }]
+                        })
                         return;
                     }
                     g.toChooseUserData = status.data;
@@ -391,7 +406,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return true;
     },
-    submit: function (isEnd) {
+    submit: function (isEnd, endEventId) {
         var g = this;
         if (!isEnd && !this.checkUserValid()) {
             return;
@@ -405,6 +420,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 taskId: this.taskId,
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
+                endEventId: endEventId,
                 taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser())
             },
             success: function (status) {
