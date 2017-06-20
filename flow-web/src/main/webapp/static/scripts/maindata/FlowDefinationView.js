@@ -395,13 +395,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     "border-radius": "3px"
                 },
                 gridCfg: {
-                    shrinkToFit:true,//固定宽度
                     loadonce: true,
                     colModel: [{
                         label: this.lang.operateText,
                         name: "operate",
                         index: "operate",
-                        width: 150,
+                        width: 110,
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             var strVar = "<div class='condetail_operate'>"
@@ -417,7 +416,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name"
+                        index: "name",
                     }, {
                         label: "最新版本ID",
                         name: "lastVersionId",
@@ -426,11 +425,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: "定义KEY",
                         name: "defKey",
-                        index: "defKey"
+                        index: "defKey",
                     }, {
                         label: "流程类型",
                         name: "flowType.name",
-                        index: "flowType.name"
+                        index: "flowType.name",
                     }, {
                         label: "业务实体ID",
                         name: "flowType.businessModel.id",
@@ -439,7 +438,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: "启动条件UEL",
                         name: "startUel",
-                        index: "startUel"
+                        index: "startUel",
                     }, {
                         label: "组织机构ID",
                         name: "orgId",
@@ -453,7 +452,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.depictText,
                         name: "depict",
-                        index: "depict"
+                        index: "depict",
                     }, {
                         label: "流程定义状态",
                         name: "flowDefinationStatus",
@@ -475,8 +474,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: "优先级",
                         name: "priority",
                         index: "priority",
-                        width: '10%'
                     }],
+                    shrinkToFit:true,//固定宽度
                     ondbClick: function () {
                         var rowData = EUI.getCmp("gridPanel").getSelectRow();
                         g.getValues(rowData.id);
