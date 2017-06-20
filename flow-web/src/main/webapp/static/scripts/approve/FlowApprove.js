@@ -110,7 +110,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-next").bind("click", function () {
             if ($(this).text() == "完成") {
-                var endEventId = $(".select", ".flow-node-box").attr("id");
+                var endEventId = $(".select", ".flow-decision-box").attr("id");
                 g.submit(true, endEventId);
             } else {
                 g.goToNext();
