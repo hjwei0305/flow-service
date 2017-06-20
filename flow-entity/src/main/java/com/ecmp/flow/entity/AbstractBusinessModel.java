@@ -37,7 +37,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     protected static final Log logger = LogFactory
             .getLog(AbstractBusinessModel.class);
     /**
-     * 业务名称--
+     * 业务名称
      */
     @Column(name = "name",length = 80,nullable = false)
     private  String name;
