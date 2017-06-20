@@ -226,9 +226,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                '<div class="choose-icon ' + iconCss + '"></div>' +
-                '<div class="excutor-item-title">' + item.name + '</div></div>';
+            if (!item.gateWayName) {
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="choose-icon ' + iconCss + '"></div>' +
+                    '<div class="excutor-item-title"><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+            } else {
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="choose-icon ' + iconCss + '"></div>' +
+                    '<div class="excutor-item-title"><div class="gateway-name">' + item.gateWayName + '</div><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+            }
         }
         if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
             $(".flow-next").text("完成");
