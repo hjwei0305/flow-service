@@ -326,7 +326,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             return;
         }
         var mask = EUI.LoadMask({
-            msg: "正在保存，请稍候..."
+            msg: "正在启动，请稍候..."
         });
         EUI.Store({
             url: g.url,
