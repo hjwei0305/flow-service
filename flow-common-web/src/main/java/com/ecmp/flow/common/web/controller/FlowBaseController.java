@@ -193,7 +193,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList) {
+    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -219,13 +219,17 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                         v.put(f.getUserVarName(), idArray);
                     }
                 }
+            }else{
+                if(StringUtils.isNotEmpty(endEventId)){
+                    selectedNodeIds.add(endEventId);
+                }
             }
 
             flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
             //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-            OperateResultWithData operateResult = proxy.complete(flowTaskCompleteVO);
+            OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
             if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
                 defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
                 baseService.save(defaultBusinessModel);

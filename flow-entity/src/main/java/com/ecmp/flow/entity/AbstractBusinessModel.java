@@ -47,7 +47,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
      */
     @Version
     @Column(name = "version")
-    private Integer version=0;
+    private Integer version = 0;
 
     /**
      * 当前流程状态
