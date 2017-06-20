@@ -37,17 +37,17 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     protected static final Log logger = LogFactory
             .getLog(AbstractBusinessModel.class);
     /**
-     * 业务名称
+     * 业务名称--
      */
     @Column(name = "name",length = 80,nullable = false)
     private  String name;
 
-    /**
-     * 乐观锁-版本
-     */
-    @Version
-    @Column(name = "version")
-    private Integer version = 0;
+//    /**
+//     * 乐观锁-版本
+//     */
+//    @Version
+//    @Column(name = "version")
+//    private Integer version = 0;
 
     /**
      * 当前流程状态
@@ -136,13 +136,13 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
         this.name = name;
     }
 
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     @Override
     public FlowStatus getFlowStatus() {
@@ -261,7 +261,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
                 .append("orgPath", this.orgPath)
                 .append("orgId", this.orgId)
                 .append("orgName", this.orgName)
-                .append("version", this.version)
+//                .append("version", this.version)
                 .append("flowStatus", this.orgPath)
                 .append("priority", this.priority)
                 .toString();
