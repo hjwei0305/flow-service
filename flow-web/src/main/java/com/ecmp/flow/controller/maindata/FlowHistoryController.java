@@ -5,6 +5,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowHistoryService;
@@ -59,7 +60,7 @@ public class FlowHistoryController extends FlowBaseController{
     public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String account = ContextUtil.getSessionUser().getAccount();
-        // search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
+         search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTaskPageResult, JsonUtil.DATE_TIME);
@@ -75,7 +76,13 @@ public class FlowHistoryController extends FlowBaseController{
     public String rollBackTask(String id) {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(id);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        OperateStatus operateStatus;
+        if(result.successful()){
+             operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        }else{
+            operateStatus = new OperateStatus(result.notSuccessful(), result.getMessage());
+        }
+
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -92,7 +99,11 @@ public class FlowHistoryController extends FlowBaseController{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId);
-        operateStatus = new OperateStatus(true, result.getMessage());
+        if(result.successful()){
+            operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        }else{
+            operateStatus = new OperateStatus(result.notSuccessful(), result.getMessage());
+        }
         return JsonUtil.serialize(operateStatus);
     }
 
