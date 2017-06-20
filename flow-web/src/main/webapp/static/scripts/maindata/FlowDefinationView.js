@@ -395,12 +395,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     "border-radius": "3px"
                 },
                 gridCfg: {
+                    shrinkToFit:true,//固定宽度
                     loadonce: true,
                     colModel: [{
                         label: this.lang.operateText,
                         name: "operate",
                         index: "operate",
-                        width: 100,
+                        width: 130,
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             var strVar = "<div class='condetail_operate'>"
