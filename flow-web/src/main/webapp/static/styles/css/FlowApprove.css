@@ -238,3 +238,17 @@
 .flow-decision-item{
     margin-bottom: 10px;
 }
+.excutor-item-title>div{
+    display: inline-block;
+}
+.gateway-name{
+    font-weight: bold;
+}
+
+.approve-arrows-right{
+    width: 37px;
+    height: 8px;
+    background: url("../images/approve-arrows-right.png") no-repeat;
+    background-size: cover;
+    margin: 0 5px;
+}
