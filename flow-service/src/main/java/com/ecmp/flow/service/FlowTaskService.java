@@ -306,9 +306,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         }
 
-        OperateResultWithData result = OperateResultWithData.OperationSuccess("core_00003");
+        OperateResultWithData<String> result = OperateResultWithData.OperationSuccess("core_00003");
         if(instance==null||instance.isEnded()){
-            result.setData(FlowStatus.COMPLETED);//任务结束
+            result.setData(FlowStatus.COMPLETED.toString());//任务结束
+            flowTask.getFlowInstance().setEnded(true);
+            flowTask.getFlowInstance().setEndDate(new Date());
+            flowInstanceDao.save(flowTask.getFlowInstance());
         }
         return result;
     }

@@ -136,6 +136,21 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return nodeIds;
     }
 
+    /**
+     * 获取流程实例任务历史id列表，以完成时间升序排序
+     * @param id
+     */
+    public List<String>  nodeHistoryIds(String id){
+        List<String> nodeIds = new ArrayList<String>();
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(id);
+        if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
+            for(FlowHistory flowHistory:flowHistoryList){
+                nodeIds.add(flowHistory.getActTaskDefKey());
+            }
+        }
+        return nodeIds;
+    }
+
   public List<FlowHistory>  findAllByBusinessId(String businessId){
           return flowHistoryDao.findAllByBusinessId(businessId);
   }

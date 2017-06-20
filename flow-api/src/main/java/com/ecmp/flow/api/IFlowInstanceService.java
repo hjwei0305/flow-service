@@ -149,4 +149,16 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "测试")
     public List<ProcessTrackVO> getProcessTrackVO(@PathParam("businessId")String businessId);
+
+
+    /**
+     * 获取流程实例任务历史id列表，以完成时间升序排序
+     * @param id
+     */
+    @GET
+    @Path("getodeHistoryIds/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "主要用于流程图跟踪")
+    public List<String>  nodeHistoryIds(@PathParam("id")String id);
 }
