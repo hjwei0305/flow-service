@@ -72,7 +72,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED")?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>':"";
+            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED"&&items[j].flowInstance.ended==false)?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>':"";
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
