@@ -156,15 +156,15 @@
 }
 
 .flow-hsitorycenter {
-//height: 290px;
-	margin: 0px 20px 20px;
+    height: 315px;
+	/*margin: 0px 20px 20px;*/
 	padding: 20px;
 	background-color: #f8f9f9;
 	overflow-y:auto;
 }
 
 .historycenter-info {
-	height: 290px;
+	height: 315px;
 	/*border: 1px solid #000000;*/
 }
 
@@ -190,6 +190,40 @@
 	margin-top: 5px;
 	margin-left: 10px;
 	float: left;
+}
+
+.flow-end {
+	height: 25px;
+	/*border: 1px solid #000000;*/
+	overflow: hidden;
+	margin-top: 10px;
+	/*border-bottom: 1px solid #EEEEEE;*/
+}
+.flow-endImg {
+	width: 20px;
+	height: 20px;
+	float: left;
+	margin-top: 5px;
+	background: url(../images/img/flowEnd.png);
+}
+.flow-endfield{
+	font-size: 14px;
+	color:  #EE0000;
+	font-weight: bold;
+	margin-top: 5px;
+	margin-left: 10px;
+	float: left;
+}
+.flow-endright {
+	float: right;
+	margin-top: 5px;
+	overflow: hidden;
+}
+.flow-endtime {
+	float: left;
+	font-size: 14px;
+	margin-left: 10px;
+	color: #333333;
 }
 
 .text {
@@ -293,8 +327,8 @@
 }
 
 .flow-statuscenter {
-	/*height: 290px;*/
-	margin: 0px 20px 20px;
+	height: 315px;
+	/*margin: 0px 20px 20px;*/
 	padding: 20px;
 	background-color: #f8f9f9;
 	overflow-y:auto;
@@ -302,7 +336,7 @@
 
 .statuscenter-info {
 	width: 520px;
-	height: 290px;
+	height: 305px;
 	/*border:1px solid #000000;*/
 }
 

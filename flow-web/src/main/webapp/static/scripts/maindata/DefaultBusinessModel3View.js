@@ -465,7 +465,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                                     + "<div class='condetail-delete'  title='删除'></div>" +
                                     "</div>";
                             }
-                            if(	"INPROCESS" == rowObject.flowStatus){
+                            if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
                                 var strVar = "<div class='condetail-operate'>"+
                                     "<div class='condetail-flowHistory'title='流程历史'></div>"
                                     + "<div class='condetail-update' title='编辑'></div>"

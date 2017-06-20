@@ -76,7 +76,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         g.win = EUI.Window({
             title: "流程信息",
             width: 650,
-            height: 515,
+            height: 523,
             padding: 0,
             xtype: "Container",
             layout: "border",
@@ -110,12 +110,12 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 },
                 data: this.instanceData,
                 afterSelect: function (data) {
-                    console.log(data.data.id);
-                    this.designInstanceId = data.data.id;
-                    this.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id;
-                    this.versionCode  = data.data.data.flowInstance.flowDefVersion.versionCode;
+                    g.designInstanceId = data.data.id;
+                    g.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id;
+                    g.versionCode  = data.data.data.flowInstance.flowDefVersion.versionCode;
                     $(".statuscenter-info").html("").removeClass("text-center");
                     $(".flow-historyprogress").html("");
+                    $(".flow-end").css("display", "none");
                     g.showFlowHistoryData(data.data.data.flowHistoryList);
                     g.showFlowStatusData(data.data.data.flowTaskList);
                 }
@@ -174,12 +174,19 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '						</div>' +
             '						<div class="flow-historyprogress">' +
             '						</div>' +
+            '                       <div class="flow-end" style="display: none;">'+
+            '							<div class="flow-endImg"></div>'+
+            '							<div class="flow-endfield">流程结束</div>'+
+            '							<div class="flow-endright">'+
+            '							</div>'+
+            '						</div>';
             '					</div>' +
             '				</div>';
     },
 
     //拼接流程历史头部数据的html
     showFlowHistoryTopData: function (data) {
+        console.log(data)
         var g = this;
         var html = "";
         html = '<div class="flow-startimg"></div>' +
@@ -209,6 +216,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '						</div>';
         }
         $(".flow-historyprogress").append(html);
+        if(typeof(data[0])=="undefined"){
+            return;
+        }else{
+            if(data[0].flowInstance.ended == true){
+                $(".flow-end").css("display", "block");
+               $(".flow-endright").html(data[0].flowInstance.endDate)
+            }
+        }
     },
     //拼接流程状态数据的html
     showFlowStatusData: function (data) {
