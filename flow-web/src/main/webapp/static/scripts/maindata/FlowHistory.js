@@ -217,11 +217,9 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         }
         $(".flow-historyprogress").append(html);
         if(typeof(data[0])=="undefined"){
-            console.log("no")
             return;
         }else{
             if(data[0].flowInstance.ended == true){
-                console.log("YES")
                 $(".flow-end").css("display", "block");
                $(".flow-endright").html(data[0].flowInstance.endDate)
             }
