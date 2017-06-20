@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
@@ -69,7 +70,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResultWithData complete(FlowTaskCompleteVO flowTaskCompleteVO);
+    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO);
 
 
     /**

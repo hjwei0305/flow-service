@@ -139,11 +139,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public OperateResultWithData complete(FlowTaskCompleteVO flowTaskCompleteVO) {
+    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
         List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
-        OperateResultWithData result = null;
+        OperateResultWithData<FlowStatus> result = null;
         if (manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()) {//非人工选择任务的情况
             result = this.complete(taskId,flowTaskCompleteVO.getOpinion(), variables);
         } else {//人工选择任务的情况
@@ -202,7 +202,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
-    private OperateResultWithData complete(String id,String opinion, Map<String, Object> variables) {
+    private OperateResultWithData<FlowStatus> complete(String id,String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         flowTask.setDepict(opinion);
         String actTaskId = flowTask.getActTaskId();
@@ -306,9 +306,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         }
 
-        OperateResultWithData<String> result = OperateResultWithData.OperationSuccess("core_00003");
+        OperateResultWithData<FlowStatus> result = OperateResultWithData.OperationSuccess("core_00003");
         if(instance==null||instance.isEnded()){
-            result.setData(FlowStatus.COMPLETED.toString());//任务结束
+            result.setData(FlowStatus.COMPLETED);//任务结束
             flowTask.getFlowInstance().setEnded(true);
             flowTask.getFlowInstance().setEndDate(new Date());
             flowInstanceDao.save(flowTask.getFlowInstance());

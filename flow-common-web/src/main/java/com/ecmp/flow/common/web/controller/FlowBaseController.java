@@ -229,7 +229,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             //  Map<String,Object> v = new HashMap<String,Object>();
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-            OperateResultWithData operateResult = proxy.complete(flowTaskCompleteVO);
+            OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
             if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
                 defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
                 baseService.save(defaultBusinessModel);

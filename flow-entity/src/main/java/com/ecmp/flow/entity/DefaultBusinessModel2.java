@@ -5,6 +5,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 
 /**
@@ -21,7 +22,8 @@ import javax.persistence.Entity;
  * *************************************************************************************************
  */
 @JsonIgnoreProperties(value={"conditionPojo"})
-@Entity(name = "default_business_model2")
+@Entity()
+@Table(name = "default_business_model2")
 @DynamicInsert
 @DynamicUpdate
 public class DefaultBusinessModel2 extends AbstractBusinessModel{
