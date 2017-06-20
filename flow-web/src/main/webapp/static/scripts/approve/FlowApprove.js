@@ -110,7 +110,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-next").bind("click", function () {
             if ($(this).text() == "完成") {
-                var endEventId = $(".select", nodeDom).attr("id");
+                var endEventId = $(".select", ".flow-decision-box").attr("id");
                 g.submit(true, endEventId);
             } else {
                 g.goToNext();
@@ -238,7 +238,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getDesionIds: function () {
         var includeNodeIds = "";
         var doms;
-        if (this.desionType = 2) {
+        if (this.desionType != 2) {
             doms = $(".select", ".flow-decision-box");
             for (var i = 0; i < doms.length; i++) {
                 includeNodeIds += $(doms[i]).attr("id");
