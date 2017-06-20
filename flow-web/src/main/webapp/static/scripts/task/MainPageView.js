@@ -1,8 +1,6 @@
 EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     data: null,
-    menudata: null,
-    dataWait: null,
     menu: null,
     initComponent: function () {
         EUI.Container({
@@ -42,17 +40,20 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".task-work").bind("click", function () {
+            $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showTodoTaskView(true);
         });
         $(".history-work").bind("click", function () {
+            $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showCompleteTaskView(true);
             $("#completeTask-content").addClass("rim");
         });
         $(".workOrder").bind("click", function () {
+            $(".workOrder").next().hide();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showMyOrderView(true);
@@ -98,6 +99,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showCompleteTaskView(false);
             if (this.myOrderView) {
                 this.myOrderView.show();
+                this.myOrderView.showCompleteOrderView(true);
                 return;
             }
             this.myOrderView = new EUI.MyOrderView({
