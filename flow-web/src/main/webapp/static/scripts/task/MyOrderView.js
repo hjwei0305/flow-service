@@ -1,6 +1,7 @@
 //已办单据
 EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
+    currentItem:"taken-invoices",
     initComponent: function () {
         this.initHtml();
         this.showCompleteOrderView(true);
@@ -16,13 +17,14 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         return '<div class="taken-center">' +
             '            <div class="center-top">' +
             '                <div class="top-header">' +
-            '                    <span class="worktable">我的单据</span>' +
-            '                    <div class="header-right">' +
+            '                    <div class="header-left">' +
             '                        <span class="wait-invoices">待办单据</span>' +
             '                        <span class="taken-work taken-invoices active">已办单据</span>' +
             '                        <div class="data">' +
             '                            <div id="dateField"></div>' +
             '                        </div>' +
+            '                    </div>' +
+            '                    <div class="header-right">' +
             '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                    </div>' +
             '                </div>' +
@@ -33,21 +35,79 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     },
     //我的单据中的日历
     initChooseDate: function () {
+        var g=this;
+        var start=new Date();
+        g.endTime=start.format("yyyy-MM-dd");
+        g.startTime=new Date(start.setDate(start.getDate()+(-6))).format("yyyy-MM-dd");
         EUI.FieldGroup({
             renderTo: "dateField",
             itemspace: 10,
             width: 266,
             items: [{
                 xtype: "DateField",
+                name:"startDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 100
+                width: 100,
+                allowBlank:false,
+                value:g.startTime,
+                beforeSelect:function (data) {
+                    var end=EUI.getCmp("dateField").getCmpByName("endDate").getValue();
+                    var result=g.checkDate(data.nowValue,end);
+                    if(result){
+                        return true;
+                    }else {
+                        g.message("起始日期不能大于截止日期");
+                        return false;
+                    }
+                },
+                afterSelect:function () {
+                    g.refreshCurrentData();
+                }
             }, "到", {
                 xtype: "DateField",
+                name:"endDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 100
-            }]
+                width: 100,
+                allowBlank:false,
+                value:g.endTime,
+                beforeSelect:function (data) {
+                    var start=EUI.getCmp("dateField").getCmpByName("startDate").getValue();
+                    var result=g.checkDate(start,data.nowValue);
+                    if(result){
+                        return true;
+                    }else {
+                        g.message("截止日期不能小于起始日期");
+                        return false;
+                    }
+                },
+                afterSelect:function () {
+                    g.refreshCurrentData();
+                }
+            }],
+            getCmpByName : function() {
+                var name = arguments[0];
+                var items = this.items;
+                return this.doGetCmp(items, name);
+            },
+            doGetCmp : function() {
+                var items = arguments[0], name = arguments[1];
+                if (items) {
+                    for (var i = 0; i < items.length; i++) {
+                        var item = EUI.getCmp(items[i]);
+                        if (item.isFormField && item.name == name) {
+                            return item;
+                        } else {
+                            var cmp = this.doGetCmp(item.items, name);
+                            if (cmp != null) {
+                                return cmp;
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
         })
     },
     show: function () {
@@ -59,14 +119,29 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".wait-invoices").bind("click", function () {
+            g.currentItem="wait-invoices";
             $(".taken-invoices").removeClass("active");
             $(this).addClass("active");
             g.showTodoOrderView(true);
         });
         $(".taken-invoices").bind("click", function () {
+            g.currentItem="taken-invoices";
             $(".wait-invoices").removeClass("active");
             $(this).addClass("active");
             g.showCompleteOrderView(true);
+        });
+        $(".header-left").next().children(":first").bind("keyup", function (e) {
+            var keycode = window.event?e.keyCode:e.which;
+            if(keycode==13) {
+                var start=EUI.getCmp("dateField").getCmpByName("startDate").getValue();
+                var end=EUI.getCmp("dateField").getCmpByName("endDate").getValue();
+                var result=g.checkDate(start,end);
+                if(result){
+                    g.refreshCurrentData();
+                }else {
+                    g.message("截止日期不能小于起始日期");
+                }
+            }
         });
     },
     //已办单据
@@ -75,6 +150,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             this.showTodoOrderView(false);
             if (this.completeOrderView) {
                 this.completeOrderView.show();
+                this.completeOrderView.getTodoOrderData();
                 return;
             }
             this.completeOrderView = new EUI.CompleteOrderView({
@@ -90,6 +166,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             this.showCompleteOrderView(false);
             if (this.todoOrderView) {
                 this.todoOrderView.show();
+                this.todoOrderView.getTodoOrderData();
                 return;
             }
             this.todoOrderView = new EUI.TodoOrderView({
@@ -98,5 +175,42 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         } else if (this.todoOrderView) {
             this.todoOrderView.hide();
         }
+    },
+    refreshCurrentData:function () {
+        var g=this;
+        switch (g.currentItem) {
+            case "wait-invoices":
+                g.todoOrderView.getTodoOrderData();
+                break;
+            case "taken-invoices":
+                g.completeOrderView.getTodoOrderData();
+                break;
+            default:
+                break;
+        }
+    },
+    checkDate:function (sdate,edate) {
+        var g=this;
+        var start = new Date(sdate.replace("-", "/").replace("-", "/"));
+        var end = new Date(edate.replace("-", "/").replace("-", "/"));
+        if ((sdate || edate )&& start > end) {
+            return false;
+        }
+        return true;
+    },
+    message: function (msg) {
+        var g = this;
+        var message = EUI.MessageBox({
+            border: true,
+            title: "提示",
+            showClose: true,
+            msg: msg,
+            buttons: [{
+                title: "确定",
+                handler: function () {
+                    message.remove();
+                }
+            }]
+        });
     }
 });
