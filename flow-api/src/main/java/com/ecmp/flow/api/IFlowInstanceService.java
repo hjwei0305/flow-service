@@ -156,7 +156,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param id
      */
     @GET
-    @Path("getodeHistoryIds/{id}")
+    @Path("getNodeHistoryIds/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "主要用于流程图跟踪")
