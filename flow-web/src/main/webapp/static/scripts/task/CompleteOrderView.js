@@ -30,7 +30,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             params: {
                 Q_GE_startDate__Date:startDate,
                 Q_LE_endDate__Date:endDate,
-                Q_LK_businessName:searchText?searchText:null,
+                Quick_value:searchText?searchText:null,
                 Q_EQ_ended__Boolean: true,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
