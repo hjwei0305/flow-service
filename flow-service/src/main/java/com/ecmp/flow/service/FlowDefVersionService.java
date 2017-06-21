@@ -165,7 +165,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 //            entity.setVersionCode(1);
             entity.setFlowDefination(flowDefination);
             entity.setDefJson(definition.getDefJson());
-            entity.setDefBpmn(defBpm);
+//            entity.setDefBpmn(defBpm);
             entity.setDefXml(defBpm);
             entity.setPriority(definition.getPriority());
 
@@ -195,7 +195,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
                 entity.setFlowDefination(flowDefination);
                 entity.setDefJson(definition.getDefJson());
-                entity.setDefBpmn(defBpm);
+//                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 entity.setName(process.getName());
                 entity.setPriority(definition.getPriority());
@@ -213,7 +213,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 //                entity.setVersionCode(1);
                 entity.setFlowDefination(flowDefination);
                 entity.setDefJson(definition.getDefJson());
-                entity.setDefBpmn(defBpm);
+//                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 if(process.getStartUEL()!=null){
                    // flowDefination.setStartUel(process.getStartUEL().toString());
