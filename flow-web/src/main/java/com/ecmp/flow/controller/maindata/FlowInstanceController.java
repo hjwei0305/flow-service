@@ -119,9 +119,11 @@ public class FlowInstanceController {
         String creatorId = ContextUtil.getUserId();
         Search search = SearchUtil.genSearch(request);
         SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
-       // SearchFilter searchFilterEnded = new SearchFilter("ended",true, SearchFilter.Operator.EQ);
         search.addFilter(searchFilterCreatorId);
-       // search.addFilter(searchFilterEnded);
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        search.addQuickSearchProperty("businessName");
+        search.addQuickSearchProperty("businessCode");
+        search.addQuickSearchProperty("businessModelRemark");
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
         List<FlowInstance>  flowInstanceList = flowInstancePageResult.getRows();
