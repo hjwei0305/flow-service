@@ -336,7 +336,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     /**
-     * 撤回到指定任务节点
+     * 撤回到指定任务节点,加撤销意见
      *
      * @param id
      * @return
