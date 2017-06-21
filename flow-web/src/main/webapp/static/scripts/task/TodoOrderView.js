@@ -69,6 +69,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
     },
     //待办单据界面内容部分的循环
     showTodoOrderView: function (datas) {
+        $(".invoice-info", '#' + this.renderTo).empty();
         var html = "";
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
@@ -153,11 +154,9 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var temps = url.split("\/");
-            var lookApproveUrl = temps[3] + "/" + temps[4];
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.businessId,
+                url: _ctxPath + "/" + url + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);
