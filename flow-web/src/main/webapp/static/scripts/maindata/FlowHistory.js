@@ -98,12 +98,11 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + "启动历史" + "</span>",
-                width: 350,
+                width: 375,
                 field: ["id"],
                 labelWidth: 80,
                 name: "name",
                 id: "flowInstanceId",
-                listWidth: 200,
                 reader: {
                     name: "name",
                     field: ["id"]
