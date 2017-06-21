@@ -30,7 +30,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             params: {
                 Q_GE_startDate__Date:startDate,
                 Q_LE_endDate__Date:endDate,
-                Q_LK_businessName:searchText?searchText:null,
+                Quick_value:searchText?searchText:null,
                 Q_EQ_ended__Boolean: true,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
@@ -78,7 +78,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                 html = $('<div class="info-items">' +
                     '                            <div class="item">' +
                     '                                <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
-                    '                                <span class="item-right general" title="流程发起时间">' + item.createdDate + '</span>' +
+                    '                                <span class="item-right general" title="流程结束时间">' + item.endDate + '</span>' +
                     '                            </div>' +
                     '                            <div class="item">' +
                     '                                <div class="remark">'+item.businessModelRemark+
@@ -98,7 +98,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total").text("共" + records + "条记录");
+        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
     },
     show: function () {
         $("#" + this.renderTo).css("display", "block");
@@ -154,10 +154,9 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
-            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + url + "?id=" + data.businessId,
+                url: _ctxPath + data.lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);
@@ -174,4 +173,12 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             })
         });
     },
+    //在新的窗口打开（模拟新页签的打开方式）
+    addTab: function (tab) {
+        if (parent.homeView) {
+            parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+        } else {
+            window.open(tab.url);
+        }
+    }
 });

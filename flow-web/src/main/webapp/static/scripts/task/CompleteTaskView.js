@@ -98,7 +98,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total").text("共" + records + "条记录");
+        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
     },
     //底部翻页绑定事件
     pagingEvent: function () {
@@ -185,15 +185,22 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var win = EUI.Window({
                 title: "撤销",
-                height: 30,
-                width:250,
-                html:"<div>确定撤销吗？</div>",
+                height: 100,
+                items:[{
+                    xtype:"TextArea",
+                    title:"撤销说明",
+                    name: 'opinion',
+                    id: "opinion",
+                    labelWidth: 90,
+                    width: 220,
+                    height: 80,
+                    allowBlank:false
+                }],
                 buttons: [{
                     title: "确定",
                     selected: true,
                     handler: function () {
-                        // var opinion = EUI.getCmp("opinion");
-                        win.close();
+                        var opinion = EUI.getCmp("opinion").getValue();
                         var myMask = EUI.LoadMask({
                             msg: "处理中，请稍后.."
                         });
@@ -201,13 +208,14 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/flowClient/cancelTask",
                             params: {
                                 preTaskId: data.id,
-                                opinion: ""
+                                opinion: opinion
                             },
                             success: function (result) {
                                 myMask.hide();
                                 if (result.success) {
+                                    win.close();
                                     //TODO:刷新当前页
-                                    window.location.reload()
+                                    window.location.reload();
                                 } else {
                                     EUI.ProcessStatus(result);
                                 }

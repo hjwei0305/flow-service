@@ -341,10 +341,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param id
      * @return
      */
-    public OperateResult rollBackTo(String id) {
+    public OperateResult rollBackTo(String id,String opinion) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
-        result = this.taskRollBack(flowHistory);
+        result = this.taskRollBack(flowHistory,opinion);
         if (result.successful()) {
             flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
             flowHistoryDao.save(flowHistory);
@@ -502,7 +502,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
-    public OperateResult taskRollBack(FlowHistory flowHistory) {
+    public OperateResult taskRollBack(FlowHistory flowHistory,String opinion) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
@@ -551,7 +551,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                     .executionId(execution.getId());
             if (his != null) {
-                historicActivityInstance = his.activityId(currTask.getTaskDefinitionKey()).singleResult();
+            List<HistoricActivityInstance>    historicActivityInstanceList = his.activityId(currTask.getTaskDefinitionKey()).orderByHistoricActivityInstanceEndTime().desc().list();
+             if(historicActivityInstanceList !=null && !historicActivityInstanceList.isEmpty()) {
+                 historicActivityInstance = historicActivityInstanceList.get(0);
+             }
                 if (historicActivityInstance == null) {
                     his = historyService.createHistoricActivityInstanceQuery().processInstanceId(instance.getId())
                             .taskAssignee(currTask.getAssignee());
@@ -614,6 +617,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             newTask.setProcessDefinitionId(currTask.getProcessDefinitionId());
             newTask.setProcessInstanceId(currTask.getProcessInstanceId());
             newTask.setVariables(currTask.getProcessVariables());
+            newTask.setDescription("【被撤销】"+opinion);
             // newTnewTaskask.setExecution((DelegateExecution) execution);
             // newTask.setProcessInstance(instance);
             // newTask.setTaskDefinition(currActivity.gett);

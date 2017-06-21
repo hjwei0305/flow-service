@@ -60,51 +60,13 @@ public class FlowHistoryController extends FlowBaseController{
     public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String account = ContextUtil.getSessionUser().getAccount();
+        if("admin".equalsIgnoreCase(account)){
+            account = "666666";
+        }
          search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTaskPageResult, JsonUtil.DATE_TIME);
-    }
-
-    /**
-     * 撤销任务
-     * @param id 任务历史ID
-     * @return 操作结果
-     */
-    @RequestMapping(value = "rollBackTask")
-    @ResponseBody
-    public String rollBackTask(String id) {
-        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result = proxy.rollBackTo(id);
-        OperateStatus operateStatus;
-        if(result.successful()){
-             operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        }else{
-            operateStatus = new OperateStatus(result.notSuccessful(), result.getMessage());
-        }
-
-        return JsonUtil.serialize(operateStatus);
-    }
-
-    /**
-     * 回退（撤销）任务
-     *
-     * @param preTaskId 上一个任务ID
-     * @param opinion   意见
-     * @return 操作结果
-     */
-    @RequestMapping(value = "cancelTask")
-    @ResponseBody
-    public String rollBackTo(String preTaskId, String opinion) {
-        OperateStatus operateStatus = null;
-        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result = proxy.rollBackTo(preTaskId);
-        if(result.successful()){
-            operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        }else{
-            operateStatus = new OperateStatus(result.notSuccessful(), result.getMessage());
-        }
-        return JsonUtil.serialize(operateStatus);
     }
 
 }

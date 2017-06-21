@@ -79,11 +79,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return
      */
     @POST
-    @Path("rollBackTo")
+    @Path("rollBackTo/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
-    public  OperateResult rollBackTo(String id);
+    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion);
 
     /**
      * 驳回任务（动态驳回）
