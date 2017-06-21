@@ -75,7 +75,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         g.win = EUI.Window({
             title: "流程信息",
-            width: 650,
+            width: 615,
             height: 523,
             padding: 0,
             xtype: "Container",
@@ -98,7 +98,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + "启动历史" + "</span>",
-                width: 418,
+                width: 350,
                 field: ["id"],
                 labelWidth: 80,
                 name: "name",
