@@ -241,7 +241,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var win = EUI.Window({
             title: "已办任务",
             layout: "border",
-            width: 1400,
+            width: 1100,
             height: 500,
             padding: 8,
             itemspace: 0,
