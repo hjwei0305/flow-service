@@ -344,9 +344,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResult rollBackTo(String id,String opinion) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
-        result = this.taskRollBack(flowHistory,opinion);
+        result = this.taskRollBack(flowHistory);
         if (result.successful()) {
             flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
+            flowHistory.setDepict("【被撤销】"+opinion);
             flowHistoryDao.save(flowHistory);
         }
         return result;
@@ -502,7 +503,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
-    public OperateResult taskRollBack(FlowHistory flowHistory,String opinion) {
+    public OperateResult taskRollBack(FlowHistory flowHistory) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
@@ -617,7 +618,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             newTask.setProcessDefinitionId(currTask.getProcessDefinitionId());
             newTask.setProcessInstanceId(currTask.getProcessInstanceId());
             newTask.setVariables(currTask.getProcessVariables());
-            newTask.setDescription("【被撤销】"+opinion);
+//            newTask.setDescription("【被撤销】"+opinion);
             // newTnewTaskask.setExecution((DelegateExecution) execution);
             // newTask.setProcessInstance(instance);
             // newTask.setTaskDefinition(currActivity.gett);
@@ -630,7 +631,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             deleteOtherNode(currActivity, instance, definition, currTask);
 
             //初始化回退后的新任务
-            flowHistory.setDepict(null);
+//            flowHistory.setDepict(null);
             initTask(instance, currTask.getTaskDefinitionKey(), flowHistory);
             return result;
         } catch (Exception e) {
