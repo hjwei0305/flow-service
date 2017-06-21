@@ -139,6 +139,8 @@ public class FlowInstanceController {
                 myBillVO.setCreatorName(f.getCreatorName());
                 myBillVO.setCreatorId(f.getCreatorId());
                 myBillVO.setFlowName(f.getFlowName());
+                myBillVO.setLookUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl());
+                myBillVO.setEndDate(f.getEndDate());
                 data.add(myBillVO);
             }
         }
