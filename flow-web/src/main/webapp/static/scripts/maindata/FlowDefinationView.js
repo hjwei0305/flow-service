@@ -85,7 +85,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var Wind = EUI.Window({
             title: "流程定义版本",
-            width: 650,
+            width: 800,
             layout: "border",
             height: 500,
             padding: 8,
