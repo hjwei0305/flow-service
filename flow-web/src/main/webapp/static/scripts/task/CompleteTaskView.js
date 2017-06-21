@@ -156,11 +156,9 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var temps = url.split("\/");
-            var lookApproveUrl = temps[3] + "/" + temps[4];
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + lookApproveUrl + "?id=" + data.flowInstance.businessId,
+                url: _ctxPath + url + "?id=" + data.flowInstance.businessId,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
