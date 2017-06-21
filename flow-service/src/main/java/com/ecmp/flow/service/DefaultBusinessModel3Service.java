@@ -8,6 +8,7 @@ import com.ecmp.flow.api.IDefaultBusinessModel3Service;
 import com.ecmp.flow.dao.DefaultBusinessModel3Dao;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
+import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,8 @@ public class DefaultBusinessModel3Service extends BaseEntityService<DefaultBusin
     @SuppressWarnings("unchecked")
     public OperateResultWithData<DefaultBusinessModel3> save(DefaultBusinessModel3 entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel3.class);
+//        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel3.class);
+        String businessCode = CodeGenerator.genCodes(6,1).get(0);
         if(StringUtils.isEmpty(entity.getBusinessCode())){
             entity.setBusinessCode(businessCode);
         }

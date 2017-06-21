@@ -33,6 +33,10 @@ public class MyBillVO {
 
     private String flowName;//流程名称
 
+    private Date endDate;//流程结束时间
+
+    private String lookUrl;//表单查看url
+
 
 
 
@@ -106,5 +110,21 @@ public class MyBillVO {
 
     public void setFlowName(String flowName) {
         this.flowName = flowName;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getLookUrl() {
+        return lookUrl;
+    }
+
+    public void setLookUrl(String lookUrl) {
+        this.lookUrl = lookUrl;
     }
 }

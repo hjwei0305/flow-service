@@ -7,6 +7,7 @@ import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.DefaultBusinessModel;
+import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,7 +48,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @SuppressWarnings("unchecked")
     public OperateResultWithData<DefaultBusinessModel> save(DefaultBusinessModel entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel.class);
+//        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel.class);
+        String businessCode = CodeGenerator.genCodes(6,1).get(0);
         if(StringUtils.isEmpty(entity.getBusinessCode())){
             entity.setBusinessCode(businessCode);
         }
