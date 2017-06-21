@@ -6,7 +6,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     count: 0,
     id: null,
     versionCode: null,
-    flowDefVersionId:null,
+    flowDefVersionId: null,
     orgId: null,
     orgCode: null,
     instance: null,
@@ -91,7 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
-                readonly:this.id ? true : false,
+                readonly: this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -141,7 +141,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 displayText: "请输入流程名称",
                 labelWidth: 85,
-                width: 200,
+                width: 220,
                 allowBlank: false,
                 name: "name"
             }, {
@@ -614,7 +614,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var process = {
             name: baseInfo.name,
             id: baseInfo.id,
-            flowDefVersionId:this.flowDefVersionId || "",
+            flowDefVersionId: this.flowDefVersionId || "",
             isExecutable: true,
             startUEL: this.startUEL,
             nodes: {}
@@ -624,20 +624,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var nodeConfig = item.data();
-            if(!nodeConfig.normal){
+            if (!nodeConfig.normal) {
                 nodeConfig = this.defaultTaskConfig();
             }
             delete nodeConfig.rowdata;
             var node = {
-                type: item.attr("type"),
-                x: item.position().left - parentPos.left + 6,
-                y: item.position().top - parentPos.top + 6,
-                id: id,
-                nodeType: item.attr("nodeType"),
-                target: [],
-                name: item.find(".node-title").text(),
-                nodeConfig: nodeConfig
-            };
+                    type: item.attr("type"),
+                    x: item.position().left - parentPos.left + 6,
+                    y: item.position().top - parentPos.top + 6,
+                    id: id,
+                    css: item.find("div:first").attr("class"),
+                    nodeType: item.attr("nodeType"),
+                    target: [],
+                    name: item.find(".node-title").text(),
+                    nodeConfig: nodeConfig
+                }
+            ;
             if (node.type.endsWith("Gateway")) {
                 node.busType = item.attr("bustype");
             }
@@ -660,7 +662,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             id: this.id,
             versionCode: this.versionCode,
             priority: baseInfo.priority,
-            businessModelId:this.businessModelId,
+            businessModelId: this.businessModelId,
             process: process
         };
     }
@@ -774,7 +776,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "' class='flow-task flow-node node-choosed' type='"
             + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div>"
+            + "<div class='" + node.css + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
@@ -785,7 +787,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div></div>"
+            + "<div class='" + node.css + "'></div></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
@@ -809,7 +811,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 mask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-                       g.flowDefVersionId = result.data.id;
+                    g.flowDefVersionId = result.data.id;
                 }
             },
             failure: function (result) {
