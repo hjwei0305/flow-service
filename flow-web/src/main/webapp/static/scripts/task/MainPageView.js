@@ -99,7 +99,16 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showCompleteTaskView(false);
             if (this.myOrderView) {
                 this.myOrderView.show();
-                this.myOrderView.showCompleteOrderView(true);
+                switch (this.myOrderView.currentItem) {
+                    case "wait-invoices":
+                        this.myOrderView.showTodoOrderView(true);
+                        break;
+                    case "taken-invoices":
+                        this.myOrderView.showCompleteOrderView(true);
+                        break;
+                    default:
+                        break;
+                }
                 return;
             }
             this.myOrderView = new EUI.MyOrderView({
