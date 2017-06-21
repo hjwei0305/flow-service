@@ -35,9 +35,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
                 myMask.hide();
+                // g.getNotData();
                 if(!status.data){
+                    g.getNotData();
                     return;
                 }
+                // g.initHtml();
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
                 g.modelId = status.data[0].businessModeId;
@@ -48,6 +51,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
             }
         })
+    },
+    getNotData:function () {
+        var html='<div class="todo-not-data">' +
+            '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
+        $("#" + this.renderTo).append(html);
     },
     //导航部分的内容的循环
     getNavHtml: function (data) {
@@ -199,7 +207,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total").text("共" + records + "条记录");
+        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
     },
     //底部翻页绑定事件
     pagingEvent: function () {
@@ -347,7 +355,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             });
                             return;
                         }
-                        win.close();
+
                         var myMask = EUI.LoadMask({
                             msg: "处理中，请稍后.."
                         });
@@ -360,6 +368,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             success: function (result) {
                                 myMask.hide();
                                 if (result.success) {
+                                    win.close();
                                     //TODO:刷新当前页+
                                     window.location.reload();
 
