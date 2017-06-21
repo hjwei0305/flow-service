@@ -113,10 +113,6 @@ public class FlowInstanceController {
      * 获取我的单据（已办/待办）
      * @return
      */
-    /**
-     * 查询流程定义版本
-     * @return 操作结果
-     */
     @RequestMapping(value = "getMyBills")
     @ResponseBody
     public String getMyBills(ServletRequest request)  throws JsonProcessingException, ParseException{
@@ -129,9 +125,9 @@ public class FlowInstanceController {
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
         List<FlowInstance>  flowInstanceList = flowInstancePageResult.getRows();
-        List<MyBillVO> results  = null;
+        PageResult<MyBillVO> results  = new PageResult<MyBillVO>();
+        ArrayList<MyBillVO> data=new ArrayList<MyBillVO>();
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
-            results = new ArrayList<MyBillVO>();
             for(FlowInstance f:flowInstanceList){
                 MyBillVO  myBillVO = new MyBillVO();
                 myBillVO.setBusinessCode(f.getBusinessCode());
@@ -143,10 +139,12 @@ public class FlowInstanceController {
                 myBillVO.setCreatorName(f.getCreatorName());
                 myBillVO.setCreatorId(f.getCreatorId());
                 myBillVO.setFlowName(f.getFlowName());
-                results.add(myBillVO);
+                data.add(myBillVO);
             }
         }
-
+        results.setRows(data);
+        results.setPage(flowInstancePageResult.getPage());
+        results.setTotal(flowInstancePageResult.getTotal());
         return JsonUtil.serialize(results,JsonUtil.DATE_TIME);
     }
 
