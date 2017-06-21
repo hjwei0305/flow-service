@@ -2,6 +2,7 @@ package com.ecmp.flow.entity;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.*;
 
@@ -71,6 +72,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	 */
 	@Column(name = "businessModelRemark")
 	private String businessModelRemark;
+
+	/**
+	 * 业务额外属性
+	 */
+	@Lob
+	@Column(name = "business_extra_map")
+	private Map<String,Object> businessExtraMap;
 
 	/**
 	 * 开始时间
@@ -254,6 +262,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setBusinessName(String businessName) {
 		this.businessName = businessName;
+	}
+
+	public Map<String, Object> getBusinessExtraMap() {
+		return businessExtraMap;
+	}
+
+	public void setBusinessExtraMap(Map<String, Object> businessExtraMap) {
+		this.businessExtraMap = businessExtraMap;
 	}
 
 	@Override

@@ -92,13 +92,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Column(name = "def_json")
     private String defJson;
 
-    /**
-     * 流程BPMN文本
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "def_bpmn")
-    private String defBpmn;
+//    /**
+//     * 流程BPMN文本
+//     */
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+//    @Column(name = "def_bpmn")
+//    private String defBpmn;
 
     /**
      * 最终定义XML
@@ -159,7 +159,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.versionCode = versionCode;
         this.priority = priority;
         this.defJson = defJson;
-        this.defBpmn = defBpmn;
+//        this.defBpmn = defBpmn;
         this.defXml = defXml;
         this.depict = depict;
         this.flowInstances = flowInstances;
@@ -238,13 +238,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.defJson = defJson;
     }
 
-    public String getDefBpmn() {
-        return this.defBpmn;
-    }
-
-    public void setDefBpmn(String defBpmn) {
-        this.defBpmn = defBpmn;
-    }
+//    public String getDefBpmn() {
+//        return this.defBpmn;
+//    }
+//
+//    public void setDefBpmn(String defBpmn) {
+//        this.defBpmn = defBpmn;
+//    }
 
     public String getDefXml() {
         return this.defXml;
@@ -304,7 +304,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("versionCode", versionCode)
                 .append("priority", priority)
                 .append("defJson", defJson)
-                .append("defBpmn", defBpmn)
+//                .append("defBpmn", defBpmn)
                 .append("defXml", defXml)
                 .append("depict", depict)
                 .append("flowInstances", flowInstances)
