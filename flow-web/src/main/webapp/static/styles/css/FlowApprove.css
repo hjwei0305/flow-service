@@ -78,18 +78,21 @@
     padding: 20px;
 }
 
+
 .flow-remark {
-    margin: 0 20px;
-    height: 100px;
-    width: 400px;
-    resize: none;
     border: 1px solid #dddddd;
+    float: left;
+    height: 110px;
+    margin-left: 20px;
+    resize: none;
+    width: 350px;
 }
 
 .flow-next {
     background: #71d1fe none repeat scroll 0 0;
     color: white;
     margin-left: 40px;
+    margin-top: 71px;
 }
 
 .flow-iframe {
@@ -200,11 +203,13 @@
     text-align: center;
 }
 
+
 .flow-btn {
     border-radius: 4px;
     cursor: pointer;
-    padding: 10px 30px;
     display: inline-block;
+    float: left;
+    padding: 10px 30px;
 }
 
 .flow-operate .submit {
