@@ -44,6 +44,8 @@ public class FlowClientController {
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
+
+
     /**
      * 回退（撤销）任务
      *
@@ -56,8 +58,8 @@ public class FlowClientController {
     public String rollBackTo(String preTaskId, String opinion) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        OperateResult result = proxy.rollBackTo(preTaskId);
-        operateStatus = new OperateStatus(true, result.getMessage());
+        OperateResult result = proxy.rollBackTo(preTaskId,opinion);
+        operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -74,7 +76,7 @@ public class FlowClientController {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
-        operateStatus = new OperateStatus(true, result.getMessage());
+        operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
