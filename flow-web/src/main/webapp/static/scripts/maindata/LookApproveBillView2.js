@@ -65,6 +65,8 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "unitPrice",
                 width: 300,
                 id: "unitPrice",
+                allowNegative : false,//不允许输入负数
+                allowChar : "0123456789",// 允许输入的数字
                 // readonly:true,
                 colon: false,
                 style: {
@@ -76,6 +78,8 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "count",
                 width: 300,
                 id: "count",
+                allowNegative : false,//不允许输入负数
+                allowChar : "0123456789",// 允许输入的数字
                 // readonly:true,
                 colon: false,
                 style: {
