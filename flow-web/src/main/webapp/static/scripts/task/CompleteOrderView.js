@@ -98,7 +98,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total").text("共" + records + "条记录");
+        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
     },
     show: function () {
         $("#" + this.renderTo).css("display", "block");
