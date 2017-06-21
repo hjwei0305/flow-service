@@ -85,7 +85,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var Wind = EUI.Window({
             title: "流程定义版本",
-            width: 1000,
+            width: 650,
             layout: "border",
             height: 500,
             padding: 8,
@@ -416,7 +416,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name",
+                        index: "name"
                     }, {
                         label: "最新版本ID",
                         name: "lastVersionId",
@@ -425,11 +425,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: "定义KEY",
                         name: "defKey",
-                        index: "defKey",
+                        index: "defKey"
                     }, {
                         label: "流程类型",
                         name: "flowType.name",
-                        index: "flowType.name",
+                        index: "flowType.name"
                     }, {
                         label: "业务实体ID",
                         name: "flowType.businessModel.id",
@@ -438,7 +438,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: "启动条件UEL",
                         name: "startUel",
-                        index: "startUel",
+                        index: "startUel"
                     }, {
                         label: "组织机构ID",
                         name: "orgId",
@@ -452,7 +452,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.depictText,
                         name: "depict",
-                        index: "depict",
+                        index: "depict"
                     }, {
                         label: "流程定义状态",
                         name: "flowDefinationStatus",
