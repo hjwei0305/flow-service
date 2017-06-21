@@ -1285,7 +1285,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
             net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
-            if("exclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
+           if("exclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))){
                 result = true;
                 break;
             }

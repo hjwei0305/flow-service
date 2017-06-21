@@ -261,7 +261,10 @@ div, span, p {
 .user {
     margin: 20px 0;
 }
-
+.remark{
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
 .userName {
     display: inline-block;
     font-size: 12px;
