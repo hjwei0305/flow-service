@@ -10,6 +10,7 @@ import com.ecmp.flow.dao.DefaultBusinessModel2Dao;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
+import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,8 @@ public class DefaultBusinessModel2Service extends BaseEntityService<DefaultBusin
     @SuppressWarnings("unchecked")
     public OperateResultWithData<DefaultBusinessModel2> save(DefaultBusinessModel2 entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel2.class);
+//        String businessCode = NumberGenerator.GetNumber(DefaultBusinessModel2.class);
+        String businessCode = CodeGenerator.genCodes(6,1).get(0);
         if(StringUtils.isEmpty(entity.getBusinessCode())){
             entity.setBusinessCode(businessCode);
         }
