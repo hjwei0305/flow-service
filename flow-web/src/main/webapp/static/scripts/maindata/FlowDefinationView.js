@@ -473,9 +473,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: "优先级",
                         name: "priority",
-                        index: "priority",
+                        index: "priority"
                     }],
-                    shrinkToFit:true,//固定宽度
+                    shrinkToFit:false,//固定宽度
                     ondbClick: function () {
                         var rowData = EUI.getCmp("gridPanel").getSelectRow();
                         g.getValues(rowData.id);

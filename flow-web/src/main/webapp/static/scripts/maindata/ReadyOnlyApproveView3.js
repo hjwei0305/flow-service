@@ -59,7 +59,7 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
                     "font-weight":"bolder"
                 }
             },{
-                xtype:"TextField",
+                xtype:"NumberField",
                 title:"<span class='name'>单价</span>",
                 name:"unitPrice",
                 width:300,
@@ -70,7 +70,7 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
                     "font-weight":"bolder"
                 }
             },{
-                xtype:"TextField",
+                xtype:"NumberField",
                 title:"<span class='name'>数量</span>",
                 name:"count",
                 width:300,

@@ -81,7 +81,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                     '                                <span class="item-right general" title="流程发起时间">' + item.createdDate + '</span>' +
                     '                            </div>' +
                     '                            <div class="item">' +
-                    '                                <div>'+item.businessModelRemark+
+                    '                                <div class="remark">'+item.businessModelRemark+
                     '                                </div>'+
                     '                            </div>' +
                     '                            <div class="item item-right">' +
