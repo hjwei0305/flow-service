@@ -18,18 +18,18 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
     //待办内容部分的数据调用
     getTodoOrderData: function () {
         var g = this;
-        var startDate=EUI.getCmp("dateField")?EUI.getCmp("dateField").getCmpByName("startDate").getValue():null;
-        var endDate=EUI.getCmp("dateField")?EUI.getCmp("dateField").getCmpByName("endDate").getValue():null;
-        var searchText=$(".header-left").next().children(":first").val();
+        var startDate = EUI.getCmp("dateField") ? EUI.getCmp("dateField").getCmpByName("startDate").getValue() : null;
+        var endDate = EUI.getCmp("dateField") ? EUI.getCmp("dateField").getCmpByName("endDate").getValue() : null;
+        var searchText = $(".header-left").next().children(":first").val();
         var myMask = EUI.LoadMask({
             msg: "正在加载请稍候..."
         });
         EUI.Store({
             url: _ctxPath + "/flowInstance/getMyBills",
             params: {
-                Q_GE_startDate__Date:startDate,
-                Q_LE_endDate__Date:endDate,
-                Q_LK_businessName:searchText?searchText:null,
+                Q_GE_startDate__Date: startDate,
+                Q_LE_endDate__Date: endDate,
+                Q_LK_businessName: searchText ? searchText : null,
                 Q_EQ_ended__Boolean: false,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
@@ -80,8 +80,8 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                     '                                <span class="item-right general" title="流程发起时间">' + item.createdDate + '</span>' +
                     '                            </div>' +
                     '                            <div class="item">' +
-                    '                                <div class="remark">'+item.businessModelRemark+
-                    '                                </div>'+
+                    '                                <div class="remark">' + item.businessModelRemark +
+                    '                                </div>' +
                     '                            </div>' +
                     '                            <div class="item item-right">' +
                     '                               <div class="end">' +
@@ -153,10 +153,9 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
-            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + url + "?id=" + data.businessId,
+                url: _ctxPath + "/" + data.lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);
@@ -172,5 +171,13 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                 businessId: data.businessId
             })
         });
+    },
+    //在新的窗口打开（模拟新页签的打开方式）
+    addTab: function (tab) {
+        if (parent.homeView) {
+            parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+        } else {
+            window.open(tab.url);
+        }
     }
 });
