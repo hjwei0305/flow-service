@@ -12,6 +12,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.initHtml();
         this.getModelList();
         this.addEvents();
+        var winHeight=$(window).height
     },
     initHtml: function () {
         var html = this.getNavbarHtml() + this.getTodoTaskHtml();
@@ -37,7 +38,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
                 // g.getNotData();
                 if(!status.data){
-                    g.getNotData();
+                    // g.getNotData();
                     return;
                 }
                 // g.initHtml();
