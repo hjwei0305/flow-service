@@ -178,7 +178,7 @@ public class FlowInstanceController {
         return JsonUtil.serialize(operateStatus);
     }
     /**
-     * 根据单据业务id终止流程实例
+     * 根据单据业务id终止流程实例，用于我的待办单据
      * @param businessId
      * @return 操作结果
      */
