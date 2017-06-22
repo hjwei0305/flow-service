@@ -41,6 +41,7 @@ html{
     float:right;
     width: 133px;
 }
+/*线性渐变兼容*/
 #top{
     background: -webkit-linear-gradient(top, #FFFFFF, #D1D1D1);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFFF), to(#D1D1D1));
