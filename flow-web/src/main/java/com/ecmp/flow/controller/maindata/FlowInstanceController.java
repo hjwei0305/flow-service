@@ -130,7 +130,9 @@ public class FlowInstanceController {
         PageResult<MyBillVO> results  = new PageResult<MyBillVO>();
         ArrayList<MyBillVO> data=new ArrayList<MyBillVO>();
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
+            List<String> flowInstanceIds = new ArrayList<String>();
             for(FlowInstance f:flowInstanceList){
+                flowInstanceIds.add(f.getId());
                 MyBillVO  myBillVO = new MyBillVO();
                 myBillVO.setBusinessCode(f.getBusinessCode());
                 myBillVO.setBusinessId(f.getBusinessId());
@@ -143,7 +145,16 @@ public class FlowInstanceController {
                 myBillVO.setFlowName(f.getFlowName());
                 myBillVO.setLookUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl());
                 myBillVO.setEndDate(f.getEndDate());
+//                Boolean canEnd = proxy.checkCanEnd(f.getId());
+//                myBillVO.setCanManuallyEnd(canEnd);
                 data.add(myBillVO);
+            }
+
+            List<Boolean> canEnds = proxy.checkIdsCanEnd(flowInstanceIds);
+            if(canEnds!=null && !canEnds.isEmpty()){
+                for(int i=0;i<canEnds.size();i++){
+                    data.get(i).setCanManuallyEnd(canEnds.get(i));
+                }
             }
         }
         results.setRows(data);
@@ -153,4 +164,30 @@ public class FlowInstanceController {
         return JsonUtil.serialize(results,JsonUtil.DATE_TIME);
     }
 
+    /**
+     * 根据id终止流程实例
+     * @param id
+     * @return 操作结果
+     */
+    @RequestMapping(value = "endFlowInstance")
+    @ResponseBody
+    public String endFlowInstance(String id) {
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        OperateResult result = proxy.end(id);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
+    /**
+     * 根据单据业务id终止流程实例
+     * @param businessId
+     * @return 操作结果
+     */
+    @RequestMapping(value = "endFlowInstanceByBusinessId")
+    @ResponseBody
+    public String endFlowInstanceByBusinessId(String businessId) {
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        OperateResult result = proxy.endByBusinessId(businessId);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
 }

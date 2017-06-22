@@ -164,6 +164,30 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
+     * 检查当前实例是否允许执行终止流程实例操作
+     * @param id 待操作数据ID
+     */
+    @GET
+    @Path("checkCanEnd/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "检查当前流程是否可以终止", notes = "实例终止")
+    public Boolean checkCanEnd(@PathParam("id") String id);
+
+
+    /**
+     * 检查实例集合是否允许执行终止流程实例操作
+     * @param ids 待操作数据ID集合
+     */
+    @GET
+    @Path("checkIdsCanEnd")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "检查流程集合是否可以终止", notes = "实例终止")
+    public List<Boolean> checkIdsCanEnd(List<String> ids);
+
+
+    /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param id 待操作数据ID
