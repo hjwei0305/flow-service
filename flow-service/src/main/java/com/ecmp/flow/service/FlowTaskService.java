@@ -60,6 +60,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.ws.rs.PathParam;
@@ -126,6 +128,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param userId 用户账号
      * @return
      */
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
     public OperateResult claim(String id, String userId) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
