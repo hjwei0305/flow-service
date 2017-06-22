@@ -267,6 +267,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
             flowHistory.setOwnerName(flowTask.getOwnerName());
             flowHistory.setExecutorAccount(flowTask.getExecutorAccount());
+            flowHistory.setExecutorId(flowTask.getExecutorId());
             flowHistory.setExecutorName(flowTask.getExecutorName());
             flowHistory.setCandidateAccount(flowTask.getCandidateAccount());
 
@@ -907,9 +908,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
-                        flowTask.setOwnerAccount(executor.getId());
+                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerId(executor.getId());
                         flowTask.setOwnerName(executor.getName());
-                        flowTask.setExecutorAccount(executor.getId());
+                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorId(executor.getId());
                         flowTask.setExecutorName(executor.getName());
                         flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
@@ -1654,11 +1657,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public List<TodoBusinessSummaryVO> findTaskSumHeader(){
         List<TodoBusinessSummaryVO> voList = null;
-        String executorAccount = ContextUtil.getUserAccount();
-        if("admin".equalsIgnoreCase(executorAccount)){
-            executorAccount = "666666";
-        }
-        List groupResultList  = flowTaskDao.findByexecutorAccountGroup(executorAccount);
+        String userID = ContextUtil.getUserId();
+//        if("admin".equalsIgnoreCase(executorAccount)){
+//            executorAccount = "666666";
+//        }
+        List groupResultList  = flowTaskDao.findByExecutorIdGroup(userID);
         Map<BusinessModel,Integer> businessModelCountMap = new HashMap<BusinessModel,Integer>();
         if(groupResultList!=null && !groupResultList.isEmpty()){
             Iterator it= groupResultList.iterator();
@@ -1692,8 +1695,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
-        String executorAccount = ContextUtil.getUserId();
+        String userId = ContextUtil.getUserId();
 //        if("admin".equalsIgnoreCase(executorAccount))executorAccount="666666";
-       return  flowTaskDao.findByPageByBusinessModelId( businessModelId, executorAccount,  searchConfig);
+       return  flowTaskDao.findByPageByBusinessModelId( businessModelId, userId,  searchConfig);
     }
 }

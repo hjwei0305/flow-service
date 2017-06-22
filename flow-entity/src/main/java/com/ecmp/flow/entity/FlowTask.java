@@ -214,6 +214,28 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	private Integer executeTime;
 
 
+	/**
+	 * 执行人ID
+	 */
+	@Column(name = "executor_id")
+	private String executorId;
+
+
+	/**
+	 * 候选人ID
+	 */
+	@Column(name = "candidate_id")
+	private String candidateId;
+
+
+	/**
+	 * 候选人ID
+	 */
+	@Column(name = "owner_id")
+	private String ownerId;
+
+
+
 	public FlowTask() {
 	}
 
@@ -470,6 +492,39 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setTaskJsonDef(String taskJsonDef) {
 		this.taskJsonDef = taskJsonDef;
+	}
+
+
+	public String getExecutorId() {
+		return executorId;
+	}
+
+	public void setExecutorId(String executorId) {
+		this.executorId = executorId;
+	}
+
+	public String getCandidateId() {
+		return candidateId;
+	}
+
+	public void setCandidateId(String candidateId) {
+		this.candidateId = candidateId;
+	}
+
+	public String getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	public Integer getExecuteTime() {
+		return executeTime;
+	}
+
+	public void setExecuteTime(Integer executeTime) {
+		this.executeTime = executeTime;
 	}
 
 	@Override

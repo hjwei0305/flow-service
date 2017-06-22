@@ -24,6 +24,6 @@ public interface CustomFlowTaskDao {
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorAccount, Search searchConfig);
+    public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig);
 
 }
