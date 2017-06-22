@@ -74,6 +74,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
+                var endFlowHtml = item.canManuallyEnd? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
                 html = $('<div class="info-items">' +
                     '                            <div class="item">' +
                     '                                <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
@@ -84,7 +85,8 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                     '                                </div>' +
                     '                            </div>' +
                     '                            <div class="item item-right">' +
-                    '                               <div class="end">' +
+                    '                               <div class="end">'
+                                                         +endFlowHtml+
                     '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                     '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                     '                               </div>' +
@@ -146,6 +148,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         g.pagingEvent();
         g.lookApproveViewWindow();
         g.flowInstanceWindow();
+        g.endFlowEvent();
     },
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
@@ -170,6 +173,49 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
             Flow.FlowHistory({
                 businessId: data.businessId
             })
+        });
+    },
+    //终止事件
+    endFlowEvent:function () {
+        var g = this;
+        $(".endFlow-icon", "#" + this.renderTo).live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var message = EUI.MessageBox({
+                border: true,
+                title: "提示",
+                showClose: true,
+                msg: "您确定要终止吗",
+                buttons: [{
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        var myMask = EUI.LoadMask({
+                            msg: "正在终止，请稍候...",
+                        });
+                        EUI.Store({
+                            url: "../flowInstance/endFlowInstanceByBusinessId/",
+                            params: {businessId: data.businessId},
+                            success: function (status) {
+                                myMask.remove();
+                                EUI.ProcessStatus(status);
+                                //重新获取数据
+                                g.getTodoOrderData();
+                            },
+                            failure: function (status) {
+                                myMask.hide();
+                                EUI.ProcessStatus(status);
+                            }
+                        });
+                        message.remove();
+                    }
+                }, {
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                }]
+            });
         });
     },
     //在新的窗口打开（模拟新页签的打开方式）

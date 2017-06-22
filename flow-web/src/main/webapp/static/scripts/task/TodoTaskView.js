@@ -151,6 +151,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var nodeType=JSON.parse(items[j].taskJsonDef).nodeType;
             var claimTaskHtml=nodeType=="SingleSign"&&!items[j].actClaimTime?'<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>':'';
+            var flowInstanceCreatorId = items[j].flowInstance ? items[j].flowInstance.creatorId : "";
+            var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
@@ -163,7 +165,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <div class="end">'
                                            +claimTaskHtml+
                 '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
-                                           + rejectHtml +
+                + rejectHtml + endFlowHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                     </div>' +
@@ -261,6 +263,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         g.flowInstanceWindow();
         g.showRejectWindow();
         g.claimEvent();
+        g.endFlowEvent();
         // g.checkBoxEvents();
         g.pagingEvent();
         g.navbarEvent();
@@ -401,8 +404,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             })
         });
     },
+    //签收事件
     claimEvent:function () {
-      var g=this;
+        var g = this;
         $(".claim-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
@@ -421,6 +425,49 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                         EUI.Store({
                             url: "../flowClient/claimTask/",
                             params: {taskId: data.id},
+                            success: function (status) {
+                                myMask.remove();
+                                EUI.ProcessStatus(status);
+                                //重新获取数据
+                                g.getTodoData();
+                            },
+                            failure: function (status) {
+                                myMask.hide();
+                                EUI.ProcessStatus(status);
+                            }
+                        });
+                        message.remove();
+                    }
+                }, {
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                }]
+            });
+        });
+    },
+    //终止事件
+    endFlowEvent: function () {
+        var g = this;
+        $(".endFlow-icon", "#" + this.renderTo).live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var message = EUI.MessageBox({
+                border: true,
+                title: "提示",
+                showClose: true,
+                msg: "您确定要终止吗",
+                buttons: [{
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        var myMask = EUI.LoadMask({
+                            msg: "正在终止，请稍候...",
+                        });
+                        EUI.Store({
+                            url: "../flowInstance/endFlowInstance/",
+                            params: {id: data.id},
                             success: function (status) {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
