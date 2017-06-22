@@ -21,14 +21,14 @@
 
 .top {
 	width: 600px;
-	height: 100px;
+	height: 55px;
 	/*border: 1px solid #000;*/
 	overflow: hidden;
 }
 
 .top-left {
 	width: 299px;
-	height: 100px;
+	height: 55px;
 	float: left;
 	text-align: center;
 	/*border: 1px solid #000;*/
@@ -53,14 +53,17 @@
 
 .flow-statusimg {
 	background: url(../images/img/flowstatusImg.png) no-repeat;
+	background-size: cover;
 }
 
 .flowselect .flow-statusimg {
 	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+	background-size: cover;
 }
 
 .navbar:hover .flow-statusimg {
 	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+	background-size: cover;
 }
 
 
@@ -80,15 +83,14 @@
 }
 
 .flow-tabicon {
-	width: 40px;
-	height: 40px;
-	margin: 0 auto;
-	margin-top: 20px;
+	width: 30px;
+	height: 30px;
+	margin: 0px auto 0 ;
 }
 
 .top-center {
 	width: 298px;
-	height: 100px;
+	height: 55px;
 	float: left;
 	/*border: 1px solid #000;*/
 }
@@ -103,14 +105,17 @@
 
 .navbar:hover .flow-historyimg {
 	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+	background-size: cover;
 }
 
 .flow-historyimg {
-	background: url(../images/img/flowhistoryImg.png)
+	background: url(../images/img/flowhistoryImg.png) no-repeat;
+	background-size: cover;
 }
 
 .flowselect .flow-historyimg {
 	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+	background-size: cover;
 }
 
 
@@ -130,7 +135,7 @@
 
 .top-right {
 	width: 190px;
-	height: 100px;
+	height: 55px;
 	float: left;
 	/*border: 1px solid #000;*/
 }
@@ -156,7 +161,7 @@
 }
 
 .flow-hsitorycenter {
-    height: 315px;
+    height: 360px;
 	/*margin: 0px 20px 20px;*/
 	padding: 20px;
 	background-color: #f8f9f9;
@@ -208,7 +213,7 @@
 }
 .flow-endfield{
 	font-size: 14px;
-	color:  #EE0000;
+	color: #45b7ff;
 	font-weight: bold;
 	margin-top: 5px;
 	margin-left: 10px;
@@ -231,7 +236,6 @@
 	font-size: 14px;
 
 	/*    margin-left: 10px;*/
-	margin-top: 5px;
 	text-align: center;
 }
 
@@ -327,7 +331,7 @@
 }
 
 .flow-statuscenter {
-	height: 315px;
+	height: 360px;
 	/*margin: 0px 20px 20px;*/
 	padding: 20px;
 	background-color: #f8f9f9;
