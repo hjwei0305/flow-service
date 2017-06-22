@@ -150,6 +150,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              statusStr = "结束";
              }*/
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
+            var nodeType=JSON.parse(items[j].taskJsonDef).nodeType;
+            var claimTaskHtml=nodeType=="SingleSign"&&!items[j].actClaimTime?'<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>':'';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
@@ -159,9 +161,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <span class="digest">' + items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                 </div>' +
                 '                 <div class="item">' +
-                '                     <div class="end">' +
+                '                     <div class="end">'
+                                           +claimTaskHtml+
                 '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
-                + rejectHtml +
+                                           + rejectHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                     </div>' +
@@ -258,6 +261,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         g.lookApproveViewWindow();
         g.flowInstanceWindow();
         g.showRejectWindow();
+        g.claimEvent();
         // g.checkBoxEvents();
         g.pagingEvent();
         g.navbarEvent();
@@ -390,6 +394,48 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }]
             })
+        });
+    },
+    claimEvent:function () {
+      var g=this;
+        $(".claim-btn", "#" + this.renderTo).live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            var message = EUI.MessageBox({
+                border: true,
+                title: "提示",
+                showClose: true,
+                msg: "您确定要签收吗",
+                buttons: [{
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        var myMask = EUI.LoadMask({
+                            msg: "正在签收，请稍候...",
+                        });
+                        EUI.Store({
+                            url: "../flowClient/claimTask/",
+                            params: {taskId: data.id},
+                            success: function (status) {
+                                myMask.remove();
+                                EUI.ProcessStatus(status);
+                                //重新获取数据
+                                g.getTodoData();
+                            },
+                            failure: function (status) {
+                                myMask.hide();
+                                EUI.ProcessStatus(status);
+                            }
+                        });
+                        message.remove();
+                    }
+                }, {
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                }]
+            });
         });
     },
     //在新的窗口打开（模拟新页签的打开方式）
