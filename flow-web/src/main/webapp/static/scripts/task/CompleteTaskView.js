@@ -82,7 +82,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED"&&items[j].flowInstance.ended==false)?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤销"></i><span>撤销</span></div>':"";
+            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED"&&items[j].flowInstance.ended==false)?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤回"></i><span>撤回</span></div>':"";
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
@@ -192,11 +192,11 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var win = EUI.Window({
-                title: "撤销",
+                title: "撤回",
                 height: 100,
                 items:[{
                     xtype:"TextArea",
-                    title:"撤销说明",
+                    title:"撤回说明",
                     name: 'opinion',
                     id: "opinion",
                     labelWidth: 90,
