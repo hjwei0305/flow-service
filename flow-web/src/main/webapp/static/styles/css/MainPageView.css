@@ -23,6 +23,7 @@ div, span, p {
 /*上面部分的头部内容样式*/
 .taken-top {
     background: #FFFFFF;
+    height: 100%;
 }
 
 .top-header {
@@ -111,8 +112,9 @@ div, span, p {
 /*上面部分的中间内容部分样式*/
 #todoTask-content {
     width: 100%;
-    border: 1px solid #dddddd;
+    /*border: 1px solid #dddddd;*/
     border-radius: 2px;
+    height: 100%;
 }
 
 .content-navbar {
@@ -624,6 +626,15 @@ div, span, p {
     cursor: pointer;
 }
 
+.todo-not-data{
+    background: url("../images/bg.jpg") no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+}
+.not-data-msg{
+    text-align: center;
+}
 
 
 
