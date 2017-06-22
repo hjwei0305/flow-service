@@ -35,7 +35,7 @@ public class FlowClientController {
      * @param taskId  任务id
      * @return
      */
-    @RequestMapping(value = "listFlowTask")
+    @RequestMapping(value = "claimTask")
     @ResponseBody
     public String claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
