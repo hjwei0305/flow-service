@@ -11,6 +11,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.getModelList();
         this.addEvents();
+        parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+            win.todoTaskView.refresh();
+        });
     },
     initHtml: function () {
         var html = this.getNavbarHtml() + this.getTodoTaskHtml();
@@ -35,7 +38,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 myMask.hide();
                 // g.getNotData();
-                if(!status.data){
+                if (!status.data) {
                     g.getNotData();
                     return;
                 }
@@ -52,8 +55,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         })
     },
     //当页面没有数据时的显示内容
-    getNotData:function () {
-        var html='<div class="todo-not-data">' +
+    getNotData: function () {
+        var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
         $("#" + this.renderTo).append(html);
     },
@@ -120,10 +123,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.records = result.records;
-                    if (g.records>0){
+                    if (g.records > 0) {
                         $(".nav-select>.navbar-circle").text(g.records);
-                    }else{
-                        $(".nav-select").css("display","none");
+                    } else {
+                        $(".nav-select").css("display", "none");
                     }
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
@@ -163,7 +166,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                 </div>' +
                 '                 <div class="item">' +
                 '                     <div class="end">'
-                                           +claimTaskHtml+
+                + claimTaskHtml +
                 '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
                 + rejectHtml + endFlowHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
@@ -212,7 +215,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
+        $(".record-total", "#" + this.renderTo).text("共" + records + "条记录");
     },
     //底部翻页绑定事件
     pagingEvent: function () {
@@ -287,22 +290,17 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
-            //var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
             var taskConfig = JSON.parse(data.taskJsonDef);
             var workPageUrl = taskConfig.nodeConfig.normal.workPageUrl;
-            console.log(workPageUrl);
             var tab = {
-                title: "审批界面",
+                title: data.taskName,
                 url: _ctxPath + workPageUrl + "?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
-            parent.homeView.addTabListener("todoTask-content",function (id,win) {
-                win.todoTaskView.refresh();
-            })
         });
     },
-    refresh:function () {
+    refresh: function () {
         window.location.reload();
     },
     //点击打开查看表单界面的新页签
@@ -405,7 +403,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     //签收事件
-    claimEvent:function () {
+    claimEvent: function () {
         var g = this;
         $(".claim-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
