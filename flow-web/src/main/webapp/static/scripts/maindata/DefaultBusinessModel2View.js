@@ -560,8 +560,8 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: "新增内置表单",
-            height: 360,
-            width: 400,
+            height: 450,
+            width: 420,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -570,90 +570,113 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TextField",
                     title: "组织机构ID",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "orgId",
-                    colon: false,
+                    colon:false,
                     width: 270,
-                    value: g.selectedNodeId,
-                    hidden: true
-                }, {
+                    value:g.selectedNodeId,
+                    hidden:true
+                },{
                     xtype: "TextField",
                     title: "组织机构",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "orgName",
-                    colon: false,
+                    colon:false,
                     width: 270,
-                    readonly: true,
-                    value: g.selectedNodeName
-                }, {
+                    readonly:true,
+                    value:g.selectedNodeName,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextField",
                     title: "组织机构code",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "orgCode",
-                    colon: false,
+                    colon:false,
                     width: 270,
-                    readonly: true,
-                    value: g.selectedNodeCode,
-                    hidden: true
-                }, {
+                    readonly:true,
+                    value:g.selectedNodeCode,
+                    hidden:true
+                },{
                     xtype: "TextField",
                     title: "组织机构租户代码",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "tenantCode",
-                    colon: false,
+                    colon:false,
                     width: 270,
-                    readonly: true,
-                    value: g.selectedNodeTenantCode,
-                    hidden: true
-                }, {
+                    readonly:true,
+                    value:g.selectedNodeTenantCode,
+                    hidden:true
+                },{
                     xtype: "TextField",
                     title: "组织机构codePath",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "orgPath",
-                    colon: false,
+                    colon:false,
                     width: 270,
-                    readonly: true,
-                    value: g.selectedNodeCodePath,
-                    hidden: true
-                }, {
+                    readonly:true,
+                    value:g.selectedNodeCodePath,
+                    hidden:true
+                },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
+                },{
                     xtype: "TextField",
-                    title: "名称",
-                    allowBlank: false,
+                    title: "业务类型",
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "name",
-                    colon: false,
-                    width: 270
-                }, {
+                    colon:false,
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextField",
+                    title: "申请说明",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "applyCaption",
+                    colon:false,
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
+                },{
+                    xtype: "NumberField",
                     title: "单价",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "unitPrice",
-                    colon: false,
-                    width: 270
-                }, {
-                    xtype: "TextField",
+                    colon:false,
+                    width: 270,
+                    precision:2,
+                    style:{"margin-left":30}
+                },{
+                    xtype: "NumberField",
                     title: "数量",
-                    allowBlank: false,
+                    allowBlank:false,
                     labelWidth: 70,
                     name: "count",
-                    colon: false,
-                    width: 270
-                }, {
+                    colon:false,
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextArea",
-                    title: "说明",
+                    title: "备注说明",
                     labelWidth: 70,
                     name: "workCaption",
-                    id: "caption",
+                    id:"caption",
                     width: 270,
-                    height: 130,
-                    colon: false,
-                    allowBlank: false
+                    height:130,
+                    colon:false,
+                    allowBlank:false,
+                    style:{"margin-left":30}
                 }]
             }],
             buttons: [{
