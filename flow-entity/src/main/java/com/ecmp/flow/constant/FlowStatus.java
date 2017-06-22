@@ -1,5 +1,7 @@
 package com.ecmp.flow.constant;
 
+import java.io.Serializable;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -12,7 +14,7 @@ package com.ecmp.flow.constant;
  * <p/>
  * *************************************************************************************************
  */
-public enum FlowStatus {
+public enum FlowStatus implements Serializable{
 
     /**
      * 未进入流程、流程处理中、流程处理完成

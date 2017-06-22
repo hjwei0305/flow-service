@@ -104,12 +104,19 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 是否挂起
 	 */
-	private boolean suspended;
+	private Boolean suspended;
 
 	/**
 	 * 是否结束
 	 */
-	private boolean ended;
+	private Boolean ended;
+
+
+	/**
+	 * 是否是手动结束（发起人手动终止任务的情况）
+	 */
+	@Column(name = "manuallyEnd")
+	private Boolean manuallyEnd;
 
 
 	/**
@@ -216,19 +223,19 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.actInstanceId = actInstanceId;
 	}
 
-	public boolean isSuspended() {
+	public Boolean isSuspended() {
 		return suspended;
 	}
 
-	public void setSuspended(boolean suspended) {
+	public void setSuspended(Boolean suspended) {
 		this.suspended = suspended;
 	}
 
-	public boolean isEnded() {
+	public Boolean isEnded() {
 		return ended;
 	}
 
-	public void setEnded(boolean ended) {
+	public void setEnded(Boolean ended) {
 		this.ended = ended;
 	}
 
@@ -270,6 +277,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setBusinessExtraMap(Map<String, Object> businessExtraMap) {
 		this.businessExtraMap = businessExtraMap;
+	}
+
+	public Boolean isManuallyEnd() {
+		return manuallyEnd;
+	}
+
+	public void setManuallyEnd(Boolean manuallyEnd) {
+		this.manuallyEnd = manuallyEnd;
 	}
 
 	@Override

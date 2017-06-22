@@ -28,12 +28,22 @@ public class DefaultBusinessModel3 extends AbstractBusinessModel{
     /**
      * 单价
      */
-    private double unitPrice;
+    private double unitPrice=0;
 
     /**
      * 数量
      */
-    private int count;
+    private int count=0;
+
+    /**
+     * 金额
+     */
+    private double sum = 0;
+
+    /**
+     * 申请说明
+     */
+    private  String applyCaption;
 
     public double getUnitPrice() {
         return unitPrice;
@@ -49,5 +59,31 @@ public class DefaultBusinessModel3 extends AbstractBusinessModel{
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public double getSum() {
+        return sum = unitPrice* count;
+    }
+
+    public void setSum(double sum) {
+        this.sum =  unitPrice* count;
+    }
+
+    public String getApplyCaption() {
+        return applyCaption;
+    }
+
+    public void setApplyCaption(String applyCaption) {
+        this.applyCaption = applyCaption;
+    }
+
+    public DefaultBusinessModel3() {
+    }
+
+    public DefaultBusinessModel3(double unitPrice, int count, double sum, String applyCaption) {
+        this.unitPrice = unitPrice;
+        this.count = count;
+        this.sum = sum;
+        this.applyCaption = applyCaption;
     }
 }

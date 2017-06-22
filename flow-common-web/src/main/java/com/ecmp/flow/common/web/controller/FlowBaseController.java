@@ -250,7 +250,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public String rollBackTo(String preTaskId, String opinion) {
+    public String rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);

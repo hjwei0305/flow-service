@@ -1,5 +1,6 @@
 package com.ecmp.flow.api.common.api;
 
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.IConditionPojo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -115,4 +116,24 @@ public interface IConditionServer {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO的值",notes = "测试")
     public Map<String,Object> getConditonPojoMapByBusinessModelId(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
+
+
+    /**
+     * 重置单据状态
+     * @param businessModelId   业务实体id
+     * @param id   单据id
+     * @param status   状态
+     * @return
+     * @throws ClassNotFoundException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @POST
+    @Path("resetState/{businessModelId}/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
+    public Boolean resetState(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }

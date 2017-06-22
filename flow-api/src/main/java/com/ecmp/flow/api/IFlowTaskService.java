@@ -83,7 +83,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
-    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion);
+    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion) throws CloneNotSupportedException;
 
     /**
      * 驳回任务（动态驳回）

@@ -145,11 +145,21 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
             if (type == "common") {
-                if ($(this).hasClass("select")) {
-                    return;
+                // if ($(this).hasClass("select")) {
+                //     return;
+                // }
+                // $(this).addClass("select");
+                // $(this).siblings().removeClass("select");
+                if($(".flow-excutor-content").children("div").length == 1){
+                    if($(".flow-user-item").hasClass("select")){
+                        $(".flow-user-item").removeClass("select");
+                    }else{
+                        $(this).addClass("select");
+                    }
+                }else{
+                    $(".flow-user-item").removeClass("select");
+                    $(this).addClass("select");
                 }
-                $(this).addClass("select");
-                $(this).siblings().removeClass("select");
             } else {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
@@ -321,7 +331,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                                     msgbox.remove();
                                 }
                             }]
-                        })
+                        });
                         return;
                     }
                     g.toChooseUserData = status.data;
@@ -337,6 +347,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     },
     showChooseUser: function () {
+        var g = this;
        var data = this.toChooseUserData;
         $(".flow-approve").hide();
         $(".flow-chooseuser").show();
@@ -356,26 +367,64 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
-            for (var j = 0; j < node.executorSet.length; j++) {
-                var item = node.executorSet[j];
-                if(!item.positionId){
-                    nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-                        '<div class="choose-icon ' + iconCss + '"></div>' +
-                        '<div class="excutor-item-title">姓名：' + item.name +
-                        '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
-                        '</div>';
+            if(iconCss ==  "choose-radio"){
+                if(node.executorSet.length == 1){
+                    var html =  g.showUserItem(node,nodeHtml,iconCss,nodeType);
+                    $(".chooseuser-title").after(html);
+                    $(".flow-user-item").addClass("select");
                 }else{
-                    nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-                        '<div class="choose-icon ' + iconCss + '"></div>' +
-                        '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                        '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
-                        '</div>';
+                    var html =  g.showUserItem(node,nodeHtml,iconCss,nodeType);
+                    $(".chooseuser-title").after(html);
+                    $(".flow-excutor-content").children("div").eq(0).addClass("select");
                 }
             }
-            nodeHtml += "</div></div>";
-            html += nodeHtml;
+            if(iconCss ==  "choose-checkbox"){
+                var html = g.showUserItem(node,nodeHtml,iconCss,nodeType);
+                $(".chooseuser-title").after(html);
+                $(".flow-user-item").addClass("select");
+            }
+
+            // for (var j = 0; j < node.executorSet.length; j++) {
+            //     var item = node.executorSet[j];
+            //     if(!item.positionId){
+            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+            //             '<div class="choose-icon ' + iconCss + '"></div>' +
+            //             '<div class="excutor-item-title">姓名：' + item.name +
+            //             '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+            //             '</div>';
+            //     }else{
+            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+            //             '<div class="choose-icon ' + iconCss + '"></div>' +
+            //             '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
+            //             '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+            //             '</div>';
+            //     }
+            // }
+            // nodeHtml += "</div></div>";
+            // html += nodeHtml;
         }
-        $(".chooseuser-title").after(html);
+      //  $(".chooseuser-title").after(html);
+    },
+    showUserItem:function (node,nodeHtml,iconCss,nodeType) {
+        var html = "";
+        for (var j = 0; j < node.executorSet.length; j++) {
+            var item = node.executorSet[j];
+            if(!item.positionId){
+                nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                    '<div class="choose-icon ' + iconCss + '"></div>' +
+                    '<div class="excutor-item-title">姓名：' + item.name +
+                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '</div>';
+            }else{
+                nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
+                    '<div class="choose-icon ' + iconCss + '"></div>' +
+                    '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
+                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '</div>';
+            }
+        }
+        nodeHtml += "</div></div>";
+        return html += nodeHtml;
     },
     getSelectedUser: function () {
         var users = [];
