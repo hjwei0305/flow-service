@@ -178,10 +178,10 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPos")
-    public String listPositon() {
+    public List<Position> listPositon() {
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
         List<Position> data = proxy.findAll();
-        return JsonUtil.serialize(data);
+        return data;
     }
 
     /**
