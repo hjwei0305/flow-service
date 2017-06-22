@@ -104,19 +104,19 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 是否挂起
 	 */
-	private Boolean suspended;
+	private Boolean suspended=false;
 
 	/**
 	 * 是否结束
 	 */
-	private Boolean ended;
+	private Boolean ended=false;
 
 
 	/**
 	 * 是否是手动结束（发起人手动终止任务的情况）
 	 */
 	@Column(name = "manuallyEnd")
-	private Boolean manuallyEnd;
+	private Boolean manuallyEnd=false;
 
 
 	/**
