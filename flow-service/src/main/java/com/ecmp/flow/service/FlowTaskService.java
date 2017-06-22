@@ -341,15 +341,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param id
      * @return
      */
-    public OperateResult rollBackTo(String id,String opinion) {
+    public OperateResult rollBackTo(String id,String opinion) throws CloneNotSupportedException{
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
-        result = this.taskRollBack(flowHistory);
-        if (result.successful()) {
-            flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
-            flowHistory.setDepict("【被撤销】"+opinion);
-            flowHistoryDao.save(flowHistory);
-        }
+        result = this.taskRollBack(flowHistory,opinion);
         return result;
     }
 
@@ -503,7 +498,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
-    public OperateResult taskRollBack(FlowHistory flowHistory) {
+    private OperateResult taskRollBack(FlowHistory flowHistory,String opinion) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
@@ -630,8 +625,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             // 删除其他到达的节点
             deleteOtherNode(currActivity, instance, definition, currTask);
 
+            //记录历史
+            if (result.successful()) {
+                flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
+                flowHistoryDao.save(flowHistory);
+                FlowHistory flowHistoryNew = (FlowHistory)flowHistory.clone();
+                flowHistoryNew.setId(null);
+                Date now = new Date();
+                flowHistoryNew.setActEndTime(now);
+                flowHistoryNew.setDepict("【被撤销】"+opinion);
+                flowHistoryNew.setActDurationInMillis(now.getTime()-flowHistory.getActEndTime().getTime());
+                flowHistoryDao.save(flowHistoryNew);
+            }
             //初始化回退后的新任务
-//            flowHistory.setDepict(null);
             initTask(instance, currTask.getTaskDefinitionKey(), flowHistory);
             return result;
         } catch (Exception e) {

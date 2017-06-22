@@ -33,18 +33,17 @@ public class FlowClientController {
     /**
      * 签收任务
      * @param taskId  任务id
-     * @param userId  用户id
      * @return
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String claimTask(String taskId, String userId){
+    public String claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
-
 
     /**
      * 回退（撤销）任务
@@ -55,7 +54,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public String rollBackTo(String preTaskId, String opinion) {
+    public String rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);

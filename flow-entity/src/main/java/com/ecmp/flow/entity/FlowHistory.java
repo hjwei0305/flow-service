@@ -23,7 +23,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_history", catalog = "ecmp_flow")
-public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
+public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  implements Cloneable{
 
 	/**
 	 * 所属流程实例
@@ -454,5 +454,13 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  {
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		FlowHistory o = null;
+		// Object中的clone()识别出你要复制的是哪一个对象。
+		o = (FlowHistory) super.clone();
+		return o;
 	}
 }
