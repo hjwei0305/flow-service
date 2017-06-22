@@ -633,7 +633,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     x: item.position().left - parentPos.left + 6,
                     y: item.position().top - parentPos.top + 6,
                     id: id,
-                    css: item.find("div:first").attr("class"),
                     nodeType: item.attr("nodeType"),
                     target: [],
                     name: item.find(".node-title").text(),
@@ -772,22 +771,36 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showTaskNode: function (id, node) {
+        var css = node.css;
+        if (!css) {
+            if (node.nodeType == "normalTaskText") {
+                css = "usertask";
+            } else if (node.nodeType == "singleSignTaskText") {
+                css = "singletask";
+            } else {
+                css = "countertask";
+            }
+        }
         return "<div tabindex=0 id='" + id
             + "' class='flow-task flow-node node-choosed' type='"
             + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
-            + "<div class='" + node.css + "'></div>"
+            + "<div class='" + css + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
     ,
     showGatewayNode: function (id, node) {
+        var css = node.type.toLowerCase();
+        if (node.busType == "ManualExclusiveGateway") {
+            css = "manualExclusivegateway";
+        }
         return "<div tabindex=0 id='" + id
             + "' class='flow-event-box flow-node node-choosed' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
-            + "<div class='" + node.css + "'></div></div>"
+            + "<div class='" + css + "'></div></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
