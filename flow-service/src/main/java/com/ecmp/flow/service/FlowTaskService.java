@@ -907,9 +907,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
-                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerAccount(executor.getId());
                         flowTask.setOwnerName(executor.getName());
-                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorAccount(executor.getId());
                         flowTask.setExecutorName(executor.getName());
                         flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
@@ -1692,8 +1692,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
-        String executorAccount = ContextUtil.getUserAccount();
-        if("admin".equalsIgnoreCase(executorAccount))executorAccount="666666";
+        String executorAccount = ContextUtil.getUserId();
+//        if("admin".equalsIgnoreCase(executorAccount))executorAccount="666666";
        return  flowTaskDao.findByPageByBusinessModelId( businessModelId, executorAccount,  searchConfig);
     }
 }

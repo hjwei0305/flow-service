@@ -59,10 +59,10 @@ public class FlowHistoryController extends FlowBaseController{
     @ResponseBody
     public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
-        String account = ContextUtil.getSessionUser().getAccount();
-        if("admin".equalsIgnoreCase(account)){
-            account = "666666";
-        }
+        String account = ContextUtil.getUserId();
+//        if("admin".equalsIgnoreCase(account)){
+//            account = "666666";
+//        }
          search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
