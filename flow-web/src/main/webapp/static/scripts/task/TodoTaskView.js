@@ -9,10 +9,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     records: null,
     initComponent: function () {
-        this.initHtml();
         this.getModelList();
         this.addEvents();
-        var winHeight=$(window).height
     },
     initHtml: function () {
         var html = this.getNavbarHtml() + this.getTodoTaskHtml();
@@ -38,10 +36,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
                 // g.getNotData();
                 if(!status.data){
-                    // g.getNotData();
+                    g.getNotData();
                     return;
                 }
-                // g.initHtml();
+                g.initHtml();
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
                 g.modelId = status.data[0].businessModeId;
@@ -53,6 +51,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
         })
     },
+    //当页面没有数据时的显示内容
     getNotData:function () {
         var html='<div class="todo-not-data">' +
             '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
@@ -295,7 +294,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
+            parent.homeView.addTabListener("todoTask-content",function (id,win) {
+                win.todoTaskView.refresh();
+            })
         });
+    },
+    refresh:function () {
+        window.location.reload();
     },
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {

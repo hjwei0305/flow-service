@@ -7,7 +7,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         total: 1
     },
     initComponent: function () {
-        this.initHtml();
+        // this.initHtml();
         this.getCompleteData();
         this.addEvents();
     },
@@ -46,9 +46,13 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             },
             success: function (result) {
                 myMask.hide();
-                if (result.rows) {
+                if(!result.rows){
+                    g.getNotData();
+                    return;
+                }else if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
+                    g.initHtml();
                     g.getCompleteHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
@@ -59,6 +63,12 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
             }
         })
+    },
+    //当页面没有数据时的显示内容
+    getNotData:function () {
+        var html='<div class="todo-not-data">' +
+            '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
+        $("#" + this.renderTo).append(html);
     },
     //已办内容部分的循环
     getCompleteHtml: function (items) {
