@@ -33,16 +33,16 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         super(FlowTask.class, entityManager);
     }
 
-    public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorAccount, Search searchConfig) {
+    public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
 
-        TypedQuery<Long> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) ", Long.class);
-        queryTotal.setParameter("executorAccount",executorAccount);
+        TypedQuery<Long> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) ", Long.class);
+        queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
         Long total = queryTotal.getSingleResult();
 
-        TypedQuery<FlowTask> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowTask.class);
-        query.setParameter("executorAccount",executorAccount);
+        TypedQuery<FlowTask> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowTask.class);
+        query.setParameter("executorId",executorId);
         query.setParameter("businessModelId",businessModelId);
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );

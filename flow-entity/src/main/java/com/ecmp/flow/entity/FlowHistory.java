@@ -195,6 +195,29 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 
 
 
+
+	/**
+	 * 执行人ID
+	 */
+	@Column(name = "executor_id")
+	private String executorId;
+
+
+	/**
+	 * 候选人ID
+	 */
+	@Column(name = "candidate_id")
+	private String candidateId;
+
+
+	/**
+	 * 候选人ID
+	 */
+	@Column(name = "owner_id")
+	private String ownerId;
+
+
+
 	public FlowHistory() {
 	}
 
@@ -430,6 +453,30 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 
 	public void setBusinessModelRemark(String businessModelRemark) {
 		this.businessModelRemark = businessModelRemark;
+	}
+
+	public String getExecutorId() {
+		return executorId;
+	}
+
+	public void setExecutorId(String executorId) {
+		this.executorId = executorId;
+	}
+
+	public String getCandidateId() {
+		return candidateId;
+	}
+
+	public void setCandidateId(String candidateId) {
+		this.candidateId = candidateId;
+	}
+
+	public String getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	@Override

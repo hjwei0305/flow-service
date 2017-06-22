@@ -70,11 +70,11 @@ public class FlowTaskController {
     public String listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String modelId = request.getParameter("modelId");
-        String account = ContextUtil.getUserId();
+        String executorId = ContextUtil.getUserId();
 //        if("admin".equalsIgnoreCase(account)){
 //            account = "666666";
 //        }
-        search.addFilter(new SearchFilter("executorAccount", account, SearchFilter.Operator.EQ));
+        search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByBusinessModelId(modelId,search);
         return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
