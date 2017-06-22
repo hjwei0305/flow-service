@@ -564,8 +564,8 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: "新增内置表单",
-            height: 360,
-            width:400,
+            height: 450,
+            width:420,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -590,7 +590,8 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     colon:false,
                     width: 270,
                     readonly:true,
-                    value:g.selectedNodeName
+                    value:g.selectedNodeName,
+                    style:{"margin-left":30}
                 },{
                     xtype: "TextField",
                     title: "组织机构code",
@@ -625,39 +626,61 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     value:g.selectedNodeCodePath,
                     hidden:true
                 },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
+                },{
                     xtype: "TextField",
-                    title: "名称",
+                    title: "业务类型",
                     allowBlank:false,
                     labelWidth: 70,
                     name: "name",
                     colon:false,
-                    width: 270
+                    width: 270,
+                    style:{"margin-left":30}
                 },{
                     xtype: "TextField",
+                    title: "申请说明",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "applyCaption",
+                    colon:false,
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
+                },{
+                    xtype: "NumberField",
                     title: "单价",
                     allowBlank:false,
                     labelWidth: 70,
                     name: "unitPrice",
                     colon:false,
-                    width: 270
+                    width: 270,
+                    precision:2,
+                    style:{"margin-left":30}
                 },{
-                    xtype: "TextField",
+                    xtype: "NumberField",
                     title: "数量",
                     allowBlank:false,
                     labelWidth: 70,
                     name: "count",
                     colon:false,
-                    width: 270
-                }, {
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextArea",
-                    title: "说明",
+                    title: "备注说明",
                     labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
                     width: 270,
                     height:130,
                     colon:false,
-                    allowBlank:false
+                    allowBlank:false,
+                    style:{"margin-left":30}
                 }]
             }],
             buttons: [{
