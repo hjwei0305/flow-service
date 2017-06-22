@@ -112,11 +112,14 @@ div, span, p {
 /*上面部分的中间内容部分样式*/
 #todoTask-content {
     width: 100%;
-    /*border: 1px solid #dddddd;*/
     border-radius: 2px;
     height: 100%;
 }
-
+#completeTask-content{
+    width: 100%;
+    border-radius: 2px;
+    height: 100%;
+}
 .content-navbar {
     height: 70px;
     margin: 20px 20px;
