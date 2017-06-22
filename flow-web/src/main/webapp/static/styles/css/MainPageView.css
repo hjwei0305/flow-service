@@ -352,6 +352,17 @@ div, span, p {
     cursor: pointer;
     margin-left: 5px;
 }
+.endFlow-icon {
+    width: 14px;
+    height: 14px;
+    background: url("../images/img/flowEnd.png") no-repeat;
+    background-size: cover;
+    vertical-align: middle;
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+}
 
 .backout-icon {
     width: 14px;
@@ -623,6 +634,9 @@ div, span, p {
 }
 
 .claim-btn{
+    cursor: pointer;
+}
+.endFlow-btn{
     cursor: pointer;
 }
 
