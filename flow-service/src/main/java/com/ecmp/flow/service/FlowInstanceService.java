@@ -300,10 +300,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             int taskCount = flowTaskList.size();
             int index=0;
             for(FlowTask flowTask:flowTaskList){
-                String defJson = flowTask.getTaskJsonDef();
-                JSONObject defObj = JSONObject.fromObject(defJson);
-                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                Boolean canCancel = flowTask.getCanSuspension();
                 if(canCancel){
                     index++;
                 }
