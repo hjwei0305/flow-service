@@ -3,6 +3,7 @@ package com.ecmp.flow.util;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
 import com.ecmp.config.util.SessionClientRequestFilter;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.vo.ContextAppModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import groovy.lang.Binding;
@@ -107,4 +108,29 @@ public class ExpressionUtil {
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
+
+
+    /**
+     * 重置单据状态
+     * @param clientApiBaseUrl
+     * @param businessModelId  业务模型ID
+     * @param status
+     * @param businessId  业务ID
+     * @return
+     */
+    public static boolean resetState(String clientApiBaseUrl, String businessModelId, String businessId, FlowStatus status){
+        boolean result = true;
+        //平台API服务使用的JSON序列化提供类
+        List<Object> providers = new ArrayList<>();
+        providers.add(new ApiRestJsonProvider());
+        //API会话检查的客户端过滤器
+        providers.add(new SessionClientRequestFilter());
+
+        result = WebClient.create(clientApiBaseUrl, providers)
+                .path("condition/resetState/{businessModelId}/{id}",businessModelId,businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .get(Boolean.class);
+        return result;
+    }
+
 }

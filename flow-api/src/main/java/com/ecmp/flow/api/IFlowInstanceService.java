@@ -161,4 +161,29 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "主要用于流程图跟踪")
     public List<String>  nodeHistoryIds(@PathParam("id")String id);
+
+
+    /**
+     * 撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     */
+    @POST
+    @Path("end/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "终止流程实例", notes = "终止")
+    public OperateResult end(@PathParam("id") String id);
+
+    /**
+     * 撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param businessId 业务单据id
+     */
+    @POST
+    @Path("endByBusinessId/{businessId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
+    public OperateResult endByBusinessId(@PathParam("businessId")String businessId);
 }

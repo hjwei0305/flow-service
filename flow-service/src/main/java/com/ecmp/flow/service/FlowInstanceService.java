@@ -1,22 +1,23 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowInstanceService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowHiVarinst;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -241,6 +242,92 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
         return result;
+    }
+
+
+    /**
+     * 检查当前实例是否允许执行终止流程实例操作
+     * @param id 待操作数据ID
+     */
+    public OperateResultWithData<Boolean> checkCanEnd(String id) {
+        boolean canEnd = false;
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            int taskCount = flowTaskList.size();
+            int index=0;
+            for(FlowTask flowTask:flowTaskList){
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                if(canCancel){
+                    index++;
+                }
+            }
+            if(index == taskCount){
+                canEnd = true;
+            }
+        }
+        OperateResultWithData<Boolean> result =  OperateResultWithData.OperationSuccess("10003");
+        result.setData(canEnd);
+        return result;
+    }
+
+    /**
+     * 撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     */
+    public OperateResult end(String id) {
+        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        boolean canEnd = false;
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            int taskCount = flowTaskList.size();
+            int index=0;
+            for(FlowTask flowTask:flowTaskList){
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                if(canCancel){
+                    index++;
+                }
+            }
+            if(index == taskCount){
+                canEnd = true;
+            }
+        }
+        if(canEnd){
+            FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
+            for(FlowTask flowTask:flowTaskList){
+                flowTaskDao.delete(flowTask);
+            }
+            String actInstanceId = flowInstance.getActInstanceId();
+            this.deleteActiviti(actInstanceId);
+            flowInstance.setEndDate(new Date());
+            flowInstance.setEnded(true);
+            flowInstance.setManuallyEnd(true);
+            flowInstanceDao.save(flowInstance);
+
+
+            //重置客户端表单流程状态
+            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            String businessModelId = businessModel.getId();
+            String appModuleId = businessModel.getAppModuleId();
+            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+            String businessId = flowInstance.getBusinessId();
+            FlowStatus status = FlowStatus.INIT;
+            ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+        }
+        return result;
+    }
+
+    public OperateResult endByBusinessId(String businessId){
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        return  this.end(flowInstance.getId());
     }
 
 }

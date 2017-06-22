@@ -4,8 +4,10 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.IBusinessFlowEntity;
 import com.ecmp.flow.entity.IConditionPojo;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import org.apache.commons.beanutils.BeanUtils;
@@ -91,5 +93,21 @@ public class ConditionServer   implements IConditionServer {
             daoBeanName = businessModel.getDaoBean();
         }
         return this.getConditonPojoMap( conditonPojoClassName,  daoBeanName, id);
+    }
+
+
+    public Boolean resetState(String businessModelId,String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+        BusinessModel businessModel = businessModelDao.findOne(businessModelId);
+        String   daoBeanName = null;
+        if(businessModel != null){
+          daoBeanName = businessModel.getDaoBean();
+        }
+//        Class conditonPojoClass = Class.forName(conditonPojoClassName);
+        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+        BaseDao appModuleDao = (BaseDao)applicationContext.getBean(daoBeanName);
+        IBusinessFlowEntity content = (IBusinessFlowEntity)appModuleDao.findOne(id);
+        content.setFlowStatus(status);
+        appModuleDao.save(content);
+        return true;
     }
 }

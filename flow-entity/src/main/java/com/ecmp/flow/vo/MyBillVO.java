@@ -37,6 +37,8 @@ public class MyBillVO {
 
     private String lookUrl;//表单查看url
 
+    private Boolean canManuallyEnd;//是否可以人工终止流程实例
+
 
 
 
@@ -126,5 +128,13 @@ public class MyBillVO {
 
     public void setLookUrl(String lookUrl) {
         this.lookUrl = lookUrl;
+    }
+
+    public Boolean getCanManuallyEnd() {
+        return canManuallyEnd;
+    }
+
+    public void setCanManuallyEnd(Boolean canManuallyEnd) {
+        this.canManuallyEnd = canManuallyEnd;
     }
 }
