@@ -178,7 +178,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
     //终止事件
     endFlowEvent:function () {
         var g = this;
-        $(".endFlow-icon", "#" + this.renderTo).live("click", function () {
+        $(".endFlow-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var message = EUI.MessageBox({
