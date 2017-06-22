@@ -543,6 +543,11 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                         index: "count",
                         width: '50%'
                     }, {
+                        label: "金额",
+                        name: "sum",
+                        index: "sum",
+                        width: '50%'
+                    }, {
                         label: "工作说明",
                         name: "workCaption",
                         index: "workCaption",

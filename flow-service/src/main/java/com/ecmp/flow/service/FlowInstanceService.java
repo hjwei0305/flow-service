@@ -249,8 +249,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 检查当前实例是否允许执行终止流程实例操作
      * @param id 待操作数据ID
      */
-    public OperateResultWithData<Boolean> checkCanEnd(String id) {
-        boolean canEnd = false;
+    public Boolean checkCanEnd(String id) {
+        Boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
             int taskCount = flowTaskList.size();
@@ -268,8 +268,22 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 canEnd = true;
             }
         }
-        OperateResultWithData<Boolean> result =  OperateResultWithData.OperationSuccess("10003");
-        result.setData(canEnd);
+        return canEnd;
+    }
+
+    /**
+     * 检查实例集合是否允许执行终止流程实例操作
+     * @param ids 待操作数据ID集合
+     */
+    public List<Boolean> checkIdsCanEnd(List<String> ids){
+        List<Boolean> result = null;
+        if(ids!=null && !ids.isEmpty()){
+            result = new ArrayList<Boolean>(ids.size());
+            for(String id:ids){
+              Boolean canEnd = this.checkCanEnd(id);
+                result.add(canEnd);
+            }
+        }
         return result;
     }
 
@@ -286,10 +300,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             int taskCount = flowTaskList.size();
             int index=0;
             for(FlowTask flowTask:flowTaskList){
-                String defJson = flowTask.getTaskJsonDef();
-                JSONObject defObj = JSONObject.fromObject(defJson);
-                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                Boolean canCancel = flowTask.getCanSuspension();
                 if(canCancel){
                     index++;
                 }

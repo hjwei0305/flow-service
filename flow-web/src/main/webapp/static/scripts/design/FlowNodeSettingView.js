@@ -759,6 +759,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     win.close();
                 }
+
             }],
             items: [{
                 xtype: "GridPanel",
