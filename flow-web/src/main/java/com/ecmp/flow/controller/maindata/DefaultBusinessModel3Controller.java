@@ -10,6 +10,7 @@ import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -98,12 +99,12 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
 
     @RequestMapping(value = "getApproveBill3")
     @ResponseBody
-    public String getApproveBill3(String id) {
+    public String getApproveBill3(String id) throws JsonProcessingException {
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
         IDefaultBusinessModel3Service proxy = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
         DefaultBusinessModel3 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
-        return JsonUtil.serialize(status);
+        return JsonUtil.serialize(status,JsonUtil.DATE_TIME);
     }
 //    @RequestMapping(value = "list")
 //    @ResponseBody
