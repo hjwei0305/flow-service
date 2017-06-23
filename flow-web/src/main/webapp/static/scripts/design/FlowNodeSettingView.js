@@ -36,6 +36,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         this.addEvent();
     },
     addEvent: function () {
+        var g = this;
         $(".condetail-delete").live("click", function () {
             var data = EUI.getCmp("userType").getValue();
             var userType = data.userType;
@@ -51,32 +52,40 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             grid.deleteRow(id);
         });
 
-        $(".west-navbar").live("click",function () {
-            if($(this).hasClass("select-navbar")){
+        $(".west-navbar").live("click", function () {
+            if ($(this).hasClass("select-navbar")) {
                 return;
             }
             $(this).addClass("select-navbar").siblings().removeClass("select-navbar");
-
+            var index = $(this).index();
+            $(".notify-center").hide();
+            var selecter = ".notify-center:eq(" + index + ")";
+            $(selecter).show();
+            if (index == 0) {
+                g.nowNotifyTab = EUI.getCmp("notify-before");
+            } else {
+                g.nowNotifyTab = EUI.getCmp("notify-after");
+            }
         });
 
-        $(".notify-user-item").live("click",function () {
-            if($(this).hasClass("select")){
+        $(".notify-user-item").live("click", function () {
+            if ($(this).hasClass("select")) {
                 return;
             }
             $(this).addClass("select").siblings().removeClass("select");
-            EUI.getCmp("notifyExcutor").hide();
-            EUI.getCmp("notifyStarter").hide();
-            EUI.getCmp("notifyPosition").hide();
+            EUI.getCmp(g.nowNotifyTab.items[0]).hide();
+            EUI.getCmp(g.nowNotifyTab.items[1]).hide();
+            EUI.getCmp(g.nowNotifyTab.items[2]).hide();
             var index = $(this).index();
-            switch (index){
+            switch (index) {
                 case 0:
-                    EUI.getCmp("notifyExcutor").show();
+                    EUI.getCmp(g.nowNotifyTab.items[0]).show();
                     break;
                 case 1:
-                    EUI.getCmp("notifyStarter").show();
+                    EUI.getCmp(g.nowNotifyTab.items[1]).show();
                     break;
                 case 2:
-                    EUI.getCmp("notifyPosition").show();
+                    EUI.getCmp(g.nowNotifyTab.items[2]).show();
                     break;
                 default:
                     break;
@@ -106,22 +115,23 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
                 var executorForm = EUI.getCmp("excutor");
                 var eventForm = EUI.getCmp("event");
-                var notifyForm = EUI.getCmp("notify");
                 var normalData = normalForm.getFormValue();
                 var eventData = eventForm.getFormValue();
+                console.log(g.getNotifyData());
+                return;
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
                     executor: g.getExcutorData(),
                     event: eventData,
-                    notify: ""
+                    notify: g.getNotifyData()
                 });
-                EUI.getCmp("notify-tab").remove();
+                g.remove();
                 g.window.close();
             }
         }, {
             title: "取消",
             handler: function () {
-                EUI.getCmp("notify-tab").remove();
+                g.remove();
                 g.window.close();
             }
         }];
@@ -371,7 +381,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getNotifyTab: function () {
         return {
             title: "通知",
-            id: "notify",
             padding: 10,
             defaultConfig: {
                 width: 300,
@@ -388,31 +397,57 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             '<div class="notify-user-item">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
-            '<div id="notify-tab"></div>' +
+            '<div id="notify-before"></div>' +
+            '</div>' +
+            '<div class="notify-center" style="display: none;">' +
+            '<div class="notify-user">' +
+            '<div class="notify-user-item select">通知执行人</div>' +
+            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-after"></div>' +
             '</div>'
         };
     },
     initNotify: function () {
-        EUI.FormPanel({
+        this.nowNotifyTab = EUI.Container({
             width: 445,
             height: 365,
-            renderTo: "notify-tab",
+            renderTo: "notify-before",
             defaultConfig: {
                 iframe: false,
-                xtype: "Container",
+                xtype: "FormPanel",
                 width: 425,
                 height: 345,
-                itemspace:10
+                itemspace: 10
             },
             items: [{
-                id: "notifyExcutor",
                 items: this.getNotifyItem()
             }, {
-                id: "notifyStarter",
                 hidden: true,
                 items: this.getNotifyItem()
             }, {
-                id: "notifyPosition",
+                hidden: true,
+                items: this.getNotifyItem()
+            }]
+        });
+        EUI.Container({
+            width: 445,
+            height: 365,
+            renderTo: "notify-after",
+            defaultConfig: {
+                iframe: false,
+                xtype: "FormPanel",
+                width: 425,
+                height: 345,
+                itemspace: 10
+            },
+            items: [{
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
                 hidden: true,
                 items: this.getNotifyItem()
             }]
@@ -443,8 +478,24 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 220,
             labelWidth: 80,
             title: "通知备注",
-            name: ""
+            name: "content"
         }];
+    },
+    getNotifyData: function () {
+        var data = {};
+        var notifyTab1 = EUI.getCmp("notify-before");
+        var notifyTab2 = EUI.getCmp("notify-after");
+        data.before = {
+            notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
+            notifyStarter: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
+            notifyPosition: EUI.getCmp(notifyTab1.items[0]).getFormValue()
+        };
+        data.after = {
+            notifyExecutor: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
+            notifyStarter: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
+            notifyPosition: EUI.getCmp(notifyTab2.items[0]).getFormValue()
+        };
+        return data;
     },
     getPositionGrid: function () {
         var colModel = [{
@@ -578,7 +629,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var cmp = EUI.getCmp("positionGrid");
                     var selectRow = EUI.getCmp("selPositionGrid").data;
-                    cmp.data = selectRow?selectRow:[];
+                    cmp.data = selectRow ? selectRow : [];
                     cmp.setDataInGrid(cmp.data, false);
                     win.close();
                 }
@@ -612,7 +663,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         width: 350,
                         itemspace: 0,
                         isOverFlow: false,
-                        items: [this.initTitle("已选择"),{
+                        items: [this.initTitle("已选择"), {
                             xtype: "GridPanel",
                             id: "selPositionGrid",
                             region: "center",
@@ -671,31 +722,31 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }],
         });
-        var data=EUI.getCmp("positionGrid") ? EUI.getCmp("positionGrid").data : [];
-        EUI.getCmp("selPositionGrid").data=[];
-        g.addGridData(data,EUI.getCmp("selPositionGrid"));
+        var data = EUI.getCmp("positionGrid") ? EUI.getCmp("positionGrid").data : [];
+        EUI.getCmp("selPositionGrid").data = [];
+        g.addGridData(data, EUI.getCmp("selPositionGrid"));
         this.addPositionEvent();
     },
     addPositionEvent: function () {
         var g = this;
         $("#position-left").live("click", function (e) {
-            var cmp=EUI.getCmp("selPositionGrid");
+            var cmp = EUI.getCmp("selPositionGrid");
             var selectRow = EUI.getCmp("allPositionGrid").getSelectRow();
             if (selectRow.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            var nowData = cmp.data?cmp.data:[];
-            g.checkIsExistAndAddData(nowData,selectRow,cmp);
+            var nowData = cmp.data ? cmp.data : [];
+            g.checkIsExistAndAddData(nowData, selectRow, cmp);
         });
         $("#position-right").live("click", function (e) {
-            var cmp=EUI.getCmp("selPositionGrid");
-            var row= cmp.getSelectRow();
+            var cmp = EUI.getCmp("selPositionGrid");
+            var row = cmp.getSelectRow();
             if (row.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            g.deleteRowData(row,cmp);
+            g.deleteRowData(row, cmp);
         });
     },
     deleteRowData: function (data, cmp) {
@@ -704,16 +755,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             cmp.deleteRow(data[i].id);
         }
     },
-    checkIsExistAndAddData:function (nowData,selectData,cmp) {
-        var g=this,isExist=false;
-        if(nowData.length==0){
+    checkIsExistAndAddData: function (nowData, selectData, cmp) {
+        var g = this, isExist = false;
+        if (nowData.length == 0) {
             cmp.addRowData(selectData);
             return;
         }
-        for (var i=0;i<selectData.length;i++) {
+        for (var i = 0; i < selectData.length; i++) {
             isExist = false;
             for (var j = 0; j < nowData.length; j++) {
-                if (nowData[j].id==selectData[i].id) {
+                if (nowData[j].id == selectData[i].id) {
                     isExist = true;
                     break;
                 }
@@ -736,8 +787,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 50,
             border: false,
             isOverFlow: false,
-            html: "<div class='arrow-right' id="+id+"-right></div>" +
-            "<div class='arrow-left' id="+id+"-left></div>"
+            html: "<div class='arrow-right' id=" + id + "-right></div>" +
+            "<div class='arrow-left' id=" + id + "-left></div>"
         }
     },
     showSelectPositionTypeWindow: function () {
@@ -909,5 +960,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+    },
+    remove: function () {
+        EUI.getCmp("notify-tab").remove();
+        EUI.getCmp("notify-tab2").remove();
     }
 });
