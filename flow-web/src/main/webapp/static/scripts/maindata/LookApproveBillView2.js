@@ -1,5 +1,5 @@
 /*
- * 查看内置审批单
+ * 查看业务申请单
  * */
 EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
     id: EUI.util.getUrlParam("id"),
@@ -13,9 +13,9 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 xtype: "Container",
                 layout: "border",
                 border: false,
-                padding: 8,
-                width: 500,
-                height: 500,
+                padding: 0,
+                width: 650,
+                height: 600,
                 id: "lookApprove",
                 itemspace: 0,
                 style: {
@@ -28,7 +28,6 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
 
         });
         this.showFindData();
-        $("#name").find('input').css("font-weight", "bold");
     },
     initTop: function () {
         var g = this;
@@ -37,8 +36,12 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             region: "north",
             id: "top",
             border: false,
-            height: 70,
-            html: "<div class='title'>采购申请单</div>"
+            height: 50,
+            padding:0,
+            html: "<div class='flow-approve-title'>" +
+            "<div class='bills-num'></div>" +
+            "<div class='title'>业务申请单</div>" +
+            "<div class='created-date'></div></div>"
         }
     },
     initCenter: function () {
@@ -48,52 +51,165 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             id: "lookBill",
             border: false,
             region: "center",
+            padding:0,
+            itemspace: 10,
             items: [{
+                xtype:"Container",
+                height:30,
+                padding:0,
+                style:{
+                    "border-top":"1px solid #b5b8c8",
+                    "border-bottom":"1px solid #b5b8c8"
+                },
+                html: "<div class='approve-title'>申请概要</div>"
+            },{
                 xtype: "TextField",
-                title: "<span class='name'>名称</span>",
+                title: "<span class='name'>业务类型</span>",
                 name: "name",
-                width: 300,
+                width: 413,
                 id: "name",
+                labelWidth: 100,
                 // readonly:true,
                 colon: false,
-                style: {
-                    "font-weight": "bolder"
+                style:{
+                    "padding-left":"20px"
                 }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>申请说明</span>",
+                name: "applyCaption",
+                width: 413,
+                id: "applyCaption",
+                // readonly:true,
+                colon: false,
+                labelWidth: 100,
+                style:{
+                    "padding-left":"20px"
+                }
+            },{
+                xtype:"Container",
+                height:30,
+                padding:0,
+                style:{
+                    "border-top":"1px solid #b5b8c8",
+                    "border-bottom":"1px solid #b5b8c8"
+                },
+                html: "<div class='approve-title'>申请详情</div>"
             }, {
                 xtype: "NumberField",
                 title: "<span class='name'>单价</span>",
                 name: "unitPrice",
-                width: 300,
+                width: 413,
                 id: "unitPrice",
-                allowNegative : false,//不允许输入负数
-                allowChar : "0123456789",// 允许输入的数字
                 // readonly:true,
                 colon: false,
-                style: {
-                    "font-weight": "bolder"
+                allowNegative : false,//不允许输入负数
+                allowChar : "0123456789",// 允许输入的数字
+                labelWidth: 100,
+                style:{
+                    "padding-left":"20px"
                 }
             }, {
                 xtype: "NumberField",
                 title: "<span class='name'>数量</span>",
                 name: "count",
-                width: 300,
+                width: 413,
                 id: "count",
+                colon: false,
+                allowNegative : false,//不允许输入负数
+                allowChar : "0123456789",// 允许输入的数字
+                //
+                labelWidth: 100,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "NumberField",
+                title: "<span class='name'>金额</span>",
+                name: "sum",
+                width: 413,
+                id: "sum",
                 allowNegative : false,//不允许输入负数
                 allowChar : "0123456789",// 允许输入的数字
                 // readonly:true,
                 colon: false,
-                style: {
-                    "font-weight": "bolder"
+                labelWidth: 100,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>代码</span>",
+                name: "orgCode",
+                width: 413,
+                id: "orgCode",
+                colon: false,
+                labelWidth: 100,
+                hidden:true,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>名称</span>",
+                name: "orgName",
+                width: 413,
+                id: "orgName",
+                colon: false,
+                labelWidth: 100,
+                hidden:true,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>页数</span>",
+                name: "orgPath",
+                width: 413,
+                id: "orgPath",
+                colon: false,
+                labelWidth: 100,
+                hidden:true,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>ID</span>",
+                name: "orgId",
+                width: 413,
+                id: "orgId",
+                colon: false,
+                labelWidth: 100,
+                hidden:true,
+                style:{
+                    "padding-left":"20px"
+                }
+            }, {
+                xtype: "TextField",
+                title: "<span class='name'>租户代码</span>",
+                name: "tenantCode",
+                width: 413,
+                id: "tenantCode",
+                colon: false,
+                labelWidth: 100,
+                hidden:true,
+                style:{
+                    "padding-left":"20px"
                 }
             }, {
                 xtype: "TextArea",
-                title: "<span class='name'>说明</span>",
+                title: "<span class='name'>备注说明</span>",
                 id: "workCaption",
                 name: "workCaption",
                 // readonly:true,
-                width: 300,
+                width: 413,
+                labelWidth: 100,
                 height: 170,
-                colon: false
+                colon: false,
+                style:{
+                    "padding-left":"20px"
+                }
             }]
         }
     },
@@ -110,6 +226,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: "保存",
                 id: "save",
+                width:200,
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("lookBill");
@@ -120,10 +237,6 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                     console.log(data);
                     g.saveLookApprove(data);
                 }
-            }, {
-                xtype: "Button",
-                title: "取消",
-                id: "cancel"
             }]
         }
     },
@@ -135,12 +248,13 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/defaultBusinessModel2/getApproveBill2",
             params: {
-                id: this.id
+                id: EUI.util.getUrlParam("id")
             },
             success: function (result) {
                 myMask.hide();
                 if (result.success) {
                     EUI.getCmp("lookBill").loadData(result.data);
+                    g.showBillsTitleData(result.data);
                 } else {
                     EUI.ProcessStatus(result);
                 }
@@ -151,6 +265,10 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
             }
         })
 
+    },
+    showBillsTitleData:function (data) {
+        $(".bills-num").text("NO：" + data.businessCode);
+        $(".created-date").text(data.createdDate);
     },
     checkIsValid: function () {
         EUI.ProcessStatus({

@@ -13,6 +13,8 @@ import com.ecmp.flow.api.common.api.IConditionServer;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -96,6 +98,7 @@ public class ConditionServer   implements IConditionServer {
     }
 
 
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
     public Boolean resetState(String businessModelId,String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         BusinessModel businessModel = businessModelDao.findOne(businessModelId);
         String   daoBeanName = null;

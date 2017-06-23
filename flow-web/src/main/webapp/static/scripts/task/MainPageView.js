@@ -9,7 +9,36 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             menudata: this.menudata,
             dataWait: this.dataWait,
             menu: this.menu,
-            html: this.getHtml()
+            items:[{
+                xtype:"Container",
+                layout:"border",
+                border:false,
+                itemspace:0,
+                padding:0,
+                style:{
+                    "background-color":"#fff"
+                },
+                items:[{
+                    xtype:"Container",
+                    region : "north",
+                    height:70,
+                    border:false,
+                    padding:0,
+                    html:this.getToolBarHtml()
+                },{
+                    xtype:"Container",
+                    region : "center",
+                    border:false,
+                    padding:0,
+                    style:{
+                        "border":"1px solid #dddddd",
+                        "border-radius":"2px"
+                    },
+                    html:this.getCenterHtml()
+                }]
+
+            }]
+
         });
         this.showTodoTaskView(true);
         this.addEvents();
@@ -36,28 +65,52 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '   </div>';
 
     },
+    getToolBarHtml:function () {
+        return '            <div class="top-header">' +
+            '                    <span class="wait-work task-work active">待办工作</span>' +
+            '                    <span class="taken-work history-work">已办工作</span>' +
+            '                    <span class="workOrder">我的单据</span>' +
+            '                <div class="header-right">' +
+            '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            // '                    <span class="btn">待办项批量处理</span>' +
+            '                </div>' +
+            '            </div>';
+    },
+    getCenterHtml:function () {
+        return '            <div id="todoTask-content" style="display: block"> </div>' +
+            '            <div id="completeTask-content" style="display: none"> </div>' +
+            '            <div id="order-content" style="display: none"></div>';
+    },
     //添加事件
     addEvents: function () {
         var g = this;
         $(".task-work").bind("click", function () {
+            $("#completeTask-content").css("display","none");
+            $("#order-content").css("display","none");
+            $("#todoTask-content").css("display","block");
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showTodoTaskView(true);
         });
         $(".history-work").bind("click", function () {
+            $("#todoTask-content").css("display","none");
+            $("#order-content").css("display","none");
+            $("#completeTask-content").css("display","block");
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showCompleteTaskView(true);
-            $("#completeTask-content").addClass("rim");
+            $("#completeTask-content").css("height","100%");
         });
         $(".workOrder").bind("click", function () {
+            $("#todoTask-content").css("display","none");
+            $("#completeTask-content").css("display","none");
+            $("#order-content").css("display","block");
             $(".workOrder").next().hide();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showMyOrderView(true);
-            $("#order-content").addClass("rim");
         });
     },
     //待办界面

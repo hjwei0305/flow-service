@@ -24,7 +24,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: ['->', {
                 xtype: "SearchBox",
-                displayText: "请输入任务名进行搜索",
+                displayText: g.lang.searchByTaskNameText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -57,7 +57,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     S_createdDate: "ASC"
                 },
                 colModel: [{
-                    label: "操作",
+                    label: g.lang.operateText,
                     name: "operate",
                     index: "taskStatus",
                     width: 100,
@@ -66,7 +66,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
                             strVar = "<div class='btn_operate'>"
-                                + "<div class='rollBackBtn' title='撤销'>撤销</div>"
+                                + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div>"
                         }
                         return strVar;
                     }
@@ -80,35 +80,35 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                  name : "flowName",
                  index : "flowName"
                  },*/{
-                    label: "任务名",
+                    label: g.lang.taskNameText,
                     name: "flowTaskName",
                     index: "flowTaskName"
                 }, {
-                    label: "流程实例",
+                    label: g.lang.flowInstanceText,
                     name: "flowInstance.flowName",
                     index: "flowInstance.flowName"
                 }, {
-                    label: "任务表单URL",
+                    label: g.lang.taskFormURLText,
                     name: "taskFormUrl",
                     index: "taskFormUrl",
                     hidden: true
                 }, {
-                    label: "任务状态",
+                    label: g.lang.taskStatusText,
                     name: "taskStatus",
                     index: "taskStatus",
                     align:"center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
-                            strVar = "已办";
+                            strVar = g.lang.doneText;
                         }
                         else if ('CANCLE' == rowObject.taskStatus) {
-                            strVar = "已撤销";
+                            strVar = g.lang.reversedText;
                         }
                         return strVar;
                     }
                 }, {
-                    label: "代理状态",
+                    label: g.lang.agentStatusText,
                     name: "proxyStatus",
                     index: "proxyStatus"
                 }, /*{
@@ -120,23 +120,23 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                  name : "flowDefinitionId",
                  index : "flowDefinitionId"
                  },*/{
-                    label: "执行人名称",
+                    label: g.lang.processorNameText,
                     name: "executorName",
                     index: "executorName"
                 }, {
-                    label: "执行人账号",
+                    label: g.lang.processorAccountText,
                     name: "executorAccount",
                     index: "executorAccount"
                 }, {
-                    label: "任务开始时间",
+                    label: g.lang.taskBeginTimeText,
                     name: "actStartTime",
                     index: "actStartTime"
                 }, {
-                    label: "任务结束时间",
+                    label: g.lang.taskEndTimeText,
                     name: "actEndTime",
                     index: "actEndTime"
                 }, {
-                    label: "任务执行时长",
+                    label: g.lang.taskProcessTimeText,
                     name: "actDurationInMillis",
                     index: "actDurationInMillis",
                     formatter: function (cellvalue, options, rowObject) {
@@ -147,22 +147,22 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                         var minute = Math.floor((value - day*60*60*1000*24- hour*60*60*1000)/(60*1000));
                         var second = Math.floor((value - day*60*60*1000*24- hour*60*60*1000 - minute*60*1000)/1000);
                         if(day > 0 ){
-                            strVar += day+"天";
+                            strVar += day+g.lang.dayText;
                         }
                         if(hour > 0 ){
-                            strVar += hour+"小时";
+                            strVar += hour+g.lang.hourText;
                         }
                         if(minute > 0 ){
-                            strVar += minute+"分";
+                            strVar += minute+g.lang.minuteText;
                         }
                         if(second > 0 ){
-                            strVar += second+"秒";
+                            strVar += second+g.lang.secondText;
                         }
                         return strVar;
                     }
 
                 }, {
-                    label: "最后更新时间",
+                    label: g.lang.lastUpdateTimeText,
                     name: "lastModifiedDate",
                     index: "lastModifiedDate"
                 },
@@ -175,7 +175,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                      name : "executeDate",
                      index : "executeDate"
                      },*/{
-                        label: "描述",
+                        label: g.lang.depictText,
                         name: "depict",
                         index: "depict"
                     }/*{
@@ -254,15 +254,15 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(rowData);
         var infoBox = EUI.MessageBox({
-            title: "提示",
-            msg: "确定撤销当前任务吗？",
+            title: g.lang.tiShiText,
+            msg: g.lang.reverseTaskMsgText,
             buttons: [{
-                title: "确定",
+                title: g.lang.sureText,
                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
-                        msg: "正在执行"
+                        msg: g.lang.processingText
                     });
                     EUI.Store({
                         url: _ctxPath + "/flowHistory/rollBackTask",
@@ -283,7 +283,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     });
                 }
             }, {
-                title: "取消",
+                title: g.lang.cancelText,
                 handler: function () {
                     infoBox.remove();
                 }

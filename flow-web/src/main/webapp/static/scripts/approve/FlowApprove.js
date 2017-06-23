@@ -13,9 +13,10 @@
  * <br>
  * *************************************************************************************************<br>
  */
-
-window.Flow = {};
-EUI.ns("Flow.flow");
+if(!window.Flow) {
+    window.Flow = {};
+    EUI.ns("Flow.flow");
+}
 
 Flow.FlowApprove = function (options) {
     return new Flow.flow.FlowApprove(options);
@@ -51,19 +52,19 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     initTopHtml: function () {
         return '<div class="flow-info">' +
             '        <div class="flow-info-item">' +
-            '            <div class="flow-ordernum">业务单号：</div>' +
+            '            <div class="flow-ordernum">'+this.lang.businessUnitText+'</div>' +
             '            <div style="padding: 0 0 20px 20px;">' +
-            '                <div class="flow-info-creater">制单人：</div>' +
+            '                <div class="flow-info-creater">'+this.lang.docMarkerText+'</div>' +
             '                <div class="flow-info-createtime"></div>' +
             '            </div>' +
             '        </div>' +
             '        <div class="flow-info-item" style="border-left:1px solid #dddddd ;">' +
             '            <div>' +
-            '                <div class="flow-info-text">上一步执行人：</div>' +
+            '                <div class="flow-info-text">'+this.lang.preExecutorText+'</div>' +
             '                <div class="flow-info-excutor"></div>' +
             '            </div>' +
             '            <div style="padding-top: 6px;">' +
-            '                <div class="flow-info-text">上一步审批意见：</div>' +
+            '                <div class="flow-info-text">'+this.lang.preApprovalOpinionsText+'</div>' +
             '                <div class="flow-info-remark"></div>' +
             '            </div>' +
             '        </div>' +
@@ -72,13 +73,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     initOperateHtml: function () {
         return '<div style="height: 200px;">' +
             '        <div class="flow-decision">' +
-            '            <div class="flow-nodetitle">决策：</div>' +
+            '            <div class="flow-nodetitle">'+this.lang.decisionText+'</div>' +
             '            <div class="flow-decision-box">' +
             '        </div></div>' +
             '        <div class="flow-info-item" style="border-left:1px solid #dddddd;">' +
-            '            <div class="flow-nodetitle">处理意见</div>' +
+            '            <div class="flow-nodetitle">'+this.lang.handlingSuggestionText+'</div>' +
             '            <textarea class="flow-remark"></textarea>' +
-            '            <span class="flow-btn flow-next">下一步</span>' +
+            '            <span class="flow-btn flow-next">'+this.lang.nextStepText+'</span>' +
             '        </div>' +
             '    </div>';
     },
@@ -86,29 +87,29 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var html = '<div>' +
             '        <div class="flow-order-titlebox">' +
             '            <div style="display: inline-block;">' +
-            '                表单明细' +
+                            this.lang.formDetailText +
             '            </div>' +
-            '            <div class="close">收起</div>' +
+            '            <div class="close">'+this.lang.collectText+'</div>' +
             '        </div>';
         html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
         return html += "</div>";
     },
     initChooseUserHtml: function () {
         return '<div class="flow-chooseuser">' +
-            '    <div class="chooseuser-title">选择下一步执行人</div>' +
+            '    <div class="chooseuser-title">'+this.lang.chooseNextExecutorText+'</div>' +
             '<div class="flow-operate">' +
             '        <div class="flow-btn pre-step">' +
-            '            上一步' +
+                        this.lang.previousStepText +
             '        </div>' +
             '        <div class="flow-btn submit">' +
-            '            提交' +
+                        this.lang.submitText +
             '        </div>' +
             '    </div>';
     },
     addEvents: function () {
         var g = this;
         $(".flow-next").bind("click", function () {
-            if ($(this).text() == "完成") {
+            if ($(this).text() == g.lang.finishText) {
                 var endEventId = $(".select", ".flow-decision-box").attr("id");
                 g.submit(true, endEventId);
             } else {
@@ -122,10 +123,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
         $(".flow-order-titlebox").toggle(function () {
             $(".flow-iframe").show();
-            $(".expand").text("收起").addClass("close");
+            $(".expand").text(g.lang.collectText).addClass("close");
         }, function () {
             $(".flow-iframe").hide();
-            $(".expand").text("展开").addClass("expand");
+            $(".expand").text(g.lang.spreadText).addClass("expand");
         });
         //决策选择
         $(".flow-decision-item").live("click", function () {
@@ -136,9 +137,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             $(this).addClass("select");
             var type = $(this).attr("type");
             if (type.toLowerCase() == "endevent") {
-                $(".flow-next").text("完成");
+                $(".flow-next").text(g.lang.finishText);
             } else {
-                $(".flow-next").text("下一步");
+                $(".flow-next").text(g.lang.nextStepText);
             }
         });
         //执行人选择
@@ -193,8 +194,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     },
     showHeadData: function (data) {
-        $(".flow-ordernum").text("业务单号：" + data.businessCode);
-        $(".flow-info-creater").text("制单人：" + data.createUser);
+        $(".flow-ordernum").text(this.lang.businessUnitText + data.businessCode);
+        $(".flow-info-creater").text(this.lang.docMarkerText + data.createUser);
         $(".flow-info-excutor").text(data.prUser);
         $(".flow-info-remark").text(data.prOpinion);
 
@@ -202,7 +203,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getNodeInfo: function () {
         var g = this;
         var mask = EUI.LoadMask({
-            msg: "正在加载数据，请稍候..."
+            msg: this.lang.queryMaskMessageText
         });
         EUI.Store({
             url: _ctxPath + "/builtInApprove/nextNodesInfo",
@@ -246,7 +247,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         }
         if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
-            $(".flow-next").text("完成");
+            $(".flow-next").text(this.lang.finishText);
         }
         $(".flow-decision-box").append(html);
     },
@@ -271,7 +272,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (doms.length != 1) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: "请选择下一步执行节点"
+                    msg: this.lang.chooseNextExecuteNodeText
                 });
                 return false;
             }
@@ -282,7 +283,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (doms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: "请选择下一步执行节点"
+                    msg: this.lang.chooseNextExecuteNodeText
                 });
                 return false;
             }
@@ -300,7 +301,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         var g = this;
         var mask = EUI.LoadMask({
-            msg: "正在保存，请稍候..."
+            msg: this.lang.nowSaveMsgText
         });
         EUI.Store({
             url: _ctxPath + "/builtInApprove/getSelectedNodesInfo",
@@ -312,22 +313,22 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 if (status.success) {
-                    if ($(".flow-next").text() == "完成") {
+                    if ($(".flow-next").text() == g.lang.finishText) {
                         g.close();
                         return;
                     }
                     if (status.data == "EndEvent") {
                         var msgbox = EUI.MessageBox({
-                            title: "操作提示",
-                            msg: "当前操作流程将会结束，是否继续？",
+                            title: g.lang.operationHintText,
+                            msg: g.lang.stopFlowMsgText,
                             buttons: [{
-                                title: "确定",
+                                title: g.lang.sureText,
                                 handler: function () {
                                     g.submit(true);
                                     msgbox.remove();
                                 }
                             }, {
-                                title: "取消", handler: function () {
+                                title: g.lang.cancelText, handler: function () {
                                     msgbox.remove();
                                 }
                             }]
@@ -355,13 +356,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
-            var nodeType = "普通任务";
+            var nodeType = this.lang.generalTaskText;
             var iconCss = "choose-radio";
             if (node.flowTaskType == "singleSign") {
-                nodeType = "单签任务";
+                nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "countersign") {
-                nodeType = "会签任务";
+                nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
@@ -390,13 +391,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
             //             '<div class="choose-icon ' + iconCss + '"></div>' +
             //             '<div class="excutor-item-title">姓名：' + item.name +
-            //             '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
             //             '</div>';
             //     }else{
             //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
             //             '<div class="choose-icon ' + iconCss + '"></div>' +
             //             '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-            //             '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
             //             '</div>';
             //     }
             // }
@@ -412,14 +413,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if(!item.positionId){
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item.name +
-                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+this.lang.nameText + item.name +
+                    this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }else{
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+this.lang.nameText + item.name + this.lang.jobText + item.positionName +
+                    this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
         }
@@ -461,7 +462,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: "请选择[" + data.name + "]的执行人"
+                    msg: this.lang.chooseMsgText + data.name + this.lang.executorMsgText
                 });
                 return false;
             }
@@ -474,7 +475,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             return;
         }
         var mask = EUI.LoadMask({
-            msg: "正在保存，请稍候..."
+            msg: this.lang.nowSaveMsgText
         });
         EUI.Store({
             url: this.submitUrl,

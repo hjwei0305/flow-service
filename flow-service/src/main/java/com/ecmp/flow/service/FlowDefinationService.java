@@ -893,6 +893,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowTask.setOwnerAccount(executor.getCode());
                         flowTask.setOwnerName(executor.getName());
                         flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorId(executor.getId());
                         flowTask.setExecutorName(executor.getName());
                         flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
