@@ -169,12 +169,33 @@
     background: url("../images/checkbox-select.png");
 }
 
+.choose-delete{
+    background: url("../images/ChooseDelete.png");
+}
+
 .flow-excutor-content {
     padding: 5px 0 20px;
 }
 
 .flow-excutor-content > div {
     padding: 15px 0 0 20px;
+}
+.flow-excutor-content2 {
+    padding: 5px 0 20px;
+    float: left;
+    width: 643px;
+    height: 230px;
+    overflow-y:auto;
+    border:1px solid #CCCCCC;
+}
+.flow-excutor-content2 > div {
+    padding: 15px 0 0 20px;
+}
+.choose-btn{
+    float: right;
+    margin-top: 15px;
+    position: absolute;
+    right: 44px;
 }
 
 .add-excutor {
