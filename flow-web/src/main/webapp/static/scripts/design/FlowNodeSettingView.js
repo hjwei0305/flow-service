@@ -932,7 +932,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         eventForm.loadData(this.data.event);
 
         //加载通知配置
-
+        EUI.getCmp("notify-before");
+        EUI.getCmp("notify-after");
     },
     initTitle: function (title) {
         return {
@@ -963,7 +964,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         });
     },
     remove: function () {
-        EUI.getCmp("notify-tab").remove();
-        EUI.getCmp("notify-tab2").remove();
+        EUI.getCmp("notify-before").remove();
+        EUI.getCmp("notify-after").remove();
     }
 });
