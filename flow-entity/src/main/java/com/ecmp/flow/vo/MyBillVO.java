@@ -37,7 +37,7 @@ public class MyBillVO {
 
     private String lookUrl;//表单查看url
 
-    private Boolean canManuallyEnd;//是否可以人工终止流程实例
+    private Boolean canManuallyEnd=false;//是否可以人工终止流程实例
 
 
 

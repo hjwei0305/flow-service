@@ -45,101 +45,124 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     showBuiltInApproveWin: function (data) {
         var g = this;
         win = EUI.Window({
-            title: "内置审批单",
-            height: 350,
+            title: "销售申请",
+            height: 450,
             width:420,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBuiltInApprove",
+                padding:0,
                 items: [{
                     xtype: "TextField",
-                    title: "ID",
-                    labelWidth: 80,
-                    name: "id",
+                    title: "组织机构ID",
                     allowBlank:false,
-                    width: 270,
-                    colon:false,
-                    hidden: true
-                },{
-                    xtype: "TextField",
-                    title: "组织机构Id",
-                    allowBlank:false,
-                    labelWidth: 80,
-                    colon:false,
+                    labelWidth: 70,
                     name: "orgId",
+                    colon:false,
                     width: 270,
-                    hidden: true
+                    value:g.selectedNodeId,
+                    hidden:true
                 },{
                     xtype: "TextField",
                     title: "组织机构",
-                    labelWidth: 80,
-                    colon:false,
                     allowBlank:false,
-                    readonly:true,
+                    labelWidth: 70,
                     name: "orgName",
-                    width: 270
+                    colon:false,
+                    width: 270,
+                    readonly:true,
+                    value:g.selectedNodeName,
+                    style:{"margin-left":30}
                 },{
                     xtype: "TextField",
                     title: "组织机构code",
-                    labelWidth: 80,
-                    colon:false,
                     allowBlank:false,
+                    labelWidth: 70,
                     name: "orgCode",
+                    colon:false,
                     width: 270,
-                    hidden: true
+                    readonly:true,
+                    value:g.selectedNodeCode,
+                    hidden:true
                 },{
                     xtype: "TextField",
-                    title: "组织机构orgPath",
-                    labelWidth: 80,
-                    colon:false,
+                    title: "组织机构租户代码",
                     allowBlank:false,
-                    name: "orgPath",
-                    width: 270,
-                    hidden: true
-                },{
-                    xtype: "TextField",
-                    title: "租户代码",
-                    labelWidth: 80,
-                    colon:false,
-                    allowBlank:false,
+                    labelWidth: 70,
                     name: "tenantCode",
+                    colon:false,
                     width: 270,
-                    hidden: true
-                }, {
+                    readonly:true,
+                    value:g.selectedNodeTenantCode,
+                    hidden:true
+                },{
                     xtype: "TextField",
-                    title: "名称",
-                    labelWidth: 80,
+                    title: "组织机构codePath",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "orgPath",
+                    colon:false,
+                    width: 270,
+                    readonly:true,
+                    value:g.selectedNodeCodePath,
+                    hidden:true
+                },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
+                },{
+                    xtype: "TextField",
+                    title: "业务类型",
+                    allowBlank:false,
+                    labelWidth: 70,
                     name: "name",
-                    width: 270,
                     colon:false,
-                    allowBlank:false
-                }, {
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextField",
+                    title: "申请说明",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "applyCaption",
+                    colon:false,
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
+                    xtype: "Container",
+                    height:25,
+                    html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
+                },{
+                    xtype: "NumberField",
                     title: "单价",
-                    labelWidth: 80,
+                    allowBlank:false,
+                    labelWidth: 70,
                     name: "unitPrice",
-                    width: 270,
                     colon:false,
-                    allowBlank:false
-                }, {
-                    xtype: "TextField",
+                    width: 270,
+                    precision:2,
+                    style:{"margin-left":30}
+                },{
+                    xtype: "NumberField",
                     title: "数量",
-                    labelWidth: 80,
+                    allowBlank:false,
+                    labelWidth: 70,
                     name: "count",
-                    width: 270,
                     colon:false,
-                    allowBlank:false
-                }, {
+                    width: 270,
+                    style:{"margin-left":30}
+                },{
                     xtype: "TextArea",
-                    title: "说明",
-                    labelWidth: 80,
+                    title: "备注说明",
+                    labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
-                    colon:false,
                     width: 270,
                     height:130,
-                    allowBlank:false
+                    colon:false,
+                    allowBlank:false,
+                    style:{"margin-left":30}
                 }]
             }],
             buttons: [{
@@ -455,7 +478,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: '25',
+                        width: '50%',
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){
@@ -483,13 +506,18 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "业务名称",
                         name: "name",
                         index: "name",
-                        width: '30%'
+                        width: '40%'
+                    }, {
+                        label: "申请说明",
+                        name: "applyCaption",
+                        index: "applyCaption",
+                        width: '40%'
                     }, {
                         label: "当前流程状态",
                         name: "flowStatus",
                         index: "flowStatus",
                         hidden: false,
-                        width: '40%',
+                        width: '45%',
                         formatter : function(cellvalue, options, rowObject) {
                             var strVar = '';
                             if('INIT' == rowObject.flowStatus){
@@ -568,7 +596,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     addBuiltInApprove: function () {
         var g = this;
         win = EUI.Window({
-            title: "新增内置表单",
+            title: "新增销售申请",
             height: 450,
             width:420,
             padding: 15,

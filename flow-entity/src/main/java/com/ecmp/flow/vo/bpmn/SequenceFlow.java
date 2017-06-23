@@ -36,6 +36,9 @@ public class SequenceFlow extends BaseNode implements Serializable {
     @XmlAttribute
     private String targetRef;
 
+    @XmlAttribute
+    private String name;
+
     /**
      * UEL
      */
@@ -49,7 +52,10 @@ public class SequenceFlow extends BaseNode implements Serializable {
         if (StringUtils.isNotBlank(uel)) {
             JSONObject uelObject = JSONObject.fromObject(uel);
             String uelValue = (String) uelObject.get("groovyUel");
-            this.conditionExpression = new ConditionExpression(uelValue);
+            this.name = (String) uelObject.get("name");
+            if(StringUtils.isNotEmpty(uelValue)){
+                this.conditionExpression = new ConditionExpression(uelValue);
+            }
         }
     }
 
@@ -71,6 +77,14 @@ public class SequenceFlow extends BaseNode implements Serializable {
 
     public ConditionExpression getConditionExpression() {
         return conditionExpression;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setConditionExpression(ConditionExpression conditionExpression) {

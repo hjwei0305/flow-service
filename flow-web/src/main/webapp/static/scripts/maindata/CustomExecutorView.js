@@ -25,7 +25,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                title: "<span style='font-weight: bold'>" + this.lang.businessEntityText + "</span>",
                 id: "coboId",
                 async: false,
                 colon: false,
@@ -64,14 +64,14 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
 
             }, {
                 xtype: "Button",
-                title: "分配执行人",
+                title: this.lang.allocationExectorText,
                 selected: true,
                 handler: function () {
                     g.showSetExecutorWind();
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: this.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -112,23 +112,23 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                  return strVar;
                  }
                  }, */{
-                    label: "用户ID",
+                    label: this.lang.userIDText,
                     name: "id",
                     index: "id",
                      hidden:true
                 }, {
-                    label: "用户名称",
+                    label: this.lang.userNameText,
                     name: "userName",
                     index: "userName",
                     width:150,
                     align: "center"
                 }, {
-                    label: "员工编号",
+                    label: this.lang.userNumberText,
                     name: "code",
                     index: "code",
                     width:200
                 }, {
-                    label: "组织机构",
+                    label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name",
                     width:150,
@@ -255,7 +255,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
     showSetExecutorWind: function () {
         var g = this;
         g.excutorSetWind = EUI.Window({
-            title: "自定义执行人配置",
+            title: this.lang.customExecutorConfigText,
             width: 1000,
             height: 400,
             items: [{
@@ -267,13 +267,13 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     this.getRightGrid()]
             }],
             buttons: [{
-                title: "确定",
+                title: this.lang.sureText,
                 selected: true,
                 handler: function () {
                     g.saveExecutorSet();
                 }
             }, {
-                title: "取消",
+                title: this.lang.cancelText,
                 handler: function () {
                     g.excutorSetWind.remove();
                 }
@@ -299,21 +299,21 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 //   hasPager: false,
                 multiselect: true,
                 colModel: [{
-                    label: "用户ID",
+                    label: this.lang.userIDText,
                     name: "id",
                     index: "id",
                     hidden: true
                 }, {
-                    label: "用户名称",
+                    label: this.lang.userNameText,
                     name: "userName",
                     index: "userName",
                     align: "center"
                 }, {
-                    label: "员工编号",
+                    label: this.lang.userNumberText,
                     name: "code",
                     index: "code"
                 }, {
-                    label: "组织机构",
+                    label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name",
                     align: "center"
@@ -353,21 +353,21 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 multiselect: true,
                 // data:[],
                 colModel: [{
-                    label: "用户ID",
+                    label: this.lang.userIDText,
                     name: "id",
                     index: "id",
                     hidden: true
                 }, {
-                    label: "用户名称",
+                    label: this.lang.userNameText,
                     name: "userName",
                     index: "userName",
                     align: "center"
                 }, {
-                    label: "员工编号",
+                    label: this.lang.userNumberText,
                     name: "code",
                     index: "code"
                 }, {
-                    label: "组织机构",
+                    label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name",
                     align: "center"

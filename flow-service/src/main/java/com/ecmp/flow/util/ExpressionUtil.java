@@ -127,7 +127,7 @@ public class ExpressionUtil {
         providers.add(new SessionClientRequestFilter());
 
         result = WebClient.create(clientApiBaseUrl, providers)
-                .path("condition/resetState/{businessModelId}/{id}",businessModelId,businessId)
+                .path("condition/resetState/{businessModelId}/{id}/{status}",businessModelId,businessId,status)
                 .accept(MediaType.APPLICATION_JSON)
                 .get(Boolean.class);
         return result;

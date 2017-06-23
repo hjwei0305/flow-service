@@ -84,7 +84,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     lookPropertyWindow: function (rowData) {
         var g = this;
         var Wind = EUI.Window({
-            title: "流程定义版本",
+            title: g.lang.flowDefinitionVersionText,
             width: 800,
             layout: "border",
             height: 500,
@@ -104,7 +104,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [ '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -142,20 +142,20 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 }, {
-                    label: "名称",
+                    label: g.lang.nameText,
                     name: "name",
                     index: "name"
                 }, {
-                    label: "定义ID",
+                    label: g.lang.definitionIDText,
                     name: "actDefId",
                     index: "actDefId",
                     hidden: true
                 }, {
-                    label: "定义KEY",
+                    label: g.lang.definitionKEYText,
                     name: "defKey",
                     index: "defKey"
                 }, {
-                    label: "部署ID",
+                    label: g.lang.deployIDText,
                     name: "actDeployId",
                     index: "actDeployId",
                     hidden: true
@@ -164,16 +164,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "startUel",
                     index: "startUel"
                 }*/, {
-                    label: "版本号",
+                    label: g.lang.versionText,
                     name: "versionCode",
                     index: "versionCode",
                     align: "right"
                 }, {
-                    label: "优先级",
+                    label: g.lang.priorityText,
                     name: "priority",
                     index: "priority"
                 }, {
-                    label: "描述",
+                    label: g.lang.depictText,
                     name: "depict",
                     index: "depict"
                 }]
@@ -184,7 +184,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var tab = {
-            title: "编辑流程定义:"+data.name,
+            title: g.lang.editFlowDefinitionText+data.name,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
             id:data.id
         };
@@ -193,7 +193,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     addFlowDefination: function () {
         var g = this;
         var tab = {
-            title: "新增流程定义",
+            title: g.lang.addFlowDefinitionText,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId+"&orgCode="+g.selectedNodeOrgCode
         };
         g.addTab(tab);
@@ -301,7 +301,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }
                     var itemCmp = $(nodeDom[0].children[0]);
                     itemCmp.addClass("ux-tree-freeze");
-                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
+                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + g.lang.FreezeText);
                 }
             },
             afterShowTree:function(data){
@@ -354,12 +354,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 border: false,
                 items: [{
                     xtype: "Button",
-                    title: this.lang.addResourceText,
+                    title: g.lang.addResourceText,
                     selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
-                                msg:"请选择组织机构",
+                                msg:g.lang.chooseOrganizationMsgText,
                                 success: false,
                                 showTime: 4
                             };
@@ -371,7 +371,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }
                 }, '->', {
                     xtype: "SearchBox",
-                    displayText: "请输入名称进行搜索",
+                    displayText: g.lang.searchByNameMsgText,
                     onSearch: function (value) {
                         console.log(value);
                         if (!value) {
@@ -397,7 +397,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 gridCfg: {
                     loadonce: true,
                     colModel: [{
-                        label: this.lang.operateText,
+                        label: g.lang.operateText,
                         name: "operate",
                         index: "operate",
                         width: 110,
@@ -414,64 +414,64 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         index: "id",
                         hidden: true
                     }, {
-                        label: this.lang.nameText,
+                        label: g.lang.nameText,
                         name: "name",
                         index: "name"
                     }, {
-                        label: "最新版本ID",
+                        label: g.lang.latestVersionIDText,
                         name: "lastVersionId",
                         index: "lastVersionId",
                         hidden: true
                     }, {
-                        label: "定义KEY",
+                        label: g.lang.definitionKEYText,
                         name: "defKey",
                         index: "defKey"
                     }, {
-                        label: "流程类型",
+                        label: g.lang.flowTypeText,
                         name: "flowType.name",
                         index: "flowType.name"
                     }, {
-                        label: "业务实体ID",
+                        label: g.lang.businessEntityIDText,
                         name: "flowType.businessModel.id",
                         index: "flowType.businessModel.id",
                         hidden: true
                     }, {
-                        label: "启动条件UEL",
+                        label: g.lang.launchConditionUELText,
                         name: "startUel",
                         index: "startUel"
                     }, {
-                        label: "组织机构ID",
+                        label: g.lang.organizationIDText,
                         name: "orgId",
                         index: "orgId",
                         hidden: true
                     }, {
-                        label: "组织机构code",
+                        label: g.lang.organizationCodeText,
                         name: "orgCode",
                         index: "orgCode",
                         hidden: true
                     }, {
-                        label: this.lang.depictText,
+                        label: g.lang.depictText,
                         name: "depict",
                         index: "depict"
                     }, {
-                        label: "流程定义状态",
+                        label: g.lang.flowDefinitionStatusText,
                         name: "flowDefinationStatus",
                         index: "flowDefinationStatus",
                         align:"center",
                         formatter : function(cellvalue, options, rowObject) {
                             var strVar = '';
                             if('INIT' == rowObject.flowDefinationStatus){
-                                strVar = "未发布";
+                                strVar = g.lang.unReleasedText;
                             }else if('Activate' == rowObject.flowDefinationStatus){
-                                strVar = "激活";
+                                strVar = g.lang.activeText;
                             }
                             else if('Freeze' == rowObject.flowDefinationStatus){
-                                strVar = "冻结 ";
+                                strVar = g.lang.frozenText;
                             }
                             return strVar;
                         }
                     }, {
-                        label: "优先级",
+                        label: g.lang.priorityText,
                         name: "priority",
                         index: "priority"
                     }],

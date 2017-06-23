@@ -19,8 +19,14 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -38,6 +44,8 @@ import java.util.*;
  */
 @Service
 public class FlowInstanceService extends BaseEntityService<FlowInstance> implements IFlowInstanceService {
+
+    private final Logger logger = LoggerFactory.getLogger(FlowInstanceService.class);
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -249,17 +257,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 检查当前实例是否允许执行终止流程实例操作
      * @param id 待操作数据ID
      */
-    public OperateResultWithData<Boolean> checkCanEnd(String id) {
-        boolean canEnd = false;
+    public Boolean checkCanEnd(String id) {
+        Boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
             int taskCount = flowTaskList.size();
             int index=0;
             for(FlowTask flowTask:flowTaskList){
-                String defJson = flowTask.getTaskJsonDef();
-                JSONObject defObj = JSONObject.fromObject(defJson);
-                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                Boolean canCancel = flowTask.getCanSuspension();
                 if(canCancel){
                     index++;
                 }
@@ -268,8 +273,22 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 canEnd = true;
             }
         }
-        OperateResultWithData<Boolean> result =  OperateResultWithData.OperationSuccess("10003");
-        result.setData(canEnd);
+        return canEnd;
+    }
+
+    /**
+     * 检查实例集合是否允许执行终止流程实例操作
+     * @param ids 待操作数据ID集合
+     */
+    public List<Boolean> checkIdsCanEnd(List<String> ids){
+        List<Boolean> result = null;
+        if(ids!=null && !ids.isEmpty()){
+            result = new ArrayList<Boolean>(ids.size());
+            for(String id:ids){
+              Boolean canEnd = this.checkCanEnd(id);
+                result.add(canEnd);
+            }
+        }
         return result;
     }
 
@@ -278,18 +297,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param id 待操作数据ID
      */
+    @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult end(String id) {
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result =  OperateResult.OperationSuccess("10010");
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
             int taskCount = flowTaskList.size();
             int index=0;
             for(FlowTask flowTask:flowTaskList){
-                String defJson = flowTask.getTaskJsonDef();
-                JSONObject defObj = JSONObject.fromObject(defJson);
-                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                Boolean canCancel = flowTask.getCanSuspension();
                 if(canCancel){
                     index++;
                 }
@@ -301,6 +318,30 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if(canEnd){
             FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
             for(FlowTask flowTask:flowTaskList){
+                try {
+                    FlowHistory flowHistory = new FlowHistory();
+                    String preFlowHistoryId = flowTask.getPreId();
+                    FlowHistory preFlowHistory = null;
+                    if(StringUtils.isNotEmpty(preFlowHistoryId)){
+                        preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
+                    }
+                    BeanUtils.copyProperties(flowHistory, flowTask);
+                    flowHistory.setId(null);
+                    flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+                    flowHistory.setDepict("【被发起人撤销流程】");
+                    flowHistory.setFlowTaskName(flowTask.getTaskName());
+                    Date now = new Date();
+                    if(preFlowHistory!=null){
+                        flowHistory.setActDurationInMillis(now.getTime()-preFlowHistory.getActEndTime().getTime());
+                    }else{
+                        flowHistory.setActDurationInMillis(now.getTime()-flowTask.getCreatedDate().getTime());
+                    }
+                    flowHistory.setActEndTime(now);
+
+                    flowHistoryDao.save(flowHistory);
+                }catch(Exception e){
+                    logger.error(e.getMessage());
+                }
                 flowTaskDao.delete(flowTask);
             }
             String actInstanceId = flowInstance.getActInstanceId();
@@ -321,10 +362,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String businessId = flowInstance.getBusinessId();
             FlowStatus status = FlowStatus.INIT;
             ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+        }else {
+            result =  OperateResult.OperationFailure("10011");//不能终止
         }
         return result;
     }
 
+    @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult endByBusinessId(String businessId){
         FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
         return  this.end(flowInstance.getId());

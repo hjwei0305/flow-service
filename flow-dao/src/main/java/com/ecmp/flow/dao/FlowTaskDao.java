@@ -38,11 +38,11 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
 
     /**
      * 根据执行人账号归类查询
-     * @param executorAccount
+     * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorAccount  = :executorAccount group by ft.flowDefinitionId")
-    public List findByexecutorAccountGroup(@Param("executorAccount")String executorAccount);
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId group by ft.flowDefinitionId")
+    public List findByExecutorIdGroup(@Param("executorId")String executorId);
 
 
 //    /**
