@@ -15,17 +15,23 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             win.todoTaskView.refresh();
         });
     },
-    initHtml: function () {
-        var html = this.getNavbarHtml() + this.getTodoTaskHtml();
+    initHtml: function (data) {
+        var html = this.getNavbarHtml(data) + this.getTodoTaskHtml();
         $("#" + this.renderTo).append(html);
     },
     //导航部分的外层容器
-    getNavbarHtml: function () {
-        return '<div class="content-navbar">' +
-            '         <i class="arrow-left pre"></i>' +
+    getNavbarHtml: function (data) {
+        var g=this;
+        var html='<div class="content-navbar">';
+        if(data.length<6){
+            html+='<div class="navbar"></div>';
+        }else{
+        html+= '      <i class="arrow-left pre"></i>' +
             '         <div class="navbar"></div>' +
-            '         <i class="arrow-right next"></i>' +
-            '   </div>';
+            '         <i class="arrow-right next"></i>';
+        }
+        html+='</div>';
+        return html;
     },
     //导航部分的数据调用
     getModelList: function () {
@@ -42,7 +48,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.getNotData();
                     return;
                 }
-                g.initHtml();
+                g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
                 g.modelId = status.data[0].businessModeId;
