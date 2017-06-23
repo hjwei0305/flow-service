@@ -46,10 +46,10 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             },
             success: function (result) {
                 myMask.hide();
-                if(!result.rows){
+                if (!result.rows) {
                     g.getNotData();
                     return;
-                }else if (result.rows) {
+                } else if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.initHtml();
@@ -65,8 +65,8 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         })
     },
     //当页面没有数据时的显示内容
-    getNotData:function () {
-        var html='<div class="todo-not-data">' +
+    getNotData: function () {
+        var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
         $("#" + this.renderTo).append(html);
     },
@@ -82,17 +82,17 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var backoutHtml=(items[j].canCancel==true&&items[j].taskStatus=="COMPLETED"&&items[j].flowInstance.ended==false)?'<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤回"></i><span>撤回</span></div>':"";
+            var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false) ? '<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
                 '                            </div>' +
                 '                            <div class="item flow-digest">' +
-                '                               <span class="digest">' +items[j].flowInstance.businessCode+'-'+items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '                               <span class="digest">' + items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark + '</span></span>' +
                 '                            </div>' +
                 '                            <div class="item">' +
                 '                                <div class="end">' +
-                 backoutHtml+
+                backoutHtml +
                 '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                                    <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
                 '                                </div>' +
@@ -108,7 +108,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     },
     //底部翻页部分
     showPage: function (records) {
-        $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
+        $(".record-total", "#" + this.renderTo).text("共" + records + "条记录");
     },
     //底部翻页绑定事件
     pagingEvent: function () {
@@ -194,15 +194,15 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             var win = EUI.Window({
                 title: "撤回",
                 height: 100,
-                items:[{
-                    xtype:"TextArea",
-                    title:"撤回说明",
+                items: [{
+                    xtype: "TextArea",
+                    title: "撤回说明",
                     name: 'opinion',
                     id: "opinion",
                     labelWidth: 90,
                     width: 220,
                     height: 80,
-                    allowBlank:false
+                    allowBlank: false
                 }],
                 buttons: [{
                     title: "确定",
