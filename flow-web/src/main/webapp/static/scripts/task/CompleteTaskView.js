@@ -66,7 +66,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //当页面没有数据时的显示内容
     getNotData: function () {
         var html = '<div class="todo-not-data">' +
-            '<div class="not-data-msg">------------当前页面暂无数据------------</div></div>';
+            '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
         $("#" + this.renderTo).append(html);
     },
     //已办内容部分的循环
