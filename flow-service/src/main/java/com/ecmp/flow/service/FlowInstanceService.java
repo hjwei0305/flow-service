@@ -19,8 +19,14 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -38,6 +44,8 @@ import java.util.*;
  */
 @Service
 public class FlowInstanceService extends BaseEntityService<FlowInstance> implements IFlowInstanceService {
+
+    private final Logger logger = LoggerFactory.getLogger(FlowInstanceService.class);
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -256,10 +264,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             int taskCount = flowTaskList.size();
             int index=0;
             for(FlowTask flowTask:flowTaskList){
-                String defJson = flowTask.getTaskJsonDef();
-                JSONObject defObj = JSONObject.fromObject(defJson);
-                net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+                Boolean canCancel = flowTask.getCanSuspension();
                 if(canCancel){
                     index++;
                 }
@@ -292,6 +297,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param id 待操作数据ID
      */
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
     public OperateResult end(String id) {
         OperateResult result =  OperateResult.OperationSuccess("core_00003");
         boolean canEnd = false;
@@ -312,6 +318,30 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if(canEnd){
             FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
             for(FlowTask flowTask:flowTaskList){
+                try {
+                    FlowHistory flowHistory = new FlowHistory();
+                    String preFlowHistoryId = flowTask.getPreId();
+                    FlowHistory preFlowHistory = null;
+                    if(StringUtils.isNotEmpty(preFlowHistoryId)){
+                        preFlowHistory = flowHistoryDao.getOne(preFlowHistoryId);
+                    }
+                    BeanUtils.copyProperties(flowHistory, flowTask);
+                    flowHistory.setId(null);
+                    flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+                    flowHistory.setDepict("【被发起人撤销流程】");
+                    flowHistory.setFlowTaskName(flowTask.getTaskName());
+                    Date now = new Date();
+                    if(preFlowHistory!=null){
+                        flowHistory.setActDurationInMillis(now.getTime()-preFlowHistory.getActEndTime().getTime());
+                    }else{
+                        flowHistory.setActDurationInMillis(now.getTime()-flowTask.getCreatedDate().getTime());
+                    }
+                    flowHistory.setActEndTime(now);
+
+                    flowHistoryDao.save(flowHistory);
+                }catch(Exception e){
+                    logger.error(e.getMessage());
+                }
                 flowTaskDao.delete(flowTask);
             }
             String actInstanceId = flowInstance.getActInstanceId();
@@ -332,6 +362,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String businessId = flowInstance.getBusinessId();
             FlowStatus status = FlowStatus.INIT;
             ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+        }else {
+            result =  OperateResult.OperationFailure("core_00003");//不能终止
         }
         return result;
     }

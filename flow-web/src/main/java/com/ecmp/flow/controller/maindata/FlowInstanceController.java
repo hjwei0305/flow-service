@@ -165,7 +165,7 @@ public class FlowInstanceController {
     }
 
     /**
-     * 根据id终止流程实例
+     * 根据id终止流程实例,用于待办任务上直接终止流程实例
      * @param id
      * @return 操作结果
      */

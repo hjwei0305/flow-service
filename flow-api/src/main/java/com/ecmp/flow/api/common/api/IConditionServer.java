@@ -130,10 +130,11 @@ public interface IConditionServer {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    @POST
-    @Path("resetState/{businessModelId}/{id}")
+    @GET
+    @Path("resetState/{businessModelId}/{id}/{status}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
-    public Boolean resetState(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    public Boolean resetState(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id,
+                              @PathParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }
