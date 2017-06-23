@@ -647,10 +647,15 @@ div, span, p {
     background-size: cover;
     width: 100%;
     height: 100%;
+    position: relative;
 }
 .not-data-msg{
-    text-align: center;
     color: #ccc;
+    display: inline-block;
+    left: 38%;
+    position: absolute;
+    top: 48%;
+    width: 280px;
 }
 
 
