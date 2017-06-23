@@ -123,11 +123,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>" +
-                            "<div class='condetail_look' title='查看条件属性'></div>" +
-                            "<div class='condetail_set' title='配置工作界面'></div>"
-                            + "<div class='condetail_setServiceUrl' title='配置服务地址'></div>"
-                            + "<div class='condetail_update' title='编辑'></div>"
-                            + "<div class='condetail_delete' title='删除'></div></div>";
+                            "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
+                            "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
+                            + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
+                            + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
+                            + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -147,15 +147,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonBean",
                     index: "conditonBean"
                 }, {
-                    label: "应用模块Code",
+                    label: this.lang.applyModuleCodeText,
                     name: "appModuleCode",
                     index: "appModuleCode"
                 }, {
-                    label: "数据访问对象",
+                    label: this.lang.dataAccessObjectText,
                     name: "daoBean",
                     index: "daoBean"
                 }, {
-                    label: "表单URL",
+                    label: this.lang.formURLText,
                     name: "lookUrl",
                     index: "lookUrl"
                 }, {
@@ -260,7 +260,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     value: g.appModuleName
                 }, {
                     xtype: "TextField",
-                    title: "应用模块code",
+                    title: this.lang.applyModuleCodeText,
                     readonly: true,
                     labelWidth: 115,
                     allowBlank: false,
@@ -293,7 +293,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     value: data.conditonBean
                 },{
                     xtype: "TextField",
-                    title: "数据访问对象",
+                    title: this.lang.dataAccessObjectText,
                     labelWidth: 115,
                     allowBlank: false,
                     name: "daoBean",
@@ -301,7 +301,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     value: data.daoBean
                 }, {
                     xtype: "TextArea",
-                    title: "表单URL",
+                    title: this.lang.formURLText,
                     labelWidth: 115,
                     allowBlank: false,
                     name: "lookUrl",
@@ -375,7 +375,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     value: g.appModuleName
                 },{
                     xtype: "TextField",
-                    title: "应用模块code",
+                    title: this.lang.applyModuleCodeText,
                     readonly: true,
                     labelWidth: 115,
                     allowBlank: false,
@@ -405,14 +405,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 220
                 }, {
                     xtype: "TextField",
-                    title: "数据访问对象",
+                    title: this.lang.dataAccessObjectText,
                     labelWidth: 115,
                     allowBlank: false,
                     name: "daoBean",
                     width: 220
                 }, {
                     xtype: "TextArea",
-                    title: "表单URL",
+                    title: this.lang.formURLText,
                     labelWidth: 115,
                     allowBlank: false,
                     name: "lookUrl",
@@ -642,8 +642,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operateServiceUrl'>"
-                            + "<div class='condetail_updateServiceUrl' title='编辑'></div>"
-                            + "<div class='condetail_deleteServiceUrl' title='删除'></div></div>";
+                            + "<div class='condetail_updateServiceUrl' title='"+g.lang.editText+"'></div>"
+                            + "<div class='condetail_deleteServiceUrl' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;
                     }
                 }, {

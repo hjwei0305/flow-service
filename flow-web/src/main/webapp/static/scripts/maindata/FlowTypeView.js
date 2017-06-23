@@ -26,7 +26,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 // xtype: "ComboBox",
-                // title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                // title: "<span style='font-weight: bold'>" + g.lang.businessEntityText + "</span>",
                 // id: "coboId",
                 // async: false,
                 // colon: false,
@@ -65,7 +65,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 //     ).trigger("reloadGrid");
                 // }
                 xtype: "ComboGrid",
-                title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
+                title: "<span style='font-weight: bold'>" + g.lang.businessEntityText + "</span>",
                 name: "bussinessModelName",
                 id: "coboId",
                //async: false,
@@ -74,7 +74,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 listWidth: 400,
                 labelWidth: 85,
                 editable:true,
-                value:"全部",
+                value:g.lang.totalText,
                 showSearch:true,
                 onSearch:function(value){
                     this.grid.localSearch(value);
@@ -106,7 +106,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 },
                afterClear:function(){
                        var cobo = EUI.getCmp("coboId");
-                       cobo.setValue("全部");
+                       cobo.setValue(g.lang.totalText);
                    EUI.getCmp("gridPanel").setPostParams({
                        "Q_EQ_businessModel.id": null
                    },true);
@@ -129,7 +129,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -169,8 +169,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
-                            + "<div class='condetail_update' title='编辑'></div>"
-                            + "<div class='condetail_delete' title='删除'></div></div>";
+                            + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
+                            + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;
                     }
                 }, {
@@ -280,7 +280,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     hidden: true
                 }, {
                     xtype: "ComboGrid",
-                    title:  "业务实体",
+                    title:  g.lang.businessEntityText,
                     name: "businessModel.name",
                     field: ["businessModel.id"],
                     listWidth: 400,
@@ -364,7 +364,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "ComboGrid",
-                    title:  "业务实体",
+                    title:  g.lang.businessEntityText,
                     name: "businessModelName",
                     field: ["businessModel.id"],
                     listWidth: 400,

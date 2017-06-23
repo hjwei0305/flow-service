@@ -650,7 +650,7 @@ div, span, p {
     position: relative;
 }
 .not-data-msg{
-    color: #ccc;
+    color: #999999;
     display: inline-block;
     left: 38%;
     position: absolute;
