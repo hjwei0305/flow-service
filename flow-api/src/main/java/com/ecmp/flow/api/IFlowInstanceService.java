@@ -179,7 +179,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * 检查实例集合是否允许执行终止流程实例操作
      * @param ids 待操作数据ID集合
      */
-    @GET
+    @POST
     @Path("checkIdsCanEnd")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
