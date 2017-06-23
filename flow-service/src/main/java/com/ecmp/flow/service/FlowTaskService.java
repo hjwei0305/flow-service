@@ -1148,6 +1148,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public List<NodeInfo> findNextNodes(String id) throws NoSuchMethodException{
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return null;
+        }
         String businessId = flowTask.getFlowInstance().getBusinessId();
         return this.findNextNodes(id,businessId);
     }
@@ -1612,6 +1615,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public ApprovalHeaderVO getApprovalHeaderVO(String id){
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return null;
+        }
         String preId = flowTask.getPreId();
         FlowHistory preFlowTask = null;
         ApprovalHeaderVO result= new ApprovalHeaderVO();
@@ -1636,6 +1642,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException{
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return  null;
+        }
         String businessId = flowTask.getFlowInstance().getBusinessId();
         return this.findNexNodesWithUserSet(id,businessId);
     }
