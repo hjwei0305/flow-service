@@ -297,9 +297,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param id 待操作数据ID
      */
-    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult end(String id) {
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result =  OperateResult.OperationSuccess("10010");
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
@@ -323,7 +323,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     String preFlowHistoryId = flowTask.getPreId();
                     FlowHistory preFlowHistory = null;
                     if(StringUtils.isNotEmpty(preFlowHistoryId)){
-                        preFlowHistory = flowHistoryDao.getOne(preFlowHistoryId);
+                        preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
                     }
                     BeanUtils.copyProperties(flowHistory, flowTask);
                     flowHistory.setId(null);
@@ -363,11 +363,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             FlowStatus status = FlowStatus.INIT;
             ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
         }else {
-            result =  OperateResult.OperationFailure("core_00003");//不能终止
+            result =  OperateResult.OperationFailure("10011");//不能终止
         }
         return result;
     }
 
+    @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult endByBusinessId(String businessId){
         FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
         return  this.end(flowInstance.getId());
