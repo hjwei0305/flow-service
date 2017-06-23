@@ -117,8 +117,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var eventForm = EUI.getCmp("event");
                 var normalData = normalForm.getFormValue();
                 var eventData = eventForm.getFormValue();
-                console.log(g.getNotifyData());
-                return;
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
                     executor: g.getExcutorData(),
@@ -932,6 +930,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
 
         //加载事件配置
         eventForm.loadData(this.data.event);
+
+        //加载通知配置
+
     },
     initTitle: function (title) {
         return {
