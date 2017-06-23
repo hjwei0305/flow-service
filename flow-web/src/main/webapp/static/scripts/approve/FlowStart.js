@@ -1,6 +1,10 @@
 /**
  * 采购页面
  */
+if(!window.Flow){
+    window.Flow = {};
+    EUI.ns("Flow.flow");
+}
 window.Flow = {};
 EUI.ns("Flow.flow");
 Flow.FlowStart = function (options) {
@@ -21,7 +25,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
-            msg: "正在启动，请稍后..."
+            msg: this.lang.launchMaskMsgText
         });
         EUI.Store({
             url: g.url,
@@ -33,7 +37,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
                 if (!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList) {
                     var status = {
-                        msg: "找不到流程定义",
+                        msg: g.lang.notFoundFlowDefinitionText,
                         success: false,
                         showTime: 4
                     };
@@ -42,7 +46,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 }
                 if (!result.data.flowTypeList) {
                     var status = {
-                        msg: "找不到流程类型",
+                        msg: g.lang.notFoundFlowTypeText,
                         success: false,
                         showTime: 4
                     };
@@ -71,19 +75,19 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
-            title: "流程启动",
+            title: this.lang.launchFlowText,
             width: 600,
             isOverFlow: false,
             padding: 0,
             items: item,
             buttons: [{
-                title: "提交",
+                title: this.lang.submitText,
                 selected: true,
                 handler: function () {
                     g.submit();
                 }
             }, {
-                title: "取消",
+                title: this.lang.cancelText,
                 handler: function () {
                     g.win.remove();
                 }
@@ -104,7 +108,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     showChooseFlowTypeAndExecutorWind: function (flowTypeList) {
         var g = this;
         window = EUI.Window({
-            title: "选择流程类型",
+            title: this.lang.chooseFlowTypeText,
             width: 600,
             layout: "border",
             padding: 0,
@@ -129,7 +133,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 name: "name",
                 id: "flowTypeId",
-                title: "<span style='font-weight: bold'>" + "流程类型" + "</span>",
+                title: "<span style='font-weight: bold'>" + this.lang.chooseFlowTypeText+ "</span>",
                 listWidth: 200,
                 reader: {
                     name: "name",
@@ -142,7 +146,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 },
                 afterSelect: function (data) {
                     var myMask = EUI.LoadMask({
-                        msg: "正在加载，请稍候..."
+                        msg: g.lang.queryMaskMessageText
                     });
                     g.typeId = data.data.id;
                     EUI.Store({
@@ -156,7 +160,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                             myMask.hide();
                             if (!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList) {
                                 var status = {
-                                    msg: "流程定义未找到",
+                                    msg: g.lang.notFoundFlowDefinitionText,
                                     success: false,
                                     showTime: 4
                                 };
@@ -197,7 +201,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var data = this.data.nodeInfoList;
         if (data == null) {
             var status = {
-                msg: "流程定义未找到",
+                msg: this.lang.notFoundFlowDefinitionText,
                 success: false,
                 showTime: 4
             };
@@ -206,7 +210,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         }
         // if(this.data.nodeInfoList.executorSet == null){
         //         var status = {
-        //             msg: "流程定义未找到",
+        //             msg: this.lang.notFoundFlowDefinitionText,
         //             success: false,
         //             showTime: 4
         //         };
@@ -219,13 +223,13 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
-            var nodeType = "普通任务";
+            var nodeType = this.lang.generalTaskText;
             var iconCss = "choose-radio";
             if (node.flowTaskType == "singleSign") {
-                nodeType = "单签任务";
+                nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "countersign") {
-                nodeType = "会签任务";
+                nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
@@ -237,14 +241,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     if(!item.positionId){
                         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                             '<div class="choose-icon ' + iconCss + '"></div>' +
-                            '<div class="excutor-item-title">姓名：' + item.name +
-                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '<div class="excutor-item-title">'+ this.lang.nameText + item.name +
+                            this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                             '</div>';
                     }else{
                         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                             '<div class="choose-icon ' + iconCss + '"></div>' +
-                            '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '<div class="excutor-item-title">'+this.lang.nameText + item.name + this.lang.jobText + item.positionName +
+                            this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                             '</div>';
                     }
                 }
@@ -258,14 +262,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     if(!item.positionId){
                         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                             '<div class="choose-icon ' + iconCss + '"></div>' +
-                            '<div class="excutor-item-title">姓名：' + item.name +
-                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '<div class="excutor-item-title">'+this.lang.nameText + item.name +
+                            this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                             '</div>';
                     }else{
                         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                             '<div class="choose-icon ' + iconCss + '"></div>' +
-                            '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                            '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                            '<div class="excutor-item-title">'+this.lang.nameText + item.name + this.lang.jobText + item.positionName +
+                            this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                             '</div>';
                     }
                 }
@@ -313,7 +317,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: "请选择[" + data.name + "]的执行人"
+                    msg: this.lang.chooseMsgText+ data.name + this.lang.executorMsgText
                 });
                 return false;
             }
@@ -326,7 +330,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             return;
         }
         var mask = EUI.LoadMask({
-            msg: "正在启动，请稍候..."
+            msg: this.lang.launchMaskMsgText
         });
         EUI.Store({
             url: g.url,
@@ -340,7 +344,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             success: function (status) {
                 mask.hide();
                 var status = {
-                    msg: "启动成功",
+                    msg: g.lang.launchSuccessText,
                     success: true
                 };
                 EUI.ProcessStatus(status);

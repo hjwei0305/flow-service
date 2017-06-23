@@ -24,7 +24,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             border : false,
             items:['->',{
                 xtype: "SearchBox",
-                displayText: "请输入任务名进行搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -57,15 +57,15 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     S_createdDate: "ASC"
                 },
                 colModel : [{
-                    label : "操作",
+                    label : g.lang.operateText,
                     name : "operate",
                     index : "operate",
                     width : 100,
                     align : "center",
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = "<div class='btn_operate'>"
-                            + "<div class='agreeBtn'>通过</div>"
-                            + "<div class='nagreeBtn'>驳回</div></div>";
+                            + "<div class='agreeBtn'>"+g.lang.passText+"</div>"
+                            + "<div class='nagreeBtn'>"+g.lang.rejectText+"</div></div>";
                         return strVar;
                     }
                 },{
@@ -78,7 +78,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "flowName",
                     index : "flowName"
                 },*/{
-                    label : "任务名",
+                    label : g.lang.taskNameText,
                     name : "taskName",
                     index : "taskName"
                 },/*{
@@ -86,29 +86,29 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "taskDefKey",
                     index : "taskDefKey"
                 },*/{
-                    label : "任务表单URL",
+                    label : g.lang.taskFormURLText,
                     name : "taskFormUrl",
                     index : "taskFormUrl",
                    hidden : true
                 },{
-                    label : "任务状态" ,
+                    label : g.lang.taskStatusText ,
                     name : "taskStatus",
                     index : "taskStatus",
                     align:"center",
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = '';
                         if('INIT' == rowObject.taskStatus){
-                            strVar = "待办";
+                            strVar = g.lang.todoText;
                         }
                        else if('CANCLE' == rowObject.taskStatus){
-                            strVar = "已撤销";
+                            strVar = g.lang.reversedText;
                         }else if('COMPLETED' == rowObject.taskStatus){
-                            strVar = "已办";
+                            strVar = g.lang.doneText;
                         }
                         return strVar;
                     }
                 },{
-                    label : "代理状态" ,
+                    label : g.lang.agentStatusText ,
                     name : "proxyStatus",
                     index : "proxyStatus"
                 },/*{
@@ -120,15 +120,15 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "flowDefinitionId",
                     index : "flowDefinitionId"
                 },*/{
-                    label : "执行人名称" ,
+                    label : g.lang.processorNameText,
                     name : "executorName",
                     index : "executorName"
                 },{
-                    label : "执行人账号" ,
+                    label : g.lang.processorAccountText,
                     name : "executorAccount",
                     index : "executorAccount"
                 },{
-                    label : "候选人账号" ,
+                    label : g.lang.candidateAccountText,
                     name : "candidateAccount",
                     index : "candidateAccount"
                 },/*{
@@ -136,11 +136,11 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "executeDate",
                     index : "executeDate"
                 },*/{
-                    label : "描述" ,
+                    label : g.lang.depictText ,
                     name : "depict",
                     index : "depict"
                 },{
-                    label : "创建时间" ,
+                    label : g.lang.createTimeText ,
                     name : "createdDate",
                     index : "createdDate"
                 }/*{
@@ -224,10 +224,10 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(rowData);
         var infoBox = EUI.MessageBox({
-            title: "提示",
-            msg:  "确定通过当前任务吗？",
+            title: g.lang.hintText,
+            msg:  g.lang.passCurrentTaskMsgText,
             buttons: [{
-                title: "确定",
+                title: g.lang.sureText,
                 selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -253,7 +253,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     });
                 }
             }, {
-                title: "取消",
+                title: g.lang.cancelText,
                 handler: function () {
                     infoBox.remove();
                 }
@@ -264,15 +264,15 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(rowData);
         var infoBox = EUI.MessageBox({
-            title: "提示",
-            msg:  "确定驳回当前任务吗？",
+            title: g.lang.hintText,
+            msg:  g.lang.rejectCurrentTaskMsgText,
             buttons: [{
-                title: "确定",
+                title: g.lang.sureText,
                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
-                        msg: "正在执行"
+                        msg: g.lang.processingText
                     });
                     EUI.Store({
                         url:  _ctxPath +"/flowTask/rejectTask",
@@ -293,7 +293,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     });
                 }
             }, {
-                title: "取消",
+                title: g.lang.cancelText,
                 handler: function () {
                     infoBox.remove();
                 }
