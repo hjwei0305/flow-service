@@ -77,20 +77,26 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '            </div>';
     },
     getCenterHtml:function () {
-        return '            <div id="todoTask-content" class="top-content"> </div>' +
-            '            <div id="completeTask-content" class="top-content"> </div>' +
-            '            <div id="order-content" class="top-content"></div>';
+        return '            <div id="todoTask-content" style="display: block"> </div>' +
+            '            <div id="completeTask-content" style="display: none"> </div>' +
+            '            <div id="order-content" style="display: none"></div>';
     },
     //添加事件
     addEvents: function () {
         var g = this;
         $(".task-work").bind("click", function () {
+            $("#completeTask-content").css("display","none");
+            $("#order-content").css("display","none");
+            $("#todoTask-content").css("display","block");
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showTodoTaskView(true);
         });
         $(".history-work").bind("click", function () {
+            $("#todoTask-content").css("display","none");
+            $("#order-content").css("display","none");
+            $("#completeTask-content").css("display","block");
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
@@ -98,6 +104,9 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $("#completeTask-content").css("height","100%");
         });
         $(".workOrder").bind("click", function () {
+            $("#todoTask-content").css("display","none");
+            $("#completeTask-content").css("display","none");
+            $("#order-content").css("display","block");
             $(".workOrder").next().hide();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");

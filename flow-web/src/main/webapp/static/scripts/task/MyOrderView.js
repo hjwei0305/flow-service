@@ -1,10 +1,10 @@
 //已办单据
 EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
-    currentItem:"taken-invoices",
+    currentItem:"wait-invoices",
     initComponent: function () {
         this.initHtml();
-        this.showCompleteOrderView(true);
+        this.showTodoOrderView(true);
         this.initChooseDate();
         this.addEvents();
     },
@@ -18,8 +18,8 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '            <div class="center-top">' +
             '                <div class="top-header">' +
             '                    <div class="header-left">' +
-            '                        <span class="wait-invoices">待办单据</span>' +
-            '                        <span class="taken-work taken-invoices active">已办单据</span>' +
+            '                        <span class="wait-invoices active">待办单据</span>' +
+            '                        <span class="taken-work taken-invoices">已办单据</span>' +
             '                        <div class="data">' +
             '                            <div id="dateField"></div>' +
             '                        </div>' +
