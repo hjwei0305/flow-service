@@ -121,8 +121,8 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail-operate'>" +
-                            "<div class='condetail-update' title='编辑'></div>" +
-                            "<div class='condetail-delete' title='删除'></div></div>";
+                            "<div class='condetail-update' title='"+g.lang.editText+"'></div>" +
+                            "<div class='condetail-delete' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;
                     }
                 }, {

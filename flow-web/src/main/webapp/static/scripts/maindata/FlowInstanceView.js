@@ -26,7 +26,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + "流程定义版本" + "</span>",
+                title: "<span style='font-weight: bold'>" + g.lang.flowDefinitionVersionText + "</span>",
                 id: "coboId",
                 async: false,
                 colon: false,
@@ -66,7 +66,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -103,8 +103,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = "<div class='condetail_operate'>"
-                            + "<div class='flowHistoryBtn'>查看已办</div>"
-                            + "<div class='deleteBtn'>删除</div></div>";
+                            + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
+                            + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
                         return strVar;
                     }
                 }, {
@@ -112,7 +112,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 }, {
-                    label: "流程名称",
+                    label: g.lang.flowNameText,
                     name: "flowName",
                     index: "flowName",
                     title: false
@@ -122,13 +122,13 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "businessId",
                     title: false
                 }*/, {
-                    label: "开始时间",
+                    label: g.lang.startTimeText,
                     name: "startDate",
                     index: "startDate",
                     align: "center",
                     title: false
                 }, {
-                    label: "结束时间",
+                    label: g.lang.endTimeText,
                     name: "endDate",
                     index: "endDate",
                     align: "center",
@@ -144,7 +144,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "actInstanceId",
                     title: false,
                 }*/, {
-                    label: "是否挂起",
+                    label: g.lang.whetherSuspendText,
                     name: "suspended",
                     index: "suspended",
                     align: "center",
@@ -152,15 +152,15 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('0' == rowObject.suspended) {
-                            strVar = "否";
+                            strVar = g.lang.noText;
                         }
                         else if ('1' == rowObject.suspended) {
-                            strVar = "是";
+                            strVar = g.lang.yesText;
                         }
                         return strVar;
                     }
                 }, {
-                    label: "是否已经结束",
+                    label: g.lang.whetherDoneText,
                     name: "ended",
                     index: "ended",
                     align: "center",
@@ -168,10 +168,10 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('0' == rowObject.ended) {
-                            strVar = "否";
+                            strVar = g.lang.noText;
                         }
                         else if ('1' == rowObject.ended) {
-                            strVar = "是";
+                            strVar = g.lang.yesText;
                         }
                         return strVar;
                     }
@@ -239,7 +239,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var g = this;
         console.log(data);
         var win = EUI.Window({
-            title: "已办任务",
+            title: g.lang.taskDoneText,
             layout: "border",
             width: 1100,
             height: 500,
@@ -259,7 +259,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: ['->', {
                 xtype: "SearchBox",
-                displayText: "请输入名称进行搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -301,7 +301,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                  align: "center",
                  formatter: function (cellvalue, options, rowObject) {
                  var strVar = "<div class='condetail_operate'>"
-                 + "<div class='flowHistoryBtn'>查看已办</div>"
+                 + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
                  + "<div class='condetail_delete'></div></div>";
                  return strVar;
                  }
@@ -311,39 +311,39 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 }, /*{
-                 label : "流程名称",
+                 label : g.lang.flowNameText,
                  name : "flowName",
                  index : "flowName"
                  },*/{
-                    label: "任务名",
+                    label: g.lang.taskNameText,
                     name: "flowTaskName",
                     index: "flowTaskName"
                 }, {
-                    label: "流程实例",
+                    label: g.lang.flowInstanceText,
                     name: "flowInstance.flowName",
                     index: "flowInstance.flowName"
                 }, {
-                    label: "任务表单URL",
+                    label: g.lang.taskFormURLText,
                     name: "taskFormUrl",
                     index: "taskFormUrl",
                     hidden: true
                 }, {
-                    label: "任务状态",
+                    label: g.lang.taskStatusText,
                     name: "taskStatus",
                     index: "taskStatus",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
-                            strVar = "已办";
+                            strVar = g.lang.doneText;
                         }
                         else if ('CANCLE' == rowObject.taskStatus) {
-                            strVar = "已撤销";
+                            strVar = g.lang.reversedText;
                         }
                         return strVar;
                     }
                 }, {
-                    label: "代理状态",
+                    label: g.lang.agentStatusText,
                     name: "proxyStatus",
                     index: "proxyStatus"
                 }, /*{
@@ -355,26 +355,26 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                  name : "flowDefinitionId",
                  index : "flowDefinitionId"
                  },*/{
-                    label: "执行人名称",
+                    label: g.lang.processorNameText,
                     name: "executorName",
                     index: "executorName"
                 }, {
-                    label: "执行人账号",
+                    label: g.lang.processorAccountText,
                     name: "executorAccount",
                     index: "executorAccount",
                     align: "center"
                 }, {
-                    label: "任务开始时间",
+                    label: g.lang.taskBeginTimeText,
                     name: "actStartTime",
                     index: "actStartTime",
                     align: "center"
                 }, {
-                    label: "任务结束时间",
+                    label: g.lang.taskEndTimeText,
                     name: "actEndTime",
                     index: "actEndTime",
                     align: "center"
                 }, {
-                    label: "任务执行时长",
+                    label: g.lang.taskProcessTimeText,
                     name: "actDurationInMillis",
                     index: "actDurationInMillis",
                     align: "center",
@@ -386,22 +386,22 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         var s = Math.floor((timeMill - h * 60 * 60 - m * 60));
                         var d = parseInt(h / 24);
                         if (d > 0) {
-                            strVar += d + "天";
+                            strVar += d + g.lang.dayText;
                         }
                         if (h > 0) {
-                            strVar += h + "小时";
+                            strVar += h + g.lang.hourText;
                         }
                         if (m > 0) {
-                            strVar += m + "分";
+                            strVar += m + g.lang.minuteText;
                         }
                         if (s > 0) {
-                            strVar += s + "钞";
+                            strVar += s + g.lang.secondText;
                         }
                         return strVar;
                     }
 
                 }, {
-                    label: "最后更新时间",
+                    label: g.lang.lastUpdateTimeText,
                     name: "lastEditedDate",
                     index: "lastEditedDate",
                     align: "center"
@@ -415,7 +415,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                      name : "executeDate",
                      index : "executeDate"
                      },*/{
-                        label: "描述",
+                        label: g.lang.depictText,
                         name: "depict",
                         index: "depict"
                     }],

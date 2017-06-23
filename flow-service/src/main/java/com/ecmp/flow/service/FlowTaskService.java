@@ -137,7 +137,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.setTaskStatus(TaskStatus.CLAIM.toString());
         flowTaskDao.save(flowTask);
         flowTaskDao.deleteNotClaimTask(actTaskId, id);
-        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.OperationSuccess("10012");
         return result;
     }
 
