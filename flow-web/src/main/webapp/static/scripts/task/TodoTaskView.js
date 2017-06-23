@@ -43,8 +43,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
                 myMask.hide();
-                g.getNotData();
-                /*if (!status.data) {
+                // g.getNotData();
+                if (!status.data) {
                     g.getNotData();
                     return;
                 }
@@ -52,7 +52,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
                 g.modelId = status.data[0].businessModeId;
-                g.getTodoData();*/
+                g.getTodoData();
             },
             failure: function (result) {
                 myMask.hide();
