@@ -95,6 +95,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
             g.showCompleteTaskView(true);
+            $("#completeTask-content").css("height","100%");
         });
         $(".workOrder").bind("click", function () {
             $(".workOrder").next().hide();
