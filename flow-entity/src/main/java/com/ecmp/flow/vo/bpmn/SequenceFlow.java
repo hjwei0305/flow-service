@@ -53,7 +53,9 @@ public class SequenceFlow extends BaseNode implements Serializable {
             JSONObject uelObject = JSONObject.fromObject(uel);
             String uelValue = (String) uelObject.get("groovyUel");
             this.name = (String) uelObject.get("name");
-            this.conditionExpression = new ConditionExpression(uelValue);
+            if(StringUtils.isNotEmpty(uelValue)){
+                this.conditionExpression = new ConditionExpression(uelValue);
+            }
         }
     }
 

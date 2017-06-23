@@ -1148,6 +1148,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public List<NodeInfo> findNextNodes(String id) throws NoSuchMethodException{
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return null;
+        }
         String businessId = flowTask.getFlowInstance().getBusinessId();
         return this.findNextNodes(id,businessId);
     }
@@ -1342,13 +1345,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private List<NodeInfo> selectNextAllNodes(FlowTask flowTask,List<String> includeNodeIds) {
         String actTaskId = flowTask.getActTaskId();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
-        List<PvmActivity> nextNodes = new ArrayList<PvmActivity>();
+        Map<PvmActivity,String> nextNodes = new LinkedHashMap<PvmActivity,String>();
         initNextNodes(currActivity, nextNodes);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         if (!nextNodes.isEmpty()) {
             //判断网关
-            PvmActivity firstActivity = nextNodes.get(0);
+            Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
+            PvmActivity firstActivity = (PvmActivity)nextNodesKeyArray[0];
             Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
             String nextActivtityType = firstActivity.getProperty("type").toString();
             String uiType = "readOnly";
@@ -1358,7 +1362,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = nextNodes.get(i);
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
                         if(includeNodeIds != null){
                             if(!includeNodeIds.contains(tempActivity.getId())){
                                 continue;
@@ -1371,6 +1375,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                        // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
                         tempNodeInfo.setGateWayName(gateWayName);
                         tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1378,7 +1383,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) { // 包容网关,checkbox,至少选择一个
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = nextNodes.get(i);
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
                         if(includeNodeIds != null){
                             if(!includeNodeIds.contains(tempActivity.getId())){
                                 continue;
@@ -1387,6 +1392,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1394,7 +1400,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关,checkbox,默认全部选中显示不能修改
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = nextNodes.get(i);
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
                         if(includeNodeIds != null){
                             if(!includeNodeIds.contains(tempActivity.getId())){
                                 continue;
@@ -1403,6 +1409,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -1410,7 +1417,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else {
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = nextNodes.get(i);
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
                         if(includeNodeIds != null){
                             if(!includeNodeIds.contains(tempActivity.getId())){
                                 continue;
@@ -1419,10 +1426,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                         nodeInfoList.add(tempNodeInfo);
                     }
                 } else {//按照惟一分支任务处理，显示一个，只读
-                    PvmActivity tempActivity = nextNodes.get(0);
+                    PvmActivity tempActivity =(PvmActivity) nextNodesKeyArray[0];
                     if(includeNodeIds != null){
                         if(!includeNodeIds.contains(tempActivity.getId())){
                             throw new RuntimeException("惟一分支未选中");
@@ -1431,6 +1439,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     NodeInfo tempNodeInfo = new NodeInfo();
                     tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
                     tempNodeInfo.setUiType(uiType);
+                    tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                     nodeInfoList.add(tempNodeInfo);
                 }
             }
@@ -1444,19 +1453,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param currActivity
      * @param nextNodes
      */
-    private void initNextNodes(PvmActivity currActivity, List<PvmActivity> nextNodes) {
+    private void initNextNodes(PvmActivity currActivity, Map<PvmActivity,String> nextNodes) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
             for (PvmTransition pv : nextTransitionList) {
                 PvmActivity currTempActivity = pv.getDestination();
+                String lineName = pv.getProperty("name")+"";//线的名称
                 Boolean ifGateWay = ifGageway(currTempActivity);
                 if (ifGateWay) {//如果是网关，其他直绑节点自行忽略
                     nextNodes.clear();
-                    nextNodes.add(currTempActivity);//把网关放入第一个节点
+                    nextNodes.put(currTempActivity,lineName);//把网关放入第一个节点
                     initNextNodes(currTempActivity, nextNodes);
                     break;
                 } else {
-                    nextNodes.add(currTempActivity);
+                    nextNodes.put(currTempActivity,lineName);
                 }
 
             }
@@ -1605,6 +1615,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public ApprovalHeaderVO getApprovalHeaderVO(String id){
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return null;
+        }
         String preId = flowTask.getPreId();
         FlowHistory preFlowTask = null;
         ApprovalHeaderVO result= new ApprovalHeaderVO();
@@ -1629,6 +1642,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException{
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return  null;
+        }
         String businessId = flowTask.getFlowInstance().getBusinessId();
         return this.findNexNodesWithUserSet(id,businessId);
     }

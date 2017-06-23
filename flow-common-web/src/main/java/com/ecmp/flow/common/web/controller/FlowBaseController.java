@@ -292,7 +292,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -322,7 +322,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 operateStatus.setData(nodeInfoList);
             }
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -343,7 +343,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -364,7 +364,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(approvalHeaderVO);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }

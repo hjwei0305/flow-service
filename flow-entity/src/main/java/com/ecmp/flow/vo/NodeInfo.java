@@ -24,6 +24,7 @@ public class NodeInfo implements Serializable{
     private String id;
     private String name;
     private String gateWayName;//网关线名称
+	private String preLineName;//入口线名称
     private String type;//目前暂时只支持 ----userTask、EndEvent（结束节点）
     private String uiType;//radiobox\checkbox\readOnly
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),会签(countersign)
@@ -113,5 +114,13 @@ public class NodeInfo implements Serializable{
 
 	public void setGateWayName(String gateWayName) {
 		this.gateWayName = gateWayName;
+	}
+
+	public String getPreLineName() {
+		return preLineName;
+	}
+
+	public void setPreLineName(String preLineName) {
+		this.preLineName = preLineName;
 	}
 }

@@ -416,7 +416,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: g.lang.nameText,
                         name: "name",
-                        index: "name"
+                        index: "name",
+                        width:'80%'
                     }, {
                         label: g.lang.latestVersionIDText,
                         name: "lastVersionId",
@@ -425,11 +426,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: g.lang.definitionKEYText,
                         name: "defKey",
-                        index: "defKey"
+                        index: "defKey",
+                        width:'80%'
                     }, {
                         label: g.lang.flowTypeText,
                         name: "flowType.name",
-                        index: "flowType.name"
+                        index: "flowType.name",
+                        width:'80%'
                     }, {
                         label: g.lang.businessEntityIDText,
                         name: "flowType.businessModel.id",
@@ -438,7 +441,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: g.lang.launchConditionUELText,
                         name: "startUel",
-                        index: "startUel"
+                        index: "startUel",
+                        width:'80%'
                     }, {
                         label: g.lang.organizationIDText,
                         name: "orgId",
@@ -452,12 +456,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: g.lang.depictText,
                         name: "depict",
-                        index: "depict"
+                        index: "depict",
+                        width:'80%'
                     }, {
                         label: g.lang.flowDefinitionStatusText,
                         name: "flowDefinationStatus",
                         index: "flowDefinationStatus",
                         align:"center",
+                        width:'80%',
                         formatter : function(cellvalue, options, rowObject) {
                             var strVar = '';
                             if('INIT' == rowObject.flowDefinationStatus){
@@ -473,7 +479,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: g.lang.priorityText,
                         name: "priority",
-                        index: "priority"
+                        index: "priority",
+                        width:'80%'
                     }],
                     shrinkToFit:false,//固定宽度
                     ondbClick: function () {
