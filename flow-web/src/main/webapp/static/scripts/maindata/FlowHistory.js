@@ -236,7 +236,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var html = "";
         if(data.length == 0){
             if(g.isManuallyEnd){
-                html  = "流程已被发起人中止";
+                html  = "流程已被发起人终止";
             }else{
                 html  = g.lang.flowFinishedText;
             }
