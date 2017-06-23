@@ -179,7 +179,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
     endFlowEvent:function () {
         var g = this;
         $(".endFlow-btn", "#" + this.renderTo).live("click", function () {
-            var itemdom = $(this).parents(".info-item");
+            var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
             var message = EUI.MessageBox({
                 border: true,
