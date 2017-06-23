@@ -18,6 +18,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     designInstanceId:null,
     designFlowDefinationId:null,
     versionCode:null,
+    isManuallyEnd:false,
     initComponent: function () {
         var g = this;
         g.getData();
@@ -219,16 +220,27 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             return;
         }else{
             if(data[0].flowInstance.ended == true){
-                $(".flow-end").css("display", "block");
-               $(".flow-endright").html(data[0].flowInstance.endDate)
+                if(data[0].flowInstance.manuallyEnd == true){
+                    g.isManuallyEnd = true;
+                    $(".flow-end").css("display", "block");
+                    $(".flow-endright").html(data[0].flowInstance.endDate)
+                }else{
+                    $(".flow-end").css("display", "block");
+                    $(".flow-endright").html(data[0].flowInstance.endDate)
+                }
             }
         }
     },
     //拼接流程状态数据的html
     showFlowStatusData: function (data) {
+        var g = this;
         var html = "";
         if(data.length == 0){
-            html  = "流程已处理完成";
+            if(g.isManuallyEnd){
+                html  = "流程已被发起人中止";
+            }else{
+                html  = "流程已处理完成";
+            }
             $(".statuscenter-info").addClass("text-center")
         }else{
             for (var i = 0; i < data.length; i++) {
