@@ -7,7 +7,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         total: 1
     },
     initComponent: function () {
-        // this.initHtml();
         this.getCompleteData();
         this.addEvents();
     },
@@ -46,7 +45,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             },
             success: function (result) {
                 myMask.hide();
-                if (!result.rows) {
+                if (result.records==0) {
                     g.getNotData();
                     return;
                 } else if (result.rows) {
