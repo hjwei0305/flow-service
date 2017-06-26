@@ -414,7 +414,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 330,
             padding: 12,
             renderTo: "notify-before",
-            itemspace:0,
+            itemspace: 0,
             defaultConfig: {
                 iframe: false,
                 xtype: "FormPanel",
@@ -437,7 +437,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 445,
             height: 330,
             padding: 12,
-            itemspace:0,
+            itemspace: 0,
             renderTo: "notify-after",
             defaultConfig: {
                 iframe: false,
@@ -535,10 +535,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             label: this.lang.codeText,
             name: "code",
             index: "code",
+            width: 100
         }, {
             label: this.lang.nameText,
             name: "name",
-            index: "name"
+            index: "name",
+            width: 150
+
         }];
     },
     positionTypeGridColModel: function () {
@@ -576,7 +579,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             gridCfg: {
                 loadonce: true,
                 hasPager: false,
-                // url: _ctxPath + "",
                 colModel: colModel
             }
         };
@@ -587,13 +589,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             index: "id",
             hidden: true
         }, {
-            label: this.lang.codeText,
+            label: "员工编号",
             name: "code",
-            index: "code"
+            index: "code",
+            width: 100
         }, {
             label: this.lang.nameText,
-            name: "name",
-            index: "name"
+            name: "userName",
+            index: "userName",
+            width: 150
         }];
     },
     getSelfDefGrid: function () {
@@ -626,16 +630,14 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var win = EUI.Window({
             title: "选择岗位",
             padding: 0,
-            width: 800,
+            width: 420,
             height: 350,
             buttons: [{
                 title: "确定",
                 selected: true,
                 handler: function () {
-                    var cmp = EUI.getCmp("positionGrid");
-                    var selectRow = EUI.getCmp("selPositionGrid").data;
-                    cmp.data = selectRow ? selectRow : [];
-                    cmp.setDataInGrid(cmp.data, false);
+                    var data = EUI.getCmp("selPositionGrid").getSelectRow();
+                    EUI.getCmp("positionGrid").addRowData(data);
                     win.close();
                 }
             }, {
@@ -645,156 +647,17 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }],
             items: [{
-                xtype: "Container",
-                layout: "border",
-                border: false,
-                padding: 0,
-                itemspace: 1,
-                items: [{
-                    xtype: "Container",
-                    region: "west",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    width: 450,
-                    itemspace: 1,
-                    isOverFlow: false,
-                    items: [{
-                        xtype: "Container",
-                        region: "west",
-                        layout: "border",
-                        border: false,
-                        padding: 0,
-                        width: 350,
-                        itemspace: 0,
-                        isOverFlow: false,
-                        items: [this.initTitle("已选择"), {
-                            xtype: "GridPanel",
-                            id: "selPositionGrid",
-                            region: "center",
-                            gridCfg: {
-                                datatype: "local",
-                                loadonce: true,
-                                hasPager: false,
-                                multiselect: true,
-                                colModel: this.positionGridColModel()
-                            }
-                        }]
-                    }, g.getCenterIcon("position")]
-                }, {
-                    xtype: "Container",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    itemspace: 0,
-                    width: 350,
-                    region: "center",
-                    items: [{
-                        xtype: "ToolBar",
-                        region: "north",
-                        height: 40,
-                        padding: 2,
-                        border: false,
-                        isOverFlow: false,
-                        items: [this.initTitle("所有岗位"), "->", {
-                            xtype: "SearchBox",
-                            id: "searchBox_positionGrid",
-                            width: 80,
-                            //searchDisplayText:请输入代码或、名称或配置值查询
-                            displayText: this.lang.searchDisplayText,
-                            onSearch: function (v) {
-                                EUI.getCmp("allPositionGrid").localSearch(v);
-                            },
-                            afterClear: function () {
-                                EUI.getCmp("allPositionGrid").restore();
-                            }
-                        }]
-                    }, {
-                        xtype: "GridPanel",
-                        id: "allPositionGrid",
-                        region: "center",
-                        searchConfig: {
-                            searchCols: ["code", "name"]
-                        },
-                        gridCfg: {
-                            hasPager: false,
-                            multiselect: true,
-                            loadonce: true,
-                            url: _ctxPath + "/design/listPos",
-                            colModel: this.positionGridColModel()
-                        }
-                    }]
-                }]
-            }],
-        });
-        var data = EUI.getCmp("positionGrid") ? EUI.getCmp("positionGrid").data : [];
-        EUI.getCmp("selPositionGrid").data = [];
-        g.addGridData(data, EUI.getCmp("selPositionGrid"));
-        this.addPositionEvent();
-    },
-    addPositionEvent: function () {
-        var g = this;
-        $("#position-left").live("click", function (e) {
-            var cmp = EUI.getCmp("selPositionGrid");
-            var selectRow = EUI.getCmp("allPositionGrid").getSelectRow();
-            if (selectRow.length == 0) {
-                g.message("请选择一条要操作的行项目!");
-                return false;
-            }
-            var nowData = cmp.data ? cmp.data : [];
-            g.checkIsExistAndAddData(nowData, selectRow, cmp);
-        });
-        $("#position-right").live("click", function (e) {
-            var cmp = EUI.getCmp("selPositionGrid");
-            var row = cmp.getSelectRow();
-            if (row.length == 0) {
-                g.message("请选择一条要操作的行项目!");
-                return false;
-            }
-            g.deleteRowData(row, cmp);
-        });
-    },
-    deleteRowData: function (data, cmp) {
-        var g = this;
-        for (var i = 0; i < data.length; i++) {
-            cmp.deleteRow(data[i].id);
-        }
-    },
-    checkIsExistAndAddData: function (nowData, selectData, cmp) {
-        var g = this, isExist = false;
-        if (nowData.length == 0) {
-            cmp.addRowData(selectData);
-            return;
-        }
-        for (var i = 0; i < selectData.length; i++) {
-            isExist = false;
-            for (var j = 0; j < nowData.length; j++) {
-                if (nowData[j].id == selectData[i].id) {
-                    isExist = true;
-                    break;
+                xtype: "GridPanel",
+                id: "selPositionGrid",
+                gridCfg: {
+                    hasPager: false,
+                    multiselect: true,
+                    rowNum:1000,
+                    url: _ctxPath + "/design/listPos",
+                    colModel: this.positionGridColModel()
                 }
-            }
-            if (!isExist) {
-                cmp.addRowData(selectData[i]);
-            }
-        }
-    },
-    addGridData: function (data, cmp) {
-        var g = this;
-        cmp.data = cmp.data.concat(data);
-        cmp.setDataInGrid(cmp.data, false);
-    },
-    getCenterIcon: function (id) {
-        var g = this;
-        return {
-            xtype: "Container",
-            region: "center",
-            width: 50,
-            border: false,
-            isOverFlow: false,
-            html: "<div class='arrow-right' id=" + id + "-right></div>" +
-            "<div class='arrow-left' id=" + id + "-left></div>"
-        }
+            }]
+        });
     },
     showSelectPositionTypeWindow: function () {
         var win = EUI.Window({
@@ -831,11 +694,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.codeText,
                         name: "code",
-                        index: "code"
+                        index: "code",
+                        width: 100
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name"
+                        index: "name",
+                        width: 150
                     }]
                 }
             }]
@@ -865,9 +730,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "GridPanel",
                 id: "selfUserGrid",
                 gridCfg: {
-                    loadonce: true,
+                    hasPager: false,
                     multiselect: true,
-                    // url: _ctxPath + "",
+                    url: _ctxPath + "/customExecutor/listExecutor",
+                    postData:{
+                        businessModuleId:this.businessModelId
+                    },
                     colModel: this.getSelfDefGridColModel()
                 }
             }]
