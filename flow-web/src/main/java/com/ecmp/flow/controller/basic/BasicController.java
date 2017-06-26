@@ -7,15 +7,14 @@ import com.ecmp.basic.entity.Organization;
 import com.ecmp.basic.entity.Position;
 import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.vo.OperateResult;
-import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.ws.rs.QueryParam;
+import javax.servlet.ServletRequest;
 import java.util.List;
 
 /**
@@ -68,9 +67,9 @@ public class BasicController {
      */
     @ResponseBody
     @RequestMapping("findAllPosition")
-    public List<Position> findAllPosition(){
+    public PageResult<Position> findAllPosition(ServletRequest request){
+        Search search = SearchUtil.genSearch(request);
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        List<Position> positionList = proxy.findAll();
-        return positionList;
+        return proxy.findByPage(search);
     }
 }

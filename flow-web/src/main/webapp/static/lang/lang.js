@@ -159,7 +159,7 @@ if (EUI.WorkPageUrlView) {
 if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         moveText: "移动",
-        codeText: "代码",
+        codeText: "编号",
         nameText: "名称",
         frozenText: '是否冻结',
         rankText: '排序',

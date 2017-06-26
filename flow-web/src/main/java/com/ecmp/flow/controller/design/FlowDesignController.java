@@ -6,6 +6,9 @@ import com.ecmp.basic.entity.Position;
 import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.api.common.api.IConditionServer;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletRequest;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -178,10 +182,10 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPos")
-    public List<Position> listPositon() {
+    public PageResult<Position> listPositon(ServletRequest request) {
+        Search search = SearchUtil.genSearch(request);
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        List<Position> data = proxy.findAll();
-        return data;
+        return proxy.findByPage(search);
     }
 
     /**
