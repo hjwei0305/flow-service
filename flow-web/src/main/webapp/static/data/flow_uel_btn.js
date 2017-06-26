@@ -23,12 +23,12 @@ var _flowUelBtn = [{
     operator: "!=",
     uel: "!="
 }, {
-    name: "交集",
-    operator: "∩",
+    name: "并且",
+    operator: "and",
     uel: "and"
 }, {
-    name: "并集",
-    operator: "∪",
+    name: "或者",
+    operator: "or",
     uel: "or"
 }, {
     name: "左括号",
