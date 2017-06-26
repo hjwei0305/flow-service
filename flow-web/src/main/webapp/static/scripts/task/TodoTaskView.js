@@ -202,7 +202,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             //计算出相差天数
             var days = Math.floor(time / (24 * 3600 * 1000));
             if (days > 0) {
-                return days + '天';
+                return days + '天前';
             }
             //计算出小时数
             var leave1 = time % (24 * 3600 * 1000);   //计算天数后剩余的毫秒数
@@ -211,7 +211,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             } else {
                 var hours = Math.floor(leave1 / (3600 * 1000));
                 if (hours > 0) {
-                    return hours + '小时';
+                    return hours + '小时前';
                 }
             }
             //计算相差分钟数
