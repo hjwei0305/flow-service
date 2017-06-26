@@ -13,15 +13,15 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         this.window = EUI.Window({
             width: 550,
-            height: 370,
+            height: 420,
             padding: 15,
             afterRender: function () {
                 this.dom.find(".ux-window-content").css("border-radius", "6px");
             },
-            buttons:[{
-                title:"确定",
-                selected:true,
-                handler:function () {
+            buttons: [{
+                title: "确定",
+                selected: true,
+                handler: function () {
                     g.window.close();
                 }
             }],
@@ -36,9 +36,68 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     this.getNotifyTab()]
             }]
         });
+        this.initNotify();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
+        this.addEvent();
+    },
+    addEvent: function () {
+        var g = this;
+        $(".condetail-delete").live("click", function () {
+            var data = EUI.getCmp("userType").getValue();
+            var userType = data.userType;
+            var id = $(this).attr("id");
+            var grid;
+            if (userType == "Position") {
+                grid = EUI.getCmp("positionGrid");
+            } else if (userType == "PositionType") {
+                grid = EUI.getCmp("positionTypeGrid");
+            } else if (userType == "SelfDefinition") {
+                grid = EUI.getCmp("selfDefGrid");
+            }
+            grid.deleteRow(id);
+        });
+
+        $(".west-navbar").live("click", function () {
+            if ($(this).hasClass("select-navbar")) {
+                return;
+            }
+            $(this).addClass("select-navbar").siblings().removeClass("select-navbar");
+            var index = $(this).index();
+            $(".notify-center").hide();
+            var selecter = ".notify-center:eq(" + index + ")";
+            $(selecter).show();
+            if (index == 0) {
+                g.nowNotifyTab = EUI.getCmp("notify-before");
+            } else {
+                g.nowNotifyTab = EUI.getCmp("notify-after");
+            }
+        });
+
+        $(".notify-user-item").live("click", function () {
+            if ($(this).hasClass("select")) {
+                return;
+            }
+            $(this).addClass("select").siblings().removeClass("select");
+            EUI.getCmp(g.nowNotifyTab.items[0]).hide();
+            EUI.getCmp(g.nowNotifyTab.items[1]).hide();
+            EUI.getCmp(g.nowNotifyTab.items[2]).hide();
+            var index = $(this).index();
+            switch (index) {
+                case 0:
+                    EUI.getCmp(g.nowNotifyTab.items[0]).show();
+                    break;
+                case 1:
+                    EUI.getCmp(g.nowNotifyTab.items[1]).show();
+                    break;
+                case 2:
+                    EUI.getCmp(g.nowNotifyTab.items[2]).show();
+                    break;
+                default:
+                    break;
+            }
+        });
     },
     getNormalTab: function () {
         return {
@@ -93,7 +152,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "FormPanel",
             title: "执行人",
-            height: 375,
+            height: 395,
             width: 535,
             id: "excutor",
             itemspace: 0,
@@ -107,14 +166,14 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Container",
                 width: 532,
-                height: 300,
+                height: 310,
                 padding: 0,
                 id: "gridBox",
                 hidden: true,
                 defaultConfig: {
                     border: true,
-                    height: 240,
-                    width: 520,
+                    height: 300,
+                    width: 520
                 },
                 items: [this.getPositionGrid(), this.getPositionTypeGrid(), this.getSelfDefGrid()]
             }]
@@ -215,18 +274,114 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getNotifyTab: function () {
         return {
             title: "通知",
-            xtype: "FormPanel",
-            id: "notify",
             padding: 10,
             defaultConfig: {
                 width: 300,
                 xtype: "TextField",
                 colon: false
             },
-            items: []
+            html: '<div class="notify-west">' +
+            '<div class="west-navbar select-navbar">任务达到时</div>' +
+            '<div class="west-navbar">任务执行后</div>' +
+            '</div>' +
+            '<div class="notify-center">' +
+            '<div class="notify-user">' +
+            '<div class="notify-user-item select">通知执行人</div>' +
+            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-before"></div>' +
+            '</div>' +
+            '<div class="notify-center" style="display: none;">' +
+            '<div class="notify-user">' +
+            '<div class="notify-user-item select">通知执行人</div>' +
+            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-after"></div>' +
+            '</div>'
         };
-    }
-    ,
+    },
+    initNotify: function () {
+        this.nowNotifyTab = EUI.Container({
+            width: 445,
+            height: 330,
+            padding: 12,
+            renderTo: "notify-before",
+            itemspace:0,
+            defaultConfig: {
+                iframe: false,
+                xtype: "FormPanel",
+                width: 425,
+                height: 310,
+                padding: 0,
+                itemspace: 10
+            },
+            items: [{
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }]
+        });
+        var nextTab = EUI.Container({
+            width: 445,
+            height: 330,
+            padding: 12,
+            itemspace:0,
+            renderTo: "notify-after",
+            defaultConfig: {
+                iframe: false,
+                xtype: "FormPanel",
+                width: 425,
+                height: 310,
+                padding: 0,
+                itemspace: 10
+            },
+            items: [{
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }]
+        });
+    },
+    getNotifyItem: function () {
+        return [{
+            xtype: "CheckBoxGroup",
+            title: "通知方式",
+            labelWidth: 80,
+            name: "type",
+            readonly:true,
+            defaultConfig: {
+                labelWidth: 60
+            },
+            items: [{
+                title: "邮件",
+                name: "EMAIL"
+            }, {
+                title: "短信",
+                name: "SMS"
+            }, {
+                title: "APP",
+                name: "APP"
+            }]
+        }, {
+            xtype: "TextArea",
+            width: 320,
+            height: 220,
+            readonly:true,
+            labelWidth: 80,
+            title: "通知备注",
+            name: "content"
+        }];
+    },
     getPositionGrid: function () {
         return {
             xtype: "GridPanel",

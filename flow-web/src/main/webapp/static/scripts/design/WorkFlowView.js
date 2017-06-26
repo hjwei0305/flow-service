@@ -406,7 +406,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
                 var input = dom.find(".node-title");
                 if (type.endsWith("Gateway")) {
-                    g.showSimpleNodeConfig(input, input.text());
+                    g.showSimpleNodeConfig(input.text(), function (value) {
+                        input.text(name);
+                    });
                 } else {
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
@@ -490,9 +492,24 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 });
                 return;
             }
+            var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            var type = $("#" + connection.sourceId).attr("bustype");
+            if (type == "ManualExclusiveGateway") {
+                g.showSimpleNodeConfig(ueldata.name, function (value) {
+                    g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                        name: value,
+                        groovyUel: "",
+                        logicUel: ""
+                    };
+                    var overlay = connection.getOverlay("label");
+                    overlay.setLabel(value);
+                    overlay.show();
+                });
+                return;
+            }
             new EUI.UELSettingView({
                 title: "表达式配置",
-                data: g.uelInfo[connection.sourceId + "," + connection.targetId],
+                data: ueldata,
                 businessModelId: g.businessModelId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
@@ -840,7 +857,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
-    showSimpleNodeConfig: function (input, title) {
+    showSimpleNodeConfig: function (title, callback) {
         var win = EUI.Window({
             height: 30,
             padding: 30,
@@ -858,7 +875,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
-                    input.text(name);
+                    callback && callback.call(this, name);
                     win.close();
                 }
             }, {
