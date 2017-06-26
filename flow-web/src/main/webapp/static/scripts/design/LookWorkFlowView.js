@@ -155,6 +155,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         // 双击连线弹出UEL配置界面
         this.instance.bind("dblclick", function (connection) {
+            var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            var type = $("#" + connection.sourceId).attr("bustype");
+            if (type == "ManualExclusiveGateway") {
+                g.showSimpleNodeConfig(ueldata.name);
+                return;
+            }
             new EUI.UELSettingView({
                 title: "表达式配置",
                 readOnly: true,
@@ -218,7 +224,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/design/getLookInfo",
             params: {
                 id: this.id,
-                instanceId:this.instanceId,
+                instanceId: this.instanceId,
                 versionCode: 1
             },
             success: function (status) {
@@ -304,7 +310,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
+            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
             + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
     }
     ,
@@ -313,11 +319,21 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         if (currentNodes.indexOf(id) != -1) {
             nodeCss += " currentNode";
         }
+        var css = node.css;
+        if (!css) {
+            if (node.nodeType == "Normal") {
+                css = "usertask";
+            } else if (node.nodeType == "SingleSign") {
+                css = "singletask";
+            } else {
+                css = "countertask";
+            }
+        }
         return "<div tabindex=0 id='" + id
             + "' class='" + nodeCss + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div>"
+            + "<div class='" + css + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "</div>";
     }
@@ -327,12 +343,16 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         if (currentNodes.indexOf(id) != -1) {
             nodeCss += " currentNode";
         }
+        var css = node.type.toLowerCase();
+        if (node.busType == "ManualExclusiveGateway") {
+            css = "manualExclusivegateway";
+        }
         return "<div tabindex=0 id='" + id
             + "' class='" + nodeCss + "' bustype='" + node.busType + "' type='"
             + node.type + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
-            + "<div class='" + node.type.toLowerCase() + "'></div></div>"
+            + "<div class='" + css + "'></div></div>"
             + "<div class='node-title'>" + node.name + "</div>"
             + "</div>";
     },

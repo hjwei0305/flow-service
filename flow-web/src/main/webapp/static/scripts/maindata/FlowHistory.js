@@ -1,7 +1,7 @@
 /**
  * 流程历史页面
  */
-if(!window.Flow){
+if (!window.Flow) {
     window.Flow = {};
     EUI.ns("Flow.flow");
 }
@@ -15,10 +15,10 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     businessId: null,
     defaultData: null,
     instanceData: null,
-    designInstanceId:null,
-    designFlowDefinationId:null,
-    versionCode:null,
-    isManuallyEnd:false,
+    designInstanceId: null,
+    designFlowDefinationId: null,
+    versionCode: null,
+    isManuallyEnd: false,
     initComponent: function () {
         var g = this;
         g.getData();
@@ -26,7 +26,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
-            msg: "正在加载，请稍候..."
+            msg: g.lang.queryMaskMessageText
         });
         EUI.Store({
             url: _ctxPath + "/flowHistoryInfo/getFlowHistoryInfo",
@@ -37,12 +37,12 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 var flag = true;
                 g.initData(result);
                 g.showWind();
-               g.showFlowHistoryTopData(g.defaultData.data.flowInstance);
+                g.showFlowHistoryTopData(g.defaultData.data.flowInstance);
                 g.showFlowHistoryData(g.defaultData.data.flowHistoryList);
                 g.showFlowStatusData(g.defaultData.data.flowTaskList);
-                 myMask.hide();
+                myMask.hide();
             }, failure: function (result) {
-               myMask.hide();
+                myMask.hide();
             }
         });
     },
@@ -52,12 +52,12 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             var item = data[i].flowInstance;
             var instanceItem = {
                 id: item.id,
-                name: item.flowName + "," + item.creatorName + "," + item.createdDate + "发起",
+                name: item.flowName + "," + item.creatorName + "," + item.createdDate + g.lang.startText,
                 instanceId: item.id,
-                data:data[i]
+                data: data[i]
             };
             instanceData.push(instanceItem);
-            if(this.instanceId == item.id){
+            if (this.instanceId == item.id) {
                 this.defaultData = instanceItem;
                 this.designInstanceId = instanceItem.id;
                 this.designFlowDefinationId = instanceItem.data.flowInstance.flowDefVersion.flowDefination.id
@@ -65,7 +65,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             }
         }
         this.instanceData = instanceData;
-        if(!this.instanceId ){
+        if (!this.instanceId) {
             this.defaultData = instanceData[0];
             this.designInstanceId = instanceData[0].id;
             this.designFlowDefinationId = instanceData[0].data.flowInstance.flowDefVersion.flowDefination.id;
@@ -75,7 +75,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showWind: function () {
         var g = this;
         g.win = EUI.Window({
-            title: "流程信息",
+            title: g.lang.flowInfoText,
             width: 615,
             height: 523,
             padding: 0,
@@ -84,7 +84,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [this.initTop(), this.initCenter()]
         });
-      EUI.getCmp("flowInstanceId").loadData(this.defaultData);
+        EUI.getCmp("flowInstanceId").loadData(this.defaultData);
         g.topEvent();
     },
     initTop: function () {
@@ -98,7 +98,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + "启动历史" + "</span>",
+                title: "<span style='font-weight: bold'>" + g.lang.launchHistoryText + "</span>",
                 width: 375,
                 field: ["id"],
                 labelWidth: 80,
@@ -112,16 +112,16 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 afterSelect: function (data) {
                     g.designInstanceId = data.data.id;
                     g.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id;
-                    g.versionCode  = data.data.data.flowInstance.flowDefVersion.versionCode;
+                    g.versionCode = data.data.data.flowInstance.flowDefVersion.versionCode;
                     $(".statuscenter-info").html("").removeClass("text-center");
                     $(".flow-historyprogress").html("");
                     $(".flow-end").css("display", "none");
                     g.showFlowHistoryData(data.data.data.flowHistoryList);
                     g.showFlowStatusData(data.data.data.flowTaskList);
                 }
-            },{
+            }, {
                 xtype: "Button",
-                title: "查看流程图",
+                title: g.lang.showFlowDiagramText,
                 handler: function () {
                     $(".toptop-right").addClass("flowselect");
                     g.showDesgin()
@@ -144,14 +144,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '				<div class="top-left navbar flowselect">' +
             '					<div class="flow-tabicon flow-statusimg"></div>' +
             '					<div class="flow-stutsfield text">' +
-            '						当前处理状态' +
+            g.lang.processStatusText +
             '					</div>' +
             '				</div>' +
             '				<div class="flow-line"></div>' +
             '				<div class="top-center navbar">' +
             '					<div class="flow-tabicon flow-historyimg"></div>' +
             '					<div class="flow-historyfield text">' +
-            '						流程处理历史' +
+            g.lang.flowProcessHistoryText +
             '					</div>' +
             '				</div>' +
             '			</div>';
@@ -174,14 +174,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '						</div>' +
             '						<div class="flow-historyprogress">' +
             '						</div>' +
-            '                       <div class="flow-end" style="display: none;">'+
-            '							<div class="flow-endImg"></div>'+
-            '							<div class="flow-endfield">流程结束</div>'+
-            '							<div class="flow-endright">'+
-            '							</div>'+
+            '                       <div class="flow-end" style="display: none;">' +
+            '							<div class="flow-endImg"></div>' +
+            '							<div class="flow-endfield">' + this.lang.flowEndText + '</div>' +
+            '							<div class="flow-endright">' +
+            '							</div>' +
             '						</div>';
-            '					</div>' +
-            '				</div>';
+        '					</div>' +
+        '				</div>';
     },
 
     //拼接流程历史头部数据的html
@@ -189,7 +189,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         var html = "";
         html = '<div class="flow-startimg"></div>' +
-            '							<div class="flow-startfield">流程启动</div>' +
+            '							<div class="flow-startfield">' + g.lang.flowLaunchText + '</div>' +
             '							<div class="flow-startright">' +
             '								<div class="flow-startuser">' + data.creatorName + '</div>' +
             '								<div class="flow-startline"></div>' +
@@ -207,25 +207,25 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '							<div class="flow-historydot"></div>' +
                 '							<div class="flow-historyinfotop">' +
                 '								<div class="flow-historystatus">' + item.flowTaskName + '</div>' +
-                '								<div class="flow-historyright">处理人：' + item.executorName + ' (' + item.actEndTime+ ')</div>' +
+                '								<div class="flow-historyright">' + g.lang.processorText + item.executorName + ' (' + item.actEndTime + ')</div>' +
                 '							</div>' +
-                '							<div class="flow-usetime">耗时：' + g.changeLongToString(item.actDurationInMillis) + '</div>' +
-                '							<div class="flow-remark">处理摘要：' + (item.depict || '无')+ '</div>' +
+                '							<div class="flow-usetime">' + g.lang.timeCunsumingText + g.changeLongToString(item.actDurationInMillis) + '</div>' +
+                '							<div class="flow-remark">' + g.lang.handleAbstractText + (item.depict || g.lang.noneText) + '</div>' +
                 '							 <div class="clear"></div> ' +
                 '						</div>';
         }
         $(".flow-historyprogress").append(html);
-        if(typeof(data[0])=="undefined"){
+        if (typeof(data[0]) == "undefined") {
             return;
-        }else{
-            if(data[0].flowInstance.ended == true){
-                if(data[0].flowInstance.manuallyEnd == true){
+        } else {
+            if (data[0].flowInstance.ended == true) {
+                if (data[0].flowInstance.manuallyEnd == true) {
                     g.isManuallyEnd = true;
                     $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(data[0].flowInstance.endDate)
-                }else{
+                    $(".flow-endright").html(data[0].flowInstance.endDate);
+                } else {
                     $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(data[0].flowInstance.endDate)
+                    $(".flow-endright").html(data[0].flowInstance.endDate);
                 }
             }
         }
@@ -234,22 +234,22 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showFlowStatusData: function (data) {
         var g = this;
         var html = "";
-        if(data.length == 0){
-            if(g.isManuallyEnd){
-                html  = "流程已被发起人中止";
-            }else{
-                html  = "流程已处理完成";
+        if (data.length == 0) {
+            if (g.isManuallyEnd) {
+                html = "流程已被发起人终止";
+            } else {
+                html = g.lang.flowFinishedText;
             }
             $(".statuscenter-info").addClass("text-center")
-        }else{
+        } else {
             for (var i = 0; i < data.length; i++) {
                 var item = data[i];
                 html += '<div class="flow-progress">' +
                     '						<div class="flow-progresstitle">' + item.taskName + '</div>' +
                     '						<div class="flow-progressinfo">' +
-                    '							<div class="flow-progressinfoleft">等待处理人：' + item.executorName + '</div>' +
+                    '							<div class="flow-progressinfoleft">' + g.lang.waitProcessorText + item.executorName + '</div>' +
                     '							<div class="flow-progressline"></div>' +
-                    '							<div class="flow-progressinforight">任务到达时间：' + item.createdDate + '</div>' +
+                    '							<div class="flow-progressinforight">' + g.lang.taskArrivalTimeText + item.createdDate + '</div>' +
                     '						</div>' +
                     '					</div>';
             }
@@ -263,16 +263,16 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var minute = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000) / (60 * 1000));
         var second = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000) / 1000);
         if (day > 0) {
-            strVar += day + "天";
+            strVar += day + g.lang.dayText;
         }
         if (hour > 0) {
-            strVar += hour + "小时";
+            strVar += hour + g.lang.hourText;
         }
         if (minute > 0) {
-            strVar += minute + "分";
+            strVar += minute + g.lang.minuteText;
         }
         if (second > 0) {
-            strVar += second + "秒";
+            strVar += second + g.lang.secondText;
         }
         return strVar;
     },
@@ -294,9 +294,9 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showDesgin: function () {
         var g = this;
         var tab = {
-            title: "流程图",
-            url: _ctxPath + "/design/showLook?id="+ this.designFlowDefinationId+ "&instanceId="+this.designInstanceId+"&versionCode="+this.versionCode,
-            id : this.designInstanceId
+            title: g.lang.flowDiagramText,
+            url: _ctxPath + "/design/showLook?id=" + this.designFlowDefinationId + "&instanceId=" + this.designInstanceId + "&versionCode=" + this.versionCode,
+            id: this.designInstanceId
         };
         g.addTab(tab);
     },
