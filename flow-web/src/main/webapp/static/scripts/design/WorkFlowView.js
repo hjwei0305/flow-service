@@ -695,7 +695,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showDesign: function (data) {
-        console.log(data);
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
@@ -766,16 +765,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
+            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
             + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node) {
         var css = node.css;
         if (!css) {
-            if (node.nodeType == "normalTaskText") {
+            if (node.nodeType == "Normal") {
                 css = "usertask";
-            } else if (node.nodeType == "singleSignTaskText") {
+            } else if (node.nodeType == "SingleSign") {
                 css = "singletask";
             } else {
                 css = "countertask";
