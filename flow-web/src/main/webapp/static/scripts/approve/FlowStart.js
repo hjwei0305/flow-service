@@ -119,7 +119,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         
         //选择任意执行人
         $(".choose-btn").die().live("click", function () {
-            console.log()
             g.showChooseExecutorWind();
             return false;
         });
@@ -236,7 +235,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         $(".flow-approve", this.win.dom).hide();
         $(".flow-chooseuser").show();
         $(".flow-node-box").remove();
-        console.log(data)
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
             var nodeType = "普通任务";
@@ -393,9 +391,15 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     showChooseExecutorWind:function () {
         var g = this;
+        var isChooseOneTitle;
+        if(g.chooseUserNode.flowTaskType == "common"){
+            isChooseOneTitle =  "选择任意执行人【请双击进行选择】"
+        }else{
+            isChooseOneTitle = "选择任意执行人"
+        }
         g.chooseAnyOneWind = EUI.Window({
-            title: "选择任意执行人",
-            width: 800,
+            title: isChooseOneTitle,
+            width: 700,
             layout: "border",
             height: 500,
             padding: 8,
@@ -483,6 +487,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     InitChooseUserGrid: function () {
         var g = this;
+        var isShowMultiselect;
+        if(g.chooseUserNode.flowTaskType == "common"){
+            isShowMultiselect = false
+        }else{
+            isShowMultiselect = true
+        }
         return {
             xtype: "Container",
             region: "center",
@@ -496,17 +506,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 height: 40,
                 border: false,
-                items: [{
-                    xtype: "Button",
-                    title: "保存",
-                    selected: true,
-                    handler: function () {
-                        var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
-                      //  console.log(selectRow);
-                        g.addChooseUsersInContainer(selectRow);
-                        g.chooseAnyOneWind.close();
-                    }
-                }, '->', {
+                items: ['->', {
                     xtype: "SearchBox",
                     displayText: "请输入名称进行搜索",
                     onSearch: function (value) {
@@ -527,16 +527,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 xtype: "GridPanel",
                 region: "center",
                 id: "chooseUserGridPanel",
-                style: {
-                    "border-radius": "3px"
-                },
+                style: { "border-radius": "3px"},
                 gridCfg: {
                 loadonce: true,
                //   url: _ctxPath + "/customExecutor/listAllUser",
                     // postData:{
                     //     organizationId: g.selectedOrgId
                     // },
-                    multiselect: true,
+                    multiselect: isShowMultiselect,
                     colModel: [/*{
                         label: "操作",
                         name: "operate",
@@ -564,7 +562,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         label: "用户ID",
                         name: "id",
                         index: "id",
-                     //   hidden:true
+                        hidden:true
                     }, {
                         label: "用户名称",
                         name: "user.userName",
@@ -581,13 +579,43 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         name: "organization.name",
                         index: "organization.name",
                         width:150,
-                        align: "center"
+                        align: "center",
+                        hidden:true
                     }],
-                    // ondbClick: function () {
-                    //     var rowData = EUI.getCmp("gridPanel").getSelectRow();
-                    //     g.getValues(rowData.id);
-                    // }
+                    ondblClickRow: function () {
+                        var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                        var html = "";
+                        html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
+                            '<div class="choose-icon choose-delete"></div>' +
+                            '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
+                            '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
+                            '</div>';
+                        $(".flow-excutor-content2").html(html);
+                        g.chooseAnyOneWind.close();
+                    }
                 }
+            },{
+                xtype: "Container",
+                region: "south",
+                height: 55,
+                border:false,
+                style:{
+                  "margin-top":"10px","margin-left":"100px"
+                },
+                items: [{
+                    xtype: "Button",
+                    title: "保存",
+                    width:200,
+                    selected: true,
+                    handler: function () {
+                        var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                        if(typeof(selectRow) == "undefined"){
+                            return;
+                        }
+                        g.addChooseUsersInContainer(selectRow);
+                        g.chooseAnyOneWind.close();
+                    }
+                }]
             }]
         }
     },
