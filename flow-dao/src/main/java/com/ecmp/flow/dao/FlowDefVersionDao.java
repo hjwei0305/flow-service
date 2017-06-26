@@ -19,4 +19,6 @@ public interface FlowDefVersionDao extends BaseEntityDao<FlowDefVersion> {
 
     public List<FlowDefVersion> findByFlowDefinationId(String flowDefinationId);
 
+    public FlowDefVersion findByActDefId(String actDefId);
+
     }

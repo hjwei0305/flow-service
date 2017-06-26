@@ -427,8 +427,51 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             variables.putAll(v);
         }
         //flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
-        String defKey = finalFlowDefination.getDefKey();
-        return startByKey(defKey, startUserId, businessKey, variables);
+        String key = finalFlowDefination.getDefKey();
+
+//        return startByKey(defKey, startUserId, businessKey, variables);
+
+        FlowInstance flowInstance = null;
+
+        FlowDefination flowDefination = flowDefinationDao.findByDefKey(key);
+        if (flowDefination != null) {
+            String versionId = flowDefination.getLastDeloyVersionId();
+            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
+//                String proessDefId = flowDefVersion.getActDefId();
+                ProcessInstance processInstance = null;
+                if ((startUserId != null) && (!"".equals(startUserId))) {
+                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
+                } else {
+                    processInstance = this.startFlowByKey(key, businessKey, variables);
+                }
+
+                Map<String, Object> vNew = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);//再获取一次，预防事件对单据进行了更新
+                if(vNew!=null && !vNew.isEmpty()){
+                    if(variables == null){
+                        variables = new HashMap<String,Object>();
+                    }
+                    variables.putAll(vNew);
+                }
+
+                flowInstance = new FlowInstance();
+                flowInstance.setBusinessId(processInstance.getBusinessKey());
+                String workCaption = variables.get("workCaption")+"";//工作说明
+                flowInstance.setBusinessModelRemark(workCaption);
+                String businessCode = variables.get("businessCode")+"";//工作说明
+                flowInstance.setBusinessCode(businessCode);
+                String businessName = variables.get("name")+"";//业务单据名称
+                flowInstance.setBusinessName(businessName);
+
+                flowInstance.setFlowDefVersion(flowDefVersion);
+                flowInstance.setStartDate(new Date());
+                flowInstance.setFlowName(flowDefVersion.getName());
+                flowInstance.setActInstanceId(processInstance.getId());
+                flowInstanceDao.save(flowInstance);
+                initTask(processInstance);
+            }
+        }
+        return flowInstance;
     }
 
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{

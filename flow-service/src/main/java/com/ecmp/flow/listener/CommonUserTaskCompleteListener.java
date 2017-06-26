@@ -1,10 +1,8 @@
 package com.ecmp.flow.listener;
 
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.flow.dao.FlowHistoryDao;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.dao.FlowVariableDao;
+import com.ecmp.flow.dao.*;
+import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
@@ -15,6 +13,8 @@ import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +38,19 @@ import org.springframework.stereotype.Component;
 public class CommonUserTaskCompleteListener implements TaskListener{
 
     @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private FlowTaskDao flowTaskDao;
 
-    private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
+    @Autowired
+    private FlowDefVersionDao flowDefVersionDao;
+
+    @Autowired
+    private FlowDefinationDao flowDefinationDao;
+
+
+    private final Logger logger = LoggerFactory.getLogger(CommonUserTaskCompleteListener.class);
 
 	public CommonUserTaskCompleteListener(){
 		System.out.println("commonUserTaskCompleteListener-------------------------");
@@ -48,27 +58,30 @@ public class CommonUserTaskCompleteListener implements TaskListener{
     private static final long serialVersionUID = 1L;
 
     public void notify(DelegateTask delegateTask) {
-      String currentTaskId =  delegateTask.getId();
-      FlowTask flowTask = flowTaskDao.findByActTaskId(currentTaskId);
-      flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-      String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-      JSONObject defObj = JSONObject.fromObject(flowDefJson);
-      Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-      net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
-//      net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-      net.sf.json.JSONObject event =    currentNode.getJSONObject("nodeConfig").getJSONObject("event");
-      UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+        ExecutionEntity taskEntity = (ExecutionEntity)delegateTask.getExecution();
+        String actTaskDefKey =  taskEntity.getActivityId();
+        String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
+        ProcessInstance instance =  taskEntity.getProcessInstance();
+        String businessId = instance.getBusinessKey();
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
+        String flowDefJson = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(flowDefJson);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+//        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+        //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+        net.sf.json.JSONObject event =    currentNode.getJSONObject("nodeConfig").getJSONObject("event");
+        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
       if(event !=null){
 //          event.get("beforeExcuteService");
 //          String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
 //          if(!StringUtils.isEmpty(beforeExcuteServiceId)){
 //              ServiceCallUtil.callService(beforeExcuteServiceId);
 //          }
-
 //          event.get("afterExcuteService");
           String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
           if(!StringUtils.isEmpty(afterExcuteServiceId)){
-              ServiceCallUtil.callService(afterExcuteServiceId);
+              ServiceCallUtil.callService(afterExcuteServiceId,businessId,"after");
           }
       }
 
