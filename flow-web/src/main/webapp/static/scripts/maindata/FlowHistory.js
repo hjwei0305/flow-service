@@ -26,7 +26,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
-            msg: g.lang.queryMaskMessageText
+            msg: "正在加载，请稍候..."
         });
         EUI.Store({
             url: _ctxPath + "/flowHistoryInfo/getFlowHistoryInfo",
@@ -52,7 +52,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             var item = data[i].flowInstance;
             var instanceItem = {
                 id: item.id,
-                name: item.flowName + "," + item.creatorName + "," + item.createdDate + g.lang.startText,
+                name: item.flowName + "," + item.creatorName + "," + item.createdDate + "发起",
                 instanceId: item.id,
                 data:data[i]
             };
@@ -75,7 +75,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showWind: function () {
         var g = this;
         g.win = EUI.Window({
-            title: g.lang.flowInfoText,
+            title: "流程信息",
             width: 615,
             height: 523,
             padding: 0,
@@ -98,7 +98,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             border: false,
             items: [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + g.lang.launchHistoryText + "</span>",
+                title: "<span style='font-weight: bold'>" + "启动历史" + "</span>",
                 width: 375,
                 field: ["id"],
                 labelWidth: 80,
@@ -121,7 +121,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 }
             },{
                 xtype: "Button",
-                title: g.lang.showFlowDiagramText,
+                title: "查看流程图",
                 handler: function () {
                     $(".toptop-right").addClass("flowselect");
                     g.showDesgin()
@@ -144,14 +144,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '				<div class="top-left navbar flowselect">' +
             '					<div class="flow-tabicon flow-statusimg"></div>' +
             '					<div class="flow-stutsfield text">' +
-                                     g.lang.processStatusText +
+            '						当前处理状态' +
             '					</div>' +
             '				</div>' +
             '				<div class="flow-line"></div>' +
             '				<div class="top-center navbar">' +
             '					<div class="flow-tabicon flow-historyimg"></div>' +
             '					<div class="flow-historyfield text">' +
-                                    g.lang.flowProcessHistoryText +
+            '						流程处理历史' +
             '					</div>' +
             '				</div>' +
             '			</div>';
@@ -176,7 +176,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '						</div>' +
             '                       <div class="flow-end" style="display: none;">'+
             '							<div class="flow-endImg"></div>'+
-            '							<div class="flow-endfield">'+g.lang.flowEndText+'</div>'+
+            '							<div class="flow-endfield">流程结束</div>'+
             '							<div class="flow-endright">'+
             '							</div>'+
             '						</div>';
@@ -186,11 +186,10 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
 
     //拼接流程历史头部数据的html
     showFlowHistoryTopData: function (data) {
-        console.log(data)
         var g = this;
         var html = "";
         html = '<div class="flow-startimg"></div>' +
-            '							<div class="flow-startfield">'+g.lang.flowLaunchText+'</div>' +
+            '							<div class="flow-startfield">流程启动</div>' +
             '							<div class="flow-startright">' +
             '								<div class="flow-startuser">' + data.creatorName + '</div>' +
             '								<div class="flow-startline"></div>' +
@@ -208,10 +207,10 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '							<div class="flow-historydot"></div>' +
                 '							<div class="flow-historyinfotop">' +
                 '								<div class="flow-historystatus">' + item.flowTaskName + '</div>' +
-                '								<div class="flow-historyright">'+g.lang.processorText + item.executorName + ' (' + item.actEndTime+ ')</div>' +
+                '								<div class="flow-historyright">处理人：' + item.executorName + ' (' + item.actEndTime+ ')</div>' +
                 '							</div>' +
-                '							<div class="flow-usetime">'+g.lang.timeCunsumingText + g.changeLongToString(item.actDurationInMillis) + '</div>' +
-                '							<div class="flow-remark">'+g.lang.handleAbstractText + (item.depict || g.lang.noneText)+ '</div>' +
+                '							<div class="flow-usetime">耗时：' + g.changeLongToString(item.actDurationInMillis) + '</div>' +
+                '							<div class="flow-remark">处理摘要：' + (item.depict || '无')+ '</div>' +
                 '							 <div class="clear"></div> ' +
                 '						</div>';
         }
@@ -233,12 +232,13 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     },
     //拼接流程状态数据的html
     showFlowStatusData: function (data) {
+        var g = this;
         var html = "";
         if(data.length == 0){
             if(g.isManuallyEnd){
-                html  = "流程已被发起人终止";
+                html  = "流程已被发起人中止";
             }else{
-                html  = g.lang.flowFinishedText;
+                html  = "流程已处理完成";
             }
             $(".statuscenter-info").addClass("text-center")
         }else{
@@ -247,9 +247,9 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 html += '<div class="flow-progress">' +
                     '						<div class="flow-progresstitle">' + item.taskName + '</div>' +
                     '						<div class="flow-progressinfo">' +
-                    '							<div class="flow-progressinfoleft">'+g.lang.waitProcessorText + item.executorName + '</div>' +
+                    '							<div class="flow-progressinfoleft">等待处理人：' + item.executorName + '</div>' +
                     '							<div class="flow-progressline"></div>' +
-                    '							<div class="flow-progressinforight">'+g.lang.taskArrivalTimeText + item.createdDate + '</div>' +
+                    '							<div class="flow-progressinforight">任务到达时间：' + item.createdDate + '</div>' +
                     '						</div>' +
                     '					</div>';
             }
@@ -263,16 +263,16 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var minute = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000) / (60 * 1000));
         var second = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000) / 1000);
         if (day > 0) {
-            strVar += day + g.lang.dayText;
+            strVar += day + "天";
         }
         if (hour > 0) {
-            strVar += hour + g.lang.hourText;
+            strVar += hour + "小时";
         }
         if (minute > 0) {
-            strVar += minute + g.lang.minuteText;
+            strVar += minute + "分";
         }
         if (second > 0) {
-            strVar += second +  g.lang.secondText;
+            strVar += second + "秒";
         }
         return strVar;
     },
@@ -294,7 +294,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showDesgin: function () {
         var g = this;
         var tab = {
-            title: g.lang.flowDiagramText,
+            title: "流程图",
             url: _ctxPath + "/design/showLook?id="+ this.designFlowDefinationId+ "&instanceId="+this.designInstanceId+"&versionCode="+this.versionCode,
             id : this.designInstanceId
         };
