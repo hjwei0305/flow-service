@@ -16,11 +16,12 @@ html{
 }
 #btn .ux-line-row{
     display: inline-block;
+    text-align: center !important;
 }
 #save{
     margin-left: 220px;
     line-height: 30px;
-    text-align: center;
+    text-align: center !important;
 }
 .approve-title{
     font-weight: bold;
