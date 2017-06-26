@@ -52,6 +52,28 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
 //    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
 //    PageResult<DefaultBusinessModel> findByPage(Search searchConfig);
 
+   /**
+     * 测试事前
+     *
+     * @return 执行结果
+     */
+    @GET
+    @Path("changeCreateDepict/{id}/{changeText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    public boolean changeCreateDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
 
+    /**
+     * 测试事后
+     *
+     * @return 执行结果
+     */
+    @GET
+    @Path("changeCompletedDepict/{id}/{changeText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    public boolean changeCompletedDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
 
 }

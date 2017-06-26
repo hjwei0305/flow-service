@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -56,5 +58,30 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
        return super.save(entity);
     }
 
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public boolean changeCreateDepict(String id,String changeText){
+        boolean result = false;
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
+        if(entity != null){
+            entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
+            defaultBusinessModelDao.save(entity);
+            defaultBusinessModelDao.saveAndFlush(entity);
+            result = true;
+        }
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public boolean changeCompletedDepict(String id,String changeText){
+        boolean result = false;
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
+        if(entity != null){
+            entity.setWorkCaption(entity.getWorkCaption()+":"+changeText);
+            defaultBusinessModelDao.save(entity);
+            defaultBusinessModelDao.saveAndFlush(entity);
+            result = true;
+        }
+        return result;
+    }
 
 }
