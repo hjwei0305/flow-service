@@ -27,7 +27,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     taskId: null,
     desionType: 0,//0表示单选、1多选，2不需要选择
     instanceId: null,
-    iframeHeight: 400,
+    iframeHeight: 600,
     pageUrl: null,
     submitUrl: null,
     goNext: null,
@@ -236,14 +236,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "";
                 this.desionType = 2;
             }
-            if (!item.gateWayName) {
+            if (item.preLineName=="null") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
                     '<div class="excutor-item-title"><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
             } else {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title"><div class="gateway-name">' + item.gateWayName + '</div><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+                    '<div class="excutor-item-title"><div class="gateway-name">' + item.preLineName + '</div><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
             }
         }
         if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {

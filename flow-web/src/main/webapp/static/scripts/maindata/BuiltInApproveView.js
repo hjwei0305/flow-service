@@ -55,6 +55,15 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 padding:0,
                 items: [{
                     xtype: "TextField",
+                    title: "ID",
+                    allowBlank:false,
+                    labelWidth: 70,
+                    name: "id",
+                    colon:false,
+                    width: 270,
+                    hidden:true
+                },{
+                    xtype: "TextField",
                     title: "组织机构ID",
                     allowBlank:false,
                     labelWidth: 70,
@@ -361,8 +370,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 "background": "#fff"
             },
             onSelect: function (node) {
-                console.log(node);
-                if (node.children.length) {
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     g.selectedNodeCode = node.code;
@@ -376,22 +383,6 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                             Q_EQ_orgId: g.selectedNodeId
                         }
                     }, true)
-                }
-                if (!node.children.length) {
-                    g.selectedNodeId = node.id;
-                    g.selectedNodeName = node.name;
-                    g.selectedNodeCode = node.code;
-                    g.selectedNodeTenantCode = node.tenantCode;
-                    g.selectedNodeCodePath = node.codePath;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/builtInApprove/list",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            Q_EQ_orgId: g.selectedNodeId
-                        }
-                    }, true)
-                }
             },
             afterItemRender: function (nodeData) {
                 if (nodeData.frozen) {

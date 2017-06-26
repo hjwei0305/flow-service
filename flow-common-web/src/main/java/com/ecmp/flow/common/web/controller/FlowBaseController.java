@@ -118,7 +118,6 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (defaultBusinessModel != null) {
-            defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
             String startUserId = "admin";
             String startUserIdContext = ContextUtil.getSessionUser().getUserId();
             if (!StringUtils.isEmpty(startUserIdContext)) {
@@ -153,6 +152,8 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
                if( flowStartResultVO.getFlowInstance()!=null){
+                   defaultBusinessModel = (V) baseService.findOne(businessKey);
+                   defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
                    baseService.save(defaultBusinessModel);
                }
                 operateStatus = new OperateStatus(true, "成功");
@@ -231,6 +232,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
             if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+                defaultBusinessModel = (V) baseService.findOne(businessId);
                 defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
                 baseService.save(defaultBusinessModel);
             }

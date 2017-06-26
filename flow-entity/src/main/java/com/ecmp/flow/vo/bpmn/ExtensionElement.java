@@ -23,6 +23,8 @@ import java.util.List;
 public class ExtensionElement {
     @XmlElement(name = "activiti:taskListener")
     private List<TaskListener> taskListener;
+
+    @XmlElement(name = "activiti:executionListener")
     private List<ExecutionListener> executionListener;
 
     public List<TaskListener> getTaskListener() {
