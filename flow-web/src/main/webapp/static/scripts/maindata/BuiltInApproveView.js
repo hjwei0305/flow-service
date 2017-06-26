@@ -82,7 +82,9 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     width: 270,
                     readonly:true,
                     value:g.selectedNodeName,
-                    style:{"margin-left":30}
+                    style:{
+                        "margin-left":30
+                    }
                 },{
                     xtype: "TextField",
                     title: "组织机构code",
