@@ -399,7 +399,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         }
         g.chooseAnyOneWind = EUI.Window({
             title: isChooseOneTitle,
-            width: 700,
+            width: 720,
             layout: "border",
             height: 500,
             padding: 8,
@@ -487,11 +487,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     InitChooseUserGrid: function () {
         var g = this;
+        var saveBtnIsHidden;
         var isShowMultiselect;
         if(g.chooseUserNode.flowTaskType == "common"){
-            isShowMultiselect = false
+            isShowMultiselect = false;
+            saveBtnIsHidden = true;
         }else{
-            isShowMultiselect = true
+            isShowMultiselect = true;
+            saveBtnIsHidden  = false;
         }
         return {
             xtype: "Container",
@@ -510,17 +513,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     xtype: "SearchBox",
                     displayText: "请输入名称进行搜索",
                     onSearch: function (value) {
-                        console.log(value);
-                        if (!value) {
-                            EUI.getCmp("chooseUserGridPanel").setPostParams({
-                                    Q_LK_name: ""
-                                }
-                            ).trigger("reloadGrid");
-                        }
-                        EUI.getCmp("chooseUserGridPanel").setPostParams({
-                                Q_LK_name: value
-                            }
-                        ).trigger("reloadGrid");
+                        EUI.getCmp("chooseUserGridPanel").localSearch(value);
+                    },
+                    afterClear: function () {
+                        EUI.getCmp("chooseUserGridPanel").restore();
                     }
                 }]
             }, {
@@ -535,30 +531,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     //     organizationId: g.selectedOrgId
                     // },
                     multiselect: isShowMultiselect,
-                    colModel: [/*{
-                        label: "操作",
-                        name: "operate",
-                        index: "operate",
-                        width: '25',
-                        align: "center",
-                        formatter: function (cellvalue, options, rowObject) {
-                            if ("INIT" == rowObject.flowStatus) {
-                                var strVar = "<div class='condetail-operate'>" +
-                                    "<div class='condetail-start'title='启动流程'></div>"
-                                    + "<div class='condetail-update' title='编辑'></div>"
-                                    + "<div class='condetail-delete'  title='删除'></div>" +
-                                    "</div>";
-                            }
-                            if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
-                                var strVar = "<div class='condetail-operate'>" +
-                                    "<div class='condetail-flowHistory'title='流程历史'></div>"
-                                    + "<div class='condetail-update' title='编辑'></div>"
-                                    + "<div class='condetail-delete'  title='删除'></div>" +
-                                    "</div>";
-                            }
-                            return strVar;
-                        }
-                    }, */{
+                    colModel: [{
                         label: "用户ID",
                         name: "id",
                         index: "id",
@@ -599,6 +572,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 region: "south",
                 height: 55,
                 border:false,
+                hidden:saveBtnIsHidden,
                 style:{
                   "margin-top":"10px","margin-left":"100px"
                 },
@@ -606,6 +580,9 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     xtype: "Button",
                     title: "保存",
                     width:200,
+                    style:{
+                        "text-align":"center"
+                    },
                     selected: true,
                     handler: function () {
                         var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
