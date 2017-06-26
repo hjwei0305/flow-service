@@ -579,7 +579,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             gridCfg: {
                 loadonce: true,
                 hasPager: false,
-                // url: _ctxPath + "",
                 colModel: colModel
             }
         };
