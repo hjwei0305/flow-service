@@ -135,6 +135,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     align: "center"
                 }],
                 shrinkToFit: false,
+                rowNum:15,
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);

@@ -243,7 +243,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var iconCss = "choose-radio";
             if(node.uiUserType == "AnyOne"){
                 var html =  g.showAnyContainer(data);
-                console.log(html)
                 $(".chooseExecutor").after(html);
                 return;
             }
@@ -287,14 +286,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content2">';
-
-            // for (var j = 0; j < 3; j++) {
-            //         nodeHtml += '<div id="78717F7C-4107-11E7-9AC3-ACE010C46AFD" class="flow-user-item select" type="common">'+
-            //             '<div class="choose-icon choose-delete"></div>'+
-            //             '<div class="excutor-item-title">姓名：小明，岗位：Java开发工程师，组织机构：研发部，编号：10011001</div>'+
-            //             '</div>';
-            // }
-
         }
         nodeHtml += "</div>" +
             '<button class="choose-btn">选择执行人</button>'+
@@ -511,7 +502,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     selected: true,
                     handler: function () {
                         var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
-                        console.log(selectRow);
+                      //  console.log(selectRow);
                         g.addChooseUsersInContainer(selectRow);
                         g.chooseAnyOneWind.close();
                     }
@@ -576,8 +567,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                      //   hidden:true
                     }, {
                         label: "用户名称",
-                        name: "creatorName",
-                        index: "creatorName",
+                        name: "user.userName",
+                        index: "user.userName",
                         width:150,
                         align: "center"
                     }, {
@@ -603,14 +594,28 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     addChooseUsersInContainer:function (selectRow) {
         var g = this;
         var html = "";
+        var selectedUser = [];
+        $(".flow-excutor-content2 > div").each(function(index,domEle){
+            selectedUser.push(domEle.id)
+        });
         for (var j = 0; j < selectRow.length; j++) {
             var item = selectRow[j];
-            html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
-                '<div class="choose-icon choose-delete"></div>' +
-                '<div class="excutor-item-title">姓名：' + item.creatorName +
-                '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
-                '</div>';
+               if( !g.itemIdIsInArray(item.id,selectedUser)){
+                   html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
+                       '<div class="choose-icon choose-delete"></div>' +
+                       '<div class="excutor-item-title">姓名：' + item["user.userName"] +
+                       '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
+                       '</div>';
+               }
+           }
+        $(".flow-excutor-content2").append(html);
+    },
+    itemIdIsInArray:function(id,array){
+        for(var i = 0 ;i<array.length;i++){
+            if(id == array[i]){
+                return true;
+            }
         }
-        $(".flow-excutor-content2").html(html);
+        return false;
     }
 });

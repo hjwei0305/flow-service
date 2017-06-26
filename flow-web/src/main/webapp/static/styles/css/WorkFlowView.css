@@ -533,7 +533,8 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 
 .notify-user {
-    padding: 12px;
+    height: 40px;
+    padding: 12px 12px 0;
 }
 
 .notify-user .select {

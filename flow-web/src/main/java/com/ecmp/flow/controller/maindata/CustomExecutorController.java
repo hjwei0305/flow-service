@@ -1,29 +1,23 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.api.IUserService;
 import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.User;
 import com.ecmp.basic.entity.vo.EmployeeQueryParam;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +92,7 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listAllExecutorNotSelected")
     @ResponseBody
-    public String listAllExecutorNotSelected(String businessModelId) throws ParseException {
+    public String listAllExecutorNotSelected(String businessModelId, @RequestParam(value = "page") int page) throws ParseException {
         IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
         List<BusinessSelfDefEmployee> businessSelfDefEmployees = proxy.findByBusinessModelId(businessModelId);
         List<String> selectedExecutorIds = new ArrayList<>();
@@ -107,7 +101,7 @@ public class CustomExecutorController {
         }
         EmployeeQueryParam employeeQueryParam = new EmployeeQueryParam();
         employeeQueryParam.setIds(selectedExecutorIds);
-        employeeQueryParam.setPage(1);
+        employeeQueryParam.setPage(page);
         employeeQueryParam.setRows(15);
         IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
         PageResult<Employee> notSelectedExecutor = proxy2.findByEmployeeParam(employeeQueryParam);
@@ -148,5 +142,13 @@ public class CustomExecutorController {
         proxy.saveCustomExecutor(businessModelId,selectedCustomExecutorIds);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG);
         return JsonUtil.serialize(operateStatus);
+    }
+
+    @RequestMapping(value = "listAllUser")
+    @ResponseBody
+    public List<Employee> listAllUser(String organizationId) {
+        IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+        List<Employee> employees = proxy.findByOrganizationId(organizationId);
+        return employees;
     }
 }

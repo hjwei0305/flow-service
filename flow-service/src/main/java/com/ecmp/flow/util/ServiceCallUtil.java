@@ -30,7 +30,7 @@ import java.util.List;
  * *************************************************************************************************
  */
 public class ServiceCallUtil {
-    public static boolean callService(String serviceUrlId){
+    public static boolean callService(String serviceUrlId,String businessId,String... args){
         boolean result = false;
         if(!StringUtils.isEmpty(serviceUrlId)){
             ApplicationContext applicationContext = ContextUtil.getApplicationContext();
@@ -41,7 +41,7 @@ public class ServiceCallUtil {
               String appModuleId = flowServiceUrl.getBusinessModel().getAppModuleId();
               com.ecmp.basic.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
               AppModule appModule = iAppModuleService.findOne(appModuleId);
-              String  clientApiBaseUrl = appModule.getApiBaseAddress();
+                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
                 //平台API服务使用的JSON序列化提供类
 
                 List<Object> providers = new ArrayList<>();
@@ -50,15 +50,12 @@ public class ServiceCallUtil {
                 providers.add(new SessionClientRequestFilter());
 
                 result = WebClient.create(clientApiBaseUrl, providers)
-                        .path(clientUrl)
+                        .path(clientUrl+"/{id}/{changeText}",businessId,args[0])
                         .accept(MediaType.APPLICATION_JSON)
                         .get(boolean.class);
             }else {
                 throw new RuntimeException("服务对象找不到");
-
             }
-
-
         }
          return result;
     }
