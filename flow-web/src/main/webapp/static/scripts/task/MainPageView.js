@@ -6,43 +6,34 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         EUI.Container({
             renderTo: this.renderTo,
             data: this.data,
+            layout:"border",
             menudata: this.menudata,
             dataWait: this.dataWait,
             menu: this.menu,
-            width:'100%',
+            border:false,
+            itemspace:0,
+            padding:0,
+            style:{
+                "background-color":"#fff"
+            },
             items:[{
-                xtype:"Container",
-                layout:"border",
-                border:false,
-                itemspace:0,
-                padding:0,
-                width:'100%',
-                style:{
-                    "background-color":"#fff"
-                },
-                items:[{
                     xtype:"Container",
                     region : "north",
                     height:70,
                     border:false,
                     padding:0,
-                    width:'100%',
                     html:this.getToolBarHtml()
                 },{
                     xtype:"Container",
                     region : "center",
                     border:false,
                     padding:0,
-                    width:'100%',
                     style:{
                         "border":"1px solid #dddddd",
                         "border-radius":"2px"
                     },
                     html:this.getCenterHtml()
                 }]
-
-            }]
-
         });
         this.showTodoTaskView(true);
         this.addEvents();

@@ -83,11 +83,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }, {
                         label: this.lang.codeText,
                         name: "code",
-                        index: "code"
+                        index: "code",
+                        width:100
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name"
+                        index: "name",
+                        width:150
                     }]
                 },
                 labelWidth: 85,
@@ -407,7 +409,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var input = dom.find(".node-title");
                 if (type.endsWith("Gateway")) {
                     g.showSimpleNodeConfig(input.text(), function (value) {
-                        input.text(name);
+                        input.text(value);
                     });
                 } else {
                     new EUI.FlowNodeSettingView({
@@ -477,7 +479,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.registerConnectionType("basic", {
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [5, 5],
+                stub: [0, 0],
                 // gap: 10,
                 cornerRadius: 5,
                 // alwaysRespectStubs: false
@@ -495,7 +497,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
             var type = $("#" + connection.sourceId).attr("bustype");
             if (type == "ManualExclusiveGateway") {
-                g.showSimpleNodeConfig(ueldata.name, function (value) {
+                var name = ueldata ? ueldata.name : "";
+                g.showSimpleNodeConfig(name, function (value) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: value,
                         groovyUel: "",
@@ -864,7 +867,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "TextField",
                 title: "节点名称",
-                labelWidth: 100,
+                labelWidth: 80,
                 width: 220,
                 id: "nodeName",
                 name: "name",

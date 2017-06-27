@@ -1,44 +1,70 @@
 .condetail-operate {
-    width: 82px;
+    /*width: 82px;*/
+    /*height: 16px;*/
+    /*line-height: 16px;*/
+    /*margin: 0 auto*/
     height: 16px;
     line-height: 16px;
-    margin: 0 auto
+    margin: 0 auto;
+    text-align: center;
+    width: 82px;
 }
 
 .condetail-operate > div {
-    margin: 0 6px;
+    /*margin: 0 6px;*/
 }
 
 .condetail-start {
-    width: 16px;
-    height: 16px;
-    float: left;
+    /*width: 16px;*/
+    /*height: 16px;*/
+    /*float: left;*/
+    /*cursor: pointer;*/
+    /*background: url("../images/btn/flow/flow_start.png") no-repeat 0 0px;*/
+    background: rgba(0, 0, 0, 0) url("../images/btn/flow/flow_start.png") no-repeat scroll 0 0;
     cursor: pointer;
-    background: url("../images/btn/flow/flow_start.png") no-repeat 0 0px;
+    float: left;
+    height: 16px;
+    width: 16px;
 }
 
 .condetail-flowHistory {
-    width: 16px;
-    height: 16px;
-    float: left;
+    /*width: 16px;*/
+    /*height: 16px;*/
+    /*float: left;*/
+    /*cursor: pointer;*/
+    /*background: url("../images/time_icon.png") no-repeat;*/
+    background: rgba(0, 0, 0, 0) url("../images/time_icon.png") no-repeat scroll 0 0;
     cursor: pointer;
-    background: url("../images/time_icon.png") no-repeat;
+    height: 16px;
+    margin: 0 auto;
+    width: 16px;
 }
 
 .condetail-update {
-    width: 15px;
-    height: 15px;
-    float: left;
+    /*width: 15px;*/
+    /*height: 15px;*/
+    /*float: left;*/
+    /*cursor: pointer;*/
+    /*background: url("../images/operate_bg.png") no-repeat 0 -160px;*/
+    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll 0 -160px;
     cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat 0 -160px;
+    float: left;
+    height: 15px;
+    margin-left: 18px;
+    width: 15px;
 }
 
 .condetail-delete {
-    width: 15px;
-    height: 15px;
-    float: right;
+    /*width: 15px;*/
+    /*height: 15px;*/
+    /*float: right;*/
+    /*cursor: pointer;*/
+    /*background: url("../images/operate_bg.png") no-repeat -32px -160px;*/
+    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll -32px -160px;
     cursor: pointer;
-    background: url("../images/operate_bg.png") no-repeat -32px -160px;
+    float: right;
+    height: 15px;
+    width: 15px;
 }
 
 #content .ux-bar-right .ux-toolbar-item {

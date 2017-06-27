@@ -109,6 +109,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "Container",
                 height: 100,
+                isOverFlow: false,
                 id: "calculate",
                 html: this.initCalculateBtns()
             }, {
