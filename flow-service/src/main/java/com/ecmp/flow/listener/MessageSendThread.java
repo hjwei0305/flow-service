@@ -76,10 +76,18 @@ public class MessageSendThread  implements Runnable {
         String actProcessDefinitionId = execution.getProcessDefinitionId();
         ProcessInstance instance = taskEntity.getProcessInstance();
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(instance.getId()).singleResult();
-        String startUserId = historicProcessInstance.getStartUserId();
-        Date startTime = historicProcessInstance.getStartTime();
-        String startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
-
+        String startUserId = null;
+        Date startTime = null;
+        String startTimeStr = null;
+        if(historicProcessInstance!=null){
+             startUserId =  historicProcessInstance.getStartUserId();
+             startTime = historicProcessInstance.getStartTime();
+             startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
+        }else {
+            startUserId =  ContextUtil.getUserId();
+            startTime = new Date();
+            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
+        }
 
         String businessId = instance.getBusinessKey();
         FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
@@ -103,7 +111,7 @@ public class MessageSendThread  implements Runnable {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
 
-                            message.setContent(notifyExecutor.getString("content"));//备注内容
+//                            message.setContent(notifyExecutor.getString("content"));//备注内容
 
                             message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
                             String senderId = ContextUtil.getUserId();
@@ -111,11 +119,12 @@ public class MessageSendThread  implements Runnable {
 
                             List<String> receiverIds = new ArrayList<String>();
                             for (IdentityLinkEntity identityLink : identityLinks) {
-                                List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                                if (employees != null && !employees.isEmpty()) {
-                                    Executor executor = employees.get(0);
-                                    receiverIds.add(executor.getId());
-                                }
+                                receiverIds.add(identityLink.getUserId());
+//                                List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+//                                if (employees != null && !employees.isEmpty()) {
+//                                    Executor executor = employees.get(0);
+//                                    receiverIds.add(executor.getId());
+//                                }
                             }
                             message.setReceiverIds(receiverIds);
 
@@ -138,7 +147,11 @@ public class MessageSendThread  implements Runnable {
                             contentTemplateParams.put("businessName", businessName);//业务单据名称
                             contentTemplateParams.put("businessCode", businessCode);//业务单据代码
 //                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                            contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                            if("before".equalsIgnoreCase(eventType)){
+                                contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                            }else if("after".equalsIgnoreCase(eventType)){
+                                contentTemplateParams.put("opinion", preOpinion);//审批意见
+                            }
                             contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
 //                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
                             contentTemplateParams.put("remark",notifyExecutor.getString("content") );//备注说明
@@ -149,7 +162,7 @@ public class MessageSendThread  implements Runnable {
                              notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 
-                            //  iNotifyService.send(message);
+                              iNotifyService.send(message);
                         } else if ("SMS".equalsIgnoreCase(type.toString())) {
 
                         } else if ("APP".equalsIgnoreCase(type.toString())) {
@@ -209,7 +222,7 @@ public class MessageSendThread  implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 
-                            //  iNotifyService.send(message);
+                              iNotifyService.send(message);
                         } else if ("SMS".equalsIgnoreCase(type.toString())) {
                         } else if ("APP".equalsIgnoreCase(type.toString())) {
                         }
