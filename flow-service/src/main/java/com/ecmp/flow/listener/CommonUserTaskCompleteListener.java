@@ -71,14 +71,8 @@ public class CommonUserTaskCompleteListener implements TaskListener{
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
         //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
         net.sf.json.JSONObject event =    currentNode.getJSONObject("nodeConfig").getJSONObject("event");
-        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+//        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
       if(event !=null){
-//          event.get("beforeExcuteService");
-//          String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
-//          if(!StringUtils.isEmpty(beforeExcuteServiceId)){
-//              ServiceCallUtil.callService(beforeExcuteServiceId);
-//          }
-//          event.get("afterExcuteService");
           String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
           if(!StringUtils.isEmpty(afterExcuteServiceId)){
               ServiceCallUtil.callService(afterExcuteServiceId,businessId,"after");
