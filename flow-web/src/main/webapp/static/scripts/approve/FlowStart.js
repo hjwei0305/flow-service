@@ -73,6 +73,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         g.win = EUI.Window({
             title: "流程启动",
             width: 700,
+             height:450,
             isOverFlow: false,
             padding: 0,
             items: item,
@@ -210,6 +211,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "containerId",
             height: 400,
+            // isOverFlow:false,
             border: true,
             style: {
                 "border-radius": "3px"
@@ -530,6 +532,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     xtype: "SearchBox",
                     displayText: "请输入用户名称或编号进行搜索",
                     onSearch: function (value) {
+                        console.log(EUI.getCmp("chooseUserGridPanel"))
                         EUI.getCmp("chooseUserGridPanel").localSearch(value);
                     },
                     afterClear: function () {
