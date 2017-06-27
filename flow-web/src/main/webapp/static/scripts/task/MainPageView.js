@@ -15,6 +15,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 border:false,
                 itemspace:0,
                 padding:0,
+                width:'100%',
                 style:{
                     "background-color":"#fff"
                 },
