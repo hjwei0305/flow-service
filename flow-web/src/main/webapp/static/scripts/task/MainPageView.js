@@ -24,12 +24,14 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                     height:70,
                     border:false,
                     padding:0,
+                    width:'100%',
                     html:this.getToolBarHtml()
                 },{
                     xtype:"Container",
                     region : "center",
                     border:false,
                     padding:0,
+                    width:'100%',
                     style:{
                         "border":"1px solid #dddddd",
                         "border-radius":"2px"
@@ -77,7 +79,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '            </div>';
     },
     getCenterHtml:function () {
-        return '            <div id="todoTask-content" style="display: block"> </div>' +
+        return '         <div id="todoTask-content" style="display: block"> </div>' +
             '            <div id="completeTask-content" style="display: none"> </div>' +
             '            <div id="order-content" style="display: none"></div>';
     },
