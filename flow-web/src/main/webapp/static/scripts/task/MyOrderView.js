@@ -3,7 +3,25 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     currentItem:"wait-invoices",
     initComponent: function () {
-        this.initHtml();
+        EUI.Container({
+            renderTo:this.renderTo,
+            layout:"border",
+            items:[{
+                xtype:"Container",
+                region : "north",
+                height:60,
+                border:false,
+                padding:0,
+                isOverFlow:false,
+                html:this.getOrderTopHtml()
+            },{
+                xtype:"Container",
+                region : "center",
+                border:false,
+                padding:0,
+                html:this.getOrderCenterHtml()
+            }]
+        });
         this.showTodoOrderView(true);
         this.initChooseDate();
         this.addEvents();
@@ -32,6 +50,26 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '            <div id="todoOrder-content" class="center-content"></div>' +
             '            <div id="completeOrder-content" class="center-content"></div>' +
             '   </div>';
+    },
+    getOrderTopHtml:function () {
+        return '            <div class="center-top">' +
+            '                <div class="top-header">' +
+            '                    <div class="header-left">' +
+            '                        <span class="wait-invoices active">待办单据</span>' +
+            '                        <span class="taken-work taken-invoices">已办单据</span>' +
+            '                        <div class="data">' +
+            '                            <div id="dateField"></div>' +
+            '                        </div>' +
+            '                    </div>' +
+            '                    <div class="header-right">' +
+            '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            '                    </div>' +
+            '                </div>' +
+            '            </div>';
+    },
+    getOrderCenterHtml:function () {
+        return '         <div id="todoOrder-content" class="center-content"></div>' +
+            '            <div id="completeOrder-content" class="center-content"></div>';
     },
     //我的单据中的日历
     initChooseDate: function () {
@@ -110,12 +148,6 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             }
         })
     },
-    show: function () {
-        $("#" + this.renderTo).css("display", "block");
-    },
-    hide: function () {
-        $("#" + this.renderTo).css("display", "none");
-    },
     addEvents: function () {
         var g = this;
         $(".wait-invoices").bind("click", function () {
@@ -175,6 +207,12 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         } else if (this.todoOrderView) {
             this.todoOrderView.hide();
         }
+    },
+    show: function () {
+        $("#" + this.renderTo).css("display", "block");
+    },
+    hide: function () {
+        $("#" + this.renderTo).css("display", "none");
     },
     refreshCurrentData:function () {
         var g=this;
