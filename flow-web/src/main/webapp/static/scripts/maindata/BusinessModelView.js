@@ -113,13 +113,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                shrinkToFit:true,//固定宽度
+                shrinkToFit: false,//固定宽度
                 loadonce: true,
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: 130,
+                    width: 140,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                          // var strVar = "<div class='condetail_operate'>" +
@@ -142,31 +142,38 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name"
+                    index: "name",
+                    width:120
                 }, {
                     label: this.lang.classPathText,
                     name: "className",
-                    index: "className"
+                    index: "className",
+                    width:120
                 }, {
                     label: this.lang.conditonBeanText,
                     name: "conditonBean",
-                    index: "conditonBean"
+                    index: "conditonBean",
+                    width:120
                 }, {
                     label: this.lang.applyModuleCodeText,
                     name: "appModuleCode",
-                    index: "appModuleCode"
+                    index: "appModuleCode",
+                    width:140
                 }, {
                     label: this.lang.dataAccessObjectText,
                     name: "daoBean",
-                    index: "daoBean"
+                    index: "daoBean",
+                    width:140
                 }, {
                     label: this.lang.formURLText,
                     name: "lookUrl",
-                    index: "lookUrl"
+                    index: "lookUrl",
+                    width:120
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict"
+                    index: "depict",
+                    width:140
                 }/*, {
                     label: this.lang.workPageText,
                     name: "workPage",
@@ -484,7 +491,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var Wind = EUI.Window({
             title: g.lang.conditionPropertyText,
             id: "propertyWind",
-            width: 500,
+            width: 515,
+            height:410,
+            isOverFlow:false,
             items: [{
                 xtype: "GridPanel",
                 id: "innerWindow",
