@@ -78,12 +78,6 @@ public class CommonUserTaskCreateListener implements TaskListener{
           if(!StringUtils.isEmpty(beforeExcuteServiceId)){
               ServiceCallUtil.callService(beforeExcuteServiceId,businessId,"before");
           }
-//
-////          event.get("afterExcuteService");
-//            String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
-//            if(!StringUtils.isEmpty(afterExcuteServiceId)){
-//                ServiceCallUtil.callService(afterExcuteServiceId);
-//            }
         }
 
     }

@@ -198,6 +198,7 @@ public class Process extends BaseNode implements Serializable {
 
                         //添加任务执行监听器，（目前只用于邮件发送）
                         try {
+                            String[] notifyType={"notifyExecutor","notifyStarter","notifyPosition"};
                             net.sf.json.JSONObject notify = node.getJSONObject("nodeConfig").getJSONObject("notify");
                             if (notify != null && !notify.isEmpty()) {
                                 JSONObject beforeNotify =  notify.getJSONObject("before");
@@ -206,36 +207,42 @@ public class Process extends BaseNode implements Serializable {
                                     extensionElement = new ExtensionElement();
                                 }
                                 if(beforeNotify != null ){
-                                    JSONArray selectType = beforeNotify.getJSONObject("notifyExecutor").getJSONArray("type");
-                                    if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
-                                        //添加执行前事件监听器
-                                        ExecutionListener executionListener = new ExecutionListener();
-                                        executionListener.setEvent("create");
-                                        executionListener.setDelegateExpression("${messageBeforeListener}");
-                                        List<ExecutionListener> executionListeners = extensionElement.getExecutionListener();
-                                        if(executionListeners == null){
-                                            executionListeners = new ArrayList<ExecutionListener>();
+                                    for(int i=0;i<notifyType.length;i++){
+                                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
+                                            //添加执行前事件监听器
+                                            ExecutionListener executionListener = new ExecutionListener();
+                                            executionListener.setEvent("start");
+                                            executionListener.setDelegateExpression("${messageBeforeListener}");
+                                            List<ExecutionListener> executionListeners = extensionElement.getExecutionListener();
+                                            if(executionListeners == null){
+                                                executionListeners = new ArrayList<ExecutionListener>();
+                                            }
+                                            executionListeners.add(executionListener);
+                                            extensionElement.setExecutionListener(executionListeners);
+                                            userTaskTemp.setExtensionElement(extensionElement);
+                                            break;
                                         }
-                                        executionListeners.add(executionListener);
-                                        extensionElement.setExecutionListener(executionListeners);
-                                        userTaskTemp.setExtensionElement(extensionElement);
                                     }
                                 }
                                 JSONObject afterNotify =  notify.getJSONObject("after");
                                 if(afterNotify != null ){
-                                    JSONArray selectType =afterNotify.getJSONObject("notifyExecutor").getJSONArray("type");
-                                    if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
-                                        //添加执行后事件监听器
-                                        ExecutionListener executionListener = new ExecutionListener();
-                                        executionListener.setEvent("end");
-                                        executionListener.setDelegateExpression("${messageAfterListener}");
-                                        List<ExecutionListener> executionListeners = extensionElement.getExecutionListener();
-                                        if(executionListeners == null){
-                                            executionListeners = new ArrayList<ExecutionListener>();
+                                    for(int i=0;i<notifyType.length;i++){
+                                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
+                                            //添加执行前事件监听器
+                                            ExecutionListener executionListener = new ExecutionListener();
+                                            executionListener.setEvent("end");
+                                            executionListener.setDelegateExpression("${messageAfterListener}");
+                                            List<ExecutionListener> executionListeners = extensionElement.getExecutionListener();
+                                            if(executionListeners == null){
+                                                executionListeners = new ArrayList<ExecutionListener>();
+                                            }
+                                            executionListeners.add(executionListener);
+                                            extensionElement.setExecutionListener(executionListeners);
+                                            userTaskTemp.setExtensionElement(extensionElement);
+                                            break;
                                         }
-                                        executionListeners.add(executionListener);
-                                        extensionElement.setExecutionListener(executionListeners);
-                                        userTaskTemp.setExtensionElement(extensionElement);
                                     }
                                 }
                             }
@@ -280,6 +287,13 @@ public class Process extends BaseNode implements Serializable {
             }
         }
     }
+//
+//    private void initMessageListener( UserTask userTaskTemp,ExtensionElement extensionElement ,JSONObject beforeNotify){
+//
+//
+//    }
+
+
 
     private void addSequenceFlow(String sourceId, JSONArray targets) {
         for (int i = 0; i < targets.size(); i++) {
