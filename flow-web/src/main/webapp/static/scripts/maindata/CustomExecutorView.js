@@ -46,7 +46,6 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     g.businessModelId = data[0].id;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/customExecutor/listExecutor",
-                        loadonce: false,
                         datatype: "json",
                         postData: {
                             // Q_EQ_businessModuleId: data[0].id
@@ -132,7 +131,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name",
-                    width:150
+                    width:350
                 }],
                 shrinkToFit: false
             }
