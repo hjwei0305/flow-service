@@ -81,17 +81,19 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
     @Override
     public void notify(DelegateExecution execution) throws Exception{
         try {
-            ExecutorService pool = Executors.newSingleThreadExecutor();
+//            ExecutorService pool = Executors.newSingleThreadExecutor();
             String eventType = "before";
             String contentTemplateCode = "EMAIL_TEMPLATE_BEFORE_DOWORK";
             MessageSendThread messageSendThread = new MessageSendThread(eventType,execution,contentTemplateCode);
             messageSendThread.setFlowDefVersionDao(this.flowDefVersionDao);
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
-            pool.submit(messageSendThread);
-            //关闭线程池
-            System.out.println(pool.isShutdown());
-            pool.shutdown();
+            messageSendThread.run();
+//            pool.execute(messageSendThread);
+//            Thread.sleep(1000*60*2);
+//            //关闭线程池
+//            System.out.println(pool.isShutdown());
+//            pool.shutdown();
         }catch (Exception e){
             logger.error(e.getMessage());
         }

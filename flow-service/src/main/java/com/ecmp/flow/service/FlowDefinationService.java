@@ -518,13 +518,151 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
             String[] orgCodes =  orgCodePath.split("\\|");
             finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
-            List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination);
+            List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
             flowStartResultVO.setNodeInfoList(nodeInfoList);
         }
          return flowStartResultVO;
     }
+    private List<NodeInfo>  initNodesInfo(List<NodeInfo>  result,FlowStartVO flowStartVO,Definition definition ,String nodeId){
+        NodeInfo nodeInfo = new NodeInfo();
+        nodeInfo.setId(nodeId);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+        nodeInfo.setName(userTaskTemp.getName());
+        nodeInfo.setType(userTaskTemp.getType());
+        if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
+            nodeInfo.setType("EndEvent");
+            return result;
+        }
+        if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+            nodeInfo.setUiType("radiobox");
+            nodeInfo.setFlowTaskType("common");
+        } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+            nodeInfo.setUiType("checkbox");
+            nodeInfo.setFlowTaskType("singleSign");
+        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+            nodeInfo.setUiType("checkbox");
+            nodeInfo.setFlowTaskType("countersign");
+//                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+//                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
+//                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+        }else {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+        }
 
-    private List<NodeInfo> findStartNextNodes(FlowDefination flowDefination) {
+        if (executor != null && !executor.isEmpty()) {
+            String userType =  executor.get("userType")+"";
+            String ids = executor.get("ids")+"";
+            Set<Executor> employeeSet = new HashSet<Executor>();
+            List<Executor> employees = null;
+            if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
+                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                String  startUserId =  ContextUtil.getSessionUser().getUserId();
+                employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+
+            } else {
+                if (!StringUtils.isEmpty(ids)) {
+                    nodeInfo.setUiUserType(userType);
+                    String[] idsShuZhu = ids.split(",");
+                    List<String> idList = java.util.Arrays.asList(idsShuZhu);
+                    //StartUser、Position、PositionType、SelfDefinition、AnyOne
+                    if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
+                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                        employees = iPositionService.getExecutorsByPositionIds(idList);
+                    } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
+                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                        employees = iPositionService.getExecutorsByPosCateIds(idList);
+                    } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+                    } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
+                    }
+                }
+            }
+            if (employees != null && !employees.isEmpty()) {
+                employeeSet.addAll(employees);
+                nodeInfo.setExecutorSet(employeeSet);
+            }
+        }
+        result.add(nodeInfo);
+        return result;
+    }
+
+    /**
+     * 递归遍启动节点（主要针对启动节点出口带网关的情况）
+     * @param result
+     * @param flowStartVO
+     * @param definition
+     * @param targetNodes
+     * @return
+     */
+    private List<NodeInfo>  findXunFanNodesInfo(List<NodeInfo>  result,FlowStartVO flowStartVO,FlowDefination flowDefination,Definition definition , JSONArray targetNodes)throws NoSuchMethodException, SecurityException{
+        for(int i=0;i<targetNodes.size();i++){
+            JSONObject jsonObject = targetNodes.getJSONObject(i);
+            String targetId = jsonObject.getString("targetId");
+            net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            String busType = currentNode.get("busType")+"";
+            if("ExclusiveGateway".equalsIgnoreCase(busType)){//如果是系统排他网关
+                JSONArray targetNodes2 = currentNode.getJSONArray("target");
+                for(int j=0;j<targetNodes2.size();j++){
+                    JSONObject jsonObject2 = targetNodes2.getJSONObject(i);
+                    String targetId2 = jsonObject2.getString("targetId");
+                    JSONObject uel = jsonObject2.getJSONObject("uel");
+                    net.sf.json.JSONObject currentNode2 = definition.getProcess().getNodes().getJSONObject(targetId2);
+                    String busType2 = currentNode2.get("busType")+"";
+                    if(uel!=null && !uel.isEmpty()){
+
+                        String groovyUel = uel.getString("groovyUel");
+                        if (groovyUel != null) {
+                            BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
+                            String businessModelId = businessModel.getId();
+                            String appModuleId = businessModel.getAppModuleId();
+                            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
+                            if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+                                String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
+                                        groovyUel.lastIndexOf("}"));
+                                if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)){
+                                        JSONArray targetNodes3 = currentNode2.getJSONArray("target");
+                                        return   this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , targetNodes3);
+                                    }else {
+                                        result = initNodesInfo(result, flowStartVO, definition , targetId2);
+                                    }
+                                    break;
+                                }
+                            } else {//其他的用UEL表达式验证
+                                Object tempResult = ConditionUtil.uelResult(groovyUel, v);
+                                if (tempResult instanceof Boolean) {
+                                    Boolean resultB = (Boolean) tempResult;
+                                    if (resultB == true) {
+                                        if("ExclusiveGateway".equalsIgnoreCase(busType2)){
+                                            JSONArray targetNodes3 = currentNode2.getJSONArray("target");
+                                           return this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , targetNodes3);
+                                        }else {
+                                            result = initNodesInfo(result, flowStartVO, definition , targetId2);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }else {
+                result = initNodesInfo(result, flowStartVO, definition , targetId);
+            }
+        }
+        return result;
+    }
+    private List<NodeInfo> findStartNextNodes(FlowDefination flowDefination,FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
         List<NodeInfo> result = null;
         if (flowDefination != null) {
             result = new ArrayList<NodeInfo>();
@@ -537,94 +675,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
                 JSONArray targetNodes = startEvent.getTarget();
-                for(int i=0;i<targetNodes.size();i++){
-                    JSONObject jsonObject = targetNodes.getJSONObject(i);
-                    String targetId = jsonObject.getString("targetId");
-//                }
-//                for (BaseFlowNode targetNode : targetNodes) {
-                    NodeInfo nodeInfo = new NodeInfo();
-                    nodeInfo.setId(targetId);
-
-                    net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
-                    net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                    UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
-                    nodeInfo.setName(userTaskTemp.getName());
-                    nodeInfo.setType(userTaskTemp.getType());
-                    if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
-                        nodeInfo.setType("EndEvent");
-                        continue;
-                    }
-                    if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
-                        nodeInfo.setUiType("radiobox");
-                        nodeInfo.setFlowTaskType("common");
-                    } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
-                        nodeInfo.setUiType("checkbox");
-                        nodeInfo.setFlowTaskType("singleSign");
-                    } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
-                        nodeInfo.setUiType("checkbox");
-                        nodeInfo.setFlowTaskType("countersign");
-//                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
-//                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
-//                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
-                    }else {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
-                    }
-
-                    if (executor != null && !executor.isEmpty()) {
-                        String userType =  executor.get("userType")+"";
-                        String ids = executor.get("ids")+"";
-                        Set<Executor> employeeSet = new HashSet<Executor>();
-                        List<Executor> employees = null;
-                        if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
-                           // continue;
-//                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-//                                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-//                            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-////                            Map<String,Object> v = instance.getProcessVariables();
-//                            String startUserId = historicProcessInstance.getStartUserId();
-                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                           String  startUserId =  ContextUtil.getSessionUser().getUserId();
-                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
-//                            if(v != null){
-//                                startUserId = (String) v.get("startUserId");
-//                            }
-//                            if(StringUtils.isEmpty(startUserId)){
-//                                startUserId = flowTask.getFlowInstance().getCreatedBy();
-//                            }
-
-                        } else {
-                            if (!StringUtils.isEmpty(ids)) {
-                                nodeInfo.setUiUserType(userType);
-                                String[] idsShuZhu = ids.split(",");
-                                List<String> idList = java.util.Arrays.asList(idsShuZhu);
-                                //StartUser、Position、PositionType、SelfDefinition、AnyOne
-                                if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-                                    IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                    employees = iPositionService.getExecutorsByPositionIds(idList);
-                                } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-                                    IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                    employees = iPositionService.getExecutorsByPosCateIds(idList);
-                                } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                                    employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
-                                } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
-                                }
-                            }
-                        }
-                        if (employees != null && !employees.isEmpty()) {
-                            employeeSet.addAll(employees);
-                            nodeInfo.setExecutorSet(employeeSet);
-                        }
-                    }
-                    result.add(nodeInfo);
-//                   if( "UserTask".equalsIgnoreCase(targetNode.getType())){
-//                       UserTask userTask = (UserTask) targetNode;
-//                       userTask.get
-//                   }
-                }
+                result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , targetNodes);
             }
         }
         return result;
