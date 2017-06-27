@@ -35,11 +35,11 @@
 }
 
 .flow-line {
-	height: 58px;
-	width: 1px;
-	float: left;
-	margin-top: 18px;
 	border-left: 1px solid #8edede;
+	float: left;
+	height: 38px;
+	margin-top: 5px;
+	width: 1px;
 }
 
 .flow-status {
