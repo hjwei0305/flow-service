@@ -13,6 +13,12 @@
  * <br>
  * *************************************************************************************************<br>
  */
+html,body{
+    overflow: auto;
+}
+body{
+    min-width: 1100px;
+}
 .flow-approve {
     border: 1px solid #dddddd;
 }
@@ -242,12 +248,20 @@
 
 .flow-decision-item{
     margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .excutor-item-title>div{
     display: inline-block;
 }
 .gateway-name{
     font-weight: bold;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .approve-arrows-right{
