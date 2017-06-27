@@ -173,10 +173,12 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     width: "50%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_operate'>"
+                /*        var strVar = "<div class='condetail_operate'>"
                             + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
                             + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
-                        return strVar;
+                        return strVar;*/
+                        return  '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
+                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -217,12 +219,12 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
-        $(".condetail_update").live("click", function () {
+        $(".ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.updateFlowServiceUrl(data);
         });
-        $(".condetail_delete").live("click", function () {
+        $(".ecmp-common-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             g.deleteFlowServiceUrl(rowData)
