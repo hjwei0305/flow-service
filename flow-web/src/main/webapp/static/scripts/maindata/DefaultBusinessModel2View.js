@@ -121,6 +121,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
                 },{
                     xtype: "TextField",
@@ -143,6 +144,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
                 },{
                     xtype: "NumberField",
@@ -650,6 +652,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
                 },{
                     xtype: "TextField",
@@ -672,6 +675,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
                 },{
                     xtype: "NumberField",
