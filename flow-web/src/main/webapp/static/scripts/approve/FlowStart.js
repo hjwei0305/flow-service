@@ -545,7 +545,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 },
                 style: { "border-radius": "3px"},
                 gridCfg: {
-                loadonce: true,
+                    loadonce: true,
                //   url: _ctxPath + "/customExecutor/listAllUser",
                     // postData:{
                     //     organizationId: g.selectedOrgId
