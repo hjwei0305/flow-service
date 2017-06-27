@@ -33,7 +33,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     goNext: null,
     iframe: null,
     toChooseUserData: null,
-
+    chooseUserNode:null,
     initComponent: function () {
         this.pageUrl += "?id=" + this.busId;
         EUI.Container({
@@ -168,6 +168,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     $(this).addClass("select");
                 }
             }
+        });
+
+        //选择任意执行人
+        $(".choose-btn").die().live("click", function () {
+            g.showChooseExecutorWind();
+            return false;
+        });
+
+        //删除选择的执行人
+        $(".choose-delete").die().live("click", function () {
+            $(this).parent().remove();
         });
 
         $(".submit").bind("click", function () {
@@ -351,6 +362,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     showChooseUser: function () {
         var g = this;
        var data = this.toChooseUserData;
+       console.log(data)
         $(".flow-approve").hide();
         $(".flow-chooseuser").show();
         $(".flow-node-box").remove();
@@ -359,6 +371,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var node = data[i];
             var nodeType = this.lang.generalTaskText;
             var iconCss = "choose-radio";
+            if(node.uiUserType == "AnyOne"){
+                var html =  g.showAnyContainer(data);
+                $(".chooseuser-title").after(html);
+                return;
+            }
             if (node.flowTaskType == "singleSign") {
                 nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
@@ -406,6 +423,23 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             // html += nodeHtml;
         }
       //  $(".chooseuser-title").after(html);
+    },
+    showAnyContainer: function (data) {
+        var g = this;
+        var html = "";
+        for (var i = 0; i < data.length; i++) {
+            var node = data[i];
+            g.chooseUserNode = node;
+            var nodeType = "任意执行人";
+            var iconCss = "choose-delete";
+            var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
+                '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
+                ']</div><div class="flow-excutor-content2">';
+        }
+        nodeHtml += "</div>" +
+            '<div class="choose-btn">选择</div>'+
+            "</div>";
+        return html += nodeHtml;
     },
     showUserItem:function (node,nodeHtml,iconCss,nodeType) {
         var html = "";
@@ -513,5 +547,233 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var text=$(this).text();
             $(this).attr("title",text);
         })
+    },
+    showChooseExecutorWind:function () {
+        var g = this;
+        var isChooseOneTitle;
+        var saveBtnIsHidden;
+        if(g.chooseUserNode.flowTaskType == "common"){
+            isChooseOneTitle =  "选择任意执行人【请双击进行选择】";
+            saveBtnIsHidden = true;
+        }else{
+            isChooseOneTitle = "选择任意执行人";
+            saveBtnIsHidden  = false;
+        }
+        g.chooseAnyOneWind = EUI.Window({
+            title: isChooseOneTitle,
+            width: 720,
+            layout: "border",
+            height: 500,
+            padding: 8,
+            itemspace: 0,
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid()],
+            buttons: [{
+                title: "保存",
+                selected: true,
+                hidden:saveBtnIsHidden,
+                handler: function () {
+                    var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                    if(typeof(selectRow) == "undefined"){
+                        return;
+                    }
+                    g.addChooseUsersInContainer(selectRow);
+                    g.chooseAnyOneWind.close();
+                }
+            }, {
+                title: "取消",
+                handler: function () {
+                    g.chooseAnyOneWind.remove();
+                }
+            }]
+        });
+    },
+    initChooseUserWindLeft:function () {
+        var g = this;
+        return {
+            xtype: "Container",
+            region: "west",
+            border: false,
+            width: 250,
+            itemspace: 0,
+            layout: "border",
+            items: [this.initChooseUserWindTopBar(), this.initChooseUserWindTree()]
+        }
+    },
+    initChooseUserWindTopBar: function () {
+        var g = this;
+        return {
+            xtype: "ToolBar",
+            region: "north",
+            height: 40,
+            border: false,
+            padding: 0,
+            isOverFlow: false,
+            items: ['->', {
+                xtype: "SearchBox",
+                width: 140,
+                displayText: "根据名称搜索",
+                onSearch: function (v) {
+                    EUI.getCmp("chooseAnyUserTree").search(v);
+                    g.selectedOrgId = null;
+                },
+                afterClear: function () {
+                    EUI.getCmp("chooseAnyUserTree").reset();
+                    g.selectedOrgId = null;
+                }
+            }]
+        };
+    },
+    initChooseUserWindTree: function () {
+        var g = this;
+        return {
+            xtype: "TreePanel",
+            region: "center",
+            id:"chooseAnyUserTree",
+            url: _ctxPath + "/flowDefination/listAllOrgs",
+            border: true,
+            searchField: ["name"],
+            showField: "name",
+            style: {
+                "background": "#fff"
+            },
+            onSelect: function (node) {
+                g.selectedOrgId = node.id;
+                //   EUI.getCmp("gridPanel").grid[0].p.postData={}
+                var chooseUserGridPanel = EUI.getCmp("chooseUserGridPanel").setGridParams({
+                    url: _ctxPath + "/customExecutor/listAllUser",
+                    loadonce: false,
+                    datatype: "json",
+                    postData: {
+                        organizationId: g.selectedOrgId
+                    }
+                }, true);
+            },
+            afterItemRender: function (nodeData) {
+                if (nodeData.frozen) {
+                    var nodeDom = $("#" + nodeData.id);
+                    if (nodeDom == []) {
+                        return;
+                    }
+                    var itemCmp = $(nodeDom[0].children[0]);
+                    itemCmp.addClass("ux-tree-freeze");
+                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
+                }
+            },
+            afterShowTree: function (data) {
+                this.setSelect(data[0].id);
+            }
+        }
+    },
+    InitChooseUserGrid: function () {
+        var g = this;
+        var isShowMultiselect;
+        if(g.chooseUserNode.flowTaskType == "common"){
+            isShowMultiselect = false;
+        }else{
+            isShowMultiselect = true;
+        }
+        return {
+            xtype: "Container",
+            region: "center",
+            itemspace: 0,
+            layout: "border",
+            border: false,
+            items: [{
+                xtype: "ToolBar",
+                region: "north",
+                isOverFlow: false,
+                padding: 0,
+                height: 40,
+                border: false,
+                items: ['->', {
+                    xtype: "SearchBox",
+                    displayText: "请输入用户名称或编号进行搜索",
+                    onSearch: function (value) {
+                        EUI.getCmp("chooseUserGridPanel").localSearch(value);
+                    },
+                    afterClear: function () {
+                        EUI.getCmp("chooseUserGridPanel").restore();
+                    }
+                }]
+            }, {
+                xtype: "GridPanel",
+                region: "center",
+                id: "chooseUserGridPanel",
+                searchConfig: {
+                    searchCols: ["code"]
+                },
+                style: { "border-radius": "3px"},
+                gridCfg: {
+                    loadonce: true,
+                    //   url: _ctxPath + "/customExecutor/listAllUser",
+                    // postData:{
+                    //     organizationId: g.selectedOrgId
+                    // },
+                    multiselect: isShowMultiselect,
+                    colModel: [{
+                        label: "用户ID",
+                        name: "id",
+                        index: "id",
+                        hidden:true
+                    }, {
+                        label: "用户名称",
+                        name: "user.userName",
+                        index: "user.userName",
+                        width:150,
+                        align: "center"
+                    }, {
+                        label: "员工编号",
+                        name: "code",
+                        index: "code",
+                        width:200
+                    }, {
+                        label: "组织机构",
+                        name: "organization.name",
+                        index: "organization.name",
+                        width:150,
+                        align: "center",
+                        hidden:true
+                    }],
+                    ondblClickRow: function () {
+                        var html = "";
+                        var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                        html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
+                            '<div class="choose-icon choose-delete"></div>' +
+                            '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
+                            '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
+                            '</div>';
+                        $(".flow-excutor-content2").html(html);
+                        g.chooseAnyOneWind.close();
+                    }
+                }
+            }]
+        }
+    },
+    addChooseUsersInContainer:function (selectRow) {
+        var g = this;
+        var html = "";
+        var selectedUser = [];
+        $(".flow-excutor-content2 > div").each(function(index,domEle){
+            selectedUser.push(domEle.id)
+        });
+        for (var j = 0; j < selectRow.length; j++) {
+            var item = selectRow[j];
+            if( !g.itemIdIsInArray(item.id,selectedUser)){
+                html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
+                    '<div class="choose-icon choose-delete"></div>' +
+                    '<div class="excutor-item-title">姓名：' + item["user.userName"] +
+                    '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
+                    '</div>';
+            }
+        }
+        $(".flow-excutor-content2").append(html);
+    },
+    itemIdIsInArray:function(id,array){
+        for(var i = 0 ;i<array.length;i++){
+            if(id == array[i]){
+                return true;
+            }
+        }
+        return false;
     }
 });
