@@ -126,20 +126,15 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.userNumberText,
                     name: "code",
                     index: "code",
-                    width:200
+                    width:200,
+                    align: "center"
                 }, {
                     label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name",
-                    width:150,
-                    align: "center"
+                    width:150
                 }],
-                shrinkToFit: false,
-                rowNum:15,
-                ondbClick: function () {
-                    var rowData = EUI.getCmp("gridPanel").getSelectRow();
-                    g.getValues(rowData.id);
-                }
+                shrinkToFit: false
             }
         };
     },
@@ -289,9 +284,9 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             height: 300,
             id: "executorNotSelectedGrid",
             region: "west",
-            style: {
-                "border": "1px solid #aaa"
-            },
+            // style: {
+            //     "border": "1px solid #aaa"
+            // },
             gridCfg: {
                 url: _ctxPath + "/customExecutor/listAllExecutorNotSelected",
                 postData: {
@@ -312,12 +307,12 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.userNumberText,
                     name: "code",
-                    index: "code"
+                    index: "code",
+                    align: "center"
                 }, {
                     label: this.lang.organizationText,
                     name: "organization.name",
-                    index: "organization.name",
-                    align: "center"
+                    index: "organization.name"
                 }]
             }
         }
@@ -330,8 +325,10 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             width: 50,
             height: 300,
             border: false,
-            html: "<div class='arrow-right'></div>" +
-            "<div class='arrow-left'></div>"
+            html: //"<div class='arrow-right'></div>" +
+            // "<div class='arrow-left'></div>"
+            '<div class="ecmp-common-moveright arrow-right"></div>' +
+            '<div class="ecmp-common-leftmove arrow-left"></div>'
         }
     },
     getRightGrid: function (data) {
@@ -366,12 +363,12 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.userNumberText,
                     name: "code",
-                    index: "code"
+                    index: "code",
+                    align: "center"
                 }, {
                     label: this.lang.organizationText,
                     name: "organization.name",
-                    index: "organization.name",
-                    align: "center"
+                    index: "organization.name"
                 }]
             }
         }

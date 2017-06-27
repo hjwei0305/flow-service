@@ -3,7 +3,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     pageInfo: {
         page: 1,
-        rows: 15,
+        rows: 10,
         total: 1
     },
     initComponent: function () {

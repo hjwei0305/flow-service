@@ -101,12 +101,17 @@
     margin: 159px auto 0;
     /*margin-top: 200px;*/
     cursor: pointer;
+    font-size:25px;
 }
 .arrow-left{
     background: url("../images/operate_arrow_left.png") no-repeat;
     width: 22px;
     height: 22px;
     cursor: pointer;
-    margin: 10px auto 0;
+    margin: 25px auto 0;
     /*margin-top: 10px;*/
+    font-size:25px;
+}
+.icon-space {
+    margin-right: 10px;
 }

@@ -328,7 +328,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     BeanUtils.copyProperties(flowHistory, flowTask);
                     flowHistory.setId(null);
                     flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                    flowHistory.setDepict("【被发起人撤销流程】");
+                    flowHistory.setDepict("【被发起人终止流程】");
                     flowHistory.setFlowTaskName(flowTask.getTaskName());
                     Date now = new Date();
                     if(preFlowHistory!=null){

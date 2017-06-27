@@ -102,10 +102,12 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width: "100",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_operate'>"
-                            + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
-                            + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
-                        return strVar;
+                        // var strVar = "<div class='condetail_operate'>"
+                        //     + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
+                        //     + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
+                        // return strVar;
+                        return '<i class="ecmp-common-view icon-space" title="'+g.lang.showDoneText+'"></i>'+
+                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -185,12 +187,12 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
-        $(".flowHistoryBtn").live("click", function () {
+        $(".ecmp-common-view").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.showTaskHistoryWind(data);
         });
-        $(".deleteBtn").live("click", function () {
+        $(".ecmp-common-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             g.deleteFlowInstance(rowData);

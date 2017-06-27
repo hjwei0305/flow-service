@@ -135,6 +135,7 @@
 .flow-node-box {
     border: 1px solid #eaeaea;
     margin: 20px;
+    overflow-y:auto;
 }
 
 .flow-excutor-title {

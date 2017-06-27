@@ -119,6 +119,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
                 },{
                     xtype: "TextField",
@@ -141,6 +142,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
                 },{
                     xtype: "NumberField",
@@ -461,6 +463,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    shrinkToFit: false,//固定宽度
                     // url: _ctxPath + "/builtInApprove/list",
                     postData: {
                         S_createdDate: "DESC"
@@ -469,7 +472,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: '50%',
+                        width: 110,
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){
@@ -497,18 +500,18 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "业务名称",
                         name: "name",
                         index: "name",
-                        width: '40%'
+                        width: 110
                     }, {
                         label: "申请说明",
                         name: "applyCaption",
                         index: "applyCaption",
-                        width: '40%'
+                        width: 110
                     }, {
                         label: "当前流程状态",
                         name: "flowStatus",
                         index: "flowStatus",
                         hidden: false,
-                        width: '45%',
+                        width: 110,
                         formatter : function(cellvalue, options, rowObject) {
                             var strVar = '';
                             if('INIT' == rowObject.flowStatus){
@@ -559,22 +562,22 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "单价",
                         name: "unitPrice",
                         index: "unitPrice",
-                        width: '50%'
+                        width: 80
                     }, {
                         label: "数量",
                         name: "count",
                         index: "count",
-                        width: '50%'
+                        width: 80
                     }, {
                         label: "金额",
                         name: "sum",
                         index: "sum",
-                        width: '50%'
+                        width: 80
                     }, {
                         label: "工作说明",
                         name: "workCaption",
                         index: "workCaption",
-                        width: '50%'
+                        width: 110
                     }],
                     ondbClick: function () {
                         var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -654,6 +657,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
                 },{
                     xtype: "TextField",
@@ -676,6 +680,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },{
                     xtype: "Container",
                     height:25,
+                    isOverFlow:false,
                     html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
                 },{
                     xtype: "NumberField",

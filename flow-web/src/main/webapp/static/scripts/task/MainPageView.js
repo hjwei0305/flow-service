@@ -9,12 +9,14 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             menudata: this.menudata,
             dataWait: this.dataWait,
             menu: this.menu,
+            width:'100%',
             items:[{
                 xtype:"Container",
                 layout:"border",
                 border:false,
                 itemspace:0,
                 padding:0,
+                width:'100%',
                 style:{
                     "background-color":"#fff"
                 },
