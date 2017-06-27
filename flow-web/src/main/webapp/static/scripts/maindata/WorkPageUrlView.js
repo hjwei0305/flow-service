@@ -120,10 +120,13 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     width: "30%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail-operate'>" +
-                            "<div class='condetail-update' title='"+g.lang.editText+"'></div>" +
-                            "<div class='condetail-delete' title='"+g.lang.deleteText+"'></div></div>";
-                        return strVar;
+                        // var strVar = "<div class='condetail-operate'>" +
+                        //     "<div class='condetail-update' title='"+g.lang.editText+"'></div>" +
+                        //     "<div class='condetail-delete' title='"+g.lang.deleteText+"'></div></div>";
+                        // return strVar;
+                        return  '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
+                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+
                     }
                 }, {
                     name: "id",
@@ -153,11 +156,11 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
     },
     addEvents: function () {
         var g = this;
-        $(".condetail-update").live("click", function () {
+        $(".ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.updateWorkPageUrl(data);
         });
-        $(".condetail-delete").live("click", function () {
+        $(".ecmp-common-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             g.deleteWorkPageUrl(rowData);
         });

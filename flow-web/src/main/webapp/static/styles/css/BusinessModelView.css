@@ -72,7 +72,7 @@
     background: url("../images/operate_set2.png") no-repeat;
 }
 .arrow-right{
-    background: url("../images/operate_arrow_right.png") no-repeat;
+   /* background: url("../images/operate_arrow_right.png") no-repeat;*/
     width: 22px;
     height: 22px;
     margin: 159px auto 0;
@@ -80,11 +80,11 @@
     cursor: pointer;
 }
 .arrow-left{
-    background: url("../images/operate_arrow_left.png") no-repeat;
+    /*background: url("../images/operate_arrow_left.png") no-repeat;*/
     width: 22px;
     height: 22px;
     cursor: pointer;
-    margin: 10px auto 0;
+    margin: 15px auto 0;
     /*margin-top: 10px;*/
 }
 
@@ -113,4 +113,8 @@
     background: url("../images/operate_bg.png") no-repeat;
     background-position: -32px -160px;
 }
+.icon-space {
+    margin-right: 10px;
+}
+
 
