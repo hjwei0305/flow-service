@@ -139,7 +139,7 @@
 
 .flow-excutor-title {
     background: #f8f9f9 none repeat scroll 0 0;
-    border-bottom: 1px solid #eaeaea;
+    /*border-bottom: 1px solid #eaeaea;*/
     color: #222222;
     font-weight: bold;
     padding: 12px;
@@ -192,10 +192,18 @@
     padding: 15px 0 0 20px;
 }
 .choose-btn{
+    background: #F2F6FD none repeat scroll 0 0;
+    border-radius: 4px;
+    color: black;
+    cursor: pointer;
     float: right;
+    height: 30px;
+    line-height: 30px;
     margin-top: 15px;
     position: absolute;
     right: 44px;
+    text-align: center;
+    width: 80px;
 }
 
 .add-excutor {
