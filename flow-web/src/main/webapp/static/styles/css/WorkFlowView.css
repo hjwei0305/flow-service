@@ -393,6 +393,7 @@
     opacity: 0.8;
     padding: 0.4em;
     z-index: 21;
+    max-width: 160px;
 }
 .condetail-operate {
     width: 55px;
