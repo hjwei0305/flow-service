@@ -122,13 +122,18 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 130,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_operate'>" +
-                            "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
-                            "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
-                            + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
-                            + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
-                            + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
-                        return strVar;
+                         // var strVar = "<div class='condetail_operate'>" +
+                         //    "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
+                         //    "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
+                         //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
+                         //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
+                         //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
+
+                        return '<i class="ecmp-common-view icon-space" title="'+g.lang.showConditionPropertiesText+'"></i>'+
+                          '<i class="ecmp-common-configuration icon-space" title="'+g.lang.configWorkSpaceText+'"></i>'+
+                          '<i class="ecmp-common-set icon-space" title="'+g.lang.configServerLocationText+'"></i>'+
+                          '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
+                          '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -641,10 +646,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: "50%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        var strVar = "<div class='condetail_operateServiceUrl'>"
-                            + "<div class='condetail_updateServiceUrl' title='"+g.lang.editText+"'></div>"
-                            + "<div class='condetail_deleteServiceUrl' title='"+g.lang.deleteText+"'></div></div>";
-                        return strVar;
+                        return  "<i class='ecmp-common-edit icon-space' title='"+g.lang.editText+"'></i>"+
+                                "<i class='ecmp-common-delete' title='"+g.lang.deleteText+"'></i>";
                     }
                 }, {
                     name: "id",
@@ -728,8 +731,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             width: 50,
             height: 300,
             border: false,
-            html: "<div class='arrow-right'></div>" +
-            "<div class='arrow-left'></div>"
+            html: //"<div class='arrow-right'></div>" +
+            // "<div class='arrow-left'></div>"
+            '<div class="ecmp-common-moveright arrow-right"></div>' +
+            '<div class="ecmp-common-leftmove arrow-left"></div>'
         }
     },
     getRightGrid: function (data) {
@@ -771,38 +776,38 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     },
     operateBtnEvents: function () {
         var g = this;
-        $(".condetail_update").live("click", function () {
+        $(".ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.updateBusinessModel(data);
         });
-        $(".condetail_delete").live("click", function () {
+        $(".ecmp-common-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             g.deleteBusinessModel(rowData);
         });
-        $(".condetail_look").live("click", function () {
+        $(".ecmp-common-view").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.lookPropertyWindow(data);
             g.getProperty(data);
         });
-        $(".condetail_set").live("click", function () {
+        $(".ecmp-common-configuration").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.showWorkPageWindow(data);
         });
-        $(".condetail_setServiceUrl").live("click", function () {
+        $(".ecmp-common-set").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.businessModelId = data.id;
             g.showServiceUrlWindow(data);
         });
-        $(".condetail_deleteServiceUrl").live("click", function () {
+        $(".ecmp-common-edit").live("click", function () {
             var rowData = EUI.getCmp("serviceUrlGridPanel").getSelectRow();
             console.log(rowData);
             g.deleteServiceUrl(rowData);
         });
-        $(".condetail_updateServiceUrl").live("click", function () {
+        $(".ecmp-common-delete").live("click", function () {
             var data = EUI.getCmp("serviceUrlGridPanel").getSelectRow();
             console.log(data);
             g.updateServiceUrl(data);
@@ -810,7 +815,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     },
     addWorkPageEvent: function () {
         var g = this, selectData = [];
-        $(".arrow-right").live("click", function () {
+        $(".ecmp-common-moveright").live("click", function () {
             var leftGrid = EUI.getCmp("workPageSet");
             var rowDatas = leftGrid.getSelectRow();
             var gridPanel = EUI.getCmp("workPageSelect");
@@ -823,7 +828,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }
         });
-        $(".arrow-left").live("click", function () {
+        $(".ecmp-common-leftmove").live("click", function () {
             var rightGrid = EUI.getCmp("workPageSelect");
             var rowDatas = rightGrid.getSelectRow();
             var gridPanel = EUI.getCmp("workPageSet");

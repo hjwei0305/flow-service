@@ -330,8 +330,10 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             width: 50,
             height: 300,
             border: false,
-            html: "<div class='arrow-right'></div>" +
-            "<div class='arrow-left'></div>"
+            html: //"<div class='arrow-right'></div>" +
+            // "<div class='arrow-left'></div>"
+            '<div class="ecmp-common-moveright arrow-right"></div>' +
+            '<div class="ecmp-common-leftmove arrow-left"></div>'
         }
     },
     getRightGrid: function (data) {

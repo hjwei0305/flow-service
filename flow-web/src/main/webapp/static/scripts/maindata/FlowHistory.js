@@ -52,7 +52,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             var item = data[i].flowInstance;
             var instanceItem = {
                 id: item.id,
-                name: item.flowName + "," + item.creatorName + "," + item.createdDate + g.lang.startText,
+                name: item.flowName + "," + item.creatorName + "," + item.createdDate + this.lang.startText,
                 instanceId: item.id,
                 data: data[i]
             };
@@ -144,14 +144,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '				<div class="top-left navbar flowselect">' +
             '					<div class="flow-tabicon flow-statusimg"></div>' +
             '					<div class="flow-stutsfield text">' +
-            g.lang.processStatusText +
+            this.lang.processStatusText +
             '					</div>' +
             '				</div>' +
             '				<div class="flow-line"></div>' +
             '				<div class="top-center navbar">' +
             '					<div class="flow-tabicon flow-historyimg"></div>' +
             '					<div class="flow-historyfield text">' +
-            g.lang.flowProcessHistoryText +
+            this.lang.flowProcessHistoryText +
             '					</div>' +
             '				</div>' +
             '			</div>';
@@ -263,16 +263,16 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var minute = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000) / (60 * 1000));
         var second = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000) / 1000);
         if (day > 0) {
-            strVar += day + g.lang.dayText;
+            strVar += day + this.lang.dayText;
         }
         if (hour > 0) {
-            strVar += hour + g.lang.hourText;
+            strVar += hour + this.lang.hourText;
         }
         if (minute > 0) {
-            strVar += minute + g.lang.minuteText;
+            strVar += minute + this.lang.minuteText;
         }
         if (second > 0) {
-            strVar += second + g.lang.secondText;
+            strVar += second + this.lang.secondText;
         }
         return strVar;
     },

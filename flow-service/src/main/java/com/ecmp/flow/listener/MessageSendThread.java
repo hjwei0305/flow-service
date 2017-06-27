@@ -146,7 +146,7 @@ public class MessageSendThread  implements Runnable {
                             message.setContentTemplateCode(contentTemplateCode);//模板代码
 
                             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-                            notifyTypes.add(NotifyType.Email);
+                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 
                             //  iNotifyService.send(message);

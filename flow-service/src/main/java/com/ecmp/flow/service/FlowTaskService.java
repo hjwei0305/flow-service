@@ -637,7 +637,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistoryNew.setId(null);
                 Date now = new Date();
                 flowHistoryNew.setActEndTime(now);
-                flowHistoryNew.setDepict("【被撤销】"+opinion);
+                flowHistoryNew.setDepict("【被撤回】"+opinion);
                 flowHistoryNew.setActDurationInMillis(now.getTime()-flowHistory.getActEndTime().getTime());
                 flowHistoryDao.save(flowHistoryNew);
             }
