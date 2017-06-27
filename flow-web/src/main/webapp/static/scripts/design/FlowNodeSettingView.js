@@ -419,7 +419,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 iframe: false,
                 xtype: "FormPanel",
                 width: 425,
-                height: 310,
+                height: 305,
                 padding: 0,
                 itemspace: 10
             },
@@ -443,7 +443,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 iframe: false,
                 xtype: "FormPanel",
                 width: 425,
-                height: 310,
+                height: 305,
                 padding: 0,
                 itemspace: 10
             },
