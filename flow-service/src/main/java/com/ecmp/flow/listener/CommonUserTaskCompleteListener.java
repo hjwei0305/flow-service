@@ -58,26 +58,29 @@ public class CommonUserTaskCompleteListener implements TaskListener{
     private static final long serialVersionUID = 1L;
 
     public void notify(DelegateTask delegateTask) {
-        ExecutionEntity taskEntity = (ExecutionEntity)delegateTask.getExecution();
-        String actTaskDefKey =  taskEntity.getActivityId();
-        String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-        ProcessInstance instance =  taskEntity.getProcessInstance();
-        String businessId = instance.getBusinessKey();
-        FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
-        String flowDefJson = flowDefVersion.getDefJson();
-        JSONObject defObj = JSONObject.fromObject(flowDefJson);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        try {
+            ExecutionEntity taskEntity = (ExecutionEntity) delegateTask.getExecution();
+            String actTaskDefKey = taskEntity.getActivityId();
+            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
+            ProcessInstance instance = taskEntity.getProcessInstance();
+            String businessId = instance.getBusinessKey();
+            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
+            String flowDefJson = flowDefVersion.getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
 //        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-        //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-        net.sf.json.JSONObject event =    currentNode.getJSONObject("nodeConfig").getJSONObject("event");
+            net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+            //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+            net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
 //        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
-      if(event !=null){
-          String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
-          if(!StringUtils.isEmpty(afterExcuteServiceId)){
-              ServiceCallUtil.callService(afterExcuteServiceId,businessId,"after");
-          }
-      }
-
+            if (event != null) {
+                String afterExcuteServiceId = (String) event.get("afterExcuteServiceId");
+                if (!StringUtils.isEmpty(afterExcuteServiceId)) {
+                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, "after");
+                }
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
     }
 }

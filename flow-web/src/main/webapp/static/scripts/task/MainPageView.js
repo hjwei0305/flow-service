@@ -22,14 +22,12 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                     height:70,
                     border:false,
                     padding:0,
-                    width:'100%',
                     html:this.getToolBarHtml()
                 },{
                     xtype:"Container",
                     region : "center",
                     border:false,
                     padding:0,
-                    width:'100%',
                     style:{
                         "border":"1px solid #dddddd",
                         "border-radius":"2px"

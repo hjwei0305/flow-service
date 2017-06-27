@@ -482,8 +482,8 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                             if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
                                 var strVar = "<div class='condetail-operate'>" +
                                     "<div class='condetail-flowHistory'title='流程历史'></div>"
-                                    + "<div class='condetail-update' title='编辑'></div>"
-                                    + "<div class='condetail-delete'  title='删除'></div>" +
+                                  /*  + "<div class='condetail-update' title='编辑'></div>"
+                                    + "<div class='condetail-delete'  title='删除'></div>"*/ +
                                     "</div>";
                             }
                             return strVar;

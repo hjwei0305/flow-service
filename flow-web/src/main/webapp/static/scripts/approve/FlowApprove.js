@@ -641,7 +641,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 //   EUI.getCmp("gridPanel").grid[0].p.postData={}
                 var chooseUserGridPanel = EUI.getCmp("chooseUserGridPanel").setGridParams({
                     url: _ctxPath + "/customExecutor/listAllUser",
-                    loadonce: false,
+                    loadonce: true,
                     datatype: "json",
                     postData: {
                         organizationId: g.selectedOrgId
