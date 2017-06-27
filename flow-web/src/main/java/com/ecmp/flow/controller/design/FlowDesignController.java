@@ -13,12 +13,14 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -214,9 +216,19 @@ public class FlowDesignController {
     @ResponseBody
     public String getLookInfo(String id, int versionCode, String instanceId) {
         OperateStatus status = OperateStatus.defaultSuccess();
+        FlowDefVersion def = null;
         Map<String, Object> data = new HashedMap();
-        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-        FlowDefVersion def = proxy.getFlowDefVersion(id, versionCode);
+        if(StringUtils.isNotEmpty(instanceId)){
+            IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+            FlowInstance flowInstance = proxy.findOne(instanceId);
+            if(flowInstance != null){
+                def = flowInstance.getFlowDefVersion();
+            }
+        }
+        if(def == null){
+            IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+            def = proxy.getFlowDefVersion(id, versionCode);
+        }
         data.put("def", def);
         IFlowInstanceService proxy2 = ApiClient.createProxy(IFlowInstanceService.class);
         Set<String> nodeIds = proxy2.currentNodeIds(instanceId);
