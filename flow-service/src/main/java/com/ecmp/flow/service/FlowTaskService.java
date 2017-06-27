@@ -637,7 +637,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistoryNew.setId(null);
                 Date now = new Date();
                 flowHistoryNew.setActEndTime(now);
-                flowHistoryNew.setDepict("【被撤销】"+opinion);
+                flowHistoryNew.setDepict("【被撤回】"+opinion);
                 flowHistoryNew.setActDurationInMillis(now.getTime()-flowHistory.getActEndTime().getTime());
                 flowHistoryDao.save(flowHistoryNew);
             }
@@ -1115,8 +1115,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                            }
 
                     } else {
+                        nodeInfo.setUiUserType(userType);
                         if (!StringUtils.isEmpty(ids)) {
-                            nodeInfo.setUiUserType(userType);
                             String[] idsShuZhu = ids.split(",");
                             List<String> idList = java.util.Arrays.asList(idsShuZhu);
                             //StartUser、Position、PositionType、SelfDefinition、AnyOne
@@ -1130,6 +1130,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                                 employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
                             } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
+
                             }
 
 

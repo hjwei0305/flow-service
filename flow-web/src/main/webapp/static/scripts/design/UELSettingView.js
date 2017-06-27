@@ -7,18 +7,23 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     properties: null,
-    readOnly:false,
+    readOnly: false,
 
     initComponent: function () {
-        var items, height = 450;
-        if (this.showName) {
-            items = [this.initTop(), this.initLeft(), this.initCenter()];
+        var items, height = 450, width = 710;
+        if (this.readOnly) {
+            items = [this.initCenter()];
+            width = 536;
         } else {
             items = [this.initLeft(), this.initCenter()];
+        }
+        if (this.showName) {
+            items = [this.initTop()].concat(items);
+        } else {
             height = 400;
         }
         this.window = EUI.Window({
-            width: 710,
+            width: width,
             height: height,
             padding: 10,
             title: this.title,
@@ -30,7 +35,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         this.logicUelCmp = EUI.getCmp("logicUel");
         this.groovyUelCmp = EUI.getCmp("groovyUel");
         this.addEvents();
-        this.getProperties();
+        !this.readOnly && this.getProperties();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
@@ -43,13 +48,15 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             hidden: !this.showName,
             isOverFlow: false,
             border: false,
+            readonly: this.readOnly,
             items: [{
                 xtype: "TextField",
                 name: "name",
                 id: "name",
                 title: "表达式名称",
                 labelWidth: 100,
-                width: 200,
+                width: 250,
+                readonly:this.readOnly,
                 value: this.data ? this.data.name : "",
                 allowBlank: false
             }]
@@ -109,7 +116,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 width: 489,
                 height: 120,
                 id: "logicUel",
-                readonly:this.readOnly,
+                readonly: this.readOnly,
                 style: {
                     "margin-left": "10px"
                 },
@@ -122,7 +129,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         var reg = new RegExp(g.properties[key], "g");
                         value = value.replace(reg, key);
                     }
-                    if(!value){
+                    if (!value) {
                         g.groovyUelCmp.setValue("");
                         return;
                     }
@@ -153,7 +160,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     ,
     addEvents: function () {
         var g = this;
-        if(this.readOnly){
+        if (this.readOnly) {
             return;
         }
         $(".calculate-btn").bind("click", function () {

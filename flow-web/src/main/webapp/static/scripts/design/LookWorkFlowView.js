@@ -156,6 +156,13 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         // 双击连线弹出UEL配置界面
         this.instance.bind("dblclick", function (connection) {
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
+            if(!ueldata){
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "当前连线未配置UEL表达式"
+                });
+                return;
+            }
             var type = $("#" + connection.sourceId).attr("bustype");
             if (type == "ManualExclusiveGateway") {
                 g.showSimpleNodeConfig(ueldata.name);

@@ -173,6 +173,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".submit").bind("click", function () {
             g.submit();
         });
+        g.showOmitContent();
     },
     getHeadData: function () {
         var g = this;
@@ -506,5 +507,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         } else {
             window.close();
         }
+    },
+    showOmitContent:function () {
+        $(".gateway-name").live("mouseover",function () {
+            var text=$(this).text();
+            $(this).attr("title",text);
+        })
     }
 });
