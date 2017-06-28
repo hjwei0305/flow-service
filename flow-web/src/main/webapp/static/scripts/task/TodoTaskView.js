@@ -16,6 +16,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     initHtml: function (data) {
+        $("#" + this.renderTo).empty();
         var html = this.getNavbarHtml(data) + this.getTodoTaskHtml();
         $("#" + this.renderTo).append(html);
     },
@@ -64,13 +65,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     getNotData: function () {
         var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
-        $("#" + this.renderTo).append(html);
-        $("#" + this.renderTo).css("height","100%");
+        $("#" + this.renderTo).append(html)
+                                .css("height","100%");
     },
     //导航部分的内容的循环
     getNavHtml: function (data) {
         var g = this;
         var html = "";
+        $(".navbar", '#' + this.renderTo).empty();
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (i == 0) {
@@ -87,7 +89,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
 
         }
-        $(".navbar").append(html);
+        $(".navbar",'#' + this.renderTo).append(html);
     },
     //待办的外层
     getTodoTaskHtml: function () {
@@ -425,7 +427,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
-                            msg: "正在签收，请稍候...",
+                            msg: "正在签收，请稍候..."
                         });
                         EUI.Store({
                             url: "../flowClient/claimTask/",

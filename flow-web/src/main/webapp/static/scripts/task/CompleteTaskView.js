@@ -11,6 +11,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         this.addEvents();
     },
     initHtml: function () {
+        $("#" + this.renderTo).empty();
         var html = this.getCompleteTaskHtml();
         $("#" + this.renderTo).append(html);
     },
