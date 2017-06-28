@@ -158,6 +158,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
               //  loadonce: true,
+                shrinkToFit: false,//固定宽度
                 url: _ctxPath + "/flowType/listFlowType",
                 postData: {
                     //S_createdDate: "ASC"
@@ -166,7 +167,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "50%",
+                    width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         // var strVar = "<div class='condetail_operate'>"
@@ -184,15 +185,18 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.codeText,
                     name: "code",
-                    index: "code"
+                    index: "code",
+                    width:270
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name"
+                    index: "name",
+                    width:250
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict"
+                    index: "depict",
+                    width:250
                 }, {
                     label: "businessModelId",
                     name: "businessModel.id",
@@ -201,7 +205,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.belongToBusinessModelText,
                     name: "businessModel.name",
-                    index: "businessModel.name"
+                    index: "businessModel.name",
+                    width:250
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();

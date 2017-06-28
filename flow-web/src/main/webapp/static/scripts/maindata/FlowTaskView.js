@@ -52,7 +52,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg : {
            //     loadonce:true,
-                	url : _ctxPath +"/flowTask/listFlowTask",
+                shrinkToFit: false,//固定宽度
+                url : _ctxPath +"/flowTask/listFlowTask",
                 postData:{
                     S_createdDate: "ASC"
                 },
@@ -80,7 +81,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },*/{
                     label : g.lang.taskNameText,
                     name : "taskName",
-                    index : "taskName"
+                    index : "taskName",
+                    width:130
                 },/*{
                     label : "任务定义KEY",
                     name : "taskDefKey",
@@ -95,6 +97,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                     name : "taskStatus",
                     index : "taskStatus",
                     align:"center",
+                    width:130,
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = '';
                         if('INIT' == rowObject.taskStatus){
@@ -110,7 +113,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },{
                     label : g.lang.agentStatusText ,
                     name : "proxyStatus",
-                    index : "proxyStatus"
+                    index : "proxyStatus",
+                    width:130
                 },/*{
                     label : "流程实例ID" ,
                     name : "flowInstanceId",
@@ -122,15 +126,18 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },*/{
                     label : g.lang.processorNameText,
                     name : "executorName",
-                    index : "executorName"
+                    index : "executorName",
+                    width:130
                 },{
                     label : g.lang.processorAccountText,
                     name : "executorAccount",
-                    index : "executorAccount"
+                    index : "executorAccount",
+                    width:130
                 },{
                     label : g.lang.candidateAccountText,
                     name : "candidateAccount",
-                    index : "candidateAccount"
+                    index : "candidateAccount",
+                    width:130
                 },/*{
                     label : "执行时间" ,
                     name : "executeDate",
@@ -138,11 +145,13 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 },*/{
                     label : g.lang.depictText ,
                     name : "depict",
-                    index : "depict"
+                    index : "depict",
+                    width:130
                 },{
                     label : g.lang.createTimeText ,
                     name : "createdDate",
-                    index : "createdDate"
+                    index : "createdDate",
+                    width:130
                 }/*{
                     label : "创建人" ,
                     name : "creatorName",
