@@ -64,7 +64,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Button",
                 title: this.lang.allocationExectorText,
-                selected: true,
+                iconCss:"ecmp-common-add",
+               // selected: true,
                 handler: function () {
                     g.showSetExecutorWind();
                 }
@@ -157,7 +158,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -183,6 +185,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -263,12 +266,14 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: this.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     g.saveExecutorSet();
                 }
             }, {
                 title: this.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.excutorSetWind.remove();
                 }

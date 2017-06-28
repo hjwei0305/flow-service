@@ -49,7 +49,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -75,6 +76,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -355,7 +357,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "Button",
                     title: g.lang.addResourceText,
-                    selected: true,
+                    iconCss:"ecmp-common-add",
+                  //  selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
@@ -408,9 +411,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             //     + "<div class='condetail_update'></div>"
                             //     + "<div class='condetail_delete'></div></div>";
                             // return strVar;
-                            return '<i class="ecmp-common-view icon-space" title="'+g.lang.showConditionPropertiesText+'"></i>'+
-                                '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
-                                '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                            return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>'+
+                                '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                                '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
                         }
                     }, {
                         name: "id",
