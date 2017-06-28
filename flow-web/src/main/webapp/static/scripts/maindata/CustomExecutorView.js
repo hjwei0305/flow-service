@@ -77,19 +77,12 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchByNameMsgText,
+                displayText:  "请输入用户名称或编号进行搜索",
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                    EUI.getCmp("gridPanel").setPostParams({
-                            Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                    EUI.getCmp("gridPanel").localSearch(value);
+                },
+                afterClear: function () {
+                    EUI.getCmp("gridPanel").restore();
                 }
             }]
         };
@@ -100,6 +93,9 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             xtype: "GridPanel",
             region: "center",
             id: "gridPanel",
+            searchConfig: {
+                searchCols: ["userName","code"]
+            },
             style: {
                 "border-reduis": "3px"
             },
