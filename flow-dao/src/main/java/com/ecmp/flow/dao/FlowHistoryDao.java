@@ -27,4 +27,13 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>,CustomFlowHis
 //    @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where  ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and ft.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
     @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
     public List<FlowHistory> findAllByBusinessId(@Param("businessId")String businessId);
+
+
+    /**
+     * 根据流程实例id查询待办
+     * @param actInstanceId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
+    public  FlowHistory findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
 }

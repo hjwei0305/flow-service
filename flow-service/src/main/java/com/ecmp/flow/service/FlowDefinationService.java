@@ -996,7 +996,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
                         flowTask.setActType(identityLink.getType());
-                        flowTask.setDepict(task.getDescription());
+                        if(StringUtils.isEmpty(task.getDescription())){
+                            flowTask.setDepict("流程启动");
+                        }else{
+                            flowTask.setDepict(task.getDescription());
+                        }
+
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         flowTask.setFlowInstance(flowInstance);
                         flowTaskDao.save(flowTask);
