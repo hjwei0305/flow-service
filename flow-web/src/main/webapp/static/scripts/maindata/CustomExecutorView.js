@@ -46,6 +46,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     g.businessModelId = data[0].id;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: false,
                         datatype: "json",
                         postData: {
                             // Q_EQ_businessModuleId: data[0].id
@@ -55,14 +56,10 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 },
                 afterSelect: function (data) {
                     g.businessModelId = data.data.id;
-                    EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/customExecutor/listExecutor",
-                        datatype: "json",
-                        postData: {
-                            // Q_EQ_businessModuleId: data[0].id
-                            businessModuleId:  data.data.id
-                        }
-                    }, true);
+                    EUI.getCmp("gridPanel").setPostParams({
+                            // Q_EQ_businessModuleId: data.data.id
+                            businessModuleId: data.data.id
+                        }, true);
                 }
 
             }, {
