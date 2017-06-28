@@ -55,16 +55,21 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 },
                 afterSelect: function (data) {
                     g.businessModelId = data.data.id;
-                    EUI.getCmp("gridPanel").setPostParams({
-                            // Q_EQ_businessModuleId: data.data.id
-                            businessModuleId: data.data.id
-                        }, true);
+                    EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/customExecutor/listExecutor",
+                        datatype: "json",
+                        postData: {
+                            // Q_EQ_businessModuleId: data[0].id
+                            businessModuleId:  data.data.id
+                        }
+                    }, true);
                 }
 
             }, {
                 xtype: "Button",
                 title: this.lang.allocationExectorText,
-                selected: true,
+                iconCss:"ecmp-common-add",
+               // selected: true,
                 handler: function () {
                     g.showSetExecutorWind();
                 }
@@ -157,7 +162,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -183,6 +189,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -263,12 +270,14 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: this.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     g.saveExecutorSet();
                 }
             }, {
                 title: this.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.excutorSetWind.remove();
                 }

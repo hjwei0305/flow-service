@@ -131,7 +131,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
-                selected: true,
+                iconCss:"ecmp-common-add",
+               // selected: true,
                 handler: function () {
                     g.addFlowServiceUrl();
                 }
@@ -177,8 +178,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                             + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
                             + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;*/
-                        return  '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
-                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                        return  '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                            '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -237,7 +238,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -263,6 +265,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -350,7 +353,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                selected: true,
+                iconCss:"ecmp-common-save",
+               // selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
@@ -362,6 +366,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
@@ -441,7 +446,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                selected: true,
+                iconCss:"ecmp-common-save",
+              //  selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
@@ -453,6 +459,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }

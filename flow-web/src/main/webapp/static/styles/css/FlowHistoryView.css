@@ -3,11 +3,11 @@
     margin: 0 6px;
 }
 .rollBackBtn {
-    width: 26px;
+   /* width: 26px;
     height: 17px;
-    float: right;
+    float: right;*/
     cursor: pointer;
-    color: firebrick;
+   /* color: firebrick;*/
 }
 #content .ux-bar-right .ux-toolbar-item{
     margin-right: 0;

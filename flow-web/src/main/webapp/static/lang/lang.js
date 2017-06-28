@@ -46,14 +46,12 @@ if (EUI.BusinessModelView) {
         conditonBeanText: "转换对象",
         belongToAppModuleText: "所属应用模块",
         updateBusinessModelText: "修改业务模型",
-        conditonBeanText: "转换对象",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
         inputConditonBeanText: "请输入转换对象",
         inputDepictMsgText: "请输入描述",
         inputWorkPageText: "请输入工作界面",
-        inputConditonBeanText: "请输入转换对象",
         searchNameText: "请输入名称进行搜索",
         chooseBelongToAppModuleText: "请选择所属应用模块",
         addNewBusinessModelText: "新增业务模型",
@@ -135,7 +133,7 @@ if (EUI.FlowDefinationView) {
         inputDepictMsgText: "请输入描述",
         chooseBelongToBusinessModelText: "请选择所属业务实体模型",
         belongToBusinessText: "所属业务实体",
-        addNewFlowTypeText: "新增流程类型",
+        addNewFlowTypeText: "新增流程类型"
     }, common_lang);
 }
 
@@ -174,13 +172,13 @@ if (EUI.FlowDefinationView) {
         closeText: "关闭",
         searchDisplayText: "请输入代码或名称查询",
         processMaskMessageText: "正在处理，请稍候...",
-        operateHintMessage: "请选择一条要操作的行项目!",
-        processMaskMessageText: "正在处理，请稍候..."
+        operateHintMessage: "请选择一条要操作的行项目!"
     }, common_lang);
 }
 
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {
+        organizationText:"组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
@@ -208,6 +206,7 @@ if (EUI.WorkFlowView) {
 
 if (EUI.LookWorkFlowView) {
     EUI.apply(EUI.LookWorkFlowView.prototype.lang, {
+        organizationText:"组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
@@ -279,7 +278,18 @@ if (EUI.LookWorkFlowView) {
          jobText:"，岗位：",
          organizationText:"，组织机构：",
          chooseMsgText:"请选择[",
-         executorMsgText:"]的执行人"
+         executorMsgText:"]的执行人",
+         seachByIdOrNameText:"请输入用户名称或编号进行搜索",
+         organization2Text:"组织机构",
+         userNumberText:"员工编号",
+         userNameText:"用户名称",
+         userIDText:"用户ID",
+         freezeText:"(已冻结)",
+         arbitraryExecutorText:"任意执行人",
+         chooseText:"选择",
+         chooseArbitraryExecutorText:"选择任意执行人",
+         chooseArbitraryExecutorMsgText:"选择任意执行人【请双击进行选择】"
+
      },common_lang);
  }
 

@@ -106,8 +106,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         //     + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
                         //     + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
                         // return strVar;
-                        return '<i class="ecmp-common-view icon-space" title="'+g.lang.showDoneText+'"></i>'+
-                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                        return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i>'+
+                            '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -205,7 +205,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+              //  selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -231,6 +232,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }

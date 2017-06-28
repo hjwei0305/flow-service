@@ -65,8 +65,9 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
-                            strVar = "<div class='btn_operate'>"
-                                + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div>"
+                            // strVar = "<div class='btn_operate'>"
+                            //     + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div></div>";
+                            strVar= "<div class='ecmp-common-return rollBackBtn' title='"+g.lang.reverseText+"'></div>";
                         }
                         return strVar;
                     }
@@ -258,7 +259,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.reverseTaskMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -284,6 +286,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
