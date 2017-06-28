@@ -115,6 +115,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showMyOrderView(false);
             if (this.todoTaskView) {
                 this.todoTaskView.show();
+                this.todoTaskView.getModelList();
                 return;
             }
             this.todoTaskView = new EUI.TodoTaskView({
@@ -131,6 +132,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showMyOrderView(false);
             if (this.completeTaskView) {
                 this.completeTaskView.show();
+                this.completeTaskView.getCompleteData();
                 return;
             }
             this.completeTaskView = new EUI.CompleteTaskView({
