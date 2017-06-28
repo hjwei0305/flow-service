@@ -46,7 +46,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     g.businessModelId = data[0].id;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/customExecutor/listExecutor",
-                        loadonce: false,
+                        loadonce: true,
                         datatype: "json",
                         postData: {
                             // Q_EQ_businessModuleId: data[0].id
@@ -56,10 +56,15 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 },
                 afterSelect: function (data) {
                     g.businessModelId = data.data.id;
-                    EUI.getCmp("gridPanel").setPostParams({
-                            // Q_EQ_businessModuleId: data.data.id
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: true,
+                        datatype: "json",
+                        postData: {
+                            // Q_EQ_businessModuleId: data[0].id
                             businessModuleId: data.data.id
-                        }, true);
+                        }
+                    }, true);
                 }
 
             }, {
@@ -400,7 +405,16 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(status);
                 if (status.success) {
                     g.excutorSetWind.close();
-                    EUI.getCmp("gridPanel").refreshGrid();
+                 //   EUI.getCmp("gridPanel").refreshGrid();
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: true,
+                        datatype: "json",
+                        postData: {
+                            // Q_EQ_businessModuleId: data[0].id
+                            businessModuleId: g.businessModelId
+                        }
+                    }, true);
                 }
             },
             failure: function (status) {
