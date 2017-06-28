@@ -126,7 +126,6 @@ public class MessageSendThread implements Runnable {
                             message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
-
                             List<String> receiverIds =  getReceiverIds(currentNode,taskEntity);
                             message.setReceiverIds(receiverIds);
 
@@ -139,17 +138,8 @@ public class MessageSendThread implements Runnable {
 
                             if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
                                 preOpinion =  execution.getVariable("opinion")+"";
-//                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
-//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-//                                if (flowTask == null ) {
-//                                    preOpinion = "";
-//                                } else {
-//                                    preOpinion = flowTask.getDepict();
-//                                }
                             }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
                                 opinion =  execution.getVariable("opinion")+"";
-//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-//                                opinion = flowTask.getDepict();
                             }
 
                             contentTemplateParams.put("businessName", businessName);//业务单据名称
@@ -212,17 +202,8 @@ public class MessageSendThread implements Runnable {
 
                             if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
                                 preOpinion =  execution.getVariable("opinion")+"";
-//                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
-//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-//                                if (flowTask == null ) {
-//                                    preOpinion = "";
-//                                } else {
-//                                    preOpinion = flowTask.getDepict();
-//                                }
                             }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
                                 opinion =  execution.getVariable("opinion")+"";
-//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-//                                opinion = flowTask.getDepict();
                             }
 
                             contentTemplateParams.put("businessName", businessName);//业务单据名称
