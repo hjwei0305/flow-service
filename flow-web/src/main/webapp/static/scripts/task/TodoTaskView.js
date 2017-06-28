@@ -8,6 +8,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         total: 1
     },
     records: null,
+    firstTime: true,
     initComponent: function () {
         this.getModelList();
         this.addEvents();
@@ -41,14 +42,18 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //导航部分的数据调用
     getModelList: function () {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                myMask.hide();
-                // g.getNotData();
+                if (g.firstTime) {
+                    myMask.hide();
+                }
                 if (!status.data) {
                     g.getNotData();
                     return;
@@ -60,10 +65,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.getTodoData();
             },
             failure: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                }
                 EUI.ProcessStatus(result);
             }
-        })
+        });
     },
     //当页面没有数据时的显示内容
     getNotData: function () {
@@ -119,9 +126,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办内容部分的数据调用
     getTodoData: function () {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTask",
             params: {
@@ -131,7 +141,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 rows: this.pageInfo.rows
             },
             success: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
@@ -140,6 +153,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
                         $(".nav-select").css("display", "none");
+                        if (!$(".navber-count").hasClass("nav-select")) {
+                            $('div', '#' + this.renderTo).css("display", "none");
+                            g.getNotData();
+                            return;
+                        }
                     }
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
@@ -147,7 +165,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }
             },
             failure: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 EUI.ProcessStatus(result);
             }
         });
