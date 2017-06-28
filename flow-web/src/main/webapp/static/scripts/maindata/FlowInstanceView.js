@@ -99,7 +99,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "100",
+                    width: 150,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         // var strVar = "<div class='condetail_operate'>"
@@ -117,6 +117,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.flowNameText,
                     name: "flowName",
                     index: "flowName",
+                    width:170,
                     title: false
                 }/*, {
                     label: "业务ID",
@@ -128,17 +129,20 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "startDate",
                     index: "startDate",
                     align: "center",
+                    width:150,
                     title: false
                 }, {
                     label: g.lang.endTimeText,
                     name: "endDate",
                     index: "endDate",
                     align: "center",
+                    width:150,
                     title: false
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict",
+                    width:170,
                     title: false
                 }/*, {
                     label: "引擎流程实例ID",
@@ -151,6 +155,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "suspended",
                     align: "center",
                     title: false,
+                    width:110,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('0' == rowObject.suspended) {
@@ -166,6 +171,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "ended",
                     index: "ended",
                     align: "center",
+                    width:110,
                     title: false,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
@@ -178,6 +184,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         return strVar;
                     }
                 }],
+                shrinkToFit: false,//固定宽度
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
