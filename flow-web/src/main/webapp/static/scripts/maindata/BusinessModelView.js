@@ -179,7 +179,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: "所属应用模块",
                     name: "appModuleName",
                     index: "appModuleName",
-                    width:140
+                    width:140,
+                    hidden:true
                 }/*, {
                     label: this.lang.workPageText,
                     name: "workPage",
