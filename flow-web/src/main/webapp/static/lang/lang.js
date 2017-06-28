@@ -172,7 +172,7 @@ if (EUI.FlowDefinationView) {
         rootText: "根节点",
         queryMaskMessageText: "正在努力获取数据，请稍候...",
         closeText: "关闭",
-        searchDisplayText: "请输入名称查询",
+        searchDisplayText: "请输入代码或名称查询",
         processMaskMessageText: "正在处理，请稍候...",
         operateHintMessage: "请选择一条要操作的行项目!",
         processMaskMessageText: "正在处理，请稍候..."

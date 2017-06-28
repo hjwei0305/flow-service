@@ -12,7 +12,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.getModelList();
         this.addEvents();
         parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
-            win.todoTaskView.refresh();
+            win.mainPageView.todoTaskView.refresh();
         });
     },
     initHtml: function (data) {
