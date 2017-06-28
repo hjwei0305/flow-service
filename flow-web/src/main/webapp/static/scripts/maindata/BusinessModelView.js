@@ -132,8 +132,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         return '<i class="ecmp-common-view icon-space" title="'+g.lang.showConditionPropertiesText+'"></i>'+
                           '<i class="ecmp-common-configuration icon-space" title="'+g.lang.configWorkSpaceText+'"></i>'+
                           '<i class="ecmp-common-set icon-space" title="'+g.lang.configServerLocationText+'"></i>'+
-                          '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
-                          '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                          '<i class="ecmp-common-edit icon-space update-businessModel" title="'+g.lang.editText+'"></i>'+
+                          '<i class="ecmp-common-delete delete-businessModel" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -173,6 +173,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict",
+                    width:140
+                }, {
+                    label: "所属应用模块",
+                    name: "appModuleName",
+                    index: "appModuleName",
                     width:140
                 }/*, {
                     label: this.lang.workPageText,
@@ -655,8 +660,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: "50%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        return  "<i class='ecmp-common-edit icon-space' title='"+g.lang.editText+"'></i>"+
-                                "<i class='ecmp-common-delete' title='"+g.lang.deleteText+"'></i>";
+                        return  "<i class='ecmp-common-edit icon-space update-serviceurl' title='"+g.lang.editText+"'></i>"+
+                                "<i class='ecmp-common-delete delete-serviceurl' title='"+g.lang.deleteText+"'></i>";
                     }
                 }, {
                     name: "id",
@@ -785,12 +790,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     },
     operateBtnEvents: function () {
         var g = this;
-        $(".ecmp-common-edit").live("click", function () {
+        $(".update-businessModel").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             console.log(data);
             g.updateBusinessModel(data);
         });
-        $(".ecmp-common-delete").live("click", function () {
+        $(".delete-businessModel").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             console.log(rowData);
             g.deleteBusinessModel(rowData);
@@ -811,12 +816,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             g.businessModelId = data.id;
             g.showServiceUrlWindow(data);
         });
-        $(".ecmp-common-edit").live("click", function () {
+        $(".delete-serviceurl").live("click", function () {
             var rowData = EUI.getCmp("serviceUrlGridPanel").getSelectRow();
             console.log(rowData);
             g.deleteServiceUrl(rowData);
         });
-        $(".ecmp-common-delete").live("click", function () {
+        $(".update-serviceurl").live("click", function () {
             var data = EUI.getCmp("serviceUrlGridPanel").getSelectRow();
             console.log(data);
             g.updateServiceUrl(data);
