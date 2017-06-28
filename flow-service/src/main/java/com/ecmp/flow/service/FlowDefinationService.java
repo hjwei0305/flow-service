@@ -400,7 +400,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
 //        FlowType   flowType = flowTypeDao.findByProperty("code","")
         //  typeCode="ecmp-flow-flowType2_1494902655299";
-
+        variables.put("opinion","流程启动");//所有流程启动描述暂时都设计为“流程启动”
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = businessKey;
         FlowDefination finalFlowDefination = null;
@@ -500,6 +500,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if(flowStartVO.getVariables()!=null && !flowStartVO.getVariables().isEmpty()){
                     v.putAll(flowStartVO.getVariables());
                 }
+
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {

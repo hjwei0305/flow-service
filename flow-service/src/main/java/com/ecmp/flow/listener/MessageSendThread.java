@@ -138,17 +138,18 @@ public class MessageSendThread implements Runnable {
                             String opinion = null;
 
                             if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
-//                                FlowHistory flowHistory = flowHistoryDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-                                if (flowTask == null ) {
-                                    preOpinion = "流程启动";
-                                } else {
-                                    preOpinion = flowTask.getDepict();
-                                }
+                                preOpinion =  execution.getVariable("opinion")+"";
+//                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
+//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
+//                                if (flowTask == null ) {
+//                                    preOpinion = "";
+//                                } else {
+//                                    preOpinion = flowTask.getDepict();
+//                                }
                             }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-                                opinion = flowTask.getDepict();
+                                opinion =  execution.getVariable("opinion")+"";
+//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
+//                                opinion = flowTask.getDepict();
                             }
 
                             contentTemplateParams.put("businessName", businessName);//业务单据名称
@@ -170,6 +171,7 @@ public class MessageSendThread implements Runnable {
                             message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
                             message.setCanToSender(true);
+//                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -209,22 +211,28 @@ public class MessageSendThread implements Runnable {
                             String opinion = null;
 
                             if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
-                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-                                if (flowTask == null ) {
-                                    preOpinion = "";
-                                } else {
-                                    preOpinion = flowTask.getDepict();
-                                }
+                                preOpinion =  execution.getVariable("opinion")+"";
+//                                actTaskDefKey =  taskEntity.getTransition().getSource().getId();
+//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
+//                                if (flowTask == null ) {
+//                                    preOpinion = "";
+//                                } else {
+//                                    preOpinion = flowTask.getDepict();
+//                                }
                             }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
-                                opinion = flowTask.getDepict();
+                                opinion =  execution.getVariable("opinion")+"";
+//                                FlowTask flowTask = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,instance.getId());
+//                                opinion = flowTask.getDepict();
                             }
 
                             contentTemplateParams.put("businessName", businessName);//业务单据名称
                             contentTemplateParams.put("businessCode", businessCode);//业务单据代码
 //                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                            contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                            if ("before".equalsIgnoreCase(eventType)) {
+                                contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                            } else if ("after".equalsIgnoreCase(eventType)) {
+                                contentTemplateParams.put("opinion", opinion);//审批意见
+                            }
                             contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
 //                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
                             contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
@@ -236,6 +244,7 @@ public class MessageSendThread implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
                             message.setCanToSender(true);
+//                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
