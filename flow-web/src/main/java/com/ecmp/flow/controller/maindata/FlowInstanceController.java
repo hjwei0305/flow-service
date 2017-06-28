@@ -158,7 +158,7 @@ public class FlowInstanceController {
             }
         }
         results.setRows(data);
-        results.setRecords(data.size());
+        results.setRecords(flowInstancePageResult.getRecords());
         results.setPage(flowInstancePageResult.getPage());
         results.setTotal(flowInstancePageResult.getTotal());
         return JsonUtil.serialize(results,JsonUtil.DATE_TIME);
