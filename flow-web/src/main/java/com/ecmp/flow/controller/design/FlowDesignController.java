@@ -188,6 +188,7 @@ public class FlowDesignController {
         Search search = SearchUtil.genSearch(request);
         search.addQuickSearchProperty("code");
         search.addQuickSearchProperty("name");
+        search.addQuickSearchProperty("organization.name");
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
         return proxy.findByPage(search);
     }
