@@ -9,6 +9,9 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.getCompleteData();
         this.addEvents();
+        parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+            win.mainPageView.completeTaskView.refresh();
+        });
     },
     initHtml: function () {
         $("#" + this.renderTo).empty();
@@ -250,5 +253,8 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         } else {
             window.open(tab.url);
         }
+    },
+    refresh: function () {
+        window.location.reload();
     }
 });

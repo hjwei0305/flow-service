@@ -167,8 +167,5 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         } else if (this.myOrderView) {
             this.myOrderView.hide();
         }
-    },
-    refresh: function () {
-        window.location.reload();
     }
 });
