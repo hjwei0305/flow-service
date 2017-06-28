@@ -542,6 +542,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             index: "name",
             width: 150
 
+        }, {
+            label: this.lang.organizationText,
+            name: "organization.name",
+            index: "organization.name",
+            width: 150
+
         }];
     },
     positionTypeGridColModel: function () {
@@ -630,7 +636,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var win = EUI.Window({
             title: "选择岗位",
             padding:0,
-            width: 800,
+            width: 1000,
             height: 350,
             buttons: [{
                 title: "确定",
@@ -660,7 +666,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     layout: "border",
                     border: false,
                     padding: 0,
-                    width: 350,
+                    width: 470,
                     itemspace: 0,
                     isOverFlow: false,
                     items: [this.initTitle("已选择"), {
@@ -681,7 +687,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     border: false,
                     padding: 0,
                     itemspace: 0,
-                    width: 350,
+                    width: 470,
                     region: "east",
                     items: [{
                         xtype: "ToolBar",
@@ -693,9 +699,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         items: [this.initTitle("所有岗位"), "->", {
                             xtype: "SearchBox",
                             id: "searchBox_positionGrid",
-                            width: 80,
-                            //searchDisplayText:请输入代码或名称查询
-                            displayText: "请输入代码或名称查询",
+                            width: 200,
+                            //searchDisplayText:请输入代码、名称或组织机构查询
+                            displayText: "请输入代码、名称或组织机构查询",
                             onSearch: function (v) {
                                 EUI.getCmp("allPositionGrid").setPostParams({
                                     Quick_value: v,
@@ -711,7 +717,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         xtype: "GridPanel",
                         id: "allPositionGrid",
                         region: "center",
-                        width: 350,
                         searchConfig: {
                             searchCols: ["code", "name"]
                         },
@@ -764,7 +769,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var win = EUI.Window({
             title: "选择岗位类别",
             padding: 0,
-            width: 800,
+            width: 1000,
             height: 350,
             buttons: [{
                 title: "确定",
@@ -794,7 +799,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     layout: "border",
                     border: false,
                     padding: 0,
-                    width: 350,
+                    width: 470,
                     itemspace: 0,
                     isOverFlow: false,
                     items: [this.initTitle("已选择"), {
@@ -816,7 +821,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     border: false,
                     padding: 0,
                     itemspace: 0,
-                    width: 350,
+                    width: 470,
                     region: "east",
                     items: [{
                         xtype: "ToolBar",
@@ -828,7 +833,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         items: [this.initTitle("所有岗位类别"), "->", {
                             xtype: "SearchBox",
                             id: "searchBox_positionTypeGrid",
-                            width: 80,
+                            width: 200,
                             //searchDisplayText:请输入代码或名称查询
                             displayText: "请输入代码或名称查询",
                             onSearch: function (v) {
@@ -865,7 +870,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "Container",
             region: "center",
-            width: 100,
+            width: 60,
             border: false,
             isOverFlow: false,
             html: "<div class='arrow-right' id="+id+"-right></div>" +

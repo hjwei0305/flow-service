@@ -178,6 +178,7 @@ if (EUI.FlowDefinationView) {
 
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {
+        organizationText:"组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
@@ -205,6 +206,7 @@ if (EUI.WorkFlowView) {
 
 if (EUI.LookWorkFlowView) {
     EUI.apply(EUI.LookWorkFlowView.prototype.lang, {
+        organizationText:"组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
