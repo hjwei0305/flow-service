@@ -171,10 +171,10 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPosType")
-    public String listPositonType(String notInIds) {
+    public List<PositionCategory> listPositonType(String notInIds) {
         IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
         List<PositionCategory> data = proxy.findAll();
-        return JsonUtil.serialize(data);
+        return data;
     }
 
     /**
@@ -186,6 +186,9 @@ public class FlowDesignController {
     @RequestMapping(value = "listPos")
     public PageResult<Position> listPositon(ServletRequest request) {
         Search search = SearchUtil.genSearch(request);
+        search.addQuickSearchProperty("code");
+        search.addQuickSearchProperty("name");
+        search.addQuickSearchProperty("organization.name");
         IPositionService proxy = ApiClient.createProxy(IPositionService.class);
         return proxy.findByPage(search);
     }

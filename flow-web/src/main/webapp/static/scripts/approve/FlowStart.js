@@ -532,7 +532,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     xtype: "SearchBox",
                     displayText: "请输入用户名称或编号进行搜索",
                     onSearch: function (value) {
-                        console.log(EUI.getCmp("chooseUserGridPanel"))
                         EUI.getCmp("chooseUserGridPanel").localSearch(value);
                     },
                     afterClear: function () {
@@ -544,7 +543,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 region: "center",
                 id: "chooseUserGridPanel",
                 searchConfig: {
-                    searchCols: ["code"]
+                    searchCols: ["user.userName","code"]
                 },
                 style: { "border-radius": "3px"},
                 gridCfg: {

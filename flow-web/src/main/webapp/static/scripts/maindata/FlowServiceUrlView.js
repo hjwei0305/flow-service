@@ -131,7 +131,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
-                selected: true,
+                iconCss:"ecmp-common-add",
+               // selected: true,
                 handler: function () {
                     g.addFlowServiceUrl();
                 }
@@ -165,20 +166,21 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //loadonce: true,
+                shrinkToFit: false,//固定宽度
                 url: _ctxPath + "/flowServiceUrl/listServiceUrl",
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "50%",
+                    width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                 /*        var strVar = "<div class='condetail_operate'>"
                             + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
                             + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
                         return strVar;*/
-                        return  '<i class="ecmp-common-edit icon-space" title="'+g.lang.editText+'"></i>'+
-                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                        return  '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                            '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -187,19 +189,23 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: this.lang.codeText,
                     name: "code",
-                    index: "code"
+                    index: "code",
+                    width:250
                 }, {
                     label: this.lang.nameText,
                     name: "name",
-                    index: "name"
+                    index: "name",
+                    width:200
                 }, {
                     label: "URL",
                     name: "url",
-                    index: "url"
+                    index: "url",
+                    width:250
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
-                    index: "depict"
+                    index: "depict",
+                    width:200
                 },{
                     label: "businessModelId",
                     name: "businessModel.id",
@@ -208,7 +214,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: g.lang.businessEntityModelText,
                     name: "businessModel.name",
-                    index: "businessModel.name"
+                    index: "businessModel.name",
+                    width:200
                 }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
@@ -237,7 +244,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -263,6 +271,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -350,7 +359,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                selected: true,
+                iconCss:"ecmp-common-save",
+               // selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
@@ -362,6 +372,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
@@ -441,7 +452,8 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                selected: true,
+                iconCss:"ecmp-common-save",
+              //  selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
@@ -453,6 +465,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }

@@ -52,6 +52,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 //     loadonce:true,
+                shrinkToFit: false,//固定宽度
                 url: _ctxPath + "/flowHistory/listFlowHistory",
                 postData: {
                     S_createdDate: "ASC"
@@ -60,13 +61,14 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.operateText,
                     name: "operate",
                     index: "taskStatus",
-                    width: 100,
+                    width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
-                            strVar = "<div class='btn_operate'>"
-                                + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div>"
+                            // strVar = "<div class='btn_operate'>"
+                            //     + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div></div>";
+                            strVar= "<div class='ecmp-common-return rollBackBtn' title='"+g.lang.reverseText+"'></div>";
                         }
                         return strVar;
                     }
@@ -82,11 +84,13 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                  },*/{
                     label: g.lang.taskNameText,
                     name: "flowTaskName",
-                    index: "flowTaskName"
+                    index: "flowTaskName",
+                    width:110
                 }, {
                     label: g.lang.flowInstanceText,
                     name: "flowInstance.flowName",
-                    index: "flowInstance.flowName"
+                    index: "flowInstance.flowName",
+                    width:150
                 }, {
                     label: g.lang.taskFormURLText,
                     name: "taskFormUrl",
@@ -97,6 +101,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     name: "taskStatus",
                     index: "taskStatus",
                     align:"center",
+                    width:110,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
@@ -110,7 +115,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: g.lang.agentStatusText,
                     name: "proxyStatus",
-                    index: "proxyStatus"
+                    index: "proxyStatus",
+                    width:110
                 }, /*{
                  label : "流程实例ID" ,
                  name : "flowInstanceId",
@@ -122,23 +128,28 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                  },*/{
                     label: g.lang.processorNameText,
                     name: "executorName",
-                    index: "executorName"
+                    index: "executorName",
+                    width:110
                 }, {
                     label: g.lang.processorAccountText,
                     name: "executorAccount",
-                    index: "executorAccount"
+                    index: "executorAccount",
+                    width:110
                 }, {
                     label: g.lang.taskBeginTimeText,
                     name: "actStartTime",
-                    index: "actStartTime"
+                    index: "actStartTime",
+                    width:150
                 }, {
                     label: g.lang.taskEndTimeText,
                     name: "actEndTime",
-                    index: "actEndTime"
+                    index: "actEndTime",
+                    width:150
                 }, {
                     label: g.lang.taskProcessTimeText,
                     name: "actDurationInMillis",
                     index: "actDurationInMillis",
+                    width:110,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         var value = rowObject.actDurationInMillis;
@@ -164,7 +175,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 }, {
                     label: g.lang.lastUpdateTimeText,
                     name: "lastModifiedDate",
-                    index: "lastModifiedDate"
+                    index: "lastModifiedDate",
+                    width:150
                 },
                     /*    ,{
                      label : "候选人账号" ,
@@ -177,7 +189,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                      },*/{
                         label: g.lang.depictText,
                         name: "depict",
-                        index: "depict"
+                        index: "depict",
+                        width:150
                     }/*{
                      label : "创建人" ,
                      name : "createdBy",
@@ -258,7 +271,8 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.reverseTaskMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -284,6 +298,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }

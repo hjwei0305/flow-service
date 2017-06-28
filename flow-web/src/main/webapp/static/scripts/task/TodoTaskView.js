@@ -8,42 +8,52 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         total: 1
     },
     records: null,
+    firstTime: true,
     initComponent: function () {
         this.getModelList();
         this.addEvents();
-        parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
-            win.mainPageView.todoTaskView.refresh();
-        });
+        if ($(".task-work").hasClass("active")) {
+            parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+                win.mainPageView.todoTaskView.refresh();
+            });
+        } else {
+            return;
+        }
     },
     initHtml: function (data) {
+        $("#" + this.renderTo).empty();
         var html = this.getNavbarHtml(data) + this.getTodoTaskHtml();
         $("#" + this.renderTo).append(html);
     },
     //导航部分的外层容器
     getNavbarHtml: function (data) {
-        var g=this;
-        var html='<div class="content-navbar">';
-        if(data.length<6){
-            html+='<div class="navbar"></div>';
-        }else{
-        html+= '      <i class="arrow-left pre"></i>' +
-            '         <div class="navbar"></div>' +
-            '         <i class="arrow-right next"></i>';
+        var g = this;
+        var html = '<div class="content-navbar">';
+        if (data.length < 6) {
+            html += '<div class="navbar"></div>';
+        } else {
+            html += '      <i class="arrow-left pre"></i>' +
+                '         <div class="navbar"></div>' +
+                '         <i class="arrow-right next"></i>';
         }
-        html+='</div>';
+        html += '</div>';
         return html;
     },
     //导航部分的数据调用
     getModelList: function () {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                myMask.hide();
-                // g.getNotData();
+                if (g.firstTime) {
+                    myMask.hide();
+                }
                 if (!status.data) {
                     g.getNotData();
                     return;
@@ -55,22 +65,25 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.getTodoData();
             },
             failure: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                }
                 EUI.ProcessStatus(result);
             }
-        })
+        });
     },
     //当页面没有数据时的显示内容
     getNotData: function () {
         var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
-        $("#" + this.renderTo).append(html);
-        $("#" + this.renderTo).css("height","100%");
+        $("#" + this.renderTo).append(html)
+            .css("height", "100%");
     },
     //导航部分的内容的循环
     getNavHtml: function (data) {
         var g = this;
         var html = "";
+        $(".navbar", '#' + this.renderTo).empty();
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (i == 0) {
@@ -87,7 +100,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
 
         }
-        $(".navbar").append(html);
+        $(".navbar", '#' + this.renderTo).append(html);
     },
     //待办的外层
     getTodoTaskHtml: function () {
@@ -113,9 +126,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办内容部分的数据调用
     getTodoData: function () {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTask",
             params: {
@@ -125,7 +141,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 rows: this.pageInfo.rows
             },
             success: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
@@ -134,6 +153,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
                         $(".nav-select").css("display", "none");
+                        if (!$(".navber-count").hasClass("nav-select")) {
+                            $('div', '#' + this.renderTo).css("display", "none");
+                            g.getNotData();
+                            return;
+                        }
                     }
                     g.getTodoHtml(result.rows);
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
@@ -141,7 +165,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }
             },
             failure: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 EUI.ProcessStatus(result);
             }
         });
@@ -159,8 +186,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              statusStr = "结束";
              }*/
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
-            var nodeType=JSON.parse(items[j].taskJsonDef).nodeType;
-            var claimTaskHtml=nodeType=="SingleSign"&&!items[j].actClaimTime?'<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>':'';
+            var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
+            var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>' : '';
             var flowInstanceCreatorId = items[j].flowInstance ? items[j].flowInstance.creatorId : "";
             var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
@@ -425,7 +452,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
-                            msg: "正在签收，请稍候...",
+                            msg: "正在签收，请稍候..."
                         });
                         EUI.Store({
                             url: "../flowClient/claimTask/",

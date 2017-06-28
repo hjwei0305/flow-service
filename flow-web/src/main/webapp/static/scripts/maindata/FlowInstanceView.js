@@ -99,15 +99,15 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: "100",
+                    width: 150,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         // var strVar = "<div class='condetail_operate'>"
                         //     + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
                         //     + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
                         // return strVar;
-                        return '<i class="ecmp-common-view icon-space" title="'+g.lang.showDoneText+'"></i>'+
-                            '<i class="ecmp-common-delete" title="'+g.lang.deleteText+'"></i>' ;
+                        return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i>'+
+                            '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
                     }
                 }, {
                     name: "id",
@@ -117,6 +117,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.flowNameText,
                     name: "flowName",
                     index: "flowName",
+                    width:170,
                     title: false
                 }/*, {
                     label: "业务ID",
@@ -128,17 +129,20 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "startDate",
                     index: "startDate",
                     align: "center",
+                    width:150,
                     title: false
                 }, {
                     label: g.lang.endTimeText,
                     name: "endDate",
                     index: "endDate",
                     align: "center",
+                    width:150,
                     title: false
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict",
+                    width:170,
                     title: false
                 }/*, {
                     label: "引擎流程实例ID",
@@ -151,6 +155,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "suspended",
                     align: "center",
                     title: false,
+                    width:110,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('0' == rowObject.suspended) {
@@ -166,6 +171,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "ended",
                     index: "ended",
                     align: "center",
+                    width:110,
                     title: false,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
@@ -178,6 +184,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         return strVar;
                     }
                 }],
+                shrinkToFit: false,//固定宽度
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
@@ -205,7 +212,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+              //  selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -231,6 +239,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }

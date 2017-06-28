@@ -6,11 +6,20 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         rows: 10,
         total: 1
     },
+    firstTime:true,
     initComponent: function () {
         this.getCompleteData();
         this.addEvents();
+        if ($(".history-work").hasClass("active")) {
+            parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+                win.mainPageView.completeTaskView.refresh();
+            });
+        }else {
+            return;
+        }
     },
     initHtml: function () {
+        $("#" + this.renderTo).empty();
         var html = this.getCompleteTaskHtml();
         $("#" + this.renderTo).append(html);
     },
@@ -33,9 +42,12 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //已办内容部分的数据调用
     getCompleteData: function (modelId) {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowHistory/listFlowHistory",
             params: {
@@ -44,7 +56,10 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 rows: this.pageInfo.rows
             },
             success: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 if (result.records==0) {
                     g.getNotData();
                     return;
@@ -58,7 +73,10 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 }
             },
             failure: function (result) {
-                myMask.hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
+                }
                 EUI.ProcessStatus(result);
             }
         })
@@ -249,5 +267,8 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         } else {
             window.open(tab.url);
         }
+    },
+    refresh: function () {
+        window.location.reload();
     }
 });

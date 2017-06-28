@@ -46,6 +46,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     g.businessModelId = data[0].id;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
                         url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: true,
                         datatype: "json",
                         postData: {
                             // Q_EQ_businessModuleId: data[0].id
@@ -55,34 +56,33 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 },
                 afterSelect: function (data) {
                     g.businessModelId = data.data.id;
-                    EUI.getCmp("gridPanel").setPostParams({
-                            // Q_EQ_businessModuleId: data.data.id
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: true,
+                        datatype: "json",
+                        postData: {
+                            // Q_EQ_businessModuleId: data[0].id
                             businessModuleId: data.data.id
-                        }, true);
+                        }
+                    }, true);
                 }
 
             }, {
                 xtype: "Button",
                 title: this.lang.allocationExectorText,
-                selected: true,
+                iconCss:"ecmp-common-add",
+               // selected: true,
                 handler: function () {
                     g.showSetExecutorWind();
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchByNameMsgText,
+                displayText:  "请输入用户名称或编号进行搜索",
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                    EUI.getCmp("gridPanel").setPostParams({
-                            Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                    EUI.getCmp("gridPanel").localSearch(value);
+                },
+                afterClear: function () {
+                    EUI.getCmp("gridPanel").restore();
                 }
             }]
         };
@@ -93,6 +93,9 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             xtype: "GridPanel",
             region: "center",
             id: "gridPanel",
+            searchConfig: {
+                searchCols: ["userName","code"]
+            },
             style: {
                 "border-reduis": "3px"
             },
@@ -157,7 +160,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -183,6 +187,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -263,12 +268,14 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: this.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     g.saveExecutorSet();
                 }
             }, {
                 title: this.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.excutorSetWind.remove();
                 }
@@ -394,7 +401,16 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(status);
                 if (status.success) {
                     g.excutorSetWind.close();
-                    EUI.getCmp("gridPanel").refreshGrid();
+                 //   EUI.getCmp("gridPanel").refreshGrid();
+                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                        url: _ctxPath + "/customExecutor/listExecutor",
+                        loadonce: true,
+                        datatype: "json",
+                        postData: {
+                            // Q_EQ_businessModuleId: data[0].id
+                            businessModuleId: g.businessModelId
+                        }
+                    }, true);
                 }
             },
             failure: function (status) {

@@ -335,12 +335,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.stopFlowMsgText,
                             buttons: [{
                                 title: g.lang.sureText,
+                                iconCss:"ecmp-common-ok",
                                 handler: function () {
                                     g.submit(true);
                                     msgbox.remove();
                                 }
                             }, {
-                                title: g.lang.cancelText, handler: function () {
+                                title: g.lang.cancelText,
+                                iconCss:"ecmp-common-delete",
+                                handler: function () {
                                     msgbox.remove();
                                 }
                             }]
@@ -430,14 +433,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
             g.chooseUserNode = node;
-            var nodeType = "任意执行人";
+            var nodeType = g.lang.arbitraryExecutorText;
             var iconCss = "choose-delete";
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content2">';
         }
         nodeHtml += "</div>" +
-            '<div class="choose-btn">选择</div>'+
+            '<div class="choose-btn">'+g.lang.chooseText+'</div>'+
             "</div>";
         return html += nodeHtml;
     },
@@ -553,10 +556,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var isChooseOneTitle;
         var saveBtnIsHidden;
         if(g.chooseUserNode.flowTaskType == "common"){
-            isChooseOneTitle =  "选择任意执行人【请双击进行选择】";
+            isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
         }else{
-            isChooseOneTitle = "选择任意执行人";
+            isChooseOneTitle = g.lang.chooseArbitraryExecutorText;
             saveBtnIsHidden  = false;
         }
         g.chooseAnyOneWind = EUI.Window({
@@ -568,8 +571,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             itemspace: 0,
             items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid()],
             buttons: [{
-                title: "保存",
-                selected: true,
+                title: g.lang.saveText,
+                iconCss:"ecmp-common-save",
+             //   selected: true,
                 hidden:saveBtnIsHidden,
                 handler: function () {
                     var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
@@ -580,7 +584,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     g.chooseAnyOneWind.close();
                 }
             }, {
-                title: "取消",
+                title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.chooseAnyOneWind.remove();
                 }
@@ -611,7 +616,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             items: ['->', {
                 xtype: "SearchBox",
                 width: 140,
-                displayText: "根据名称搜索",
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (v) {
                     EUI.getCmp("chooseAnyUserTree").search(v);
                     g.selectedOrgId = null;
@@ -656,7 +661,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     }
                     var itemCmp = $(nodeDom[0].children[0]);
                     itemCmp.addClass("ux-tree-freeze");
-                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
+                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + g.lang.freezeText);
                 }
             },
             afterShowTree: function (data) {
@@ -687,7 +692,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 border: false,
                 items: ['->', {
                     xtype: "SearchBox",
-                    displayText: "请输入用户名称或编号进行搜索",
+                    displayText: g.lang.seachByIdOrNameText,
                     onSearch: function (value) {
                         EUI.getCmp("chooseUserGridPanel").localSearch(value);
                     },
@@ -711,23 +716,23 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     // },
                     multiselect: isShowMultiselect,
                     colModel: [{
-                        label: "用户ID",
+                        label: g.lang.userIDText,
                         name: "id",
                         index: "id",
                         hidden:true
                     }, {
-                        label: "用户名称",
+                        label: g.lang.userNameText,
                         name: "user.userName",
                         index: "user.userName",
                         width:150,
                         align: "center"
                     }, {
-                        label: "员工编号",
+                        label: g.lang.userNumberText,
                         name: "code",
                         index: "code",
                         width:200
                     }, {
-                        label: "组织机构",
+                        label: g.lang.organization2Text,
                         name: "organization.name",
                         index: "organization.name",
                         width:150,
@@ -739,8 +744,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
                         html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
-                            '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
+                            '<div class="excutor-item-title">'+g.lang.nameText+ rowData["user.userName"] +
+                            g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
                             '</div>';
                         $(".flow-excutor-content2").html(html);
                         g.chooseAnyOneWind.close();
@@ -761,8 +766,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if( !g.itemIdIsInArray(item.id,selectedUser)){
                 html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item["user.userName"] +
-                    '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+g.lang.nameText+ item["user.userName"] +
+                    g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
         }
