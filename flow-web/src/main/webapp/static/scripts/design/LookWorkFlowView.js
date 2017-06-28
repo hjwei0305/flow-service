@@ -232,7 +232,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             params: {
                 id: this.id,
                 instanceId: this.instanceId,
-                versionCode: 1
+                versionCode: this.versionCode
             },
             success: function (status) {
                 mask.hide();

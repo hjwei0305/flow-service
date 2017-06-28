@@ -9,8 +9,16 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.getCompleteData();
         this.addEvents();
+        if ($(".history-work").hasClass("active")) {
+            parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+                win.mainPageView.completeTaskView.refresh();
+            });
+        }else {
+            return;
+        }
     },
     initHtml: function () {
+        $("#" + this.renderTo).empty();
         var html = this.getCompleteTaskHtml();
         $("#" + this.renderTo).append(html);
     },
@@ -249,5 +257,8 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         } else {
             window.open(tab.url);
         }
+    },
+    refresh: function () {
+        window.location.reload();
     }
 });

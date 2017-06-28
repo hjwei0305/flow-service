@@ -11,26 +11,31 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.getModelList();
         this.addEvents();
-        parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
-            win.mainPageView.todoTaskView.refresh();
-        });
+        if ($(".task-work").hasClass("active")) {
+            parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+                win.mainPageView.todoTaskView.refresh();
+            });
+        } else {
+            return;
+        }
     },
     initHtml: function (data) {
+        $("#" + this.renderTo).empty();
         var html = this.getNavbarHtml(data) + this.getTodoTaskHtml();
         $("#" + this.renderTo).append(html);
     },
     //导航部分的外层容器
     getNavbarHtml: function (data) {
-        var g=this;
-        var html='<div class="content-navbar">';
-        if(data.length<6){
-            html+='<div class="navbar"></div>';
-        }else{
-        html+= '      <i class="arrow-left pre"></i>' +
-            '         <div class="navbar"></div>' +
-            '         <i class="arrow-right next"></i>';
+        var g = this;
+        var html = '<div class="content-navbar">';
+        if (data.length < 6) {
+            html += '<div class="navbar"></div>';
+        } else {
+            html += '      <i class="arrow-left pre"></i>' +
+                '         <div class="navbar"></div>' +
+                '         <i class="arrow-right next"></i>';
         }
-        html+='</div>';
+        html += '</div>';
         return html;
     },
     //导航部分的数据调用
@@ -64,13 +69,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     getNotData: function () {
         var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
-        $("#" + this.renderTo).append(html);
-        $("#" + this.renderTo).css("height","100%");
+        $("#" + this.renderTo).append(html)
+            .css("height", "100%");
     },
     //导航部分的内容的循环
     getNavHtml: function (data) {
         var g = this;
         var html = "";
+        $(".navbar", '#' + this.renderTo).empty();
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             if (i == 0) {
@@ -87,7 +93,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
 
         }
-        $(".navbar").append(html);
+        $(".navbar", '#' + this.renderTo).append(html);
     },
     //待办的外层
     getTodoTaskHtml: function () {
@@ -159,8 +165,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              statusStr = "结束";
              }*/
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
-            var nodeType=JSON.parse(items[j].taskJsonDef).nodeType;
-            var claimTaskHtml=nodeType=="SingleSign"&&!items[j].actClaimTime?'<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>':'';
+            var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
+            var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>' : '';
             var flowInstanceCreatorId = items[j].flowInstance ? items[j].flowInstance.creatorId : "";
             var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
@@ -425,7 +431,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
-                            msg: "正在签收，请稍候...",
+                            msg: "正在签收，请稍候..."
                         });
                         EUI.Store({
                             url: "../flowClient/claimTask/",

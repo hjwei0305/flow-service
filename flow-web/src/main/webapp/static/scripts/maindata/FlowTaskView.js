@@ -228,7 +228,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             msg:  g.lang.passCurrentTaskMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+             //   selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -254,6 +255,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -268,7 +270,8 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             msg:  g.lang.rejectCurrentTaskMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                selected: true,
+                iconCss:"ecmp-common-ok",
+              //  selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -294,6 +297,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
