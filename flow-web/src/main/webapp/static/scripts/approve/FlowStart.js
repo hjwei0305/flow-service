@@ -79,12 +79,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             items: item,
             buttons: [{
                 title: "提交",
-                selected: true,
+                iconCss:"ecmp-common-ok",
+              //  selected: true,
                 handler: function () {
                     g.submit();
                 }
             }, {
                 title: "取消",
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.win.remove();
                 }
@@ -412,7 +414,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid()],
             buttons: [{
                 title: "保存",
-                selected: true,
+                iconCss:"ecmp-common-save",
+            //    selected: true,
                 hidden:saveBtnIsHidden,
                 handler: function () {
                     var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
@@ -424,6 +427,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     g.chooseAnyOneWind.remove();
                 }
