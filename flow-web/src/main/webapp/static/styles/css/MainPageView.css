@@ -27,9 +27,11 @@ div, span, p {
 }
 
 .top-header {
-    height: 60px;
+    height: 50px;
 }
-
+.invoices-header{
+    height: 40px;
+}
 .worktable {
     font-size: 16px;
     color: #333333;
@@ -40,7 +42,7 @@ div, span, p {
 
 .workOrder {
     font-size: 14px;
-    line-height: 60px;
+    line-height: 50px;
     border-left: 2px solid #999;
     padding: 0 25px;
     cursor: pointer;
@@ -50,22 +52,24 @@ div, span, p {
 .header-left {
     display: inline-block;
     float: left;
-    line-height: 60px;
+    line-height: 40px;
     vertical-align: middle;
 }
 
 .header-right {
     display: inline-block;
     float: right;
-    line-height: 60px;
+    line-height: 50px;
     vertical-align: middle;
 }
-
+.invoices-right{
+    line-height: 40px;
+}
 .wait-work {
     font-size: 14px;
     color: #999999;
-    border-left: 2px solid #999999;
-    padding:0 25px;
+    /*border-left: 2px solid #999999;*/
+    padding:0 25px 0 0;
     cursor: pointer;
 }
 
@@ -120,8 +124,8 @@ div, span, p {
     border-radius: 2px;
 }
 .content-navbar {
-    height: 70px;
-    margin: 20px 20px;
+    height: 60px;
+    margin: 10px 20px;
 }
 
 .arrow-left {
@@ -176,7 +180,7 @@ div, span, p {
     font-size: 14px;
     color: #666666;
     text-align: center;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
 }
 
 .nav-select .navbar-circle {
@@ -222,7 +226,7 @@ div, span, p {
     width: 45%;
     float: left;
     border-bottom: 1px solid #eeeeee;
-    padding: 20px 10px 16px;
+    padding: 5px 10px;
     overflow: hidden;
 }
 
@@ -312,6 +316,9 @@ div, span, p {
     line-height: 20px;
     vertical-align: middle;
     color: #45b7ff;
+}
+.approve-btn>span{
+    font-weight: bold;
 }
 .end-text {
     font-size: 12px;
@@ -474,7 +481,7 @@ div, span, p {
 }
 
 .pege-right > .one {
-    color: #45b7ff;
+    color: #000;
     height: 18px;
     margin-left: 10px;
     margin-top: 16px;
@@ -542,8 +549,8 @@ div, span, p {
 .wait-invoices {
     font-size: 14px;
     color: #999999;
-    padding: 0 25px;
-    border-left: 2px solid #999999;
+    padding: 0 25px 0 10px;
+    /*border-left: 2px solid #999999;*/
     cursor: pointer;
 }
 
@@ -566,13 +573,13 @@ div, span, p {
 /*导航部分的样式*/
 .navbar {
     /*width:98%;*/
-    height: 70px;
+    height: 60px;
     overflow: hidden;
 }
 
 .active {
     color: #45b7ff;
-    border-left: 2px solid #45b7ff;
+    /*border-left: 2px solid #45b7ff;*/
 }
 
 .checkbox {
