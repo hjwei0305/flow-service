@@ -78,7 +78,8 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "Button",
             title: "启动条件",
-            iconCss:"ecmp-common-configuration",
+            selected: true,
+            iconCss: "ecmp-common-configuration",
             id: "setStartUel",
             handler: function () {
                 if (!g.startUEL) {
