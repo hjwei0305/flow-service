@@ -141,7 +141,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-
+@Transactional
     public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
@@ -335,18 +335,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     private void callInitTaskBack(PvmActivity currentNode, ProcessInstance instance, FlowHistory flowHistory) {
-        List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
-        if (nextNodes != null && nextNodes.size() > 0) {
-            for (PvmTransition node : nextNodes) {
-                PvmActivity nextActivity = node.getDestination();
+
+        Map<String, TransitionImpl> namedOutgoingTransitions = ((ActivityImpl)currentNode).getNamedOutgoingTransitions();
+//        List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
+        if (namedOutgoingTransitions != null && !namedOutgoingTransitions.isEmpty()) {
+            for (Map.Entry<String, TransitionImpl> node : namedOutgoingTransitions.entrySet()) {
+                PvmActivity nextActivity = node.getValue().getDestination();
                 if (ifGageway(nextActivity)) {
                     callInitTaskBack(nextActivity, instance, flowHistory);
+                }else {
+                    String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
+                    if (key == null) {
+                        key = nextActivity.getId();
+                    }
+                    initTask(instance, key, flowHistory);
                 }
-                String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
-                if (key == null) {
-                    key = nextActivity.getId();
-                }
-                initTask(instance, key, flowHistory);
             }
         }
 
@@ -381,6 +384,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskId
      * @param variables
      */
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
     private void completeActiviti(String taskId, Map<String, Object> variables) {
         taskService.complete(taskId, variables);
     }
@@ -893,6 +897,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
+////        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser(assignee).active().list();
+//        List<Task> testTask = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).list();
+//System.out.println(testTask);
+//        List<Task> unsignedTasks = taskService.createTaskQuery().processInstanceId(instance.getId()).taskCandidateUser(ContextUtil.getUserId()).active().list();
+//        System.out.println(unsignedTasks);
+//        HistoricTaskInstance unsignedTasks2 =  historyService
+//                .createHistoricTaskInstanceQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).unfinished().singleResult();
+//        System.out.println(unsignedTasks2);
+//        // 合并
+////        list.addAll(unsignedTasks);
         String flowName =null;
         String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
         JSONObject defObj = JSONObject.fromObject(flowDefJson);

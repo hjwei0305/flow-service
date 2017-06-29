@@ -1178,7 +1178,7 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     return getParent();
   }
 
-  /** used to calculate the sourceActivityExecution for method {@link #updateActivityInstanceIdInHistoricVariableUpdate(HistoricDetailVariableInstanceUpdateEntity, ExecutionEntity)} */
+  /** used to calculate the sourceActivityExecution for method {@link HistoricDetailVariableInstanceUpdateEntity, ExecutionEntity)} */
   protected ExecutionEntity getSourceActivityExecution() {
     return (activityId!=null ? this : null);
   }
@@ -1725,7 +1725,6 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   }
   /**
    * 自定义更新
-   * @param bzKey
    * @return
    */
   public void update() {

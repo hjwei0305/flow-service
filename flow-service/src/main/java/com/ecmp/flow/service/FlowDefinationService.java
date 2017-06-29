@@ -654,6 +654,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
 
             }
+        }   else  if("ParallelGateway".equalsIgnoreCase(busType)){//如果是并行网关
+            JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
+            for(int j=0;j<targetNodes.size();j++){
+                JSONObject jsonObject = targetNodes.getJSONObject(j);
+                String targetId = jsonObject.getString("targetId");
+                net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+                String busType2 = nextNode.get("busType")+"";
+                if("ParallelGateway".equalsIgnoreCase(busType2)){
+                    this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
+                }else {
+                    result = initNodesInfo(result, flowStartVO, definition , targetId);
+                }
+            }
         }else if("startEvent".equalsIgnoreCase(type)){//开始节点向下遍历
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             for(int j=0;j<targetNodes.size();j++){
