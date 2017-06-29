@@ -199,18 +199,9 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
         $(".arrow-right").live("click", function () {
             var leftGrid = EUI.getCmp("executorNotSelectedGrid");
             var rowDatas = leftGrid.getSelectRow();
-            // var changedDatas=[];
-            // for(var i=0;i<rowDatas.length;i++){
-            //     var object = new Object();
-            //     object.employeeId = rowDatas[i].id;
-            //     object.employeeName = rowDatas[i].userName;
-            //     changedDatas.push(object);
-            // }
-            // console.log(changedDatas);
-            // console.log(rowDatas);
             var gridPanel = EUI.getCmp("executorSelectedGrid");
+            // gridPanel.addRowData(rowDatas,true)
             var selectData = gridPanel.getGridData();
-            //  console.log(selectData);
             for (var i = 0; i < rowDatas.length; i++) {
                 var item = rowDatas[i];
                 if (!g.isInArray(item, selectData)) {
@@ -287,6 +278,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "GridPanel",
             width: 460,
+            title:"未分配",
             height: 300,
             id: "executorNotSelectedGrid",
             region: "west",
@@ -343,6 +335,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             xtype: "GridPanel",
             width: 460,
             height: 300,
+            title:"已选择",
             id: "executorSelectedGrid",
             region: "east",
             // style: {
@@ -353,7 +346,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 postData: {
                     businessModelId: g.businessModelId
                 },
-                hasPager: false,
+               loadonce:true,
+               hasPager: false,
                 multiselect: true,
                 // data:[],
                 colModel: [{
@@ -375,7 +369,8 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.organizationText,
                     name: "organization.name",
                     index: "organization.name"
-                }]
+                }],
+               rowNum:1000
             }
         }
     },

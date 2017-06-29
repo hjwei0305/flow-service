@@ -87,6 +87,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     private String appModuleCode;
 
     /**
+     * 关联的应用模块Name
+     */
+    @Column(length = 80,name = "app_module_name")
+    private String appModuleName;
+
+    /**
      * 查看单据的URL
      */
     @Column(length = 6000,name = "look_url")
@@ -185,6 +191,32 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setConditonBean(String conditonBean) {
         this.conditonBean = conditonBean;
+    }
+
+    public String getAppModuleName() {
+        return appModuleName;
+    }
+
+    public void setAppModuleName(String appModuleName) {
+        this.appModuleName = appModuleName;
+    }
+
+    public BusinessModel(Integer version, String name, String className, String conditonBean, String daoBean, String depict, String appModuleId, String appModuleCode, String appModuleName, String lookUrl, Set<FlowType> flowTypes) {
+        this.version = version;
+        this.name = name;
+        this.className = className;
+        this.conditonBean = conditonBean;
+        this.daoBean = daoBean;
+        this.depict = depict;
+        this.appModuleId = appModuleId;
+        this.appModuleCode = appModuleCode;
+        this.appModuleName = appModuleName;
+        this.lookUrl = lookUrl;
+        this.flowTypes = flowTypes;
+    }
+
+
+    public BusinessModel() {
     }
 
     @Override

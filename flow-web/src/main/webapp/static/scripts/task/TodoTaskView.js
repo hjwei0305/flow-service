@@ -12,13 +12,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         this.getModelList();
         this.addEvents();
-        if ($(".task-work").hasClass("active")) {
-            parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
-                win.mainPageView.todoTaskView.refresh();
-            });
-        } else {
-            return;
-        }
     },
     initHtml: function (data) {
         $("#" + this.renderTo).empty();
@@ -40,7 +33,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         return html;
     },
     //导航部分的数据调用
-    getModelList: function () {
+    getModelList: function (modelId) {
         var g = this;
         var myMask;
         if (g.firstTime) {
@@ -61,7 +54,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
-                g.modelId = status.data[0].businessModeId;
+                g.modelId = modelId ? modelId : status.data[0].businessModeId;
+                if (modelId) {
+                    $(".navber-count[data-id='" + g.modelId + "']").click();
+                }
                 g.getTodoData();
             },
             failure: function (result) {
@@ -208,7 +204,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     </div>' +
                 '                     <span class="item-right task-item-right">' +
                 '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                          <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i><span>' + this.countDate(items[j].createdDate) + '</span></div>' +
+                '                          <div class="todo-date"><i class="flow-time-icon" title="创建时间"></i><span>' + this.countDate(items[j].createdDate) + '</span></div>' +
                 '                     </span>' +
                 '                 </div>' +
                 '</div>');
@@ -335,7 +331,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     refresh: function () {
-        window.location.reload();
+        this.getModelList(this.modelId);
     },
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {

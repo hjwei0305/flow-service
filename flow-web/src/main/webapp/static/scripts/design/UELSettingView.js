@@ -66,7 +66,8 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             title: "保存配置",
-            selected: true,
+            iconCss:"ecmp-common-save",
+          //  selected: true,
             handler: function () {
                 var name;
                 if (g.showName) {
@@ -90,6 +91,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             title: "取消",
+            iconCss:"ecmp-common-delete",
             handler: function () {
                 g.window.close();
             }

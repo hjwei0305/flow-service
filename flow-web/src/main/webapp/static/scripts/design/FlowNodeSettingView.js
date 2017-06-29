@@ -97,7 +97,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             title: "保存配置",
-            selected: true,
+            iconCss:"ecmp-common-save",
+         //   selected: true,
             handler: function () {
                 var normalForm = EUI.getCmp("normal");
                 if (!normalForm.isValid()) {
@@ -129,6 +130,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             title: "取消",
+            iconCss:"ecmp-common-delete",
             handler: function () {
                 g.remove();
                 g.window.close();
@@ -234,6 +236,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     items: [{
                         xtype: "Button",
                         title: "选择岗位",
+                        iconCss:"ecmp-common-choose",
                         id: "chooseBtn",
                         handler: function () {
                             var userType = EUI.getCmp("userType").getValue().userType;
@@ -558,11 +561,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }, {
             label: this.lang.codeText,
             name: "code",
-            index: "code"
+            index: "code",
+            width: 100
         }, {
             label: this.lang.nameText,
             name: "name",
-            index: "name"
+            index: "name",
+            width: 150
         }];
     },
     getPositionTypeGrid: function () {
@@ -640,7 +645,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 350,
             buttons: [{
                 title: "确定",
-                selected: true,
+                iconCss:"ecmp-common-ok",
+               // selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionGrid");
                     var selectRow = EUI.getCmp("selPositionGrid").getGridData();
@@ -650,6 +656,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -773,7 +780,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 350,
             buttons: [{
                 title: "确定",
-                selected: true,
+                iconCss:"ecmp-common-ok",
+             //   selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionTypeGrid");
                     var selectRow = EUI.getCmp("selPositionTypeGrid").getGridData();
@@ -783,6 +791,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -906,7 +915,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 350,
             buttons: [{
                 title: "确定",
-                selected: true,
+                iconCss:"ecmp-common-ok",
+             //   selected: true,
                 handler: function () {
                     var data = EUI.getCmp("selfUserGrid").getSelectRow();
                     EUI.getCmp("selfDefGrid").addRowData(data);
@@ -914,6 +924,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
+                iconCss:"ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -1032,6 +1043,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             msg: msg,
             buttons: [{
                 title: "确定",
+                iconCss:"ecmp-common-ok",
                 handler: function () {
                     message.remove();
                 }

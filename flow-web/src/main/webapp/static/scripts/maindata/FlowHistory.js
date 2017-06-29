@@ -99,7 +99,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + g.lang.launchHistoryText + "</span>",
-                width: 375,
+                width: 365,
                 field: ["id"],
                 labelWidth: 80,
                 name: "name",
@@ -122,6 +122,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Button",
                 title: g.lang.showFlowDiagramText,
+                iconCss:"ecmp-common-view",
                 handler: function () {
                     $(".toptop-right").addClass("flowselect");
                     g.showDesgin()
