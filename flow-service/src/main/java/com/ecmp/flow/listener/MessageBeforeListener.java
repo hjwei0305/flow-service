@@ -6,6 +6,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
+import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
@@ -76,6 +77,9 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
     @Autowired
     private HistoryService historyService;
 
+    @Autowired
+    private FlowHistoryDao flowHistoryDao;
+
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Override
@@ -88,6 +92,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setFlowDefVersionDao(this.flowDefVersionDao);
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
+            messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
             messageSendThread.run();
 //            pool.execute(messageSendThread);
 //            Thread.sleep(1000*60*2);

@@ -30,6 +30,14 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
 
     /**
      * 根据流程实例id查询待办
+     * @param actInstanceId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
+    public  FlowTask findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
+
+    /**
+     * 根据流程实例id查询待办
      * @param instanceId
      * @return
      */

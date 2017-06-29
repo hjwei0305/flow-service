@@ -6,6 +6,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
+import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
@@ -69,22 +70,28 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
     @Autowired
     private HistoryService historyService;
 
+    @Autowired
+    private FlowHistoryDao flowHistoryDao;
+
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Override
     public void notify(DelegateExecution execution) throws Exception{
         try {
-            ExecutorService pool = Executors.newSingleThreadExecutor();
+//            ExecutorService pool = Executors.newSingleThreadExecutor();
             String eventType = "after";
             String contentTemplateCode = "EMAIL_TEMPLATE_AFTER_DOWORK";
             MessageSendThread messageSendThread = new MessageSendThread(eventType,execution,contentTemplateCode);
             messageSendThread.setFlowDefVersionDao(this.flowDefVersionDao);
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
-            pool.submit(messageSendThread);
-            //关闭线程池
-            System.out.println(pool.isShutdown());
-            pool.shutdown();
+            messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
+            messageSendThread.run();
+//            new Thread(messageSendThread).start();
+//            pool.submit(messageSendThread);
+//            //关闭线程池
+//            System.out.println(pool.isShutdown());
+//            pool.shutdown();
         }catch (Exception e){
             logger.error(e.getMessage());
         }
