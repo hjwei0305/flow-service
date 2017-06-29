@@ -179,7 +179,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "保存",
                 iconCss:"ecmp-common-save",
-              //  selected: true,
+               selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBuiltInApprove");
                     if (!form.isValid()) {
@@ -208,7 +208,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
@@ -290,7 +290,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -431,7 +431,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     xtype: "Button",
                     title: "新增",
                     iconCss:"ecmp-common-add",
-                   // selected: true,
+                   selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
@@ -728,7 +728,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title:"保存",
                 iconCss:"ecmp-common-save",
-              //  selected: true,
+               selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBuiltInApprove");
                     if (!form.isValid()) {

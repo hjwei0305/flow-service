@@ -181,7 +181,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         }, "->", {
             xtype: "Button",
-          //  selected: true,
+             selected: true,
             title: this.lang.deployText,
             iconCss:"ecmp-common-upload",
             handler: function () {
@@ -205,7 +205,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     buttons: [{
                         title: "确定",
                         iconCss:"ecmp-common-ok",
-                       // selected: true,
+                         selected: true,
                         handler: function () {
                             g.clear();
                             msgBox.remove();
@@ -884,7 +884,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "保存配置",
                 iconCss:"ecmp-common-save",
-             //   selected: true,
+                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
                     callback && callback.call(this, name);

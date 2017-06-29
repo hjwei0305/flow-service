@@ -181,7 +181,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "保存",
                 iconCss:"ecmp-common-save",
-               // selected: true,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBuiltInApprove");
                     if (!form.isValid()) {
@@ -210,7 +210,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
@@ -288,7 +288,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-              //  selected: true,
+                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -429,7 +429,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                     xtype: "Button",
                     title: "新增",
                     iconCss:"ecmp-common-add",
-                  //  selected: true,
+                     selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
@@ -724,7 +724,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title:"保存",
                 iconCss:"ecmp-common-save",
-                //selected: true,
+                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBuiltInApprove");
                     if (!form.isValid()) {

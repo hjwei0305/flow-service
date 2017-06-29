@@ -80,7 +80,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: this.lang.addBtnText,
                 iconCss:"ecmp-common-add",
-              //  selected: true,
+                selected: true,
                 handler: function () {
                     g.addWorkPageUrl();
                 }
@@ -174,7 +174,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-              //  selected: true,
+                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -272,7 +272,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-             //   selected: true,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateWorkPageUrl");
                     if (!form.isValid()) {
@@ -343,7 +343,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-             //   selected: true,
+                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addWorkPageUrl");
                     if (!form.isValid()) {

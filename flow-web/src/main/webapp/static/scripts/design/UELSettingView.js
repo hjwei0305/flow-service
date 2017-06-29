@@ -67,7 +67,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         return [{
             title: "保存配置",
             iconCss:"ecmp-common-save",
-          //  selected: true,
+             selected: true,
             handler: function () {
                 var name;
                 if (g.showName) {

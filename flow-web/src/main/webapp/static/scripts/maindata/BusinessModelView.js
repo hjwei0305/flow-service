@@ -81,7 +81,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 iconCss:"ecmp-common-add",
                 title: this.lang.addResourceText,
-                selected: false,
+                selected: true,
                 handler: function () {
                     g.addBusinessModel();
                 }
@@ -129,12 +129,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                          //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
                          //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
                          //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
-
-                        return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showConditionPropertiesText+'"></i>'+
+                        return  '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="'+g.lang.editText+'"></i>'+
+                          '<i class="ecmp-common-delete delete-businessModel fontcusor" title="'+g.lang.deleteText+'"></i>' +
+                          '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showConditionPropertiesText+'"></i>'+
                           '<i class="ecmp-common-configuration icon-space fontcusor" title="'+g.lang.configWorkSpaceText+'"></i>'+
-                          '<i class="ecmp-common-set icon-space fontcusor" title="'+g.lang.configServerLocationText+'"></i>'+
-                          '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="'+g.lang.editText+'"></i>'+
-                          '<i class="ecmp-common-delete delete-businessModel fontcusor" title="'+g.lang.deleteText+'"></i>' ;
+                          '<i class="ecmp-common-set icon-space fontcusor" title="'+g.lang.configServerLocationText+'"></i>';
                     }
                 }, {
                     name: "id",
@@ -207,7 +206,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-                selected: false,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -348,7 +347,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-                selected: false,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBusinessModel");
                     if (!form.isValid()) {
@@ -458,7 +457,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-                selected: false,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBusinessModel");
                     if (!form.isValid()) {
@@ -585,7 +584,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-                selected: false,
+                selected: true,
                 handler: function () {
                     // var form=EUI.getCmp("workPageSelect");
                     // var data=form.getFormValue();
@@ -625,7 +624,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
                 iconCss:"ecmp-common-add",
-                //  selected: true,
+                selected: true,
                 handler: function () {
                     g.addFlowServiceUrl(data);
                 }
@@ -960,7 +959,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-                selected: false,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
@@ -1068,7 +1067,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-                selected: false,
+                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
@@ -1095,7 +1094,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-                selected: false,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({

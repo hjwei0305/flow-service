@@ -98,7 +98,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return [{
             title: "保存配置",
             iconCss:"ecmp-common-save",
-         //   selected: true,
+            selected: true,
             handler: function () {
                 var normalForm = EUI.getCmp("normal");
                 if (!normalForm.isValid()) {
@@ -644,7 +644,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+                selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionGrid");
                     var selectRow = EUI.getCmp("selPositionGrid").getGridData();
@@ -779,7 +779,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-             //   selected: true,
+                 selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionTypeGrid");
                     var selectRow = EUI.getCmp("selPositionTypeGrid").getGridData();
@@ -914,7 +914,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-             //   selected: true,
+                selected: true,
                 handler: function () {
                     var data = EUI.getCmp("selfUserGrid").getSelectRow();
                     EUI.getCmp("selfDefGrid").addRowData(data);

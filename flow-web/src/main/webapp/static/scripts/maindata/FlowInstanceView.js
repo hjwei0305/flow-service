@@ -213,7 +213,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-              //  selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({

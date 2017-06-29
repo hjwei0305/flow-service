@@ -21,7 +21,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-             //   selected: true,
+                 selected: true,
                 handler: function () {
                     g.window.close();
                 }
