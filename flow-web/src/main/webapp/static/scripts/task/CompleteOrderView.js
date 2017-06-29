@@ -8,6 +8,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     },
     initComponent: function () {
         this.initHtml();
+
         this.getTodoOrderData();
         this.addEvents();
     },

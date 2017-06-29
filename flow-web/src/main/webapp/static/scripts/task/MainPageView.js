@@ -19,7 +19,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             items:[{
                     xtype:"Container",
                     region : "north",
-                    height:70,
+                    height:50,
                     border:false,
                     padding:0,
                     html:this.getToolBarHtml()
@@ -107,6 +107,11 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("active");
             g.showMyOrderView(true);
         });
+
+        parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+            win.mainPageView.todoTaskView.refresh();
+            win.mainPageView.completeTaskView.refresh();
+        });
     },
     //待办界面
     showTodoTaskView: function (visiable) {
@@ -115,7 +120,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showMyOrderView(false);
             if (this.todoTaskView) {
                 this.todoTaskView.show();
-                this.todoTaskView.getModelList();
+                this.todoTaskView.refresh();
                 return;
             }
             this.todoTaskView = new EUI.TodoTaskView({
@@ -132,7 +137,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showMyOrderView(false);
             if (this.completeTaskView) {
                 this.completeTaskView.show();
-                this.completeTaskView.getCompleteData();
+                this.completeTaskView.refresh();
                 return;
             }
             this.completeTaskView = new EUI.CompleteTaskView({
