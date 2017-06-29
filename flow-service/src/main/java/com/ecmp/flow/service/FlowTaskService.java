@@ -546,7 +546,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String executionId = currTask.getExecutionId();
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
             List<HistoricVariableInstance> historicVariableInstances = historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
-
+           if(execution == null){
+               return OperateResult.OperationFailure("10014");//当前任务不允许撤回
+           }
 //            for(HistoricVariableInstance h: historicVariableInstances){
 //
 //            }
@@ -566,7 +568,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             HistoricActivityInstance historicActivityInstance = null;
             HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
-                    .executionId(execution.getId());
+                    .executionId(executionId);
             if (his != null) {
             List<HistoricActivityInstance>    historicActivityInstanceList = his.activityId(currTask.getTaskDefinitionKey()).orderByHistoricActivityInstanceEndTime().desc().list();
              if(historicActivityInstanceList !=null && !historicActivityInstanceList.isEmpty()) {
@@ -662,6 +664,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             initTask(instance, currTask.getTaskDefinitionKey(), flowHistory);
             return result;
         } catch (Exception e) {
+            e.printStackTrace();
             e.printStackTrace();
             logger.error(e.getMessage());
 
