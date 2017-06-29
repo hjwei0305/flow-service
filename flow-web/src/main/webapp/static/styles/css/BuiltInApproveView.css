@@ -20,11 +20,11 @@
     /*float: left;*/
     /*cursor: pointer;*/
     /*background: url("../images/btn/flow/flow_start.png") no-repeat 0 0px;*/
-    background: rgba(0, 0, 0, 0) url("../images/btn/flow/flow_start.png") no-repeat scroll 0 0;
-    cursor: pointer;
+  /*  background: rgba(0, 0, 0, 0) url("../images/btn/flow/flow_start.png") no-repeat scroll 0 0;
     float: left;
     height: 16px;
-    width: 16px;
+    width: 16px;*/
+    cursor: pointer;
 }
 
 .condetail-flowHistory {
@@ -33,11 +33,11 @@
     /*float: left;*/
     /*cursor: pointer;*/
     /*background: url("../images/time_icon.png") no-repeat;*/
-    background: rgba(0, 0, 0, 0) url("../images/time_icon.png") no-repeat scroll 0 0;
-    cursor: pointer;
+   /* background: rgba(0, 0, 0, 0) url("../images/time_icon.png") no-repeat scroll 0 0;
     height: 16px;
     margin: 0 auto;
-    width: 16px;
+    width: 16px;*/
+    cursor: pointer;
 }
 
 .condetail-update {
@@ -46,12 +46,12 @@
     /*float: left;*/
     /*cursor: pointer;*/
     /*background: url("../images/operate_bg.png") no-repeat 0 -160px;*/
-    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll 0 -160px;
-    cursor: pointer;
+/*    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll 0 -160px;
     float: left;
     height: 15px;
     margin-left: 18px;
-    width: 15px;
+    width: 15px;*/
+    cursor: pointer;
 }
 
 .condetail-delete {
@@ -60,11 +60,11 @@
     /*float: right;*/
     /*cursor: pointer;*/
     /*background: url("../images/operate_bg.png") no-repeat -32px -160px;*/
-    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll -32px -160px;
-    cursor: pointer;
+/*    background: rgba(0, 0, 0, 0) url("../images/operate_bg.png") no-repeat scroll -32px -160px;
     float: right;
     height: 15px;
-    width: 15px;
+    width: 15px;*/
+    cursor: pointer;
 }
 
 #content .ux-bar-right .ux-toolbar-item {
@@ -77,4 +77,7 @@
 
 #caption .ux-field-label {
     top: 55px;
+}
+.icon-space {
+    margin-right: 10px;
 }

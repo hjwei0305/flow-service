@@ -205,9 +205,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
     private OperateResultWithData<FlowStatus> complete(String id,String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         flowTask.setDepict(opinion);
+        Integer reject = null;
+        if (variables != null) {
+            Object rejectO = variables.get("reject");
+            if (rejectO != null) {
+                try {
+                    reject = Integer.parseInt(rejectO.toString());
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+        if (reject != null && reject == 1) {
+            flowTask.setDepict("【被驳回】"+flowTask.getDepict());
+            flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+        } else {
+            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
+        }
+        variables.put("opinion", flowTask.getDepict());
+      //  flowTaskDao.save(flowTask);
+
         String actTaskId = flowTask.getActTaskId();
 
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
@@ -228,17 +249,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
         this.completeActiviti(actTaskId, variables);
         this.saveVariables(variables, flowTask);
-        Integer reject = null;
-        if (variables != null) {
-            Object rejectO = variables.get("reject");
-            if (rejectO != null) {
-                try {
-                    reject = Integer.parseInt(rejectO.toString());
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-            }
-        }
+
         HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
         // 取得流程实例
@@ -278,12 +289,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowHistory.setActHistoryId(historicTaskInstance.getId());
             flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
             flowHistory.setPreId(flowTask.getPreId());
-            if (reject != null && reject == 1) {
-                flowHistory.setDepict("【被驳回】"+flowHistory.getDepict());
-                flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
-            } else {
-                flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-            }
+            flowHistory.setDepict(flowTask.getDepict());
+            flowHistory.setTaskStatus(flowTask.getTaskStatus());
+//            if (reject != null && reject == 1) {
+//                flowHistory.setDepict("【被驳回】"+flowHistory.getDepict());
+//                flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
+//            } else {
+//                flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
+//            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
 
