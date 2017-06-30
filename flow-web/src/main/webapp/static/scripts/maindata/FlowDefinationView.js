@@ -412,8 +412,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             //     + "<div class='condetail_delete'></div></div>";
                             // return strVar;
                             return '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
-                                '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' +
-                                '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
+                                '<i class="ecmp-common-delete  icon-space fontcusor" title="'+g.lang.deleteText+'"></i>' +
+                                '<i class="ecmp-common-viewfontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
                         }
                     }, {
                         name: "id",

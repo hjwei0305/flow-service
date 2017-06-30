@@ -181,11 +181,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
+            var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="ecmp-common-return reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
-            var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="claim-icon" title="签收"></i><span>签收</span></div>' : '';
+            var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="ecmp-common-claim claim-icon" title="签收"></i><span>签收</span></div>' : '';
             var flowInstanceCreatorId = items[j].flowInstance ? items[j].flowInstance.creatorId : "";
-            var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
+            var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon icon-size" title="终止"></i><span>终止</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 // '                  <div class="checkbox"></div>' +
@@ -197,14 +197,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                 <div class="item">' +
                 '                     <div class="end">'
                 + claimTaskHtml +
-                '                          <div class="todo-btn approve-btn"><i class="end-icon" title="审批"></i><span>处理</span></div>'
+                '                          <div class="todo-btn approve-btn"><i class="ecmp-common-handle end-icon handle-icon-size" title="审批"></i><span>处理</span></div>'
                 + rejectHtml + endFlowHtml +
-                '                          <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
-                '                          <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
+                '                          <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                '                          <div class="todo-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                 '                     </div>' +
                 '                     <span class="item-right task-item-right">' +
                 '                          <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                          <div class="todo-date"><i class="flow-time-icon" title="创建时间"></i><span>' + this.countDate(items[j].createdDate) + '</span></div>' +
+                '                          <div class="todo-date"><i class="ecmp-flow-history flow-time-icon time-icon-size" title="创建时间"></i><span>' + this.countDate(items[j].createdDate) + '</span></div>' +
                 '                     </span>' +
                 '                 </div>' +
                 '</div>');
@@ -386,6 +386,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }],
                 buttons: [{
                     title: "确定",
+                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var opinion = EUI.getCmp("opinion").getValue();
@@ -425,6 +426,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
+                    iconCss:"ecmp-common-delete",
                     handler: function () {
                         win.remove();
                     }
@@ -445,6 +447,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 msg: "您确定要签收吗",
                 buttons: [{
                     title: "确定",
+                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -468,6 +471,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
+                    iconCss:"ecmp-common-delete",
                     handler: function () {
                         message.remove();
                     }
@@ -488,6 +492,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 msg: "您确定要终止吗",
                 buttons: [{
                     title: "确定",
+                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -511,6 +516,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
+                    iconCss:"ecmp-common-delete",
                     handler: function () {
                         message.remove();
                     }

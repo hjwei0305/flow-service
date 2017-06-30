@@ -74,7 +74,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
-                var endFlowHtml = item.canManuallyEnd? '<div class="todo-btn endFlow-btn"><i class="endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
+                var endFlowHtml = item.canManuallyEnd? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
                 html = $('<div class="info-items">' +
                     '                            <div class="item">' +
                     '                                <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
@@ -87,8 +87,8 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                     '                            <div class="item item-right">' +
                     '                               <div class="end">'
                                                          +endFlowHtml+
-                    '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
-                    '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
+                    '                                    <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                    '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                     '                               </div>' +
                     '                            </div>' +
                     '                        </div>');
@@ -188,6 +188,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                 msg: "您确定要终止吗",
                 buttons: [{
                     title: "确定",
+                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -211,6 +212,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
+                    iconCss:"ecmp-common-delete",
                     handler: function () {
                         message.remove();
                     }

@@ -92,7 +92,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
              } else if (status == "COMPLETE") {
              statusStr = "结束";
              }*/
-            var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false) ? '<div class="todo-btn flow-backout-btn"><i class="backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
+            var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false) ? '<div class="todo-btn flow-backout-btn"><i class="ecmp-flow-backout backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
             var itemdom = $('<div class="info-item">' +
                 '                            <div class="item">' +
                 '                                <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
@@ -103,12 +103,12 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                            <div class="item">' +
                 '                                <div class="end">' +
                 backoutHtml +
-                '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
-                '                                    <div class="todo-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
+                '                                    <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                '                                    <div class="todo-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                 '                                </div>' +
                 '                                <span class="item-right task-item-right">' +
                 '                                    <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                                    <div class="todo-date"><i class="flow-time-icon" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
+                '                                    <div class="todo-date"><i class="ecmp-flow-history flow-time-icon time-icon-size" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
                 '                                </span>' +
                 '                            </div>' +
                 '</div>');
@@ -216,6 +216,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 }],
                 buttons: [{
                     title: "确定",
+                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var opinion = EUI.getCmp("opinion").getValue();
@@ -246,6 +247,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
+                    iconCss:"ecmp-common-delete",
                     handler: function () {
                         win.remove();
                     }

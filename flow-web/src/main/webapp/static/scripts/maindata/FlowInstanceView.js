@@ -106,8 +106,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         //     + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
                         //     + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
                         // return strVar;
-                        return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i>'+
-                            '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
+                        //  return '<i class="ecmp-common-delete icon-space fontcusor" title="'+g.lang.deleteText+'"></i>'+
+                        return  '<i class="ecmp-common-view  fontcusor" title="'+g.lang.showDoneText+'"></i>';
                     }
                 }, {
                     name: "id",

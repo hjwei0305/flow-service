@@ -488,9 +488,9 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                                     + "<div class='condetail-update' title='编辑'></div>"
                                     + "<div class='condetail-delete'  title='删除'></div>" +
                                     "</div>";*/
-                                var strVar="<i class='ecmp-flow-start condetail-start icon-space' title='启动流程'></i>"+
-                                    "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
-                                    "<i class='ecmp-common-delete condetail-delete' title='删除'></i>";
+                                var strVar=      "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
+                                    "<i class='ecmp-common-delete condetail-delete icon-space' title='删除'></i>"+
+                                    "<i class='ecmp-flow-start condetail-start' title='启动流程'></i>";
                             }
                             if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
                               //  var strVar = "<div class='condetail-operate'>"+

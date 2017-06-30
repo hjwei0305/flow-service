@@ -245,6 +245,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             msg: msg,
             buttons: [{
                 title: "确定",
+                iconCss:"ecmp-common-ok",
                 handler: function () {
                     message.remove();
                 }
