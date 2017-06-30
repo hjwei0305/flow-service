@@ -318,6 +318,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             //初始化新的任务
             PvmActivity currentNode = this.getActivitNode(actTaskId);
             if (instance!=null && currentNode != null &&  (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type")+""))) {
+
                 callInitTaskBack(currentNode, instance, flowHistory);
             }
 
@@ -335,21 +336,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     private void callInitTaskBack(PvmActivity currentNode, ProcessInstance instance, FlowHistory flowHistory) {
-
-        Map<String, TransitionImpl> namedOutgoingTransitions = ((ActivityImpl)currentNode).getNamedOutgoingTransitions();
-//        List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
-        if (namedOutgoingTransitions != null && !namedOutgoingTransitions.isEmpty()) {
-            for (Map.Entry<String, TransitionImpl> node : namedOutgoingTransitions.entrySet()) {
-                PvmActivity nextActivity = node.getValue().getDestination();
+        List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
+        if (nextNodes != null && nextNodes.size() > 0) {
+            for (PvmTransition node : nextNodes) {
+                PvmActivity nextActivity = node.getDestination();
                 if (ifGageway(nextActivity)) {
                     callInitTaskBack(nextActivity, instance, flowHistory);
-                }else {
-                    String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
-                    if (key == null) {
-                        key = nextActivity.getId();
-                    }
-                    initTask(instance, key, flowHistory);
                 }
+                String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
+                if (key == null) {
+                    key = nextActivity.getId();
+                }
+                initTask(instance, key, flowHistory);
             }
         }
 
@@ -1205,29 +1203,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNextNodesWithCondition(String id, String businessId,List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
+        PvmActivity currActivity = this.getActivitNode(actTaskId);
+
+        BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        String businessModelId = businessModel.getId();
+        String appModuleId = businessModel.getAppModuleId();
+        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
         if(this.checkSystemExclusiveGateway(flowTask)){//判断是否存在系统排他网关
             if (StringUtils.isEmpty(businessId)) {
                 throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
             }
-//            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-//            JSONObject defObj = JSONObject.fromObject(defJson);
-            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
-//            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
-//            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
 
-            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-//            clientApiBaseUrl =    ContextUtil.getHost();
-//            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
-            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
+            return this.selectQualifiedNode(currActivity, v, includeNodeIds);
         }else {
-            PvmActivity currActivity = this.getActivitNode(actTaskId);
-            return this.selectNextAllNodesWithGateWay( flowTask,currActivity  , includeNodeIds);
+            return this.selectNextAllNodesWithGateWay( flowTask,currActivity  , v,includeNodeIds);
         }
     }
 
@@ -1374,7 +1366,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
-    private List<NodeInfo> selectNextAllNodesWithGateWay(FlowTask flowTask ,PvmActivity currActivity ,List<String> includeNodeIds) {
+    private List<NodeInfo> selectNextAllNodesWithGateWay(FlowTask flowTask ,PvmActivity currActivity , Map<String, Object> v,List<String> includeNodeIds) throws NoSuchMethodException, SecurityException{
 
         Map<PvmActivity,String> nextNodes = new LinkedHashMap<PvmActivity,String>();
         initNextNodes(currActivity, nextNodes,0);
@@ -1400,7 +1392,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         if(ifGageway(tempActivity)){
-                            List<NodeInfo>  currentNodeInf= this.selectNextAllNodesWithGateWay(flowTask ,tempActivity ,null);
+                            List<NodeInfo>  currentNodeInf= this.selectQualifiedNode(currActivity, v, null);
                             nodeInfoList.addAll(currentNodeInf);
                             continue;
                         }
@@ -1734,16 +1726,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     /**
      * 选择符合条件的节点
      *
-     * @param actTaskId 流程引擎实际任务ID
      * @param v
      * @return
      * @throws SecurityException
      * @throws NoSuchMethodException
      */
-    private List<NodeInfo> selectQualifiedNode(String actTaskId, Map<String, Object> v,List<String> includeNodeIds)
+    private List<NodeInfo> selectQualifiedNode(PvmActivity currActivity, Map<String, Object> v,List<String> includeNodeIds)
             throws NoSuchMethodException, SecurityException {
         List<NodeInfo> qualifiedNode = new ArrayList<NodeInfo>();
-        PvmActivity currActivity = this.getActivitNode(actTaskId);
         List<PvmActivity> results = new ArrayList<PvmActivity>();
         checkFuHeConditon(currActivity, v, results);
         // 前端需要的数据
