@@ -882,8 +882,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             border: false,
             isOverFlow: false,
-            html: "<div class='arrow-right' id="+id+"-right></div>" +
-            "<div class='arrow-left' id="+id+"-left></div>"
+            html: "<div class='ecmp-common-moveright arrow-right' id="+id+"-right></div>" +
+            "<div class='ecmp-common-leftmove arrow-left' id="+id+"-left></div>"
         }
     },
     addPositionTypeEvent: function () {

@@ -25,9 +25,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         if (data.length < 6) {
             html += '<div class="navbar"></div>';
         } else {
-            html += '      <i class="arrow-left pre"></i>' +
+            html += '      <i class="ecmp-common-leftmove arrow-left pre"></i>' +
                 '         <div class="navbar"></div>' +
-                '         <i class="arrow-right next"></i>';
+                '         <i class="ecmp-common-moveright arrow-right next"></i>';
         }
         html += '</div>';
         return html;
