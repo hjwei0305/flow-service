@@ -424,6 +424,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResult taskReject(String id,String opinion, Map<String, Object> variables) {
         OperateResult result = OperateResult.OperationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask == null){
+            return OperateResult.OperationFailure("10009");
+        }
         flowTask.setDepict(opinion);
         if (flowTask != null) {
             FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
