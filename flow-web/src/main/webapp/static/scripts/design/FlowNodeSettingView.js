@@ -513,8 +513,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+                // return "<div class='condetail-operate'>" +
+                //     "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+                return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
         colModel = colModel.concat(this.positionGridColModel());
@@ -578,8 +579,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+       /*         return "<div class='condetail-operate'>" +
+                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";*/
+                return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
         colModel = colModel.concat(this.positionTypeGridColModel());
@@ -619,8 +621,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除'></div></div>";
+               /* return "<div class='condetail-operate'>" +
+                 "<div class='condetail-delete' title='删除'></div></div>";*/
+                return "<div class='ecmp-common-delete condetail-delete' title='删除'></div>";
             }
         }];
         colModel = colModel.concat(this.getSelfDefGridColModel());
