@@ -1,11 +1,193 @@
 {
-  "id": "string",
-  "createdDate": "2017-03-30T12:37:48.262Z",
-  "lastEditedDate": "2017-03-30T12:37:48.263Z",
-  "name": "string",
-  "className": "string",
-  "depict": "string",
-  "appModule": {
-    "id": "c0a80164-5b22-1953-815b-224980b20000"
+  "flowTypeId" : "C35B0B09-3640-11E7-9617-3C970EA9E0F7",
+  "flowTypeName" : "默认类型",
+  "orgId" : "B9D2C6C5-3B9A-11E7-8985-9681B6E77C6A",
+  "orgCode" : "10058",
+  "id" : null,
+  "versionCode" : -1,
+  "priority" : 0,
+  "businessModelId" : "D1E8B6BB-361D-11E7-9617-3C970EA9E0F7",
+  "process" : {
+    "name" : "emailtjTest1",
+    "id" : "邮件测试",
+    "flowDefVersionId" : "",
+    "isExecutable" : true,
+    "nodes" : {
+      "StartEvent_1" : {
+        "type" : "StartEvent",
+        "x" : 75,
+        "y" : 63,
+        "id" : "StartEvent_1",
+        "target" : [{
+          "targetId" : "UserTask_2",
+          "uel" : ""
+        }],
+        "name" : "开始",
+        "nodeConfig" : {
+          "normal" : {
+            "name" : "普通任务",
+            "executeTime" : 0,
+            "workPageName" : "",
+            "workPageUrl" : "",
+            "allowTerminate" : false,
+            "allowPreUndo" : false,
+            "allowReject" : false
+          },
+          "executor" : {
+            "userType" : "StartUser"
+          },
+          "event" : {},
+          "notify" : {}
+        }
+      },
+      "UserTask_2" : {
+        "type" : "UserTask",
+        "x" : 237,
+        "y" : 73,
+        "id" : "UserTask_2",
+        "nodeType" : "Normal",
+        "target" : [{
+          "targetId" : "UserTask_3",
+          "uel" : ""
+        }],
+        "name" : "普通任务",
+        "nodeConfig" : {
+          "normal" : {
+            "name" : "普通任务",
+            "executeTime" : 0,
+            "workPageName" : "业务申请查看页面",
+            "workPageUrl" : "/builtInApprove/look",
+            "allowTerminate" : true,
+            "allowPreUndo" : true,
+            "allowReject" : true
+          },
+          "executor" : {
+            "userType" : "StartUser"
+          },
+          "event" : {
+            "beforeExcuteService" : "",
+            "beforeExcuteServiceId" : "",
+            "afterExcuteService" : "",
+            "afterExcuteServiceId" : ""
+          },
+          "notify" : {
+            "before" : {
+              "notifyExecutor" : {
+                "type" : ["EMAIL", "SMS"],
+                "content" : "test"
+              },
+              "notifyStarter" : {
+                "type" : ["EMAIL", "SMS"],
+                "content" : "test"
+              },
+              "notifyPosition" : {
+                "type" : ["EMAIL", "SMS"],
+                "content" : "test"
+              }
+            },
+            "after" : {
+              "notifyExecutor" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyStarter" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyPosition" : {
+                "type" : [],
+                "content" : ""
+              }
+            }
+          }
+        }
+      },
+      "UserTask_3" : {
+        "type" : "UserTask",
+        "x" : 450,
+        "y" : 73,
+        "id" : "UserTask_3",
+        "nodeType" : "Normal",
+        "target" : [{
+          "targetId" : "EndEvent_4",
+          "uel" : ""
+        }],
+        "name" : "普通任务",
+        "nodeConfig" : {
+          "normal" : {
+            "name" : "普通任务",
+            "executeTime" : 0,
+            "workPageName" : "业务申请查看页面",
+            "workPageUrl" : "/builtInApprove/look",
+            "allowTerminate" : true,
+            "allowPreUndo" : true,
+            "allowReject" : true
+          },
+          "executor" : {
+            "userType" : "StartUser"
+          },
+          "event" : {
+            "beforeExcuteService" : "",
+            "beforeExcuteServiceId" : "",
+            "afterExcuteService" : "",
+            "afterExcuteServiceId" : ""
+          },
+          "notify" : {
+            "before" : {
+              "notifyExecutor" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyStarter" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyPosition" : {
+                "type" : [],
+                "content" : ""
+              }
+            },
+            "after" : {
+              "notifyExecutor" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyStarter" : {
+                "type" : [],
+                "content" : ""
+              },
+              "notifyPosition" : {
+                "type" : [],
+                "content" : ""
+              }
+            }
+          }
+        }
+      },
+      "EndEvent_4" : {
+        "type" : "EndEvent",
+        "x" : 631,
+        "y" : 63,
+        "id" : "EndEvent_4",
+        "target" : [],
+        "name" : "结束",
+        "nodeConfig" : {
+          "normal" : {
+            "name" : "普通任务",
+            "executeTime" : 0,
+            "workPageName" : "",
+            "workPageUrl" : "",
+            "allowTerminate" : false,
+            "allowPreUndo" : false,
+            "allowReject" : false
+          },
+          "executor" : {
+            "userType" : "StartUser"
+          },
+          "event" : {},
+          "notify" : {}
+        }
+      }
+    }
   }
-  }
+}

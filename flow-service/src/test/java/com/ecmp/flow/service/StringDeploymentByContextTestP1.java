@@ -17,15 +17,13 @@ import com.ecmp.flow.ActivitiContextTestCase;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 
 /**
- * 用文本方式部署
+ * 用文本方式部署,测试并行网关
  *
  * @author tj
  */
-public class StringDeploymentByContextTest extends ActivitiContextTestCase {
+public class StringDeploymentByContextTestP1 extends ActivitiContextTestCase {
 
     // XML字符串
     private String text = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +

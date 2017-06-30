@@ -205,9 +205,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
-    @Transactional( propagation= Propagation.REQUIRES_NEW)
     private OperateResultWithData<FlowStatus> complete(String id,String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
         Integer reject = null;
         if (variables != null) {
@@ -248,7 +248,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
         this.completeActiviti(actTaskId, variables);
-        this.saveVariables(variables, flowTask);
+//        this.saveVariables(variables, flowTask);先不做保存
 
         HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
@@ -326,8 +326,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         OperateResultWithData<FlowStatus> result = OperateResultWithData.OperationSuccess("core_00003");
         if(instance==null||instance.isEnded()){
             result.setData(FlowStatus.COMPLETED);//任务结束
-            flowTask.getFlowInstance().setEnded(true);
-            flowTask.getFlowInstance().setEndDate(new Date());
+            flowInstance.setEnded(true);
+            flowInstance.setEndDate(new Date());
             flowInstanceDao.save(flowTask.getFlowInstance());
         }
         return result;
@@ -1226,7 +1226,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
             return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
         }else {
-            return this.selectNextAllNodes(flowTask , includeNodeIds);
+            PvmActivity currActivity = this.getActivitNode(actTaskId);
+            return this.selectNextAllNodesWithGateWay( flowTask,currActivity  , includeNodeIds);
         }
     }
 
@@ -1367,6 +1368,119 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+
+    /**
+     * 获取所有出口节点信息,包含网关迭代
+     *
+     * @return
+     */
+    private List<NodeInfo> selectNextAllNodesWithGateWay(FlowTask flowTask ,PvmActivity currActivity ,List<String> includeNodeIds) {
+
+        Map<PvmActivity,String> nextNodes = new LinkedHashMap<PvmActivity,String>();
+        initNextNodes(currActivity, nextNodes,0);
+        //前端需要的数据出口任务数据
+        List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
+        if (!nextNodes.isEmpty()) {
+            //判断网关
+            Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
+            PvmActivity firstActivity = (PvmActivity)nextNodesKeyArray[0];
+            Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
+            String nextActivtityType = firstActivity.getProperty("type").toString();
+            String uiType = "readOnly";
+            if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
+                if(this.checkManualExclusiveGateway(flowTask,firstActivity.getId())){//如果人工网关
+                    uiType =  "radiobox";
+                }
+                if (isSizeBigTwo) {
+                    for (int i = 1; i < nextNodes.size(); i++) {
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
+                        if(ifGageway(tempActivity)){
+                            List<NodeInfo>  currentNodeInf= this.selectNextAllNodesWithGateWay(flowTask ,tempActivity ,null);
+                            nodeInfoList.addAll(currentNodeInf);
+                            continue;
+                        }
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                        String gateWayName = firstActivity.getProperty("name")+"";
+                        // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
+                        tempNodeInfo.setGateWayName(gateWayName);
+                        tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) { // 包容网关,checkbox,至少选择一个
+                if (isSizeBigTwo) {
+                    for (int i = 1; i < nextNodes.size(); i++) {
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                        tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            } else if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关,checkbox,默认全部选中显示不能修改
+                if (isSizeBigTwo) {
+                    for (int i = 1; i < nextNodes.size(); i++) {
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
+                        if(includeNodeIds != null){
+                            if(!includeNodeIds.contains(tempActivity.getId())){
+                                continue;
+                            }
+                        }
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                        tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                }
+
+            } else {
+                if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
+                    for (int i = 0; i < nextNodes.size(); i++) {
+                        PvmActivity tempActivity = (PvmActivity)nextNodesKeyArray[i];
+//                        if(includeNodeIds != null){
+//                            if(!includeNodeIds.contains(tempActivity.getId())){
+//                                continue;
+//                            }
+//                        }
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                        tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                        nodeInfoList.add(tempNodeInfo);
+                    }
+                } else {//按照惟一分支任务处理，显示一个，只读
+                    PvmActivity tempActivity =(PvmActivity) nextNodesKeyArray[0];
+                    if(includeNodeIds != null){
+                        if(!includeNodeIds.contains(tempActivity.getId())){
+                            throw new RuntimeException("惟一分支未选中");
+                        }
+                    }
+                    NodeInfo tempNodeInfo = new NodeInfo();
+                    tempNodeInfo = convertNodes(tempNodeInfo, tempActivity);
+                    tempNodeInfo.setUiType(uiType);
+                    tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                    nodeInfoList.add(tempNodeInfo);
+                }
+            }
+        }
+        return nodeInfoList;
+    }
     /**
      * 获取所有出口节点信息
      *
@@ -1377,7 +1491,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String actTaskId = flowTask.getActTaskId();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
         Map<PvmActivity,String> nextNodes = new LinkedHashMap<PvmActivity,String>();
-        initNextNodes(currActivity, nextNodes);
+        initNextNodes(currActivity, nextNodes,0);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         if (!nextNodes.isEmpty()) {
@@ -1484,18 +1598,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param currActivity
      * @param nextNodes
      */
-    private void initNextNodes(PvmActivity currActivity, Map<PvmActivity,String> nextNodes) {
+    private void initNextNodes(PvmActivity currActivity, Map<PvmActivity,String> nextNodes,int index) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
             for (PvmTransition pv : nextTransitionList) {
                 PvmActivity currTempActivity = pv.getDestination();
                 String lineName = pv.getProperty("name")+"";//线的名称
                 Boolean ifGateWay = ifGageway(currTempActivity);
-                if (ifGateWay) {//如果是网关，其他直绑节点自行忽略
+                if (ifGateWay && index<1) {//如果是网关，其他直绑节点自行忽略
                     nextNodes.clear();
                     nextNodes.put(currTempActivity,lineName);//把网关放入第一个节点
-                    initNextNodes(currTempActivity, nextNodes);
-                    break;
+                    initNextNodes(currTempActivity, nextNodes,1);
+                   // break;
                 } else {
                     nextNodes.put(currTempActivity,lineName);
                 }
@@ -1519,6 +1633,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String candidateUsers = null;
         if("endEvent".equalsIgnoreCase(tempActivity.getProperty("type")+"")){
             tempNodeInfo.setType("EndEvent");
+            return tempNodeInfo;
+        } else if(ifGageway(tempActivity)){
+            tempNodeInfo.setType("gateWay");
+            tempNodeInfo.setUiType("radiobox");
+            tempNodeInfo.setFlowTaskType("common");
             return tempNodeInfo;
         }
         try {
@@ -1545,7 +1664,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else if (!StringUtil.isEmpty(candidateUsers) && (!"null".equalsIgnoreCase(candidateUsers))) {//单签任务
             tempNodeInfo.setFlowTaskType("singleSign");
             tempNodeInfo.setUiType("checkbox");
-        } else {
+        }else {
             throw new RuntimeException("流程任务节点配置有错误");
         }
         return tempNodeInfo;
