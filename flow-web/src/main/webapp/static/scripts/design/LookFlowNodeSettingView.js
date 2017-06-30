@@ -12,20 +12,16 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
         var g = this;
         this.window = EUI.Window({
+            title: "节点配置",
             width: 550,
             height: 420,
             padding: 15,
             afterRender: function () {
                 this.dom.find(".ux-window-content").css("border-radius", "6px");
             },
-            buttons: [{
-                title: "确定",
-                iconCss:"ecmp-common-ok",
-                 selected: true,
-                handler: function () {
-                    g.window.close();
-                }
-            }],
+            afterClose: function () {
+                g.remove();
+            },
             items: [{
                 xtype: "TabPanel",
                 isOverFlow: false,
@@ -45,21 +41,6 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     addEvent: function () {
         var g = this;
-        $(".condetail-delete").live("click", function () {
-            var data = EUI.getCmp("userType").getValue();
-            var userType = data.userType;
-            var id = $(this).attr("id");
-            var grid;
-            if (userType == "Position") {
-                grid = EUI.getCmp("positionGrid");
-            } else if (userType == "PositionType") {
-                grid = EUI.getCmp("positionTypeGrid");
-            } else if (userType == "SelfDefinition") {
-                grid = EUI.getCmp("selfDefGrid");
-            }
-            grid.deleteRow(id);
-        });
-
         $(".west-navbar").live("click", function () {
             if ($(this).hasClass("select-navbar")) {
                 return;
@@ -309,7 +290,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 330,
             padding: 12,
             renderTo: "notify-before",
-            itemspace:0,
+            itemspace: 0,
             defaultConfig: {
                 iframe: false,
                 xtype: "FormPanel",
@@ -332,7 +313,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 445,
             height: 330,
             padding: 12,
-            itemspace:0,
+            itemspace: 0,
             renderTo: "notify-after",
             defaultConfig: {
                 iframe: false,
@@ -359,7 +340,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "通知方式",
             labelWidth: 80,
             name: "type",
-            readonly:true,
+            readonly: true,
             defaultConfig: {
                 labelWidth: 60
             },
@@ -377,7 +358,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             xtype: "TextArea",
             width: 320,
             height: 220,
-            readonly:true,
+            readonly: true,
             labelWidth: 80,
             title: "通知备注",
             name: "content"
@@ -493,6 +474,12 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
         //加载事件配置
         eventForm.loadData(nodeConfig.event);
+    },
+    remove: function () {
+        EUI.getCmp("notify-before").remove();
+        EUI.getCmp("notify-after").remove();
+        $(".west-navbar").die();
+        $(".notify-user-item").die();
     }
 })
 ;

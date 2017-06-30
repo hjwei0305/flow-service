@@ -561,11 +561,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }, {
             label: this.lang.codeText,
             name: "code",
-            index: "code"
+            index: "code",
+            width: 100
         }, {
             label: this.lang.nameText,
             name: "name",
-            index: "name"
+            index: "name",
+            width: 150
         }];
     },
     getPositionTypeGrid: function () {

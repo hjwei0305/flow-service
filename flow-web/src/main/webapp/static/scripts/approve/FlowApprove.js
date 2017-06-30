@@ -30,6 +30,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     iframeHeight: 600,
     pageUrl: null,
     submitUrl: null,
+    manualSelected:false,//是否是人工选择的网关类型
     goNext: null,
     iframe: null,
     toChooseUserData: null,
@@ -243,10 +244,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var iconCss = "choose-radio";
             if (item.uiType == "checkbox") {
                 iconCss = "choose-checkbox";
+                this.manualSelected=true;
                 this.desionType = 1;
             } else if (item.uiType == "readOnly") {
                 iconCss = "";
+                this.manualSelected=false;
                 this.desionType = 2;
+            }else{
+                this.manualSelected=true;
             }
             if (item.preLineName=="null") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
@@ -522,7 +527,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
-                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser())
+                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
+                manualSelected:g.manualSelected//是否是人工网关选择
             },
             success: function (status) {
                 mask.hide();

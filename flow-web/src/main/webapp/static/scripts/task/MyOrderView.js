@@ -9,7 +9,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             items:[{
                 xtype:"Container",
                 region : "north",
-                height:60,
+                height:40,
                 border:false,
                 padding:0,
                 isOverFlow:false,
@@ -53,7 +53,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     },
     getOrderTopHtml:function () {
         return '            <div class="center-top">' +
-            '                <div class="top-header">' +
+            '                <div class="top-header invoices-header">' +
             '                    <div class="header-left">' +
             '                        <span class="wait-invoices active">待办单据</span>' +
             '                        <span class="taken-work taken-invoices">已办单据</span>' +
@@ -61,7 +61,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '                            <div id="dateField"></div>' +
             '                        </div>' +
             '                    </div>' +
-            '                    <div class="header-right">' +
+            '                    <div class="header-right invoices-right">' +
             '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                    </div>' +
             '                </div>' +

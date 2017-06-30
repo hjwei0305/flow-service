@@ -5,7 +5,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     appModuleName: "",
     appModule: "",
     businessModelId: "",
-    appModuleCode:"",
+    appModuleCode: "",
     initComponent: function () {
         EUI.Container({
             renderTo: this.renderTo,
@@ -79,9 +79,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 xtype: "Button",
-                iconCss:"ecmp-common-add",
+                iconCss: "ecmp-common-add",
                 title: this.lang.addResourceText,
-                selected: true,
+                selected: false,
                 handler: function () {
                     g.addBusinessModel();
                 }
@@ -123,17 +123,18 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 160,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                         // var strVar = "<div class='condetail_operate'>" +
-                         //    "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
-                         //    "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
-                         //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
-                         //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
-                         //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
-                        return  '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="'+g.lang.editText+'"></i>'+
-                          '<i class="ecmp-common-delete delete-businessModel fontcusor" title="'+g.lang.deleteText+'"></i>' +
-                          '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showConditionPropertiesText+'"></i>'+
-                          '<i class="ecmp-common-configuration icon-space fontcusor" title="'+g.lang.configWorkSpaceText+'"></i>'+
-                          '<i class="ecmp-common-set icon-space fontcusor" title="'+g.lang.configServerLocationText+'"></i>';
+                        // var strVar = "<div class='condetail_operate'>" +
+                        //    "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
+                        //    "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
+                        //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
+                        //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
+                        //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
+
+                        return '<i class="ecmp-common-view icon-space fontcusor" title="' + g.lang.showConditionPropertiesText + '"></i>' +
+                            '<i class="ecmp-common-configuration icon-space fontcusor" title="' + g.lang.configWorkSpaceText + '"></i>' +
+                            '<i class="ecmp-common-set icon-space fontcusor" title="' + g.lang.configServerLocationText + '"></i>' +
+                            '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="' + g.lang.editText + '"></i>' +
+                            '<i class="ecmp-common-delete delete-businessModel fontcusor" title="' + g.lang.deleteText + '"></i>';
                     }
                 }, {
                     name: "id",
@@ -143,48 +144,48 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.nameText,
                     name: "name",
                     index: "name",
-                    width:120
+                    width: 120
                 }, {
                     label: this.lang.classPathText,
                     name: "className",
                     index: "className",
-                    width:120
+                    width: 120
                 }, {
                     label: this.lang.conditonBeanText,
                     name: "conditonBean",
                     index: "conditonBean",
-                    width:120
+                    width: 120
                 }, {
                     label: this.lang.applyModuleCodeText,
                     name: "appModuleCode",
                     index: "appModuleCode",
-                    width:140
+                    width: 140
                 }, {
                     label: this.lang.dataAccessObjectText,
                     name: "daoBean",
                     index: "daoBean",
-                    width:140
+                    width: 140
                 }, {
                     label: this.lang.formURLText,
                     name: "lookUrl",
                     index: "lookUrl",
-                    width:120
+                    width: 120
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict",
-                    width:140
+                    width: 140
                 }, {
                     label: "所属应用模块",
                     name: "appModuleName",
                     index: "appModuleName",
-                    width:140,
-                    hidden:true
+                    width: 140,
+                    hidden: true
                 }/*, {
-                    label: this.lang.workPageText,
-                    name: "workPage",
-                    index: "workPage"
-                }*/],
+                 label: this.lang.workPageText,
+                 name: "workPage",
+                 index: "workPage"
+                 }*/],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValue(rowData.id);
@@ -205,8 +206,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-                selected: true,
+                iconCss: "ecmp-common-ok",
+                selected: false,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -232,7 +233,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
@@ -245,7 +246,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
             height: 400,
-            width:380,
+            width: 380,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -269,7 +270,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: g.appModule,
                     hidden: true
-                },{
+                }, {
                     xtype: "TextField",
                     title: g.lang.modelText,
                     readonly: true,
@@ -287,7 +288,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "appModuleCode",
                     width: 220,
                     value: data.appModuleCode
-                },  {
+                }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
                     labelWidth: 115,
@@ -311,7 +312,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonBean",
                     width: 220,
                     value: data.conditonBean
-                },{
+                }, {
                     xtype: "TextField",
                     title: this.lang.dataAccessObjectText,
                     labelWidth: 115,
@@ -346,8 +347,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                selected: true,
+                iconCss: "ecmp-common-save",
+                selected: false,
                 handler: function () {
                     var form = EUI.getCmp("updateBusinessModel");
                     if (!form.isValid()) {
@@ -359,7 +360,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
@@ -371,7 +372,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.addNewBusinessModelText,
             height: 400,
-            width:380,
+            width: 380,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -395,7 +396,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "appModuleName",
                     width: 220,
                     value: g.appModuleName
-                },{
+                }, {
                     xtype: "TextField",
                     title: this.lang.applyModuleCodeText,
                     readonly: true,
@@ -456,8 +457,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                selected: true,
+                iconCss: "ecmp-common-save",
+                selected: false,
                 handler: function () {
                     var form = EUI.getCmp("addBusinessModel");
                     if (!form.isValid()) {
@@ -469,7 +470,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
@@ -504,8 +505,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             title: g.lang.conditionPropertyText,
             id: "propertyWind",
             width: 515,
-            height:410,
-            isOverFlow:false,
+            height: 410,
+            isOverFlow: false,
             items: [{
                 xtype: "GridPanel",
                 id: "innerWindow",
@@ -547,9 +548,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 /*var data = g.handleProperty(status);
                  EUI.getCmp("innerWindow").setDataInGrid(data);*///添加数据到dom的方法
             }/*,
-            failure: function (response) {
-                EUI.ProcessStatus(response);
-            }*/
+             failure: function (response) {
+             EUI.ProcessStatus(response);
+             }*/
         });
     },
     //js将从后台获取到的object数据转化为数组
@@ -572,19 +573,16 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             title: g.lang.workPageSetText,
             width: 700,
             height: 400,
-            items: [{
-                xtype: "Container",
-                border: false,
-                layout: "border",
-                items: [this.getLeftGrid(data),
-                    this.getCenterIcon(),
-                    this.getRightGrid(data)
-                ]
-            }],
+            border: false,
+            layout: "border",
+            items: [this.getLeftGrid(data),
+                this.getCenterIcon(),
+                this.getRightGrid(data)
+            ],
             buttons: [{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-                selected: true,
+                iconCss: "ecmp-common-ok",
+                selected: false,
                 handler: function () {
                     // var form=EUI.getCmp("workPageSelect");
                     // var data=form.getFormValue();
@@ -592,7 +590,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     g.workPageSetWind.remove();
                 }
@@ -602,7 +600,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     showServiceUrlWindow: function (data) {
         var g = this;
         var win = EUI.Window({
-            title:g.lang.serviceUrlText,
+            title: g.lang.serviceUrlText,
             width: 800,
             layout: "border",
             height: 450,
@@ -610,7 +608,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             itemspace: 0,
             items: [this.initWindTbar(data), this.initWindGrid(data)]
         });
-    },
+    }
+    ,
     initWindTbar: function (data) {
         var g = this;
         return {
@@ -623,14 +622,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "Button",
                 title: this.lang.addResourceText,
-                iconCss:"ecmp-common-add",
-                selected: true,
+                iconCss: "ecmp-common-add",
+                //  selected: true,
                 handler: function () {
                     g.addFlowServiceUrl(data);
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText:this.lang.searchNameText,
+                displayText: this.lang.searchNameText,
                 onSearch: function (value) {
                     console.log(value);
                     if (!value) {
@@ -646,7 +645,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         };
-    },
+    }
+    ,
     initWindGrid: function (data) {
         var g = this;
         return {
@@ -670,8 +670,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: "50%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        return  "<i class='ecmp-common-edit icon-space update-serviceurl fontcusor' title='"+g.lang.editText+"'></i>"+
-                                "<i class='ecmp-common-delete delete-serviceurl fontcusor' title='"+g.lang.deleteText+"'></i>";
+                        return "<i class='ecmp-common-edit icon-space update-serviceurl fontcusor' title='" + g.lang.editText + "'></i>" +
+                            "<i class='ecmp-common-delete delete-serviceurl fontcusor' title='" + g.lang.deleteText + "'></i>";
                     }
                 }, {
                     name: "id",
@@ -700,7 +700,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }
         };
-    },
+    }
+    ,
     getLeftGrid: function (data) {
         var g = this;
         return {
@@ -746,7 +747,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 // }]
             }
         };
-    },
+    }
+    ,
     getCenterIcon: function () {
         var g = this;
         return {
@@ -760,7 +762,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             '<div class="ecmp-common-moveright arrow-right"></div>' +
             '<div class="ecmp-common-leftmove arrow-left"></div>'
         }
-    },
+    }
+    ,
     getRightGrid: function (data) {
         var g = this;
         return {
@@ -797,7 +800,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }]
             }
         }
-    },
+    }
+    ,
     operateBtnEvents: function () {
         var g = this;
         $(".update-businessModel").live("click", function () {
@@ -836,7 +840,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             console.log(data);
             g.updateServiceUrl(data);
         });
-    },
+    }
+    ,
     addWorkPageEvent: function () {
         var g = this, selectData = [];
         $(".arrow-right").live("click", function () {
@@ -865,7 +870,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }
         })
-    },
+    }
+    ,
     isInArray: function (item, array) {
         for (var i = 0; i < array.length; i++) {
             if (item.id == array[i].id) {
@@ -873,7 +879,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }
         }
         return false;
-    },
+    }
+    ,
     saveWorkPageSet: function (data) {
         var g = this;
         var gridData = EUI.getCmp("workPageSelect").getGridData();
@@ -906,11 +913,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(status);
             }
         });
-    },
+    }
+    ,
     addFlowServiceUrl: function (data) {
         var g = this;
         var win = EUI.Window({
-            title:g.lang.addServiceUrlText,
+            title: g.lang.addServiceUrlText,
             height: 250,
             padding: 15,
             items: [{
@@ -919,13 +927,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 items: [{
                     xtype: "TextField",
-                    title:g.lang.businessModelIdText,
+                    title: g.lang.businessModelIdText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "businessModel.id",
                     width: 220,
                     value: data.id,
-                    hidden:true
+                    hidden: true
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,
@@ -958,8 +966,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                selected: true,
+                iconCss: "ecmp-common-save",
+                selected: false,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
@@ -971,13 +979,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
             }]
         });
-    },
+    }
+    ,
     saveFlowServiceUrl: function (data, winCmp) {
         var g = this;
         console.log(data);
@@ -1000,7 +1009,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
             }
         });
-    },
+    }
+    ,
     updateServiceUrl: function (data) {
         var g = this;
         console.log(data);
@@ -1066,8 +1076,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                selected: true,
+                iconCss: "ecmp-common-save",
+                selected: false,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
@@ -1079,13 +1089,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.remove();
                 }
             }]
         });
-    },
+    }
+    ,
     deleteServiceUrl: function (rowData) {
         var g = this;
         var infoBox = EUI.MessageBox({
@@ -1093,8 +1104,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             msg: g.lang.ifDelMsgText,
             buttons: [{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-                selected: true,
+                iconCss: "ecmp-common-ok",
+                selected: false,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -1120,14 +1131,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     infoBox.remove();
                 }
             }]
         });
     }
-});
+})
+;
 
 
 
