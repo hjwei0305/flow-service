@@ -403,12 +403,12 @@
     text-align: center;
 }
 .condetail-delete {
-    width: 15px;
-    height: 15px;
+/*    width: 15px;
+    height: 15px;*/
     cursor: pointer;
-    display: inline-block;
+  /*  display: inline-block;
     background: url("../images/operate_bg.png") no-repeat;
-    background-position: -32px -160px;
+    background-position: -32px -160px;*/
 }
 
 

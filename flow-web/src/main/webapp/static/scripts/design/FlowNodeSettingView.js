@@ -513,8 +513,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+                // return "<div class='condetail-operate'>" +
+                //     "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+                return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
         colModel = colModel.concat(this.positionGridColModel());
@@ -578,8 +579,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";
+       /*         return "<div class='condetail-operate'>" +
+                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";*/
+                return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
         colModel = colModel.concat(this.positionTypeGridColModel());
@@ -619,8 +621,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除'></div></div>";
+               /* return "<div class='condetail-operate'>" +
+                 "<div class='condetail-delete' title='删除'></div></div>";*/
+                return "<div class='ecmp-common-delete condetail-delete' title='删除'></div>";
             }
         }];
         colModel = colModel.concat(this.getSelfDefGridColModel());
@@ -685,7 +688,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             loadonce: true,
                             multiselect: true,
                             sortname: 'code',
-                            colModel: this.positionGridColModel()
+                            colModel: this.positionGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var cmp=EUI.getCmp("selPositionGrid");
+                                var row= cmp.grid.jqGrid('getRowData', rowid);
+                                if (!row) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                g.deleteRowData([row],cmp);
+                            }
                         }
                     }]
                 }, g.getCenterIcon("position"), {
@@ -733,7 +745,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             loadonce: false,
                             sortname: 'code',
                             url: _ctxPath + "/design/listPos",
-                            colModel: this.positionGridColModel()
+                            colModel: this.positionGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var selectRow=EUI.getCmp("allPositionGrid").grid.jqGrid('getRowData', rowid);
+                                if (!selectRow) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                EUI.getCmp("selPositionGrid").addRowData([selectRow],true);
+                            }
                         }
                     }]
                 }]
@@ -770,9 +790,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             cmp.deleteRow(data[i].id);
         }
-        cmp.setDataInGrid(cmp.getGridData(),false);
+        cmp.setDataInGrid([].concat(cmp.getGridData()),false);
     },
     showSelectPositionTypeWindow: function () {
+        var g=this;
         var win = EUI.Window({
             title: "选择岗位类别",
             padding: 0,
@@ -821,9 +842,18 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             hasPager: false,
                             multiselect: true,
                             sortname: 'code',
-                            colModel: this.positionTypeGridColModel()
+                            colModel: this.positionTypeGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var cmp = EUI.getCmp("selPositionTypeGrid");
+                                var row = cmp.grid.jqGrid('getRowData', rowid);
+                                if (!row) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                g.deleteRowData([row], cmp);
+                            }
                         }
-                    }]
+                        }]
                 }, this.getCenterIcon("positionType"), {
                     xtype: "Container",
                     layout: "border",
@@ -863,7 +893,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             datatype: "local",
                             loadonce: true,
                             url: _ctxPath + "/design/listPosType",
-                            colModel: this.positionTypeGridColModel()
+                            colModel: this.positionTypeGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var selectRow=EUI.getCmp("allPositionTypeGrid").grid.jqGrid('getRowData', rowid);
+                                if (!selectRow) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                EUI.getCmp("selPositionTypeGrid").addRowData([selectRow],true);
+                            }
                         }
                     }]
                 }]
