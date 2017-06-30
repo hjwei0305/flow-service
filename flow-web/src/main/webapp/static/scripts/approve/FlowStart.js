@@ -80,7 +80,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "提交",
                 iconCss:"ecmp-common-ok",
-              //  selected: true,
+                selected: true,
                 handler: function () {
                     g.submit();
                 }
@@ -415,7 +415,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "保存",
                 iconCss:"ecmp-common-save",
-            //    selected: true,
+                selected: true,
                 hidden:saveBtnIsHidden,
                 handler: function () {
                     var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();

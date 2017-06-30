@@ -328,95 +328,101 @@ div, span, p {
     margin-right: 0px;
 }
 .end-icon {
-    width: 14px;
+  /*  width: 14px;
     height: 14px;
     background: url("../images/end-icon.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
-    margin-right: 5px;
+   /* display: inline-block;*/
+    margin-right: 18px;
     cursor: pointer;
 }
 
 .reject-icon {
-    width: 14px;
+   /* width: 14px;
     height: 14px;
     background: url("../images/back.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
+  /*  display: inline-block;*/
     margin-right: 5px;
     cursor: pointer;
-    margin-left: 5px;
+  /*  margin-left: 5px;*/
+    font-size:20px;
+    display: inline-block;
+    height: 25px;
 }
 
 .claim-icon {
-    width: 14px;
+  /*  width: 14px;
     height: 14px;
     background: url("../images/back.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
+ /*   display: inline-block;*/
     margin-right: 5px;
     cursor: pointer;
-    margin-left: 5px;
+  /*  margin-left: 5px;*/
+    font-size:18px;
 }
 .endFlow-icon {
-    width: 14px;
+  /*  width: 14px;
     height: 14px;
     background: url("../images/img/flowEnd.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
-    margin-right: 5px;
+   /* display: inline-block;*/
+    margin-right: 18px;
     cursor: pointer;
-    margin-left: 5px;
+   /* margin-left: 5px;*/
+    font-size:18px;
 }
 
 .backout-icon {
-    width: 14px;
+   /* width: 14px;
     height: 14px;
     background: url("../images/backout.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
-    margin-right: 5px;
+   /* display: inline-block;*/
+    margin-right: 6px;
     cursor: pointer;
+    font-size: 15px;
 }
 
 .look-icon {
-    width: 14px;
+   /* width: 14px;
     height: 14px;
     background: url("../images/look_icon.png") no-repeat;
     background-size: cover;
+    display: inline-block;*/
     vertical-align: middle;
-    display: inline-block;
-    margin-right: 5px;
+    margin-right: 2px;
     cursor: pointer;
-    margin-left: 5px;
+   /* margin-left: 5px;*/
 }
 
 .time-icon {
-    width: 14px;
-    height: 14px;
-    background: url("../images/time_icon.png") no-repeat;
-    background-size: cover;
+    /* width: 14px;
+      height: 14px;
+      background: url("../images/time_icon.png") no-repeat;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
+ /*   display: inline-block;*/
     margin-right: 5px;
     cursor: pointer;
-    margin-left: 5px;
+  /*  margin-left: 5px;*/
 }
 
 .flow-time-icon {
-    width: 12px;
+   /* width: 12px;
     height: 12px;
     background: url("../images/time_icon.png") no-repeat;
-    background-size: cover;
+    background-size: cover;*/
     vertical-align: middle;
-    display: inline-block;
+  /*  display: inline-block;*/
     margin-right: 5px;
-    margin-left: 5px;
+  /*  margin-left: 5px;*/
 }
 
 /*
@@ -664,7 +670,15 @@ div, span, p {
     top: 48%;
     width: 340px;
 }
-
+.icon-size{
+    font-size:16px;
+}
+.time-icon-size{
+    font-size:12px;
+}
+.handle-icon-size{
+    font-size:15px;
+}
 
 
 

@@ -87,8 +87,8 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                     '                            </div>' +
                     '                            <div class="item item-right">' +
                     '                               <div class="end">' +
-                    '                                    <div class="todo-btn look-approve-btn"><i class="look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
-                    '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="time-icon flowInstance" title="流程历史"></i><span>流程历史</span></div>' +
+                    '                                    <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
+                    '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                     '                               </div>' +
                     '                            </div>' +
                     '                        </div>');

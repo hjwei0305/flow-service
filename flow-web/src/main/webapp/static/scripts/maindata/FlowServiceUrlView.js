@@ -132,7 +132,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: this.lang.addResourceText,
                 iconCss:"ecmp-common-add",
-               // selected: true,
+                 selected: true,
                 handler: function () {
                     g.addFlowServiceUrl();
                 }
@@ -245,7 +245,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+                 selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -360,7 +360,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-               // selected: true,
+                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
@@ -453,7 +453,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-              //  selected: true,
+                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {

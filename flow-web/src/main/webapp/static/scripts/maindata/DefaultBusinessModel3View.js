@@ -179,7 +179,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "保存",
                 iconCss:"ecmp-common-save",
-              //  selected: true,
+               selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBuiltInApprove");
                     if (!form.isValid()) {
@@ -208,7 +208,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
@@ -290,7 +290,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: "确定",
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -431,7 +431,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     xtype: "Button",
                     title: "新增",
                     iconCss:"ecmp-common-add",
-                   // selected: true,
+                   selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
@@ -488,9 +488,9 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                                     + "<div class='condetail-update' title='编辑'></div>"
                                     + "<div class='condetail-delete'  title='删除'></div>" +
                                     "</div>";*/
-                                var strVar="<i class='ecmp-flow-start condetail-start icon-space' title='启动流程'></i>"+
-                                    "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
-                                    "<i class='ecmp-common-delete condetail-delete' title='删除'></i>";
+                                var strVar=      "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
+                                    "<i class='ecmp-common-delete condetail-delete icon-space' title='删除'></i>"+
+                                    "<i class='ecmp-flow-start condetail-start' title='启动流程'></i>";
                             }
                             if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
                               //  var strVar = "<div class='condetail-operate'>"+
@@ -728,7 +728,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title:"保存",
                 iconCss:"ecmp-common-save",
-              //  selected: true,
+               selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBuiltInApprove");
                     if (!form.isValid()) {

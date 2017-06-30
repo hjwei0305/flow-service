@@ -71,7 +71,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 xtype: "Button",
                 title: this.lang.allocationExectorText,
                 iconCss:"ecmp-common-add",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     g.showSetExecutorWind();
                 }
@@ -161,7 +161,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+               selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -260,7 +260,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: this.lang.sureText,
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+                selected: true,
                 handler: function () {
                     g.saveExecutorSet();
                 }

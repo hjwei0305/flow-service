@@ -579,7 +579,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.saveText,
                 iconCss:"ecmp-common-save",
-             //   selected: true,
+                 selected: true,
                 hidden:saveBtnIsHidden,
                 handler: function () {
                     var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();

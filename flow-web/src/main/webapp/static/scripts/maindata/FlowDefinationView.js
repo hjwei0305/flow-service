@@ -50,7 +50,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             buttons: [{
                 title: g.lang.sureText,
                 iconCss:"ecmp-common-ok",
-               // selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -358,7 +358,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     xtype: "Button",
                     title: g.lang.addResourceText,
                     iconCss:"ecmp-common-add",
-                  //  selected: true,
+                    selected: true,
                     handler: function () {
                         if(!g.selectedNodeId){
                             var status = {
@@ -411,9 +411,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             //     + "<div class='condetail_update'></div>"
                             //     + "<div class='condetail_delete'></div></div>";
                             // return strVar;
-                            return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>'+
-                                '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
-                                '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
+                            return '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                                '<i class="ecmp-common-delete  icon-space fontcusor" title="'+g.lang.deleteText+'"></i>' +
+                                '<i class="ecmp-common-viewfontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
                         }
                     }, {
                         name: "id",
