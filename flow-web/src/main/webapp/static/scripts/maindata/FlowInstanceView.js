@@ -99,7 +99,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: 150,
+                    width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         // var strVar = "<div class='condetail_operate'>"
