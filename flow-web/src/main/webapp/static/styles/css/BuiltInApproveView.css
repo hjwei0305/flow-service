@@ -26,6 +26,7 @@
     width: 16px;*/
     float: right;
     cursor: pointer;
+    font-size: 18px;
 }
 
 .condetail-flowHistory {
@@ -40,6 +41,7 @@
     width: 16px;*/
     float: left;
     cursor: pointer;
+    font-size: 17px;
 }
 
 .condetail-update {
