@@ -157,7 +157,10 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             width:198,
             displayText:"输入单据说明关键字查询",
             editable:true,
-            colon:false
+            colon:false,
+            onSearch:function () {
+
+            }
         })
     },
     addEvents: function () {
