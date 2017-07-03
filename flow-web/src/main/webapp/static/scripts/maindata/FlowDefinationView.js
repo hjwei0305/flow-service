@@ -232,7 +232,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             border: false,
             padding: 0,
             isOverFlow: false,
-            items: ['->', {
+            items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
                 width:159,
                 displayText:g.lang.searchDisplayText,
@@ -499,6 +499,21 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     }
                 }
             }]
+        }
+    },
+    initTitle: function (title) {
+        return {
+            xtype: "Container",
+            region: "north",
+            border: false,
+            width:80,
+            padding:0,
+            height:30,
+            isOverFlow: false,
+            style:{
+                "margin-top":"10px"
+            },
+            html: "<div style='font-size:17px;overflow:hidden;title:" + title + ";'>" + title + "</div>"
         }
     }
 });
