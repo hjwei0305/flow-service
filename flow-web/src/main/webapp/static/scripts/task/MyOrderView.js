@@ -24,6 +24,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         });
         this.showTodoOrderView(true);
         this.initChooseDate();
+        this.initOrderSearchBox();
         this.addEvents();
     },
     initHtml: function () {
@@ -43,7 +44,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '                        </div>' +
             '                    </div>' +
             '                    <div class="header-right">' +
-            '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            // '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                    </div>' +
             '                </div>' +
             '            </div>' +
@@ -61,8 +62,8 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '                            <div id="dateField"></div>' +
             '                        </div>' +
             '                    </div>' +
-            '                    <div class="header-right invoices-right">' +
-            '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            '                    <div id="order-searchBox" class="header-right invoices-right">' +
+            // '                        <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             '                    </div>' +
             '                </div>' +
             '            </div>';
@@ -148,18 +149,31 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             }
         })
     },
+    //搜索框
+    initOrderSearchBox:function () {
+        var g=this;
+        EUI.SearchBox({
+            renderTo:"order-searchBox",
+            width:198,
+            displayText:"输入单据说明关键字查询",
+            editable:true,
+            colon:false
+        })
+    },
     addEvents: function () {
         var g = this;
         $(".wait-invoices").bind("click", function () {
             g.currentItem="wait-invoices";
             $(".taken-invoices").removeClass("active");
             $(this).addClass("active");
+            $("#order-searchBox input").val("").focus();
             g.showTodoOrderView(true);
         });
         $(".taken-invoices").bind("click", function () {
             g.currentItem="taken-invoices";
             $(".wait-invoices").removeClass("active");
             $(this).addClass("active");
+            $("#order-searchBox input").val("").focus();
             g.showCompleteOrderView(true);
         });
         $(".header-left").next().children(":first").bind("keyup", function (e) {
