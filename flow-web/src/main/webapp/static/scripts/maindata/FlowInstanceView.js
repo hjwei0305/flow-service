@@ -143,7 +143,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "depict",
                     index: "depict",
                     width:170,
-                    title: false
+                    title: false,
+                    hidden:true,
                 }/*, {
                     label: "引擎流程实例ID",
                     name: "actInstanceId",
