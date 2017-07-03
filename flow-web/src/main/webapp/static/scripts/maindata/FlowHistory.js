@@ -143,14 +143,14 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     getTopHtml: function () {
         return '<div class="top">' +
             '				<div class="top-left navbar flowselect">' +
-            '					<div class="flow-tabicon flow-statusimg"></div>' +
+            '					<div class="flow-tabicon flow-statusimg ecmp-flow-handlestatus"></div>' +
             '					<div class="flow-stutsfield text">' +
             this.lang.processStatusText +
             '					</div>' +
             '				</div>' +
             '				<div class="flow-line"></div>' +
             '				<div class="top-center navbar">' +
-            '					<div class="flow-tabicon flow-historyimg"></div>' +
+            '					<div class="flow-tabicon flow-historyimg  ecmp-flow-handlehistory"></div>' +
             '					<div class="flow-historyfield text">' +
             this.lang.flowProcessHistoryText +
             '					</div>' +
@@ -205,7 +205,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             html += '<div class="flow-historyinfoone">' +
-                '							<div class="flow-historydot"></div>' +
+                '							<div class="flow-historydot ecmp-flow-nodedot"></div>' +
                 '							<div class="flow-historyinfotop">' +
                 '								<div class="flow-historystatus">' + item.flowTaskName + '</div>' +
                 '								<div class="flow-historyright">' + g.lang.processorText + item.executorName + ' (' + item.actEndTime + ')</div>' +
