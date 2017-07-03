@@ -49,7 +49,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                    <span class="wait-work task-work active">待办工作</span>' +
             '                    <span class="taken-work history-work">已办工作</span>' +
             '                    <span class="workOrder">我的单据</span>' +
-            '                <div class="header-right">' +
+            '                <div id="header-right" class="header-right">' +
             '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             // '                    <span class="btn">待办项批量处理</span>' +
             '                </div>' +
@@ -110,7 +110,12 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
 
         parent.homeView && parent.homeView.addTabListener("FLOW_PTSY", function (id, win) {
             win.mainPageView.todoTaskView.refresh();
-            win.mainPageView.completeTaskView.refresh();
+            if(!win.mainPageView.completeTaskView){
+                return;
+            }else{
+                win.mainPageView.completeTaskView.refresh();
+            }
+
         });
     },
     //待办界面
