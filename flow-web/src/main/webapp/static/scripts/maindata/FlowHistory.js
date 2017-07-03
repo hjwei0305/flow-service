@@ -176,7 +176,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '						<div class="flow-historyprogress">' +
             '						</div>' +
             '                       <div class="flow-end" style="display: none;">' +
-            '							<div class="flow-endImg"></div>' +
+            '							<div class="flow-endImg ecmp-flow-end"></div>' +
             '							<div class="flow-endfield">' + this.lang.flowEndText + '</div>' +
             '							<div class="flow-endright">' +
             '							</div>' +
@@ -189,7 +189,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showFlowHistoryTopData: function (data) {
         var g = this;
         var html = "";
-        html = '<div class="flow-startimg"></div>' +
+        html = '<div class="flow-startimg ecmp-flow-flag"></div>' +
             '							<div class="flow-startfield">' + g.lang.flowLaunchText + '</div>' +
             '							<div class="flow-startright">' +
             '								<div class="flow-startuser">' + data.creatorName + '</div>' +
