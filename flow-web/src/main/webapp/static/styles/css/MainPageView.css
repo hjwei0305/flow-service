@@ -71,6 +71,7 @@ div, span, p {
     /*border-left: 2px solid #999999;*/
     padding:0 25px 0 0;
     cursor: pointer;
+    margin-left: 5px;
 }
 
 .wait-work:hover {
