@@ -344,7 +344,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             border: false,
             padding: 0,
             isOverFlow: false,
-            items: ['->', {
+            items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
                 width:159,
                 displayText:g.lang.searchDisplayText,
@@ -479,7 +479,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         label: "操作",
                         name: "operate",
                         index: "operate",
-                        width: 110,
+                        width: 100,
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){
@@ -769,5 +769,20 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
             }
         });
+    },
+    initTitle: function (title) {
+        return {
+            xtype: "Container",
+            region: "north",
+            border: false,
+            width:80,
+            padding:0,
+            height:30,
+            isOverFlow: false,
+            style:{
+                "margin-top":"10px"
+            },
+            html: "<div style='font-size:17px;overflow:hidden;title:" + title + ";'>" + title + "</div>"
+        }
     }
 });

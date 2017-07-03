@@ -444,14 +444,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "flowType.businessModel.id",
                         index: "flowType.businessModel.id",
                         hidden: true
-                    },
-                    //     {
-                    //     label: g.lang.launchConditionUELText,
-                    //     name: "startUel",
-                    //     index: "startUel",
-                    //     width:110
-                    // },
-                        {
+                    },{
+                        label: g.lang.launchConditionUELText,
+                        name: "startUel",
+                        index: "startUel",
+                        width:110,
+                        hidden:true
+                    },{
                         label: g.lang.organizationIDText,
                         name: "orgId",
                         index: "orgId",
@@ -461,14 +460,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "orgCode",
                         index: "orgCode",
                         hidden: true
-                    },
-                    //     {
-                    //     label: g.lang.depictText,
-                    //     name: "depict",
-                    //     index: "depict",
-                    //     width:110
-                    // },
-                        {
+                    },{
+                        label: g.lang.depictText,
+                        name: "depict",
+                        index: "depict",
+                        width:110,
+                        hidden:true
+                    },{
                         label: g.lang.flowDefinitionStatusText,
                         name: "flowDefinationStatus",
                         index: "flowDefinationStatus",
