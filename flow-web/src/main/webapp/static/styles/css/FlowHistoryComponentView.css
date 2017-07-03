@@ -52,27 +52,18 @@
 }
 
 .flow-statusimg {
-	/*background: url(../images/img/flowstatusImg.png) no-repeat;
-	background-size: cover;*/
+	background: url(../images/img/flowstatusImg.png) no-repeat;
+	background-size: cover;
 }
 
-/*.flowselect .flow-statusimg {
+.flowselect .flow-statusimg {
 	background: url(../images/img/flowstatusSelImg.png) no-repeat;
 	background-size: cover;
-}*/
-.ecmp-flow-handlestatus{
-	color:#cfcfcf;
-	font-size:31px;
 }
-.flowselect .ecmp-flow-handlestatus{
-	color:#45b7ff;
-}
-/*.navbar:hover .flow-statusimg {
+
+.navbar:hover .flow-statusimg {
 	background: url(../images/img/flowstatusSelImg.png) no-repeat;
 	background-size: cover;
-}*/
-.navbar:hover .ecmp-flow-handlestatus{
-	color:#45b7ff;
 }
 
 
@@ -94,8 +85,7 @@
 .flow-tabicon {
 	width: 30px;
 	height: 30px;
-	margin: 3px auto 0 ;
-	line-height:30px;
+	margin: 0px auto 0 ;
 }
 
 .top-center {
@@ -113,32 +103,21 @@
 	cursor: pointer;
 }
 
-/*.navbar:hover .flow-historyimg {
+.navbar:hover .flow-historyimg {
 	background: url(../images/img/flowhistorySelImg.png) no-repeat;
 	background-size: cover;
+}
 
-}*/
-.ecmp-flow-handlehistory {
-	font-size:33px;
-	color: #cfcfcf
-}
-.navbar:hover .ecmp-flow-handlehistory {
-	color:#45b7ff;
-}
 .flow-historyimg {
-	/*background: url(../images/img/flowhistoryImg.png) no-repeat;*/
-	/*background-size: cover;*/
+	background: url(../images/img/flowhistoryImg.png) no-repeat;
+	background-size: cover;
 }
 
-/*.flowselect .flow-historyimg {
+.flowselect .flow-historyimg {
 	background: url(../images/img/flowhistorySelImg.png) no-repeat;
 	background-size: cover;
-
-}*/
-
-.flowselect .ecmp-flow-handlehistory{
-	color:#45b7ff;
 }
+
 
 /*.flow-historyimg:hover{
 	width: 40px;
@@ -205,8 +184,7 @@
 	width: 16px;
 	height: 16px;
 	float: left;
-	margin-top: -2px;
-	font-size:21px;
+	margin-top: 5px;
 	/*background: url(../images/img/flowstartImg.png);*/
 }
 
@@ -230,9 +208,7 @@
 	width: 20px;
 	height: 20px;
 	float: left;
-	margin-top: 3px;
-	margin-right:-5px;
-	font-size:18px;
+	/*margin-top: 2px;*/
 	/*background: url(../images/img/flowEnd.png);*/
 }
 .flow-endfield{
@@ -318,18 +294,14 @@
 .flow-historydot {
 	width: 16px;
 	height: 16px;
-	/*background: url(../images/img/flowDot.png);*/
+	background: url(../images/img/flowDot.png);
 	float: left;
 	position: absolute;
-	top: 18px;
+	top: 20px;
 	left: -9px;
 	z-index: 1;
 }
 
-.ecmp-flow-nodedot{
-	color: #B3B3B3;
-	font-size: 17px;
-}
 .flow-historystatus {
 	margin-left: 18px;
 	font-size: 14px;

@@ -392,22 +392,22 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
-                        var timeMill = rowObject.actDurationInMillis / 1000;
-                        var h = Math.floor(timeMill / 60 / 60);
-                        var m = Math.floor((timeMill - h * 60 * 60) / 60);
-                        var s = Math.floor((timeMill - h * 60 * 60 - m * 60));
-                        var d = parseInt(h / 24);
-                        if (d > 0) {
-                            strVar += d + g.lang.dayText;
+                        var value = rowObject.actDurationInMillis;
+                        var day = Math.floor(value / (60 * 60 * 1000 * 24));
+                        var hour = Math.floor((value - day * 60 * 60 * 1000 * 24) / (60 * 60 * 1000));
+                        var minute = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000) / (60 * 1000));
+                        var second = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000) / 1000);
+                        if (day > 0) {
+                            strVar += day + "天";
                         }
-                        if (h > 0) {
-                            strVar += h + g.lang.hourText;
+                        if (hour > 0) {
+                            strVar += hour + "小时";
                         }
-                        if (m > 0) {
-                            strVar += m + g.lang.minuteText;
+                        if (minute > 0) {
+                            strVar += minute + "分";
                         }
-                        if (s > 0) {
-                            strVar += s + g.lang.secondText;
+                        if (second > 0) {
+                            strVar += second + "秒";
                         }
                         return strVar;
                     }

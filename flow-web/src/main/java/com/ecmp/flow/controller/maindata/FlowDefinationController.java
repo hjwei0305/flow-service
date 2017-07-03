@@ -57,7 +57,7 @@ public class FlowDefinationController {
     @RequestMapping("listAllOrgs")
     public String listAllOrgs() {
         IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
-        List<Organization> result = proxy.findAllOrgs();
+        List<Organization> result = proxy.findOrgTreeWithoutFrozen();
         OperateStatus operateStatus = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
         return JsonUtil.serialize(operateStatus);
     }

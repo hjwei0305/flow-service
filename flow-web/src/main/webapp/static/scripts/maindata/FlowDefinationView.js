@@ -266,7 +266,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 "background": "#fff"
             },
             onSelect: function (node) {
-                if (node.children.length) {
                     g.selectedNodeId = node.id;
                     g.selectedNodeName = node.name;
                     g.selectedNodeOrgCode = node.code;
@@ -279,21 +278,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             S_lastEditedDate:"DESC"
                         }
                     }, true)
-                }
-                if (!node.children.length) {
-                    g.selectedNodeId = node.id;
-                    g.selectedNodeName = node.name;
-                    g.selectedNodeOrgCode = node.code;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/flowDefination/listFlowDefination",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            Q_EQ_orgId: g.selectedNodeId,
-                            S_lastEditedDate:"DESC"
-                        }
-                    }, true)
-                }
             },
             afterItemRender: function (nodeData) {
                 if (nodeData.frozen) {
