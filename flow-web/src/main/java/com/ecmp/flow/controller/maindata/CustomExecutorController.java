@@ -116,7 +116,7 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listAllExecutorSelected")
     @ResponseBody
-    public String listAllExecutorSelected(String businessModelId) throws ParseException {
+    public List<Employee> listAllExecutorSelected(String businessModelId) throws ParseException {
         IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
         List<BusinessSelfDefEmployee> businessSelfDefEmployees = proxy.findByBusinessModelId(businessModelId);
         List<String> selectedExecutorIds = new ArrayList<>();
@@ -125,7 +125,12 @@ public class CustomExecutorController {
         }
         IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
         List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
-        return JsonUtil.serialize(selectedExecutor);
+        if(selectedExecutor == null){
+            List<Employee> list = new ArrayList<>();
+            return list;
+        }else{
+            return selectedExecutor;
+        }
     }
 
     /**
