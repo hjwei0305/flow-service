@@ -338,9 +338,6 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             title:"已选择",
             id: "executorSelectedGrid",
             region: "east",
-            // style: {
-            //     "border": "1px solid #aaa"
-            // },
             gridCfg: {
                 url: _ctxPath + "/customExecutor/listAllExecutorSelected",
                 postData: {
