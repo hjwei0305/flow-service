@@ -90,6 +90,10 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name"
+                    }, {
+                        label: "所属应用模块",
+                        name: "appModuleName",
+                        index: "appModuleName"
                     }]
                 },
                 reader: {
