@@ -150,7 +150,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '				</div>' +
             '				<div class="flow-line"></div>' +
             '				<div class="top-center navbar">' +
-            '					<div class="flow-tabicon flow-historyimg  ecmp-flow-handlehistory"></div>' +
+            '					<div class="flow-tabicon flow-historyimg"></div>' +
             '					<div class="flow-historyfield text">' +
             this.lang.flowProcessHistoryText +
             '					</div>' +
