@@ -101,7 +101,12 @@ div, span, p {
     background: url("../images/search.png") no-repeat 15px 6px;
     /*vertical-align: middle;*/
 }
-
+#searchBox{
+    margin-top: 10px;
+}
+#order-searchBox{
+    margin-top: 5px;
+}
 .btn {
     font-size: 12px;
     width: 110px;

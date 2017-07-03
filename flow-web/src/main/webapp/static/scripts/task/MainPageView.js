@@ -36,6 +36,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 }]
         });
         this.showTodoTaskView(true);
+        this.initSearchBox();
         this.addEvents();
     },
     //拼接html内容
@@ -49,8 +50,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                    <span class="wait-work task-work active">待办工作</span>' +
             '                    <span class="taken-work history-work">已办工作</span>' +
             '                    <span class="workOrder">我的单据</span>' +
-            '                <div id="header-right" class="header-right">' +
-            '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            '                <div id="searchBox" class="header-right">' +
+            // '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             // '                    <span class="btn">待办项批量处理</span>' +
             '                </div>' +
             '            </div>' +
@@ -65,8 +66,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             '                    <span class="wait-work task-work active">待办工作</span>' +
             '                    <span class="taken-work history-work">已办工作</span>' +
             '                    <span class="workOrder">我的单据</span>' +
-            '                <div class="header-right">' +
-            '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
+            '                <div id="searchBox" class="header-right">' +
+            // '                    <input class="search" type="text" placeholder="输入单据说明关键字查询"/>' +
             // '                    <span class="btn">待办项批量处理</span>' +
             '                </div>' +
             '            </div>';
@@ -86,6 +87,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
+            $("#searchBox input").val("").focus();
             g.showTodoTaskView(true);
         });
         $(".history-work").bind("click", function () {
@@ -95,6 +97,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $(".workOrder").next().show();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
+            $("#searchBox input").val("").focus();
             g.showCompleteTaskView(true);
             $("#completeTask-content").css("height","100%");
         });
@@ -105,6 +108,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             $(".workOrder").next().hide();
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
+            $("#searchBox input").val("").focus();
             g.showMyOrderView(true);
         });
 
@@ -177,5 +181,16 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         } else if (this.myOrderView) {
             this.myOrderView.hide();
         }
+    },
+    //搜索框
+    initSearchBox:function () {
+        var g=this;
+        EUI.SearchBox({
+            renderTo:"searchBox",
+            width:198,
+            displayText:"输入单据说明关键字查询",
+            editable:true,
+            colon:false
+        })
     }
 });
