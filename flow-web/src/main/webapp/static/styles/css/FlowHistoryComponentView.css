@@ -185,7 +185,7 @@
 	height: 16px;
 	float: left;
 	margin-top: 5px;
-	background: url(../images/img/flowstartImg.png);
+	/*background: url(../images/img/flowstartImg.png);*/
 }
 
 .flow-startfield{
@@ -208,8 +208,8 @@
 	width: 20px;
 	height: 20px;
 	float: left;
-	margin-top: 5px;
-	background: url(../images/img/flowEnd.png);
+	/*margin-top: 2px;*/
+	/*background: url(../images/img/flowEnd.png);*/
 }
 .flow-endfield{
 	font-size: 14px;
