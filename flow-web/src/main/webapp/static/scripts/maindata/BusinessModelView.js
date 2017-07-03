@@ -121,18 +121,19 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 160,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                         // var strVar = "<div class='condetail_operate'>" +
-                         //    "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
-                         //    "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
-                         //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
-                         //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
-                         //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
+                        // var strVar = "<div class='condetail_operate'>" +
+                        //    "<div class='condetail_look' title='"+g.lang.showConditionPropertiesText+"'></div>" +
+                        //    "<div class='condetail_set' title='"+g.lang.configWorkSpaceText+"'></div>"
+                        //    + "<div class='condetail_setServiceUrl' title='"+g.lang.configServerLocationText+"'></div>"
+                        //    + "<div class='condetail_update' title='"+g.lang.editText+"'></div>"
+                        //    + "<div class='condetail_delete' title='"+g.lang.deleteText+"'></div></div>";
 
-                        return '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showConditionPropertiesText+'"></i>'+
-                          '<i class="ecmp-common-configuration icon-space fontcusor" title="'+g.lang.configWorkSpaceText+'"></i>'+
-                          '<i class="ecmp-common-set icon-space fontcusor" title="'+g.lang.configServerLocationText+'"></i>'+
-                          '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="'+g.lang.editText+'"></i>'+
-                          '<i class="ecmp-common-delete delete-businessModel fontcusor" title="'+g.lang.deleteText+'"></i>' ;
+                        return    '<i class="ecmp-common-edit icon-space update-businessModel fontcusor" title="' + g.lang.editText + '"></i>' +
+                            '<i class="ecmp-common-delete icon-space delete-businessModel fontcusor" title="' + g.lang.deleteText + '"></i>'+
+                            '<i class="ecmp-common-configuration icon-space fontcusor" title="' + g.lang.configWorkSpaceText + '"></i>' +
+                            '<i class="ecmp-common-set icon-space fontcusor" title="' + g.lang.configServerLocationText + '"></i>'+
+                            '<i class="ecmp-common-view fontcusor" title="' + g.lang.showConditionPropertiesText + '"></i>' ;
+
                     }
                 }, {
                     name: "id",
@@ -181,10 +182,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width:140,
                     hidden:true
                 }/*, {
-                    label: this.lang.workPageText,
-                    name: "workPage",
-                    index: "workPage"
-                }*/],
+                 label: this.lang.workPageText,
+                 name: "workPage",
+                 index: "workPage"
+                 }*/],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValue(rowData.id);
@@ -542,9 +543,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 /*var data = g.handleProperty(status);
                  EUI.getCmp("innerWindow").setDataInGrid(data);*///添加数据到dom的方法
             }/*,
-            failure: function (response) {
-                EUI.ProcessStatus(response);
-            }*/
+             failure: function (response) {
+             EUI.ProcessStatus(response);
+             }*/
         });
     },
     //js将从后台获取到的object数据转化为数组
@@ -663,7 +664,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         return  "<i class='ecmp-common-edit icon-space update-serviceurl fontcusor' title='"+g.lang.editText+"'></i>"+
-                                "<i class='ecmp-common-delete delete-serviceurl fontcusor' title='"+g.lang.deleteText+"'></i>";
+                            "<i class='ecmp-common-delete delete-serviceurl fontcusor' title='"+g.lang.deleteText+"'></i>";
                     }
                 }, {
                     name: "id",
