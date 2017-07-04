@@ -321,6 +321,7 @@ div, span, p {
 .todo-btn>span{
     line-height: 20px;
     vertical-align: middle;
+    font-size: 15px;
     color: #45b7ff;
 }
 .approve-btn>span{
@@ -469,7 +470,7 @@ div, span, p {
     float: right;
 }
 
-.pege-right > a {
+a {
     text-decoration: none;
     outline: none;
     color: #999999;
@@ -487,7 +488,7 @@ div, span, p {
     line-height: 50px;
 }
 
-.pege-right > a:hover {
+.hover {
     color: #45b7ff;
     font-weight: bold;
 }
@@ -684,6 +685,15 @@ div, span, p {
 }
 .handle-icon-size{
     font-size:15px;
+}
+.pageDisable{
+    font-weight: normal;
+    color: #ccc;
+}
+
+.hoverPage{
+    font-weight: normal;
+    color: #ccc;
 }
 
 
