@@ -629,7 +629,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
-                                if("ExclusiveGateway".equalsIgnoreCase(busType2)){
+                                if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
                                     return   this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                                 }else {
                                     result = initNodesInfo(result, flowStartVO, definition , targetId);
@@ -641,7 +641,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
                                 if (resultB == true) {
-                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)){
+                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
                                         return this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                                     }else {
                                         result = initNodesInfo(result, flowStartVO, definition , targetId);
@@ -666,6 +666,56 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }else {
                     result = initNodesInfo(result, flowStartVO, definition , targetId);
                 }
+            }
+        } else if("InclusiveGateway".equalsIgnoreCase(busType)){//如果是系统包容网关
+            JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
+            for(int j=0;j<targetNodes.size();j++){
+                JSONObject jsonObject = targetNodes.getJSONObject(j);
+                String targetId = jsonObject.getString("targetId");
+                JSONObject uel = jsonObject.getJSONObject("uel");
+                net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+                String busType2 = nextNode.get("busType")+"";
+                if(uel!=null && !uel.isEmpty()){
+
+                    String groovyUel = uel.getString("groovyUel");
+                    if (StringUtils.isNotEmpty(groovyUel)) {
+                        BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
+                        String businessModelId = businessModel.getId();
+                        String appModuleId = businessModel.getAppModuleId();
+                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
+                        if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+                            String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
+                                    groovyUel.lastIndexOf("}"));
+                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                                if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                    this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
+
+                                }else {
+                                    initNodesInfo(result, flowStartVO, definition , targetId);
+                                }
+
+//                                break;
+                            }
+                        } else {//其他的用UEL表达式验证
+                            Object tempResult = ConditionUtil.uelResult(groovyUel, v);
+                            if (tempResult instanceof Boolean) {
+                                Boolean resultB = (Boolean) tempResult;
+                                if (resultB == true) {
+                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                        this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
+                                    }else {
+                                        initNodesInfo(result, flowStartVO, definition , targetId);
+                                    }
+//                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         }else if("startEvent".equalsIgnoreCase(type)){//开始节点向下遍历
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");

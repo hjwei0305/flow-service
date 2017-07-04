@@ -48,11 +48,11 @@ public class UserTask extends BaseFlowNode implements Serializable {
     @XmlElement(name = "multiInstanceLoopCharacteristics")
     private MultiInstanceConfig config;
 
-    /**
-     * 是否是审批任务类型
-     */
-    @XmlTransient
-    private Boolean approval=false;
+//    /**
+//     * 是否是审批任务类型
+//     */
+//    @XmlTransient
+//    private Boolean approval=false;
 
     /**
      * 前端节点类型
@@ -119,11 +119,4 @@ public class UserTask extends BaseFlowNode implements Serializable {
         this.extensionElement = extensionElement;
     }
 
-    public Boolean getApproval() {
-        return approval;
-    }
-
-    public void setApproval(Boolean approval) {
-        this.approval = approval;
-    }
 }

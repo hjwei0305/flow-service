@@ -41,5 +41,10 @@ public class CommonCounterSignCompleteListener implements TaskListener{
 
         delegateTask.setVariable("counterSignValue", agreeCounter + value);
 
+        //完成会签的次数
+        Integer completeCounter=(Integer)delegateTask.getVariable("nrOfCompletedInstances");
+        //总循环次数
+        Integer instanceOfNumbers=(Integer)delegateTask.getVariable("nrOfInstances");
+
     }
 }
