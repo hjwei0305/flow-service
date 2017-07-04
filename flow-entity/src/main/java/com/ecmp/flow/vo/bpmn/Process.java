@@ -136,7 +136,9 @@ public class Process extends BaseNode implements Serializable {
                             userTaskTemp.setAssignee("${" + userTaskTemp.getId() + "_Normal}");
                         } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             userTaskTemp.setCandidateUsers("${" + userTaskTemp.getId() + "_SingleSign}");
-                        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                        } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            userTaskTemp.setAssignee("${" + userTaskTemp.getId() + "_Approve}");
+                        }  else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
                             multiInstanceConfig.setUserIds("${" + userTaskTemp.getId() + "_List_CounterSign}");
                             multiInstanceConfig.setVariable("${" + userTaskTemp.getId() + "_CounterSign}");

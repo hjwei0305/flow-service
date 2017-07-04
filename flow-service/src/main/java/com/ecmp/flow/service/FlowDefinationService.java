@@ -544,6 +544,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
             nodeInfo.setUiType("checkbox");
             nodeInfo.setFlowTaskType("singleSign");
+        }else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
+            nodeInfo.setUiType("radiobox");
+            nodeInfo.setFlowTaskType("approve");
         } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
             nodeInfo.setUiType("checkbox");
@@ -605,6 +609,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
       //  JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
         String busType = jsonObjectNode.get("busType")+"";
         String type = jsonObjectNode.get("type")+"";
+        String nodeType = jsonObjectNode.get("nodeType")+"";
         String nodeId = jsonObjectNode.get("id")+"";
         if("ExclusiveGateway".equalsIgnoreCase(busType)){//如果是系统排他网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
@@ -629,7 +634,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
-                                if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                if(checkGateway(busType2)){
                                     return   this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                                 }else {
                                     result = initNodesInfo(result, flowStartVO, definition , targetId);
@@ -641,7 +646,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
                                 if (resultB == true) {
-                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                    if(checkGateway(busType2)){
                                         return this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                                     }else {
                                         result = initNodesInfo(result, flowStartVO, definition , targetId);
@@ -661,7 +666,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String targetId = jsonObject.getString("targetId");
                 net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
                 String busType2 = nextNode.get("busType")+"";
-                if("ParallelGateway".equalsIgnoreCase(busType2)){
+                if(checkGateway(busType2)){
                     this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                 }else {
                     result = initNodesInfo(result, flowStartVO, definition , targetId);
@@ -690,7 +695,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
-                                if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                if(checkGateway(busType2)){
                                     this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
 
                                 }else {
@@ -704,7 +709,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
                                 if (resultB == true) {
-                                    if("ExclusiveGateway".equalsIgnoreCase(busType2)||"InclusiveGateway".equalsIgnoreCase(busType2)){
+                                    if(checkGateway(busType2)){
                                         this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
                                     }else {
                                         initNodesInfo(result, flowStartVO, definition , targetId);
@@ -717,7 +722,22 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
 
             }
-        }else if("startEvent".equalsIgnoreCase(type)){//开始节点向下遍历
+        }else if("ManualExclusiveGateway".equalsIgnoreCase(busType)) {//如果是人工排他网关
+            throw  new RuntimeException("开始节点不允许直接配置人工排他网关节点！");
+//            JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
+//            for(int j=0;j<targetNodes.size();j++){
+//                JSONObject jsonObject = targetNodes.getJSONObject(j);
+//                String targetId = jsonObject.getString("targetId");
+//                net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+//                String busType2 = nextNode.get("busType")+"";
+//                if(checkGateway(busType2)){
+//                    this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
+//                }else {
+//                    result = initNodesInfo(result, flowStartVO, definition , targetId);
+//                }
+//            }
+        }
+        else if("startEvent".equalsIgnoreCase(type)){//开始节点向下遍历
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             for(int j=0;j<targetNodes.size();j++){
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
@@ -727,6 +747,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               }
         }else{
             result = initNodesInfo(result, flowStartVO, definition , nodeId);
+        }
+        return result;
+    }
+    private boolean checkGateway(String busType){
+        boolean result = false;
+        if("ManualExclusiveGateway".equalsIgnoreCase(busType) ||  //人工排他网关
+                "exclusiveGateway".equalsIgnoreCase(busType) ||  //排他网关
+                "inclusiveGateway".equalsIgnoreCase(busType)  //包容网关
+                || "parallelGateWay".equalsIgnoreCase(busType)) { //并行网关
+            result = true;
         }
         return result;
     }
