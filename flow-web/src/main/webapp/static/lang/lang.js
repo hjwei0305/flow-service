@@ -188,6 +188,7 @@ if (EUI.WorkFlowView) {
         normalTaskText: "普通任务",
         singleSignTaskText: "单签任务",
         counterSignTaskText: "会签任务",
+        approveTaskText:"审批任务",
         userTaskText: "审批任务",
         serviceTaskText: "服务任务",
         scriptTaskText: "脚本任务",

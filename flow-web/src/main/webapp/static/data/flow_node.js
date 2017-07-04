@@ -23,6 +23,11 @@ var _flownode = {
         type: "UserTask",
         css: "countertask",
         nodeType: "CounterSign"
+    }, {
+        name: "approveTaskText",
+        type: "UserTask",
+        css: "countertask",
+        nodeType: "Approve"
     }],
     gateway: [{
         name: "exclusiveGatewayText",
