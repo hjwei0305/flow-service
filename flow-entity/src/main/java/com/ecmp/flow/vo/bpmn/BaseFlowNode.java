@@ -37,6 +37,13 @@ public class BaseFlowNode extends BaseNode implements Serializable {
      */
     @XmlTransient
     private String type;
+
+    /**
+     * 默认出口路径
+     */
+    @XmlAttribute(name="default")
+    private String defaultSequence;
+
     /**
      * 扩展节点类型
      */
@@ -130,6 +137,14 @@ public class BaseFlowNode extends BaseNode implements Serializable {
 
     public void setBusType(String busType) {
         this.busType = busType;
+    }
+
+    public String getDefaultSequence() {
+        return defaultSequence;
+    }
+
+    public void setDefaultSequence(String defaultSequence) {
+        this.defaultSequence = defaultSequence;
     }
 
     public static void main(String[] args) {
