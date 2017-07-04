@@ -84,12 +84,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.codeText,
                         name: "code",
                         index: "code",
-                        width:100
+                        width: 100
                     }, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name",
-                        width:150
+                        width: 150
                     }]
                 },
                 labelWidth: 85,
@@ -104,7 +104,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             msg: "切换流程类型将清空所有流程设计，请确定是否继续?",
                             buttons: [{
                                 title: "确定",
-                                iconCss:"ecmp-common-ok",
+                                iconCss: "ecmp-common-ok",
                                 handler: function () {
                                     g.businessModelId = busModelId;
                                     scope.loadData({
@@ -116,7 +116,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 }
                             }, {
                                 title: "取消",
-                                iconCss:"ecmp-common-delete",
+                                iconCss: "ecmp-common-delete",
                                 handler: function () {
                                     msgBox.remove();
                                 }
@@ -159,7 +159,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "Button",
             title: "启动条件",
-            iconCss:"ecmp-common-configuration",
+            iconCss: "ecmp-common-configuration",
             id: "setStartUel",
             handler: function () {
                 if (!g.businessModelId) {
@@ -181,38 +181,38 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         }, "->", {
             xtype: "Button",
-             selected: true,
+            selected: true,
             title: this.lang.deployText,
-            iconCss:"ecmp-common-upload",
+            iconCss: "ecmp-common-upload",
             handler: function () {
                 g.save(true);
             }
         }, {
             xtype: "Button",
             title: this.lang.saveText,
-            iconCss:"ecmp-common-save",
+            iconCss: "ecmp-common-save",
             handler: function () {
                 g.save(false);
             }
         }, {
             xtype: "Button",
             title: this.lang.resetText,
-            iconCss:"ecmp-common-clear",
+            iconCss: "ecmp-common-clear",
             handler: function () {
                 var msgBox = EUI.MessageBox({
                     title: "提示",
                     msg: "清空设计将不能恢复，确定要继续吗？",
                     buttons: [{
                         title: "确定",
-                        iconCss:"ecmp-common-ok",
-                         selected: true,
+                        iconCss: "ecmp-common-ok",
+                        selected: true,
                         handler: function () {
                             g.clear();
                             msgBox.remove();
                         }
                     }, {
                         title: "取消",
-                        iconCss:"ecmp-common-delete",
+                        iconCss: "ecmp-common-delete",
                         handler: function () {
                             msgBox.remove();
                         }
@@ -488,9 +488,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [0, 0],
-                // gap: 10,
-                cornerRadius: 5,
-                // alwaysRespectStubs: false
+                cornerRadius: 5
             }]
         });
         // 双击连线弹出UEL配置界面
@@ -545,6 +543,19 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var overlay = connection.connection.getOverlay("label");
                 overlay.setLabel(uel.name);
                 overlay.show();
+            } else {
+                var busType = $("#" + connection.sourceId).attr("bustype");
+                if (busType == "ExclusiveGateway") {
+                    var overlay = connection.connection.getOverlay("label");
+                    overlay.setLabel("默认");
+                    overlay.show();
+                    g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                        name: "默认",
+                        isDefault: true,
+                        logicUel: "",
+                        groovyUel: ""
+                    };
+                }
             }
         });
     }
@@ -556,10 +567,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             filter: ".node-dot",
             anchor: "Continuous",
             connector: ["Flowchart", {
-                stub: [5, 5],
-                // gap: 10,
-                cornerRadius: 5,
-                // alwaysRespectStubs: true
+                stub: [0, 0],
+                cornerRadius: 5
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
@@ -670,14 +679,25 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (node.type.endsWith("Gateway")) {
                 node.busType = item.attr("bustype");
             }
+            var defaultCount = 0;
             for (var key in this.connectInfo) {
                 if (key.startsWith(id + ",")) {
                     var item = {
                         targetId: key.split(",")[1],
                         uel: this.uelInfo[key] || ""
                     };
+                    if (node.busType == "ExclusiveGateway" && item.uel && item.uel.isDefault) {
+                        defaultCount++;
+                    }
                     node.target.push(item);
                 }
+            }
+            if (defaultCount > 1) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: node.name + "：只能有1个默认路径，请修改配置"
+                });
+                return;
             }
             process.nodes[id] = node;
         }
@@ -883,8 +903,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }],
             buttons: [{
                 title: "保存配置",
-                iconCss:"ecmp-common-save",
-                 selected: true,
+                iconCss: "ecmp-common-save",
+                selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
                     callback && callback.call(this, name);
@@ -892,7 +912,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
