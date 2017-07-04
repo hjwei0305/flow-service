@@ -34,11 +34,19 @@ public class MultiInstanceConfig implements Serializable {
     private String variable;
 
     @XmlElement
-    private String loopCardinality;
+    private String loopCardinality;//设定的循环次数
 
     @XmlElement
-    private String completionCondition;
+    private String completionCondition="${nrOfCompletedInstances/nrOfInstances == 1}";//审批完成的条件，暂时定义为需要全部人审批
 
+    @XmlTransient
+    private Integer ballot;//赞成票数
+
+    @XmlTransient
+    private Byte votingType=0;//投票类型，0代表百分比，1代表绝对赞成票数
+
+    @XmlTransient
+    private Byte percentApproval;//赞成百分比，前端默认为100%
 
     public String getUserIds() {
         return userIds;
@@ -78,5 +86,29 @@ public class MultiInstanceConfig implements Serializable {
 
     public void setCompletionCondition(String completionCondition) {
         this.completionCondition = completionCondition;
+    }
+
+    public Integer getBallot() {
+        return ballot;
+    }
+
+    public void setBallot(Integer ballot) {
+        this.ballot = ballot;
+    }
+
+    public Byte getVotingType() {
+        return votingType;
+    }
+
+    public void setVotingType(Byte votingType) {
+        this.votingType = votingType;
+    }
+
+    public Byte getPercentApproval() {
+        return percentApproval;
+    }
+
+    public void setPercentApproval(Byte percentApproval) {
+        this.percentApproval = percentApproval;
     }
 }
