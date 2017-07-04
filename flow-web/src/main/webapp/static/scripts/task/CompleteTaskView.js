@@ -6,6 +6,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         rows: 10,
         total: 1
     },
+    searchName:null,
     firstTime:true,
     initComponent: function () {
         this.getCompleteData();
@@ -24,11 +25,11 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             '               <div class="content-page">' +
             '                   <div class="record-total">共0条记录</div>' +
             '                    <div class="pege-right">' +
-            '                        <a href="#" class="first-page"><首页</a>' +
-            '                        <a href="#" class="prev-page"><上一页</a>' +
+            '                        <a href="#" class="first-page pageDisable"><首页</a>' +
+            '                        <a href="#" class="prev-page pageDisable"><上一页</a>' +
             '                        <input value="1" class="one">' +
-            '                        <a href="#" class="next-page">下一页></a>' +
-            '                        <a href="#" class="end-page">尾页></a>' +
+            '                        <a href="#" class="next-page pageDisable">下一页></a>' +
+            '                        <a href="#" class="end-page pageDisable">尾页></a>' +
             '                     </div>' +
             '               </div>';
     },
@@ -46,7 +47,8 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             params: {
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
-                rows: this.pageInfo.rows
+                rows: this.pageInfo.rows,
+                Q_EQ_flowTaskName:this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {
@@ -54,13 +56,14 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                     g.firstTime = false;
                 }
                 if (result.records==0) {
-                    g.getNotData();
+                    g.getNotWorkData();
                     return;
                 } else if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.initHtml();
                     g.getCompleteHtml(result.rows);
+                    g.pageJudge();
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
@@ -74,8 +77,50 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             }
         })
     },
+    //已办分页的判断
+    pageJudge: function () {
+        var g = this;
+        if (g.pageInfo.page == 1 && g.pageInfo.total > 1&&g.pageInfo.page < g.pageInfo.total) {
+            $(".next-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".next-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".end-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        }else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
+            $("a", "#" + this.renderTo).removeClass("pageDisable");
+            $("a", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+        } else if (g.pageInfo.page > 1 && g.pageInfo.page == g.pageInfo.total) {
+            $(".first-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".first-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".prev-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        }
+    },
     //当页面没有数据时的显示内容
-    getNotData: function () {
+    getNotWorkData: function () {
         $("#" + this.renderTo).empty();
         var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
@@ -109,7 +154,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                                </div>' +
                 '                                <span class="item-right task-item-right">' +
                 '                                    <div class="userName">发起人：' + items[j].creatorName + '</div>' +
-                '                                    <div class="todo-date"><i class="ecmp-flow-history flow-time-icon time-icon-size" title="流程历史"></i>处理时间：' + items[j].actEndTime + '</div>' +
+                '                                    <div class="todo-date"><i class="ecmp-flow-history flow-time-icon time-icon-size" title="流程历史"></i><span>处理时间：' + items[j].actEndTime + '</span></div>' +
                 '                                </span>' +
                 '                            </div>' +
                 '</div>');
@@ -127,6 +172,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         //首页
         $(".first-page", "#" + this.renderTo).live("click", function () {
             if (g.pageInfo.page == 1) {
+                $(".first-page", "#" + this.renderTo).addClass("pageDisable");
                 return;
             }
             g.pageInfo.page = 1;
@@ -265,6 +311,10 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         }
     },
     refresh: function () {
+        var g=this;
+        g.pageInfo.page=1;
+        g.pageInfo.rows=10;
+        g.pageInfo.total=1;
         this.getCompleteData();
     }
 });

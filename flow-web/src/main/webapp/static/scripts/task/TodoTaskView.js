@@ -9,6 +9,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     records: null,
     firstTime: true,
+    searchName: null,
     initComponent: function () {
         this.getModelList();
         this.addEvents();
@@ -48,17 +49,17 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     myMask.hide();
                 }
                 if (!status.data) {
-                    g.getNotData();
+                    g.getNotWorkData();
                     return;
                 }
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
                 g.modelId = modelId ? modelId : status.data[0].businessModeId;
-                if (modelId) {
+                if (g.modelId) {
                     $(".navber-count[data-id='" + g.modelId + "']").click();
                 }
-                g.getTodoData();
+                // g.getTodoData();
             },
             failure: function (result) {
                 if (g.firstTime) {
@@ -69,7 +70,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     //当页面没有数据时的显示内容
-    getNotData: function () {
+    getNotWorkData: function () {
         $("#" + this.renderTo).empty();
         var html = '<div class="todo-not-data">' +
             '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
@@ -112,11 +113,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             '               <div class="content-page">' +
             '                   <div class="record-total">共0条记录</div>' +
             '                    <div class="pege-right">' +
-            '                        <a href="#" class="first-page"><首页</a>' +
-            '                        <a href="#" class="prev-page"><上一页</a>' +
+            '                        <a href="#" class="first-page pageDisable"><首页</a>' +
+            '                        <a href="#" class="prev-page pageDisable"><上一页</a>' +
             '                        <input value="1" class="one">' +
-            '                        <a href="#" class="next-page">下一页></a>' +
-            '                        <a href="#" class="end-page">尾页></a>' +
+            '                        <a href="#" class="next-page pageDisable">下一页></a>' +
+            '                        <a href="#" class="end-page pageDisable">尾页></a>' +
             '                     </div>' +
             '               </div>';
     },
@@ -135,7 +136,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 modelId: this.modelId,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
-                rows: this.pageInfo.rows
+                rows: this.pageInfo.rows,
+                taskName: this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {
@@ -146,13 +148,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.records = result.records;
+                    g.pageJudge();
                     if (g.records > 0) {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
                         $(".nav-select").css("display", "none");
                         if (!$(".navber-count").hasClass("nav-select")) {
                             $('div', '#' + this.renderTo).css("display", "none");
-                            g.getNotData();
+                            g.getNotWorkData();
                             return;
                         }
                     }
@@ -169,6 +172,48 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
             }
         });
+    },
+    //待办分页的判断
+    pageJudge: function () {
+        var g = this;
+        if (g.pageInfo.page == 1 && g.pageInfo.total > 1&&g.pageInfo.page < g.pageInfo.total) {
+            $(".next-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".next-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".end-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        }else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
+            $("a", "#" + this.renderTo).removeClass("pageDisable");
+            $("a", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+        } else if (g.pageInfo.page > 1 && g.pageInfo.page == g.pageInfo.total) {
+            $(".first-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".first-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".prev-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        }
     },
     //待办里面内容部分的循环
     getTodoHtml: function (items) {
@@ -252,6 +297,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     pagingEvent: function () {
         var g = this;
         //首页
+
         $(".first-page", "#" + this.renderTo).live("click", function () {
             if (g.pageInfo.page == 1) {
                 return;
@@ -310,6 +356,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 $(this).addClass("nav-select").siblings().removeClass("nav-select");
                 var id = $(this).attr("data-id");
                 g.modelId = id;
+                g.pageInfo.page=1;
+                g.pageInfo.rows=10;
+                g.pageInfo.total=1;
                 //重新获取数据
                 g.getTodoData();
             })
@@ -332,6 +381,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     refresh: function () {
+        var g=this;
+        g.pageInfo.page=1;
+        g.pageInfo.rows=10;
+        g.pageInfo.total=1;
         this.getModelList(this.modelId);
     },
     //点击打开查看表单界面的新页签
@@ -387,7 +440,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }],
                 buttons: [{
                     title: "确定",
-                    iconCss:"ecmp-common-ok",
+                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var opinion = EUI.getCmp("opinion").getValue();
@@ -427,7 +480,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
-                    iconCss:"ecmp-common-delete",
+                    iconCss: "ecmp-common-delete",
                     handler: function () {
                         win.remove();
                     }
@@ -448,7 +501,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 msg: "您确定要签收吗",
                 buttons: [{
                     title: "确定",
-                    iconCss:"ecmp-common-ok",
+                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -472,7 +525,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
-                    iconCss:"ecmp-common-delete",
+                    iconCss: "ecmp-common-delete",
                     handler: function () {
                         message.remove();
                     }
@@ -493,11 +546,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 msg: "您确定要终止吗",
                 buttons: [{
                     title: "确定",
-                    iconCss:"ecmp-common-ok",
+                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
-                            msg: "正在终止，请稍候...",
+                            msg: "正在终止，请稍候..."
                         });
                         EUI.Store({
                             url: "../flowInstance/endFlowInstance/",
@@ -517,7 +570,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     title: "取消",
-                    iconCss:"ecmp-common-delete",
+                    iconCss: "ecmp-common-delete",
                     handler: function () {
                         message.remove();
                     }
