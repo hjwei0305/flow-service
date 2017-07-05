@@ -390,6 +390,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             } else if (node.flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
+            }else if (node.flowTaskType == "approve") {
+                nodeType = this.lang.approveTaskText;
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +

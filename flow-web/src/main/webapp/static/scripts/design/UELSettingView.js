@@ -7,27 +7,23 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     properties: null,
-    readOnly: false,
+    isDefault: false,
 
     initComponent: function () {
-        var items, height = 450, width = 710;
-        if (this.readOnly) {
-            items = [this.initCenter()];
-            width = 536;
-        } else {
+        this.isDefault = this.data ? this.data.isDefault : false;
+        var items, height = 450;
+        if (!this.showName) {
             items = [this.initLeft(), this.initCenter()];
-        }
-        if (this.showName) {
-            items = [this.initTop()].concat(items);
-        } else {
             height = 400;
+        } else {
+            items = [this.initTop(), this.initLeft(), this.initCenter()];
         }
         this.window = EUI.Window({
-            width: width,
+            width: 710,
             height: height,
             padding: 10,
             title: this.title,
-            buttons: this.readOnly ? null : this.getButtons(),
+            buttons: this.getButtons(),
             layout: "border",
             items: items
         })
@@ -35,20 +31,23 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         this.logicUelCmp = EUI.getCmp("logicUel");
         this.groovyUelCmp = EUI.getCmp("groovyUel");
         this.addEvents();
-        !this.readOnly && this.getProperties();
+        this.getProperties();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
     },
     initTop: function () {
+        var g = this;
         return {
+            xtype: "FormPanel",
+            id: "uelform",
             region: "north",
             height: 40,
             padding: 0,
-            hidden: !this.showName,
             isOverFlow: false,
             border: false,
-            readonly: this.readOnly,
+            itemspace: 20,
+            layout: "auto",
             items: [{
                 xtype: "TextField",
                 name: "name",
@@ -56,26 +55,49 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 title: "表达式名称",
                 labelWidth: 100,
                 width: 250,
-                readonly:this.readOnly,
+                readonly: this.isDefault,
                 value: this.data ? this.data.name : "",
                 allowBlank: false
+            }, {
+                xtype: "CheckBox",
+                name: "isDefault",
+                title: "默认路径",
+                labelFirst: false,
+                value: this.isDefault,
+                onChecked: function (value) {
+                    g.setDefault(value);
+                }
             }]
         };
+    },
+    setDefault: function (isDefault) {
+        var nameCmp = EUI.getCmp("name");
+        nameCmp.setReadOnly(isDefault);
+        this.logicUelCmp.setReadOnly(isDefault);
+        if (isDefault) {
+            this.logicUelCmp.reset();
+            this.groovyUelCmp.reset();
+            nameCmp.setValue("默认");
+        }
+        this.isDefault = isDefault;
     },
     getButtons: function () {
         var g = this;
         return [{
             title: "保存配置",
-            iconCss:"ecmp-common-save",
-             selected: true,
+            iconCss: "ecmp-common-save",
+            selected: true,
             handler: function () {
-                var name;
+                var name, isDefault = false;
                 if (g.showName) {
-                    name = EUI.getCmp("name").getValue();
-                    if (!name) {
+                    var formPanel = EUI.getCmp("uelform");
+                    var headData = formPanel.getFormValue();
+                    isDefault = headData.isDefault;
+                    name = headData.name;
+                    if (!headData.name) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "请先输入表达式名称"
+                            msg: "请填写表达式名称"
                         });
                         return;
                     }
@@ -83,6 +105,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 ;
                 var data = {
                     name: name,
+                    isDefault: isDefault,
                     logicUel: g.logicUelCmp.getValue(),
                     groovyUel: g.groovyUelCmp.getValue()
                 };
@@ -91,7 +114,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             title: "取消",
-            iconCss:"ecmp-common-delete",
+            iconCss: "ecmp-common-delete",
             handler: function () {
                 g.window.close();
             }
@@ -119,13 +142,13 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 width: 489,
                 height: 120,
                 id: "logicUel",
-                readonly: this.readOnly,
+                readonly: this.isDefault,
                 style: {
                     "margin-left": "10px"
                 },
                 name: "logicUel",
                 afterValidate: function (value) {
-                    if (g.readOnly || !g.properties) {
+                    if (g.isDefault || !g.properties) {
                         return;
                     }
                     for (var key in g.properties) {
@@ -163,24 +186,23 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     ,
     addEvents: function () {
         var g = this;
-        if (this.readOnly) {
-            return;
-        }
         $(".calculate-btn").bind("click", function () {
-            var operator = " " + $(this).attr("operator") + " ";
+            if (g.isDefault) {
+                return;
+            }
+            // var operator = " " + $(this).attr("operator") + " ";
             var uel = " " + $(this).attr("uel") + " ";
-            var value = g.logicUelCmp.getValue() + operator;
+            var value = g.logicUelCmp.getValue() + uel;
             g.logicUelCmp.setValue(value);
-            // value = g.groovyUelCmp.getValue() + uel;
-            // g.groovyUelCmp.setValue(value);
         });
         $(".property-item").live("click", function () {
+            if (g.isDefault) {
+                return;
+            }
             var text = $(this).text();
             var key = $(this).attr("key");
             var value = g.logicUelCmp.getValue() + " " + text + " ";
             g.logicUelCmp.setValue(value);
-            // value = g.groovyUelCmp.getValue() + " " + key + " ";
-            // g.groovyUelCmp.setValue(value);
         });
     }
     ,
@@ -192,10 +214,6 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 businessModelId: this.businessModelId
             },
             success: function (result) {
-                if (!result.success) {
-                    EUI.ProcessStatus(result);
-                    return;
-                }
                 g.properties = result.data;
                 g.showProperties(result.data);
             },

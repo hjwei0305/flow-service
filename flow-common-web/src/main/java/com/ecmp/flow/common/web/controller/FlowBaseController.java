@@ -139,7 +139,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
-                        if ("common".equalsIgnoreCase(flowTaskType)) {
+                        if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
                             userMap.put(f.getUserVarName(), f.getUserIds());
                         } else {
                             String[] idArray = f.getUserIds().split(",");
@@ -213,7 +213,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                     selectedNodeIds.add(f.getNodeId());
                     String flowTaskType = f.getFlowTaskType();
-                    if ("common".equalsIgnoreCase(flowTaskType)) {
+                    if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
                         v.put(f.getUserVarName(), f.getUserIds());
                     } else {
                         String[] idArray = f.getUserIds().split(",");

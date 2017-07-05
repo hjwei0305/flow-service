@@ -81,20 +81,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             selected: true,
             iconCss: "ecmp-common-configuration",
             id: "setStartUel",
+            hidden:true,
             handler: function () {
-                if (!g.startUEL) {
-                    EUI.ProcessStatus({
-                        success: false,
-                        msg: "该流程未配置启动条件"
-                    });
-                    return;
-                }
                 var scope = this;
-                new EUI.UELSettingView({
+                new EUI.LookUELSettingView({
                     title: "流程启动条件",
                     data: g.startUEL,
-                    showName: false,
-                    readOnly: true,
                     businessModelId: g.businessModelId,
                     afterConfirm: function (data) {
                         scope.startUEL = data;
@@ -160,9 +152,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
             if (!ueldata) {
                 EUI.ProcessStatus({
-                    success: false,
+                    success: true,
                     msg: "当前连线未配置UEL表达式"
                 });
+                return;
+            }
+            if(ueldata.isDefault){
                 return;
             }
             var type = $("#" + connection.sourceId).attr("bustype");
@@ -170,9 +165,8 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 g.showSimpleNodeConfig(ueldata.name);
                 return;
             }
-            new EUI.UELSettingView({
+            new EUI.LookUELSettingView({
                 title: "表达式配置",
-                readOnly: true,
                 data: g.uelInfo[connection.sourceId + "," + connection.targetId],
                 businessModelId: g.businessModelId
             });
@@ -297,6 +291,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
+        if(this.startUEL){
+            EUI.getCmp("setStartUel").show();
+        }
     },
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
@@ -367,7 +364,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     },
     showSimpleNodeConfig: function (title) {
         var win = EUI.Window({
-            height: 30,
+            height: 33,
             padding: 30,
             title: "节点配置",
             items: [{

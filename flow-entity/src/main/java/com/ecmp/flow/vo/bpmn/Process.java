@@ -121,14 +121,18 @@ public class Process extends BaseNode implements Serializable {
                 String key = (String) iterator.next();
                 JSONObject node = nodes.getJSONObject(key);
                 JSONArray targets = node.getJSONArray("target");
+                BaseFlowNode baseFlowNodeTemp = null;
                 switch (node.getString("type")) {
                     case "StartEvent":
                         StartEvent startEventTemp = (StartEvent) JSONObject.toBean(node, StartEvent.class);
                         startEventTemp.setInitiator("startUserId");
                         startEvent.add(startEventTemp);
+                        baseFlowNodeTemp  = startEventTemp;
                         break;
                     case "EndEvent":
-                        endEvent.add((EndEvent) JSONObject.toBean(node, EndEvent.class));
+                        EndEvent endEventTemp = (EndEvent) JSONObject.toBean(node, EndEvent.class);
+                        endEvent.add(endEventTemp);
+                        baseFlowNodeTemp  = endEventTemp;
                         break;
                     case "UserTask": {
                         UserTask userTaskTemp = (UserTask) JSONObject.toBean(node, UserTask.class);
@@ -136,7 +140,9 @@ public class Process extends BaseNode implements Serializable {
                             userTaskTemp.setAssignee("${" + userTaskTemp.getId() + "_Normal}");
                         } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             userTaskTemp.setCandidateUsers("${" + userTaskTemp.getId() + "_SingleSign}");
-                        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                        } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            userTaskTemp.setAssignee("${" + userTaskTemp.getId() + "_Approve}");
+                        }  else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
                             multiInstanceConfig.setUserIds("${" + userTaskTemp.getId() + "_List_CounterSign}");
                             multiInstanceConfig.setVariable("${" + userTaskTemp.getId() + "_CounterSign}");
@@ -254,36 +260,53 @@ public class Process extends BaseNode implements Serializable {
 
 
                         userTask.add(userTaskTemp);
+                        baseFlowNodeTemp  = userTaskTemp;
                         break;
                     }
                     case "MailTask":
-                        mailTask.add((MailTask) JSONObject.toBean(node, MailTask.class));
+                        MailTask mailTaskTemp = (MailTask) JSONObject.toBean(node, MailTask.class);
+                        mailTask.add(mailTaskTemp);
+                        baseFlowNodeTemp  = mailTaskTemp;
                         break;
                     case "ManualTask":
-                        manualTask.add((ManualTask) JSONObject.toBean(node, ManualTask.class));
+                        ManualTask manualTaskTemp = (ManualTask) JSONObject.toBean(node, ManualTask.class);
+                        manualTask.add(manualTaskTemp);
+                        baseFlowNodeTemp  = manualTaskTemp;
                         break;
                     case "ScriptTask":
-                        scriptTask.add((ScriptTask) JSONObject.toBean(node, ScriptTask.class));
+                        ScriptTask scriptTaskTemp =  (ScriptTask) JSONObject.toBean(node, ScriptTask.class);
+                        scriptTask.add(scriptTaskTemp);
+                        baseFlowNodeTemp  = scriptTaskTemp;
                         break;
                     case "ServiceTask":
-                        serviceTask.add((ServiceTask) JSONObject.toBean(node, ServiceTask.class));
+                        ServiceTask serviceTaskTemp = (ServiceTask) JSONObject.toBean(node, ServiceTask.class);
+                        serviceTask.add(serviceTaskTemp);
+                        baseFlowNodeTemp  = serviceTaskTemp;
                         break;
                     case "ExclusiveGateway":
-                        exclusiveGateway.add((ExclusiveGateway) JSONObject.toBean(node, ExclusiveGateway.class));
+                        ExclusiveGateway exclusiveGatewayTemp = (ExclusiveGateway) JSONObject.toBean(node, ExclusiveGateway.class);
+                        exclusiveGateway.add(exclusiveGatewayTemp);
+                        baseFlowNodeTemp  = exclusiveGatewayTemp;
                         break;
                     case "InclusiveGateway":
-                        inclusiveGateway.add((InclusiveGateway) JSONObject.toBean(node, InclusiveGateway.class));
+                        InclusiveGateway inclusiveGatewayTemp = (InclusiveGateway) JSONObject.toBean(node, InclusiveGateway.class);
+                        inclusiveGateway.add(inclusiveGatewayTemp);
+                        baseFlowNodeTemp  = inclusiveGatewayTemp;
                         break;
                     case "ParallelGateway":
-                        parallelGateway.add((ParallelGateway) JSONObject.toBean(node, ParallelGateway.class));
+                        ParallelGateway parallelGatewayTemp = (ParallelGateway) JSONObject.toBean(node, ParallelGateway.class);
+                        parallelGateway.add(parallelGatewayTemp);
+                        baseFlowNodeTemp  = parallelGatewayTemp;
                         break;
                     case "EventGateway":
-                        eventGateway.add((EventGateway) JSONObject.toBean(node, EventGateway.class));
+                        EventGateway eventGatewayTemp = (EventGateway) JSONObject.toBean(node, EventGateway.class);
+                        eventGateway.add(eventGatewayTemp);
+                        baseFlowNodeTemp  = eventGatewayTemp;
                         break;
                     default:
                         break;
                 }
-                addSequenceFlow(key, targets);
+                addSequenceFlow(baseFlowNodeTemp, targets);
             }
         }
     }
@@ -295,12 +318,25 @@ public class Process extends BaseNode implements Serializable {
 
 
 
-    private void addSequenceFlow(String sourceId, JSONArray targets) {
+    private void addSequenceFlow(BaseFlowNode currentNode, JSONArray targets) {
+        String sourceId =  currentNode.getId();
         for (int i = 0; i < targets.size(); i++) {
             JSONObject target = targets.getJSONObject(i);
             String id = "flow" + (++lineCount);
             String targetId = target.getString("targetId");
             String uel = target.getString("uel");
+            if(StringUtils.isNotEmpty(uel)){
+                try{
+                JSONObject uelObject = target.getJSONObject("uel");
+                if(uelObject!=null){
+                    String isDefault = uelObject.get("isDefault")+"";
+                    if("true".equalsIgnoreCase(isDefault)&&currentNode.getDefaultSequence()==null){
+                        currentNode.setDefaultSequence(id);
+                    }
+                }}catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
             SequenceFlow sf = new SequenceFlow(id, sourceId, targetId, uel);
             sequenceFlow.add(sf);
         }

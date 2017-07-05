@@ -24,12 +24,12 @@ var _flowUelBtn = [{
     uel: "!="
 }, {
     name: "并且",
-    operator: "and",
-    uel: "and"
+    operator: "&&",
+    uel: "&&"
 }, {
     name: "或者",
-    operator: "or",
-    uel: "or"
+    operator: "||",
+    uel: "||"
 }, {
     name: "左括号",
     operator: "(",
