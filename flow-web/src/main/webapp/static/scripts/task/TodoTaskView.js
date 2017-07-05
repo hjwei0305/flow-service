@@ -10,8 +10,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     records: null,
     firstTime: true,
     searchName: null,
+    nowPage:null,
+    totalPage:null,
     initComponent: function () {
         this.getModelList();
+        // this.getTestNavData(_data);
         this.addEvents();
     },
     initHtml: function (data) {
@@ -21,18 +24,43 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //导航部分的外层容器
     getNavbarHtml: function (data) {
-        var g = this;
-        var html = '<div class="content-navbar">';
-        if (data.length < 6) {
-            html += '<div class="navbar"></div>';
-        } else {
-            html += '      <i class="ecmp-common-prepage arrow-left pre"></i>' +
+            var g = this;
+            var html = '<div class="content-navbar">';
+            if (data.length < 6) {
+             html += '<div class="navbar"></div>';
+             } else {
+            html += '      <i class="ecmp-common-prepage page-btn arrow-left pre"></i>' +
                 '         <div class="navbar"></div>' +
-                '         <i class="ecmp-common-nextpage arrow-right next"></i>';
-        }
-        html += '</div>';
-        return html;
+                '         <i class="ecmp-common-nextpage page-btn arrow-right next"></i>';
+            }
+            html += '</div>';
+            return html;
     },
+
+
+    //导航测试数据
+   /* getTestNavData: function () {
+        var g = this;
+        g.initHtml(_data);
+        g.getNavHtml(_data);
+        g.nowPage = 1;
+        g.totalPage = Math.ceil(_data.length / 6);
+        g.upPageBtn();
+
+    },*/
+    upPageBtn: function () {
+        if (this.nowPage==1){
+            $(".pre").removeClass("page-gray").addClass("page-btn")
+        }else {
+            $(".pre").removeClass("page-btn").addClass("page-gray")
+        }
+        if (this.totalPage == this.nowPage){
+            $(".next").removeClass("page-gray").addClass("page-btn")
+        }else {
+            $(".next").removeClass("page-btn").addClass("page-gray")
+        }
+    },
+
     //导航部分的数据调用
     getModelList: function (modelId) {
         var g = this;
@@ -45,6 +73,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
+                g.nowPage = 1;
+                g.totalPage = Math.ceil(status.data.length / 6);
                 if (g.firstTime) {
                     myMask.hide();
                 }
@@ -57,9 +87,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 //默认显示第一个模块的列表
                 g.modelId = modelId ? modelId : status.data[0].businessModeId;
                 if (g.modelId) {
-                    $(".navber-count[data-id='" + g.modelId + "']").click();
+                    $(".navber-count[data-id='" + g.modelId + "']").click();//对当前模块或者第一个模块模拟点击事件进行刷新
                 }
-                // g.getTodoData();
+                g.upPageBtn();
+
             },
             failure: function (result) {
                 if (g.firstTime) {
@@ -83,15 +114,16 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         var html = "";
         $(".navbar", '#' + this.renderTo).empty();
         for (var i = 0; i < data.length; i++) {
+            var page = parseInt(i / 6) + 1;
             var item = data[i];
             if (i == 0) {
-                html += '                    <div class="navber-count nav-select" data-id="' + item.businessModeId + '">' +
+                html += '                    <div page="' + page + '" class="navber-count nav-select" data-id="' + item.businessModeId + '">' +
                     '                            <div class="navbar-circle">' + item.count + '</div>' +
                     '                            <div class="navber-text">' + item.businessModelName + '</div>' +
                     '                        </div>';
             }
             else {
-                html += '                    <div class="navber-count" data-id="' + item.businessModeId + '">' +
+                html += '                    <div page="' + page + '" class="navber-count" data-id="' + item.businessModeId + '">' +
                     '                            <div class="navbar-circle">' + item.count + '</div>' +
                     '                            <div class="navber-text">' + item.businessModelName + '</div>' +
                     '                        </div>';
@@ -99,6 +131,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
 
         }
         $(".navbar", '#' + this.renderTo).append(html);
+        $(".navber-count:gt(5)", ".navbar").hide();
     },
     //待办的外层
     getTodoTaskHtml: function () {
@@ -137,7 +170,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
                 rows: this.pageInfo.rows,
-                taskName: this.searchName
+                Quick_value:this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {
@@ -176,7 +209,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办分页的判断
     pageJudge: function () {
         var g = this;
-        if (g.pageInfo.page == 1 && g.pageInfo.total > 1&&g.pageInfo.page < g.pageInfo.total) {
+        if (g.pageInfo.page == 1 && g.pageInfo.total > 1 && g.pageInfo.page < g.pageInfo.total) {
             $(".next-page", "#" + this.renderTo).removeClass("pageDisable");
             $(".next-page", "#" + this.renderTo).mouseenter(function () {
                 $(this).addClass("hover");
@@ -191,7 +224,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             });
             $(".first-page", "#" + this.renderTo).addClass("pageDisable");
             $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
-        }else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
+        } else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
             $("a", "#" + this.renderTo).removeClass("pageDisable");
             $("a", "#" + this.renderTo).mouseenter(function () {
                 $(this).addClass("hover");
@@ -351,18 +384,41 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //导航的点击事件
     navbarEvent: function () {
         var g = this;
-        $(document).ready(function () {
-            $(".navber-count").live("click", function () {
-                $(this).addClass("nav-select").siblings().removeClass("nav-select");
-                var id = $(this).attr("data-id");
-                g.modelId = id;
-                g.pageInfo.page=1;
-                g.pageInfo.rows=10;
-                g.pageInfo.total=1;
-                //重新获取数据
-                g.getTodoData();
-            })
-        })
+        $(".navber-count").live("click", function () {
+            $(this).addClass("nav-select").siblings().removeClass("nav-select");
+            var id = $(this).attr("data-id");
+            g.modelId = id;
+            g.resetPageBar();
+            //重新获取数据
+            g.getTodoData();
+        });
+        $(".arrow-left").live("click", function () {
+            if(!$(this).hasClass("page-btn")){
+                g.nowPage--;
+                $(".navber-count", ".navbar").hide(300);
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
+                g.upPageBtn();
+            }
+        });
+        $(".arrow-right").live("click", function () {
+            if(!$(this).hasClass("page-btn")){
+                g.nowPage++;
+                $(".navber-count", ".navbar").hide(300);
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
+                g.upPageBtn();
+            }
+        });
+    },
+    resetPageBar: function () {
+        this.pageInfo.page = 1;
+        this.pageInfo.rows = 10;
+        this.pageInfo.total = 1;
+
+        $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".one", "#" + this.renderTo).val(1);
     },
     //点击打开审批界面的新页签
     approveViewWindow: function () {
@@ -381,10 +437,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     refresh: function () {
-        var g=this;
-        g.pageInfo.page=1;
-        g.pageInfo.rows=10;
-        g.pageInfo.total=1;
         this.getModelList(this.modelId);
     },
     //点击打开查看表单界面的新页签

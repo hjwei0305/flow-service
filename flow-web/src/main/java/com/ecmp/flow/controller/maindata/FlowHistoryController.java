@@ -64,6 +64,12 @@ public class FlowHistoryController extends FlowBaseController{
 //            account = "666666";
 //        }
          search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("flowTaskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTaskPageResult, JsonUtil.DATE_TIME);

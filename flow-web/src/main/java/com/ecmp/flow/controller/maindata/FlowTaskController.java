@@ -75,6 +75,12 @@ public class FlowTaskController {
 //            account = "666666";
 //        }
         search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
+        //setQuickSearchValue
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByBusinessModelId(modelId,search);
         return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);

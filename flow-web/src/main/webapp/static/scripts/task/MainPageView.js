@@ -190,11 +190,23 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             renderTo:"searchBox",
             width:198,
             displayText:"输入单据说明关键字查询",
-            editable:true,
+            canClear:true,
             colon:false,
-            onSearch:function () {
-
+            onSearch:function (data) {
+               g.searchOperate(data);
             }
         })
+    },
+    searchOperate:function (data) {
+        var selectDom=$(".top-header").children(".active");
+        var selectDomClass=selectDom.attr("class");
+        if(selectDomClass.indexOf("wait-work")>=0){
+            this.todoTaskView.searchName=data;
+            this.todoTaskView.getTodoData();
+        }
+        if(selectDomClass.indexOf("taken-work")>=0){
+            this.completeTaskView.searchName=data;
+            this.completeTaskView.getCompleteData();
+        }
     }
 });
