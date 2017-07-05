@@ -139,7 +139,7 @@ div, span, p {
     float: left;
     width: 19px;
     height: 49px;
-    margin-top: 10.5px;
+    margin-top: 3.5px;
     cursor: pointer;
 }
 
@@ -148,7 +148,7 @@ div, span, p {
     float: right;
     width: 19px;
     height: 49px;
-    margin-top: -60.5px;
+    margin-top: -56.5px;
     cursor: pointer;
 }
 
