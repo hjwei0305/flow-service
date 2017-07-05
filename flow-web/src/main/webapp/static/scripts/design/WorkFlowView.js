@@ -516,6 +516,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 });
                 return;
             }
+            var nodeType = $("#" + connection.sourceId).attr("nodetype");
+            if(nodeType == "Approve"){
+                return;
+            }
             new EUI.UELSettingView({
                 title: "表达式配置",
                 data: ueldata,
@@ -555,14 +559,49 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         logicUel: "",
                         groovyUel: ""
                     };
+                } else {
+                    var nodeType = $("#" + connection.sourceId).attr("nodetype");
+                    if (nodeType == "Approve") {
+                        var result = g.getApproveLineInfo(connection.sourceId);
+                        var name = "同意", agree = true;
+                        if (result == 0) {
+                            name = "不同意";
+                            agree = false;
+                        }
+                        var overlay = connection.connection.getOverlay("label");
+                        overlay.setLabel(name);
+                        overlay.show();
+                        g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                            name: name,
+                            agree: agree,
+                            groovyUel: "",
+                            logicUel: ""
+                        };
+                    }
                 }
             }
         });
     }
     ,
+    getApproveLineInfo: function (id) {
+        for (var key in this.uelInfo) {
+            if (key.startsWith(id + ",")) {
+                var uel = this.uelInfo[key];
+                if (uel.agree) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
+        }
+    },
     initNode: function (el) {
         this.instance.draggable(el);
-
+        var maxConnections = -1;
+        var nodeType = $(el).attr("nodetype");
+        if (nodeType == "Approve") {
+            maxConnections = 2;
+        }
         this.instance.makeSource(el, {
             filter: ".node-dot",
             anchor: "Continuous",
@@ -583,21 +622,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 outlineWidth: 5,
                 outlineStroke: "white"
             },
-            connectionType: "basic"
+            connectionType: "basic",
+            maxConnections: maxConnections
         });
 
         this.instance.makeTarget(el, {
             anchor: "Continuous",
             allowLoopback: false,
+            maxConnections: maxConnections,
             beforeDrop: function (params) {
                 if (params.sourceId == params.targetId) {
                     return false;
-                    /* 不能链接自己 */
                 }
                 return true;
             }
         });
-
     }
     ,
     doConect: function (sourceId, targetId) {
