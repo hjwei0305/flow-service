@@ -735,7 +735,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (defaultCount > 1) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: node.name + "：只能有1个默认路径，请修改配置"
+                    msg: node.name + "：最多只能有1个默认路径，请修改配置"
                 });
                 return;
             }
