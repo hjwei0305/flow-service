@@ -160,9 +160,6 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             colon:false,
             onSearch:function (data) {
                 g.quickSearch();
-            },
-            afterClear:function () {
-                g.quickSearch();
             }
         })
     },

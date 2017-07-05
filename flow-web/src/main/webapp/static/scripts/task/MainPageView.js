@@ -194,9 +194,6 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             colon:false,
             onSearch:function (data) {
                g.searchOperate(data);
-            },
-            afterClear:function () {
-                g.searchOperate(null);
             }
         })
     },
