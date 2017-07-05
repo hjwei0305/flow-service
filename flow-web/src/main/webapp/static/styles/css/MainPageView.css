@@ -470,7 +470,7 @@ div, span, p {
     float: right;
 }
 
-a {
+.pege-right a {
     text-decoration: none;
     outline: none;
     color: #999999;
@@ -686,7 +686,7 @@ a {
 .handle-icon-size{
     font-size:15px;
 }
-.pageDisable{
+.pege-right .pageDisable{
     font-weight: normal;
     color: #ccc;
 }
