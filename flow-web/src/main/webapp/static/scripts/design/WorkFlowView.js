@@ -574,7 +574,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "",
+                            groovyUel: "#{approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     }
@@ -599,8 +599,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.draggable(el);
         var maxConnections = -1;
         var nodeType = $(el).attr("nodetype");
-        if (nodeType == "Approve") {
+        if (nodeType == "Approve" || nodeType == "CounterSign") {
             maxConnections = 2;
+        }else if(nodeType){
+            maxConnections = 1;
         }
         this.instance.makeSource(el, {
             filter: ".node-dot",
@@ -629,7 +631,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.makeTarget(el, {
             anchor: "Continuous",
             allowLoopback: false,
-            maxConnections: maxConnections,
             beforeDrop: function (params) {
                 if (params.sourceId == params.targetId) {
                     return false;
@@ -725,7 +726,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         targetId: key.split(",")[1],
                         uel: this.uelInfo[key] || ""
                     };
-                    if ((node.busType == "ExclusiveGateway" || node.busType == "InclusiveGateway") 
+                    if ((node.busType == "ExclusiveGateway" || node.busType == "InclusiveGateway")
                         && item.uel && item.uel.isDefault) {
                         defaultCount++;
                     }
@@ -735,7 +736,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (defaultCount > 1) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: node.name + "：只能有1个默认路径，请修改配置"
+                    msg: node.name + "：最多只能有1个默认路径，请修改配置"
                 });
                 return;
             }

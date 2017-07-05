@@ -157,6 +157,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 });
                 return;
             }
+            if(ueldata.isDefault){
+                return;
+            }
             var type = $("#" + connection.sourceId).attr("bustype");
             if (type == "ManualExclusiveGateway") {
                 g.showSimpleNodeConfig(ueldata.name);

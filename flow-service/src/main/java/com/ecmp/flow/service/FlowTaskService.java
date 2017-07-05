@@ -1760,7 +1760,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (ifGateWay) {// 一个节点的出口，暂时只允许拥有一个网关节点
                     results.clear();
                     checkFuHeConditon(currTempActivity, v, results);
-                    break;
+                    if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关
+                        throw new RuntimeException("存在并行网关非法检查条件表达式异常！");
+                    }
+                    if(results.isEmpty()){//如果为空，查找节点的default路径节点
+                       String defaultSequenceId = currTempActivity.getProperty("default")+"";
+                       if(StringUtils.isNotEmpty(defaultSequenceId)){
+                           PvmTransition pvmTransition = currTempActivity.findOutgoingTransition(defaultSequenceId);
+                           if(pvmTransition!=null){
+                               results.add(pvmTransition.getDestination());
+                           }
+                       }
+                    }else if(results.size()>1 && "ExclusiveGateway".equalsIgnoreCase(nextActivtityType)){
+                        PvmActivity reTemp =  results.get(0);
+                        results.clear();
+                        results.add(reTemp);
+                    }
+                    //break;
                 }
 
                 String conditionText = (String) pv.getProperty("conditionText");
@@ -1800,9 +1816,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeInfo> qualifiedNode = new ArrayList<NodeInfo>();
         List<PvmActivity> results = new ArrayList<PvmActivity>();
         checkFuHeConditon(currActivity, v, results);
-        if(results.isEmpty()){//如果为空，查找节点的default路径节点
 
-        }
         // 前端需要的数据
         if (!results.isEmpty()) {
             for (PvmActivity tempActivity : results) {
