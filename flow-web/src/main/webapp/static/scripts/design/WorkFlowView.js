@@ -574,7 +574,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "",
+                            groovyUel: "#{approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     }
@@ -725,7 +725,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         targetId: key.split(",")[1],
                         uel: this.uelInfo[key] || ""
                     };
-                    if ((node.busType == "ExclusiveGateway" || node.busType == "InclusiveGateway") 
+                    if ((node.busType == "ExclusiveGateway" || node.busType == "InclusiveGateway")
                         && item.uel && item.uel.isDefault) {
                         defaultCount++;
                     }
