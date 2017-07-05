@@ -20,10 +20,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.NodeInfo;
-import com.ecmp.flow.vo.bpmn.BaseFlowNode;
-import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.flow.vo.bpmn.StartEvent;
-import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONArray;
@@ -49,6 +46,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.xml.soap.Node;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -613,6 +611,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String nodeId = jsonObjectNode.get("id")+"";
         if("ExclusiveGateway".equalsIgnoreCase(busType)){//如果是系统排他网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
+            List<NodeInfo>  resultDefault = new ArrayList<NodeInfo>();
             for(int j=0;j<targetNodes.size();j++){
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
                 String targetId = jsonObject.getString("targetId");
@@ -620,7 +619,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
                 String busType2 = nextNode.get("busType")+"";
                 if(uel!=null && !uel.isEmpty()){
-
+                    String isDefault = uel.get("isDefault")+"";
+                    if("true".equalsIgnoreCase(isDefault)){
+                        resultDefault= initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        continue;
+                    }
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
@@ -657,7 +660,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         }
                     }
                 }
-
+            }
+            if((result==null || result.isEmpty()) && (resultDefault != null && !resultDefault.isEmpty())){
+                result.addAll(resultDefault);
             }
         }   else  if("ParallelGateway".equalsIgnoreCase(busType)){//如果是并行网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
@@ -674,14 +679,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
         } else if("InclusiveGateway".equalsIgnoreCase(busType)){//如果是系统包容网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
+            List<NodeInfo>  resultDefault = new ArrayList<NodeInfo>();
             for(int j=0;j<targetNodes.size();j++){
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
                 String targetId = jsonObject.getString("targetId");
                 JSONObject uel = jsonObject.getJSONObject("uel");
                 net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
                 String busType2 = nextNode.get("busType")+"";
-                if(uel!=null && !uel.isEmpty()){
 
+                if(uel!=null && !uel.isEmpty()){
+                    String isDefault = uel.get("isDefault")+"";
+                    if("true".equalsIgnoreCase(isDefault)){
+                        resultDefault= initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        continue;
+                    }
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
@@ -721,6 +732,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
 
+            }
+            if((result==null || result.isEmpty()) && (resultDefault != null && !resultDefault.isEmpty())){
+                result.addAll(resultDefault);
             }
         }else if("ManualExclusiveGateway".equalsIgnoreCase(busType)) {//如果是人工排他网关
             throw  new RuntimeException("开始节点不允许直接配置人工排他网关节点！");
