@@ -6,6 +6,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         rows: 10,
         total: 1
     },
+    searchName: null,
     initComponent: function () {
         this.initHtml();
         this.getTodoOrderData();
@@ -20,7 +21,6 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var startDate = EUI.getCmp("dateField") ? EUI.getCmp("dateField").getCmpByName("startDate").getValue() : null;
         var endDate = EUI.getCmp("dateField") ? EUI.getCmp("dateField").getCmpByName("endDate").getValue() : null;
-        var searchText = $(".header-left").next().children(":first").val();
         var myMask = EUI.LoadMask({
             msg: "正在加载请稍候..."
         });
@@ -29,7 +29,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
             params: {
                 Q_GE_startDate__Date: startDate,
                 Q_LE_endDate__Date: endDate,
-                Quick_value: searchText ? searchText : null,
+                Quick_value: this.searchName,
                 Q_EQ_ended__Boolean: false,
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,

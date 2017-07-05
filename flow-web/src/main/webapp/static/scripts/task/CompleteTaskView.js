@@ -48,7 +48,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
                 rows: this.pageInfo.rows,
-                Q_EQ_flowTaskName:this.searchName
+                Quick_value:this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {

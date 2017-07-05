@@ -170,7 +170,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
                 rows: this.pageInfo.rows,
-                taskName: this.searchName
+                Quick_value:this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {

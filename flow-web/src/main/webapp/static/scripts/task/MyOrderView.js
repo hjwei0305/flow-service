@@ -158,8 +158,11 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             displayText:"输入单据说明关键字查询",
             editable:true,
             colon:false,
-            onSearch:function () {
-
+            onSearch:function (data) {
+                g.quickSearch();
+            },
+            afterClear:function () {
+                g.quickSearch();
             }
         })
     },
@@ -178,19 +181,6 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("active");
             $("#order-searchBox input").val("").focus();
             g.showCompleteOrderView(true);
-        });
-        $(".header-left").next().children(":first").bind("keyup", function (e) {
-            var keycode = window.event?e.keyCode:e.which;
-            if(keycode==13) {
-                var start=EUI.getCmp("dateField").getCmpByName("startDate").getValue();
-                var end=EUI.getCmp("dateField").getCmpByName("endDate").getValue();
-                var result=g.checkDate(start,end);
-                if(result){
-                    g.refreshCurrentData();
-                }else {
-                    g.message("截止日期不能小于起始日期");
-                }
-            }
         });
     },
     //已办单据
@@ -233,11 +223,14 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
     },
     refreshCurrentData:function () {
         var g=this;
+        var searchText=EUI.getCmp("order-searchBox").getValue();
         switch (g.currentItem) {
             case "wait-invoices":
+                g.todoOrderView.searchName=searchText;
                 g.todoOrderView.getTodoOrderData();
                 break;
             case "taken-invoices":
+                g.completeOrderView.searchName=searchText;
                 g.completeOrderView.getTodoOrderData();
                 break;
             default:
@@ -268,5 +261,16 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+    },
+    quickSearch:function () {
+        var g=this;
+        var start=EUI.getCmp("dateField").getCmpByName("startDate").getValue();
+        var end=EUI.getCmp("dateField").getCmpByName("endDate").getValue();
+        var result=g.checkDate(start,end);
+        if(result){
+            g.refreshCurrentData();
+        }else {
+            g.message("截止日期不能小于起始日期");
+        }
     }
 });
