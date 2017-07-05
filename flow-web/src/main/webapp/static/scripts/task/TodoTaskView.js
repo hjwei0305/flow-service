@@ -176,7 +176,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //待办分页的判断
     pageJudge: function () {
         var g = this;
-        if (g.pageInfo.page == 1 && g.pageInfo.total > 1&&g.pageInfo.page < g.pageInfo.total) {
+        if (g.pageInfo.page == 1 && g.pageInfo.total > 1 && g.pageInfo.page < g.pageInfo.total) {
             $(".next-page", "#" + this.renderTo).removeClass("pageDisable");
             $(".next-page", "#" + this.renderTo).mouseenter(function () {
                 $(this).addClass("hover");
@@ -191,7 +191,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             });
             $(".first-page", "#" + this.renderTo).addClass("pageDisable");
             $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
-        }else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
+        } else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
             $("a", "#" + this.renderTo).removeClass("pageDisable");
             $("a", "#" + this.renderTo).mouseenter(function () {
                 $(this).addClass("hover");
@@ -351,18 +351,25 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     //导航的点击事件
     navbarEvent: function () {
         var g = this;
-        $(document).ready(function () {
-            $(".navber-count").live("click", function () {
-                $(this).addClass("nav-select").siblings().removeClass("nav-select");
-                var id = $(this).attr("data-id");
-                g.modelId = id;
-                g.pageInfo.page=1;
-                g.pageInfo.rows=10;
-                g.pageInfo.total=1;
-                //重新获取数据
-                g.getTodoData();
-            })
-        })
+        $(".navber-count").live("click", function () {
+            $(this).addClass("nav-select").siblings().removeClass("nav-select");
+            var id = $(this).attr("data-id");
+            g.modelId = id;
+            g.resetPageBar();
+            //重新获取数据
+            g.getTodoData();
+        });
+    },
+    resetPageBar: function () {
+        this.pageInfo.page = 1;
+        this.pageInfo.rows = 10;
+        this.pageInfo.total = 1;
+
+        $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".one", "#" + this.renderTo).val(1);
     },
     //点击打开审批界面的新页签
     approveViewWindow: function () {
@@ -381,10 +388,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     },
     refresh: function () {
-        var g=this;
-        g.pageInfo.page=1;
-        g.pageInfo.rows=10;
-        g.pageInfo.total=1;
         this.getModelList(this.modelId);
     },
     //点击打开查看表单界面的新页签
