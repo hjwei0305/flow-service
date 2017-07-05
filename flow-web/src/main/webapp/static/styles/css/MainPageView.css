@@ -135,21 +135,36 @@ div, span, p {
 }
 
 .arrow-left {
-    background: url("../images/arrow-left.png") no-repeat;
+    /*background: url("../images/arrow-left.png") no-repeat;*/
     float: left;
-    width: 19px;
+    width: 38px;
     height: 49px;
     margin-top: 3.5px;
     cursor: pointer;
+    line-height: 49px;
+    margin-left: -10px;
 }
 
 .arrow-right {
-    background: url("../images/arrow-right.png") no-repeat;
+   /* background: url("../images/arrow-right.png") no-repeat;*/
     float: right;
-    width: 19px;
+    width: 38px;
     height: 49px;
-    margin-top: -56.5px;
+    margin-top: -54.5px;
+    margin-right: 6px;
     cursor: pointer;
+    line-height: 49px;
+}
+.ecmp-common-nextpage {
+    font-size: 60px;
+    color: #45B7FF;
+    font-weight: bold;
+}
+
+.ecmp-common-prepage {
+    font-size: 60px;
+    color: #EEEEEE;
+    font-weight: bold;
 }
 
 .navber-count {
