@@ -510,7 +510,7 @@ div, span, p {
     line-height: 50px;
 }
 
-.hover {
+.pege-right .hover {
     color: #45b7ff;
     font-weight: bold;
 }
