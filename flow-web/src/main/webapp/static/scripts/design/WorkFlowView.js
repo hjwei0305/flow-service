@@ -517,7 +517,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 return;
             }
             var nodeType = $("#" + connection.sourceId).attr("nodetype");
-            if(nodeType == "Approve"){
+            if (nodeType == "Approve") {
                 return;
             }
             new EUI.UELSettingView({
@@ -549,7 +549,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 overlay.show();
             } else {
                 var busType = $("#" + connection.sourceId).attr("bustype");
-                if (busType == "ExclusiveGateway") {
+                if (busType == "ExclusiveGateway" || busType == "InclusiveGateway") {
                     var overlay = connection.connection.getOverlay("label");
                     overlay.setLabel("默认");
                     overlay.show();
@@ -725,7 +725,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         targetId: key.split(",")[1],
                         uel: this.uelInfo[key] || ""
                     };
-                    if (node.busType == "ExclusiveGateway" && item.uel && item.uel.isDefault) {
+                    if ((node.busType == "ExclusiveGateway" || node.busType == "InclusiveGateway") 
+                        && item.uel && item.uel.isDefault) {
                         defaultCount++;
                     }
                     node.target.push(item);
