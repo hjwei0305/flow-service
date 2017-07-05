@@ -9,7 +9,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     flowTypeId: null,
-
+    notifyBeforePositionData:null,
+    notifyAfterPositionData:null,
     initComponent: function () {
         this.window = EUI.Window({
             width: 550,
@@ -384,6 +385,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             title: "通知",
             padding: 10,
+            style:{
+                "position":"relative"
+            },
             defaultConfig: {
                 width: 300,
                 xtype: "TextField",
@@ -433,7 +437,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 items: this.getNotifyItem()
             }, {
                 hidden: true,
-                items: this.getNotifyItem()
+              //  items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyBefore")
             }]
         });
         var nextTab = EUI.Container({
@@ -453,13 +458,89 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 items: this.getNotifyItem()
             }, {
-                hidden: true,
+                 hidden: true,
                 items: this.getNotifyItem()
             }, {
-                hidden: true,
-                items: this.getNotifyItem()
+               hidden: true,
+               // items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyAfter")
             }]
         });
+    },
+    getNotifyChoosePositionItem:function(notifyType){
+        var g = this;
+        if(notifyType=="notifyBefore"){
+            if(!this.notifyBeforePositionData){
+                var choosePositionNum = 0
+            }else{
+                var choosePositionNum = this.notifyBeforePositionData.length
+            }
+        }
+        if(notifyType=="notifyAfter"){
+            if(!this.notifyAfterPositionData){
+                var choosePositionNum = 0
+            }else{
+                var choosePositionNum = this.notifyAfterPositionData.length
+            }
+        }
+        return [{
+            xtype: "CheckBoxGroup",
+            title: "通知方式",
+            labelWidth: 80,
+            name: "type",
+            defaultConfig: {
+                labelWidth: 40
+            },
+            items: [{
+                title: "邮件",
+                name: "EMAIL"
+            }, {
+                title: "短信",
+                name: "SMS"
+            }, {
+                title: "APP",
+                name: "APP"
+            }]
+        }, {
+            xtype: "Button",
+            id:notifyType+"ChoosePositionBtn",
+            width: 85,
+            height: 25,
+            title: "选择岗位(" + '<a class='+notifyType+'notifyChoosePositionNum>'+choosePositionNum+'</a>)',
+            style:{
+                "margin-left":"305px",
+                "position":"absolute",
+                "top":"67px"
+            },
+            handler: function () {
+                var nowChooseBtnId  = $(this).attr("id");
+                var notifyChoosePositionGridData = null;
+                if(nowChooseBtnId.indexOf("notifyBefore") == 0){
+                    notifyChoosePositionGridData = g.notifyBeforePositionData
+                }
+                if(nowChooseBtnId.indexOf("notifyAfter") == 0){
+                    notifyChoosePositionGridData = g.notifyAfterPositionData
+                }
+                g.showNotifySelectPositionWindow(function (data) {
+                    if(nowChooseBtnId.indexOf("notifyBefore") == 0){
+                        g.notifyBeforePositionData = data;
+                        $(".notifyBeforenotifyChoosePositionNum").html(data.length);
+                    }
+                    if(nowChooseBtnId.indexOf("notifyAfter") == 0){
+                        g.notifyAfterPositionData = data;
+                        $(".notifyAfternotifyChoosePositionNum").html(data.length);
+                    }
+                    g.notifySelectPositionWin.close()
+                },  notifyChoosePositionGridData);
+            }
+        }, {
+            xtype: "TextArea",
+            width: 320,
+            height: 210,
+            labelWidth: 80,
+            title: "通知备注",
+            name: "content"
+        }];
     },
     getNotifyItem: function () {
         return [{
@@ -468,7 +549,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 80,
             name: "type",
             defaultConfig: {
-                labelWidth: 60
+                labelWidth: 40
             },
             items: [{
                 title: "邮件",
@@ -493,15 +574,19 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var data = {};
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
+        var beforePosition = EUI.getCmp(notifyTab1.items[2]).getFormValue();
+        var afterPosition = EUI.getCmp(notifyTab2.items[2]).getFormValue();
+        beforePosition.positionData = this.notifyBeforePositionData;
+        afterPosition.positionData = this.notifyAfterPositionData;
         data.before = {
             notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
             notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
-            notifyPosition: EUI.getCmp(notifyTab1.items[2]).getFormValue()
+            notifyPosition:beforePosition
         };
         data.after = {
             notifyExecutor: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
             notifyStarter: EUI.getCmp(notifyTab2.items[1]).getFormValue(),
-            notifyPosition: EUI.getCmp(notifyTab2.items[2]).getFormValue()
+            notifyPosition: afterPosition
         };
         return data;
     },
@@ -1028,6 +1113,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return ids;
     },
     loadData: function () {
+        var g = this;
         var normalForm = EUI.getCmp("normal");
         var executorForm = EUI.getCmp("excutor");
         var eventForm = EUI.getCmp("event");
@@ -1055,11 +1141,27 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var notifyAfter = EUI.getCmp("notify-after");
         this.loadNotifyData(notifyBefore, this.data.notify.before);
         this.loadNotifyData(notifyAfter, this.data.notify.after);
+
+        this.loadNotifyChoosePositonData(this.data);
+        this.notifyBeforePositionData = this.data.notify.before.notifyPosition.positionData;
+        this.notifyAfterPositionData = this.data.notify.after.notifyPosition.positionData;
     },
     loadNotifyData: function (tab, data) {
         EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
         EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
+    },
+    loadNotifyChoosePositonData:function (data) {
+        if(!data.notify.before.notifyPosition.positionData){
+            $(".notifyBeforenotifyChoosePositionNum").html(0);
+        }else{
+            $(".notifyBeforenotifyChoosePositionNum").html(data.notify.before.notifyPosition.positionData.length);
+        }
+        if(!data.notify.after.notifyPosition.positionData){
+            $(".notifyAfternotifyChoosePositionNum").html(0);
+        }else{
+            $(".notifyAfternotifyChoosePositionNum").html(data.notify.after.notifyPosition.positionData.length);
+        }
     },
     initTitle: function (title) {
         return {
@@ -1094,5 +1196,152 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         $(".condetail-delete").die();
         $(".west-navbar").die();
         $(".notify-user-item").die();
+    },
+    showNotifySelectPositionWindow:function (callback,notifyChoosePositionGridData) {
+        var g = this;
+        g.notifySelectPositionWin = EUI.Window({
+            title: "选择岗位",
+            padding:0,
+            width: 1000,
+            height: 350,
+            buttons: [{
+                title: "确定",
+                iconCss:"ecmp-common-ok",
+                selected: true,
+                handler: function () {
+                    var selectRow = EUI.getCmp("notifyChoosePositionGrid").getGridData();
+                    callback&&callback.call(this,selectRow);
+                }
+            }, {
+                title: "取消",
+                iconCss:"ecmp-common-delete",
+                handler: function () {
+                    win.close();
+                }
+            }],
+            items: [{
+                xtype: "Container",
+                layout: "auto",
+                border: false,
+                padding: 0,
+                itemspace: 1,
+                items: [{
+                    xtype: "Container",
+                    region: "west",
+                    layout: "border",
+                    border: false,
+                    padding: 0,
+                    width: 470,
+                    itemspace: 0,
+                    isOverFlow: false,
+                    items: [this.initTitle("已选择"), {
+                        xtype: "GridPanel",
+                        id: "notifyChoosePositionGrid",
+                        region: "center",
+                        gridCfg: {
+
+                            datatype: "local",
+                            loadonce: true,
+                            multiselect: true,
+                            sortname: 'code',
+                            colModel: this.positionGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var cmp=EUI.getCmp("notifyChoosePositionGrid");
+                                var row= cmp.grid.jqGrid('getRowData', rowid);
+                                if (!row) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                g.deleteRowData([row],cmp);
+                            }
+                        }
+                    }]
+                }, g.getCenterIcon("notifyPosition"), {
+                    xtype: "Container",
+                    layout: "border",
+                    border: false,
+                    padding: 0,
+                    itemspace: 0,
+                    width: 470,
+                    region: "east",
+                    items: [{
+                        xtype: "ToolBar",
+                        region: "north",
+                        height: 35,
+                        padding: 2,
+                        border: false,
+                        isOverFlow: false,
+                        items: [this.initTitle("所有岗位"), "->", {
+                            xtype: "SearchBox",
+                            id: "searchBox_positionGrid",
+                            width: 200,
+                            //searchDisplayText:请输入代码、名称或组织机构查询
+                            displayText: "请输入代码、名称或组织机构查询",
+                            onSearch: function (v) {
+                                EUI.getCmp("notifyAllPositionGrid").setPostParams({
+                                    Quick_value: v
+                                }, true);
+                            },
+                            afterClear: function () {
+                                EUI.getCmp("notifyAllPositionGrid").setPostParams({
+                                    Quick_value: null
+                                }, true);
+                            }
+                        }]
+                    }, {
+                        xtype: "GridPanel",
+                        id: "notifyAllPositionGrid",
+                        region: "center",
+                        searchConfig: {
+                            searchCols: ["code", "name"]
+                        },
+                        gridCfg: {
+                            hasPager: true,
+                            multiselect: true,
+                            loadonce: false,
+                            sortname: 'code',
+                            url: _ctxPath + "/design/listPos",
+                            colModel: this.positionGridColModel(),
+                            ondblClickRow: function (rowid) {
+                                var selectRow=EUI.getCmp("notifyAllPositionGrid").grid.jqGrid('getRowData', rowid);
+                                if (!selectRow) {
+                                    g.message("请选择一条要操作的行项目!");
+                                    return false;
+                                }
+                                EUI.getCmp("notifyChoosePositionGrid").addRowData([selectRow],true);
+                            }
+                        }
+                    }]
+                }]
+            }]
+        });
+        EUI.getCmp("notifyChoosePositionGrid").reset();
+        if(!notifyChoosePositionGridData){
+            EUI.getCmp("notifyChoosePositionGrid").setDataInGrid([], false);
+        }else{
+            EUI.getCmp("notifyChoosePositionGrid").setDataInGrid(notifyChoosePositionGridData, false);
+        }
+        this.notifyAddPositionEvent();
+    },
+    notifyAddPositionEvent: function (notifyType) {
+        var g = this;
+        $("#notifyPosition-left").bind("click", function (e) {
+            var cmp=EUI.getCmp("notifyChoosePositionGrid");
+            var selectRow = EUI.getCmp("notifyAllPositionGrid").getSelectRow();
+            if (selectRow.length == 0) {
+                g.message("请选择一条要操作的行项目!");
+                return false;
+            }
+            cmp.addRowData(selectRow,true);
+        });
+        $("#notifyPosition-right").bind("click", function (e) {
+            var cmp=EUI.getCmp("notifyChoosePositionGrid");
+            var row= cmp.getSelectRow();
+            if (row.length == 0) {
+                g.message("请选择一条要操作的行项目!");
+                return false;
+            }
+            g.deleteRowData(row,cmp);
+        });
     }
 });
