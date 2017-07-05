@@ -4,7 +4,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     modelId: null,
     pageInfo: {
         page: 1,
-        rows: 5,
+        rows: 10,
         total: 1
     },
     records: null,
@@ -362,7 +362,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     resetPageBar: function () {
         this.pageInfo.page = 1;
-        this.pageInfo.rows = 5;
+        this.pageInfo.rows = 10;
         this.pageInfo.total = 1;
 
         $(".first-page", "#" + this.renderTo).addClass("pageDisable");
