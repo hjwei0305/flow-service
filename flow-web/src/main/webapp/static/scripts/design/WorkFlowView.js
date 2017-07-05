@@ -599,8 +599,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.draggable(el);
         var maxConnections = -1;
         var nodeType = $(el).attr("nodetype");
-        if (nodeType == "Approve") {
+        if (nodeType == "Approve" || nodeType == "CounterSign") {
             maxConnections = 2;
+        }else if(nodeType){
+            maxConnections = 1;
         }
         this.instance.makeSource(el, {
             filter: ".node-dot",
@@ -629,7 +631,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.makeTarget(el, {
             anchor: "Continuous",
             allowLoopback: false,
-            maxConnections: maxConnections,
             beforeDrop: function (params) {
                 if (params.sourceId == params.targetId) {
                     return false;
