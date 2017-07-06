@@ -129,7 +129,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showCompleteTaskView(false);
             this.showMyOrderView(false);
             if (this.todoTaskView) {
-                this.todoTaskView.show();
+                EUI.getCmp("searchBox").setValue(this.todoTaskView.searchName);
+                this.todoTaskView.mainViewBarClick=true;
                 this.todoTaskView.refresh();
                 return;
             }
@@ -146,7 +147,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showTodoTaskView(false);
             this.showMyOrderView(false);
             if (this.completeTaskView) {
-                this.completeTaskView.show();
+                EUI.getCmp("searchBox").setValue(this.completeTaskView.searchName);
                 this.completeTaskView.refresh();
                 return;
             }
@@ -163,12 +164,13 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
             this.showTodoTaskView(false);
             this.showCompleteTaskView(false);
             if (this.myOrderView) {
-                this.myOrderView.show();
                 switch (this.myOrderView.currentItem) {
                     case "wait-invoices":
+                        EUI.getCmp("order-searchBox").setValue(this.myOrderView.todoOrderView.searchName);
                         this.myOrderView.showTodoOrderView(true);
                         break;
                     case "taken-invoices":
+                        EUI.getCmp("order-searchBox").setValue(this.myOrderView.completeOrderView.searchName);
                         this.myOrderView.showCompleteOrderView(true);
                         break;
                     default:
@@ -202,11 +204,11 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         var selectDomClass=selectDom.attr("class");
         if(selectDomClass.indexOf("wait-work")>=0){
             this.todoTaskView.searchName=data;
-            this.todoTaskView.getTodoData();
+            this.todoTaskView.getTodoData(true);
         }
         if(selectDomClass.indexOf("taken-work")>=0){
             this.completeTaskView.searchName=data;
-            this.completeTaskView.getCompleteData();
+            this.completeTaskView.getCompleteData(true);
         }
     }
 });

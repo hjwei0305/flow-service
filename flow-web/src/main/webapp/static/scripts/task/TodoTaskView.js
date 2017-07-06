@@ -12,6 +12,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     searchName: null,
     nowPage:null,
     totalPage:null,
+    mainViewBarClick:false,
     initComponent: function () {
         this.getModelList();
         // this.getTestNavData(_data);
@@ -155,7 +156,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             '               </div>';
     },
     //待办内容部分的数据调用
-    getTodoData: function () {
+    getTodoData: function (isSearch) {
         var g = this;
         var myMask;
         if (g.firstTime) {
@@ -185,7 +186,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     if (g.records > 0) {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
-                        $(".nav-select").css("display", "none");
+                        if(!isSearch){
+                            $(".nav-select").css("display", "none");
+                        }
                         if (!$(".navber-count").hasClass("nav-select")) {
                             $('div', '#' + this.renderTo).css("display", "none");
                             g.getNotWorkData();
@@ -388,6 +391,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("nav-select").siblings().removeClass("nav-select");
             var id = $(this).attr("data-id");
             g.modelId = id;
+            if(!g.mainViewBarClick){
+                EUI.getCmp("searchBox").reset();
+                g.searchName=null;
+                g.mainViewBarClick=false;
+            }
             g.resetPageBar();
             //重新获取数据
             g.getTodoData();
