@@ -27,6 +27,7 @@
         var orgCode = EUI.util.getUrlParam("orgCode");
         var versionCode = EUI.util.getUrlParam("versionCode");
         var businessModelId = EUI.util.getUrlParam("businessModelId");
+        var isCopy = EUI.util.getUrlParam("isCopy")=="true";
         EUI.onReady(function () {
             flowView = new EUI.WorkFlowView({
                 id: id,
@@ -34,6 +35,7 @@
                 orgCode:orgCode,
                 businessModelId: businessModelId,
                 versionCode: versionCode || -1,
+                isCopy:isCopy,
                 renderTo: "content"
             });
         });

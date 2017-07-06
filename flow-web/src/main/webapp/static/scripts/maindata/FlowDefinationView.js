@@ -29,7 +29,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data);
             g.updateFlowDefnation(data);
         });
         $(".ecmp-common-delete").live("click", function () {
@@ -184,7 +183,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     },
     updateFlowDefnation: function (data) {
         var g = this;
-        console.log(data);
         var tab = {
             title: g.lang.editFlowDefinitionText+data.name,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
@@ -197,6 +195,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var tab = {
             title: g.lang.addFlowDefinitionText,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId+"&orgCode="+g.selectedNodeOrgCode
+        };
+        g.addTab(tab);
+    },
+    copyFlowDefination: function (data) {
+        var g = this;
+        var tab = {
+            // copyFlowDefinitionText: "参考创建流程定义",
+            title: g.lang.copyFlowDefinitionText,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
         };
         g.addTab(tab);
     },
@@ -295,34 +302,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }
         }
     },
-    // getOrgTreeData: function (rowData) {
-    //     var g = this;
-    //     var myMask = EUI.LoadMask({
-    //         //queryMaskMessageText: "正在努力获取数据，请稍候...",
-    //         msg: g.lang.queryMaskMessageText
-    //     });
-    //     EUI.Store({
-    //         async: false,
-    //         url: _ctxPath + "/flowDefination/listAllOrgs",
-    //         success: function (result) {
-    //             myMask.hide();
-    //             if(result.success){
-    //                 g.treeCmp.setData(result.data,true);
-    //                 g.treeCmp.setSelect(result.data[0].id)
-    //             }
-    //
-    //         },
-    //         failure: function (re) {
-    //             myMask.hide();
-    //             var status = {
-    //                 msg: re.msg,
-    //                 success: false,
-    //                 showTime: 6
-    //             };
-    //             EUI.ProcessStatus(status);
-    //         }
-    //     });
-    // },
     initCenterContainer: function () {
         var g = this;
         return {
@@ -354,6 +333,20 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             return;
                         }
                         g.addFlowDefination();
+                    }
+                },{
+                    xtype: "Button",
+                    //copyText: "参考创建",
+                    title: g.lang.copyText,
+                    iconCss:"ecmp-common-copy",
+                    handler: function() {
+                        var rowData =EUI.getCmp("gridPanel").getSelectRow();
+                        if (rowData && rowData.id) {
+                            g.copyFlowDefination(rowData);
+                        } else {
+                            // copyHintMessage:"请选择一条要参考的行项目!",
+                            g.message(g.lang.copyHintMessage);
+                        }
 
                     }
                 }, '->', {
@@ -497,5 +490,24 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             },
             html: "<div style='font-size:17px;overflow:hidden;title:" + title + ";'>" + title + "</div>"
         }
-    }
+    },
+    message: function (msg) {
+        var g = this;
+        var message = EUI.MessageBox({
+            border: true,
+            //tiShiText: "提示",
+            title: g.lang.tiShiText,
+            showClose: true,
+            msg: msg,
+            buttons: [{
+                //okText: "确定",
+                title: g.lang.okText,
+                iconCss: "ecmp-common-ok",
+                selected:true,
+                handler: function () {
+                    message.remove();
+                }
+            }]
+        });
+    },
 });

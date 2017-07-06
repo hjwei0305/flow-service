@@ -12,6 +12,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     uelInfo: {},
+    isCopy:false,
     businessModelId: null,//业务实体ID
 
     initComponent: function () {
@@ -93,7 +94,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
-                readonly: this.id ? true : false,
+                readonly: !isCopy&&this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -137,7 +138,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 100,
-                readonly: this.id ? true : false,
+                readonly: !isCopy&&this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -787,6 +788,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (status.success && status.data) {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
+                    if(g.isCopy){
+                        data.process.name=data.process.name+"_COPY";
+                        data.process.id=data.process.id+"_COPY";
+                    }
                     g.showDesign(data);
                 } else {
                     EUI.ProcessStatus(status);
@@ -914,6 +919,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var data = this.getFlowData();
         if (!data) {
             return;
+        }
+        if(!deploy&&g.isCopy){
+            delete data.id;
         }
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText

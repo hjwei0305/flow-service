@@ -35,7 +35,8 @@ var common_lang = {
     submitText: "提交",
     finishText: "完成",
     editText: "编辑",
-    searchByNameMsgText: "请输入名称进行搜索"
+    searchByNameMsgText: "请输入名称进行搜索",
+    copyHintMessage:"请选择一条要参考的行项目!"
 };
 
 if (EUI.BusinessModelView) {
@@ -131,6 +132,7 @@ if (EUI.FlowInstanceView) {
 if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         addResourceText: "新增",
+        copyText: "参考创建",
         belongToBusinessModelText: "所属业务实体模型",
         updateFlowTypeText: "修改流程类型",
         inputCodeMsgText: "请输入代码",
@@ -338,6 +340,7 @@ if(EUI.FlowDefinationView){
         priorityText: "优先级",
         editFlowDefinitionText: "编辑流程定义:",
         addFlowDefinitionText: "新增流程定义",
+        copyFlowDefinitionText: "参考创建流程定义",
         FreezeText: "(已冻结)",
         chooseOrganizationMsgText: "请选择组织机构",
         latestVersionIDText: "最新版本ID",
