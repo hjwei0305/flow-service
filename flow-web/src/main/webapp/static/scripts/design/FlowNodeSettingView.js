@@ -9,8 +9,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     flowTypeId: null,
-    notifyBeforePositionData:null,
-    notifyAfterPositionData:null,
+    notifyBeforePositionData: "",
+    notifyAfterPositionData: "",
     initComponent: function () {
         this.window = EUI.Window({
             width: 550,
@@ -98,7 +98,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             title: "保存配置",
-            iconCss:"ecmp-common-save",
+            iconCss: "ecmp-common-save",
             selected: true,
             handler: function () {
                 var normalForm = EUI.getCmp("normal");
@@ -131,7 +131,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             title: "取消",
-            iconCss:"ecmp-common-delete",
+            iconCss: "ecmp-common-delete",
             handler: function () {
                 g.remove();
                 g.window.close();
@@ -237,7 +237,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     items: [{
                         xtype: "Button",
                         title: "选择岗位",
-                        iconCss:"ecmp-common-choose",
+                        iconCss: "ecmp-common-choose",
                         id: "chooseBtn",
                         handler: function () {
                             var userType = EUI.getCmp("userType").getValue().userType;
@@ -385,8 +385,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             title: "通知",
             padding: 10,
-            style:{
-                "position":"relative"
+            style: {
+                "position": "relative"
             },
             defaultConfig: {
                 width: 300,
@@ -437,7 +437,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 items: this.getNotifyItem()
             }, {
                 hidden: true,
-              //  items: this.getNotifyItem()
+                //  items: this.getNotifyItem()
                 items: this.getNotifyChoosePositionItem("notifyBefore")
             }]
         });
@@ -458,28 +458,28 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 items: this.getNotifyItem()
             }, {
-                 hidden: true,
+                hidden: true,
                 items: this.getNotifyItem()
             }, {
-               hidden: true,
-               // items: this.getNotifyItem()
+                hidden: true,
+                // items: this.getNotifyItem()
                 items: this.getNotifyChoosePositionItem("notifyAfter")
             }]
         });
     },
-    getNotifyChoosePositionItem:function(notifyType){
+    getNotifyChoosePositionItem: function (notifyType) {
         var g = this;
-        if(notifyType=="notifyBefore"){
-            if(!this.notifyBeforePositionData){
+        if (notifyType == "notifyBefore") {
+            if (!this.notifyBeforePositionData) {
                 var choosePositionNum = 0
-            }else{
+            } else {
                 var choosePositionNum = this.notifyBeforePositionData.length
             }
         }
-        if(notifyType=="notifyAfter"){
-            if(!this.notifyAfterPositionData){
+        if (notifyType == "notifyAfter") {
+            if (!this.notifyAfterPositionData) {
                 var choosePositionNum = 0
-            }else{
+            } else {
                 var choosePositionNum = this.notifyAfterPositionData.length
             }
         }
@@ -503,35 +503,35 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         }, {
             xtype: "Button",
-            id:notifyType+"ChoosePositionBtn",
+            id: notifyType + "ChoosePositionBtn",
             width: 85,
             height: 25,
-            title: "选择岗位(" + '<a class='+notifyType+'notifyChoosePositionNum>'+choosePositionNum+'</a>)',
-            style:{
-                "margin-left":"305px",
-                "position":"absolute",
-                "top":"67px"
+            title: "选择岗位(" + '<a class=' + notifyType + 'notifyChoosePositionNum>' + choosePositionNum + '</a>)',
+            style: {
+                "margin-left": "305px",
+                "position": "absolute",
+                "top": "67px"
             },
             handler: function () {
-                var nowChooseBtnId  = $(this).attr("id");
+                var nowChooseBtnId = $(this).attr("id");
                 var notifyChoosePositionGridData = null;
-                if(nowChooseBtnId.indexOf("notifyBefore") == 0){
+                if (nowChooseBtnId.indexOf("notifyBefore") == 0) {
                     notifyChoosePositionGridData = g.notifyBeforePositionData
                 }
-                if(nowChooseBtnId.indexOf("notifyAfter") == 0){
+                if (nowChooseBtnId.indexOf("notifyAfter") == 0) {
                     notifyChoosePositionGridData = g.notifyAfterPositionData
                 }
                 g.showNotifySelectPositionWindow(function (data) {
-                    if(nowChooseBtnId.indexOf("notifyBefore") == 0){
+                    if (nowChooseBtnId.indexOf("notifyBefore") == 0) {
                         g.notifyBeforePositionData = data;
                         $(".notifyBeforenotifyChoosePositionNum").html(data.length);
                     }
-                    if(nowChooseBtnId.indexOf("notifyAfter") == 0){
+                    if (nowChooseBtnId.indexOf("notifyAfter") == 0) {
                         g.notifyAfterPositionData = data;
                         $(".notifyAfternotifyChoosePositionNum").html(data.length);
                     }
                     g.notifySelectPositionWin.close()
-                },  notifyChoosePositionGridData);
+                }, notifyChoosePositionGridData);
             }
         }, {
             xtype: "TextArea",
@@ -571,7 +571,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }];
     },
     getNotifyData: function () {
-        console.log(this.notifyBeforePositionData)
         var data = {};
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
@@ -584,7 +583,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         data.before = {
             notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
             notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
-            notifyPosition:beforePosition
+            notifyPosition: beforePosition
         };
         data.after = {
             notifyExecutor: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
@@ -593,9 +592,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         };
         return data;
     },
-    getNotifyChoosePositionIds:function (data) {
+    getNotifyChoosePositionIds: function (data) {
         var notifyChoosePositionIds = [];
-        for(var i=0;i<data.length;i++){
+        for (var i = 0; i < data.length; i++) {
             notifyChoosePositionIds.push(data[i].id)
         }
         return notifyChoosePositionIds;
@@ -674,8 +673,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-       /*         return "<div class='condetail-operate'>" +
-                    "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";*/
+                /*         return "<div class='condetail-operate'>" +
+                 "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";*/
                 return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
@@ -716,7 +715,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-               /* return "<div class='condetail-operate'>" +
+                /* return "<div class='condetail-operate'>" +
                  "<div class='condetail-delete' title='删除'></div></div>";*/
                 return "<div class='ecmp-common-delete condetail-delete' title='删除'></div>";
             }
@@ -738,12 +737,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: "选择岗位",
-            padding:0,
+            padding: 0,
             width: 1000,
             height: 350,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
+                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionGrid");
@@ -754,7 +753,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -785,13 +784,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             sortname: 'code',
                             colModel: this.positionGridColModel(),
                             ondblClickRow: function (rowid) {
-                                var cmp=EUI.getCmp("selPositionGrid");
-                                var row= cmp.grid.jqGrid('getRowData', rowid);
+                                var cmp = EUI.getCmp("selPositionGrid");
+                                var row = cmp.grid.jqGrid('getRowData', rowid);
                                 if (!row) {
                                     g.message("请选择一条要操作的行项目!");
                                     return false;
                                 }
-                                g.deleteRowData([row],cmp);
+                                g.deleteRowData([row], cmp);
                             }
                         }
                     }]
@@ -842,19 +841,19 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/design/listPos",
                             colModel: this.positionGridColModel(),
                             ondblClickRow: function (rowid) {
-                                var selectRow=EUI.getCmp("allPositionGrid").grid.jqGrid('getRowData', rowid);
+                                var selectRow = EUI.getCmp("allPositionGrid").grid.jqGrid('getRowData', rowid);
                                 if (!selectRow) {
                                     g.message("请选择一条要操作的行项目!");
                                     return false;
                                 }
-                                EUI.getCmp("selPositionGrid").addRowData([selectRow],true);
+                                EUI.getCmp("selPositionGrid").addRowData([selectRow], true);
                             }
                         }
                     }]
                 }]
             }]
         });
-        var data=EUI.getCmp("positionGrid").getGridData();
+        var data = EUI.getCmp("positionGrid").getGridData();
         EUI.getCmp("selPositionGrid").reset();
         EUI.getCmp("selPositionGrid").setDataInGrid(data, false);
         this.addPositionEvent();
@@ -862,22 +861,22 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     addPositionEvent: function () {
         var g = this;
         $("#position-left").bind("click", function (e) {
-            var cmp=EUI.getCmp("selPositionGrid");
+            var cmp = EUI.getCmp("selPositionGrid");
             var selectRow = EUI.getCmp("allPositionGrid").getSelectRow();
             if (selectRow.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            cmp.addRowData(selectRow,true);
+            cmp.addRowData(selectRow, true);
         });
         $("#position-right").bind("click", function (e) {
-            var cmp=EUI.getCmp("selPositionGrid");
-            var row= cmp.getSelectRow();
+            var cmp = EUI.getCmp("selPositionGrid");
+            var row = cmp.getSelectRow();
             if (row.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            g.deleteRowData(row,cmp);
+            g.deleteRowData(row, cmp);
         });
     },
     deleteRowData: function (data, cmp) {
@@ -885,10 +884,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             cmp.deleteRow(data[i].id);
         }
-        cmp.setDataInGrid([].concat(cmp.getGridData()),false);
+        cmp.setDataInGrid([].concat(cmp.getGridData()), false);
     },
     showSelectPositionTypeWindow: function () {
-        var g=this;
+        var g = this;
         var win = EUI.Window({
             title: "选择岗位类别",
             padding: 0,
@@ -896,8 +895,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 350,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
-                 selected: true,
+                iconCss: "ecmp-common-ok",
+                selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionTypeGrid");
                     var selectRow = EUI.getCmp("selPositionTypeGrid").getGridData();
@@ -907,7 +906,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -948,7 +947,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                                 g.deleteRowData([row], cmp);
                             }
                         }
-                        }]
+                    }]
                 }, this.getCenterIcon("positionType"), {
                     xtype: "Container",
                     layout: "border",
@@ -990,19 +989,19 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/design/listPosType",
                             colModel: this.positionTypeGridColModel(),
                             ondblClickRow: function (rowid) {
-                                var selectRow=EUI.getCmp("allPositionTypeGrid").grid.jqGrid('getRowData', rowid);
+                                var selectRow = EUI.getCmp("allPositionTypeGrid").grid.jqGrid('getRowData', rowid);
                                 if (!selectRow) {
                                     g.message("请选择一条要操作的行项目!");
                                     return false;
                                 }
-                                EUI.getCmp("selPositionTypeGrid").addRowData([selectRow],true);
+                                EUI.getCmp("selPositionTypeGrid").addRowData([selectRow], true);
                             }
                         }
                     }]
                 }]
             }]
         });
-        var data=EUI.getCmp("positionTypeGrid").getGridData();
+        var data = EUI.getCmp("positionTypeGrid").getGridData();
         EUI.getCmp("selPositionTypeGrid").reset();
         EUI.getCmp("selPositionTypeGrid").setDataInGrid(data, false);
         this.addPositionTypeEvent();
@@ -1015,29 +1014,29 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             border: false,
             isOverFlow: false,
-            html: "<div class='ecmp-common-moveright arrow-right' id="+id+"-right></div>" +
-            "<div class='ecmp-common-leftmove arrow-left' id="+id+"-left></div>"
+            html: "<div class='ecmp-common-moveright arrow-right' id=" + id + "-right></div>" +
+            "<div class='ecmp-common-leftmove arrow-left' id=" + id + "-left></div>"
         }
     },
     addPositionTypeEvent: function () {
         var g = this;
         $("#positionType-left").bind("click", function (e) {
-            var cmp=EUI.getCmp("selPositionTypeGrid");
+            var cmp = EUI.getCmp("selPositionTypeGrid");
             var selectRow = EUI.getCmp("allPositionTypeGrid").getSelectRow();
             if (selectRow.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            cmp.addRowData(selectRow,true);
+            cmp.addRowData(selectRow, true);
         });
         $("#positionType-right").bind("click", function (e) {
-            var cmp=EUI.getCmp("selPositionTypeGrid");
-            var row= cmp.getSelectRow();
+            var cmp = EUI.getCmp("selPositionTypeGrid");
+            var row = cmp.getSelectRow();
             if (row.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            g.deleteRowData(row,cmp);
+            g.deleteRowData(row, cmp);
         });
     },
     showSelectSelfUserWindow: function () {
@@ -1048,7 +1047,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 350,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
+                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var data = EUI.getCmp("selfUserGrid").getSelectRow();
@@ -1057,7 +1056,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: "取消",
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -1069,8 +1068,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     hasPager: false,
                     multiselect: true,
                     url: _ctxPath + "/customExecutor/listExecutor",
-                    postData:{
-                        businessModuleId:this.businessModelId
+                    postData: {
+                        businessModuleId: this.businessModelId
                     },
                     colModel: this.getSelfDefGridColModel()
                 }
@@ -1161,15 +1160,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
         EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
     },
-    loadNotifyChoosePositonData:function (data) {
-        if(!data.notify.before.notifyPosition.positionData){
+    loadNotifyChoosePositonData: function (data) {
+        if (!data.notify.before.notifyPosition.positionData) {
             $(".notifyBeforenotifyChoosePositionNum").html(0);
-        }else{
+        } else {
             $(".notifyBeforenotifyChoosePositionNum").html(data.notify.before.notifyPosition.positionData.length);
         }
-        if(!data.notify.after.notifyPosition.positionData){
+        if (!data.notify.after.notifyPosition.positionData) {
             $(".notifyAfternotifyChoosePositionNum").html(0);
-        }else{
+        } else {
             $(".notifyAfternotifyChoosePositionNum").html(data.notify.after.notifyPosition.positionData.length);
         }
     },
@@ -1180,7 +1179,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             border: false,
             height: 35,
             width: 110,
-            isOverFlow:false,
+            isOverFlow: false,
             html: "<div style='font-size:15px;overflow:hidden;'>" + title + "</div>"
         }
     },
@@ -1193,7 +1192,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             msg: msg,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
+                iconCss: "ecmp-common-ok",
                 handler: function () {
                     message.remove();
                 }
@@ -1207,24 +1206,24 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         $(".west-navbar").die();
         $(".notify-user-item").die();
     },
-    showNotifySelectPositionWindow:function (callback,notifyChoosePositionGridData) {
+    showNotifySelectPositionWindow: function (callback, notifyChoosePositionGridData) {
         var g = this;
         g.notifySelectPositionWin = EUI.Window({
             title: "选择岗位",
-            padding:0,
+            padding: 0,
             width: 1000,
             height: 350,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
+                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var selectRow = EUI.getCmp("notifyChoosePositionGrid").getGridData();
-                    callback&&callback.call(this,selectRow);
+                    callback && callback.call(this, selectRow);
                 }
             }, {
                 title: "取消",
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     win.close();
                 }
@@ -1256,13 +1255,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             sortname: 'code',
                             colModel: this.positionGridColModel(),
                             ondblClickRow: function (rowid) {
-                                var cmp=EUI.getCmp("notifyChoosePositionGrid");
-                                var row= cmp.grid.jqGrid('getRowData', rowid);
+                                var cmp = EUI.getCmp("notifyChoosePositionGrid");
+                                var row = cmp.grid.jqGrid('getRowData', rowid);
                                 if (!row) {
                                     g.message("请选择一条要操作的行项目!");
                                     return false;
                                 }
-                                g.deleteRowData([row],cmp);
+                                g.deleteRowData([row], cmp);
                             }
                         }
                     }]
@@ -1313,12 +1312,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             url: _ctxPath + "/design/listPos",
                             colModel: this.positionGridColModel(),
                             ondblClickRow: function (rowid) {
-                                var selectRow=EUI.getCmp("notifyAllPositionGrid").grid.jqGrid('getRowData', rowid);
+                                var selectRow = EUI.getCmp("notifyAllPositionGrid").grid.jqGrid('getRowData', rowid);
                                 if (!selectRow) {
                                     g.message("请选择一条要操作的行项目!");
                                     return false;
                                 }
-                                EUI.getCmp("notifyChoosePositionGrid").addRowData([selectRow],true);
+                                EUI.getCmp("notifyChoosePositionGrid").addRowData([selectRow], true);
                             }
                         }
                     }]
@@ -1326,9 +1325,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         });
         EUI.getCmp("notifyChoosePositionGrid").reset();
-        if(!notifyChoosePositionGridData){
+        if (!notifyChoosePositionGridData) {
             EUI.getCmp("notifyChoosePositionGrid").setDataInGrid([], false);
-        }else{
+        } else {
             EUI.getCmp("notifyChoosePositionGrid").setDataInGrid(notifyChoosePositionGridData, false);
         }
         this.notifyAddPositionEvent();
@@ -1336,22 +1335,22 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAddPositionEvent: function (notifyType) {
         var g = this;
         $("#notifyPosition-left").bind("click", function (e) {
-            var cmp=EUI.getCmp("notifyChoosePositionGrid");
+            var cmp = EUI.getCmp("notifyChoosePositionGrid");
             var selectRow = EUI.getCmp("notifyAllPositionGrid").getSelectRow();
             if (selectRow.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            cmp.addRowData(selectRow,true);
+            cmp.addRowData(selectRow, true);
         });
         $("#notifyPosition-right").bind("click", function (e) {
-            var cmp=EUI.getCmp("notifyChoosePositionGrid");
-            var row= cmp.getSelectRow();
+            var cmp = EUI.getCmp("notifyChoosePositionGrid");
+            var row = cmp.getSelectRow();
             if (row.length == 0) {
                 g.message("请选择一条要操作的行项目!");
                 return false;
             }
-            g.deleteRowData(row,cmp);
+            g.deleteRowData(row, cmp);
         });
     }
 });

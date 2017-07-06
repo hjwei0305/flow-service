@@ -517,7 +517,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 return;
             }
             var nodeType = $("#" + connection.sourceId).attr("nodetype");
-            if (nodeType == "Approve") {
+            if (nodeType == "Approve" || nodeType == "CounterSign") {
                 return;
             }
             new EUI.UELSettingView({
@@ -577,6 +577,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             groovyUel: "#{approveResult == " + agree + "}",
                             logicUel: ""
                         };
+                    } else if (nodeType == "CounterSign") {
+                        var result = g.getApproveLineInfo(connection.sourceId);
+                        var name = "通过", agree = true;
+                        if (result == 0) {
+                            name = "未通过";
+                            agree = false;
+                        }
+                        var overlay = connection.connection.getOverlay("label");
+                        overlay.setLabel(name);
+                        overlay.show();
+                        g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                            name: name,
+                            agree: agree,
+                            groovyUel: "#{approveResult == " + agree + "}",
+                            logicUel: ""
+                        };
                     }
                 }
             }
@@ -601,7 +617,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var nodeType = $(el).attr("nodetype");
         if (nodeType == "Approve" || nodeType == "CounterSign") {
             maxConnections = 2;
-        }else if(nodeType){
+        } else if (nodeType) {
             maxConnections = 1;
         }
         this.instance.makeSource(el, {

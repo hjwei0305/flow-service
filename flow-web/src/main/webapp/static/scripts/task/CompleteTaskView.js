@@ -34,7 +34,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             '               </div>';
     },
     //已办内容部分的数据调用
-    getCompleteData: function (modelId) {
+    getCompleteData: function () {
         var g = this;
         var myMask;
         if (g.firstTime) {
@@ -311,10 +311,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         }
     },
     refresh: function () {
-        var g=this;
-        g.pageInfo.page=1;
-        g.pageInfo.rows=10;
-        g.pageInfo.total=1;
         this.getCompleteData();
     }
 });

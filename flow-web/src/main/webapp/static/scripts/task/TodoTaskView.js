@@ -12,6 +12,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     searchName: null,
     nowPage:null,
     totalPage:null,
+    mainViewBarClick:false,
     initComponent: function () {
         this.getModelList();
         // this.getTestNavData(_data);
@@ -26,7 +27,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     getNavbarHtml: function (data) {
             var g = this;
             var html = '<div class="content-navbar">';
-            if (data.length < 6) {
+            if (data.length < 7) {
              html += '<div class="navbar"></div>';
              } else {
             html += '      <i class="ecmp-common-prepage page-btn arrow-left pre"></i>' +
@@ -39,7 +40,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
 
 
     //导航测试数据
-   /* getTestNavData: function () {
+    /*getTestNavData: function () {
         var g = this;
         g.initHtml(_data);
         g.getNavHtml(_data);
@@ -73,8 +74,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                g.nowPage = 1;
-                g.totalPage = Math.ceil(status.data.length / 6);
                 if (g.firstTime) {
                     myMask.hide();
                 }
@@ -82,6 +81,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.getNotWorkData();
                     return;
                 }
+                g.nowPage = 1;
+                g.totalPage = Math.ceil(status.data.length / 6);
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
@@ -155,7 +156,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             '               </div>';
     },
     //待办内容部分的数据调用
-    getTodoData: function () {
+    getTodoData: function (isSearch) {
         var g = this;
         var myMask;
         if (g.firstTime) {
@@ -185,7 +186,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     if (g.records > 0) {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
-                        $(".nav-select").css("display", "none");
+                        if(!isSearch){
+                            $(".nav-select").css("display", "none");
+                        }
                         if (!$(".navber-count").hasClass("nav-select")) {
                             $('div', '#' + this.renderTo).css("display", "none");
                             g.getNotWorkData();
@@ -388,6 +391,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("nav-select").siblings().removeClass("nav-select");
             var id = $(this).attr("data-id");
             g.modelId = id;
+            if(!g.mainViewBarClick){
+                EUI.getCmp("searchBox").reset();
+                g.searchName=null;
+                g.mainViewBarClick=false;
+            }
             g.resetPageBar();
             //重新获取数据
             g.getTodoData();
@@ -395,8 +403,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".arrow-left").live("click", function () {
             if(!$(this).hasClass("page-btn")){
                 g.nowPage--;
-                $(".navber-count", ".navbar").hide(300);
-                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
+                $(".navber-count", ".navbar").hide("fast");
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show("fast");
                 g.upPageBtn();
             }
         });

@@ -45,6 +45,7 @@
             <bean class="com.ecmp.flow.service.WorkPageUrlService"/>
             <bean class="com.ecmp.flow.service.BusinessWorkPageUrlService"/>
             <bean class="com.ecmp.flow.service.ConditionServer"/>
+            <bean class="com.ecmp.flow.service.FlowExecutorConfigService"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="com.ecmp.config.util.ApiRestJsonProvider"/>

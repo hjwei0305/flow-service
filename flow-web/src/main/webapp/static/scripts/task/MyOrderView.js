@@ -19,6 +19,9 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 region : "center",
                 border:false,
                 padding:0,
+                style:{
+                   "border-top":"1px solid #eee"
+                },
                 html:this.getOrderCenterHtml()
             }]
         });
@@ -156,7 +159,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             renderTo:"order-searchBox",
             width:198,
             displayText:"输入单据说明关键字查询",
-            editable:true,
+            canClear:true,
             colon:false,
             onSearch:function (data) {
                 g.quickSearch();
@@ -170,6 +173,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             $(".taken-invoices").removeClass("active");
             $(this).addClass("active");
             $("#order-searchBox input").val("").focus();
+            g.todoOrderView&&EUI.getCmp("order-searchBox").setValue(g.todoOrderView.searchName);
             g.showTodoOrderView(true);
         });
         $(".taken-invoices").bind("click", function () {
@@ -177,7 +181,9 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             $(".wait-invoices").removeClass("active");
             $(this).addClass("active");
             $("#order-searchBox input").val("").focus();
+            g.completeOrderView&&EUI.getCmp("order-searchBox").setValue(g.completeOrderView.searchName);
             g.showCompleteOrderView(true);
+            $("#completeOrder-content").css("height", "100%");
         });
     },
     //已办单据

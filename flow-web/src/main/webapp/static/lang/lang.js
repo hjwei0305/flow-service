@@ -67,7 +67,12 @@ if (EUI.BusinessModelView) {
         serviceUrlText: "服务地址管理",
         addServiceUrlText: "新增服务地址",
         businessModelIdText: "业务实体ID",
-        updateServiceUrlText: "修改服务地址管理"
+        updateServiceUrlText: "修改服务地址管理",
+        addExecutorConfigText: "新增自定义执行人配置",
+        paramText: "参数",
+        businessModelText: "业务实体",
+        updatExecutorConfigText: "编辑自定义执行人配置",
+        apiLocationText: "API地址"
     }, common_lang);
 }
 
@@ -189,7 +194,8 @@ if (EUI.WorkFlowView) {
         singleSignTaskText: "单签任务",
         counterSignTaskText: "会签任务",
         approveTaskText:"审批任务",
-        userTaskText: "审批任务",
+        parallelTaskText:"并行任务",
+        serialTaskText:"串行任务",
         serviceTaskText: "服务任务",
         scriptTaskText: "脚本任务",
         emailTaskText: "邮件任务",
@@ -304,7 +310,8 @@ if(EUI.BusinessModelView){
         configServerLocationText:"配置服务地址",
         applyModuleCodeText:"应用模块Code",
         dataAccessObjectText:"数据访问对象",
-        formURLText:"表单URL"
+        formURLText:"表单URL",
+        configExecutorText:"自定义执行人配置"
 
     },common_lang);
 }
