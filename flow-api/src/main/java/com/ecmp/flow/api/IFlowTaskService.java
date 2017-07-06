@@ -5,10 +5,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.vo.ApprovalHeaderVO;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.NodeInfo;
-import com.ecmp.flow.vo.TodoBusinessSummaryVO;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -231,4 +228,12 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public PageResult<FlowTask> findByBusinessModelId(@PathParam("businessModelId") String businessModelId, Search searchConfig);
+
+
+//    @POST
+//    @Path("findByModelEntity")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+//    public PageResult<FlowTask> findByBusinessModelId(FlowTaskQueryParam flowTaskQueryParam);
 }

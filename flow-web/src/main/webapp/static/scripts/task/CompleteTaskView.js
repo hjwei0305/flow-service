@@ -311,10 +311,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         }
     },
     refresh: function () {
-        var g=this;
-        g.pageInfo.page=1;
-        g.pageInfo.rows=10;
-        g.pageInfo.total=1;
         this.getCompleteData();
     }
 });

@@ -19,6 +19,9 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 region : "center",
                 border:false,
                 padding:0,
+                style:{
+                   "border-top":"1px solid #eee"
+                },
                 html:this.getOrderCenterHtml()
             }]
         });
@@ -160,9 +163,6 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             colon:false,
             onSearch:function (data) {
                 g.quickSearch();
-            },
-            afterClear:function () {
-                g.quickSearch();
             }
         })
     },
@@ -181,6 +181,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("active");
             $("#order-searchBox input").val("").focus();
             g.showCompleteOrderView(true);
+            $("#completeOrder-content").css("height", "100%");
         });
     },
     //已办单据

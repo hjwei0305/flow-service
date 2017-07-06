@@ -26,8 +26,18 @@ var _flownode = {
     }, {
         name: "approveTaskText",
         type: "UserTask",
-        css: "countertask",
+        css: "approvetask",
         nodeType: "Approve"
+    }, {
+        name: "parallelTaskText",
+        type: "UserTask",
+        css: "paralleltask",
+        nodeType: "Normal"
+    }, {
+        name: "serialTaskText",
+        type: "UserTask",
+        css: "serialtask",
+        nodeType: "Normal"
     }],
     gateway: [{
         name: "exclusiveGatewayText",
