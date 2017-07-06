@@ -42,10 +42,17 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
-               StringBuffer extraHql = new StringBuffer();
+               StringBuffer extraHql = new StringBuffer("and (");
+               boolean first = true;
                for(String s:quickSearchProperties){
-                   extraHql.append(" and ft."+s+" like '%"+quickSearchValue+"%'");
+                   if(first){
+                       extraHql.append("  ft."+s+" like '%"+quickSearchValue+"%'");
+                       first = false;
+                   }else {
+                       extraHql.append(" or  ft."+s+" like '%"+quickSearchValue+"%'");
+                   }
                }
+            extraHql.append(" )");
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }

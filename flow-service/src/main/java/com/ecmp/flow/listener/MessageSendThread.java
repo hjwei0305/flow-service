@@ -1,6 +1,7 @@
 package com.ecmp.flow.listener;
 
 import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
@@ -247,6 +248,80 @@ public class MessageSendThread implements Runnable {
                     Object[] types = selectType.toArray();
                     for (Object type : types) {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
+                          JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
+                          if(notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()){
+                              List<String> idList = new ArrayList<String>();
+                              for(int i=0;i<notifyPositionJsonArray.size();i++){
+                                  JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
+                                  String positionId = jsonObject.getString("id");
+                                  if(StringUtils.isNotEmpty(positionId)){
+                                      idList.add(positionId);
+                                  }
+                              }
+                              IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                              List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
+                              Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
+                              List<String> receiverIds = new ArrayList<String>();
+                              if(employees != null && !employees.isEmpty() ){
+                                  for(Executor executor:employees){
+                                      linkedHashSetReceiverIds.add(executor.getId());
+                                  }
+                              }else {
+                                  return;
+                              }
+                              receiverIds.addAll(linkedHashSetReceiverIds);
+                              INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+                              EcmpMessage message = new EcmpMessage();
+                              message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                              String senderId = ContextUtil.getUserId();
+                              message.setSenderId(senderId);
+
+
+                              message.setReceiverIds(receiverIds);
+
+                              Map<String, String> contentTemplateParams = new HashMap<String, String>();
+                              String workCaption = (String) execution.getVariable("workCaption");
+                              String businessName = (String) execution.getVariable("name");
+                              String businessCode = (String) execution.getVariable("businessCode");
+                              String preOpinion = null;
+                              String opinion = null;
+
+                              if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
+                                  preOpinion =  execution.getVariable("opinion")+"";
+                              }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
+                                  opinion =  execution.getVariable("opinion")+"";
+                              }
+
+                              contentTemplateParams.put("businessName", businessName);//业务单据名称
+                              contentTemplateParams.put("businessCode", businessCode);//业务单据代码
+//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
+                              if ("before".equalsIgnoreCase(eventType)) {
+                                  contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                              } else if ("after".equalsIgnoreCase(eventType)) {
+                                  contentTemplateParams.put("opinion", opinion);//审批意见
+                              }
+                              contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
+//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
+                              contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
+
+                              message.setContentTemplateParams(contentTemplateParams);
+                              message.setContentTemplateCode(contentTemplateCode);//模板代码
+
+                              List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+                              notifyTypes.add(NotifyType.Email);
+                              message.setNotifyTypes(notifyTypes);
+                              message.setCanToSender(true);
+//                            iNotifyService.send(message);
+                              new Thread(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                      iNotifyService.send(message);
+                                  }
+                              }).start();
+
+                          }
+
+
                         } else if ("SMS".equalsIgnoreCase(type.toString())) {
                         } else if ("APP".equalsIgnoreCase(type.toString())) {
                         }
