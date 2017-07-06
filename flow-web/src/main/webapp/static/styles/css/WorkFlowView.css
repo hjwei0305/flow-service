@@ -220,7 +220,24 @@
     display: inline-block;
     height: 20px;
     width: 18px;
-    background: #fefed9;
+}
+.flow-task .approvetask {
+    background: url("../images/flow_approve_task.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+}
+.flow-task .paralleltask {
+    background: url("../images/flow_parallel_task.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+}
+.flow-task .serialtask {
+    background: url("../images/flow_serial_task.png") no-repeat;
+    display: inline-block;
+    height: 20px;
+    width: 22px;
 }
 
 .node-dot {
@@ -403,12 +420,7 @@
     text-align: center;
 }
 .condetail-delete {
-/*    width: 15px;
-    height: 15px;*/
     cursor: pointer;
-  /*  display: inline-block;
-    background: url("../images/operate_bg.png") no-repeat;
-    background-position: -32px -160px;*/
 }
 
 
@@ -565,17 +577,13 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 
 .arrow-right{
-  /*  background: url("../images/operate_arrow_right.png") no-repeat;*/
     width: 22px;
-   /* height: 22px;*/
     margin: 130px auto 0;
     margin-top: 149px;
     cursor: pointer;
 }
 .arrow-left{
-  /*  background: url("../images/operate_arrow_left.png") no-repeat;*/
     width: 22px;
-    /*height: 22px;*/
     cursor: pointer;
     margin: 45px auto 0;
     margin-top: 15px;
