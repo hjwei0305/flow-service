@@ -29,29 +29,29 @@ import javax.ws.rs.core.MediaType;
 @Path("flowHiVarinst")
 @Api(value = "IFlowHiVarinstService 历史参数管理服务API接口")
 public interface IFlowHiVarinstService extends IBaseService<FlowHiVarinst, String> {
-
-    /**
-     * 保存一个实体
-     * @param flowHiVarinst 实体
-     * @return 保存后的实体
-     */
-    @POST
-    @Path("save")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<FlowHiVarinst> save(FlowHiVarinst flowHiVarinst);
-
-
-    /**
-     * 获取分页数据
-     *
-     * @return 实体清单
-     */
-    @POST
-    @Path("findByPage")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
-    PageResult<FlowHiVarinst> findByPage(Search searchConfig);
+//
+//    /**
+//     * 保存一个实体
+//     * @param flowHiVarinst 实体
+//     * @return 保存后的实体
+//     */
+//    @POST
+//    @Path("save")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+//    OperateResultWithData<FlowHiVarinst> save(FlowHiVarinst flowHiVarinst);
+//
+//
+//    /**
+//     * 获取分页数据
+//     *
+//     * @return 实体清单
+//     */
+//    @POST
+//    @Path("findByPage")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+//    PageResult<FlowHiVarinst> findByPage(Search searchConfig);
 }

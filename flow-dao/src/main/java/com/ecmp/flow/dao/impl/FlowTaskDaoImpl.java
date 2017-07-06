@@ -7,10 +7,12 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
 import com.ecmp.flow.entity.FlowTask;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,13 +37,25 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
-
-        TypedQuery<Long> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) ", Long.class);
+        Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
+        String  quickSearchValue = searchConfig.getQuickSearchValue();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
+        if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
+               StringBuffer extraHql = new StringBuffer();
+               for(String s:quickSearchProperties){
+                   extraHql.append(" and ft."+s+" like '%"+quickSearchValue+"%'");
+               }
+            hqlCount+=extraHql.toString();
+            hqlQuery+=extraHql.toString();
+        }
+        hqlQuery+=" order by ft.lastEditedDate desc";
+        TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
         Long total = queryTotal.getSingleResult();
 
-        TypedQuery<FlowTask> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowTask.class);
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
         query.setParameter("executorId",executorId);
         query.setParameter("businessModelId",businessModelId);
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );

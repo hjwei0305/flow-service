@@ -74,7 +74,7 @@ public class FlowTaskController {
 //        if("admin".equalsIgnoreCase(account)){
 //            account = "666666";
 //        }
-        search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
+       // search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
         //setQuickSearchValue
         search.addQuickSearchProperty("flowName");
         search.addQuickSearchProperty("taskName");
