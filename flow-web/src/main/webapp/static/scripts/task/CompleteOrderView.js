@@ -9,7 +9,6 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     searchName: null,
     initComponent: function () {
         this.initHtml();
-
         this.getTodoOrderData();
         this.addEvents();
     },
@@ -39,10 +38,15 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             },
             success: function (result) {
                 myMask.hide();
-                if (result) {
+                // g.getNotWorkData();
+                if (result.records==0) {
+                    g.getNotWorkData();
+                    return;
+                }else if (result.rows) {
                     g.pageInfo.page = result.page;
                     g.pageInfo.total = result.total;
                     g.showCompleteView(result.rows);
+                    g.pageJudge();
                     g.showPage(result.records);//数据请求成功后再给总条数赋值
                     $(".one").val(g.pageInfo.page);//数据请求成功后在改变class为one的val值，避免了点击下一页时val值变了却没有获取成功数据
                 }
@@ -97,6 +101,48 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             }
         }
     },
+    //已办单据分页的判断
+    pageJudge: function () {
+        var g = this;
+        if (g.pageInfo.page == 1 && g.pageInfo.total > 1&&g.pageInfo.page < g.pageInfo.total) {
+            $(".next-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".next-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".end-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        }else if (g.pageInfo.page > 1 && g.pageInfo.page < g.pageInfo.total) {
+            $("a", "#" + this.renderTo).removeClass("pageDisable");
+            $("a", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+        } else if (g.pageInfo.page > 1 && g.pageInfo.page == g.pageInfo.total) {
+            $(".first-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".first-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".prev-page", "#" + this.renderTo).removeClass("pageDisable");
+            $(".prev-page", "#" + this.renderTo).mouseenter(function () {
+                $(this).addClass("hover");
+            }).mouseleave(function () {
+                $(this).removeClass("hover");
+            });
+            $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+            $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        }
+    },
     //底部翻页部分
     showPage: function (records) {
         $(".record-total","#" + this.renderTo).text("共" + records + "条记录");
@@ -106,6 +152,13 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     },
     hide: function () {
         $("#" + this.renderTo).css("display", "none");
+    },
+    //当页面没有数据时的显示内容
+    getNotWorkData: function () {
+        $("#" + this.renderTo).empty();
+        var html = '<div class="todo-not-data">' +
+            '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
+        $("#" + this.renderTo).append(html);
     },
     //底部翻页绑定事件
     pagingEvent: function () {

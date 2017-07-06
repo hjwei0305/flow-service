@@ -26,7 +26,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     getNavbarHtml: function (data) {
             var g = this;
             var html = '<div class="content-navbar">';
-            if (data.length < 6) {
+            if (data.length < 7) {
              html += '<div class="navbar"></div>';
              } else {
             html += '      <i class="ecmp-common-prepage page-btn arrow-left pre"></i>' +
@@ -39,7 +39,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
 
 
     //导航测试数据
-   /* getTestNavData: function () {
+    /*getTestNavData: function () {
         var g = this;
         g.initHtml(_data);
         g.getNavHtml(_data);
@@ -73,8 +73,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                g.nowPage = 1;
-                g.totalPage = Math.ceil(status.data.length / 6);
                 if (g.firstTime) {
                     myMask.hide();
                 }
@@ -82,6 +80,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.getNotWorkData();
                     return;
                 }
+                g.nowPage = 1;
+                g.totalPage = Math.ceil(status.data.length / 6);
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
@@ -395,8 +395,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".arrow-left").live("click", function () {
             if(!$(this).hasClass("page-btn")){
                 g.nowPage--;
-                $(".navber-count", ".navbar").hide(300);
-                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
+                $(".navber-count", ".navbar").hide("fast");
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show("fast");
                 g.upPageBtn();
             }
         });
