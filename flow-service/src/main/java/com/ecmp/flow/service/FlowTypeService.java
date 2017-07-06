@@ -12,6 +12,8 @@ import com.ecmp.flow.entity.FlowType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * *************************************************************************************************
  * <p/>
@@ -34,4 +36,8 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
         return this.flowTypeDao;
     }
 
+    @Override
+    public List<FlowType> findByBusinessModelId(String businessModelId) {
+        return flowTypeDao.findByBusinessModelId(businessModelId);
+    }
 }
