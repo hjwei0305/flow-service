@@ -73,8 +73,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskHeader",
             success: function (status) {
-                g.nowPage = 1;
-                g.totalPage = Math.ceil(status.data.length / 6);
                 if (g.firstTime) {
                     myMask.hide();
                 }
@@ -82,6 +80,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     g.getNotWorkData();
                     return;
                 }
+                g.nowPage = 1;
+                g.totalPage = Math.ceil(status.data.length / 6);
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
