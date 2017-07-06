@@ -64,5 +64,4 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     List<BusinessModel> findByAppModuleId(@QueryParam("appModuleId") String appModuleId);
 
-
 }
