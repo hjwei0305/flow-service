@@ -36,7 +36,8 @@ var common_lang = {
     finishText: "完成",
     editText: "编辑",
     searchByNameMsgText: "请输入名称进行搜索",
-    copyHintMessage:"请选择一条要参考的行项目!"
+    copyHintMessage:"请选择一条要参考的行项目!",
+    searchByCodeOrNameText: "请输入代码或名称进行搜索"
 };
 
 if (EUI.BusinessModelView) {

@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -53,5 +54,17 @@ public interface IFlowExecutorConfigService extends IBaseService<FlowExecutorCon
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowExecutorConfig> findByPage(Search searchConfig);
+
+    /**
+     * 获取所有符合条件的数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByFilters")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    List<FlowExecutorConfig> findByFilters(Search searchConfig);
 
 }

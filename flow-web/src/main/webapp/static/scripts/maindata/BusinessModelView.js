@@ -637,18 +637,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText:this.lang.searchNameText,
+                id: "searchBox",
+                displayText:this.lang.searchByCodeOrNameText,
                 onSearch: function (value) {
-                    if (!value) {
-                        EUI.getCmp("executorConfigGridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                    EUI.getCmp("executorConfigGridPanel").setPostParams({
-                            Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                    EUI.getCmp("executorConfigGridPanel").localSearch(value);
                 }
             }]
         };
@@ -662,13 +654,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             style: {
                 "border-radius": "3px"
             },
+            searchConfig: {
+                searchCols: ["name","code"]
+            },
             gridCfg: {
-                //     loadonce:true,
+                loadonce:true,//一次查询所有数据
                 url: _ctxPath + "/flowExecutorConfig/list",
                 postData: {
                     "Q_EQ_businessModel.id": data.id,
-                   // S_code: "ASC"
-                    S_lastEditedDate: "DESC"
+                    "S_lastEditedDate": "DESC"
                 },
                 colModel: [{
                     label: this.lang.operateText,
@@ -803,14 +797,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             success: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (result.success) {
-                    EUI.getCmp("executorConfigGridPanel").grid.trigger("reloadGrid");
-                    winCmp.remove();
-                }
+                EUI.getCmp("executorConfigGridPanel").refreshGrid();
+                EUI.getCmp("searchBox").setValue("");
+                winCmp.remove();
             },
             failure: function (result) {
-                EUI.ProcessStatus(result);
                 myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
     },
@@ -1157,13 +1150,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         success: function (result) {
                             myMask.hide();
                             EUI.ProcessStatus(result);
-                            if (result.success) {
-                                EUI.getCmp("executorConfigGridPanel").grid.trigger("reloadGrid");
-                            }
+                            EUI.getCmp("executorConfigGridPanel").refreshGrid();
+                            EUI.getCmp("searchBox").setValue("");
+                         //   EUI.getCmp("executorConfigGridPanel").deleteRow(rowData.id);
                         },
                         failure: function (result) {
-                            EUI.ProcessStatus(result);
                             myMask.hide();
+                            EUI.ProcessStatus(result);
                         }
                     });
                 }

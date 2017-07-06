@@ -2,23 +2,20 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowExecutorConfigService;
-import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.entity.FlowExecutorConfig;
-import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -44,11 +41,10 @@ public class FlowExecutorConfigController {
      */
     @RequestMapping(value = "list")
     @ResponseBody
-    public String listExecutorConfig(ServletRequest request) throws ParseException {
+    public List<FlowExecutorConfig> list(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowExecutorConfigService proxy = ApiClient.createProxy(IFlowExecutorConfigService.class);
-        PageResult<FlowExecutorConfig> flowExecutorConfigPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowExecutorConfigPageResult);
+        return proxy.findByFilters(search);
     }
 
     /**
