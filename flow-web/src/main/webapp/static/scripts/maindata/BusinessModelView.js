@@ -118,7 +118,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    width: 160,
+                    width: 180,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
                         // var strVar = "<div class='condetail_operate'>" +
@@ -132,6 +132,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                             '<i class="ecmp-common-delete icon-space delete-businessModel fontcusor" title="' + g.lang.deleteText + '"></i>'+
                             '<i class="ecmp-common-configuration icon-space fontcusor" title="' + g.lang.configWorkSpaceText + '"></i>' +
                             '<i class="ecmp-common-set icon-space fontcusor" title="' + g.lang.configServerLocationText + '"></i>'+
+                            '<i class="ecmp-common-account config-excutor icon-space fontcusor" title="' + g.lang.configExecutorText + '"></i>'+
                             '<i class="ecmp-common-view fontcusor" title="' + g.lang.showConditionPropertiesText + '"></i>' ;
 
                     }
@@ -605,6 +606,214 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             items: [this.initWindTbar(data), this.initWindGrid(data)]
         });
     },
+    showExecutorConfigWindow: function (data) {
+        var g = this;
+        var win = EUI.Window({
+            title: this.lang.configExecutorText+" ["+this.lang.businessModelText+":"+data.name+"]",
+            width: 800,
+            layout: "border",
+            height: 450,
+            padding: 8,
+            itemspace: 0,
+            items: [this.initExecutorConfigWindTbar(data), this.initExecutorConfigWindGrid(data)]
+        });
+    },
+    initExecutorConfigWindTbar: function (data) {
+        var g = this;
+        return {
+            xtype: "ToolBar",
+            region: "north",
+            height: 40,
+            padding: 0,
+            isOverFlow: false,
+            border: false,
+            items: [{
+                xtype: "Button",
+                title: this.lang.addResourceText,
+                iconCss:"ecmp-common-add",
+                selected: true,
+                handler: function () {
+                    g.addExecutorConfig(data);
+                }
+            }, '->', {
+                xtype: "SearchBox",
+                displayText:this.lang.searchNameText,
+                onSearch: function (value) {
+                    if (!value) {
+                        EUI.getCmp("executorConfigGridPanel").setPostParams({
+                                Q_LK_name: ""
+                            }
+                        ).trigger("reloadGrid");
+                    }
+                    EUI.getCmp("executorConfigGridPanel").setPostParams({
+                            Q_LK_name: value
+                        }
+                    ).trigger("reloadGrid");
+                }
+            }]
+        };
+    },
+    initExecutorConfigWindGrid: function (data) {
+        var g = this;
+        return {
+            xtype: "GridPanel",
+            region: "center",
+            id: "executorConfigGridPanel",
+            style: {
+                "border-radius": "3px"
+            },
+            gridCfg: {
+                //     loadonce:true,
+                url: _ctxPath + "/flowExecutorConfig/list",
+                postData: {
+                    "Q_EQ_businessModel.id": data.id,
+                   // S_code: "ASC"
+                    S_lastEditedDate: "DESC"
+                },
+                colModel: [{
+                    label: this.lang.operateText,
+                    name: "operate",
+                    index: "operate",
+                    width: 80,
+                    align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
+                        return  "<i class='ecmp-common-edit icon-space update-executorconfig fontcusor' title='"+g.lang.editText+"'></i>"+
+                            "<i class='ecmp-common-delete delete-executorconfig fontcusor' title='"+g.lang.deleteText+"'></i>";
+                    }
+                }, {
+                    name: "id",
+                    index: "id",
+                    hidden: true
+                }, {
+                    label: this.lang.codeText,
+                    name: "code",
+                    index: "code"
+                }, {
+                    label: this.lang.nameText,
+                    name: "name",
+                    index: "name"
+                },{
+                    label: this.lang.apiLocationText,
+                    name: "url",
+                    index: "url"
+                },{
+                    label: this.lang.paramText,
+                    name: "param",
+                    index: "param"
+                }, {
+                    label: this.lang.depictText,
+                    name: "depict",
+                    index: "depict"
+                }, {
+                    name: "businessModel.id",
+                    index: "businessModel.id",
+                    hidden: true
+                }]
+
+            }
+        };
+    },
+    addExecutorConfig: function (data) {
+        var g = this;
+        var win = EUI.Window({
+            title: this.lang.addExecutorConfigText,
+            height: 300,
+            padding: 15,
+            isOverFlow: false,
+            items: [{
+                xtype: "FormPanel",
+                id: "addExecutorConfig",
+                padding: 13,
+                items: [{
+                    xtype: "TextField",
+                    title: this.lang.businessModelIdText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: data.id,
+                    hidden:true
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.codeText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "code",
+                    width: 220
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.nameText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "name",
+                    width: 220
+                },{
+                    xtype: "TextField",
+                    title: this.lang.apiLocationText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "url",
+                    width: 220
+                },{
+                    xtype: "TextField",
+                    title: this.lang.paramText,
+                    labelWidth: 80,
+                    allowBlank: true,
+                    name: "param",
+                    width: 220
+                }, {
+                    xtype: "TextArea",
+                    title: this.lang.depictText,
+                    labelWidth: 80,
+                    allowBlank: true,
+                    name: "depict",
+                    width: 220,
+                    height: 90
+                }]
+            }],
+            buttons: [{
+                title: g.lang.saveText,
+                iconCss:"ecmp-common-save",
+                selected: true,
+                handler: function () {
+                    var form = EUI.getCmp("addExecutorConfig");
+                    if (!form.isValid()) {
+                        return;
+                    }
+                    var data = form.getFormValue();
+                    g.saveExecutorConfig(data, win);
+                }
+            }, {
+                title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
+                handler: function () {
+                    win.remove();
+                }
+            }]
+        });
+    },
+    saveExecutorConfig: function (data, winCmp) {
+        var g = this;
+        var myMask = EUI.LoadMask({
+            msg: g.lang.nowSaveMsgText
+        });
+        EUI.Store({
+            url: _ctxPath + "/flowExecutorConfig/save",
+            params: data,
+            success: function (result) {
+                myMask.hide();
+                EUI.ProcessStatus(result);
+                if (result.success) {
+                    EUI.getCmp("executorConfigGridPanel").grid.trigger("reloadGrid");
+                    winCmp.remove();
+                }
+            },
+            failure: function (result) {
+                EUI.ProcessStatus(result);
+                myMask.hide();
+            }
+        });
+    },
     initWindTbar: function (data) {
         var g = this;
         return {
@@ -818,6 +1027,153 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         $(".update-serviceurl").live("click", function () {
             var data = EUI.getCmp("serviceUrlGridPanel").getSelectRow();
             g.updateServiceUrl(data);
+        });
+        $(".config-excutor").live("click", function () {
+            var data = EUI.getCmp("gridPanel").getSelectRow();
+            g.showExecutorConfigWindow(data);
+        });
+        $(".update-executorconfig").live("click", function () {
+            var data = EUI.getCmp("executorConfigGridPanel").getSelectRow();
+            g.updateExecutorConfig(data);
+        });
+        $(".delete-executorconfig").live("click", function () {
+            var rowData = EUI.getCmp("executorConfigGridPanel").getSelectRow();
+            g.deleteExecutorConfig(rowData);
+        });
+    },
+    updateExecutorConfig: function (data) {
+        console.log(data);
+        var g = this;
+        var win = EUI.Window({
+            title: this.lang.updatExecutorConfigText,
+            height: 300,
+            padding: 15,
+            isOverFlow: false,
+            items: [{
+                xtype: "FormPanel",
+                id: "updateExecutorConfig",
+                padding: 13,
+                items: [{
+                    xtype: "TextField",
+                    title: this.lang.businessModelIdText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "businessModel.id",
+                    width: 220,
+                    value: data["businessModel.id"],
+                    hidden: true
+                },{
+                    xtype: "TextField",
+                    title: "ID",
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "id",
+                    width: 220,
+                    value: data.id,
+                    hidden: true
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.codeText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "code",
+                    width: 220,
+                    value: data.code
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.nameText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "name",
+                    width: 220,
+                    value: data.name
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.apiLocationText,
+                    labelWidth: 80,
+                    allowBlank: false,
+                    name: "url",
+                    width: 220,
+                    value: data.url
+                },{
+                    xtype: "TextField",
+                    title: this.lang.paramText,
+                    labelWidth: 80,
+                    allowBlank: true,
+                    name: "param",
+                    width: 220,
+                    value: data.param
+                }, {
+                    xtype: "TextArea",
+                    title: this.lang.depictText,
+                    labelWidth: 80,
+                    allowBlank: true,
+                    name: "depict",
+                    width: 220,
+                    height: 90,
+                    value: data.depict
+                }]
+            }],
+            buttons: [{
+                title: g.lang.saveText,
+                iconCss:"ecmp-common-save",
+                selected: true,
+                handler: function () {
+                    var form = EUI.getCmp("updateExecutorConfig");
+                    if (!form.isValid()) {
+                        return;
+                    }
+                    var data = form.getFormValue();
+                    g.saveExecutorConfig(data, win);
+                }
+            }, {
+                title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
+                handler: function () {
+                    win.remove();
+                }
+            }]
+        });
+    },
+    deleteExecutorConfig: function (rowData) {
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
+            buttons: [{
+                title: g.lang.sureText,
+                iconCss:"ecmp-common-ok",
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.nowDelMsgText
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/flowExecutorConfig/delete",
+                        params: {
+                            id: rowData.id
+                        },
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.ProcessStatus(result);
+                            if (result.success) {
+                                EUI.getCmp("executorConfigGridPanel").grid.trigger("reloadGrid");
+                            }
+                        },
+                        failure: function (result) {
+                            EUI.ProcessStatus(result);
+                            myMask.hide();
+                        }
+                    });
+                }
+            }, {
+                title: g.lang.cancelText,
+                iconCss:"ecmp-common-delete",
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
         });
     },
     addWorkPageEvent: function () {
