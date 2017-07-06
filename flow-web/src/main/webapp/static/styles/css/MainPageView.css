@@ -223,7 +223,7 @@ div, span, p {
 
 .content-info {
     margin: 0 10px;
-    border-top: 1px solid #eeeeee;
+    /*border-top: 1px solid #eeeeee;*/
     overflow: hidden;
     /*width: 100%;*/
 }
@@ -575,6 +575,9 @@ div, span, p {
     border-radius: 2px;
 }
 
+#todoOrder-content{
+    height: 100%;
+}
 .taken-invoices {
     font-size: 14px;
     /*color: #45b7ff;*/
