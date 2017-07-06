@@ -571,13 +571,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }];
     },
     getNotifyData: function () {
+        console.log(this.notifyBeforePositionData)
         var data = {};
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
         var beforePosition = EUI.getCmp(notifyTab1.items[2]).getFormValue();
         var afterPosition = EUI.getCmp(notifyTab2.items[2]).getFormValue();
         beforePosition.positionData = this.notifyBeforePositionData;
+        beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
         afterPosition.positionData = this.notifyAfterPositionData;
+        afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
         data.before = {
             notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
             notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
@@ -589,6 +592,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             notifyPosition: afterPosition
         };
         return data;
+    },
+    getNotifyChoosePositionIds:function (data) {
+        var notifyChoosePositionIds = [];
+        for(var i=0;i<data.length;i++){
+            notifyChoosePositionIds.push(data[i].id)
+        }
+        return notifyChoosePositionIds;
     },
     getPositionGrid: function () {
         var colModel = [{
