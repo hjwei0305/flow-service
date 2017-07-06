@@ -171,4 +171,19 @@ public class BusinessModuleController {
         return JsonUtil.serialize(result);
     }
 
+    /**
+     * 根据应用模块Id查询业务实体
+     * @param appModuleId
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @RequestMapping(value = "listBusinessModuleByAppModelId")
+    @ResponseBody
+    public String listBusinessModuleByAppModelId(String appModuleId) throws  ClassNotFoundException {
+        IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
+        List<BusinessModel> businessModelList = proxy.findByAppModuleId(appModuleId);
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
+        return JsonUtil.serialize(operateStatus);
+    }
+
 }

@@ -190,4 +190,20 @@ public class FlowInstanceController {
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
+
+    /**
+     * 根据业务实体id查询流程类型
+     * @param businessModelId
+     * @return
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "listFlowTypeByBusinessModelId")
+    @ResponseBody
+    public String listFlowTypeByBusinessModelId(String businessModelId) throws JsonProcessingException, ParseException {
+        IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
+        List<FlowType> flowTypeList = proxy.findByBusinessModelId(businessModelId);
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowTypeList);
+        return JsonUtil.serialize(operateStatus);
+    }
 }
