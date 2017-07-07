@@ -28,7 +28,7 @@ public abstract class BasicContextTestCase extends AbstractJUnit4SpringContextTe
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Before
     public void setUp() throws Exception {
-        String sessionId = "ecmp_mock_user";
-        ContextUtil.setSessionId(sessionId);
+//        String sessionId = "ecmp_mock_user";
+        ContextUtil.mockUser();
     }
 }
