@@ -203,7 +203,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    showChooseUserGrid: function (userType, rowdata) {
+    showChooseUserGrid: function (userType, data) {
         if (userType == "StartUser") {
             var grid = EUI.getCmp("gridBox");
             grid && grid.hide();
@@ -213,8 +213,8 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionGrid").show();
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDefGrid").hide();
-            if (rowdata) {
-                EUI.getCmp("positionGrid").setDataInGrid(rowdata);
+            if (data && data.rowdata) {
+                EUI.getCmp("positionGrid").setDataInGrid(data.rowdata);
             }
         }
         else if (userType == "PositionType") {
@@ -222,17 +222,14 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").show();
             EUI.getCmp("selfDefGrid").hide();
-            if (rowdata) {
-                EUI.getCmp("positionTypeGrid").setDataInGrid(rowdata);
+            if (data && data.rowdata) {
+                EUI.getCmp("positionTypeGrid").setDataInGrid(data.rowdata);
             }
         } else if (userType == "SelfDefinition") {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
-            EUI.getCmp("selfDefGrid").show();
-            if (rowdata) {
-                EUI.getCmp("selfDefGrid").setDataInGrid(rowdata);
-            }
+            EUI.getCmp("selfDef").loadData(data);
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();
         }
@@ -560,7 +557,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             var userType = nodeConfig.executor.userType;
             var userTypeCmp = EUI.getCmp("userType");
             userTypeCmp.setValue(userType);
-            this.showChooseUserGrid(userType, nodeConfig.executor.rowdata);
+            this.showChooseUserGrid(userType, nodeConfig.executor);
         }
         //加载事件配置
         eventForm.loadData(nodeConfig.event);
