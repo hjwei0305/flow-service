@@ -39,6 +39,23 @@ public class FlowExecutorConfigController {
      * @return 自定义执行人配置清单
      * @throws ParseException
      */
+    @RequestMapping(value = "listCombo")
+    @ResponseBody
+    public OperateStatus listCombo(ServletRequest request) throws ParseException {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        Search search = SearchUtil.genSearch(request);
+        IFlowExecutorConfigService proxy = ApiClient.createProxy(IFlowExecutorConfigService.class);
+        status.setData(proxy.findByFilters(search));
+        return status;
+    }
+
+
+    /**
+     * 查询自定义执行人配置
+     * @param request
+     * @return 自定义执行人配置清单
+     * @throws ParseException
+     */
     @RequestMapping(value = "list")
     @ResponseBody
     public List<FlowExecutorConfig> list(ServletRequest request) throws ParseException {

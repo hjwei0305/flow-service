@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.basic.entity.Employee;
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
@@ -11,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -75,5 +78,17 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     public boolean changeCompletedDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
+
+    /**
+     * 测试事后
+     *
+     * @return 执行结果
+     */
+    @POST
+    @Path("getPersonToExecutorConfig/{businessId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
+    public List<Executor> getPersonToExecutorConfig(@PathParam("businessId") String businessId,Map<String,String> map);
 
 }

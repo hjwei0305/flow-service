@@ -1,5 +1,9 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.entity.Employee;
+import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.NumberGenerator;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
@@ -17,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -84,4 +90,24 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public List<Executor> getPersonToExecutorConfig(String businessId,Map<String,String> map){
+        List<Executor> result = new ArrayList<Executor>();
+        if(StringUtils.isNotEmpty(businessId)){
+            DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
+            if(defaultBusinessModel!=null){
+                String orgid = defaultBusinessModel.getOrgId();
+                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+                //获取市场部所有人员
+                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
+                List<String> idList = new ArrayList<String>();
+                for(Employee e : employeeList){
+                    idList.add(e.getId());
+                }
+                //获取执行人
+                result = proxy.getExecutorsByEmployeeIds(idList);
+            }
+        }
+        return result;
+    }
 }
