@@ -350,7 +350,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDef").show();
-            EUI.getCmp("chooseBtn").setTitle("选择自定义执行人");
             EUI.getCmp("selfDef").loadData(data);
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();

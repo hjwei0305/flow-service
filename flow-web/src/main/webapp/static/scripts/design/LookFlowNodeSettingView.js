@@ -212,7 +212,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").show();
             EUI.getCmp("positionTypeGrid").hide();
-            EUI.getCmp("selfDefGrid").hide();
+            EUI.getCmp("selfDef").hide();
             if (data && data.rowdata) {
                 EUI.getCmp("positionGrid").setDataInGrid(data.rowdata);
             }
@@ -221,7 +221,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").show();
-            EUI.getCmp("selfDefGrid").hide();
+            EUI.getCmp("selfDef").hide();
             if (data && data.rowdata) {
                 EUI.getCmp("positionTypeGrid").setDataInGrid(data.rowdata);
             }
@@ -229,6 +229,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
+            EUI.getCmp("selfDef").show();
             EUI.getCmp("selfDef").loadData(data);
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();
@@ -527,17 +528,17 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 200
         }];
     },
-    getSelfDefGrid: function () {
+    getSelfDef: function () {
         return {
-            xtype: "GridPanel",
-            id: "selfDefGrid",
+            xtype: "TextField",
+            id: "selfDef",
+            name: "name",
+            title: "自定义执行人类型",
+            labelWidth: 140,
+            height: 18,
+            width: 340,
             hidden: true,
-            gridCfg: {
-                loadonce: true,
-                hasPager: false,
-                // url: _ctxPath + "",
-                colModel: this.getSelfDefGridColModel()
-            }
+            readonly:true
         };
     },
     loadData: function () {
