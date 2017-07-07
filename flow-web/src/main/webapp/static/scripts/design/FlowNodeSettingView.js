@@ -611,8 +611,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     getNotifyChoosePositionIds: function (data) {
         var notifyChoosePositionIds = [];
-        for (var i = 0; i < data.length; i++) {
-            notifyChoosePositionIds.push(data[i].id)
+        if (data) {
+            for (var i = 0; i < data.length; i++) {
+                notifyChoosePositionIds.push(data[i].id)
+            }
         }
         return notifyChoosePositionIds;
     },
