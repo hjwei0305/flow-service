@@ -620,6 +620,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             maxConnections = 2;
         } else if (nodeType) {
             maxConnections = 1;
+        } else if ($(el).attr("type") == "StartEvent") {
+            maxConnections = 1;
         }
         this.instance.makeSource(el, {
             filter: ".node-dot",
@@ -645,16 +647,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             maxConnections: maxConnections
         });
 
-        this.instance.makeTarget(el, {
-            anchor: "Continuous",
-            allowLoopback: false,
-            beforeDrop: function (params) {
-                if (params.sourceId == params.targetId) {
-                    return false;
+        if ($(el).attr("type") != "StartEvent") {
+            this.instance.makeTarget(el, {
+                anchor: "Continuous",
+                allowLoopback: false,
+                beforeDrop: function (params) {
+                    if (params.sourceId == params.targetId) {
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
+        }
     }
     ,
     doConect: function (sourceId, targetId) {
