@@ -327,7 +327,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").hide();
             EUI.getCmp("selfDef").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位");
-            if (data.rowdata) {
+            if (data && data.rowdata) {
                 EUI.getCmp("positionGrid").setDataInGrid(data.rowdata);
             }
         }
@@ -338,7 +338,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             EUI.getCmp("positionTypeGrid").show();
             EUI.getCmp("selfDef").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位类别");
-            if (data.rowdata) {
+            if (data && data.rowdata) {
                 EUI.getCmp("positionTypeGrid").setDataInGrid(data.rowdata);
             }
         } else if (userType == "SelfDefinition") {
