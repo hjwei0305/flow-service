@@ -313,7 +313,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "任意执行人",
                 name: "AnyOne",
                 onChecked: function (value) {
-                    EUI.getCmp("selfDef").show();
+                    g.showChooseUserGrid(this.name);
                 }
             }]
         };

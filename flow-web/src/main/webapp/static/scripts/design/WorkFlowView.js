@@ -12,7 +12,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     uelInfo: {},
-    isCopy:false,
+    isCopy: false,
     businessModelId: null,//业务实体ID
 
     initComponent: function () {
@@ -94,7 +94,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
-                readonly: !isCopy&&this.id ? true : false,
+                readonly: !isCopy && this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -138,7 +138,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 100,
-                readonly: !isCopy&&this.id ? true : false,
+                readonly: !isCopy && this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -671,6 +671,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var type = item.attr("type");
+            var name = item.find(".node-title").text();
+            var nodeConfig = item.data();
+            if (type.indexOf("Task") != -1 && Object.isEmpty(nodeConfig)) {
+                EUI.ProcessStatus({
+                    success: false,
+                    msg: "请将节点：" + name + "，配置完整"
+                });
+                return;
+            }
+
             var flag = false;
             for (var key in this.connectInfo) {
                 if (key.indexOf(id) != -1) {
@@ -679,7 +689,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }
             if (!flag) {
-                var name = item.find(".node-title").text();
                 EUI.ProcessStatus({
                     success: false,
                     msg: String.format(this.lang.noConnectLineText, name)
@@ -717,19 +726,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < nodes.length; i++) {
             var item = $(nodes[i]);
             var id = item.attr("id");
+            var type = item.attr("type");
+            var name = item.find(".node-title").text();
             var nodeConfig = item.data();
-            if (!nodeConfig.normal) {
-                nodeConfig = this.defaultTaskConfig();
-            }
-            delete nodeConfig.rowdata;
             var node = {
-                    type: item.attr("type"),
+                    type: type,
                     x: item.position().left - parentPos.left + 6,
                     y: item.position().top - parentPos.top + 6,
                     id: id,
                     nodeType: item.attr("nodeType"),
                     target: [],
-                    name: item.find(".node-title").text(),
+                    name: name,
                     nodeConfig: nodeConfig
                 }
             ;
@@ -788,9 +795,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (status.success && status.data) {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
-                    if(g.isCopy){
-                        data.process.name=data.process.name+"_COPY";
-                        data.process.id=data.process.id+"_COPY";
+                    if (g.isCopy) {
+                        data.process.name = data.process.name + "_COPY";
+                        data.process.id = data.process.id + "_COPY";
                     }
                     g.showDesign(data);
                 } else {
@@ -920,7 +927,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         if (!data) {
             return;
         }
-        if(!deploy&&g.isCopy){
+        if (!deploy && g.isCopy) {
             delete data.id;
         }
         var mask = EUI.LoadMask({
@@ -983,22 +990,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
-    }
-    , defaultTaskConfig: function () {
-        return {
-            "normal": {
-                "name": "普通任务",
-                "executeTime": 0,
-                "workPageName": "",
-                "workPageUrl": "",
-                "allowTerminate": false,
-                "allowPreUndo": false,
-                "allowReject": false
-            },
-            "executor": {"userType": "StartUser"},
-            "event": {},
-            "notify": {}
-        };
     }
 })
 ;
