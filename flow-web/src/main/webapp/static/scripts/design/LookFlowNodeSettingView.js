@@ -126,6 +126,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
+                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowTerminate"
             }, {
                 xtype: "CheckBox",
@@ -134,6 +135,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许驳回",
+                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowReject"
             }]
         };

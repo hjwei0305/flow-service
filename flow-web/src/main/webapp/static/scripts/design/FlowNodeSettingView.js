@@ -196,7 +196,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 maxValue: 100.1,
                 minValueText: "最低通过比例为1%",
                 maxValueText: "最高通过比例为100%",
-                displayText: "请输入会签通过的百分比",
+                displayText: "请输入会签通过的百分比1%—100%",
                 allowNegative: false,
                 allowBlank: this.nodeType == "CounterSign" ? false : true,
                 hidden: this.nodeType == "CounterSign" ? false : true,
@@ -204,6 +204,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
+                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowTerminate"
             }, {
                 xtype: "CheckBox",
@@ -212,6 +213,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许驳回",
+                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowReject"
             }]
         };
