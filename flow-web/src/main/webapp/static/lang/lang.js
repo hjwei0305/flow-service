@@ -353,7 +353,8 @@ if(EUI.FlowDefinationView){
         flowDefinitionStatusText : "流程定义状态",
         unReleasedText: "未发布",
         activeText: "激活",
-        frozenText: "冻结"
+        frozenText: "冻结",
+        viewText:"查看"
     },common_lang);
 }
 

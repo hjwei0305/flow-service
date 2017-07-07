@@ -239,5 +239,4 @@ public class FlowDesignController {
         status.setData(data);
         return JsonUtil.serialize(status);
     }
-
 }
