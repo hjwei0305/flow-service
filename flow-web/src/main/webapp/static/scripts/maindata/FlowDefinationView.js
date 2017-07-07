@@ -35,10 +35,17 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             g.deleteFlowDefinationWind(rowData);
         });
-        $(".ecmp-common-view").live("click", function () {
+        $("#defFlow > .ecmp-common-view").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
             g.lookPropertyWindow(rowData);
+            g.addDefVersionWinEvents();
+        });
+    },
+    addDefVersionWinEvents:function () {
+      var g=this;
+        $("#defVersion>.ecmp-common-view").live("click", function () {
+            var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            g.viewFlowDefnation(rowData);
         });
     },
     deleteFlowDefinationWind:function(rowData){
@@ -103,7 +110,24 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             padding: 0,
             isOverFlow: false,
             border: false,
-            items: [ '->', {
+            items: [ {
+                xtype: "Button",
+                //copyText: "参考创建",
+                title: g.lang.copyText,
+                iconCss:"ecmp-common-copy",
+                selected:true,
+                handler: function() {
+                    var rowData =EUI.getCmp("defViesonGridPanel").getSelectRow();
+                    if (rowData && rowData.id) {
+                        rowData.orgCode=rowData["flowDefination.orgCode"];
+                        g.copyFlowDefination(rowData,true);
+                    } else {
+                        // copyHintMessage:"请选择一条要参考的行项目!",
+                        g.message(g.lang.copyHintMessage);
+                    }
+
+                }
+            },'->', {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
@@ -139,8 +163,29 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     S_versionCode:"ASC"
                 },
                 colModel: [{
+                    label: g.lang.operateText,
+                    name: "operate",
+                    index: "operate",
+                    align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
+                        //viewText:"查看"
+                        return '<div id="defVersion"><i class="ecmp-common-view fontcusor" title="'+g.lang.viewText+'"></i></div>';
+                    }
+                },{
                     name: "id",
                     index: "id",
+                    hidden: true
+                },{
+                    name: "flowDefination.orgCode",
+                    index: "flowDefination.orgCode",
+                    hidden: true
+                },{
+                    name: "flowDefination.id",
+                    index: "flowDefination.id",
+                    hidden: true
+                },{
+                    name: "versionCode",
+                    index: "versionCode",
                     hidden: true
                 }, {
                     label: g.lang.nameText,
@@ -160,11 +205,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     name: "actDeployId",
                     index: "actDeployId",
                     hidden: true
-                }/*, {
-                    label: "启动条件UEL",
-                    name: "startUel",
-                    index: "startUel"
-                }*/, {
+                }, {
                     label: g.lang.versionText,
                     name: "versionCode",
                     index: "versionCode",
@@ -177,9 +218,34 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.depictText,
                     name: "depict",
                     index: "depict"
+                },{
+                    label: g.lang.flowDefinitionStatusText,
+                    name: "flowDefinationStatus",
+                    index: "flowDefinationStatus",
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        if('INIT' == rowObject.flowDefinationStatus){
+                            strVar = g.lang.unReleasedText;
+                        }else if('Activate' == rowObject.flowDefinationStatus){
+                            strVar = g.lang.activeText;
+                        }
+                        else if('Freeze' == rowObject.flowDefinationStatus){
+                            strVar = g.lang.frozenText;
+                        }
+                        return strVar;
+                    }
                 }]
             }
         };
+    },
+    viewFlowDefnation: function (data) {
+        var g = this;
+        var tab = {
+            title: g.lang.viewText+data.name,
+            //url: _ctxPath + "/design/getFlowDefByVersionId?id="+data.id+"&viewFlowDefByVersionId=true"
+            url: _ctxPath + "/design/showLook?id="+data.id+"&viewFlowDefByVersionId=true"
+        };
+        g.addTab(tab);
     },
     updateFlowDefnation: function (data) {
         var g = this;
@@ -207,6 +273,16 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         };
         g.addTab(tab);
     },
+    copyFlowDefination: function (data,isFromVersion) {
+        var g = this;
+        var id= isFromVersion?data["flowDefination.id"]:data.id;
+        var tab = {
+            // copyFlowDefinitionText: "参考创建流程定义",
+            title: g.lang.copyFlowDefinitionText,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
+        };
+        g.addTab(tab);
+    },
     addTab: function (tab) {
         if(parent.homeView){
             parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
@@ -215,9 +291,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         }
     },
 
-    // addTab: function (tab) {
-    //     window.open(tab.url);
-    // },
     initLeft: function () {
         var g = this;
         return {
@@ -342,7 +415,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     handler: function() {
                         var rowData =EUI.getCmp("gridPanel").getSelectRow();
                         if (rowData && rowData.id) {
-                            g.copyFlowDefination(rowData);
+                            g.copyFlowDefination(rowData,false);
                         } else {
                             // copyHintMessage:"请选择一条要参考的行项目!",
                             g.message(g.lang.copyHintMessage);
@@ -383,14 +456,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         width: 110,
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
-                            // var strVar = "<div class='condetail_operate'>"
-                            //     + "<div class='condetail_look'></div>"
-                            //     + "<div class='condetail_update'></div>"
-                            //     + "<div class='condetail_delete'></div></div>";
-                            // return strVar;
-                            return '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                            return '<div id="defFlow"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
                                 '<i class="ecmp-common-delete  icon-space fontcusor" title="'+g.lang.deleteText+'"></i>' +
-                                '<i class="ecmp-common-view fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
+                                '<i class="ecmp-common-view fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i></div>';
                         }
                     }, {
                         name: "id",

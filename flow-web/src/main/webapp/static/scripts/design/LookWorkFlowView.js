@@ -11,7 +11,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     connectInfo: {},
     uelInfo: {},
     businessModelId: null,//业务实体ID
-
+    viewFlowDefByVersionId:false,//根据流程定义版本id查看流程定义
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -220,16 +220,24 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     loadData: function (data) {
         var g = this;
+        var url= _ctxPath + "/design/getLookInfo";
+        var postData= {
+            id: this.id,
+            instanceId: this.instanceId,
+            versionCode: this.versionCode
+        };
+        if(this.viewFlowDefByVersionId){
+            url=_ctxPath + "/design/getEntityByVersionId";
+            postData={
+                flowDefVersionId: this.id
+            }
+        }
         var mask = EUI.LoadMask({
             msg: "正在获取数据，请稍候..."
         });
         EUI.Store({
-            url: _ctxPath + "/design/getLookInfo",
-            params: {
-                id: this.id,
-                instanceId: this.instanceId,
-                versionCode: this.versionCode
-            },
+            url:url,
+            params: postData,
             success: function (status) {
                 mask.hide();
                 g.showDesign(status.data);
@@ -239,12 +247,15 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(status);
             }
         });
-    }
-    ,
+    },
     showDesign: function (defData) {
-        var data = JSON.parse(defData.def.defJson);
+        if(this.viewFlowDefByVersionId){
+            var data = JSON.parse(defData.defJson);
+        }else {
+            var data = JSON.parse(defData.def.defJson);
+            var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
+        }
         this.businessModelId = data.businessModelId;
-        var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
@@ -322,8 +333,10 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showTaskNode: function (id, node, currentNodes) {
         var nodeCss = "flow-task flow-node node-choosed";
-        if (currentNodes.indexOf(id) != -1) {
-            nodeCss += " currentNode";
+        if(!this.viewFlowDefByVersionId){
+            if (currentNodes.indexOf(id) != -1) {
+                nodeCss += " currentNode";
+            }
         }
         var css = node.css;
         if (!css) {
@@ -346,8 +359,10 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showGatewayNode: function (id, node, currentNodes) {
         var nodeCss = "flow-event-box flow-node node-choosed";
-        if (currentNodes.indexOf(id) != -1) {
-            nodeCss += " currentNode";
+        if(!this.viewFlowDefByVersionId) {
+            if (currentNodes.indexOf(id) != -1) {
+                nodeCss += " currentNode";
+            }
         }
         var css = node.type.toLowerCase();
         if (node.busType == "ManualExclusiveGateway") {
