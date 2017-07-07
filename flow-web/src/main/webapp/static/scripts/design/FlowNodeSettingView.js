@@ -596,9 +596,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var notifyTab2 = EUI.getCmp("notify-after");
         var beforePosition = EUI.getCmp(notifyTab1.items[2]).getFormValue();
         var afterPosition = EUI.getCmp(notifyTab2.items[2]).getFormValue();
-        beforePosition.positionData = this.notifyBeforePositionData;
+        beforePosition.positionData = this.notifyBeforePositionData || [];
         beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
-        afterPosition.positionData = this.notifyAfterPositionData;
+        afterPosition.positionData = this.notifyAfterPositionData || [];
         afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
         data.before = {
             notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
