@@ -139,6 +139,71 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }];
     },
     getNormalTab: function () {
+        var items = [{
+            title: "节点名称",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "name",
+            value: this.title
+        }, {
+            xtype: "NumberField",
+            title: "额定工时",
+            allowNegative: false,
+            name: "executeTime",
+            width: 262,
+            labelWidth: 100,
+            unit: "分钟"
+        }, {
+            xtype: "ComboBox",
+            title: "工作界面",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "workPageName",
+            field: ["workPageUrl"],
+            async: false,
+            store: {
+                url: _ctxPath + "/design/listAllWorkPage",
+                params: {
+                    businessModelId: this.businessModelId
+                }
+            },
+            reader: {
+                name: "name",
+                field: ["url"]
+            }
+        }];
+        if (this.nodeType == "CounterSign") {
+            items.push({
+                xtype: "NumberField",
+                title: "会签决策",
+                labelWidth: 100,
+                width: 283,
+                unit: "%",
+                minValue: 1,
+                maxValue: 100.1,
+                minValueText: "最低通过比例为1%",
+                maxValueText: "最高通过比例为100%",
+                displayText: "请输入会签通过的百分比1%—100%",
+                allowNegative: false,
+                allowBlank: false,
+                name: "counterDecision"
+            })
+        }
+        items = items.concat([{
+            xtype: "CheckBox",
+            title: "允许流程发起人终止",
+            readonly: this.nodeType == "CounterSign" ? true : false,
+            name: "allowTerminate"
+        }, {
+            xtype: "CheckBox",
+            title: "允许撤回",
+            name: "allowPreUndo"
+        }, {
+            xtype: "CheckBox",
+            title: "允许驳回",
+            readonly: this.nodeType == "CounterSign" ? true : false,
+            name: "allowReject"
+        }]);
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -153,68 +218,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             style: {
                 padding: "10px 30px"
             },
-            items: [{
-                title: "节点名称",
-                labelWidth: 100,
-                allowBlank: false,
-                name: "name",
-                value: this.title
-            }, {
-                xtype: "NumberField",
-                title: "额定工时",
-                allowNegative: false,
-                name: "executeTime",
-                width: 262,
-                labelWidth: 100,
-                unit: "分钟"
-            }, {
-                xtype: "ComboBox",
-                title: "工作界面",
-                labelWidth: 100,
-                allowBlank: false,
-                name: "workPageName",
-                field: ["workPageUrl"],
-                async: false,
-                store: {
-                    url: _ctxPath + "/design/listAllWorkPage",
-                    params: {
-                        businessModelId: this.businessModelId
-                    }
-                },
-                reader: {
-                    name: "name",
-                    field: ["url"]
-                }
-            }, {
-                xtype: "NumberField",
-                title: "会签决策",
-                labelWidth: 100,
-                width: 283,
-                unit: "%",
-                minValue: 1,
-                maxValue: 100.1,
-                minValueText: "最低通过比例为1%",
-                maxValueText: "最高通过比例为100%",
-                displayText: "请输入会签通过的百分比1%—100%",
-                allowNegative: false,
-                allowBlank: this.nodeType == "CounterSign" ? false : true,
-                hidden: this.nodeType == "CounterSign" ? false : true,
-                name: "counterDecision"
-            }, {
-                xtype: "CheckBox",
-                title: "允许流程发起人终止",
-                readonly: this.nodeType == "CounterSign" ? true : false,
-                name: "allowTerminate"
-            }, {
-                xtype: "CheckBox",
-                title: "允许撤回",
-                name: "allowPreUndo"
-            }, {
-                xtype: "CheckBox",
-                title: "允许驳回",
-                readonly: this.nodeType == "CounterSign" ? true : false,
-                name: "allowReject"
-            }]
+            items: items
         };
     },
     getExcutorTab: function () {
