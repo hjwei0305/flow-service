@@ -191,7 +191,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 width: 283,
                 unit: "%",
-                value: 100,
                 minValue: 1,
                 maxValue: 100.1,
                 minValueText: "最低通过比例为1%",
