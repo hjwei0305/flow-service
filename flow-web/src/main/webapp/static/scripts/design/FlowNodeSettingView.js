@@ -186,6 +186,21 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     field: ["url"]
                 }
             }, {
+                xtype: "NumberField",
+                title: "会签决策",
+                labelWidth: 100,
+                width: 283,
+                unit: "%",
+                minValue: 1,
+                maxValue: 100.1,
+                minValueText:"最低通过比例为1%",
+                maxValueText:"最高通过比例为100%",
+                displayText: "请输入会签通过的百分比",
+                allowNegative: false,
+                allowBlank: this.nodeType == "CounterSign" ? false : true,
+                hidden: this.nodeType == "CounterSign" ? false : true,
+                name: "counterDecision"
+            }, {
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
                 name: "allowTerminate"
@@ -245,12 +260,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                                 g.showSelectPositionWindow();
                             } else if (userType == "PositionType") {
                                 g.showSelectPositionTypeWindow();
-                            } else if (userType == "SelfDefinition") {
-                                g.showSelectSelfUserWindow();
                             }
                         }
                     }]
-                }, this.getPositionGrid(), this.getPositionTypeGrid(), this.getSelfDefGrid()]
+                }, this.getPositionGrid(), this.getPositionTypeGrid(), this.getSelfDef()]
             }]
         };
     },
@@ -294,44 +307,45 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "任意执行人",
                 name: "AnyOne",
                 onChecked: function (value) {
-                    g.showChooseUserGrid(this.name);
+                    EUI.getCmp("selfDef").show();
                 }
             }]
         };
     },
-    showChooseUserGrid: function (userType, rowdata) {
+    showChooseUserGrid: function (userType, data) {
         if (userType == "StartUser") {
             var grid = EUI.getCmp("gridBox");
             grid && grid.hide();
         }
         else if (userType == "Position") {
+            EUI.getCmp("chooseBtn").show();
             EUI.getCmp("gridBox").show();
             EUI.getCmp("positionGrid").show();
             EUI.getCmp("positionTypeGrid").hide();
-            EUI.getCmp("selfDefGrid").hide();
+            EUI.getCmp("selfDef").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位");
-            if (rowdata) {
-                EUI.getCmp("positionGrid").setDataInGrid(rowdata);
+            if (data.rowdata) {
+                EUI.getCmp("positionGrid").setDataInGrid(data.rowdata);
             }
         }
         else if (userType == "PositionType") {
             EUI.getCmp("gridBox").show();
+            EUI.getCmp("chooseBtn").show();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").show();
-            EUI.getCmp("selfDefGrid").hide();
+            EUI.getCmp("selfDef").hide();
             EUI.getCmp("chooseBtn").setTitle("选择岗位类别");
-            if (rowdata) {
-                EUI.getCmp("positionTypeGrid").setDataInGrid(rowdata);
+            if (data.rowdata) {
+                EUI.getCmp("positionTypeGrid").setDataInGrid(data.rowdata);
             }
         } else if (userType == "SelfDefinition") {
             EUI.getCmp("gridBox").show();
+            EUI.getCmp("chooseBtn").hide();
             EUI.getCmp("positionGrid").hide();
             EUI.getCmp("positionTypeGrid").hide();
-            EUI.getCmp("selfDefGrid").show();
+            EUI.getCmp("selfDef").show();
             EUI.getCmp("chooseBtn").setTitle("选择自定义执行人");
-            if (rowdata) {
-                EUI.getCmp("selfDefGrid").setDataInGrid(rowdata);
-            }
+            EUI.getCmp("selfDef").loadData(data);
         } else if (userType == "AnyOne") {
             EUI.getCmp("gridBox").hide();
         }
@@ -673,8 +687,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 60,
             align: "center",
             formatter: function (cellvalue, options, rowObject) {
-                /*         return "<div class='condetail-operate'>" +
-                 "<div class='condetail-delete' title='删除' id='" + cellvalue + "'></div></div>";*/
                 return "<div class='ecmp-common-delete condetail-delete' title='删除' id='" + cellvalue + "'></div>";
             }
         }];
@@ -707,29 +719,23 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             width: 150
         }];
     },
-    getSelfDefGrid: function () {
-        var colModel = [{
-            label: this.lang.operateText,
-            name: "operate",
-            index: "operate",
-            width: 60,
-            align: "center",
-            formatter: function (cellvalue, options, rowObject) {
-                /* return "<div class='condetail-operate'>" +
-                 "<div class='condetail-delete' title='删除'></div></div>";*/
-                return "<div class='ecmp-common-delete condetail-delete' title='删除'></div>";
-            }
-        }];
-        colModel = colModel.concat(this.getSelfDefGridColModel());
+    getSelfDef: function () {
         return {
-            xtype: "GridPanel",
-            id: "selfDefGrid",
+            xtype: "ComboBox",
+            id: "selfDef",
+            name: "name",
+            title: "自定义执行人类型",
+            labelWidth: 140,
+            height: 18,
+            allowBlank: false,
+            width: 340,
             hidden: true,
-            gridCfg: {
-                loadonce: true,
-                hasPager: false,
-                // url: _ctxPath + "",
-                colModel: colModel
+            field: ["selfDefUserUrl"],
+            store: {
+                url: _ctxPath + "/flowExecutorConfig/list",
+                params: {
+                    "Q_EQ_businessModel.id": this.businessModelId
+                }
             }
         };
     },
@@ -1039,43 +1045,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             g.deleteRowData(row, cmp);
         });
     },
-    showSelectSelfUserWindow: function () {
-        var win = EUI.Window({
-            title: "选择自定义执行人",
-            padding: 0,
-            width: 420,
-            height: 350,
-            buttons: [{
-                title: "确定",
-                iconCss: "ecmp-common-ok",
-                selected: true,
-                handler: function () {
-                    var data = EUI.getCmp("selfUserGrid").getSelectRow();
-                    EUI.getCmp("selfDefGrid").addRowData(data);
-                    win.close();
-                }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    win.close();
-                }
-            }],
-            items: [{
-                xtype: "GridPanel",
-                id: "selfUserGrid",
-                gridCfg: {
-                    hasPager: false,
-                    multiselect: true,
-                    url: _ctxPath + "/customExecutor/listExecutor",
-                    postData: {
-                        businessModuleId: this.businessModelId
-                    },
-                    colModel: this.getSelfDefGridColModel()
-                }
-            }]
-        })
-    },
     checkExcutor: function () {
         var userType = EUI.getCmp("userType").getValue().userType;
         var data;
@@ -1137,7 +1106,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var userType = this.data.executor.userType;
         var userTypeCmp = EUI.getCmp("userType");
         userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType, this.data.executor.rowdata);
+        this.showChooseUserGrid(userType, this.data.executor);
 
         //加载事件配置
         eventForm.loadData(this.data.event);
