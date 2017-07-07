@@ -116,6 +116,14 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 name: "workPageName"
             }, {
+                xtype: "NumberField",
+                title: "会签决策",
+                labelWidth: 100,
+                width: 283,
+                unit: "%",
+                hidden: this.nodeType == "CounterSign" ? false : true,
+                name: "counterDecision"
+            }, {
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
                 name: "allowTerminate"
