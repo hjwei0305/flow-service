@@ -740,7 +740,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             hidden: true,
             field: ["selfDefUserUrl"],
             store: {
-                url: _ctxPath + "/flowExecutorConfig/list",
+                url: _ctxPath + "/flowExecutorConfig/listCombo",
                 params: {
                     "Q_EQ_businessModel.id": this.businessModelId
                 }
