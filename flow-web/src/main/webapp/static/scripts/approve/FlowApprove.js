@@ -13,7 +13,7 @@
  * <br>
  * *************************************************************************************************<br>
  */
-if(!window.Flow) {
+if (!window.Flow) {
     window.Flow = {};
     EUI.ns("Flow.flow");
 }
@@ -30,11 +30,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     iframeHeight: 600,
     pageUrl: null,
     submitUrl: null,
-    manualSelected:false,//是否是人工选择的网关类型
+    manualSelected: false,//是否是人工选择的网关类型
     goNext: null,
     iframe: null,
     toChooseUserData: null,
-    chooseUserNode:null,
+    chooseUserNode: null,
     initComponent: function () {
         this.pageUrl += "?id=" + this.busId;
         EUI.Container({
@@ -53,19 +53,19 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     initTopHtml: function () {
         return '<div class="flow-info">' +
             '        <div class="flow-info-item">' +
-            '            <div class="flow-ordernum">'+this.lang.businessUnitText+'</div>' +
+            '            <div class="flow-ordernum">' + this.lang.businessUnitText + '</div>' +
             '            <div style="padding: 0 0 20px 20px;">' +
-            '                <div class="flow-info-creater">'+this.lang.docMarkerText+'</div>' +
+            '                <div class="flow-info-creater">' + this.lang.docMarkerText + '</div>' +
             '                <div class="flow-info-createtime"></div>' +
             '            </div>' +
             '        </div>' +
             '        <div class="flow-info-item" style="border-left:1px solid #dddddd ;">' +
             '            <div>' +
-            '                <div class="flow-info-text">'+this.lang.preExecutorText+'</div>' +
+            '                <div class="flow-info-text">' + this.lang.preExecutorText + '</div>' +
             '                <div class="flow-info-excutor"></div>' +
             '            </div>' +
             '            <div style="padding-top: 6px;">' +
-            '                <div class="flow-info-text">'+this.lang.preApprovalOpinionsText+'</div>' +
+            '                <div class="flow-info-text">' + this.lang.preApprovalOpinionsText + '</div>' +
             '                <div class="flow-info-remark"></div>' +
             '            </div>' +
             '        </div>' +
@@ -74,36 +74,53 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     initOperateHtml: function () {
         return '<div style="height: 200px;">' +
             '        <div class="flow-decision">' +
-            '            <div class="flow-nodetitle">'+this.lang.decisionText+'</div>' +
+            '            <div class="flow-nodetitle">' + this.lang.decisionText + '</div>' +
             '            <div class="flow-decision-box">' +
             '        </div></div>' +
             '        <div class="flow-info-item" style="border-left:1px solid #dddddd;">' +
-            '            <div class="flow-nodetitle">'+this.lang.handlingSuggestionText+'</div>' +
+            '            <div class="flow-nodetitle flow-deal-opinion">' + this.lang.handlingSuggestionText + '</div>' +
+            '            <div id="flow-deal-checkbox"></div>' +
             '            <textarea class="flow-remark"></textarea>' +
-            '            <span class="flow-btn flow-next">'+this.lang.nextStepText+'</span>' +
+            '            <span class="flow-btn flow-next">' + this.lang.nextStepText + '</span>' +
             '        </div>' +
             '    </div>';
+    },
+    //处理意见中的选项框
+    initDealCheckBox: function () {
+        var g = this;
+        EUI.RadioBoxGroup({
+            renderTo: "flow-deal-checkbox",
+            onlyOneChecked: true,
+            items: [{
+                title: "同意",
+                name: "agree",
+                value: true
+            }, {
+                title: "不同意",
+                name: "disagree"
+            }]
+        })
     },
     initFrameHtml: function () {
         var html = '<div>' +
             '        <div class="flow-order-titlebox">' +
             '            <div style="display: inline-block;">' +
-                            this.lang.formDetailText +
+            this.lang.formDetailText +
             '            </div>' +
-            '            <div class="close">'+this.lang.collectText+'</div>' +
+            '            <div class="close">' + this.lang.collectText + '</div>' +
             '        </div>';
         html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
         return html += "</div>";
     },
     initChooseUserHtml: function () {
         return '<div class="flow-chooseuser">' +
-            '    <div class="chooseuser-title">'+this.lang.chooseNextExecutorText+'</div>' +
+            '    <div class="chooseuser-title">' + this.lang.chooseNextExecutorText + '</div>' +
             '<div class="flow-operate">' +
             '        <div class="flow-btn pre-step">' +
-                        this.lang.previousStepText +
+            this.lang.previousStepText +
             '        </div>' +
             '        <div class="flow-btn submit">' +
-                        this.lang.submitText +
+            this.lang.submitText +
             '        </div>' +
             '    </div>';
     },
@@ -152,13 +169,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 // }
                 // $(this).addClass("select");
                 // $(this).siblings().removeClass("select");
-                if($(".flow-excutor-content").children("div").length == 1){
-                    if($(".flow-user-item").hasClass("select")){
+                if ($(".flow-excutor-content").children("div").length == 1) {
+                    if ($(".flow-user-item").hasClass("select")) {
                         $(".flow-user-item").removeClass("select");
-                    }else{
+                    } else {
                         $(this).addClass("select");
                     }
-                }else{
+                } else {
                     $(".flow-user-item").removeClass("select");
                     $(this).addClass("select");
                 }
@@ -238,30 +255,34 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     },
     showNodeInfo: function (data) {
+        var g=this;
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             var iconCss = "choose-radio";
+            if (item.flowTaskType == "countersign") {
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="excutor-item-title"><div>' + item.name + '</div></div></div>';
+                g.initDealCheckBox();
+            }
             if (item.uiType == "checkbox") {
                 iconCss = "choose-checkbox";
-                this.manualSelected=true;
+                this.manualSelected = true;
                 this.desionType = 1;
             } else if (item.uiType == "readOnly") {
                 iconCss = "";
-                this.manualSelected=false;
+                this.manualSelected = false;
                 this.desionType = 2;
-            }else{
-                this.manualSelected=true;
-            }
-            if (item.preLineName=="null") {
-                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title"><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
             } else {
-                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title"><div class="gateway-name">' + item.preLineName + '</div><div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+                this.manualSelected = true;
             }
+            var lineNameHtml = "";
+            if (item.preLineName != "null") {
+                lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
+            }
+            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                '<div class="choose-icon ' + iconCss + '"></div>' +
+                '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
         }
         if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
             $(".flow-next").text(this.lang.finishText);
@@ -340,14 +361,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                             msg: g.lang.stopFlowMsgText,
                             buttons: [{
                                 title: g.lang.sureText,
-                                iconCss:"ecmp-common-ok",
+                                iconCss: "ecmp-common-ok",
                                 handler: function () {
                                     g.submit(true);
                                     msgbox.remove();
                                 }
                             }, {
                                 title: g.lang.cancelText,
-                                iconCss:"ecmp-common-delete",
+                                iconCss: "ecmp-common-delete",
                                 handler: function () {
                                     msgbox.remove();
                                 }
@@ -369,8 +390,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     },
     showChooseUser: function () {
         var g = this;
-       var data = this.toChooseUserData;
-       console.log(data)
+        var data = this.toChooseUserData;
+        console.log(data)
         $(".flow-approve").hide();
         $(".flow-chooseuser").show();
         $(".flow-node-box").remove();
@@ -379,8 +400,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var node = data[i];
             var nodeType = this.lang.generalTaskText;
             var iconCss = "choose-radio";
-            if(node.uiUserType == "AnyOne"){
-                var html =  g.showAnyContainer(data);
+            if (node.uiUserType == "AnyOne") {
+                var html = g.showAnyContainer(data);
                 $(".chooseuser-title").after(html);
                 return;
             }
@@ -390,25 +411,25 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             } else if (node.flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
-            }else if (node.flowTaskType == "approve") {
+            } else if (node.flowTaskType == "approve") {
                 nodeType = this.lang.approveTaskText;
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
-            if(iconCss ==  "choose-radio"){
-                if(node.executorSet.length == 1){
-                    var html =  g.showUserItem(node,nodeHtml,iconCss,nodeType);
+            if (iconCss == "choose-radio") {
+                if (node.executorSet.length == 1) {
+                    var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
                     $(".flow-user-item").addClass("select");
-                }else{
-                    var html =  g.showUserItem(node,nodeHtml,iconCss,nodeType);
+                } else {
+                    var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
                     $(".flow-excutor-content").children("div").eq(0).addClass("select");
                 }
             }
-            if(iconCss ==  "choose-checkbox"){
-                var html = g.showUserItem(node,nodeHtml,iconCss,nodeType);
+            if (iconCss == "choose-checkbox") {
+                var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                 $(".chooseuser-title").after(html);
                 $(".flow-user-item").addClass("select");
             }
@@ -432,7 +453,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             // nodeHtml += "</div></div>";
             // html += nodeHtml;
         }
-      //  $(".chooseuser-title").after(html);
+        //  $(".chooseuser-title").after(html);
     },
     showAnyContainer: function (data) {
         var g = this;
@@ -447,24 +468,24 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 ']</div><div class="flow-excutor-content2">';
         }
         nodeHtml += "</div>" +
-            '<div class="choose-btn">'+g.lang.chooseText+'</div>'+
+            '<div class="choose-btn">' + g.lang.chooseText + '</div>' +
             "</div>";
         return html += nodeHtml;
     },
-    showUserItem:function (node,nodeHtml,iconCss,nodeType) {
+    showUserItem: function (node, nodeHtml, iconCss, nodeType) {
         var html = "";
         for (var j = 0; j < node.executorSet.length; j++) {
             var item = node.executorSet[j];
-            if(!item.positionId){
+            if (!item.positionId) {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">'+this.lang.nameText + item.name +
+                    '<div class="excutor-item-title">' + this.lang.nameText + item.name +
                     this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
-            }else{
+            } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">'+this.lang.nameText + item.name + this.lang.jobText + item.positionName +
+                    '<div class="excutor-item-title">' + this.lang.nameText + item.name + this.lang.jobText + item.positionName +
                     this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
@@ -530,7 +551,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
                 taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
-                manualSelected:g.manualSelected//是否是人工网关选择
+                manualSelected: g.manualSelected//是否是人工网关选择
             },
             success: function (status) {
                 mask.hide();
@@ -553,22 +574,22 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             window.close();
         }
     },
-    showOmitContent:function () {
-        $(".gateway-name").live("mouseover",function () {
-            var text=$(this).text();
-            $(this).attr("title",text);
+    showOmitContent: function () {
+        $(".gateway-name").live("mouseover", function () {
+            var text = $(this).text();
+            $(this).attr("title", text);
         })
     },
-    showChooseExecutorWind:function () {
+    showChooseExecutorWind: function () {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if(g.chooseUserNode.flowTaskType == "common"){
+        if (g.chooseUserNode.flowTaskType == "common") {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
-        }else{
+        } else {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorText;
-            saveBtnIsHidden  = false;
+            saveBtnIsHidden = false;
         }
         g.chooseAnyOneWind = EUI.Window({
             title: isChooseOneTitle,
@@ -580,12 +601,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid()],
             buttons: [{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                 selected: true,
-                hidden:saveBtnIsHidden,
+                iconCss: "ecmp-common-save",
+                selected: true,
+                hidden: saveBtnIsHidden,
                 handler: function () {
                     var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
-                    if(typeof(selectRow) == "undefined"){
+                    if (typeof(selectRow) == "undefined") {
                         return;
                     }
                     g.addChooseUsersInContainer(selectRow);
@@ -593,14 +614,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
             }, {
                 title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
+                iconCss: "ecmp-common-delete",
                 handler: function () {
                     g.chooseAnyOneWind.remove();
                 }
             }]
         });
     },
-    initChooseUserWindLeft:function () {
+    initChooseUserWindLeft: function () {
         var g = this;
         return {
             xtype: "Container",
@@ -641,7 +662,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "TreePanel",
             region: "center",
-            id:"chooseAnyUserTree",
+            id: "chooseAnyUserTree",
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             searchField: ["name"],
@@ -680,9 +701,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     InitChooseUserGrid: function () {
         var g = this;
         var isShowMultiselect;
-        if(g.chooseUserNode.flowTaskType == "common"){
+        if (g.chooseUserNode.flowTaskType == "common") {
             isShowMultiselect = false;
-        }else{
+        } else {
             isShowMultiselect = true;
         }
         return {
@@ -715,7 +736,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 searchConfig: {
                     searchCols: ["code"]
                 },
-                style: { "border-radius": "3px"},
+                style: {"border-radius": "3px"},
                 gridCfg: {
                     loadonce: true,
                     //   url: _ctxPath + "/customExecutor/listAllUser",
@@ -727,32 +748,32 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         label: g.lang.userIDText,
                         name: "id",
                         index: "id",
-                        hidden:true
+                        hidden: true
                     }, {
                         label: g.lang.userNameText,
                         name: "user.userName",
                         index: "user.userName",
-                        width:150,
+                        width: 150,
                         align: "center"
                     }, {
                         label: g.lang.userNumberText,
                         name: "code",
                         index: "code",
-                        width:200
+                        width: 200
                     }, {
                         label: g.lang.organization2Text,
                         name: "organization.name",
                         index: "organization.name",
-                        width:150,
+                        width: 150,
                         align: "center",
-                        hidden:true
+                        hidden: true
                     }],
                     ondblClickRow: function () {
                         var html = "";
                         var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
                         html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">'+g.lang.nameText+ rowData["user.userName"] +
+                            '<div class="excutor-item-title">' + g.lang.nameText + rowData["user.userName"] +
                             g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
                             '</div>';
                         $(".flow-excutor-content2").html(html);
@@ -762,28 +783,28 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }]
         }
     },
-    addChooseUsersInContainer:function (selectRow) {
+    addChooseUsersInContainer: function (selectRow) {
         var g = this;
         var html = "";
         var selectedUser = [];
-        $(".flow-excutor-content2 > div").each(function(index,domEle){
+        $(".flow-excutor-content2 > div").each(function (index, domEle) {
             selectedUser.push(domEle.id)
         });
         for (var j = 0; j < selectRow.length; j++) {
             var item = selectRow[j];
-            if( !g.itemIdIsInArray(item.id,selectedUser)){
+            if (!g.itemIdIsInArray(item.id, selectedUser)) {
                 html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">'+g.lang.nameText+ item["user.userName"] +
+                    '<div class="excutor-item-title">' + g.lang.nameText + item["user.userName"] +
                     g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
         }
         $(".flow-excutor-content2").append(html);
     },
-    itemIdIsInArray:function(id,array){
-        for(var i = 0 ;i<array.length;i++){
-            if(id == array[i]){
+    itemIdIsInArray: function (id, array) {
+        for (var i = 0; i < array.length; i++) {
+            if (id == array[i]) {
                 return true;
             }
         }

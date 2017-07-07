@@ -9,8 +9,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     flowTypeId: null,
-    notifyBeforePositionData: "",
-    notifyAfterPositionData: "",
+    notifyBeforePositionData: null,
+    notifyAfterPositionData: null,
     initComponent: function () {
         this.window = EUI.Window({
             width: 550,
@@ -1194,7 +1194,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "取消",
                 iconCss: "ecmp-common-delete",
                 handler: function () {
-                    win.close();
+                    g.notifySelectPositionWin.close();
                 }
             }],
             items: [{
