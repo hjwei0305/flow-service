@@ -83,6 +83,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         });
     },
     getNormalTab: function () {
+        console.log(this.nodeType);
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -126,7 +127,6 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
-                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowTerminate"
             }, {
                 xtype: "CheckBox",
@@ -135,7 +135,6 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "CheckBox",
                 title: "允许驳回",
-                readonly: this.nodeType == "CounterSign" ? true : false,
                 name: "allowReject"
             }]
         };
@@ -168,7 +167,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     height: 300,
                     width: 520
                 },
-                items: [this.getPositionGrid(), this.getPositionTypeGrid(), this.getSelfDefGrid()]
+                items: [this.getPositionGrid(), this.getPositionTypeGrid(), this.getSelfDef()]
             }]
         };
     },
