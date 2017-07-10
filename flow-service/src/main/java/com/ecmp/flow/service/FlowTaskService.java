@@ -1551,13 +1551,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
             String nextActivtityType = firstActivity.getProperty("type").toString();
             String uiType = "readOnly";
-            if ("Approve".equalsIgnoreCase(nodeType)) {//如果是审批结点
+            if ("Approve".equalsIgnoreCase(nodeType)||"CounterSign".equalsIgnoreCase(nodeType)) {//如果是审批结点
                 uiType = "radiobox";
                 for (int i = 0; i < nextNodes.size(); i++) {
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-
                     boolean markInclude=false;
-
                     for(int j = 0; j < nextNodes.size(); j++){
                         PvmActivity tempActivityJ = (PvmActivity) nextNodesKeyArray[j];
                         if(tempActivityJ!=tempActivity){
@@ -1583,6 +1581,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                     tempNodeInfo.setUiType(uiType);
                     tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                    if("CounterSign".equalsIgnoreCase(nodeType)){
+                        tempNodeInfo.setFlowTaskType("CounterSign");
+                    }
                     nodeInfoList.add(tempNodeInfo);
                 }
             } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
@@ -1752,7 +1753,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //    }
 
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
-            tempNodeInfo.setUiType("checkbox");
+            tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("countersign");
         } else if ("Normal".equalsIgnoreCase(nodeType)) {//普通任务
             tempNodeInfo.setUiType("radiobox");

@@ -33,6 +33,12 @@ public class MultiInstanceConfig implements Serializable {
     @XmlAttribute(name = "activiti:elementVariable")
     private String variable;
 
+    @XmlAttribute(name = "activiti:candidateUsers")//候选人
+    private String candidateUsers;
+
+    @XmlAttribute(name = "activiti:assignee")//候选人
+    private String assignee;
+
     @XmlElement
     private String loopCardinality;//设定的循环次数
 
@@ -110,5 +116,21 @@ public class MultiInstanceConfig implements Serializable {
 
     public void setPercentApproval(Byte percentApproval) {
         this.percentApproval = percentApproval;
+    }
+
+    public String getCandidateUsers() {
+        return candidateUsers;
+    }
+
+    public void setCandidateUsers(String candidateUsers) {
+        this.candidateUsers = candidateUsers;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 }
