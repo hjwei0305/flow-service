@@ -1754,7 +1754,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
             tempNodeInfo.setUiType("radiobox");
-            tempNodeInfo.setFlowTaskType("countersign");
+            tempNodeInfo.setFlowTaskType("CounterSign");
         } else if ("Normal".equalsIgnoreCase(nodeType)) {//普通任务
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("common");
