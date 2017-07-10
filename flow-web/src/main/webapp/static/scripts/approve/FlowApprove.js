@@ -78,8 +78,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            <div class="flow-decision-box">' +
             '        </div></div>' +
             '        <div class="flow-info-item" style="border-left:1px solid #dddddd;">' +
-            '            <div class="flow-nodetitle flow-deal-opinion">' + this.lang.handlingSuggestionText + '</div>' +
-            '            <div id="flow-deal-checkbox"></div>' +
+            '            <div class="flow-deal-opinion"><div class="flow-nodetitle">' + this.lang.handlingSuggestionText + '</div><div id="flow-deal-checkbox"></div></div>' +
             '            <textarea class="flow-remark"></textarea>' +
             '            <span class="flow-btn flow-next">' + this.lang.nextStepText + '</span>' +
             '        </div>' +
@@ -90,14 +89,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         EUI.RadioBoxGroup({
             renderTo: "flow-deal-checkbox",
-            onlyOneChecked: true,
+            name: "approved",
             items: [{
                 title: "同意",
-                name: "agree",
+                name: "true",
                 value: true
             }, {
                 title: "不同意",
-                name: "disagree"
+                name: "false"
             }]
         })
     },
@@ -255,34 +254,42 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     },
     showNodeInfo: function (data) {
-        var g=this;
+        var g = this;
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
-            var iconCss = "choose-radio";
-            if (item.flowTaskType == "countersign") {
+            if (item.flowTaskType == "CounterSign") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div>' + item.name + '</div></div></div>';
                 g.initDealCheckBox();
-            }
-            if (item.uiType == "checkbox") {
-                iconCss = "choose-checkbox";
-                this.manualSelected = true;
-                this.desionType = 1;
-            } else if (item.uiType == "readOnly") {
-                iconCss = "";
-                this.manualSelected = false;
-                this.desionType = 2;
             } else {
-                this.manualSelected = true;
+                var iconCss = "choose-radio";
+                if (item.uiType == "checkbox") {
+                    iconCss = "choose-checkbox";
+                    this.manualSelected = true;
+                    this.desionType = 1;
+                } else if (item.uiType == "readOnly") {
+                    iconCss = "";
+                    this.manualSelected = false;
+                    this.desionType = 2;
+                } else {
+                    this.manualSelected = true;
+                }
+                var lineNameHtml = "";
+                if (item.preLineName != "null") {
+                    lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
+                    if(item.preLineName=="同意"||item.preLineName=="不同意"){
+                        var clickId = $(".select", ".flow-decision-box").attr("id");
+                        var text=$(".gateway-name","#"+clickId).text();
+                        console.log(text);
+                        $(".flow-remark").text(text);
+                    }
+                }
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="choose-icon ' + iconCss + '"></div>' +
+                    '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+
             }
-            var lineNameHtml = "";
-            if (item.preLineName != "null") {
-                lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
-            }
-            html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                '<div class="choose-icon ' + iconCss + '"></div>' +
-                '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
         }
         if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
             $(".flow-next").text(this.lang.finishText);

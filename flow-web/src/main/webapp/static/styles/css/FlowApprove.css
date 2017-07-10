@@ -82,13 +82,14 @@ body{
     font-size: 18px;
     font-weight: bold;
     padding: 20px;
+    line-height: 30px;
 }
 
 
 .flow-remark {
     border: 1px solid #dddddd;
     float: left;
-    height: 105px;
+    height: 110px;
     margin-left: 20px;
     resize: none;
     width: 350px;
@@ -99,7 +100,7 @@ body{
     background: #71d1fe none repeat scroll 0 0;
     color: white;
     margin-left: 40px;
-    margin-top: 66px;
+    margin-top: 72px;
 }
 
 .flow-iframe {
@@ -300,13 +301,21 @@ body{
     background-size: cover;
     margin: 0 5px;
 }
-.flow-info-item>.flow-deal-opinion{
+/*.flow-info-item>.flow-deal-opinion{
     padding: 20px 0 0 20px;
-}
+}*/
 #flow-deal-checkbox{
     height: 30px;
     line-height: 30px;
-    margin-left: 12%;
+    margin-left: 15%;
     padding: 0 0 0 20px;
-    width: 80%;
+    /*width: 80%;*/
+}
+.flow-info-item > .flow-deal-opinion{
+    display: inline-block;
+    padding: 20px 0 20px 20px;
+    width: 100%;
+}
+.flow-deal-opinion>.flow-nodetitle{
+    padding: 0;
 }
