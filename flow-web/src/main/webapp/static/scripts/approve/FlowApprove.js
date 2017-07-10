@@ -279,10 +279,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
                     if (item.preLineName == "同意" || item.preLineName == "不同意") {
-                        var clickId = $(".select", ".flow-decision-box").attr("id");
-                        var text = $(".gateway-name", "#" + clickId).text();
-                        console.log(text);
-                        $(".flow-remark").text(text);
+                        g.getCheackBoxValue();
                     }
                 }
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
@@ -306,6 +303,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         }
         return includeNodeIds;
+    },
+    //获取选中的单选框的值
+    getCheackBoxValue:function () {
+        $(".flow-decision-box>div").live("click",function () {
+            var clickId = $(".select", ".flow-decision-box").attr("id");
+            var text = $(".gateway-name", "#" + clickId).text();
+            console.log(text);
+            $(".flow-remark").text(text);
+        })
     },
     //检查审批输入是否有效
     checkIsValid: function () {
