@@ -1538,20 +1538,29 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         JSONObject defObj = JSONObject.fromObject(defJson);
         String nodeType = defObj.get("nodeType") + "";
 
+
+
         String actTaskId = flowTask.getActTaskId();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
-        Map<PvmActivity, String> nextNodes = new LinkedHashMap<PvmActivity, String>();
-        initNextNodes(currActivity, nextNodes, 0,nodeType);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
+        String uiType = "readOnly";
+        if("CounterSign".equalsIgnoreCase(nodeType)){//会签节点，直接返回当前会签节点信息
+            NodeInfo tempNodeInfo = new NodeInfo();
+            tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
+            tempNodeInfo.setUiType(uiType);
+            nodeInfoList.add(tempNodeInfo);
+            return nodeInfoList;
+        }
+        Map<PvmActivity, String> nextNodes = new LinkedHashMap<PvmActivity, String>();
+        initNextNodes(currActivity, nextNodes, 0,nodeType);
         if (!nextNodes.isEmpty()) {
             //判断网关
             Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
             PvmActivity firstActivity = (PvmActivity) nextNodesKeyArray[0];
             Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
             String nextActivtityType = firstActivity.getProperty("type").toString();
-            String uiType = "readOnly";
-            if ("Approve".equalsIgnoreCase(nodeType)||"CounterSign".equalsIgnoreCase(nodeType)) {//如果是审批结点
+            if ("Approve".equalsIgnoreCase(nodeType)) {//如果是审批结点
                 uiType = "radiobox";
                 for (int i = 0; i < nextNodes.size(); i++) {
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
@@ -1577,14 +1586,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if(markInclude){
                         continue;
                     }
-                    NodeInfo tempNodeInfo = new NodeInfo();
-                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
-                    tempNodeInfo.setUiType(uiType);
-                    tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
-                    if("CounterSign".equalsIgnoreCase(nodeType)){
-                        tempNodeInfo.setFlowTaskType("CounterSign");
-                    }
-                    nodeInfoList.add(tempNodeInfo);
+
                 }
             } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关
