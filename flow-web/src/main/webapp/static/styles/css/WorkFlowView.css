@@ -108,6 +108,14 @@
     line-height: 35px;
     vertical-align: middle;
 }
+.flow-event-terminateend {
+    background: url("../images/flow_terminate_end.png") no-repeat scroll 0 0/cover;
+    display: inline-block;
+    height: 45px;
+    width: 45px;
+    line-height: 45px;
+    vertical-align: middle;
+}
 
 .flow-event-iconbox {
     display: inline-block;
@@ -119,6 +127,12 @@
 
 .flow-event-end:hover {
     background: url("../images/flow_end_select.png") no-repeat scroll 0 0/cover;
+    height: 45px;
+    width: 45px;
+}
+
+.flow-event-terminateend:hover {
+    background: url("../images/flow_terminate_end_select.png") no-repeat scroll 0 0/cover;
     height: 45px;
     width: 45px;
 }

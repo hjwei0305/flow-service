@@ -7,6 +7,10 @@ var _flownode = {
         name: "endEventText",
         type: "EndEvent",
         css: "flow-event-end"
+    }, {
+        name: "terminateEndEventText",
+        type: "TerminateEndEvent",
+        css: "flow-event-terminateend"
     }],
     task: [{
         name: "normalTaskText",

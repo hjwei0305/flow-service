@@ -189,9 +189,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [5, 5],
-                // gap: 10,
                 cornerRadius: 5,
-                // alwaysRespectStubs: true
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
