@@ -638,9 +638,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }, '->', {
                 xtype: "SearchBox",
                 id: "searchBox",
+                canClear: true,
                 displayText:this.lang.searchByCodeOrNameText,
                 onSearch: function (value) {
                     EUI.getCmp("executorConfigGridPanel").localSearch(value);
+                },
+                afterClear: function(){
+                    EUI.getCmp("executorConfigGridPanel").restore();
                 }
             }]
         };
