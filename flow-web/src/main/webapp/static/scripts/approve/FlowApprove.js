@@ -278,9 +278,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 var lineNameHtml = "";
                 if (item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
-                    if(item.preLineName=="同意"||item.preLineName=="不同意"){
+                    if (item.preLineName == "同意" || item.preLineName == "不同意") {
                         var clickId = $(".select", ".flow-decision-box").attr("id");
-                        var text=$(".gateway-name","#"+clickId).text();
+                        var text = $(".gateway-name", "#" + clickId).text();
                         console.log(text);
                         $(".flow-remark").text(text);
                     }
