@@ -46,5 +46,6 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         //总循环次数
         Integer instanceOfNumbers=(Integer)delegateTask.getVariable("nrOfInstances");
 
+
     }
 }

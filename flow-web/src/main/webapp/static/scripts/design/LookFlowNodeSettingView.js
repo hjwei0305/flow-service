@@ -583,11 +583,13 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     loadNotifyChoosePositonData: function (data) {
         if (!data.notify.before.notifyPosition.positionData) {
             $(".notifyBeforenotifyChoosePositionNum").html(0);
+            EUI.getCmp("notifyBeforeChoosePositionBtn").hide();
         } else {
             $(".notifyBeforenotifyChoosePositionNum").html(data.notify.before.notifyPosition.positionData.length);
         }
         if (!data.notify.after.notifyPosition.positionData) {
             $(".notifyAfternotifyChoosePositionNum").html(0);
+            EUI.getCmp("notifyAfterChoosePositionBtn").hide();
         } else {
             $(".notifyAfternotifyChoosePositionNum").html(data.notify.after.notifyPosition.positionData.length);
         }
