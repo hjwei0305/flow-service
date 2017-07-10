@@ -195,7 +195,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected,Boolean approved ) {
+    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected,String approved ) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
