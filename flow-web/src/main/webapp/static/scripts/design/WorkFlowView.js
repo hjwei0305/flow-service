@@ -372,7 +372,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             top: doffset.top - offset.top - 12
                         });
                         var type = dragDom.attr("type");
-                        if (type != "EndEvent") {
+                        if (type.indexOf("EndEvent") == -1) {
                             dragDom
                                 .append("<div class='node-dot' action='begin'></div>");
                         }
