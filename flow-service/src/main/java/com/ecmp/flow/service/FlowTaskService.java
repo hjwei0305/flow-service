@@ -1090,8 +1090,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws NoSuchMethodException
      */
-    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId) throws NoSuchMethodException {
-        return this.findNexNodesWithUserSet(id, businessId, null);
+    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,String approved) throws NoSuchMethodException {
+        return this.findNexNodesWithUserSet(id, businessId, approved,null);
     }
 
     /**
@@ -1102,8 +1102,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws NoSuchMethodException
      */
-    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId, List<String> includeNodeIds) throws NoSuchMethodException {
-        List<NodeInfo> nodeInfoList = this.findNextNodesWithCondition(id, businessId, includeNodeIds);
+    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
+        List<NodeInfo> nodeInfoList = this.findNextNodesWithCondition(id, businessId,approved, includeNodeIds);
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             FlowTask flowTask = flowTaskDao.findOne(id);
@@ -1213,7 +1213,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws NoSuchMethodException
      */
-    public List<NodeInfo> findNextNodesWithCondition(String id, String businessId, List<String> includeNodeIds) throws NoSuchMethodException {
+    public List<NodeInfo> findNextNodesWithCondition(String id, String businessId,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String actTaskId = flowTask.getActTaskId();
         PvmActivity currActivity = this.getActivitNode(actTaskId);
@@ -1225,6 +1225,75 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
         String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
         Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+//        if(ifMultiInstance(currActivity)){//如果是多实例任务
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            String nodeType = defObj.get("nodeType") + "";
+            if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务
+                List<NodeInfo> result = new ArrayList<NodeInfo>();
+                int counterDecision=100;
+                try {
+                    counterDecision = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+                ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                        .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+                // 取得当前任务
+                HistoricTaskInstance currTask = historyService
+                        .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                        .singleResult();
+                String executionId = currTask.getExecutionId();
+
+                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+                //完成会签的次数
+                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+                //总循环次数
+                Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
+                //当前处于激活状态的任务实例
+                Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+
+                if(nrOfActiveInstances==1){//会签最后一个执行人
+                    Integer counterSignAgree = (Integer) processVariables.get("counterSign_agree").getValue();
+                    if(counterSignAgree==null) {
+                        counterSignAgree = 0;
+                    }
+                    Integer value = 0;//默认弃权
+                    if("true".equalsIgnoreCase(approved)){
+                        counterSignAgree++;
+                    }
+                    if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
+                        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+                        if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+                            for (PvmTransition pv : nextTransitionList) {
+                                String conditionText = (String) pv.getProperty("conditionText");
+                                if("#{approveResult == true}".equalsIgnoreCase(conditionText)){
+                                    PvmActivity currTempActivity = pv.getDestination();
+                                    NodeInfo tempNodeInfo = new NodeInfo();
+                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                    result.add(tempNodeInfo);
+                                    return result;
+                                }
+                                }
+                        }
+                    }else {//获取不通过节点
+                        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+                        if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+                            for (PvmTransition pv : nextTransitionList) {
+                                String conditionText = (String) pv.getProperty("conditionText");
+                                if("#{approveResult == false}".equalsIgnoreCase(conditionText)){
+                                    PvmActivity currTempActivity = pv.getDestination();
+                                    NodeInfo tempNodeInfo = new NodeInfo();
+                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                    result.add(tempNodeInfo);
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+//        }
         if (this.checkSystemExclusiveGateway(flowTask)) {//判断是否存在系统排他网关、系统包容网关
             if (StringUtils.isEmpty(businessId)) {
                 throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
@@ -1407,6 +1476,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Boolean isSizeBigTwo = nextNodes.size() > 1 ? true : false;
             String nextActivtityType = firstActivity.getProperty("type").toString();
             String uiType = "readOnly";
+            if("CounterSign".equalsIgnoreCase(nodeType)){//如果是会签
+                for (int i = 0; i < nextNodes.size(); i++) {
+                    PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
+                    if (includeNodeIds != null) {
+                        if (!includeNodeIds.contains(tempActivity.getId())) {
+                            continue;
+                        }
+                    }
+                    if (ifGageway(tempActivity)) {
+                        List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
+                        nodeInfoList.addAll(currentNodeInf);
+                        continue;
+                    }
+                    NodeInfo tempNodeInfo = new NodeInfo();
+                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
+                    tempNodeInfo.setUiType(uiType);
+                    tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                    nodeInfoList.add(tempNodeInfo);
+
+
+                }
+            }
             if ("Approve".equalsIgnoreCase(nodeType)) {//如果是审批结点
                 uiType = "radiobox";
                 for (int i = 0; i < nextNodes.size(); i++) {
@@ -1941,13 +2032,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return null;
         }
         String businessId = flowTask.getFlowInstance().getBusinessId();
-        return this.findNexNodesWithUserSet(id, businessId);
+        return this.findNexNodesWithUserSet(id, businessId,null);
     }
 
     public List<NodeInfo> findNexNodesWithUserSet(String id, List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String businessId = flowTask.getFlowInstance().getBusinessId();
-        List<NodeInfo> result = this.findNexNodesWithUserSet(id, businessId, includeNodeIds);
+        List<NodeInfo> result = this.findNexNodesWithUserSet(id, businessId,null, includeNodeIds);
         return result;
     }
 
