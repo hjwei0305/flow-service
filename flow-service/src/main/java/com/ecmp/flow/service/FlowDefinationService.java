@@ -566,6 +566,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String ids = executor.get("ids")+"";
             Set<Executor> employeeSet = new HashSet<Executor>();
             List<Executor> employees = null;
+            nodeInfo.setUiUserType(userType);
             if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
                 IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                 String  startUserId =  ContextUtil.getSessionUser().getUserId();
@@ -574,22 +575,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             } else {
                 String selfDefId = executor.get("selfDefId")+"";
                 if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
-                    nodeInfo.setUiUserType(userType);
-                    String[] idsShuZhu = ids.split(",");
-                    List<String> idList = java.util.Arrays.asList(idsShuZhu);
-                    //StartUser、Position、PositionType、SelfDefinition、AnyOne
-                    if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                        employees = iPositionService.getExecutorsByPositionIds(idList);
-                    } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                        employees = iPositionService.getExecutorsByPosCateIds(idList);
-                    } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+
+                      if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
 //                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
 //                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
 
-                       FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
-                       String path = flowExecutorConfig.getUrl();
+                        FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                        String path = flowExecutorConfig.getUrl();
                         String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
                         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
                         com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
@@ -600,8 +592,21 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         params.put("businessId",flowStartVO.getBusinessKey());
                         params.put("paramJson",param);
                         employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
-                    } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
-                    }
+                    }else{
+
+                          String[] idsShuZhu = ids.split(",");
+                          List<String> idList = java.util.Arrays.asList(idsShuZhu);
+                          //StartUser、Position、PositionType、SelfDefinition、AnyOne
+                          if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
+                              IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                              employees = iPositionService.getExecutorsByPositionIds(idList);
+                          } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
+                              IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                              employees = iPositionService.getExecutorsByPosCateIds(idList);
+                          }else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
+                          }
+                      }
+
                 }
             }
             if (employees != null && !employees.isEmpty()) {
