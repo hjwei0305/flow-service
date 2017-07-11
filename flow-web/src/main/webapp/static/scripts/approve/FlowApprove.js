@@ -217,7 +217,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     getHeadData: function () {
         var g = this;
         EUI.Store({
-            url: _ctxPath + "/builtInApprove/getApprovalHeaderInfo",
+            url: _ctxPath + "/flowClient/getApprovalHeaderInfo",
             params: {
                 taskId: this.taskId
             },
@@ -246,7 +246,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             msg: this.lang.queryMaskMessageText
         });
         EUI.Store({
-            url: _ctxPath + "/builtInApprove/nextNodesInfo",
+            url: _ctxPath + "/flowClient/nextNodesInfo",
             params: {
                 taskId: this.taskId
             },
@@ -375,7 +375,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             msg: this.lang.nowSaveMsgText
         });
         EUI.Store({
-            url: _ctxPath + "/builtInApprove/getSelectedNodesInfo",
+            url: _ctxPath + "/flowClient/getSelectedNodesInfo",
             params: {
                 taskId: this.taskId,
                 includeNodeIdsStr: this.getDesionIds(),
