@@ -19,6 +19,8 @@ if (!window.Flow) {
 }
 
 Flow.FlowApprove = function (options) {
+    this.id = EUI.util.getUrlParam("id");
+    this.taskId = EUI.util.getUrlParam("taskId");
     return new Flow.flow.FlowApprove(options);
 };
 Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
@@ -98,12 +100,16 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 value: true,
                 onChecked: function (value) {
                     g.counterApprove = value;
+                    var title=$(this).attr("title");
+                    $(".flow-remark").text(title);
                 }
             }, {
                 title: "不同意",
                 name: "false",
                 onChecked: function (value) {
                     g.counterApprove = value;
+                    var title=$(this).attr("title");
+                    $(".flow-remark").text(title);
                 }
             }]
         })
@@ -261,7 +267,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var item = data[i];
             if (item.flowTaskType == "CounterSign") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div>' + item.name + '-[会签任务]</div></div></div>';
+                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
             } else {

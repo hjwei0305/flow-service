@@ -214,7 +214,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
-                        businessKey: data.id,
+                        businessId: data.id,
                         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel',
                         url: _ctxPath + "/builtInApprove/startFlow",
                         afterSubmit:function(){

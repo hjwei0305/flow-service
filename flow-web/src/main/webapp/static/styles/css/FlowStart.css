@@ -13,6 +13,67 @@
  * <br>
  * *************************************************************************************************<br>
  */
+
+.flowstart-node-box {
+    border: 1px solid #eaeaea;
+    margin: 20px;
+    overflow-y:auto;
+    max-height: 350px;
+}
+
+.flowstart-excutor-title {
+    background: #f8f9f9 none repeat scroll 0 0;
+    /*border-bottom: 1px solid #eaeaea;*/
+    color: #222222;
+    font-weight: bold;
+    padding: 12px;
+}
+
+
+.flowstart-excutor-content2 {
+    padding: 5px 0 20px;
+    height: 230px;
+    overflow-y:auto;
+}
+.flowstart-excutor-content2 > div {
+    padding: 15px 0 0 20px;
+}
+.flowstartchoose-btn{
+    background: #f2f6fd none repeat scroll 0 0;
+    border-radius: 4px;
+    color: black;
+    cursor: pointer;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    right: 52px;
+    text-align: center;
+    top: 170px;
+    width: 80px;
+}
+
+/*审批css*/
+/**
+ * *************************************************************************************************
+ * <br>
+ * 实现功能：
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 版本          变更时间             变更人                     变更原因
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 1.0.00      2017/5/24 14:20      陈飞(fly)                    新建
+ * <br>
+ * *************************************************************************************************<br>
+ */
+html,body{
+    overflow: auto;
+}
+body{
+    min-width: 1100px;
+}
 .flow-approve {
     border: 1px solid #dddddd;
 }
@@ -78,18 +139,21 @@
     padding: 20px;
 }
 
-/*.flow-remark {*/
-    /*margin: 0 20px;*/
-    /*height: 100px;*/
-    /*width: 400px;*/
-    /*resize: none;*/
-    /*border: 1px solid #dddddd;*/
-/*}*/
+
+.flow-remark {
+    border: 1px solid #dddddd;
+    float: left;
+    height: 110px;
+    margin-left: 20px;
+    resize: none;
+    width: 350px;
+}
 
 .flow-next {
     background: #71d1fe none repeat scroll 0 0;
     color: white;
     margin-left: 40px;
+    margin-top: 71px;
 }
 
 .flow-iframe {
@@ -135,12 +199,11 @@
 .flow-node-box {
     border: 1px solid #eaeaea;
     margin: 20px;
-    overflow-y:auto;
 }
 
 .flow-excutor-title {
     background: #f8f9f9 none repeat scroll 0 0;
-    /*border-bottom: 1px solid #eaeaea;*/
+    border-bottom: 1px solid #eaeaea;
     color: #222222;
     font-weight: bold;
     padding: 12px;
@@ -181,9 +244,9 @@
 .flow-excutor-content > div {
     padding: 15px 0 0 20px;
 }
+
 .flow-excutor-content2 {
     padding: 5px 0 20px;
-    float: left;
     width: 643px;
     height: 230px;
     overflow-y:auto;
@@ -197,12 +260,11 @@
     border-radius: 4px;
     color: black;
     cursor: pointer;
-    float: right;
     height: 30px;
     line-height: 30px;
-    margin-top: 15px;
     position: absolute;
-    right: 44px;
+    left: 570px;
+    top: 145px;
     text-align: center;
     width: 80px;
 }
@@ -230,11 +292,13 @@
     text-align: center;
 }
 
+
 .flow-btn {
     border-radius: 4px;
     cursor: pointer;
-    padding: 10px 30px;
     display: inline-block;
+    /*float: left;*/
+    padding: 10px 30px;
 }
 
 .flow-operate .submit {
@@ -266,5 +330,27 @@
 }
 
 .flow-decision-item{
-    float: left;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.excutor-item-title>div{
+    display: inline-block;
+}
+.gateway-name{
+    font-weight: bold;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.approve-arrows-right{
+    width: 37px;
+    height: 8px;
+    background: url("../images/approve-arrows-right.png") no-repeat;
+    background-size: cover;
+    margin: 0 5px;
 }

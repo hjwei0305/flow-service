@@ -1,5 +1,5 @@
 /**
- * 采购页面
+ * 流程启动组件
  */
 window.Flow = {};
 EUI.ns("Flow.flow");
@@ -8,7 +8,7 @@ Flow.FlowStart = function (options) {
 };
 Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     data: null,
-    businessKey: null,
+    businessId: null,
     businessModelCode: null,
     typeId: null,
     url: null,
@@ -27,7 +27,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             url: g.url,
             params: {
                 businessModelCode: g.businessModelCode,
-                businessKey: g.businessKey
+                businessKey: g.businessId
             },
             success: function (result) {
                 myMask.hide();
@@ -119,13 +119,11 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 }
             }
         });
-        
         //选择任意执行人
-        $(".choose-btn").die().live("click", function () {
+        $(".flowstartchoose-btn").die().live("click", function () {
             g.showChooseExecutorWind();
             return false;
         });
-
         //删除选择的执行人
         $(".choose-delete").die().live("click", function () {
              $(this).parent().remove();
@@ -178,7 +176,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     EUI.Store({
                         url: g.url,
                         params: {
-                            businessKey: g.businessKey,
+                            businessKey: g.businessId,
                             businessModelCode: g.businessModelCode,
                             typeId: g.typeId
                         },
@@ -191,8 +189,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                                     showTime: 4
                                 };
                                 EUI.ProcessStatus(status);
-                                //   $(".flow-node-box").empty();
-                                $(".flow-node-box").remove();
+                                $(".flowstart-node-box").remove();
                                 return;
                             } else {
                                 g.data = result.data;
@@ -238,7 +235,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         }
         $(".flow-approve", this.win.dom).hide();
         $(".flow-chooseuser").show();
-        $(".flow-node-box").remove();
+        $(".flowstart-node-box").remove();
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
             var nodeType = "普通任务";
@@ -255,8 +252,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 nodeType = "会签任务";
                 iconCss = "choose-checkbox";
             }
-            var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
-                '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
+            var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
+                '<div class="flowstart-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
             if (iconCss == "choose-radio") {
                 if (node.executorSet.length == 1) {
@@ -285,12 +282,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             g.chooseUserNode = node;
             var nodeType = "任意执行人";
             var iconCss = "choose-delete";
-            var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
-                '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
-                ']</div><div class="flow-excutor-content2">';
+            var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
+                '<div class="flowstart-excutor-title">' + node.name + '-[' + nodeType +
+                ']</div><div class="flowstart-excutor-content2">';
         }
         nodeHtml += "</div>" +
-            '<div class="choose-btn">选择</div>'+
+            '<div class="flowstartchoose-btn">选择</div>'+
             "</div>";
         return html += nodeHtml;
     },
@@ -317,7 +314,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     getSelectedUser: function () {
         var users = [];
-        var nodeDoms = $(".flow-node-box");
+        var nodeDoms = $(".flowstart-node-box");
         for (var i = 0; i < nodeDoms.length; i++) {
             var nodeDom = $(nodeDoms[i]);
             var index = nodeDom.attr("index");
@@ -341,7 +338,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         return users;
     },
     checkUserValid: function () {
-        var nodeDoms = $(".flow-node-box");
+        var nodeDoms = $(".flowstart-node-box");
         if (nodeDoms.length == 0) {
             return false;
         }
@@ -371,7 +368,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: g.url,
             params: {
-                businessKey: g.businessKey,
+                businessKey: g.businessId,
                 businessModelCode: g.businessModelCode,
                 typeId: g.typeId,
                 opinion: null,
@@ -552,10 +549,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 style: { "border-radius": "3px"},
                 gridCfg: {
                     loadonce: true,
-               //   url: _ctxPath + "/customExecutor/listAllUser",
-                    // postData:{
-                    //     organizationId: g.selectedOrgId
-                    // },
                     multiselect: isShowMultiselect,
                     colModel: [{
                         label: "用户ID",
@@ -581,15 +574,15 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         align: "center",
                         hidden:true
                     }],
-                    ondblClickRow: function () {
+                    ondblClickRow: function (rowid) {
                         var html = "";
-                        var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                        var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
                             '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
                             '</div>';
-                        $(".flow-excutor-content2").html(html);
+                        $(".flowstart-excutor-content2").html(html);
                         g.chooseAnyOneWind.close();
                     }
                 }
@@ -600,7 +593,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var g = this;
         var html = "";
         var selectedUser = [];
-        $(".flow-excutor-content2 > div").each(function(index,domEle){
+        $(".flowstart-excutor-content2 > div").each(function(index,domEle){
             selectedUser.push(domEle.id)
         });
         for (var j = 0; j < selectRow.length; j++) {
@@ -613,7 +606,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                        '</div>';
                }
            }
-        $(".flow-excutor-content2").append(html);
+        $(".flowstart-excutor-content2").append(html);
     },
     itemIdIsInArray:function(id,array){
         for(var i = 0 ;i<array.length;i++){

@@ -12,12 +12,8 @@
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
         var flowView;
-        var id = EUI.util.getUrlParam("id");
-        var taskId = EUI.util.getUrlParam("taskId");
         EUI.onReady(function () {
             flowView = Flow.FlowApprove({
-                busId: id,
-                taskId: taskId,
                 iframeHeight: 550,
                 renderTo: "content",
 //                goNext: function () {

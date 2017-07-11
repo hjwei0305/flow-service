@@ -217,7 +217,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
-                        businessKey: data.id,
+                        businessId: data.id,
                         businessModelCode: 'com.ecmp.flow.entity.DefaultBusinessModel2',
                         url: _ctxPath + "/defaultBusinessModel2/startFlow",
                         afterSubmit:function(){

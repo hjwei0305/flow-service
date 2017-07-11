@@ -89,11 +89,11 @@ body{
 .flow-remark {
     border: 1px solid #dddddd;
     float: left;
-    height: 110px;
+    height: 100px;
     margin-left: 20px;
+    padding: 5px;
     resize: none;
     width: 350px;
-    /*margin-top: 10px;*/
 }
 
 .flow-next {
@@ -272,7 +272,7 @@ body{
 .flow-decision-box {
     float: left;
     height: 50px;
-    margin-top: 22px;
+    margin-top: 25px;
     width: 80%;
 }
 
@@ -284,6 +284,9 @@ body{
 }
 .excutor-item-title>div{
     display: inline-block;
+}
+.flow-countersign{
+    font-weight: bold;
 }
 .gateway-name{
     font-weight: bold;
