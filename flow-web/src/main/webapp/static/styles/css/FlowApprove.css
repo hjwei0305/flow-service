@@ -272,7 +272,7 @@ body{
 .flow-decision-box {
     float: left;
     height: 50px;
-    margin-top: 22px;
+    margin-top: 25px;
     width: 80%;
 }
 
@@ -284,6 +284,9 @@ body{
 }
 .excutor-item-title>div{
     display: inline-block;
+}
+.flow-countersign{
+    font-weight: bold;
 }
 .gateway-name{
     font-weight: bold;
