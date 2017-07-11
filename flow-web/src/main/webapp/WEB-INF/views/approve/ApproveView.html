@@ -20,9 +20,9 @@
                 taskId: taskId,
                 iframeHeight: 550,
                 renderTo: "content",
-//                goNext: function () {
-//                    return this.iframe.lookApproveBillView.checkIsValid();
-//                },
+                goNext: function () {
+                    return this.iframe.lookApproveBillView.save(this);
+                },
                 pageUrl: _ctxPath + "/builtInApprove/orderLook",
                 submitUrl: _ctxPath +"/builtInApprove/completeTask"
             });

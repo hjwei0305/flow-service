@@ -569,7 +569,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
-                approved:this.counterApprove,
+                approved: this.counterApprove,
                 taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
                 manualSelected: g.manualSelected//是否是人工网关选择
             },

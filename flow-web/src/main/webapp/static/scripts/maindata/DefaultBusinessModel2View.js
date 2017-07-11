@@ -41,6 +41,9 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
             g.deleteBuiltInApproveWin(data);
         });
     },
+    save:function (scope) {
+
+    },
     //编辑按钮
     showBuiltInApproveWin: function (data) {
         var g = this;
