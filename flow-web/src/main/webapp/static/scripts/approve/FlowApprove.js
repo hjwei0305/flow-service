@@ -19,6 +19,8 @@ if (!window.Flow) {
 }
 
 Flow.FlowApprove = function (options) {
+    this.id = EUI.util.getUrlParam("id");
+    this.taskId = EUI.util.getUrlParam("taskId");
     return new Flow.flow.FlowApprove(options);
 };
 Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
@@ -138,9 +140,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".flow-next").bind("click", function () {
-            if ($(this).text() == g.lang.finishText) {
+            if (g.isEnd) {
                 var endEventId = $(".select", ".flow-decision-box").attr("id");
-                g.submit(true, endEventId);
+                g.submit(endEventId);
             } else {
                 g.goToNext();
             }
@@ -165,21 +167,18 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             $(".flow-decision-item").removeClass("select");
             $(this).addClass("select");
             var type = $(this).attr("type");
-            if (type.toLowerCase() == "endevent") {
+            if (type.toLowerCase().indexOf("endevent") != -1) {
+                g.isEnd = true;
                 $(".flow-next").text(g.lang.finishText);
             } else {
                 $(".flow-next").text(g.lang.nextStepText);
+                g.isEnd = false;
             }
         });
         //执行人选择
         $(".flow-user-item").live("click", function () {
             var type = $(this).attr("type");
             if (type == "common") {
-                // if ($(this).hasClass("select")) {
-                //     return;
-                // }
-                // $(this).addClass("select");
-                // $(this).siblings().removeClass("select");
                 if ($(".flow-excutor-content").children("div").length == 1) {
                     if ($(".flow-user-item").hasClass("select")) {
                         $(".flow-user-item").removeClass("select");
@@ -287,7 +286,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 var lineNameHtml = "";
                 if (item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
-                    if(item.preLineName == "同意" || item.preLineName == "不同意") {
+                    if (item.preLineName == "同意" || item.preLineName == "不同意") {
                         g.getCheackBoxValue();
                     }
                 }
@@ -297,8 +296,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
             }
         }
-        if (data.length == 1 && data[0].type.toLowerCase() == "endevent") {
+        if (data.counterSignLastTask) {
             $(".flow-next").text(this.lang.finishText);
+        }
+        if (data.length == 1 && data[0].type.toLowerCase().indexOf("endevent") != -1) {
+            $(".flow-next").text(this.lang.finishText);
+            g.isEnd = true;
         }
         $(".flow-decision-box").append(html);
     },
@@ -312,8 +315,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         }
         return includeNodeIds;
-    },
-    //获取选中的单选框的值
+    }
+    ,
+//获取选中的单选框的值
     getCheackBoxValue: function () {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
@@ -321,8 +325,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             console.log(text);
             $(".flow-remark").text(text);
         })
-    },
-    //检查审批输入是否有效
+    }
+    ,
+//检查审批输入是否有效
     checkIsValid: function () {
         if (this.desionType == 2) {
             return true;
@@ -350,7 +355,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             return true;
         }
         return false;
-    },
+    }
+    ,
     goToNext: function () {
         if (!this.checkIsValid()) {
             return;
@@ -361,8 +367,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         } else {
             this.doGoToNext();
         }
-
-    },
+    }
+    ,
     doGoToNext: function () {
         var g = this;
         var mask = EUI.LoadMask({
@@ -372,13 +378,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/builtInApprove/getSelectedNodesInfo",
             params: {
                 taskId: this.taskId,
-                businessId: this.busId,
                 includeNodeIdsStr: this.getDesionIds(),
                 approved: this.counterApprove
             },
             success: function (status) {
                 mask.hide();
-                if ($(".flow-next").text() == g.lang.finishText) {
+                if (g.isEnd) {
                     g.close();
                     return;
                 }
@@ -403,6 +408,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
+                if (status.data == "CounterSignNotEnd") {
+                    g.submit();
+                    return;
+                }
                 g.toChooseUserData = status.data;
                 g.showChooseUser();
             },
@@ -411,7 +420,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(response);
             }
         });
-    },
+    }
+    ,
     showChooseUser: function () {
         var g = this;
         var data = this.toChooseUserData;
@@ -478,7 +488,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             // html += nodeHtml;
         }
         //  $(".chooseuser-title").after(html);
-    },
+    }
+    ,
     showAnyContainer: function (data) {
         var g = this;
         var html = "";
@@ -495,7 +506,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '<div class="choose-btn">' + g.lang.chooseText + '</div>' +
             "</div>";
         return html += nodeHtml;
-    },
+    }
+    ,
     showUserItem: function (node, nodeHtml, iconCss, nodeType) {
         var html = "";
         for (var j = 0; j < node.executorSet.length; j++) {
@@ -516,7 +528,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         nodeHtml += "</div></div>";
         return html += nodeHtml;
-    },
+    }
+    ,
     getSelectedUser: function () {
         var users = [];
         var nodeDoms = $(".flow-node-box");
@@ -541,7 +554,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             users.push(node);
         }
         return users;
-    },
+    }
+    ,
     checkUserValid: function () {
         var nodeDoms = $(".flow-node-box");
         for (var i = 0; i < nodeDoms.length; i++) {
@@ -558,10 +572,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         }
         return true;
-    },
-    submit: function (isEnd, endEventId) {
+    }
+    ,
+    submit: function (endEventId) {
         var g = this;
-        if (!isEnd && !this.checkUserValid()) {
+        if (!this.isEnd && !this.checkUserValid()) {
             return;
         }
         var mask = EUI.LoadMask({
@@ -575,7 +590,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
                 approved: this.counterApprove,
-                taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
+                taskList: this.isEnd ? "" : JSON.stringify(this.getSelectedUser()),
                 manualSelected: g.manualSelected//是否是人工网关选择
             },
             success: function (status) {
@@ -591,20 +606,23 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(response);
             }
         });
-    },
+    }
+    ,
     close: function () {
         if (parent.homeView) {
             parent.homeView.closeNowTab();
         } else {
             window.close();
         }
-    },
+    }
+    ,
     showOmitContent: function () {
         $(".gateway-name").live("mouseover", function () {
             var text = $(this).text();
             $(this).attr("title", text);
         })
-    },
+    }
+    ,
     showChooseExecutorWind: function () {
         var g = this;
         var isChooseOneTitle;
@@ -645,7 +663,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
-    },
+    }
+    ,
     initChooseUserWindLeft: function () {
         var g = this;
         return {
@@ -657,7 +676,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             layout: "border",
             items: [this.initChooseUserWindTopBar(), this.initChooseUserWindTree()]
         }
-    },
+    }
+    ,
     initChooseUserWindTopBar: function () {
         var g = this;
         return {
@@ -681,7 +701,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
             }]
         };
-    },
+    }
+    ,
     initChooseUserWindTree: function () {
         var g = this;
         return {
@@ -722,7 +743,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 this.setSelect(data[0].id);
             }
         }
-    },
+    }
+    ,
     InitChooseUserGrid: function () {
         var g = this;
         var isShowMultiselect;
@@ -807,7 +829,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
             }]
         }
-    },
+    }
+    ,
     addChooseUsersInContainer: function (selectRow) {
         var g = this;
         var html = "";
@@ -826,7 +849,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         }
         $(".flow-excutor-content2").append(html);
-    },
+    }
+    ,
     itemIdIsInArray: function (id, array) {
         for (var i = 0; i < array.length; i++) {
             if (id == array[i]) {
@@ -835,4 +859,5 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
         return false;
     }
-});
+})
+;

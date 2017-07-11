@@ -315,7 +315,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
-        if (!StringUtils.isEmpty(includeNodeIdsStr)) {
+        if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
@@ -324,6 +324,8 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             operateStatus = new OperateStatus(true, "成功");
             if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
                 operateStatus.setData("EndEvent");
+            }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
+                operateStatus.setData("CounterSignNotEnd");
             }else {
                 operateStatus.setData(nodeInfoList);
             }

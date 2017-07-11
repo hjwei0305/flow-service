@@ -1112,6 +1112,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
 
             for (NodeInfo nodeInfo : nodeInfoList) {
+                if ("CounterSignNotEnd".equalsIgnoreCase(nodeInfo.getType())) {
+                    continue;
+                }
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
                 net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
 
@@ -1120,6 +1123,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setType("EndEvent");
                     continue;
                 }
+
                 if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                     nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
                 } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
@@ -1291,7 +1295,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                     }
+                }else {
+                    NodeInfo tempNodeInfo = new NodeInfo();
+                    tempNodeInfo.setType("CounterSignNotEnd");
+                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
+                    result.add(tempNodeInfo);
                 }
+                return result;
             }
 //        }
         if (this.checkSystemExclusiveGateway(flowTask)) {//判断是否存在系统排他网关、系统包容网关
@@ -1640,6 +1650,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             NodeInfo tempNodeInfo = new NodeInfo();
             tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
             tempNodeInfo.setUiType(uiType);
+            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                    .singleResult();
+            String executionId = currTask.getExecutionId();
+
+            Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+            //当前处于激活状态的任务实例
+            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+            if(nrOfActiveInstances==1){//会签最后一个执行人
+                tempNodeInfo.setCounterSignLastTask(true);
+            }
             nodeInfoList.add(tempNodeInfo);
             return nodeInfoList;
         }
@@ -1807,6 +1831,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     private NodeInfo convertNodes(FlowTask flowTask, NodeInfo tempNodeInfo, PvmActivity tempActivity) {
+        if ("CounterSignNotEnd".equalsIgnoreCase(tempNodeInfo.getType())) {
+            tempNodeInfo.setName(tempActivity.getProperty("name").toString());
+            tempNodeInfo.setId(tempActivity.getId());
+            return tempNodeInfo;
+        }
         tempNodeInfo.setName(tempActivity.getProperty("name").toString());
         tempNodeInfo.setType(tempActivity.getProperty("type").toString());
         tempNodeInfo.setId(tempActivity.getId());
@@ -1815,7 +1844,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if ("endEvent".equalsIgnoreCase(tempActivity.getProperty("type") + "")) {
             tempNodeInfo.setType("EndEvent");
             return tempNodeInfo;
-        } else if (ifGageway(tempActivity)) {
+        }  else if (ifGageway(tempActivity)) {
             tempNodeInfo.setType("gateWay");
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("common");
