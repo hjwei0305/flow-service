@@ -266,6 +266,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div>' + item.name + '</div></div></div>';
                 g.initDealCheckBox();
+                this.desionType = 2;
             } else {
                 var iconCss = "choose-radio";
                 if (item.uiType == "checkbox") {
