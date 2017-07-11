@@ -188,7 +188,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 allowBlank: false,
                 name: "counterDecision"
             })
-        }else {
+        } else {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -736,7 +736,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowBlank: false,
             width: 340,
             hidden: true,
-            field: ["selfDefUserUrl"],
+            field: ["selfDefId"],
+            reader: {
+                field: ["id"]
+            },
             store: {
                 url: _ctxPath + "/flowExecutorConfig/listCombo",
                 params: {
@@ -1059,7 +1062,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         } else if (userType == "PositionType") {
             data = EUI.getCmp("positionTypeGrid").getGridData();
         } else if (userType == "SelfDefinition") {
-            data = EUI.getCmp("selfDefGrid").getGridData();
+            return EUI.getCmp("selfDef").sysValidater();
         } else {
             return true;
         }
@@ -1080,9 +1083,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             data.ids = this.getSelectIds(rowdata);
             data.rowdata = rowdata;
         } else if (userType == "SelfDefinition") {
-            rowdata = EUI.getCmp("selfDefGrid").getGridData();
-            data.ids = this.getSelectIds(rowdata);
-            data.rowdata = rowdata;
+            var selfData = EUI.getCmp("selfDef").getSubmitValue();
+            EUI.apply(data,selfData);
         }
         return data;
     },
