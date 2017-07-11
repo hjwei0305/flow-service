@@ -1821,29 +1821,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             tempNodeInfo.setFlowTaskType("common");
             return tempNodeInfo;
         }
-//        String defJson = flowTask.getTaskJsonDef();
-//        JSONObject defObj = JSONObject.fromObject(defJson);
-//        String nodeType = defObj.get("nodeType")+"";
 
         String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
         JSONObject defObj = JSONObject.fromObject(defObjStr);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(tempActivity.getId());
         String nodeType = currentNode.get("nodeType") + "";
-//        try {
-//            org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity processDefinitionEntity = (org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity) tempActivity.getProcessDefinition();
-//            org.activiti.engine.impl.task.TaskDefinition taskDefinition = processDefinitionEntity.getTaskDefinitions().get(tempActivity.getId());
-//            org.activiti.engine.delegate.Expression assigneeExpression = taskDefinition.getAssigneeExpression();
-//            Set<org.activiti.engine.delegate.Expression> candidateUserIdExpressionSet = taskDefinition.getCandidateUserIdExpressions();
-//        if (assigneeExpression != null) {
-//            assignee = assigneeExpression.getExpressionText();
-//        }
-//        if (candidateUserIdExpressionSet != null && !candidateUserIdExpressionSet.isEmpty()) {
-//            candidateUsers = ((org.activiti.engine.delegate.Expression) candidateUserIdExpressionSet.toArray()[0]).getExpressionText();
-//        }
-//    }catch (Exception e){
-//        logger.error(e.getMessage());
-//    }
 
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
             tempNodeInfo.setUiType("radiobox");
@@ -2032,13 +2015,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return null;
         }
         String businessId = flowTask.getFlowInstance().getBusinessId();
-        return this.findNexNodesWithUserSet(id, businessId,null);
+        return this.findNexNodesWithUserSet(id, businessId,null,null);
     }
 
-    public List<NodeInfo> findNexNodesWithUserSet(String id, List<String> includeNodeIds) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(String id,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         String businessId = flowTask.getFlowInstance().getBusinessId();
-        List<NodeInfo> result = this.findNexNodesWithUserSet(id, businessId,null, includeNodeIds);
+        List<NodeInfo> result = this.findNexNodesWithUserSet(id, businessId,approved, includeNodeIds);
         return result;
     }
 
@@ -2062,9 +2045,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<TodoBusinessSummaryVO> findTaskSumHeader() {
         List<TodoBusinessSummaryVO> voList = null;
         String userID = ContextUtil.getUserId();
-//        if("admin".equalsIgnoreCase(executorAccount)){
-//            executorAccount = "666666";
-//        }
         List groupResultList = flowTaskDao.findByExecutorIdGroup(userID);
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
@@ -2080,8 +2060,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     oldCount = 0;
                 }
                 businessModelCountMap.put(businessModel, oldCount + count);
-//                System.out.println("count"+count);
-//                System.out.println(res[0]+"    "+res[1]);
             }
         }
         if (businessModelCountMap != null && !businessModelCountMap.isEmpty()) {
@@ -2100,7 +2078,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-//        if("admin".equalsIgnoreCase(executorAccount))executorAccount="666666";
         return flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
     }
 }
