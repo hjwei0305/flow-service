@@ -319,6 +319,9 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
+        if(StringUtils.isEmpty(approved)){
+            approved="APPROVED";
+        }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");

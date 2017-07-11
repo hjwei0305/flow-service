@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.ws.rs.core.GenericType;
 import javax.xml.soap.Node;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -83,6 +84,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Autowired
     private FlowTaskDao flowTaskDao;
+
+    @Autowired
+    private FlowExecutorConfigDao  flowExecutorConfigDao;
 
 
     @Autowired
@@ -580,8 +584,21 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
                         employees = iPositionService.getExecutorsByPosCateIds(idList);
                     } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+                       String selfDefId = executor.get("selfDefId")+"";
+                       FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                       String path = flowExecutorConfig.getUrl();
+                        String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
+                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                        String appModuleCode = appModule.getCode();
+                        Map<String, String>  params = new HashMap<String,String>();;
+                        String param = flowExecutorConfig.getParam();
+                        params.put("businessId",flowStartVO.getBusinessKey());
+                        params.put("paramJson",param);
+                        employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
                     } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
                     }
                 }

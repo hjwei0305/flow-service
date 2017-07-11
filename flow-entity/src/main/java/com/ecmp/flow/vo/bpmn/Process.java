@@ -305,6 +305,12 @@ public class Process extends BaseNode implements Serializable {
                         eventGateway.add(eventGatewayTemp);
                         baseFlowNodeTemp  = eventGatewayTemp;
                         break;
+                    case "TerminateEndEvent":
+                        EndEvent terminateEndEventTemp = (EndEvent) JSONObject.toBean(node, EndEvent.class);
+                        terminateEndEventTemp.setTerminateEventDefinition("");
+                        endEvent.add(terminateEndEventTemp);
+                        baseFlowNodeTemp  = terminateEndEventTemp;
+                        break;
                     default:
                         break;
                 }

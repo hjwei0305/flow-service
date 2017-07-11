@@ -65,7 +65,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.GenericType;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * *************************************************************************************************
@@ -99,6 +102,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private FlowVariableDao flowVariableDao;
 
     @Autowired
+    private FlowExecutorConfigDao  flowExecutorConfigDao;
+
+    @Autowired
     private RepositoryService repositoryService;
 
     @Autowired
@@ -120,6 +126,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private ProcessEngine processEngine;
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
+
+    private  Lock lock = new ReentrantLock();
 
     /**
      * 任务签收
@@ -251,6 +259,35 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             variables.putAll(v);
         }
         flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption") + "");
+//        String taskJsonDef = flowTask.getTaskJsonDef();
+//        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+//        String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+//        if("CounterSign".equalsIgnoreCase(nodeType)){
+//            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+//                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+//            // 取得当前任务
+//            HistoricTaskInstance currTask = historyService
+//                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+//                    .singleResult();
+//            String executionId = currTask.getExecutionId();
+//
+//            Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+//            //当前处于激活状态的任务实例
+//            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+//            if(nrOfActiveInstances==1){//会签最后一个任务
+//                this.completeActiviti(actTaskId, variables);
+//            }else {
+//                try {
+//                    lock.lock(); // 加锁
+//                    this.completeActiviti(actTaskId, variables);
+//                } finally {
+//                    lock.unlock(); // 释放锁
+//                }
+//            }
+//
+//        }else {
+//            this.completeActiviti(actTaskId, variables);
+//        }
         this.completeActiviti(actTaskId, variables);
 //        this.saveVariables(variables, flowTask);先不做保存
 
@@ -1170,8 +1207,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
                                 employees = iPositionService.getExecutorsByPosCateIds(idList);
                             } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                                employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+//                                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                                employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+                                String selfDefId = executor.get("selfDefId")+"";
+                                FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                                String path = flowExecutorConfig.getUrl();
+                                String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
+                                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                                String appModuleCode = appModule.getCode();
+                                Map<String, String>  params = new HashMap<String,String>();;
+                                String param = flowExecutorConfig.getParam();
+                                params.put("businessId",businessId);
+                                params.put("paramJson",param);
+                                employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
                             } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
 
                             }

@@ -80,15 +80,15 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     public boolean changeCompletedDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
 
     /**
-     * 测试事后
+     * 测试自定义执行人选择
      *
      * @return 执行结果
      */
     @POST
-    @Path("getPersonToExecutorConfig/{businessId}")
+    @Path("getPersonToExecutorConfig")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
-    public List<Executor> getPersonToExecutorConfig(@PathParam("businessId") String businessId,Map<String,String> map);
+    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId,@QueryParam("paramJson")String paramJson);
 
 }
