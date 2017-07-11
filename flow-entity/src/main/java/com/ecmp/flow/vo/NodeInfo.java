@@ -33,6 +33,8 @@ public class NodeInfo implements Serializable{
 	private Set<Executor> executorSet;//记录流程设计阶段所选择的执行人
 	private String userVarName;//流程节点用户变量名称
 
+	private Boolean counterSignLastTask;//是否是最后一个会签子任务执行人;
+
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
 
@@ -122,5 +124,13 @@ public class NodeInfo implements Serializable{
 
 	public void setPreLineName(String preLineName) {
 		this.preLineName = preLineName;
+	}
+
+	public Boolean getCounterSignLastTask() {
+		return counterSignLastTask;
+	}
+
+	public void setCounterSignLastTask(Boolean counterSignLastTask) {
+		this.counterSignLastTask = counterSignLastTask;
 	}
 }

@@ -1650,6 +1650,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             NodeInfo tempNodeInfo = new NodeInfo();
             tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
             tempNodeInfo.setUiType(uiType);
+            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                    .singleResult();
+            String executionId = currTask.getExecutionId();
+
+            Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+            //当前处于激活状态的任务实例
+            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+            if(nrOfActiveInstances==1){//会签最后一个执行人
+                tempNodeInfo.setCounterSignLastTask(true);
+            }
             nodeInfoList.add(tempNodeInfo);
             return nodeInfoList;
         }
