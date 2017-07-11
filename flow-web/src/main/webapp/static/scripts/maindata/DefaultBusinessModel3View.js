@@ -212,7 +212,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     infoBox.remove();
                     Flow.FlowStart({
-                        businessKey: data.id,
+                        businessId: data.id,
                         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel3',
                         url: _ctxPath + "/defaultBusinessModel3/startFlow",
                         afterSubmit:function(){
@@ -347,7 +347,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
                 width:159,
-                displayText:g.lang.searchDisplayText,
+                displayText: "请输入代码或名称查询",
                 onSearch: function (v) {
                     g.treeCmp.search(v);
                     g.selectedNodeId = null;
