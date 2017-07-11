@@ -83,7 +83,47 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         });
     },
     getNormalTab: function () {
-        console.log(this.nodeType);
+        var items = [{
+            title: "节点名称",
+            labelWidth: 100,
+            name: "name",
+            value: this.title
+        }, {
+            xtype: "NumberField",
+            title: "额定工时",
+            allowNegative: false,
+            name: "executeTime",
+            width: 262,
+            labelWidth: 100,
+            unit: "分钟"
+        }, {
+            title: "工作界面",
+            labelWidth: 100,
+            name: "workPageName"
+        }, {
+            xtype: "NumberField",
+            title: "会签决策",
+            labelWidth: 100,
+            width: 283,
+            unit: "%",
+            hidden: this.nodeType == "CounterSign" ? false : true,
+            name: "counterDecision"
+        }];
+        if (this.nodeType != "CounterSign") {
+            items = items.concat([{
+                xtype: "CheckBox",
+                title: "允许流程发起人终止",
+                name: "allowTerminate"
+            }, {
+                xtype: "CheckBox",
+                title: "允许上步撤回",
+                name: "allowPreUndo"
+            }, {
+                xtype: "CheckBox",
+                title: "允许驳回",
+                name: "allowReject"
+            }]);
+        }
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -99,44 +139,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             style: {
                 padding: "10px 30px"
             },
-            items: [{
-                title: "节点名称",
-                labelWidth: 100,
-                name: "name",
-                value: this.title
-            }, {
-                xtype: "NumberField",
-                title: "额定工时",
-                allowNegative: false,
-                name: "executeTime",
-                width: 262,
-                labelWidth: 100,
-                unit: "分钟"
-            }, {
-                title: "工作界面",
-                labelWidth: 100,
-                name: "workPageName"
-            }, {
-                xtype: "NumberField",
-                title: "会签决策",
-                labelWidth: 100,
-                width: 283,
-                unit: "%",
-                hidden: this.nodeType == "CounterSign" ? false : true,
-                name: "counterDecision"
-            }, {
-                xtype: "CheckBox",
-                title: "允许流程发起人终止",
-                name: "allowTerminate"
-            }, {
-                xtype: "CheckBox",
-                title: "允许上步撤回",
-                name: "allowPreUndo"
-            }, {
-                xtype: "CheckBox",
-                title: "允许驳回",
-                name: "allowReject"
-            }]
+            items: items
         };
     },
     getExcutorTab: function () {
@@ -537,7 +540,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             height: 18,
             width: 340,
             hidden: true,
-            readonly:true
+            readonly: true
         };
     },
     loadData: function () {

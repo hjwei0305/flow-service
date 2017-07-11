@@ -33,6 +33,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     manualSelected: false,//是否是人工选择的网关类型
     goNext: null,
     iframe: null,
+    counterApprove: "",//会签审批
     toChooseUserData: null,
     chooseUserNode: null,
     initComponent: function () {
@@ -87,16 +88,23 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     //处理意见中的选项框
     initDealCheckBox: function () {
         var g = this;
+        g.counterApprove = true;
         EUI.RadioBoxGroup({
             renderTo: "flow-deal-checkbox",
             name: "approved",
             items: [{
                 title: "同意",
                 name: "true",
-                value: true
+                value: true,
+                onChecked: function (value) {
+                    g.counterApprove = value;
+                }
             }, {
                 title: "不同意",
-                name: "false"
+                name: "false",
+                onChecked: function (value) {
+                    g.counterApprove = value;
+                }
             }]
         })
     },
@@ -241,11 +249,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             },
             success: function (status) {
                 mask.hide();
-                if (status.success) {
-                    g.showNodeInfo(status.data);
-                } else {
-                    EUI.ProcessStatus(status);
-                }
+                g.showNodeInfo(status.data);
             },
             failure: function (response) {
                 mask.hide();
@@ -260,8 +264,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var item = data[i];
             if (item.flowTaskType == "CounterSign") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div>' + item.name + '</div></div></div>';
+                    '<div class="excutor-item-title"><div>' + item.name + '-[会签任务]</div></div></div>';
                 g.initDealCheckBox();
+                this.desionType = 2;
             } else {
                 var iconCss = "choose-radio";
                 if (item.uiType == "checkbox") {
@@ -278,7 +283,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 var lineNameHtml = "";
                 if (item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
-                    if (item.preLineName == "同意" || item.preLineName == "不同意") {
+                    if(item.preLineName == "同意" || item.preLineName == "不同意") {
                         g.getCheackBoxValue();
                     }
                 }
@@ -305,8 +310,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         return includeNodeIds;
     },
     //获取选中的单选框的值
-    getCheackBoxValue:function () {
-        $(".flow-decision-box>div").live("click",function () {
+    getCheackBoxValue: function () {
+        $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
             console.log(text);
@@ -347,9 +352,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             return;
         }
         //执行子窗口方法
-        if (this.goNext && !this.goNext.call(this)) {
-            return;
+        if (this.goNext) {
+            this.goNext.call(this);
+        } else {
+            this.doGoToNext();
         }
+
+    },
+    doGoToNext: function () {
         var g = this;
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText
@@ -359,41 +369,38 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             params: {
                 taskId: this.taskId,
                 businessId: this.busId,
-                includeNodeIdsStr: this.getDesionIds()
+                includeNodeIdsStr: this.getDesionIds(),
+                approved: this.counterApprove
             },
             success: function (status) {
                 mask.hide();
-                if (status.success) {
-                    if ($(".flow-next").text() == g.lang.finishText) {
-                        g.close();
-                        return;
-                    }
-                    if (status.data == "EndEvent") {
-                        var msgbox = EUI.MessageBox({
-                            title: g.lang.operationHintText,
-                            msg: g.lang.stopFlowMsgText,
-                            buttons: [{
-                                title: g.lang.sureText,
-                                iconCss: "ecmp-common-ok",
-                                handler: function () {
-                                    g.submit(true);
-                                    msgbox.remove();
-                                }
-                            }, {
-                                title: g.lang.cancelText,
-                                iconCss: "ecmp-common-delete",
-                                handler: function () {
-                                    msgbox.remove();
-                                }
-                            }]
-                        });
-                        return;
-                    }
-                    g.toChooseUserData = status.data;
-                    g.showChooseUser();
-                } else {
-                    EUI.ProcessStatus(status);
+                if ($(".flow-next").text() == g.lang.finishText) {
+                    g.close();
+                    return;
                 }
+                if (status.data == "EndEvent") {
+                    var msgbox = EUI.MessageBox({
+                        title: g.lang.operationHintText,
+                        msg: g.lang.stopFlowMsgText,
+                        buttons: [{
+                            title: g.lang.sureText,
+                            iconCss: "ecmp-common-ok",
+                            handler: function () {
+                                g.submit(true);
+                                msgbox.remove();
+                            }
+                        }, {
+                            title: g.lang.cancelText,
+                            iconCss: "ecmp-common-delete",
+                            handler: function () {
+                                msgbox.remove();
+                            }
+                        }]
+                    });
+                    return;
+                }
+                g.toChooseUserData = status.data;
+                g.showChooseUser();
             },
             failure: function (response) {
                 mask.hide();
@@ -563,6 +570,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
+                approved: this.counterApprove,
                 taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
                 manualSelected: g.manualSelected//是否是人工网关选择
             },

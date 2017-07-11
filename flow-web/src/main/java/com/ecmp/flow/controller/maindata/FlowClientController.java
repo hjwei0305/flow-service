@@ -109,7 +109,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId, String includeNodeIdsStr) throws NoSuchMethodException {
+    public String getSelectedNodesInfo(String taskId,String approved,  String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
@@ -119,7 +119,7 @@ public class FlowClientController {
         } else {
             throw new RuntimeException("至少要传入一个节点ID！");
         }
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, approved,includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);

@@ -27,25 +27,36 @@ public class CommonCounterSignCompleteListener implements TaskListener{
     private static final long serialVersionUID = 1L;
 
     public void notify(DelegateTask delegateTask) {
-        Integer agreeCounter = (Integer) delegateTask.getVariable("counterSignValue");
-        if(agreeCounter==null) {
-            agreeCounter = 0;
+        Integer counterSignAgree = (Integer) delegateTask.getVariable("counterSign_agree");//同意票数
+        if(counterSignAgree==null) {
+            counterSignAgree = 0;
+        }
+        Integer counterSignOpposition = (Integer) delegateTask.getVariable("counterSign_opposition");//反对票数
+        if(counterSignOpposition==null) {
+            counterSignOpposition = 0;
+        }
+        Integer counterSignWaiver = (Integer) delegateTask.getVariable("counterSign_waiver");//弃权票数
+        if(counterSignWaiver==null) {
+            counterSignWaiver = 0;
         }
         String approved = (String) delegateTask.getVariable("approved");
         Integer value = 0;//默认弃权
         if("true".equalsIgnoreCase(approved)){
-            value = 1;
+            counterSignAgree++;
         }else if("false".equalsIgnoreCase(approved)){
-            value = -1;
+            counterSignOpposition++;
+        }else {
+            counterSignWaiver++;
         }
 
-        delegateTask.setVariable("counterSignValue", agreeCounter + value);
-
+        delegateTask.setVariable("counterSign_agree", counterSignAgree);
+        delegateTask.setVariable("counterSign_opposition", counterSignOpposition);
+        delegateTask.setVariable("counterSign_waiver", counterSignWaiver);
         //完成会签的次数
         Integer completeCounter=(Integer)delegateTask.getVariable("nrOfCompletedInstances");
         //总循环次数
         Integer instanceOfNumbers=(Integer)delegateTask.getVariable("nrOfInstances");
-
+        System.out.println("success call commonCounterSignCompleteListener------------");
 
     }
 }
