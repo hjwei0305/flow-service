@@ -264,7 +264,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var item = data[i];
             if (item.flowTaskType == "CounterSign") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div>' + item.name + '</div></div></div>';
+                    '<div class="excutor-item-title"><div>【' + item.name + '】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
             } else {
@@ -283,7 +283,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 var lineNameHtml = "";
                 if (item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
-                    if (item.preLineName == "同意" || item.preLineName == "不同意") {
+                    if(item.preLineName == "同意" || item.preLineName == "不同意") {
                         g.getCheackBoxValue();
                     }
                 }
