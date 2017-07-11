@@ -188,22 +188,21 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 allowBlank: false,
                 name: "counterDecision"
             })
+        }else {
+            items = items.concat([{
+                xtype: "CheckBox",
+                title: "允许流程发起人终止",
+                name: "allowTerminate"
+            }, {
+                xtype: "CheckBox",
+                title: "允许撤回",
+                name: "allowPreUndo"
+            }, {
+                xtype: "CheckBox",
+                title: "允许驳回",
+                name: "allowReject"
+            }]);
         }
-        items = items.concat([{
-            xtype: "CheckBox",
-            title: "允许流程发起人终止",
-            readonly: this.nodeType == "CounterSign" ? true : false,
-            name: "allowTerminate"
-        }, {
-            xtype: "CheckBox",
-            title: "允许撤回",
-            name: "allowPreUndo"
-        }, {
-            xtype: "CheckBox",
-            title: "允许驳回",
-            readonly: this.nodeType == "CounterSign" ? true : false,
-            name: "allowReject"
-        }]);
         return {
             title: "常规",
             xtype: "FormPanel",

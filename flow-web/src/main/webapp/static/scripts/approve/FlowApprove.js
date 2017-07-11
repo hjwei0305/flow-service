@@ -363,18 +363,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText
         });
-        var approved = "";
-        var cmp = EUI.getCmp("flow-deal-checkbox");
-        if (cmp) {
-            approved = cmp.getValue();
-        }
         EUI.Store({
             url: _ctxPath + "/builtInApprove/getSelectedNodesInfo",
             params: {
                 taskId: this.taskId,
                 businessId: this.busId,
                 includeNodeIdsStr: this.getDesionIds(),
-                approved: approved
+                approved: this.counterApprove
             },
             success: function (status) {
                 mask.hide();
@@ -574,6 +569,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 businessId: this.busId,
                 opinion: $(".flow-remark").val(),
                 endEventId: endEventId,
+                approved: this.counterApprove,
                 taskList: isEnd ? "" : JSON.stringify(this.getSelectedUser()),
                 manualSelected: g.manualSelected//是否是人工网关选择
             },

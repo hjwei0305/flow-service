@@ -2,6 +2,8 @@ package com.ecmp.flow.service;
 
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.ApiRestJsonProvider;
+import com.ecmp.config.util.SessionClientRequestFilter;
 import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
@@ -44,18 +46,21 @@ public class IBusinessSelfDefEmployeeServiceTest extends BasicContextTestCase {
     }
     @Test
     public void apiTest(){
-        String baseAddress = "http://localhost:8080";
-
-        List<Object> providerList = new ArrayList<Object>();
-        providerList.add(new JacksonJsonProvider());
-
-        IBusinessSelfDefEmployeeService businessSelfDefEmployeeService = JAXRSClientFactory.create(baseAddress, IBusinessSelfDefEmployeeService.class, providerList);
-        List<BusinessSelfDefEmployee> result  = businessSelfDefEmployeeService.findAll();
-        System.out.println(result.size());
-
-//        IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
-//        List<BusinessSelfDefEmployee> result   = proxy.findAll();
+//        String baseAddress = "http://localhost:8080";
+//
+//        List<Object> providers = new ArrayList<>();
+//        providers.add(new ApiRestJsonProvider());
+//        //API会话检查的客户端过滤器
+//        providers.add(new SessionClientRequestFilter());
+//
+//        IBusinessSelfDefEmployeeService businessSelfDefEmployeeService = JAXRSClientFactory.create(baseAddress, IBusinessSelfDefEmployeeService.class, providers);
+//        List<BusinessSelfDefEmployee> result  = businessSelfDefEmployeeService.findAll();
 //        System.out.println(result.size());
+
+
+        IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
+        List<BusinessSelfDefEmployee>  result   = proxy.findAll();
+        System.out.println(result.size());
     }
 
 }
