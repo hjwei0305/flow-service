@@ -302,7 +302,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
             net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-            Boolean canCancel = normalInfo.getBoolean("allowPreUndo");
+
+            Boolean canCancel = null;
+            if( normalInfo.get("allowPreUndo")!=null){
+                canCancel =  normalInfo.getBoolean("allowPreUndo");
+            }
+
             FlowHistory flowHistory = new FlowHistory();
             flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
             flowHistory.setActType(flowTask.getActType());

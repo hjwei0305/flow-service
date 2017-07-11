@@ -23,6 +23,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import io.swagger.models.auth.In;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -1125,9 +1126,18 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 flowName = definition.getProcess().getName();
                 net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-                Integer executeTime = normalInfo.getInt("executeTime");
-                Boolean canReject = normalInfo.getBoolean("allowReject");
-                Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+                Integer executeTime = null;
+                Boolean canReject = null;
+                Boolean canSuspension = null;
+                if(normalInfo.get("executeTime")!=null){
+                    executeTime=normalInfo.getInt("executeTime");
+                }
+                if(normalInfo.get("allowReject")!=null){
+                    canReject = normalInfo.getBoolean("allowReject");
+                }
+                if(normalInfo.get("allowTerminate")!=null){
+                    canSuspension = normalInfo.getBoolean("allowTerminate");
+                }
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                 if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
                     /** 获取流程变量 **/
