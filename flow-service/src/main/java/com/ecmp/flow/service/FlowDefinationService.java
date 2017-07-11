@@ -572,7 +572,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 
             } else {
-                if (!StringUtils.isEmpty(ids)) {
+                String selfDefId = executor.get("selfDefId")+"";
+                if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
                     nodeInfo.setUiUserType(userType);
                     String[] idsShuZhu = ids.split(",");
                     List<String> idList = java.util.Arrays.asList(idsShuZhu);
@@ -586,7 +587,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
 //                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
 //                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
-                       String selfDefId = executor.get("selfDefId")+"";
+
                        FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                        String path = flowExecutorConfig.getUrl();
                         String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
@@ -822,6 +823,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 StartEvent startEvent = startEventList.get(0);
                 net.sf.json.JSONObject startEventNode = definition.getProcess().getNodes().getJSONObject(startEvent.getId());
                 result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , startEventNode);
+                if(!result.isEmpty()){
+                    for(NodeInfo nodeInfo:result){
+                        nodeInfo.setCurrentTaskType(startEvent.getType());
+                    }
+                }
             }
         }
         return result;

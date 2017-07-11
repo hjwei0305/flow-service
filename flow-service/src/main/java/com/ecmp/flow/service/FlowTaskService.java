@@ -1148,7 +1148,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
 
+            String flowTaskDefJson = flowTask.getTaskJsonDef();
+            JSONObject flowTaskDefObj = JSONObject.fromObject(flowTaskDefJson);
+            String currentNodeType = flowTaskDefObj.get("nodeType") + "";
+
             for (NodeInfo nodeInfo : nodeInfoList) {
+                nodeInfo.setCurrentTaskType(currentNodeType);
                 if ("CounterSignNotEnd".equalsIgnoreCase(nodeInfo.getType())) {
                     continue;
                 }
@@ -1196,7 +1201,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                     } else {
                         nodeInfo.setUiUserType(userType);
-                        if (!StringUtils.isEmpty(ids)) {
+                        String selfDefId = executor.get("selfDefId")+"";
+                        if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
                             String[] idsShuZhu = ids.split(",");
                             List<String> idList = java.util.Arrays.asList(idsShuZhu);
                             //StartUser、Position、PositionType、SelfDefinition、AnyOne
@@ -1209,7 +1215,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
 //                                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
 //                                employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
-                                String selfDefId = executor.get("selfDefId")+"";
+
                                 FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                                 String path = flowExecutorConfig.getUrl();
                                 String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
