@@ -715,7 +715,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: this.lang.addExecutorConfigText,
-            height: 300,
+            height: 310,
             padding: 15,
             isOverFlow: false,
             items: [{
@@ -753,12 +753,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "url",
                     width: 220
                 },{
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: this.lang.paramText,
                     labelWidth: 80,
                     allowBlank: true,
                     name: "param",
-                    width: 220
+                    width: 220,
+                    height:60
                 }, {
                     xtype: "TextArea",
                     title: this.lang.depictText,
@@ -766,7 +767,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: true,
                     name: "depict",
                     width: 220,
-                    height: 90
+                    height: 80
                 }]
             }],
             buttons: [{
@@ -1043,7 +1044,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: this.lang.updatExecutorConfigText,
-            height: 300,
+            height: 310,
             padding: 15,
             isOverFlow: false,
             items: [{
@@ -1093,12 +1094,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 220,
                     value: data.url
                 },{
-                    xtype: "TextField",
+                    xtype: "TextArea",
                     title: this.lang.paramText,
                     labelWidth: 80,
                     allowBlank: true,
                     name: "param",
                     width: 220,
+                    height:60,
                     value: data.param
                 }, {
                     xtype: "TextArea",
@@ -1107,7 +1109,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: true,
                     name: "depict",
                     width: 220,
-                    height: 90,
+                    height: 80,
                     value: data.depict
                 }]
             }],
