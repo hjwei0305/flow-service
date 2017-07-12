@@ -265,7 +265,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
-            if (item.flowTaskType == "CounterSign") {
+            if (item.currentTaskType == "CounterSign") {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
