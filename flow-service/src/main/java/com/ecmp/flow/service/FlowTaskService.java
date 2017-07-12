@@ -288,6 +288,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }catch (Exception e){
                     logger.error(e.getMessage());
                 }
+                String approved = variables.get("approved")+"";
+                Integer value = 0;//默认弃权
+                if("true".equalsIgnoreCase(approved)){
+                    counterSignAgree++;
+                }
                 if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
                     approveResult = true;}
                 else{
@@ -1322,9 +1327,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }catch (Exception e){
                     logger.error(e.getMessage());
                 }
-                ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-                        .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-                // 取得当前任务
+                 // 取得当前任务
                 HistoricTaskInstance currTask = historyService
                         .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                         .singleResult();
