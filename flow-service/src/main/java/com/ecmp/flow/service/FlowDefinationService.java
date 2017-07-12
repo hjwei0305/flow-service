@@ -442,13 +442,23 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
-            if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
+
+            if(flowDefVersion==null ||flowDefVersion.getActDefId() == null || (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate)) {//启动该版本激活状态下的最高版本
+                List<FlowDefVersion>  flowDefVersionsActivates =  flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
+                if(flowDefVersionsActivates!=null && !flowDefVersionsActivates.isEmpty()) {
+                    flowDefVersion = flowDefVersionsActivates.get(0);
+                }
+            }
+            if (flowDefVersion != null && flowDefVersion.getActDefId() != null&& (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
 //                String proessDefId = flowDefVersion.getActDefId();
+                String actDefId = flowDefVersion.getActDefId();
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
-                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
+//                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
+                    processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
                 } else {
-                    processInstance = this.startFlowByKey(key, businessKey, variables);
+//                    processInstance = this.startFlowByKey(key, businessKey, variables);
+                    processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
 
                 Map<String, Object> vNew = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);//再获取一次，预防事件对单据进行了更新
@@ -764,7 +774,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 }else {
                                     initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                 }
-
 //                                break;
                             }
                         } else {//其他的用UEL表达式验证
@@ -836,6 +845,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String startUEL = flowDefination.getStartUel();
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            if(flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate){//当前
+                List<FlowDefVersion>  flowDefVersionsActivates =  flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
+                 if(flowDefVersionsActivates!=null && !flowDefVersionsActivates.isEmpty()) {
+                     flowDefVersion = flowDefVersionsActivates.get(0);
+                 }
+            }
             JSONObject defObj = JSONObject.fromObject(flowDefVersion.getDefJson());
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
             List<StartEvent> startEventList = definition.getProcess().getStartEvent();
@@ -894,6 +909,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         } else {
             FlowDefination flowDefination = flowDefinationDao.findOne(id);            ;
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+        }
+        if(flowDefVersion.getFlowDefinationStatus()!=FlowDefinationStatus.Activate){
+
         }
         return flowDefVersion;
     }
