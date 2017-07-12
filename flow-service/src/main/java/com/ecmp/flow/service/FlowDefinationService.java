@@ -23,6 +23,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import io.swagger.annotations.OAuth2Definition;
 import io.swagger.models.auth.In;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -482,13 +483,30 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
+        FlowDefination finalFlowDefination = null;
         if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
             List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
-//                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
+                //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
+                String businessId = flowStartVO.getBusinessKey();
+                String businessModelId = businessModel.getId();
+                String appModuleId = businessModel.getAppModuleId();
+                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+                String orgCodePath = v.get("orgPath")+"";
+                orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
                     flowStartResultVO.setFlowTypeList(flowTypeList);
-//                    return flowStartResultVO;
-//                }
+                    for(FlowType flowTypeTemp:flowTypeList){
+                        String[] orgCodes =  orgCodePath.split("\\|");
+                        finalFlowDefination = this.flowDefLuYou( v, flowTypeTemp, orgCodes , 1);
+                        List<FlowDefination> flowDefinationList =  flowDefinationDao.findByTypeCode(flowTypeTemp.getCode());
+                        if(finalFlowDefination!=null){
+                            finalFlowDefination.setFlowType(null);
+                            flowTypeTemp.getFlowDefinations().add(finalFlowDefination);
+                        }
+                    }
                 flowType = flowTypeList.get(0);
             } else {
                 flowStartResultVO = null;
@@ -507,23 +525,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
-            //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
-            String businessId = flowStartVO.getBusinessKey();
-            FlowDefination finalFlowDefination = null;
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-//        String orgId = v.get("orgId")+"";
-//        String orgCode = v.get("orgCode")+"";
-            String orgCodePath = v.get("orgPath")+"";
-            orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
-            String[] orgCodes =  orgCodePath.split("\\|");
-            finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
-            List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
-            flowStartResultVO.setNodeInfoList(nodeInfoList);
+            if(!flowType.getFlowDefinations().isEmpty()){
+                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
+                List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
+                flowStartResultVO.setNodeInfoList(nodeInfoList);
+            }
         }
          return flowStartResultVO;
     }
