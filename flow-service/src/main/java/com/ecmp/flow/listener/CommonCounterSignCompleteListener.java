@@ -77,7 +77,7 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         Integer instanceOfNumbers=(Integer)delegateTask.getVariable("nrOfInstances");
         //当前处于激活状态的任务实例
         Integer nrOfActiveInstances=(Integer)delegateTask.getVariable("nrOfActiveInstances");
-        Boolean  approveResult = null;
+//        Boolean  approveResult = null;
         if(nrOfActiveInstances==1){//会签最后一个执行人
             int counterDecision=100;
             try {
@@ -97,12 +97,12 @@ public class CommonCounterSignCompleteListener implements TaskListener{
             }catch (Exception e){
                 logger.error(e.getMessage());
             }
-            if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
-                approveResult = true;}
-             else{
-                approveResult=false;
-            }
-            delegateTask.setVariable("approveResult",approveResult);
+//            if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
+//                approveResult = true;}
+//             else{
+//                approveResult=false;
+//            }
+//            delegateTask.setVariable("approveResult",approveResult);
         }
         System.out.println("success call commonCounterSignCompleteListener------------");
 
