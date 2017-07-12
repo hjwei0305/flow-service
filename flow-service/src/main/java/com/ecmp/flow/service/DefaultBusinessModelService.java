@@ -91,7 +91,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public List<Executor> getPersonToExecutorConfig(String businessId,Map<String,String> map){
+    public List<Executor> getPersonToExecutorConfig(String businessId,String paramJson){
         List<Executor> result = new ArrayList<Executor>();
         if(StringUtils.isNotEmpty(businessId)){
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);

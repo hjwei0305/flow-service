@@ -32,7 +32,7 @@ public class NodeInfo implements Serializable{
 //    private Set<Employee> employeeSet;//记录流程设计阶段所选择的员工
 	private Set<Executor> executorSet;//记录流程设计阶段所选择的执行人
 	private String userVarName;//流程节点用户变量名称
-
+    private String currentTaskType;//当前任务节点类型，自定义任务类型,common(普通),单签(singleSign),审批任务(approve),会签(CounterSign)
 	private Boolean counterSignLastTask;//是否是最后一个会签子任务执行人;
 
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
@@ -132,5 +132,13 @@ public class NodeInfo implements Serializable{
 
 	public void setCounterSignLastTask(Boolean counterSignLastTask) {
 		this.counterSignLastTask = counterSignLastTask;
+	}
+
+	public String getCurrentTaskType() {
+		return currentTaskType;
+	}
+
+	public void setCurrentTaskType(String currentTaskType) {
+		this.currentTaskType = currentTaskType;
 	}
 }

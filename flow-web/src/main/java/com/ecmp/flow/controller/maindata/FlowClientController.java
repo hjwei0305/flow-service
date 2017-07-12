@@ -5,15 +5,24 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -33,17 +42,18 @@ public class FlowClientController {
     /**
      * 签收任务
      * @param taskId  任务id
+     * @param userId  用户id
      * @return
      */
-    @RequestMapping(value = "claimTask")
+    @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String claimTask(String taskId){
+    public String claimTask(String taskId, String userId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
+
 
     /**
      * 回退（撤销）任务
@@ -75,7 +85,7 @@ public class FlowClientController {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
-        operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        operateStatus = new OperateStatus(true, result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -96,7 +106,7 @@ public class FlowClientController {
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -109,22 +119,29 @@ public class FlowClientController {
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId,String approved,  String includeNodeIdsStr) throws NoSuchMethodException {
+    public String getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
-        if (!StringUtils.isEmpty(includeNodeIdsStr)) {
+        if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
-        } else {
-            throw new RuntimeException("至少要传入一个节点ID！");
         }
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, approved,includeNodeIds);
+        if(StringUtils.isEmpty(approved)){
+            approved="APPROVED";
+        }
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");
-            operateStatus.setData(nodeInfoList);
+            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
+                operateStatus.setData("EndEvent");
+            }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
+                operateStatus.setData("CounterSignNotEnd");
+            }else {
+                operateStatus.setData(nodeInfoList);
+            }
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -145,7 +162,7 @@ public class FlowClientController {
             operateStatus = new OperateStatus(true, "成功");
             operateStatus.setData(nodeInfoList);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }
@@ -164,10 +181,9 @@ public class FlowClientController {
         ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
         if (approvalHeaderVO != null) {
             operateStatus = new OperateStatus(true, "成功");
-            approvalHeaderVO.setFlowBaseUrl(ContextUtil.getAppModule().getWebBaseAddress());
             operateStatus.setData(approvalHeaderVO);
         } else {
-            operateStatus = new OperateStatus(false, "不存在");
+            operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
         return JsonUtil.serialize(operateStatus);
     }

@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
@@ -8,11 +9,9 @@ import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -54,6 +53,16 @@ public interface IDefaultBusinessModel2Service extends IBaseService<DefaultBusin
 //    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
 //    PageResult<DefaultBusinessModel2> findByPage(Search searchConfig);
 
-
+    /**
+     * 测试自定义执行人选择
+     *
+     * @return 执行结果
+     */
+    @POST
+    @Path("getPersonToExecutorConfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
+    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId, @QueryParam("paramJson")String paramJson);
 
 }
