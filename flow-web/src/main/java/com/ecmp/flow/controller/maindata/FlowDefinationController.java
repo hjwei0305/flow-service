@@ -174,10 +174,12 @@ public class FlowDefinationController {
     public String activateOrFreezeFlowDef(String id,Boolean activate) {
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateStatus operateStatus = null;
+        FlowDefinationStatus status = null;
         FlowDefination flowDefination = proxy.findOne(id);
         if (activate) {
             if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Freeze) {
-                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+//                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+                status = FlowDefinationStatus.Activate;
             } else {
                 //10003=当前状态为已激活，禁止激活！
                 operateStatus = new OperateStatus(false, ContextUtil.getMessage("10003"));
@@ -185,14 +187,15 @@ public class FlowDefinationController {
             }
         } else {
             if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
-                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+//                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+                status = FlowDefinationStatus.Freeze;
             } else {
                 //10004=当前状态为已冻结，禁止冻结！
                 operateStatus = new OperateStatus(false, ContextUtil.getMessage("10004"));
                 return JsonUtil.serialize(operateStatus);
             }
         }
-        OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
+        OperateResultWithData<FlowDefination> result = proxy.changeStatus(flowDefination.getId(),status);
         operateStatus = new OperateStatus(result.successful(), activate ? ContextUtil.getMessage("10002") : ContextUtil.getMessage("10001"));
         return JsonUtil.serialize(operateStatus);
     }
@@ -210,9 +213,11 @@ public class FlowDefinationController {
         OperateStatus operateStatus=null;
         FlowDefVersion flowDefVersion = proxy.findOne(id);
         Boolean needSave=false;
+        FlowDefinationStatus status = null;
         if(activate){
             if(flowDefVersion.getFlowDefinationStatus()== FlowDefinationStatus.Freeze){
-                flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+               // flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+                status = FlowDefinationStatus.Activate;
                 needSave=true;
             }else {
                 //10003=当前状态为已激活，禁止激活！
@@ -220,7 +225,8 @@ public class FlowDefinationController {
             }
         }else {
             if(flowDefVersion.getFlowDefinationStatus()== FlowDefinationStatus.Activate){
-                flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+//                flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+                status = FlowDefinationStatus.Freeze;
                 needSave=true;
             }else {
                 //10004=当前状态为已冻结，禁止冻结！
@@ -230,7 +236,7 @@ public class FlowDefinationController {
         if(needSave){
             // 10001=冻结成功
             // 10002=激活成功
-            OperateResultWithData<FlowDefVersion> result =proxy.save(flowDefVersion);
+            OperateResultWithData<FlowDefVersion> result =proxy.changeStatus(flowDefVersion.getId(),status);
             operateStatus = new OperateStatus(result.successful(), activate?ContextUtil.getMessage("10002"):ContextUtil.getMessage("10001"));
         }
         return JsonUtil.serialize(operateStatus);

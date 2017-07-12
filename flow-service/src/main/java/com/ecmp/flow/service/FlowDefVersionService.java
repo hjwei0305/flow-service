@@ -111,6 +111,17 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         return operateResult;
     }
 
+    public OperateResultWithData<FlowDefVersion> changeStatus(String id,FlowDefinationStatus  status){
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
+        if(flowDefVersion == null){
+            return  OperateResultWithData.OperationFailure("10003");
+        }
+        flowDefVersion.setFlowDefinationStatus(status);
+        flowDefVersionDao.save(flowDefVersion);
+        return  OperateResultWithData.OperationSuccess("10001");
+    }
+
+
     /**
      * 新增修改操作,保存前端json，
      * 转换成标准的BPMN

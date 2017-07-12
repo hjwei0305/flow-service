@@ -2,6 +2,8 @@ package com.ecmp.flow.constant;
 
 import com.ecmp.annotation.Remark;
 
+import java.io.Serializable;
+
 /**
  * *************************************************************************************************
  * <br>
@@ -17,7 +19,7 @@ import com.ecmp.annotation.Remark;
  * <br>
  * *************************************************************************************************<br>
  */
-public enum FlowDefinationStatus {
+public enum FlowDefinationStatus implements Serializable{
 
     /**
      * 未发布

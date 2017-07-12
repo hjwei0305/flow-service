@@ -1234,4 +1234,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     }
 
+
+    public OperateResultWithData<FlowDefination> changeStatus(String id,FlowDefinationStatus  status){
+        FlowDefination flowDefination = flowDefinationDao.findOne(id);
+        if(flowDefination == null){
+            return  OperateResultWithData.OperationFailure("10003");
+        }
+        flowDefination.setFlowDefinationStatus(status);
+        flowDefinationDao.save(flowDefination);
+        return  OperateResultWithData.OperationSuccess("10001");
+    }
+
+
 }
