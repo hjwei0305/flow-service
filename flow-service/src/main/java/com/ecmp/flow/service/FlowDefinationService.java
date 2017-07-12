@@ -40,6 +40,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
@@ -501,10 +502,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     for(FlowType flowTypeTemp:flowTypeList){
                         String[] orgCodes =  orgCodePath.split("\\|");
                         finalFlowDefination = this.flowDefLuYou( v, flowTypeTemp, orgCodes , 1);
-                        List<FlowDefination> flowDefinationList =  flowDefinationDao.findByTypeCode(flowTypeTemp.getCode());
                         if(finalFlowDefination!=null){
-                            finalFlowDefination.setFlowType(null);
-                            flowTypeTemp.getFlowDefinations().add(finalFlowDefination);
+                            FlowDefination finalFlowDefinationTemp = new FlowDefination();
+                            BeanUtils.copyProperties(finalFlowDefination,finalFlowDefinationTemp);
+                            finalFlowDefinationTemp.setFlowType(null);
+                            flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
                         }
                     }
                 flowType = flowTypeList.get(0);
