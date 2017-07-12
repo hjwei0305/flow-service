@@ -64,6 +64,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     showWind: function () {
         var g = this;
+        var defaultTitleName = this.data.flowTypeList[0].flowDefinations[0].name;
+        var defaultTitleCode = this.data.flowTypeList[0].flowDefinations[0].defKey;
         var item = [];
         if (this.data.flowTypeList.length == 1) {
             item = [this.initWindContainer()]
@@ -71,9 +73,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
-            title: "流程启动",
+            title: "启动流程:["+defaultTitleName+"--"+defaultTitleCode+"]",
             width: 700,
              height:450,
+            id:"flowStartWind",
             isOverFlow: false,
             padding: 0,
             items: item,
@@ -182,7 +185,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         },
                         success: function (result) {
                             myMask.hide();
-                            if (!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList) {
+                            if (!result.data.flowInstance && !result.data.nodeInfoList) {
                                 var status = {
                                     msg: "流程定义未找到",
                                     success: false,
@@ -190,9 +193,15 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                                 };
                                 EUI.ProcessStatus(status);
                                 $(".flowstart-node-box").remove();
+                                EUI.getCmp("flowStartWind").setTitle("此流程未定义");
                                 return;
                             } else {
                                 g.data = result.data;
+                                var titleName =   result.data.flowTypeList[0].flowDefinations[0].name;
+                                var titleCode = result.data.flowTypeList[0].flowDefinations[0].defKey;
+                                EUI.getCmp("flowStartWind").setTitle("启动流程:["+titleName+"--"+titleCode+"]");
+
+
                                 g.showChooseUser();
                             }
                         }, failure: function (result) {
