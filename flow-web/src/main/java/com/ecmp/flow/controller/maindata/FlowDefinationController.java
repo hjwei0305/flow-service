@@ -12,9 +12,11 @@ import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -161,4 +163,76 @@ public class FlowDefinationController {
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 激活或冻结流程定义
+     * @param id 流程定义id
+     * @param activate 是激活操作
+     * @return 操作结果
+     */
+    @RequestMapping(value = "activateOrFreezeFlowDef")
+    @ResponseBody
+    public String activateOrFreezeFlowDef(String id,Boolean activate) {
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        OperateStatus operateStatus = null;
+        FlowDefination flowDefination = proxy.findOne(id);
+        if (activate) {
+            if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Freeze) {
+                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+            } else {
+                //10003=当前状态为已激活，禁止激活！
+                operateStatus = new OperateStatus(false, ContextUtil.getMessage("10003"));
+                return JsonUtil.serialize(operateStatus);
+            }
+        } else {
+            if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
+                flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+            } else {
+                //10004=当前状态为已冻结，禁止冻结！
+                operateStatus = new OperateStatus(false, ContextUtil.getMessage("10004"));
+                return JsonUtil.serialize(operateStatus);
+            }
+        }
+        OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
+        operateStatus = new OperateStatus(result.successful(), activate ? ContextUtil.getMessage("10002") : ContextUtil.getMessage("10001"));
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 激活或冻结流程版本
+     * @param id 流程版本id
+     * @param activate 是激活操作
+     * @return 操作结果
+     */
+    @RequestMapping(value = "activateOrFreezeFlowVer")
+    @ResponseBody
+    public String activateOrFreezeFlowVer(String id,Boolean activate) {
+        IFlowDefVersionService  proxy = ApiClient.createProxy(IFlowDefVersionService .class);
+        OperateStatus operateStatus=null;
+        FlowDefVersion flowDefVersion = proxy.findOne(id);
+        Boolean needSave=false;
+        if(activate){
+            if(flowDefVersion.getFlowDefinationStatus()== FlowDefinationStatus.Freeze){
+                flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
+                needSave=true;
+            }else {
+                //10003=当前状态为已激活，禁止激活！
+                operateStatus=new OperateStatus(false,ContextUtil.getMessage("10003"));
+            }
+        }else {
+            if(flowDefVersion.getFlowDefinationStatus()== FlowDefinationStatus.Activate){
+                flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Freeze);
+                needSave=true;
+            }else {
+                //10004=当前状态为已冻结，禁止冻结！
+                operateStatus=new OperateStatus(false,ContextUtil.getMessage("10004"));
+            }
+        }
+        if(needSave){
+            // 10001=冻结成功
+            // 10002=激活成功
+            OperateResultWithData<FlowDefVersion> result =proxy.save(flowDefVersion);
+            operateStatus = new OperateStatus(result.successful(), activate?ContextUtil.getMessage("10002"):ContextUtil.getMessage("10001"));
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
 }

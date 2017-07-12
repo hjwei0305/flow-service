@@ -134,6 +134,10 @@ if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         addResourceText: "新增",
         copyText: "参考创建",
+        activateHintMessageText:"您确定要激活吗？",
+        freezeHintMessageText:"您确定要冻结吗？",
+        activateMaskMessageText: "正在激活，请稍候...",
+        freezeMaskMessageText: "正在冻结，请稍候...",
         belongToBusinessModelText: "所属业务实体模型",
         updateFlowTypeText: "修改流程类型",
         inputCodeMsgText: "请输入代码",
@@ -355,7 +359,7 @@ if(EUI.FlowDefinationView){
         flowDefinitionStatusText : "流程定义状态",
         unReleasedText: "未发布",
         activeText: "激活",
-        frozenText: "冻结",
+        suspendText: "冻结",
         viewText:"查看"
     },common_lang);
 }
