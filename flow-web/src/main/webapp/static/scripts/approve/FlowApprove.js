@@ -99,7 +99,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 name: "true",
                 value: true,
                 onChecked: function (value) {
-                    g.counterApprove = value;
+                    g.counterApprove = true;
                     var title=$(this).attr("title");
                     $(".flow-remark").text(title);
                 }
@@ -107,7 +107,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 title: "不同意",
                 name: "false",
                 onChecked: function (value) {
-                    g.counterApprove = value;
+                    g.counterApprove = false;
                     var title=$(this).attr("title");
                     $(".flow-remark").text(title);
                 }

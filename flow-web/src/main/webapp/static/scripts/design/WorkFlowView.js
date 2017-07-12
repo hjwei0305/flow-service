@@ -575,7 +575,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "#{approveResult == " + agree + "}",
+                            groovyUel: "${approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     } else if (nodeType == "CounterSign") {
@@ -591,7 +591,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "#{approveResult == " + agree + "}",
+                            groovyUel: "${approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     }
