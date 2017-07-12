@@ -1128,7 +1128,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
-        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser("DC0F669A-3BB7-11E7-A34B-ACE010C46AFD").active().list();
 
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {
