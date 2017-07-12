@@ -485,9 +485,18 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
         FlowDefination finalFlowDefination = null;
+        List<FlowType> flowTypeList =null;
         if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
-            List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
-            if (flowTypeList != null && !flowTypeList.isEmpty()) {
+            flowTypeList  = flowTypeDao.findListByProperty("businessModel", businessModel);
+        }else {
+            flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
+            flowTypeList = new ArrayList<FlowType>();
+            if(flowType!=null){
+                flowTypeList.add(flowType);
+            }
+        }
+
+        if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
                 String businessId = flowStartVO.getBusinessKey();
                 String businessModelId = businessModel.getId();
@@ -513,9 +522,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             } else {
                 flowStartResultVO = null;
             }
-        } else {
-            flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
-        }
 
         if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
                 Map<String, Object> v = new HashMap<String, Object>();
