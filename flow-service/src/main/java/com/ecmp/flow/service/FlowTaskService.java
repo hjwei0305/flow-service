@@ -259,24 +259,44 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             variables.putAll(v);
         }
         flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption") + "");
-//        String taskJsonDef = flowTask.getTaskJsonDef();
-//        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-//        String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
-//        if("CounterSign".equalsIgnoreCase(nodeType)){
-//            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-//                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-//            // 取得当前任务
-//            HistoricTaskInstance currTask = historyService
-//                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-//                    .singleResult();
-//            String executionId = currTask.getExecutionId();
-//
-//            Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
-//            //当前处于激活状态的任务实例
-//            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-//            if(nrOfActiveInstances==1){//会签最后一个任务
-//                this.completeActiviti(actTaskId, variables);
-//            }else {
+        String taskJsonDef = flowTask.getTaskJsonDef();
+        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+        String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+        if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                    .singleResult();
+            String executionId = currTask.getExecutionId();
+
+            Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+
+           //通过票数
+            Integer counterSignAgree = (Integer)processVariables.get("counterSign_agree").getValue();
+            //完成会签的次数
+            Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+            //总循环次数
+            Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
+            //当前处于激活状态的任务实例
+            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+
+            if(nrOfActiveInstances==1){//会签最后一个任务
+              Boolean  approveResult = null;
+                int counterDecision=100;
+                try {
+                    counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+                if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
+                    approveResult = true;}
+                else{
+                    approveResult=false;
+                }
+                variables.put("approveResult",approveResult);
+                this.completeActiviti(actTaskId, variables);
+            }
+//            else {
 //                try {
 //                    lock.lock(); // 加锁
 //                    this.completeActiviti(actTaskId, variables);
@@ -284,11 +304,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                    lock.unlock(); // 释放锁
 //                }
 //            }
-//
-//        }else {
-//            this.completeActiviti(actTaskId, variables);
-//        }
-        this.completeActiviti(actTaskId, variables);
+
+        }else {
+            this.completeActiviti(actTaskId, variables);
+        }
+//        this.completeActiviti(actTaskId, variables);
 //        this.saveVariables(variables, flowTask);先不做保存
 
         HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
@@ -1335,12 +1355,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
                             for (PvmTransition pv : nextTransitionList) {
                                 String conditionText = (String) pv.getProperty("conditionText");
-                                if("#{approveResult == true}".equalsIgnoreCase(conditionText)){
+                                if("${approveResult == true}".equalsIgnoreCase(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                      tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
                                     result.add(tempNodeInfo);
-                                    return result;
+
                                 }
                                 }
                         }
@@ -1350,16 +1370,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
                             for (PvmTransition pv : nextTransitionList) {
                                 String conditionText = (String) pv.getProperty("conditionText");
-                                if("#{approveResult == false}".equalsIgnoreCase(conditionText)){
+                                if("${approveResult == false}".equalsIgnoreCase(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
                                     result.add(tempNodeInfo);
-                                    return result;
                                 }
                             }
                         }
                     }
+                    return result;
                 }else {
                     NodeInfo tempNodeInfo = new NodeInfo();
                     tempNodeInfo.setType("CounterSignNotEnd");

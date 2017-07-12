@@ -152,11 +152,24 @@ public class Process extends BaseNode implements Serializable {
 
                             ExtensionElement extensionElement = new ExtensionElement();
                             //添加默认任务监听器
-                            TaskListener taskListener = new TaskListener();
+                            TaskListener taskListener = new TaskListener();//在结点处理逻辑执行完成时
                             taskListener.setEvent("complete");
                             taskListener.setDelegateExpression("${commonCounterSignCompleteListener}");
                             List<TaskListener> taskListeners = new ArrayList<TaskListener>();
                             taskListeners.add(taskListener);
+
+//                            TaskListener  taskListenerA = new TaskListener();//在结点处理逻辑被指派时
+//                            taskListenerA.setEvent("assignment");
+//                            taskListenerA.setDelegateExpression("${commonCounterSignAssignmentListener}");
+//                            taskListeners.add(taskListenerA);
+
+//                            ExecutionListener executionListener = new ExecutionListener();
+//                            executionListener.setEvent("start");
+//                            executionListener.setDelegateExpression("${commonCounterSignBeforeListener}");
+//                            List<ExecutionListener> executionListeners = new ArrayList<ExecutionListener>();
+//                            executionListeners.add(executionListener);
+//                            extensionElement.setExecutionListener(executionListeners);
+
                             extensionElement.setTaskListener(taskListeners);
                             userTaskTemp.setExtensionElement(extensionElement);
 
