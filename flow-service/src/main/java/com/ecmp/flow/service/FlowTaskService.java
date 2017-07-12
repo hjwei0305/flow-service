@@ -1048,33 +1048,74 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             for (Task task : taskList) {
 //                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                for (IdentityLink identityLink : identityLinks) {
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                    if (employees != null && !employees.isEmpty()) {
-                        Executor executor = employees.get(0);
-                        FlowTask flowTask = new FlowTask();
-                        flowTask.setCanReject(canReject);
-                        flowTask.setCanSuspension(canSuspension);
-                        flowTask.setTaskJsonDef(currentNode.toString());
-                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                        flowTask.setActTaskDefKey(actTaskDefKey);
-                        flowTask.setFlowName(flowName);
-                        flowTask.setTaskName(task.getName());
-                        flowTask.setActTaskId(task.getId());
-                        flowTask.setOwnerAccount(executor.getCode());
-                        flowTask.setOwnerId(executor.getId());
-                        flowTask.setOwnerName(executor.getName());
-                        flowTask.setExecutorAccount(executor.getCode());
-                        flowTask.setExecutorId(executor.getId());
-                        flowTask.setExecutorName(executor.getName());
-                        flowTask.setPriority(task.getPriority());
+                if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
+                    /** 获取流程变量 **/
+                    String executionId = task.getExecutionId();
+                    // Map<String, Object> tempV = task.getProcessVariables();
+                    String variableName = "" + actTaskDefKey + "_CounterSign";
+                    String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
+                    if(StringUtils.isNotEmpty(userId)){
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+                        if(employees!=null && !employees.isEmpty()){
+                            Executor executor = employees.get(0);
+                            FlowTask flowTask = new FlowTask();
+                            flowTask.setCanReject(canReject);
+                            flowTask.setCanSuspension(canSuspension);
+                            flowTask.setTaskJsonDef(currentNode.toString());
+                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                            flowTask.setActTaskDefKey(actTaskDefKey);
+                            flowTask.setFlowName(flowName);
+                            flowTask.setTaskName(task.getName());
+                            flowTask.setActTaskId(task.getId());
+                            flowTask.setOwnerAccount(executor.getCode());
+                            flowTask.setOwnerName(executor.getName());
+                            flowTask.setExecutorAccount(executor.getCode());
+                            flowTask.setExecutorId(executor.getId());
+                            flowTask.setExecutorName(executor.getName());
+                            flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
-                        flowTask.setActType(identityLink.getType());
-                        flowTask.setDepict(task.getDescription());
-                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                        if (preTask != null) {
-                            if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
+                            flowTask.setActType("candidate");
+                            if(StringUtils.isEmpty(task.getDescription())){
+                                flowTask.setDepict("流程启动");
+                            }else{
+                                flowTask.setDepict(task.getDescription());
+                            }
+
+                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setFlowInstance(flowInstance);
+                            flowTaskDao.save(flowTask);
+                        }
+                    }
+                    // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
+                }else{
+                    for (IdentityLink identityLink : identityLinks) {
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                        if (employees != null && !employees.isEmpty()) {
+                            Executor executor = employees.get(0);
+                            FlowTask flowTask = new FlowTask();
+                            flowTask.setCanReject(canReject);
+                            flowTask.setCanSuspension(canSuspension);
+                            flowTask.setTaskJsonDef(currentNode.toString());
+                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                            flowTask.setActTaskDefKey(actTaskDefKey);
+                            flowTask.setFlowName(flowName);
+                            flowTask.setTaskName(task.getName());
+                            flowTask.setActTaskId(task.getId());
+                            flowTask.setOwnerAccount(executor.getCode());
+                            flowTask.setOwnerId(executor.getId());
+                            flowTask.setOwnerName(executor.getName());
+                            flowTask.setExecutorAccount(executor.getCode());
+                            flowTask.setExecutorId(executor.getId());
+                            flowTask.setExecutorName(executor.getName());
+                            flowTask.setPriority(task.getPriority());
+//                                flowTask.setExecutorAccount(identityLink.getUserId());
+                            flowTask.setActType(identityLink.getType());
+                            flowTask.setDepict(task.getDescription());
+                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            if (preTask != null) {
+                                if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
 //                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
 //                                if(!StringUtils.isEmpty(oldPreId)){
 //                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
@@ -1084,16 +1125,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                                        flowTask.setPreId(null);
 //                                    }
 //                                }
-                                flowTask.setTaskStatus(TaskStatus.REJECT.toString());
-                            } else {
+                                    flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                                } else {
+                                    flowTask.setPreId(preTask.getId());
+                                }
                                 flowTask.setPreId(preTask.getId());
+                                flowTask.setDepict(preTask.getDepict());
                             }
-                            flowTask.setPreId(preTask.getId());
-                            flowTask.setDepict(preTask.getDepict());
-                        }
-                        flowTask.setFlowInstance(flowInstance);
+                            flowTask.setFlowInstance(flowInstance);
 
-                        flowTaskDao.save(flowTask);
+                            flowTaskDao.save(flowTask);
+                        }
                     }
                 }
             }
