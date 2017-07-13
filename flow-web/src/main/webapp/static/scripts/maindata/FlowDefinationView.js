@@ -49,10 +49,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     },
     addDefVersionWinEvents:function () {
       var g=this;
-        // $("#defVersion>.ecmp-common-edit").live("click", function () {
-        //     var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
-        //     g.updateFlowDefVersion(data);
-        // });
+        $("#defVersion>.ecmp-common-edit").live("click", function () {
+            var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            g.updateFlowDefVersion(data);
+        });
         $("#defVersion>.ecmp-common-view").live("click", function () {
             var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
             g.viewFlowDefnation(rowData);
@@ -192,7 +192,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     width:120,
                     formatter : function(cellvalue, options, rowObject) {
                         //viewFlowDefText:"查看流程定义"
-                        var str='<div id="defVersion"><i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.viewFlowDefText+'"></i>';
+                        var str='<div id="defVersion"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i><i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.viewFlowDefText+'"></i>';
                         if('Activate' == rowObject.flowDefinationStatus){
                             str=str+'<i class="ecmp-common-suspend fontcusor" title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor" style="display: none"  title="'+g.lang.activeText+'"></i></div>';
                         }
@@ -273,9 +273,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         };
     },
 
-    updateFlowDefVersion:function (data) {
-        var g=this;
-    },
     viewFlowDefnation: function (data) {
         var g = this;
         var tab = {
@@ -308,6 +305,15 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             // copyFlowDefinitionText: "参考创建流程定义",
             title: g.lang.copyFlowDefinitionText,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
+        };
+        g.addTab(tab);
+    },
+    updateFlowDefVersion: function (data) {
+        var g = this;
+        var tab = {
+            // copyFlowDefinitionText: "参考创建流程定义",
+            title: g.lang.copyFlowDefinitionText,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowType.businessModel.id"],
         };
         g.addTab(tab);
     },

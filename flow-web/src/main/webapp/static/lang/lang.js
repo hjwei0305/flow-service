@@ -35,6 +35,7 @@ var common_lang = {
     submitText: "提交",
     finishText: "完成",
     editText: "编辑",
+    unFilledText:"存在必填项未输入，请确认！",
     searchByNameMsgText: "请输入名称进行搜索",
     copyHintMessage:"请选择一条要参考的行项目!",
     searchByCodeOrNameText: "请输入代码或名称进行搜索"
