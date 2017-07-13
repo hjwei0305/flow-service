@@ -272,7 +272,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
 
            //通过票数
-            Integer counterSignAgree = (Integer)processVariables.get("counterSign_agree").getValue();
+            Integer counterSignAgree = 0;
+            if(processVariables.get("counterSign_agree")!=null){
+                counterSignAgree =  (Integer)processVariables.get("counterSign_agree").getValue();
+            }
+
             //完成会签的次数
             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
