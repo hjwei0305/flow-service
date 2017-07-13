@@ -1452,9 +1452,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 if(nrOfActiveInstances==1){//会签最后一个执行人
                     Boolean  approveResult = null;
-                    Integer counterSignAgree = (Integer) processVariables.get("counterSign_agree").getValue();
-                    if(counterSignAgree==null) {
-                        counterSignAgree = 0;
+                    Integer counterSignAgree = 0;
+                    if(processVariables.get("counterSign_agree")!=null) {
+                         counterSignAgree = (Integer) processVariables.get("counterSign_agree").getValue();
                     }
                     Integer value = 0;//默认弃权
                     if("true".equalsIgnoreCase(approved)){
