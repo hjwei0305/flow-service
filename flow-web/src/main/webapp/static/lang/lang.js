@@ -360,7 +360,7 @@ if(EUI.FlowDefinationView){
         unReleasedText: "未发布",
         activeText: "激活",
         suspendText: "冻结",
-        viewText:"查看"
+        viewFlowDefText:"查看流程定义"
     },common_lang);
 }
 
