@@ -1040,9 +1040,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
         net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-        Integer executeTime = normalInfo.getInt("executeTime");
-        Boolean canReject = normalInfo.getBoolean("allowReject");
-        Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+        Integer executeTime = (Integer)normalInfo.get("executeTime");
+        Boolean canReject = (Boolean)normalInfo.get("allowReject");
+        Boolean canSuspension =(Boolean) normalInfo.get("allowTerminate");
         flowName = definition.getProcess().getName();
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
@@ -1323,7 +1323,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                            }
 
                     } else {
-                        String selfDefId = executor.get("selfDefId")+"";
+                        String selfDefId = (String)executor.get("selfDefId");
                         if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
                              if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
 //                                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
@@ -1828,6 +1828,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String uiType = "readOnly";
         if("CounterSign".equalsIgnoreCase(nodeType)){//会签节点，直接返回当前会签节点信息
             NodeInfo tempNodeInfo = new NodeInfo();
+            tempNodeInfo.setCurrentTaskType(nodeType);
             tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
             tempNodeInfo.setUiType(uiType);
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
@@ -1897,6 +1898,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
 
                         NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo.setCurrentTaskType(nodeType);
                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                         String gateWayName = firstActivity.getProperty("name") + "";
                         // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
@@ -1917,6 +1919,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo.setCurrentTaskType(nodeType);
                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
                         tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
@@ -1934,6 +1937,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo.setCurrentTaskType(nodeType);
                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
                         tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
@@ -1951,6 +1955,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo.setCurrentTaskType(nodeType);
                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
                         tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
@@ -1964,6 +1969,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                     NodeInfo tempNodeInfo = new NodeInfo();
+                    tempNodeInfo.setCurrentTaskType(nodeType);
                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                     tempNodeInfo.setUiType(uiType);
                     tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
@@ -2038,7 +2044,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(tempActivity.getId());
         String nodeType = currentNode.get("nodeType") + "";
-        tempNodeInfo.setCurrentTaskType(nodeType);
+//        tempNodeInfo.setCurrentTaskType(nodeType);
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
             tempNodeInfo.setUiType("readOnly");
             tempNodeInfo.setFlowTaskType("CounterSign");
