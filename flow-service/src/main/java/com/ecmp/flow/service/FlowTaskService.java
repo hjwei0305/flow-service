@@ -434,20 +434,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
+            if("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
+                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+                try {
+                    //逻辑代码，可以写上你的逻辑处理代码
 
-            org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-            TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-            try {
-                //逻辑代码，可以写上你的逻辑处理代码
-                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
-                transactionManager.commit(status);
-            } catch (Exception e) {
-                e.printStackTrace();
-                transactionManager.rollback(status);
-                throw e;
+                    flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
+                    transactionManager.commit(status);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    transactionManager.rollback(status);
+                    throw e;
+                }
             }
+
 
 
             //初始化新的任务
