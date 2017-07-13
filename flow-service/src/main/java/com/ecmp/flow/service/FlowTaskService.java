@@ -416,6 +416,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowHistory.setPreId(flowTask.getPreId());
             flowHistory.setDepict(flowTask.getDepict());
             flowHistory.setTaskStatus(flowTask.getTaskStatus());
+
+            if(flowHistory.getActEndTime() == null){
+                flowHistory.setActEndTime(new Date());
+            }
+            if(flowHistory.getActDurationInMillis() == null){
+                Long actDurationInMillis = flowHistory.getActStartTime().getTime()-flowHistory.getActEndTime().getTime();
+                flowHistory.setActDurationInMillis(actDurationInMillis);
+            }
 //            if (reject != null && reject == 1) {
 //                flowHistory.setDepict("【被驳回】"+flowHistory.getDepict());
 //                flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
