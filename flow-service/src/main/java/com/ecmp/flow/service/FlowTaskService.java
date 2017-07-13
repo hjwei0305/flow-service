@@ -354,6 +354,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 for (PvmTransition pvmTransition : oriPvmTransitionList) {
                     pvmTransitionList.add(pvmTransition);
                 }
+            }else {
+                this.completeActiviti(actTaskId, variables);
             }
 //            else {
 //                try {
