@@ -54,7 +54,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 660,
+            width: 670,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -675,6 +675,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var type = item.attr("type");
+            var nodeType = item.attr("nodetype");
             var name = item.find(".node-title").text();
             var nodeConfig = item.data();
             if (type.indexOf("Task") != -1 && Object.isEmpty(nodeConfig)) {
@@ -683,6 +684,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     msg: "请将节点：" + name + "，配置完整"
                 });
                 return;
+            }
+
+            if(nodeType == "Approve" || nodeType == "CounterSign"){
+                var result = this.checkApproveAndCounterSign(name);
+                if(!result){
+                    return;
+                }
             }
 
             var flag = false;
@@ -703,6 +711,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         return true;
     }
     ,
+    checkApproveAndCounterSign: function (name) {
+        var count = 0;
+        for (var key in this.connectInfo) {
+            if (key.indexOf(id) != -1) {
+                count++;
+            }
+        }
+        if (count != 2) {
+            EUI.ProcessStatus({
+                success: false,
+                msg: "节点：" + name + "需要配置两条连线"
+            });
+            return false;
+        }
+        return true;
+    },
     getFlowData: function () {
         if (!this.checkValid()) {
             return;
