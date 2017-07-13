@@ -268,14 +268,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                     .singleResult();
             String executionId = currTask.getExecutionId();
-
+//            ProcessInstance processInstance =runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+//            Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(processInstance.getId());
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
-
-           //通过票数
-            Integer counterSignAgree = 0;
-            if(processVariables.get("counterSign_agree")!=null){
-                counterSignAgree =  (Integer)processVariables.get("counterSign_agree").getValue();
-            }
 
             //完成会签的次数
          //   Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
@@ -286,6 +281,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowInstance.getActInstanceId());
             if(nrOfActiveInstances==1){//会签最后一个任务
 //              Boolean  approveResult = null;
+                //通过票数
+                Integer counterSignAgree = 0;
+                if(processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey())!=null) {
+                    counterSignAgree = (Integer) processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey()).getValue();
+                }
                 int counterDecision=100;
                 try {
                     counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
@@ -297,7 +297,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if("true".equalsIgnoreCase(approved)){
                     counterSignAgree++;
                 }
-
                 ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                         .getDeployedProcessDefinition(currTask
                                 .getProcessDefinitionId());
@@ -1441,8 +1440,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                         .singleResult();
                 String executionId = currTask.getExecutionId();
+                Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(executionId);
 
-                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+
 //                //完成会签的次数
 //                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 //总循环次数
@@ -1452,9 +1452,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 if(nrOfActiveInstances==1){//会签最后一个执行人
                     Boolean  approveResult = null;
+                    //通过票数
                     Integer counterSignAgree = 0;
-                    if(processVariables.get("counterSign_agree")!=null) {
-                         counterSignAgree = (Integer) processVariables.get("counterSign_agree").getValue();
+                    if(processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey())!=null) {
+                         counterSignAgree = (Integer) processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey()).getValue();
                     }
                     Integer value = 0;//默认弃权
                     if("true".equalsIgnoreCase(approved)){
