@@ -150,6 +150,7 @@ body{
 .flow-node-box {
     border: 1px solid #eaeaea;
     margin: 20px;
+    position: relative;
 }
 
 .flow-excutor-title {
@@ -198,10 +199,10 @@ body{
 
 .flow-excutor-content2 {
     padding: 5px 0 20px;
-    width: 643px;
+    /*width: 643px;*/
     height: 230px;
     overflow-y:auto;
-    border:1px solid #CCCCCC;
+    /*border:1px solid #CCCCCC;*/
 }
 .flow-excutor-content2 > div {
     padding: 15px 0 0 20px;
@@ -214,10 +215,11 @@ body{
     height: 30px;
     line-height: 30px;
     position: absolute;
-    left: 570px;
-    top: 145px;
+    right: 30px;
+    top: 60px;
     text-align: center;
     width: 80px;
+    border: 1px solid #cccccc;
 }
 
 .add-excutor {
@@ -337,6 +339,7 @@ body{
     margin: 20px;
     overflow-y:auto;
     max-height: 350px;
+    position: relative;
 }
 
 .flowstart-excutor-title {
@@ -364,11 +367,12 @@ body{
     height: 30px;
     line-height: 30px;
     position: absolute;
-    right: 52px;
+    right:20px;
     text-align: center;
-    top: 170px;
+    top: 60px;
     width: 80px;
 }
+
 
 /*
 *流程历史组件css
