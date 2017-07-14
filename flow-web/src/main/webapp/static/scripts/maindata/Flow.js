@@ -37,7 +37,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     iframe: null,
     counterApprove: "",//会签审批
     toChooseUserData: null,
-    chooseUserNode: null,
     initComponent: function () {
         this.pageUrl += "?id=" + this.busId;
         EUI.Container({
@@ -201,7 +200,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //选择任意执行人
         $(".choose-btn").die().live("click", function () {
             var currentChooseDivIndex = $(this).parent().attr("index");
-            g.showChooseExecutorWind(currentChooseDivIndex);
+            var currentChooseTaskType = $(this).parent().children().eq(0).attr("flowtasktype");
+            g.showChooseExecutorWind(currentChooseDivIndex,currentChooseTaskType);
             return false;
         });
 
@@ -323,7 +323,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
-            console.log(text);
             $(".flow-remark").text(text);
         })
     }
@@ -426,10 +425,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     showChooseUser: function () {
         var g = this;
         var data = this.toChooseUserData;
-        // console.log(data)
-        // $(".flow-approve").hide();
-        // $(".flow-chooseuser").show();
-        // $(".flow-node-box").remove();
+        $(".flow-approve").hide();
+        $(".flow-chooseuser").show();
+        $(".flow-node-box").remove();
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
@@ -495,11 +493,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         var html = "";
         var node = data;
-        g.chooseUserNode = node;
         var nodeType = g.lang.arbitraryExecutorText;
         var iconCss = "choose-delete";
         var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
-            '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
+            '<div class="flow-excutor-title" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
             ']</div><div class="flow-excutor-content2">';
         nodeHtml += "</div>" +
             '<div class="choose-btn">' + g.lang.chooseText + '</div>' +
@@ -622,11 +619,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         })
     }
     ,
-    showChooseExecutorWind: function (currentChooseDivIndex) {
+    showChooseExecutorWind: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
         } else {
@@ -640,7 +637,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex)],
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex,currentChooseTaskType)],
             buttons: [{
                 title: g.lang.saveText,
                 iconCss: "ecmp-common-save",
@@ -651,7 +648,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
-                    g.addChooseUsersInContainer(selectRow,currentChooseDivIndex);
+                    g.addChooseUsersInContainer(selectRow, currentChooseDivIndex,currentChooseTaskType);
                     g.chooseAnyOneWind.close();
                 }
             }, {
@@ -744,10 +741,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    InitChooseUserGrid: function (currentChooseDivIndex) {
+    InitChooseUserGrid: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
@@ -817,12 +814,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     ondblClickRow: function (rowid) {
                         var html = "";
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
-                        html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
+                        html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' + g.lang.nameText + rowData["user.userName"] +
                             g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
                             '</div>';
-                        $("div[index="+currentChooseDivIndex+"]").children().eq(1).html(html);
+                        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
                         g.chooseAnyOneWind.close();
                     }
                 }
@@ -830,24 +827,24 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    addChooseUsersInContainer: function (selectRow,currentChooseDivIndex) {
+    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var html = "";
         var selectedUser = [];
-        $("div[index="+currentChooseDivIndex+"]").children().eq(1).children().each(function (index, domEle) {
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).children().each(function (index, domEle) {
             selectedUser.push(domEle.id)
         });
         for (var j = 0; j < selectRow.length; j++) {
             var item = selectRow[j];
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
-                html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
+                html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">' + g.lang.nameText + item["user.userName"] +
                     g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
         }
-        $("div[index="+currentChooseDivIndex+"]").children().eq(1).append(html);
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).append(html);
     }
     ,
     itemIdIsInArray: function (id, array) {
@@ -874,7 +871,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     url: null,
     afterSubmit: null,
     selectedOrgId: null,  //当前选中的节点的ID
-    chooseUserNode: null,
     initComponent: function () {
         this.getData();
     },
@@ -933,7 +929,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
-            // title: "启动流程:[" + defaultTitleName + "--" + defaultTitleCode + "]",
             title: "["+defaultTitleCode+"]-"+defaultTitleName,
             width: 700,
             height: 450,
@@ -986,8 +981,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         //选择任意执行人
         $(".flowstartchoose-btn").die().live("click", function () {
             var currentChooseDivIndex = $(this).parent().attr("index");
-            g.showChooseExecutorWind(currentChooseDivIndex);
-
+            var currentChooseTaskType = $(this).parent().children().eq(0).attr("flowtasktype");
+            g.showChooseExecutorWind(currentChooseDivIndex,currentChooseTaskType);
             return false;
         });
         //删除选择的执行人
@@ -1064,6 +1059,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                                 var titleCode = result.data.flowTypeList[0].flowDefinations[0].defKey;
                                 EUI.getCmp("flowStartWind").setTitle("["+titleCode+"]-"+titleName);
                                 $(".flowstart-node-box").remove();
+
                                 g.showChooseUser();
                             }
                         }, failure: function (result) {
@@ -1148,11 +1144,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var g = this;
         var html = "";
         var node = data;
-        g.chooseUserNode = node;
         var nodeType = "任意执行人";
         var iconCss = "choose-delete";
         var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
-            '<div class="flowstart-excutor-title">' + node.name + '-[' + nodeType +
+            '<div class="flowstart-excutor-title" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
             ']</div><div class="flowstart-excutor-content2">';
         nodeHtml += "</div>" +
             '<div class="flowstartchoose-btn">选择</div>' +
@@ -1258,11 +1253,11 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    showChooseExecutorWind: function (currentChooseDivIndex) {
+    showChooseExecutorWind: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isChooseOneTitle = "选择任意执行人【请双击进行选择】";
             saveBtnIsHidden = true;
         } else {
@@ -1276,7 +1271,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex)],
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex,currentChooseTaskType)],
             buttons: [{
                 title: "保存",
                 iconCss: "ecmp-common-save",
@@ -1287,7 +1282,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
-                    g.addChooseUsersInContainer(selectRow,currentChooseDivIndex);
+                    g.addChooseUsersInContainer(selectRow,currentChooseDivIndex,currentChooseTaskType);
                     g.chooseAnyOneWind.close();
                 }
             }, {
@@ -1376,10 +1371,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         }
     },
-    InitChooseUserGrid: function (currentChooseDivIndex) {
+    InitChooseUserGrid: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
@@ -1445,7 +1440,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     ondblClickRow: function (rowid) {
                         var html = "";
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
-                        html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
+                        html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
                             '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
@@ -1457,7 +1452,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }]
         }
     },
-    addChooseUsersInContainer: function (selectRow,currentChooseDivIndex) {
+    addChooseUsersInContainer: function (selectRow,currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var html = "";
         var selectedUser = [];
@@ -1467,7 +1462,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         for (var j = 0; j < selectRow.length; j++) {
             var item = selectRow[j];
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
-                html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
+                html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">姓名：' + item["user.userName"] +
                     '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
