@@ -175,20 +175,20 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         });
         //执行人选择
-        $(".flow-user-item").live("click", function () {
-            var type = $(this).attr("type");
+        $(".flow-user-item").die().live("click", function () {
+            var type = $(this).attr("type").toLowerCase();
             if (type == "common") {
-                if ($(".flow-excutor-content").children("div").length == 1) {
-                    if ($(".flow-user-item").hasClass("select")) {
-                        $(".flow-user-item").removeClass("select");
+                if ($(this).parent().children("div").length == 1) {
+                    if ($(this).hasClass("select")) {
+                        $(this).removeClass("select");
                     } else {
                         $(this).addClass("select");
                     }
                 } else {
-                    $(".flow-user-item").removeClass("select");
-                    $(this).addClass("select");
+                    $(this).addClass("select").siblings().removeClass("select");
                 }
-            } else {
+            }
+            if (type == "singlesign" || type == "countersign") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -455,39 +455,20 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
-                    $(".flow-user-item").addClass("select");
+                    $("div[type='common']").addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
-                    $(".flow-excutor-content").children("div").eq(0).addClass("select");
+                    $("div[type='common']").parent().children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
                 var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                 $(".chooseuser-title").after(html);
-                $(".flow-user-item").addClass("select");
+                $("div[type='singleSign']").addClass("select");
+                $("div[type='countersign']").addClass("select");
             }
-
-            // for (var j = 0; j < node.executorSet.length; j++) {
-            //     var item = node.executorSet[j];
-            //     if(!item.positionId){
-            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-            //             '<div class="choose-icon ' + iconCss + '"></div>' +
-            //             '<div class="excutor-item-title">姓名：' + item.name +
-            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
-            //             '</div>';
-            //     }else{
-            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-            //             '<div class="choose-icon ' + iconCss + '"></div>' +
-            //             '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
-            //             '</div>';
-            //     }
-            // }
-            // nodeHtml += "</div></div>";
-            // html += nodeHtml;
         }
-        //  $(".chooseuser-title").after(html);
     }
     ,
     showAnyContainer: function (data, i) {
@@ -960,15 +941,14 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
             if (type == "common") {
-                if ($(".flow-excutor-content").children("div").length == 1) {
-                    if ($(".flow-user-item").hasClass("select")) {
-                        $(".flow-user-item").removeClass("select");
+                if ($(this).parent().children("div").length == 1) {
+                    if ($(this).hasClass("select")) {
+                        $(this).removeClass("select");
                     } else {
                         $(this).addClass("select");
                     }
                 } else {
-                    $(".flow-user-item").removeClass("select");
-                    $(this).addClass("select");
+                    $(this).addClass("select").siblings().removeClass("select");
                 }
             }
             if (type == "singlesign" || type == "countersign") {
@@ -1101,9 +1081,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             EUI.ProcessStatus(status);
             return;
         }
-        // $(".flow-approve", this.win.dom).hide();
-        // $(".flow-chooseuser").show();
-        // $(".flowstart-node-box").remove();
         for (var i = 0; i < data.length; i++) {
             var node = data[i];
             var nodeType = "普通任务";
@@ -1127,17 +1104,18 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").after(html);
-                    $(".flow-user-item").addClass("select");
+                    $("div[type='common']").addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").after(html);
-                    $(".flow-excutor-content").children("div").eq(0).addClass("select");
+                    $("div[type='common']").parent().children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
                 var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                 $(".chooseExecutor").after(html);
-                $(".flow-user-item").addClass("select");
+                $("div[type='singleSign']").addClass("select");
+                $("div[type='countersign']").addClass("select");
             }
         }
     },
