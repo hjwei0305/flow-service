@@ -902,12 +902,13 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     },
     showWind: function () {
         var g = this;
+        var title;
         if (typeof( this.data.flowTypeList[0].flowDefinations[0]) =="undefined") {
-            var defaultTitleName = "未定义";
-            var defaultTitleCode = "此流程";
+            title = "此流程未定义";
         }else{
             var defaultTitleName = this.data.flowTypeList[0].flowDefinations[0].name;
             var defaultTitleCode = this.data.flowTypeList[0].flowDefinations[0].defKey;
+            title = "["+defaultTitleCode+"]-"+defaultTitleName;
         }
         var item = [];
         if (this.data.flowTypeList.length == 1) {
@@ -916,7 +917,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
-            title: "["+defaultTitleCode+"]-"+defaultTitleName,
+            title: title,
             width: 700,
             height: 450,
             id: "flowStartWind",

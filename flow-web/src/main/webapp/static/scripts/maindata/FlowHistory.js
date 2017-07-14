@@ -1,5 +1,5 @@
 /**
- * 流程历史页面
+ * 流程历史组件
  */
 if (!window.Flow) {
     window.Flow = {};
@@ -9,8 +9,6 @@ Flow.FlowHistory = function (options) {
     return new Flow.flow.FlowHistory(options);
 };
 Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
-    // width: null,
-    // height: null,
     instanceId: null,
     businessId: null,
     defaultData: null,
@@ -60,7 +58,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             if (this.instanceId == item.id) {
                 this.defaultData = instanceItem;
                 this.designInstanceId = instanceItem.id;
-                this.designFlowDefinationId = instanceItem.data.flowInstance.flowDefVersion.flowDefination.id
+                this.designFlowDefinationId = instanceItem.data.flowInstance.flowDefVersion.flowDefination.id;
                 this.versionCode = instanceItem.data.flowInstance.flowDefVersion.versionCode
             }
         }
@@ -76,7 +74,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         g.win = EUI.Window({
             title: g.lang.flowInfoText,
-            width: 615,
+            width: 620,
             height: 523,
             padding: 0,
             xtype: "Container",
@@ -156,7 +154,6 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             '					</div>' +
             '				</div>' +
             '			</div>';
-
     },
     getCenterHtml: function () {
         var g = this;
@@ -211,7 +208,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '								<div class="flow-historyright">' + g.lang.processorText + item.executorName + ' (' + item.actEndTime + ')</div>' +
                 '							</div>' +
                 '							<div class="flow-usetime">' + g.lang.timeCunsumingText + g.changeLongToString(item.actDurationInMillis) + '</div>' +
-                '							<div class="flow-remark">' + g.lang.handleAbstractText + (item.depict || g.lang.noneText) + '</div>' +
+                '							<div class="flowhistory-remark">' + g.lang.handleAbstractText + (item.depict || g.lang.noneText) + '</div>' +
                 '							 <div class="clear"></div> ' +
                 '						</div>';
         }

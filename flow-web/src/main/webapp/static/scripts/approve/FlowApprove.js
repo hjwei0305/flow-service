@@ -37,7 +37,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     iframe: null,
     counterApprove: "",//会签审批
     toChooseUserData: null,
-    chooseUserNode: null,
     initComponent: function () {
         this.pageUrl += "?id=" + this.busId;
         EUI.Container({
@@ -100,7 +99,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 value: true,
                 onChecked: function (value) {
                     g.counterApprove = true;
-                    var title=$(this).attr("title");
+                    var title = $(this).attr("title");
                     $(".flow-remark").text(title);
                 }
             }, {
@@ -108,7 +107,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 name: "false",
                 onChecked: function (value) {
                     g.counterApprove = false;
-                    var title=$(this).attr("title");
+                    var title = $(this).attr("title");
                     $(".flow-remark").text(title);
                 }
             }]
@@ -176,20 +175,20 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             }
         });
         //执行人选择
-        $(".flow-user-item").live("click", function () {
-            var type = $(this).attr("type");
+        $(".flow-user-item").die().live("click", function () {
+            var type = $(this).attr("type").toLowerCase();
             if (type == "common") {
-                if ($(".flow-excutor-content").children("div").length == 1) {
-                    if ($(".flow-user-item").hasClass("select")) {
-                        $(".flow-user-item").removeClass("select");
+                if ($(this).parent().children("div").length == 1) {
+                    if ($(this).hasClass("select")) {
+                        $(this).removeClass("select");
                     } else {
                         $(this).addClass("select");
                     }
                 } else {
-                    $(".flow-user-item").removeClass("select");
-                    $(this).addClass("select");
+                    $(this).addClass("select").siblings().removeClass("select");
                 }
-            } else {
+            }
+            if (type == "singlesign" || type == "countersign") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -200,7 +199,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
         //选择任意执行人
         $(".choose-btn").die().live("click", function () {
-            g.showChooseExecutorWind();
+            var currentChooseDivIndex = $(this).parent().attr("index");
+            var currentChooseTaskType = $(this).parent().children().eq(0).attr("flowtasktype");
+            g.showChooseExecutorWind(currentChooseDivIndex,currentChooseTaskType);
             return false;
         });
 
@@ -425,7 +426,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     showChooseUser: function () {
         var g = this;
         var data = this.toChooseUserData;
-        console.log(data)
         $(".flow-approve").hide();
         $(".flow-chooseuser").show();
         $(".flow-node-box").remove();
@@ -435,9 +435,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var nodeType = this.lang.generalTaskText;
             var iconCss = "choose-radio";
             if (node.uiUserType == "AnyOne") {
-                var html = g.showAnyContainer(data);
+                var html = g.showAnyContainer(data[i], i);
                 $(".chooseuser-title").after(html);
-                return;
+                continue;
             }
             if (node.flowTaskType == "singleSign") {
                 nodeType = this.lang.singleSignTaskText;
@@ -455,53 +455,31 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
-                    $(".flow-user-item").addClass("select");
+                    $("div[type='common']").addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseuser-title").after(html);
-                    $(".flow-excutor-content").children("div").eq(0).addClass("select");
+                    $("div[type='common']").parent().children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
                 var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                 $(".chooseuser-title").after(html);
-                $(".flow-user-item").addClass("select");
+                $("div[type='singleSign']").addClass("select");
+                $("div[type='countersign']").addClass("select");
             }
-
-            // for (var j = 0; j < node.executorSet.length; j++) {
-            //     var item = node.executorSet[j];
-            //     if(!item.positionId){
-            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-            //             '<div class="choose-icon ' + iconCss + '"></div>' +
-            //             '<div class="excutor-item-title">姓名：' + item.name +
-            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
-            //             '</div>';
-            //     }else{
-            //         nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
-            //             '<div class="choose-icon ' + iconCss + '"></div>' +
-            //             '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-            //             '，组织机构：' + item.organizationName + this.lang.number2Text + item.code + '</div>' +
-            //             '</div>';
-            //     }
-            // }
-            // nodeHtml += "</div></div>";
-            // html += nodeHtml;
         }
-        //  $(".chooseuser-title").after(html);
     }
     ,
-    showAnyContainer: function (data) {
+    showAnyContainer: function (data, i) {
         var g = this;
         var html = "";
-        for (var i = 0; i < data.length; i++) {
-            var node = data[i];
-            g.chooseUserNode = node;
-            var nodeType = g.lang.arbitraryExecutorText;
-            var iconCss = "choose-delete";
-            var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
-                '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
-                ']</div><div class="flow-excutor-content2">';
-        }
+        var node = data;
+        var nodeType = g.lang.arbitraryExecutorText;
+        var iconCss = "choose-delete";
+        var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
+            '<div class="flow-excutor-title" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
+            ']</div><div class="flow-excutor-content2">';
         nodeHtml += "</div>" +
             '<div class="choose-btn">' + g.lang.chooseText + '</div>' +
             "</div>";
@@ -623,11 +601,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         })
     }
     ,
-    showChooseExecutorWind: function () {
+    showChooseExecutorWind: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
         } else {
@@ -641,7 +619,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid()],
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex,currentChooseTaskType)],
             buttons: [{
                 title: g.lang.saveText,
                 iconCss: "ecmp-common-save",
@@ -652,7 +630,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
-                    g.addChooseUsersInContainer(selectRow);
+                    g.addChooseUsersInContainer(selectRow, currentChooseDivIndex,currentChooseTaskType);
                     g.chooseAnyOneWind.close();
                 }
             }, {
@@ -745,10 +723,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    InitChooseUserGrid: function () {
+    InitChooseUserGrid: function (currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (g.chooseUserNode.flowTaskType == "common") {
+        if (currentChooseTaskType == "common") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
@@ -815,15 +793,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         align: "center",
                         hidden: true
                     }],
-                    ondblClickRow: function () {
+                    ondblClickRow: function (rowid) {
                         var html = "";
-                        var rowData = EUI.getCmp("chooseUserGridPanel").getSelectRow();
-                        html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + rowData.id + '">' +
+                        var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
+                        html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' + g.lang.nameText + rowData["user.userName"] +
                             g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
                             '</div>';
-                        $(".flow-excutor-content2").html(html);
+                        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
                         g.chooseAnyOneWind.close();
                     }
                 }
@@ -831,24 +809,24 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    addChooseUsersInContainer: function (selectRow) {
+    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex,currentChooseTaskType) {
         var g = this;
         var html = "";
         var selectedUser = [];
-        $(".flow-excutor-content2 > div").each(function (index, domEle) {
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).children().each(function (index, domEle) {
             selectedUser.push(domEle.id)
         });
         for (var j = 0; j < selectRow.length; j++) {
             var item = selectRow[j];
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
-                html += '<div class="flow-anyOneUser-item select" type="' + g.chooseUserNode.flowTaskType + '" id="' + item.id + '">' +
+                html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">' + g.lang.nameText + item["user.userName"] +
                     g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
         }
-        $(".flow-excutor-content2").append(html);
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).append(html);
     }
     ,
     itemIdIsInArray: function (id, array) {
