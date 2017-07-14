@@ -5,15 +5,19 @@ import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
 import net.sf.json.JSONObject;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 
 
 /**
@@ -38,26 +42,35 @@ public class CommonCounterSignCompleteListener implements TaskListener{
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
 
+    @Autowired
+    private HistoryService historyService;
 
-	public CommonCounterSignCompleteListener(){
+    @Autowired
+    private RuntimeService runtimeService;
+
+    public CommonCounterSignCompleteListener(){
 		System.out.println("commonCounterSignCompleteListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
 
     private final Logger logger = LoggerFactory.getLogger(CommonCounterSignCompleteListener.class);
     public void notify(DelegateTask delegateTask) {
-        Integer counterSignAgree = (Integer) delegateTask.getVariable("counterSign_agree");//同意票数
-        if(counterSignAgree==null) {
-            counterSignAgree = 0;
+//        ProcessInstance processInstance =runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
+        Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(delegateTask.getProcessInstanceId());
+        Integer counterSignAgree = 0;//同意票数
+        if(processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey())!=null) {
+            counterSignAgree = (Integer) processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey()).getValue();//同意票数
         }
-        Integer counterSignOpposition = (Integer) delegateTask.getVariable("counterSign_opposition");//反对票数
-        if(counterSignOpposition==null) {
-            counterSignOpposition = 0;
+        Integer counterSignOpposition = 0;
+        if( processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey())!=null) {
+             counterSignOpposition = (Integer) processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey()).getValue();
         }
-        Integer counterSignWaiver = (Integer) delegateTask.getVariable("counterSign_waiver");//弃权票数
-        if(counterSignWaiver==null) {
-            counterSignWaiver = 0;
+
+        Integer counterSignWaiver = 0;
+        if( processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey())!=null) {
+            counterSignOpposition = (Integer) processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey()).getValue();
         }
+
         String approved = (String) delegateTask.getVariable("approved");
         Integer value = 0;//默认弃权
         if("true".equalsIgnoreCase(approved)){
@@ -67,10 +80,12 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         }else {
             counterSignWaiver++;
         }
-
-        delegateTask.setVariable("counterSign_agree", counterSignAgree);
-        delegateTask.setVariable("counterSign_opposition", counterSignOpposition);
-        delegateTask.setVariable("counterSign_waiver", counterSignWaiver);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_agree"+delegateTask.getTaskDefinitionKey(), counterSignAgree);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_opposition"+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
+//        processVariables.put("counterSign_agree", counterSignAgree);
+//        processVariables.put("counterSign_opposition", counterSignOpposition);
+//        processVariables.put("counterSign_waiver", counterSignWaiver);
 //        //完成会签的次数
 //        Integer completeCounter=(Integer)delegateTask.getVariable("nrOfCompletedInstances");
 //        //总循环次数

@@ -244,7 +244,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String actTaskId = flowTask.getActTaskId();
 
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
-        String businessId = flowTask.getFlowInstance().getBusinessId();
+        String businessId = flowInstance.getBusinessId();
         BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         String businessModelId = businessModel.getId();
         String appModuleId = businessModel.getAppModuleId();
@@ -268,24 +268,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                     .singleResult();
             String executionId = currTask.getExecutionId();
-
+//            ProcessInstance processInstance =runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+//            Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(processInstance.getId());
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
 
-           //通过票数
-            Integer counterSignAgree = 0;
-            if(processVariables.get("counterSign_agree")!=null){
-                counterSignAgree =  (Integer)processVariables.get("counterSign_agree").getValue();
-            }
-
             //完成会签的次数
-            Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+         //   Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
             //当前处于激活状态的任务实例
-            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-
+//            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+            Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowInstance.getActInstanceId());
             if(nrOfActiveInstances==1){//会签最后一个任务
 //              Boolean  approveResult = null;
+                //通过票数
+                Integer counterSignAgree = 0;
+                if(processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey())!=null) {
+                    counterSignAgree = (Integer) processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey()).getValue();
+                }
                 int counterDecision=100;
                 try {
                     counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
@@ -297,7 +297,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if("true".equalsIgnoreCase(approved)){
                     counterSignAgree++;
                 }
-
                 ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                         .getDeployedProcessDefinition(currTask
                                 .getProcessDefinitionId());
@@ -354,6 +353,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 for (PvmTransition pvmTransition : oriPvmTransitionList) {
                     pvmTransitionList.add(pvmTransition);
                 }
+            }else {
+                this.completeActiviti(actTaskId, variables);
             }
 //            else {
 //                try {
@@ -432,20 +433,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
+            if("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
+                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+                try {
+                    //逻辑代码，可以写上你的逻辑处理代码
 
-            org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-            DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-            def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-            TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-            try {
-                //逻辑代码，可以写上你的逻辑处理代码
-                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
-                transactionManager.commit(status);
-            } catch (Exception e) {
-                e.printStackTrace();
-                transactionManager.rollback(status);
-                throw e;
+                    flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
+                    transactionManager.commit(status);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    transactionManager.rollback(status);
+                    throw e;
+                }
             }
+
 
 
             //初始化新的任务
@@ -1436,20 +1440,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                         .singleResult();
                 String executionId = currTask.getExecutionId();
+                Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(executionId);
 
-                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
-                //完成会签的次数
-                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+
+//                //完成会签的次数
+//                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 //总循环次数
                 Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
                 //当前处于激活状态的任务实例
-                Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowTask.getFlowInstance().getActInstanceId());
 
                 if(nrOfActiveInstances==1){//会签最后一个执行人
                     Boolean  approveResult = null;
-                    Integer counterSignAgree = (Integer) processVariables.get("counterSign_agree").getValue();
-                    if(counterSignAgree==null) {
-                        counterSignAgree = 0;
+                    //通过票数
+                    Integer counterSignAgree = 0;
+                    if(processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey())!=null) {
+                         counterSignAgree = (Integer) processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey()).getValue();
                     }
                     Integer value = 0;//默认弃权
                     if("true".equalsIgnoreCase(approved)){
@@ -1853,7 +1859,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
             //当前处于激活状态的任务实例
-            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+//            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+            Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowTask.getFlowInstance().getActInstanceId());
             if(nrOfActiveInstances==1){//会签最后一个执行人
                 tempNodeInfo.setCounterSignLastTask(true);
             }
