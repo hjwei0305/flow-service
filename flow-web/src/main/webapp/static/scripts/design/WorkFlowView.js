@@ -489,7 +489,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [0, 0],
-                cornerRadius: 5
+                cornerRadius: 0
             }]
         });
         // 双击连线弹出UEL配置界面
@@ -628,7 +628,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [0, 0],
-                cornerRadius: 5
+                cornerRadius: 0
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
@@ -687,7 +687,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
 
             if(nodeType == "Approve" || nodeType == "CounterSign"){
-                var result = this.checkApproveAndCounterSign(name);
+                var result = this.checkApproveAndCounterSign(id,name);
                 if(!result){
                     return;
                 }
@@ -711,10 +711,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         return true;
     }
     ,
-    checkApproveAndCounterSign: function (name) {
+    checkApproveAndCounterSign: function (id,name) {
         var count = 0;
         for (var key in this.connectInfo) {
-            if (key.indexOf(id) != -1) {
+            if (key.startsWith(id)) {
                 count++;
             }
         }
