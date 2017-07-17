@@ -310,7 +310,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .findActivity(currTask.getTaskDefinitionKey());
 
                 PvmActivity destinationActivity = null;
-                if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
+                if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
                     List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
                     if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
                         for (PvmTransition pv : nextTransitionList) {
@@ -1482,7 +1482,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         counterSignAgree++;
                     }
 
-                    if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
+                    if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
                         approveResult = true;
                         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
                         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
