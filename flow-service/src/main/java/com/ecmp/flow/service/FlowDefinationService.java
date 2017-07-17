@@ -489,6 +489,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowInstance;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
         FlowStartResultVO  flowStartResultVO =  new FlowStartResultVO();
         Map<String, Object> userMap = flowStartVO.getUserMap();
@@ -1138,12 +1139,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void initTask(ProcessInstance instance) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-        if (instance.isEnded()) {//流程结束
-            flowInstance.setEnded(true);
-            flowInstance.setEndDate(new Date());
-            flowInstanceDao.save(flowInstance);
-            return;
-        }
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
 
