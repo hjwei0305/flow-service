@@ -49,7 +49,6 @@ public class CommonCounterSignCompleteListener implements TaskListener{
     private RuntimeService runtimeService;
 
     public CommonCounterSignCompleteListener(){
-		System.out.println("commonCounterSignCompleteListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
 
@@ -83,43 +82,5 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_agree"+delegateTask.getTaskDefinitionKey(), counterSignAgree);
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_opposition"+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
-//        processVariables.put("counterSign_agree", counterSignAgree);
-//        processVariables.put("counterSign_opposition", counterSignOpposition);
-//        processVariables.put("counterSign_waiver", counterSignWaiver);
-//        //完成会签的次数
-//        Integer completeCounter=(Integer)delegateTask.getVariable("nrOfCompletedInstances");
-//        //总循环次数
-//        Integer instanceOfNumbers=(Integer)delegateTask.getVariable("nrOfInstances");
-//        //当前处于激活状态的任务实例
-//        Integer nrOfActiveInstances=(Integer)delegateTask.getVariable("nrOfActiveInstances");
-//        Boolean  approveResult = null;
-//        if(nrOfActiveInstances==1){//会签最后一个执行人
-//            int counterDecision=100;
-//            try {
-//
-//                ExecutionEntity taskEntity = (ExecutionEntity) delegateTask.getExecution();
-//                String actTaskDefKey = taskEntity.getActivityId();
-//                String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-//                ProcessInstance instance = taskEntity.getProcessInstance();
-//                String businessId = instance.getBusinessKey();
-//                FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
-//                String flowDefJson = flowDefVersion.getDefJson();
-//                JSONObject defObj = JSONObject.fromObject(flowDefJson);
-//                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-////        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
-//                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-//                counterDecision = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
-//            }catch (Exception e){
-//                logger.error(e.getMessage());
-//            }
-////            if(counterDecision<=((counterSignAgree/instanceOfNumbers)*100)){//获取通过节点
-////                approveResult = true;}
-////             else{
-////                approveResult=false;
-////            }
-////            delegateTask.setVariable("approveResult",approveResult);
-//        }
-        System.out.println("success call commonCounterSignCompleteListener------------");
-
     }
 }
