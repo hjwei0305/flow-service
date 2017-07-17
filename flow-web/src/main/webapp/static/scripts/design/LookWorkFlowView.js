@@ -47,7 +47,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 760,
+            width: 850,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -56,23 +56,24 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             border: false,
             itemspace: 5,
             defaultConfig: {
-                labelWidth: 88,
+                labelWidth: 80,
                 readonly: true,
                 xtype: "TextField"
             },
             items: [{
                 name: "flowTypeName",
-                title: "流程类型"
+                title: "流程类型",
+                width:200
             }, {
                 name: "id",
-                width: 90,
+                width: 120,
                 labelWidth: 85,
                 title: "流程代码"
             }, {
                 xtype: "TextField",
                 title: "流程名称",
                 labelWidth: 85,
-                width: 200,
+                width: 250,
                 name: "name"
             }]
         }, {

@@ -94,6 +94,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
+                width:190,
                 readonly: !isCopy && this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
@@ -137,7 +138,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "TextField",
                 name: "id",
-                width: 100,
+                width: 110,
                 readonly: !isCopy && this.id ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
@@ -146,14 +147,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 displayText: "请输入流程名称",
                 labelWidth: 85,
-                width: 220,
+                width: 243,
                 allowBlank: false,
                 name: "name"
             }, {
                 xtype: "NumberField",
                 displayText: "请输入优先级",
                 labelWidth: 85,
-                width: 90,
+                width: 100,
                 allowNegative: false,
                 name: "priority"
             }]
