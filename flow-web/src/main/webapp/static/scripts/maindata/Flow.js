@@ -201,7 +201,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".choose-btn").die().live("click", function () {
             var currentChooseDivIndex = $(this).parent().attr("index");
             var currentChooseTaskType = $(this).parent().children().eq(0).attr("flowtasktype");
-            g.showChooseExecutorWind(currentChooseDivIndex,currentChooseTaskType);
+            g.showChooseExecutorWind(currentChooseDivIndex, currentChooseTaskType);
             return false;
         });
 
@@ -323,7 +323,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
-            console.log(text);
             $(".flow-remark").text(text);
         })
     }
@@ -455,11 +454,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".flow-operate").before(html);
-                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
+                    $("div[index=" + i + "]").children().eq(1).children().eq(0).addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".flow-operate").before(html);
-                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
+                    $("div[index=" + i + "]").children().eq(1).children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
@@ -601,7 +600,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         })
     }
     ,
-    showChooseExecutorWind: function (currentChooseDivIndex,currentChooseTaskType) {
+    showChooseExecutorWind: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
@@ -619,7 +618,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex,currentChooseTaskType)],
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
                 title: g.lang.saveText,
                 iconCss: "ecmp-common-save",
@@ -630,7 +629,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
-                    g.addChooseUsersInContainer(selectRow, currentChooseDivIndex,currentChooseTaskType);
+                    g.addChooseUsersInContainer(selectRow, currentChooseDivIndex, currentChooseTaskType);
                     g.chooseAnyOneWind.close();
                 }
             }, {
@@ -723,7 +722,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    InitChooseUserGrid: function (currentChooseDivIndex,currentChooseTaskType) {
+    InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
         if (currentChooseTaskType == "common") {
@@ -809,7 +808,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         }
     }
     ,
-    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex,currentChooseTaskType) {
+    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var html = "";
         var selectedUser = [];
@@ -903,12 +902,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     showWind: function () {
         var g = this;
         var title;
-        if (typeof( this.data.flowTypeList[0].flowDefinations[0]) =="undefined") {
+        if (typeof( this.data.flowTypeList[0].flowDefinations[0]) == "undefined") {
             title = "此流程未定义";
-        }else{
+        } else {
             var defaultTitleName = this.data.flowTypeList[0].flowDefinations[0].name;
             var defaultTitleCode = this.data.flowTypeList[0].flowDefinations[0].defKey;
-            title = "["+defaultTitleCode+"]-"+defaultTitleName;
+            title = "[" + defaultTitleCode + "]-" + defaultTitleName;
         }
         var item = [];
         if (this.data.flowTypeList.length == 1) {
@@ -969,7 +968,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         $(".flowstartchoose-btn").die().live("click", function () {
             var currentChooseDivIndex = $(this).parent().attr("index");
             var currentChooseTaskType = $(this).parent().children().eq(0).attr("flowtasktype");
-            g.showChooseExecutorWind(currentChooseDivIndex,currentChooseTaskType);
+            g.showChooseExecutorWind(currentChooseDivIndex, currentChooseTaskType);
             return false;
         });
         //删除选择的执行人
@@ -1044,7 +1043,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                                 g.data = result.data;
                                 var titleName = result.data.flowTypeList[0].flowDefinations[0].name;
                                 var titleCode = result.data.flowTypeList[0].flowDefinations[0].defKey;
-                                EUI.getCmp("flowStartWind").setTitle("["+titleCode+"]-"+titleName);
+                                EUI.getCmp("flowStartWind").setTitle("[" + titleCode + "]-" + titleName);
                                 $(".flowstart-node-box").remove();
 
                                 g.showChooseUser();
@@ -1110,11 +1109,11 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").append(html);
-                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
+                    $("div[index=" + i + "]").children().eq(1).children().eq(0).addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").append(html);
-                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
+                    $("div[index=" + i + "]").children().eq(1).children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
@@ -1238,7 +1237,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    showChooseExecutorWind: function (currentChooseDivIndex,currentChooseTaskType) {
+    showChooseExecutorWind: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
@@ -1256,7 +1255,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex,currentChooseTaskType)],
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
                 title: "保存",
                 iconCss: "ecmp-common-save",
@@ -1267,7 +1266,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
-                    g.addChooseUsersInContainer(selectRow,currentChooseDivIndex,currentChooseTaskType);
+                    g.addChooseUsersInContainer(selectRow, currentChooseDivIndex, currentChooseTaskType);
                     g.chooseAnyOneWind.close();
                 }
             }, {
@@ -1356,7 +1355,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         }
     },
-    InitChooseUserGrid: function (currentChooseDivIndex,currentChooseTaskType) {
+    InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
         if (currentChooseTaskType == "common") {
@@ -1430,18 +1429,18 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                             '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
                             '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
                             '</div>';
-                        $("div[index="+currentChooseDivIndex+"]").children().eq(1).html(html);
+                        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
                         g.chooseAnyOneWind.close();
                     }
                 }
             }]
         }
     },
-    addChooseUsersInContainer: function (selectRow,currentChooseDivIndex,currentChooseTaskType) {
+    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var html = "";
         var selectedUser = [];
-        $("div[index="+currentChooseDivIndex+"]").children().eq(1).children().each(function (index, domEle) {
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).children().each(function (index, domEle) {
             selectedUser.push(domEle.id)
         });
         for (var j = 0; j < selectRow.length; j++) {
@@ -1454,7 +1453,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     '</div>';
             }
         }
-        $("div[index="+currentChooseDivIndex+"]").children().eq(1).append(html);
+        $("div[index=" + currentChooseDivIndex + "]").children().eq(1).append(html);
     },
     itemIdIsInArray: function (id, array) {
         for (var i = 0; i < array.length; i++) {
@@ -1583,7 +1582,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             }, {
                 xtype: "Button",
                 title: g.lang.showFlowDiagramText,
-                iconCss:"ecmp-common-view",
+                iconCss: "ecmp-common-view",
                 handler: function () {
                     $(".toptop-right").addClass("flowselect");
                     g.showDesgin()
