@@ -106,6 +106,19 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             unit: "%",
             hidden: this.nodeType == "CounterSign" ? false : true,
             name: "counterDecision"
+        }, {
+            xtype: "RadioGroup",
+            name: "isSequential",
+            title: "执行策略",
+            hidden: this.nodeType == "CounterSign" ? false : true,
+            items: [{
+                title: "并行",
+                name: "false",
+                checked: true
+            }, {
+                title: "串行",
+                name: "true"
+            }]
         }];
         if (this.nodeType != "CounterSign") {
             items = items.concat([{

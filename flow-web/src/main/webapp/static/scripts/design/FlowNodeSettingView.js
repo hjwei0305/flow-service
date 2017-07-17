@@ -172,7 +172,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
         }];
         if (this.nodeType == "CounterSign") {
-            items.push({
+            items = items.concat([{
                 xtype: "NumberField",
                 title: "会签决策",
                 labelWidth: 100,
@@ -185,7 +185,20 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 allowNegative: false,
                 allowBlank: false,
                 name: "counterDecision"
-            })
+            }, {
+                xtype: "RadioGroup",
+                name: "isSequential",
+                title: "执行策略",
+                allowBlank: false,
+                items: [{
+                    title: "并行",
+                    name: "false",
+                    checked: true
+                }, {
+                    title: "串行",
+                    name: "true"
+                }]
+            }]);
         } else {
             items = items.concat([{
                 xtype: "CheckBox",
@@ -1082,7 +1095,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             data.rowdata = rowdata;
         } else if (userType == "SelfDefinition") {
             var selfData = EUI.getCmp("selfDef").getSubmitValue();
-            EUI.apply(data,selfData);
+            EUI.apply(data, selfData);
         }
         return data;
     },
