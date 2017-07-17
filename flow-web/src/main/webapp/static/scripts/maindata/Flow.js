@@ -455,11 +455,11 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".flow-operate").before(html);
-                    $("div[type='common']").addClass("select");
+                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".flow-operate").before(html);
-                    $("div[type='common']").parent().children().eq(0).addClass("select");
+                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
@@ -1110,11 +1110,11 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").append(html);
-                    $("div[type='common']").addClass("select");
+                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".chooseExecutor").append(html);
-                    $("div[type='common']").parent().children().eq(0).addClass("select");
+                    $("div[index="+i+"]").children().eq(1).children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
