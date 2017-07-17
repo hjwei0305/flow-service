@@ -150,7 +150,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "额定工时",
             allowNegative: false,
             name: "executeTime",
-            width: 262,
             labelWidth: 100,
             unit: "分钟"
         }, {
@@ -177,7 +176,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "NumberField",
                 title: "会签决策",
                 labelWidth: 100,
-                width: 283,
                 unit: "%",
                 minValue: 1,
                 maxValue: 100.1,
