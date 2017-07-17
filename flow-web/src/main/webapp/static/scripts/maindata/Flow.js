@@ -436,7 +436,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var iconCss = "choose-radio";
             if (node.uiUserType == "AnyOne") {
                 var html = g.showAnyContainer(data[i], i);
-                $(".chooseuser-title").after(html);
+                $(".flow-operate").before(html);
                 continue;
             }
             if (node.flowTaskType == "singleSign") {
@@ -454,17 +454,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (iconCss == "choose-radio") {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                    $(".chooseuser-title").after(html);
+                    $(".flow-operate").before(html);
                     $("div[type='common']").addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                    $(".chooseuser-title").after(html);
+                    $(".flow-operate").before(html);
                     $("div[type='common']").parent().children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
                 var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                $(".chooseuser-title").after(html);
+                $(".flow-operate").before(html);
                 $("div[type='singleSign']").addClass("select");
                 $("div[type='countersign']").addClass("select");
             }
@@ -1093,7 +1093,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var iconCss = "choose-radio";
             if (node.uiUserType == "AnyOne") {
                 var html = g.showAnyContainer(data[i], i);
-                $(".chooseExecutor").after(html);
+                $(".chooseExecutor").append(html);
                 continue;
             }
             if (node.flowTaskType == "singleSign") {
@@ -1109,17 +1109,17 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (iconCss == "choose-radio") {
                 if (node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                    $(".chooseExecutor").after(html);
+                    $(".chooseExecutor").append(html);
                     $("div[type='common']").addClass("select");
                 } else {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                    $(".chooseExecutor").after(html);
+                    $(".chooseExecutor").append(html);
                     $("div[type='common']").parent().children().eq(0).addClass("select");
                 }
             }
             if (iconCss == "choose-checkbox") {
                 var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
-                $(".chooseExecutor").after(html);
+                $(".chooseExecutor").append(html);
                 $("div[type='singleSign']").addClass("select");
                 $("div[type='countersign']").addClass("select");
             }
