@@ -323,7 +323,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
-            console.log(text);
             $(".flow-remark").text(text);
         })
     }
