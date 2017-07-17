@@ -52,7 +52,6 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
 
     private final Logger logger = LoggerFactory.getLogger(MessageAfterListener.class);
 	public MessageAfterListener(){
-		System.out.println("messageAfterListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
     @Autowired
