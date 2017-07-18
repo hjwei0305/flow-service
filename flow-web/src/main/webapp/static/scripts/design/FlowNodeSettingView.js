@@ -190,14 +190,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "isSequential",
                 title: "执行策略",
                 labelWidth: 100,
-                allowBlank: false,
                 items: [{
                     title: "并行",
-                    name: "false",
+                    name: false,
                     checked: true
                 }, {
                     title: "串行",
-                    name: "true"
+                    name: true
                 }]
             }]);
         } else {
