@@ -298,7 +298,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
             }
         }
-        if (data.counterSignLastTask) {
+        if (!data.counterSignLastTask) {
             $(".flow-next").text(this.lang.finishText);
         }
         if (data.length == 1 && data[0].type.toLowerCase().indexOf("endevent") != -1) {

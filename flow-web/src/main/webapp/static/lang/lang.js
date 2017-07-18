@@ -1,4 +1,4 @@
-if(!window.Flow) {
+if (!window.Flow) {
     window.Flow = {};
     EUI.ns("Flow.flow");
 }
@@ -35,9 +35,9 @@ var common_lang = {
     submitText: "提交",
     finishText: "完成",
     editText: "编辑",
-    unFilledText:"存在必填项未输入，请确认！",
+    unFilledText: "存在必填项未输入，请确认！",
     searchByNameMsgText: "请输入名称进行搜索",
-    copyHintMessage:"请选择一条要参考的行项目!",
+    copyHintMessage: "请选择一条要参考的行项目!",
     searchByCodeOrNameText: "请输入代码或名称进行搜索"
 };
 
@@ -135,8 +135,8 @@ if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         addResourceText: "新增",
         copyText: "参考创建",
-        activateHintMessageText:"您确定要激活吗？",
-        freezeHintMessageText:"您确定要冻结吗？",
+        activateHintMessageText: "您确定要激活吗？",
+        freezeHintMessageText: "您确定要冻结吗？",
         activateMaskMessageText: "正在激活，请稍候...",
         freezeMaskMessageText: "正在冻结，请稍候...",
         belongToBusinessModelText: "所属业务实体模型",
@@ -191,7 +191,7 @@ if (EUI.FlowDefinationView) {
 
 if (EUI.WorkFlowView) {
     EUI.apply(EUI.WorkFlowView.prototype.lang, {
-        organizationText:"组织机构",
+        organizationText: "组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
@@ -202,9 +202,9 @@ if (EUI.WorkFlowView) {
         normalTaskText: "普通任务",
         singleSignTaskText: "单签任务",
         counterSignTaskText: "会签任务",
-        approveTaskText:"审批任务",
-        parallelTaskText:"并行任务",
-        serialTaskText:"串行任务",
+        approveTaskText: "审批任务",
+        parallelTaskText: "并行任务",
+        serialTaskText: "串行任务",
         serviceTaskText: "服务任务",
         scriptTaskText: "脚本任务",
         emailTaskText: "邮件任务",
@@ -222,7 +222,7 @@ if (EUI.WorkFlowView) {
 
 if (EUI.LookWorkFlowView) {
     EUI.apply(EUI.LookWorkFlowView.prototype.lang, {
-        organizationText:"组织机构",
+        organizationText: "组织机构",
         eventTitleText: "事件",
         taskTitleText: "任务",
         gatewayTitleText: "网关",
@@ -233,7 +233,7 @@ if (EUI.LookWorkFlowView) {
         normalTaskText: "普通任务",
         singleSignTaskText: "单签任务",
         counterSignTaskText: "会签任务",
-        approveTaskText:"审批任务",
+        approveTaskText: "审批任务",
         userTaskText: "审批任务",
         serviceTaskText: "服务任务",
         scriptTaskText: "脚本任务",
@@ -250,96 +250,96 @@ if (EUI.LookWorkFlowView) {
     }, common_lang);
 }
 
- if(Flow.flow.FlowStart){
-     EUI.apply(Flow.flow.FlowStart.prototype.lang, {
-         launchMaskMsgText:"正在启动，请稍候",
-         notFoundFlowDefinitionText:"找不到流程定义",
-         notFoundFlowTypeText:"找不到流程类型",
-         launchFlowText:"流程启动",
-         chooseFlowTypeText:"选择流程类型",
-         flowTypeText:"流程类型",
-         generalTaskText:"普通任务",
-         singleSignTaskText:"单签任务",
-         counterSignTaskText:"会签任务",
-         approveTaskText:"审批任务",
-         nameText:"姓名：",
-         number2Text:"，编号：",
-         jobText:"，岗位：",
-         organizationText:"，组织机构：",
-         chooseMsgText:"请选择[",
-         executorMsgText:"]的执行人",
-         launchSuccessText:"启动成功"
-     },common_lang);
- }
+if (Flow.flow.FlowStart) {
+    Flow.flow.FlowStart.prototype.lang = EUI.applyIf({
+        launchMaskMsgText: "正在启动，请稍候",
+        notFoundFlowDefinitionText: "找不到流程定义",
+        notFoundFlowTypeText: "找不到流程类型",
+        launchFlowText: "流程启动",
+        chooseFlowTypeText: "选择流程类型",
+        flowTypeText: "流程类型",
+        generalTaskText: "普通任务",
+        singleSignTaskText: "单签任务",
+        counterSignTaskText: "会签任务",
+        approveTaskText: "审批任务",
+        nameText: "姓名：",
+        number2Text: "，编号：",
+        jobText: "，岗位：",
+        organizationText: "，组织机构：",
+        chooseMsgText: "请选择[",
+        executorMsgText: "]的执行人",
+        launchSuccessText: "启动成功"
+    }, common_lang);
+}
 
- if(Flow.flow.FlowApprove){
-     EUI.apply(Flow.flow.FlowApprove.prototype.lang, {
-         businessUnitText:"业务单号：",
-         docMarkerText:"制单人：",
-         preExecutorText:"上一步执行人：",
-         preApprovalOpinionsText:"上一步审批意见：",
-         decisionText:"决策：",
-         handlingSuggestionText:"处理意见",
-         nextStepText:"下一步",
-         formDetailText:"表单明细",
-         collectText:"收起",
-         chooseNextExecutorText:"选择下一步执行人",
-         previousStepText:"上一步",
-         spreadText:"展开",
-         chooseNextExecuteNodeText:"请选择下一步执行节点",
-         operationHintText:"操作提示",
-         stopFlowMsgText:"当前操作流程将会结束，是否继续？",
-         generalTaskText:"普通任务",
-         singleSignTaskText:"单签任务",
-         counterSignTaskText:"会签任务",
-         approveTaskText:"审批任务",
-         nameText:"姓名：",
-         nameText2:"名称：",
-         number2Text:"，编号：",
-         jobText:"，岗位：",
-         organizationText:"，组织机构：",
-         chooseMsgText:"请选择[",
-         executorMsgText:"]的执行人",
-         seachByIdOrNameText:"请输入用户名称或编号进行搜索",
-         organization2Text:"组织机构",
-         userNumberText:"员工编号",
-         userNameText:"用户名称",
-         userIDText:"用户ID",
-         freezeText:"(已冻结)",
-         arbitraryExecutorText:"任意执行人",
-         chooseText:"选择",
-         chooseArbitraryExecutorText:"选择任意执行人",
-         chooseArbitraryExecutorMsgText:"选择任意执行人【请双击进行选择】"
+if (Flow.flow.FlowApprove) {
+    Flow.flow.FlowApprove.prototype.lang = EUI.applyIf({
+        businessUnitText: "业务单号：",
+        docMarkerText: "制单人：",
+        preExecutorText: "上一步执行人：",
+        preApprovalOpinionsText: "上一步审批意见：",
+        decisionText: "决策：",
+        handlingSuggestionText: "处理意见",
+        nextStepText: "下一步",
+        formDetailText: "表单明细",
+        collectText: "收起",
+        chooseNextExecutorText: "选择下一步执行人",
+        previousStepText: "上一步",
+        spreadText: "展开",
+        chooseNextExecuteNodeText: "请选择下一步执行节点",
+        operationHintText: "操作提示",
+        stopFlowMsgText: "当前操作流程将会结束，是否继续？",
+        generalTaskText: "普通任务",
+        singleSignTaskText: "单签任务",
+        counterSignTaskText: "会签任务",
+        approveTaskText: "审批任务",
+        nameText: "姓名：",
+        nameText2: "名称：",
+        number2Text: "，编号：",
+        jobText: "，岗位：",
+        organizationText: "，组织机构：",
+        chooseMsgText: "请选择[",
+        executorMsgText: "]的执行人",
+        seachByIdOrNameText: "请输入用户名称或编号进行搜索",
+        organization2Text: "组织机构",
+        userNumberText: "员工编号",
+        userNameText: "用户名称",
+        userIDText: "用户ID",
+        freezeText: "(已冻结)",
+        arbitraryExecutorText: "任意执行人",
+        chooseText: "选择",
+        chooseArbitraryExecutorText: "选择任意执行人",
+        chooseArbitraryExecutorMsgText: "选择任意执行人【请双击进行选择】"
 
-     },common_lang);
- }
+    }, common_lang);
+}
 
-if(EUI.BusinessModelView){
+if (EUI.BusinessModelView) {
     EUI.apply(EUI.BusinessModelView.prototype.lang, {
-        showConditionPropertiesText:"查看条件属性",
-        configWorkSpaceText:"配置工作界面",
-        configServerLocationText:"配置服务地址",
-        applyModuleCodeText:"应用模块Code",
-        dataAccessObjectText:"数据访问对象",
-        formURLText:"表单URL",
-        configExecutorText:"自定义执行人配置"
+        showConditionPropertiesText: "查看条件属性",
+        configWorkSpaceText: "配置工作界面",
+        configServerLocationText: "配置服务地址",
+        applyModuleCodeText: "应用模块Code",
+        dataAccessObjectText: "数据访问对象",
+        formURLText: "表单URL",
+        configExecutorText: "自定义执行人配置"
 
-    },common_lang);
+    }, common_lang);
 }
 
-if(EUI.CustomExecutorView){
+if (EUI.CustomExecutorView) {
     EUI.apply(EUI.CustomExecutorView.prototype.lang, {
-        businessEntityText:"业务实体",
-        allocationExectorText:"分配执行人",
-        userIDText:"用户ID",
-        userNameText:"用户名称",
-        userNumberText:"员工编号",
-        organizationText:"组织机构",
-        customExecutorConfigText:"自定义执行人配置"
-    },common_lang);
+        businessEntityText: "业务实体",
+        allocationExectorText: "分配执行人",
+        userIDText: "用户ID",
+        userNameText: "用户名称",
+        userNumberText: "员工编号",
+        organizationText: "组织机构",
+        customExecutorConfigText: "自定义执行人配置"
+    }, common_lang);
 }
 
-if(EUI.FlowDefinationView){
+if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
         flowDefinitionVersionText: "流程定义版本",
         definitionIDText: "定义ID",
@@ -358,42 +358,42 @@ if(EUI.FlowDefinationView){
         launchConditionUELText: "启动条件UEL",
         organizationIDText: "组织机构ID",
         organizationCodeText: "组织机构code ",
-        flowDefinitionStatusText : "流程定义状态",
+        flowDefinitionStatusText: "流程定义状态",
         unReleasedText: "未发布",
         activeText: "激活",
         suspendText: "冻结",
-        viewFlowDefText:"查看流程定义"
-    },common_lang);
+        viewFlowDefText: "查看流程定义"
+    }, common_lang);
 }
 
- if(Flow.flow.FlowHistory){
-     EUI.apply(Flow.flow.FlowHistory.prototype.lang, {
-         queryMaskMessageText: "正在加载，请稍候...",
-         startText: "发起",
-         flowInfoText: "流程信息",
-         launchHistoryText: "启动历史",
-         showFlowDiagramText: "查看流程图",
-         processStatusText: "当前处理状态",
-         flowProcessHistoryText: "流程处理历史",
-         flowEndText: "流程结束",
-         flowLaunchText: "流程启动",
-         processorText: "处理人：",
-         timeCunsumingText: "耗时：",
-         handleAbstractText: "处理摘要：",
-         noneText: "无",
-         flowFinishedText: "流程已处理完成",
-         waitProcessorText: "等待处理人：",
-         taskArrivalTimeText: "任务到达时间：",
-         dayText: "天",
-         hourText: "小时",
-         minuteText: "分",
-         secondText: "秒",
-         flowDiagramText: "流程图"
+if (Flow.flow.FlowHistory) {
+    Flow.flow.FlowHistory.prototype.lang = EUI.applyIf( {
+        queryMaskMessageText: "正在加载，请稍候...",
+        startText: "发起",
+        flowInfoText: "流程信息",
+        launchHistoryText: "启动历史",
+        showFlowDiagramText: "查看流程图",
+        processStatusText: "当前处理状态",
+        flowProcessHistoryText: "流程处理历史",
+        flowEndText: "流程结束",
+        flowLaunchText: "流程启动",
+        processorText: "处理人：",
+        timeCunsumingText: "耗时：",
+        handleAbstractText: "处理摘要：",
+        noneText: "无",
+        flowFinishedText: "流程已处理完成",
+        waitProcessorText: "等待处理人：",
+        taskArrivalTimeText: "任务到达时间：",
+        dayText: "天",
+        hourText: "小时",
+        minuteText: "分",
+        secondText: "秒",
+        flowDiagramText: "流程图"
 
-     },common_lang);
- }
+    }, common_lang);
+}
 
-if(EUI.FlowHistoryView){
+if (EUI.FlowHistoryView) {
     EUI.apply(EUI.FlowHistoryView.prototype.lang, {
         searchByTaskNameText: "请输入任务名进行搜索",
         reverseText: "撤销",
@@ -417,10 +417,10 @@ if(EUI.FlowHistoryView){
         reverseTaskMsgText: "确定撤销当前任务吗？",
         processingText: "正在执行"
 
-    },common_lang);
+    }, common_lang);
 }
 
-if(EUI.FlowInstanceView){
+if (EUI.FlowInstanceView) {
     EUI.apply(EUI.FlowInstanceView.prototype.lang, {
         flowDefinitionVersionText: "流程定义版本",
         showDoneText: "查看已办",
@@ -446,20 +446,20 @@ if(EUI.FlowInstanceView){
         taskProcessTimeText: "任务执行时长",
         lastUpdateTimeText: "最后更新时间"
 
-    },common_lang);
+    }, common_lang);
 }
 
-if(EUI.FlowServiceUrlView){
+if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         businessEntityText: "业务实体",
         totalText: "全部",
         searchByNameMsgText: "请输入名称进行搜索",
         businessEntityModelText: "所属业务实体模型"
 
-    },common_lang);
+    }, common_lang);
 }
 
-if(EUI.FlowTaskView){
+if (EUI.FlowTaskView) {
     EUI.apply(EUI.FlowTaskView.prototype.lang, {
         searchByNameMsgText: "请输入任务名进行搜索",
         passText: "通过",
@@ -480,17 +480,16 @@ if(EUI.FlowTaskView){
         processingText: "正在执行"
 
 
-    },common_lang);
+    }, common_lang);
 }
 
-if(EUI.FlowTypeView){
+if (EUI.FlowTypeView) {
     EUI.apply(EUI.FlowTypeView.prototype.lang, {
-        businessEntityText:"业务实体",
-        totalText:"全部"
-    },common_lang);
+        businessEntityText: "业务实体",
+        totalText: "全部"
+    }, common_lang);
 }
 
-if(EUI.WorkPageUrlView){
-    EUI.apply(EUI.WorkPageUrlView.prototype.lang, {
-    },common_lang);
+if (EUI.WorkPageUrlView) {
+    EUI.apply(EUI.WorkPageUrlView.prototype.lang, {}, common_lang);
 }

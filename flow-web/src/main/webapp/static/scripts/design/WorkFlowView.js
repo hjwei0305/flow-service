@@ -930,7 +930,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 css = "singletask";
             } else {
                 css = "countertask";
-                if (node.nodeConfig&&node.nodeConfig.normal.isSequential) {
+                if (node.nodeConfig && node.nodeConfig.normal.isSequential) {
                     css = "countertask serial-countertask";
                 } else {
                     css = "countertask parallel-countertask";
