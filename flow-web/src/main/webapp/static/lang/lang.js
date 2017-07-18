@@ -294,6 +294,7 @@ if (EUI.LookWorkFlowView) {
          counterSignTaskText:"会签任务",
          approveTaskText:"审批任务",
          nameText:"姓名：",
+         nameText2:"名称：",
          number2Text:"，编号：",
          jobText:"，岗位：",
          organizationText:"，组织机构：",
