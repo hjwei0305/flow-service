@@ -271,7 +271,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
-            } else {
+            }
+            else {
                 var iconCss = "choose-radio";
                 if (item.uiType == "checkbox") {
                     iconCss = "choose-checkbox";
