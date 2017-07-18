@@ -271,6 +271,16 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
+            }else if(item.currentTaskType == "ParallelTask"){
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【并行任务】</div></div></div>';
+                // g.initDealCheckBox();
+                this.desionType = 2;
+            }else if(item.currentTaskType == "SerialTask"){
+                html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
+                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【串行任务】</div></div></div>';
+                // g.initDealCheckBox();
+                this.desionType = 2;
             } else {
                 var iconCss = "choose-radio";
                 if (item.uiType == "checkbox") {
