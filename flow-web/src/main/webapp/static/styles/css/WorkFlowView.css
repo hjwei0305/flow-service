@@ -1,7 +1,6 @@
-.flow-content *{
+.flow-content * {
     font-size: 12px;
 }
-
 
 .flow-grid {
     background: url("../images/flow_grid.png") repeat;
@@ -108,6 +107,7 @@
     line-height: 35px;
     vertical-align: middle;
 }
+
 .flow-event-terminateend {
     background: url("../images/flow_terminate_end.png") no-repeat scroll 0 0/cover;
     display: inline-block;
@@ -195,17 +195,37 @@
     height: 20px;
     width: 16px;
 }
+
 .flow-task .singletask {
     background: url("../images/singletask.png") no-repeat;
     display: inline-block;
     height: 20px;
     width: 22px;
 }
+
 .flow-task .countertask {
     background: url("../images/countertask.png") no-repeat;
     display: inline-block;
     height: 20px;
     width: 24px;
+}
+
+.flow-task .serial-countertask::before {
+    background: url("../images/flow_serial_task.png") no-repeat scroll 0 0 / cover;
+    content: "";
+    float: left;
+    height: 12px;
+    margin-left: -28px;
+    width: 12px;
+}
+
+.flow-task .parallel-countertask::before {
+    background: url("../images/flow_parallel_task.png") no-repeat scroll 0 0 / cover;
+    content: "";
+    float: left;
+    height: 12px;
+    margin-left: -28px;
+    width: 12px;
 }
 
 .flow-task .servicetask {
@@ -235,18 +255,21 @@
     height: 20px;
     width: 18px;
 }
+
 .flow-task .approvetask {
     background: url("../images/flow_approve_task.png") no-repeat;
     display: inline-block;
     height: 20px;
     width: 20px;
 }
+
 .flow-task .paralleltask {
     background: url("../images/flow_parallel_task.png") no-repeat;
     display: inline-block;
     height: 20px;
     width: 20px;
 }
+
 .flow-task .serialtask {
     background: url("../images/flow_serial_task.png") no-repeat;
     display: inline-block;
@@ -271,7 +294,7 @@
     bottom: 46%;
 }
 
-.flow-gateway-box .node-dot{
+.flow-gateway-box .node-dot {
     right: 10px;
 }
 
@@ -426,6 +449,7 @@
     z-index: 21;
     max-width: 160px;
 }
+
 .condetail-operate {
     width: 55px;
     height: 15px;
@@ -433,12 +457,12 @@
     margin: 0 auto;
     text-align: center;
 }
+
 .condetail-delete {
     cursor: pointer;
 }
 
-
-.node-delete{
+.node-delete {
     background-color: red;
     border-radius: 50%;
     color: white;
@@ -450,18 +474,17 @@
     z-index: 21;
 }
 
-
 .node-title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.node-choosed .node-title{
+.node-choosed .node-title {
     max-width: 130px;
 }
 
-.flow-gateway-iconbox{
+.flow-gateway-iconbox {
     display: inline-block;
     height: 55px;
     line-height: 55px;
@@ -469,7 +492,7 @@
     width: 55px;
 }
 
-.flow-gateway-iconbox div{
+.flow-gateway-iconbox div {
     vertical-align: middle;
 }
 
@@ -485,7 +508,6 @@
     height: 53px;
     width: 53px;
 }
-
 
 /*兼容*/
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
@@ -578,25 +600,26 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     width: 136px;
 }
 
-.notify-user-item:nth-child(2){
+.notify-user-item:nth-child(2) {
     border-left: none;
     border-right: none;
 }
 
-.flow-content .currentNode{
+.flow-content .currentNode {
     background: lightgreen none repeat scroll 0 0;
     border: 1px solid green;
     box-shadow: 0 0 8px lightgreen;
     color: white;
 }
 
-.arrow-right{
+.arrow-right {
     width: 22px;
     margin: 130px auto 0;
     margin-top: 149px;
     cursor: pointer;
 }
-.arrow-left{
+
+.arrow-left {
     width: 22px;
     cursor: pointer;
     margin: 45px auto 0;

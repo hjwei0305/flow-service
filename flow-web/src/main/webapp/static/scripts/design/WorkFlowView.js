@@ -94,7 +94,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }]
                 },
                 labelWidth: 85,
-                width:190,
+                width: 190,
                 readonly: !isCopy && this.id ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
@@ -422,14 +422,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         input.text(value);
                     });
                 } else {
+                    var nodeType = dom.attr("nodeType");
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
                         businessModelId: g.businessModelId,
                         data: dom.data(),
-                        nodeType: dom.attr("nodeType"),
+                        nodeType: nodeType,
                         afterConfirm: function (data) {
                             input.text(data.normal.name);
                             dom.data(data);
+                            if (data.normal.isSequential) {
+                                dom.find(".countertask").addClass("serial-countertask").removeClass("parallel-countertask");
+                            } else {
+                                dom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
+                            }
                         }
                     });
                 }
@@ -687,9 +693,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 return;
             }
 
-            if(nodeType == "Approve" || nodeType == "CounterSign"){
-                var result = this.checkApproveAndCounterSign(id,name);
-                if(!result){
+            if (nodeType == "Approve" || nodeType == "CounterSign") {
+                var result = this.checkApproveAndCounterSign(id, name);
+                if (!result) {
                     return;
                 }
             }
@@ -712,7 +718,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         return true;
     }
     ,
-    checkApproveAndCounterSign: function (id,name) {
+    checkApproveAndCounterSign: function (id, name) {
         var count = 0;
         for (var key in this.connectInfo) {
             if (key.startsWith(id)) {
