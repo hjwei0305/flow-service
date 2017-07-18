@@ -186,9 +186,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 allowBlank: false,
                 name: "counterDecision"
             }, {
-                xtype: "RadioGroup",
+                xtype: "RadioBoxGroup",
                 name: "isSequential",
                 title: "执行策略",
+                labelWidth: 100,
                 allowBlank: false,
                 items: [{
                     title: "并行",

@@ -107,9 +107,10 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             hidden: this.nodeType == "CounterSign" ? false : true,
             name: "counterDecision"
         }, {
-            xtype: "RadioGroup",
+            xtype: "RadioBoxGroup",
             name: "isSequential",
             title: "执行策略",
+            labelWidth: 100,
             hidden: this.nodeType == "CounterSign" ? false : true,
             items: [{
                 title: "并行",
