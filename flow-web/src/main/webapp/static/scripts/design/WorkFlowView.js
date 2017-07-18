@@ -924,17 +924,35 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     showTaskNode: function (id, node) {
         var css = node.css;
         if (!css) {
-            if (node.nodeType == "Normal") {
-                css = "usertask";
-            } else if (node.nodeType == "SingleSign") {
-                css = "singletask";
-            } else {
-                css = "countertask";
-                if (node.nodeConfig && node.nodeConfig.normal.isSequential) {
-                    css = "countertask serial-countertask";
-                } else {
-                    css = "countertask parallel-countertask";
-                }
+            switch (node.nodeType){
+                case "Normal":
+                    css = "usertask";
+                    break;
+                case "SingleSign":
+                    css = "singletask";
+                    break;
+                case "CounterSign":
+                    css = "countertask";
+                    if(node.nodeConfig.normal.isSequential=="true"){
+                        node.nodeConfig.normal.isSequential=true;
+                    }else if(node.nodeConfig.normal.isSequential=="false"){
+                        node.nodeConfig.normal.isSequential=false;
+                    }
+                    if (node.nodeConfig&&node.nodeConfig.normal.isSequential) {
+                        css = "countertask serial-countertask";
+                    } else {
+                        css = "countertask parallel-countertask";
+                    }
+                    break;
+                case "Approve":
+                    css = "approvetask";
+                    break;
+                case "ParallelTask":
+                    css = "paralleltask";
+                    break;
+                case "SerialTask":
+                    css = "serialtask";
+                    break;
             }
         }
         return "<div tabindex=0 id='" + id

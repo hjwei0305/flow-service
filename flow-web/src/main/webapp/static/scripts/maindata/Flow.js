@@ -507,14 +507,16 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (!item.positionId) {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + this.lang.nameText2 + item.name +
-                    this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
+                    '<div class="excutor-item-title">' +
+                     String.format(this.lang.showUserInfo2Text,item.name,item.organizationName,item.code)+
+                    '</div>' +
                     '</div>';
             } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + this.lang.nameText2 + item.name + this.lang.jobText + item.positionName +
-                    this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
+                    '<div class="excutor-item-title">' +
+                    String.format(this.lang.showUserInfoText,item.name,item.positionName,item.organizationName,item.code)+
+                    '</div>' +
                     '</div>';
             }
         }
@@ -558,7 +560,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: this.lang.chooseMsgText + data.name + this.lang.executorMsgText
+                  //  msg: this.lang.chooseMsgText + data.name + this.lang.executorMsgText
+                    msg: String.format(this.lang.chooseExecutorMsgText,data.name)
                 });
                 return false;
             }
@@ -812,8 +815,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">' + g.lang.nameText + rowData["user.userName"] +
-                            g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
+                            '<div class="excutor-item-title">' +
+                           // g.lang.nameText + rowData["user.userName"] +g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code +
+                            String.format(this.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                            '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
                         g.chooseAnyOneWind.close();
@@ -835,8 +840,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">' + g.lang.nameText + item["user.userName"] +
-                    g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
+                    '<div class="excutor-item-title">' +
+                  //  g.lang.nameText + item["user.userName"] +g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code +
+                    String.format(this.lang.showUserInfo2Text,item["user.userName"],item["organization.name"],item.code)+
+                    '</div>' +
                     '</div>';
             }
         }
@@ -1160,14 +1167,18 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (!item.positionId) {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item.name +
-                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+
+                   // '姓名：' + item.name + '，组织机构：' + item.organizationName + '，编号：' + item.code +
+                    String.format(this.lang.showUserInfo2Text,item.name,item.organizationName,item.code)+
+                    '</div>' +
                     '</div>';
             } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item.name + '，岗位：' + item.positionName +
-                    '，组织机构：' + item.organizationName + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+
+                   // '姓名：' + item.name + '，岗位：' + item.positionName +'，组织机构：' + item.organizationName + '，编号：' + item.code +
+                    String.format(this.lang.showUserInfoText,item.name,item.positionName,item.organizationName,item.code)+
+                    '</div>' +
                     '</div>';
             }
         }
@@ -1212,7 +1223,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                    msg: "请选择[" + data.name + "]的执行人"
+                   // msg: "请选择[" + data.name + "]的执行人"
+                    msg: String.format(this.lang.chooseExecutorMsgText,data.name)
                 });
                 return false;
             }
@@ -1441,8 +1453,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">姓名：' + rowData["user.userName"] +
-                            '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
+                            '<div class="excutor-item-title">'+
+                          //  '姓名：' + rowData["user.userName"] + '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code +
+                            String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                            '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
                         g.chooseAnyOneWind.close();
@@ -1463,8 +1477,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">姓名：' + item["user.userName"] +
-                    '，组织机构：' + item["organization.name"] + '，编号：' + item.code + '</div>' +
+                    '<div class="excutor-item-title">'+
+                   // '姓名：' + item["user.userName"] + '，组织机构：' + item["organization.name"] + '，编号：' + item.code +
+                    String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                    '</div>' +
                     '</div>';
             }
         }
