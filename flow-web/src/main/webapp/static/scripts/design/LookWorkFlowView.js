@@ -343,8 +343,13 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 css = "usertask";
             } else if (node.nodeType == "SingleSign") {
                 css = "singletask";
-            } else {
+            }  else {
                 css = "countertask";
+                if (node.nodeConfig.normal.isSequential) {
+                    css = "countertask serial-countertask";
+                } else {
+                    css = "countertask parallel-countertask";
+                }
             }
         }
         return "<div tabindex=0 id='" + id

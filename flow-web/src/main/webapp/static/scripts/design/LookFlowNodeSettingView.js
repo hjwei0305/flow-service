@@ -114,11 +114,11 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             hidden: this.nodeType == "CounterSign" ? false : true,
             items: [{
                 title: "并行",
-                name: "false",
+                name: false,
                 checked: true
             }, {
                 title: "串行",
-                name: "true"
+                name: true
             }]
         }];
         if (this.nodeType != "CounterSign") {
