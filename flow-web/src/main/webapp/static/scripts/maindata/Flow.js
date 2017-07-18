@@ -507,13 +507,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (!item.positionId) {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + this.lang.nameText + item.name +
+                    '<div class="excutor-item-title">' + this.lang.nameText2 + item.name +
                     this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
             } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + this.lang.nameText + item.name + this.lang.jobText + item.positionName +
+                    '<div class="excutor-item-title">' + this.lang.nameText2 + item.name + this.lang.jobText + item.positionName +
                     this.lang.organizationText + item.organizationName + this.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }
