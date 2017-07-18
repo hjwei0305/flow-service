@@ -374,9 +374,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-            runtimeService.setVariable(executionId,"nrOfCompletedInstances", completeCounter+1);
+//            runtimeService.setVariable(executionId,"nrOfCompletedInstances", completeCounter+1);
             if(completeCounter+1==instanceOfNumbers){//最后一个任务
                 counterSignLastTask=true;}
+            this.completeActiviti(actTaskId, variables);
         }
         else {
             this.completeActiviti(actTaskId, variables);
