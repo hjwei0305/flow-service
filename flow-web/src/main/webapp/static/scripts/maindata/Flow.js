@@ -271,7 +271,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
-            } else {
+            }else {
                 var iconCss = "choose-radio";
                 if (item.uiType == "checkbox") {
                     iconCss = "choose-checkbox";
@@ -297,10 +297,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
             }
         }
-        if (data.counterSignLastTask) {
-            $(".flow-next").text(this.lang.finishText);
+
+        if(data[0].currentTaskType==="CounterSign"||data[0].currentTaskType==="ParallelTask"||data[0].currentTaskType==="SerialTask"){
+            if(data[0].counterSignLastTask){
+                $(".flow-next").text(this.lang.nextStepText);
+            }else{
+                $(".flow-next").text(this.lang.finishText);
+            }
         }
-        if (data.length == 1 && data[0].type.toLowerCase().indexOf("endevent") != -1) {
+        if (data[0].length == 1 && data[0].type.toLowerCase().indexOf("endevent") != -1) {
             $(".flow-next").text(this.lang.finishText);
             g.isEnd = true;
         }
@@ -486,6 +491,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     }
     ,
     showUserItem: function (node, nodeHtml, iconCss, nodeType) {
+        console.log(this.lang);
+        console.log(this.lang.nameText);
         var html = "";
         for (var j = 0; j < node.executorSet.length; j++) {
             var item = node.executorSet[j];
