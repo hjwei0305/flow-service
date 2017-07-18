@@ -24,7 +24,7 @@ import java.util.Map;
  * *************************************************************************************************
  * <p/>
  * 实现功能： 通用会签任务监听器，当会签任务完成时统计投票数量
- *   1代表同意、-1代表不同意、0代表弃权
+ *   counterSignAgree代表同意、counterSignOpposition代表不同意、counterSignWaiver代表弃权
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -54,24 +54,23 @@ public class CommonCounterSignCompleteListener implements TaskListener{
 
     private final Logger logger = LoggerFactory.getLogger(CommonCounterSignCompleteListener.class);
     public void notify(DelegateTask delegateTask) {
-//        ProcessInstance processInstance =runtimeService.createProcessInstanceQuery().processInstanceId(delegateTask.getProcessInstanceId()).singleResult();
         Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(delegateTask.getProcessInstanceId());
         Integer counterSignAgree = 0;//同意票数
         if(processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey())!=null) {
             counterSignAgree = (Integer) processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey()).getValue();//同意票数
         }
-        Integer counterSignOpposition = 0;
+        Integer counterSignOpposition = 0;//反对
         if( processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey())!=null) {
              counterSignOpposition = (Integer) processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
-        Integer counterSignWaiver = 0;
+        Integer counterSignWaiver = 0;//弃权
         if( processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey())!=null) {
             counterSignOpposition = (Integer) processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
         String approved = (String) delegateTask.getVariable("approved");
-        Integer value = 0;//默认弃权
+
         if("true".equalsIgnoreCase(approved)){
             counterSignAgree++;
         }else if("false".equalsIgnoreCase(approved)){

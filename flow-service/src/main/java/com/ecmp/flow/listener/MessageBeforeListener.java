@@ -59,7 +59,6 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
 
     private final Logger logger = LoggerFactory.getLogger(MessageBeforeListener.class);
 	public MessageBeforeListener(){
-		System.out.println("messageBeforeListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
     @Autowired
@@ -85,7 +84,6 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
     @Override
     public void notify(DelegateExecution execution) throws Exception{
         try {
-//            ExecutorService pool = Executors.newSingleThreadExecutor();
             String eventType = "before";
             String contentTemplateCode = "EMAIL_TEMPLATE_BEFORE_DOWORK";
             MessageSendThread messageSendThread = new MessageSendThread(eventType,execution,contentTemplateCode);
