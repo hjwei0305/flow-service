@@ -3,13 +3,10 @@ if(!window.Flow) {
     EUI.ns("Flow.flow");
 }
 var common_lang = {
-    operateText: "操作",
     tiShiText: "提示",
     ifDelMsgText: "确定删除吗？",
     sureText: "确定",
     nowDelMsgText: "正在删除,请稍后....",
-    cancelText: "取消",
-    saveText: "保存",
     nowSaveMsgText: "正在保存，请稍候...",
     codeText: "代码",
     nameText: "名称",
@@ -262,12 +259,9 @@ if (EUI.LookWorkFlowView) {
          singleSignTaskText:"单签任务",
          counterSignTaskText:"会签任务",
          approveTaskText:"审批任务",
-         nameText:"姓名：",
-         number2Text:"，编号：",
-         jobText:"，岗位：",
-         organizationText:"，组织机构：",
-         chooseMsgText:"请选择[",
-         executorMsgText:"]的执行人",
+         showUserInfoText:"名称：{0}，岗位：{1}，组织机构：{2}，编号：{3}",
+         showUserInfo2Text:"名称：{0}，组织机构：{1}，编号：{2}",
+         chooseExecutorMsgText:"请选择[{0}]的执行人",
          launchSuccessText:"启动成功"
      },common_lang);
  }
@@ -293,13 +287,9 @@ if (EUI.LookWorkFlowView) {
          singleSignTaskText:"单签任务",
          counterSignTaskText:"会签任务",
          approveTaskText:"审批任务",
-         nameText:"姓名：",
-         nameText2:"名称：",
-         number2Text:"，编号：",
-         jobText:"，岗位：",
-         organizationText:"，组织机构：",
-         chooseMsgText:"请选择[",
-         executorMsgText:"]的执行人",
+         showUserInfoText:"名称：{0}，岗位：{1}，组织机构：{2}，编号：{3}",
+         showUserInfo2Text:"名称：{0}，组织机构：{1}，编号：{2}",
+         chooseExecutorMsgText:"请选择[{0}]的执行人",
          seachByIdOrNameText:"请输入用户名称或编号进行搜索",
          organization2Text:"组织机构",
          userNumberText:"员工编号",
