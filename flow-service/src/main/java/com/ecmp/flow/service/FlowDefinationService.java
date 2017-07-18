@@ -580,9 +580,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
             nodeInfo.setUiType("checkbox");
             nodeInfo.setFlowTaskType("countersign");
-//                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
-//                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
-//                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+        }else if ("ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+            nodeInfo.setUiType("checkbox");
+            nodeInfo.setFlowTaskType(userTaskTemp.getNodeType());
         }else {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
         }

@@ -148,6 +148,10 @@ public class Process extends BaseNode implements Serializable {
                             multiInstanceConfig.setCandidateUsers("${" + userTaskTemp.getId() + "_List_CounterSign}");
                             multiInstanceConfig.setVariable("" + userTaskTemp.getId() + "_CounterSign");
                             multiInstanceConfig.setAssignee("${" + userTaskTemp.getId() + "_CounterSign}");
+                            String isSequential = node.getJSONObject("nodeConfig").getJSONObject("normal").get("isSequential")+"";
+                            if("true".equalsIgnoreCase(isSequential)){
+                                multiInstanceConfig.setSequential(true);
+                            }
                             userTaskTemp.setConfig(multiInstanceConfig);
 
                             ExtensionElement extensionElement = new ExtensionElement();
@@ -173,6 +177,22 @@ public class Process extends BaseNode implements Serializable {
                             extensionElement.setTaskListener(taskListeners);
                             userTaskTemp.setExtensionElement(extensionElement);
 
+                        }else if("ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())){//并行任务
+                            MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+                            multiInstanceConfig.setUserIds("" + userTaskTemp.getId() + "_List_CounterSign");
+                            multiInstanceConfig.setCandidateUsers("${" + userTaskTemp.getId() + "_List_CounterSign}");
+                            multiInstanceConfig.setVariable("" + userTaskTemp.getId() + "_CounterSign");
+                            multiInstanceConfig.setAssignee("${" + userTaskTemp.getId() + "_CounterSign}");
+                            multiInstanceConfig.setSequential(false);
+                            userTaskTemp.setConfig(multiInstanceConfig);
+                        }else if("SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())){//串行任务
+                            MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
+                            multiInstanceConfig.setUserIds("" + userTaskTemp.getId() + "_List_CounterSign");
+                            multiInstanceConfig.setCandidateUsers("${" + userTaskTemp.getId() + "_List_CounterSign}");
+                            multiInstanceConfig.setVariable("" + userTaskTemp.getId() + "_CounterSign");
+                            multiInstanceConfig.setAssignee("${" + userTaskTemp.getId() + "_CounterSign}");
+                            multiInstanceConfig.setSequential(true);
+                            userTaskTemp.setConfig(multiInstanceConfig);
                         }
                         //添加自定义用户任务事件监听（用于用户任务事前、事后）
                         try {
