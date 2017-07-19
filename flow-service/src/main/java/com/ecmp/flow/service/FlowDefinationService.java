@@ -545,7 +545,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
             if(!flowType.getFlowDefinations().isEmpty()){
-                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
+//                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
                 List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
                 flowStartResultVO.setNodeInfoList(nodeInfoList);
             }
