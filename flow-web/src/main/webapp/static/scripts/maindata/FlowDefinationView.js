@@ -206,6 +206,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     index: "id",
                     hidden: true
                 },{
+                    name: "flowDefination.flowType.businessModel.id",
+                    index: "flowDefination.flowType.businessModel.id",
+                    hidden: true
+                },{
                     name: "flowDefinationStatus",
                     index: "flowDefinationStatus",
                     hidden: true
@@ -313,7 +317,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var tab = {
             // copyFlowDefinitionText: "参考创建流程定义",
             title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowType.businessModel.id"],
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data["flowDefination.orgCode"]+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowDefination.flowType.businessModel.id"],
         };
         g.addTab(tab);
     },
