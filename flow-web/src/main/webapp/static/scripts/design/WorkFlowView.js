@@ -410,6 +410,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             delete g.connectInfo[key];
                         }
                     }
+                    for (var key in g.uelInfo) {
+                        if (key.indexOf(sourceId) != -1) {
+                            delete g.uelInfo[key];
+                        }
+                    }
                     $(this).remove();
                     e.stopPropagation();
                 }
