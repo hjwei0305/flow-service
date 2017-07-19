@@ -71,6 +71,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 field: ["flowTypeId"],
                 displayText: "请选择流程类型",
                 listWidth: 400,
+                showSearch: true,
+                searchConfig: {searchCols: ["code", "name","businessModel.name"]},
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
                     colModel: [{
@@ -82,15 +84,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         index: "businessModel.id",
                         hidden: true
                     }, {
+                        //businessModelText:"模块"
+                        label: this.lang.businessModelText,
+                        name: "businessModel.name",
+                        index: "businessModel.name"
+                    },{
                         label: this.lang.codeText,
                         name: "code",
-                        index: "code",
-                        width: 100
+                        index: "code"
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name",
-                        width: 150
+                        index: "name"
                     }]
                 },
                 labelWidth: 85,
@@ -134,6 +139,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 reader: {
                     name: "name",
                     field: ["id"]
+                },
+                onSearch: function (data) {
+                    this.grid.setPostParams({
+                        Quick_value: data
+                    }, true);
                 }
             }, {
                 xtype: "TextField",
