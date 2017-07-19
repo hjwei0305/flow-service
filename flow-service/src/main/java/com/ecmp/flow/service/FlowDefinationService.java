@@ -525,11 +525,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         if(finalFlowDefination!=null){
                             FlowDefination finalFlowDefinationTemp = new FlowDefination();
                             BeanUtils.copyProperties(finalFlowDefination,finalFlowDefinationTemp);
-                            finalFlowDefinationTemp.setFlowType(null);
+//                            finalFlowDefinationTemp.setFlowType(null);
                             flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
                         }
                     }
-                flowType = flowTypeList.get(0);
+            for(FlowType flowTypeTemp:flowTypeList){
+               if(flowTypeTemp.getFlowDefinations()!=null && !flowTypeTemp.getFlowDefinations().isEmpty()){
+                   flowType=flowTypeTemp;
+                   flowTypeList.remove(flowTypeTemp);
+                   break;
+               }
+            }
+            if(flowType!=null){
+                flowTypeList.add(0,flowType);
+            }
             } else {
                 flowStartResultVO = null;
             }
@@ -545,9 +554,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
             if(!flowType.getFlowDefinations().isEmpty()){
-//                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
+                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
                 List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
                 flowStartResultVO.setNodeInfoList(nodeInfoList);
+            }
+        }
+
+        if(flowTypeList !=null && !flowTypeList.isEmpty()){
+            for(FlowType flowTypeTemp:flowTypeList){
+               Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
+               if(flowDefinationSet != null && !flowDefinationSet.isEmpty()){
+                   for(FlowDefination flowDefination :flowDefinationSet){
+                       flowDefination.setFlowType(null);
+                   }
+               }
             }
         }
          return flowStartResultVO;
