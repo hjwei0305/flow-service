@@ -326,16 +326,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-item-title").bind("click", function () {
             if ($(this).hasClass("select")) {
-                return;
+                $(this).removeClass("select");
+                $(this).siblings(".flow-item-content").slideUp("normal");
+            }else {
+                $(this).addClass("select");
+                $(this).siblings(".flow-item-content").slideDown("normal");
             }
-            var preDom = $(".select.flow-item-title");
-            preDom.removeClass("select");
-            preDom.siblings(".flow-item-content").slideUp("normal");
-            $(this).addClass("select");
-            $(this).siblings(".flow-item-content").slideDown("normal");
-            $(this).parent().find(".flow-item-space:last").show();
-            $(this).parent().siblings().find(".flow-item-space:last")
-                .hide();
         });
         var dragging = false;
         var dragDom, preNode;
