@@ -978,7 +978,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     $(this).addClass("select").siblings().removeClass("select");
                 }
             }
-            if (type == "singlesign" || type == "countersign") {
+            if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "SerialTask") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -1122,6 +1122,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "countersign") {
                 nodeType = "会签任务";
+                iconCss = "choose-checkbox";
+            }else if (node.flowTaskType == "ParallelTask") {
+                nodeType = "并行任务";
+                iconCss = "choose-checkbox";
+            } else if (node.flowTaskType == "SerialTask") {
+                nodeType = "串行任务";
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
