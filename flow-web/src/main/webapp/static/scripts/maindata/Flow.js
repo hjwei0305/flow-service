@@ -1485,7 +1485,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">'+
                    // '姓名：' + item["user.userName"] + '，组织机构：' + item["organization.name"] + '，编号：' + item.code +
-                    String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                    String.format(g.lang.showUserInfo2Text,item["user.userName"],item["organization.name"],item.code)+
                     '</div>' +
                     '</div>';
             }

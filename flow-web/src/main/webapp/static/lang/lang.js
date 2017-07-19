@@ -72,7 +72,14 @@ if (EUI.BusinessModelView) {
         paramText: "参数",
         businessModelText: "业务实体",
         updatExecutorConfigText: "编辑自定义执行人配置",
-        apiLocationText: "API地址"
+        apiLocationText: "API地址",
+        showConditionPropertiesText: "查看条件属性",
+        configWorkSpaceText: "配置工作界面",
+        configServerLocationText: "配置服务地址",
+        applyModuleCodeText: "应用模块Code",
+        dataAccessObjectText: "数据访问对象",
+        formURLText: "表单URL",
+        configExecutorText: "自定义执行人配置"
     }, common_lang);
 }
 
@@ -305,31 +312,6 @@ if (Flow.flow.FlowApprove) {
     }, common_lang);
 }
 
-if (EUI.BusinessModelView) {
-    EUI.apply(EUI.BusinessModelView.prototype.lang, {
-        showConditionPropertiesText: "查看条件属性",
-        configWorkSpaceText: "配置工作界面",
-        configServerLocationText: "配置服务地址",
-        applyModuleCodeText: "应用模块Code",
-        dataAccessObjectText: "数据访问对象",
-        formURLText: "表单URL",
-        configExecutorText: "自定义执行人配置"
-
-    }, common_lang);
-}
-
-if (EUI.BusinessModelView) {
-    EUI.BusinessModelView.prototype.lang = EUI.applyIf({
-        showConditionPropertiesText: "查看条件属性",
-        configWorkSpaceText: "配置工作界面",
-        configServerLocationText: "配置服务地址",
-        applyModuleCodeText: "应用模块Code",
-        dataAccessObjectText: "数据访问对象",
-        formURLText: "表单URL",
-        configExecutorText: "自定义执行人配置"
-
-    }, common_lang);
-}
 
 if (EUI.CustomExecutorView) {
     EUI.apply(EUI.CustomExecutorView.prototype.lang, {
