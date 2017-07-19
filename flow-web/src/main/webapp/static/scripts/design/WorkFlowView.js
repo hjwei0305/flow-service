@@ -71,6 +71,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 field: ["flowTypeId"],
                 displayText: "请选择流程类型",
                 listWidth: 400,
+                showSearch: true,
+                searchConfig: {searchCols: ["code", "name","businessModel.name"]},
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
                     colModel: [{
@@ -82,15 +84,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         index: "businessModel.id",
                         hidden: true
                     }, {
+                        //businessModelText:"模块"
+                        label: this.lang.businessModelText,
+                        name: "businessModel.name",
+                        index: "businessModel.name"
+                    },{
                         label: this.lang.codeText,
                         name: "code",
-                        index: "code",
-                        width: 100
+                        index: "code"
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name",
-                        width: 150
+                        index: "name"
                     }]
                 },
                 labelWidth: 85,
@@ -134,6 +139,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 reader: {
                     name: "name",
                     field: ["id"]
+                },
+                onSearch: function (data) {
+                    this.grid.setPostParams({
+                        Quick_value: data
+                    }, true);
                 }
             }, {
                 xtype: "TextField",
@@ -293,7 +303,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 初始化事件
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
-            if (i == gateways.length - 1) {
+            if(item.type=="EventGateway") {continue;}
+            if (i == gateways.length - 1||(gateways[i+1].type=="EventGateway"&&i==gateways.length - 2)) {
                 html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
                     + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
@@ -315,16 +326,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-item-title").bind("click", function () {
             if ($(this).hasClass("select")) {
-                return;
+                $(this).removeClass("select");
+                $(this).siblings(".flow-item-content").slideUp("normal");
+            }else {
+                $(this).addClass("select");
+                $(this).siblings(".flow-item-content").slideDown("normal");
             }
-            var preDom = $(".select.flow-item-title");
-            preDom.removeClass("select");
-            preDom.siblings(".flow-item-content").slideUp("normal");
-            $(this).addClass("select");
-            $(this).siblings(".flow-item-content").slideDown("normal");
-            $(this).parent().find(".flow-item-space:last").show();
-            $(this).parent().siblings().find(".flow-item-space:last")
-                .hide();
         });
         var dragging = false;
         var dragDom, preNode;
@@ -335,6 +342,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
                 g.count++;
+                var nodeType=$(this).attr("nodetype");
+                if(type=="UserTask"&&nodeType=="CounterSign"){
+                    dragDom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
+                }
                 dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;

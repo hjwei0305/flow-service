@@ -213,7 +213,8 @@ if (EUI.WorkFlowView) {
         eventGatewayText: "事件网关",
         saveText: "保存",
         resetText: "清空",
-        deployText: "发布"
+        deployText: "发布",
+        businessModelText:"模块"
     }, common_lang);
 }
 

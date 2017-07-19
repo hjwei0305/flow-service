@@ -55,6 +55,10 @@ public class FlowTypeController {
     @ResponseBody
     public String listFlowType(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
+        //根据代码、名称、模块名
+        search.addQuickSearchProperty("code");
+        search.addQuickSearchProperty("name");
+        search.addQuickSearchProperty("businessModel.name");
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         PageResult<FlowType> flowTypePageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowTypePageResult);
