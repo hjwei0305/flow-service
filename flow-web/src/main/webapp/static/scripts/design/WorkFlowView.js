@@ -345,6 +345,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
                 g.count++;
+                var nodeType=$(this).attr("nodetype");
+                if(type=="UserTask"&&nodeType=="CounterSign"){
+                    dragDom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
+                }
                 dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
