@@ -318,6 +318,19 @@ if (EUI.BusinessModelView) {
     }, common_lang);
 }
 
+if (EUI.BusinessModelView) {
+    EUI.BusinessModelView.prototype.lang = EUI.applyIf({
+        showConditionPropertiesText: "查看条件属性",
+        configWorkSpaceText: "配置工作界面",
+        configServerLocationText: "配置服务地址",
+        applyModuleCodeText: "应用模块Code",
+        dataAccessObjectText: "数据访问对象",
+        formURLText: "表单URL",
+        configExecutorText: "自定义执行人配置"
+
+    }, common_lang);
+}
+
 if (EUI.CustomExecutorView) {
     EUI.apply(EUI.CustomExecutorView.prototype.lang, {
         businessEntityText: "业务实体",
