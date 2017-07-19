@@ -121,7 +121,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "true"
             }]
         }];
-        if (this.nodeType != "CounterSign") {
+        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask") {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",

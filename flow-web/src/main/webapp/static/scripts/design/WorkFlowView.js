@@ -303,7 +303,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 初始化事件
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
-            if (i == gateways.length - 1) {
+            if(item.type=="EventGateway") {continue;}
+            if (i == gateways.length - 1||(gateways[i+1].type=="EventGateway"&&i==gateways.length - 2)) {
                 html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
                     + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]

@@ -199,7 +199,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     name: true
                 }]
             }]);
-        } else {
+        }
+        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"){
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
