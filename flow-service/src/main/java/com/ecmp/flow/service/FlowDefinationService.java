@@ -529,7 +529,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
                         }
                     }
-                flowType = flowTypeList.get(0);
+            for(FlowType flowTypeTemp:flowTypeList){
+               if(flowTypeTemp.getFlowDefinations()!=null && !flowTypeTemp.getFlowDefinations().isEmpty()){
+                   flowType=flowTypeTemp;
+                   flowTypeList.remove(flowTypeTemp);
+                   break;
+               }
+            }
+            if(flowType!=null){
+                flowTypeList.add(0,flowType);
+            }
             } else {
                 flowStartResultVO = null;
             }
