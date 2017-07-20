@@ -481,6 +481,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowInstance.setEnded(true);
             flowInstance.setEndDate(new Date());
             flowInstanceDao.save(flowTask.getFlowInstance());
+            flowTaskDao.deleteByFlowInstanceId(flowTask.getFlowInstance().getId());//针对终止结束时，删除所有待办
         }
         return result;
     }
