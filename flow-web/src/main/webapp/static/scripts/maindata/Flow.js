@@ -817,7 +817,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' +
                            // g.lang.nameText + rowData["user.userName"] +g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code +
-                            String.format(this.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                            String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
                             '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
