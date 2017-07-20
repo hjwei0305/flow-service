@@ -39,7 +39,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }, {
                 region: "center",
                 id: "center",
-                padding:0,
+                padding: 0,
                 html: this.getCenterHtml()
             }]
         });
@@ -740,7 +740,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     checkApproveAndCounterSign: function (id, name) {
         var count = 0;
         for (var key in this.connectInfo) {
-            if (key.startsWith(id)) {
+            if (key.startsWith(id + ",")) {
                 count++;
             }
         }
