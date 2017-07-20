@@ -19,8 +19,8 @@ EUI.ns("Flow.flow");
  * 审批组件
  * */
 Flow.FlowApprove = function (options) {
-    this.id = EUI.util.getUrlParam("id");
-    this.taskId = EUI.util.getUrlParam("taskId");
+    options.busId = EUI.util.getUrlParam("id");
+    options.taskId = EUI.util.getUrlParam("taskId");
     return new Flow.flow.FlowApprove(options);
 };
 Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
