@@ -39,6 +39,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }, {
                 region: "center",
                 id: "center",
+                padding:0,
                 html: this.getCenterHtml()
             }]
         });
@@ -507,7 +508,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }
                 }
             }]],
-            Container: "body"
+            Container: $(".flow-content")
         });
 
         this.instance.registerConnectionType("basic", {
