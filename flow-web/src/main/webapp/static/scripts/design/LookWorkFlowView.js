@@ -262,7 +262,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             var type = node.type;
             if (type == "StartEvent") {
                 html += this.showStartNode(id, node);
-            } else if (type == "EndEvent") {
+            } else if (type.indexOf("EndEvent") != -1) {
                 html += this.showEndNode(id, node);
             } else if (type.indexOf("Task") != -1) {
                 html += this.showTaskNode(id, node, currentNodes);
@@ -331,7 +331,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.y
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
-            + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
+            + "<div class='node-title'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node, currentNodes) {
