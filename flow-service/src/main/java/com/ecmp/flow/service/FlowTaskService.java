@@ -1952,8 +1952,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     if(markInclude){
                         continue;
+                    }else {
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo.setCurrentTaskType(nodeType);
+                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
+                        tempNodeInfo.setUiType(uiType);
+                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
+                        nodeInfoList.add(tempNodeInfo);
                     }
-
                 }
             } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关
