@@ -305,10 +305,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     copyFlowDefination: function (data,isFromVersion) {
         var g = this;
         var id= isFromVersion?data["flowDefination.id"]:data.id;
+        var businessModelId=isFromVersion?data["flowDefination.flowType.businessModel.id"]:data["flowType.businessModel.id"];
         var tab = {
             // copyFlowDefinitionText: "参考创建流程定义",
             title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion,
         };
         g.addTab(tab);
     },

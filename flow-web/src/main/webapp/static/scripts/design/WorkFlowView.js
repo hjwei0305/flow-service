@@ -12,7 +12,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     uelInfo: {},
-    isCopy: false,
+    isCopy: false,//参考创建
+    isFromVersion:false,//流程定义版本参考创建（true）
     businessModelId: null,//业务实体ID
 
     initComponent: function () {
@@ -101,7 +102,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 },
                 labelWidth: 85,
                 width: 190,
-                readonly: !isCopy && this.id ? true : false,
+                readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -150,7 +151,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 110,
-                readonly: !isCopy && this.id ? true : false,
+                readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
                 displayText: "请输入流程代码"
@@ -850,8 +851,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     if (g.isCopy) {
+                        if (!g.isFromVersion) {
+                            data.process.id = data.process.id + "_COPY";
+                        }
                         data.process.name = data.process.name + "_COPY";
-                        data.process.id = data.process.id + "_COPY";
                     }
                     g.showDesign(data);
                 } else {
