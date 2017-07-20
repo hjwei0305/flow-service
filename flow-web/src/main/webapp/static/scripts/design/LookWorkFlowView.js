@@ -63,7 +63,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             items: [{
                 name: "flowTypeName",
                 title: "流程类型",
-                width:200
+                width: 200
             }, {
                 name: "id",
                 width: 120,
@@ -319,14 +319,18 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showEndNode: function (id, node) {
-        return "<div tabindex=0 type='EndEvent' id='"
+        var css = "flow-event-end";
+        if (node.type == "TerminateEndEvent") {
+            css = "flow-event-terminateend";
+        }
+        return "<div tabindex=0 type='" + node.type + "' id='"
             + id
             + "' class='flow-event-box flow-node node-choosed' style='cursor: pointer; left: "
             + node.x
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
+            + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
             + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
     }
     ,
@@ -339,7 +343,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         var css = node.css;
         if (!css) {
-            switch (node.nodeType){
+            switch (node.nodeType) {
                 case "Normal":
                     css = "usertask";
                     break;
@@ -348,8 +352,8 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "CounterSign":
                     css = "countertask";
-                    node.nodeConfig.normal.isSequential=node.nodeConfig.normal.isSequential.toString();
-                    if (node.nodeConfig.normal.isSequential=="true") {
+                    node.nodeConfig.normal.isSequential = node.nodeConfig.normal.isSequential.toString();
+                    if (node.nodeConfig.normal.isSequential == "true") {
                         css = "countertask serial-countertask";
                     } else {
                         css = "countertask parallel-countertask";
