@@ -26,6 +26,8 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
 
     public long  deleteByActTaskId(String actTaskId);
 
+    public long  deleteByFlowInstanceId(String flowInstanceId);
+
     public  FlowTask findByActTaskId(String actTaskId);
 
     /**
