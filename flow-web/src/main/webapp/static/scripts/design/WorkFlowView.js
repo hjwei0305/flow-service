@@ -72,7 +72,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 displayText: "请选择流程类型",
                 listWidth: 400,
                 showSearch: true,
-                searchConfig: {searchCols: ["code", "name","businessModel.name"]},
+                searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
                     colModel: [{
@@ -88,7 +88,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.businessModelText,
                         name: "businessModel.name",
                         index: "businessModel.name"
-                    },{
+                    }, {
                         label: this.lang.codeText,
                         name: "code",
                         index: "code"
@@ -303,8 +303,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 初始化事件
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
-            if(item.type=="EventGateway") {continue;}
-            if (i == gateways.length - 1||(gateways[i+1].type=="EventGateway"&&i==gateways.length - 2)) {
+            if (item.type == "EventGateway") {
+                continue;
+            }
+            if (i == gateways.length - 1 || (gateways[i + 1].type == "EventGateway" && i == gateways.length - 2)) {
                 html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
                     + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
@@ -328,7 +330,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if ($(this).hasClass("select")) {
                 $(this).removeClass("select");
                 $(this).siblings(".flow-item-content").slideUp("normal");
-            }else {
+            } else {
                 $(this).addClass("select");
                 $(this).siblings(".flow-item-content").slideDown("normal");
             }
@@ -342,8 +344,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
                 g.count++;
-                var nodeType=$(this).attr("nodetype");
-                if(type=="UserTask"&&nodeType=="CounterSign"){
+                var nodeType = $(this).attr("nodetype");
+                if (type == "UserTask" && nodeType == "CounterSign") {
                     dragDom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
                 }
                 dragDom.attr("id", type + "_" + g.count);
@@ -870,7 +872,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var type = node.type;
             if (type == "StartEvent") {
                 html += this.showStartNode(id, node);
-            } else if (type == "EndEvent") {
+            } else if (type.indexOf("EndEvent") != -1) {
                 html += this.showEndNode(id, node);
             } else if (type.indexOf("Task") != -1) {
                 html += this.showTaskNode(id, node);
@@ -926,21 +928,25 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showEndNode: function (id, node) {
-        return "<div tabindex=0 type='EndEvent' id='"
+        var css = "flow-event-end";
+        if (node.type == "TerminateEndEvent") {
+            css = "flow-event-terminateend";
+        }
+        return "<div tabindex=0 type='" + node.type + "' id='"
             + id
             + "' class='flow-event-box flow-node node-choosed' style='cursor: pointer; left: "
             + node.x
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
-            + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
+            + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
+            + "<div class='node-title'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node) {
         var css = node.css;
         if (!css) {
-            switch (node.nodeType){
+            switch (node.nodeType) {
                 case "Normal":
                     css = "usertask";
                     break;
@@ -949,12 +955,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "CounterSign":
                     css = "countertask";
-                    if(node.nodeConfig.normal.isSequential=="true"){
-                        node.nodeConfig.normal.isSequential=true;
-                    }else if(node.nodeConfig.normal.isSequential=="false"){
-                        node.nodeConfig.normal.isSequential=false;
+                    if (node.nodeConfig.normal.isSequential == "true") {
+                        node.nodeConfig.normal.isSequential = true;
+                    } else if (node.nodeConfig.normal.isSequential == "false") {
+                        node.nodeConfig.normal.isSequential = false;
                     }
-                    if (node.nodeConfig&&node.nodeConfig.normal.isSequential) {
+                    if (node.nodeConfig && node.nodeConfig.normal.isSequential) {
                         css = "countertask serial-countertask";
                     } else {
                         css = "countertask parallel-countertask";
