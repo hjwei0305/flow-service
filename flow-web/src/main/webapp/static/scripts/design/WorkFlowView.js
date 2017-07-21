@@ -151,10 +151,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 name: "id",
                 width: 110,
-                readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
+                readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
-                displayText: "请输入流程代码"
+                displayText: "请输入流程代码",
+                validateText: "必须包含字符,且长度在6-80之间",
+                validater: function (data) {
+                    var reg = /(?=.*[a-zA-Z])(?=.*\d.*)[a-zA-Z0-9]{6,80}$/
+                    if (!reg.test(data)) {
+                        return false;
+                    }
+                    return true;
+                }
             }, {
                 xtype: "TextField",
                 displayText: "请输入流程名称",
@@ -852,9 +860,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     var data = JSON.parse(status.data.defJson);
                     if (g.isCopy) {
                         if (!g.isFromVersion) {
-                            data.process.id = data.process.id + "_COPY";
+                            data.process.id = data.process.id + "COPY";
                         }
-                        data.process.name = data.process.name + "_COPY";
+                        data.process.name = data.process.name + "COPY";
                     }
                     g.showDesign(data);
                 } else {
@@ -1050,7 +1058,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             padding: 30,
             items: [{
                 xtype: "TextField",
-                title: "节点名称",
+                title: "名称",
                 labelWidth: 80,
                 width: 220,
                 id: "nodeName",
