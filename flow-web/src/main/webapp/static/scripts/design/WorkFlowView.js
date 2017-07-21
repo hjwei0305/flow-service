@@ -90,17 +90,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         label: this.lang.businessModelText,
                         name: "businessModel.name",
                         index: "businessModel.name",
-                        sortable: true
+                        sortable:true
                     }, {
                         label: this.lang.codeText,
                         name: "code",
                         index: "code",
-                        sortable: true
+                        sortable:true
                     }, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name",
-                        sortable: true
+                        sortable:true
                     }]
                 },
                 labelWidth: 85,
@@ -617,6 +617,15 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             logicUel: ""
                         };
                     } else if (nodeType == "CounterSign") {
+                        var bustype = $("#" + connection.targetId).attr("bustype");
+                        if(bustype=="ManualExclusiveGateway"){
+                            EUI.ProcessStatus({
+                                success: false,
+                                msg: "会签任务后禁止连接人工网关"
+                            });
+                            jsPlumb.detach(connection);
+                            return;
+                        }
                         var result = g.getApproveLineInfo(connection.sourceId);
                         var name = "通过", agree = true;
                         if (result == 0) {
