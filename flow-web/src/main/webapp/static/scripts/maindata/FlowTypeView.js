@@ -69,6 +69,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 name: "bussinessModelName",
                 id: "coboId",
                //async: false,
+                canClear: true,
                 colon: false,
                 field: ["id"],
                 listWidth: 400,
@@ -101,7 +102,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     filed: ["id"]
                 },
                 afterSelect: function (data) {
-                    console.log(data);
+                 //   console.log(data);
                     g.businessModel = data.data.id;
                     g.businessModelName = data.data.name;
                     EUI.getCmp("gridPanel").setPostParams({
