@@ -5,6 +5,7 @@ import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Position;
 import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
@@ -72,6 +73,11 @@ public class FlowDesignController {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        boolean keyCorrect=definition.getId().matches("/(?=.*[a-zA-Z])(?=.*\\d.*)[a-zA-Z0-9]{6,80}$/");
+        if(!keyCorrect){
+            status=new OperateStatus(false, ContextUtil.getMessage("10001"));
+            return JsonUtil.serialize(status);
+        }
         definition.setDefJson(def);
 //        net.sf.json.JSONObject test= definition.getProcess().getNodes().getJSONObject("UserTask_1");
 //        net.sf.json.JSONObject executor= test.getJSONObject("nodeConfig").getJSONObject("executor");
