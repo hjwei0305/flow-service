@@ -89,15 +89,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         //businessModelText:"模块"
                         label: this.lang.businessModelText,
                         name: "businessModel.name",
-                        index: "businessModel.name"
+                        index: "businessModel.name",
+                        sortable: true
                     }, {
                         label: this.lang.codeText,
                         name: "code",
-                        index: "code"
+                        index: "code",
+                        sortable: true
                     }, {
                         label: this.lang.nameText,
                         name: "name",
-                        index: "name"
+                        index: "name",
+                        sortable: true
                     }]
                 },
                 labelWidth: 85,
