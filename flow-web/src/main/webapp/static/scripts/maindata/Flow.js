@@ -187,8 +187,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 } else {
                     $(this).addClass("select").siblings().removeClass("select");
                 }
-            }
-            if (type == "singlesign" || type == "countersign") {
+            }else if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "serialtask") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -461,6 +460,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "approve") {
                 nodeType = this.lang.approveTaskText;
+            } else if (node.flowTaskType == "ParallelTask") {
+                nodeType = this.lang.ParallelTaskText;
+                iconCss = "choose-checkbox";
+            } else if (node.flowTaskType == "SerialTask") {
+                nodeType = this.lang.SerialTaskText;
+                iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
@@ -978,7 +983,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     $(this).addClass("select").siblings().removeClass("select");
                 }
             }
-            if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "SerialTask") {
+            if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "serialtask") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -1118,16 +1123,16 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 continue;
             }
             if (node.flowTaskType == "singleSign") {
-                nodeType = "单签任务";
+                nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "countersign") {
-                nodeType = "会签任务";
+                nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
             }else if (node.flowTaskType == "ParallelTask") {
-                nodeType = "并行任务";
+                nodeType = this.lang.ParallelTaskText;
                 iconCss = "choose-checkbox";
             } else if (node.flowTaskType == "SerialTask") {
-                nodeType = "串行任务";
+                nodeType = this.lang.SerialTaskText;
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
