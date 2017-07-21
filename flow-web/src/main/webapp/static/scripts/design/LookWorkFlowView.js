@@ -253,6 +253,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         } else {
             var data = JSON.parse(defData.def.defJson);
             var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
+            currentNodes += ",";
         }
         this.businessModelId = data.businessModelId;
         this.loadHead(data);
@@ -337,7 +338,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     showTaskNode: function (id, node, currentNodes) {
         var nodeCss = "flow-task flow-node node-choosed";
         if (!this.viewFlowDefByVersionId) {
-            if (currentNodes.indexOf(id) != -1) {
+            if (currentNodes.indexOf(id + ",") != -1) {
                 nodeCss += " currentNode";
             }
         }
