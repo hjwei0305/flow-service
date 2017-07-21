@@ -452,18 +452,22 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 $(".flow-operate").before(html);
                 continue;
             }
-            if (node.flowTaskType == "singleSign") {
+            var flowTaskType = "";
+            if(node.flowTaskType){
+                flowTaskType = node.flowTaskType.toLowerCase();
+            }
+            if (flowTaskType == "singlesign") {
                 nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
-            } else if (node.flowTaskType == "countersign") {
+            } else if (flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
-            } else if (node.flowTaskType == "approve") {
+            } else if (flowTaskType == "approve") {
                 nodeType = this.lang.approveTaskText;
-            } else if (node.flowTaskType == "ParallelTask") {
+            } else if (flowTaskType == "paralleltask") {
                 nodeType = this.lang.ParallelTaskText;
                 iconCss = "choose-checkbox";
-            } else if (node.flowTaskType == "SerialTask") {
+            } else if (flowTaskType == "serialtask") {
                 nodeType = this.lang.SerialTaskText;
                 iconCss = "choose-checkbox";
             }
@@ -1122,16 +1126,20 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 $(".chooseExecutor").append(html);
                 continue;
             }
-            if (node.flowTaskType == "singleSign") {
+            var flowTaskType = "";
+            if(node.flowTaskType){
+                flowTaskType = node.flowTaskType.toLowerCase();
+            }
+            if (flowTaskType == "singlesign") {
                 nodeType = this.lang.singleSignTaskText;
                 iconCss = "choose-checkbox";
-            } else if (node.flowTaskType == "countersign") {
+            } else if (flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
-            }else if (node.flowTaskType == "ParallelTask") {
+            }else if (flowTaskType == "paralleltask") {
                 nodeType = this.lang.ParallelTaskText;
                 iconCss = "choose-checkbox";
-            } else if (node.flowTaskType == "SerialTask") {
+            } else if (flowTaskType == "serialtask") {
                 nodeType = this.lang.SerialTaskText;
                 iconCss = "choose-checkbox";
             }
