@@ -1572,10 +1572,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 String conditionText = (String) pv.getProperty("conditionText");
                                 if("${approveResult == true}".equalsIgnoreCase(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
-                                    NodeInfo tempNodeInfo = new NodeInfo();
-                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                    result.add(tempNodeInfo);
-
+                                    if(ifGageway(currTempActivity)){
+                                        List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
+                                        result.addAll(temp);
+                                    }else{
+                                        NodeInfo tempNodeInfo = new NodeInfo();
+                                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                        result.add(tempNodeInfo);
+                                    }
                                 }
                                 }
                         }
@@ -1587,9 +1591,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 String conditionText = (String) pv.getProperty("conditionText");
                                 if("${approveResult == false}".equalsIgnoreCase(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
-                                    NodeInfo tempNodeInfo = new NodeInfo();
-                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                    result.add(tempNodeInfo);
+                                    if(ifGageway(currTempActivity)){
+                                        List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
+                                        result.addAll(temp);
+                                    }else{
+                                        NodeInfo tempNodeInfo = new NodeInfo();
+                                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                        result.add(tempNodeInfo);
+                                    }
                                 }
                             }
                         }
@@ -1855,7 +1864,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -1880,7 +1889,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -1902,7 +1911,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -1919,11 +1928,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 0; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-//                        if(includeNodeIds != null){
-//                            if(!includeNodeIds.contains(tempActivity.getId())){
-//                                continue;
-//                            }
-//                        }
                         NodeInfo tempNodeInfo = new NodeInfo();
                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
                         tempNodeInfo.setUiType(uiType);
@@ -1932,7 +1936,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 } else {//按照惟一分支任务处理，显示一个，只读
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[0];
-                    if (includeNodeIds != null) {
+                    if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                         if (!includeNodeIds.contains(tempActivity.getId())) {
                             throw new RuntimeException("惟一分支未选中");
                         }
@@ -1990,6 +1994,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if(completeCounter+1==instanceOfNumbers){//会签,串，并最后一个执行人
                 tempNodeInfo.setCounterSignLastTask(true);
                 counterSignLastTask = true;
+                if("CounterSign".equalsIgnoreCase(nodeType)){
+                    nodeInfoList.add(tempNodeInfo);
+                    return nodeInfoList;
+                }
             }else{
                 nodeInfoList.add(tempNodeInfo);
                 return nodeInfoList;
@@ -2045,7 +2053,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -2067,7 +2075,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -2085,7 +2093,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -2103,7 +2111,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 0; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null) {
+                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                             if (!includeNodeIds.contains(tempActivity.getId())) {
                                 continue;
                             }
@@ -2117,7 +2125,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 } else {//按照惟一分支任务处理，显示一个，只读
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[0];
-                    if (includeNodeIds != null) {
+                    if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                         if (!includeNodeIds.contains(tempActivity.getId())) {
                             throw new RuntimeException("惟一分支未选中");
                         }
@@ -2300,6 +2308,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     pvmNodeInfo =  pvmNodeInfoGateWayInit( ifGateWay, pvmNodeInfo, nextTempActivity, v);
                 }
             }
+            if ("ExclusiveGateway".equalsIgnoreCase(currentActivtityType) || "inclusiveGateway".equalsIgnoreCase(currentActivtityType) && pvmNodeInfo.getChildren().isEmpty()) {
+                String defaultSequenceId = currActivity.getProperty("default") + "";
+                if (StringUtils.isNotEmpty(defaultSequenceId)) {
+                    PvmTransition pvmTransition = currActivity.findOutgoingTransition(defaultSequenceId);
+                    if (pvmTransition != null) {
+                        PvmNodeInfo pvmNodeInfoDefault = new PvmNodeInfo();
+                        pvmNodeInfoDefault.setCurrActivity(pvmTransition.getDestination());
+                        pvmNodeInfoDefault.setParent(pvmNodeInfo);
+                        pvmNodeInfo.getChildren().add(pvmNodeInfoDefault);
+                    }
+                }
+            }
         }
           return pvmNodeInfo;
     }
@@ -2376,7 +2396,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (!results.isEmpty()) {
             for (PvmActivity tempActivity : results) {
                 NodeInfo tempNodeInfo = new NodeInfo();
-                if (includeNodeIds != null) {
+                if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
                     if (!includeNodeIds.contains(tempActivity.getId())) {
                         continue;
                     }
