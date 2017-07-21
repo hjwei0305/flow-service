@@ -1964,6 +1964,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         String uiType = "readOnly";
+        Boolean counterSignLastTask = false;
         if("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){//多实例节点，直接返回当前会签节点信息
 
             NodeInfo tempNodeInfo = new NodeInfo();
@@ -1986,12 +1987,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
             if(completeCounter+1==instanceOfNumbers){//会签最后一个执行人
                 tempNodeInfo.setCounterSignLastTask(true);
-                if("CounterSign".equalsIgnoreCase(nodeType)){
-                    nodeInfoList.add(tempNodeInfo);
-                    return nodeInfoList;
-                }else{
-
-                }
+                counterSignLastTask = true;
+//                if("CounterSign".equalsIgnoreCase(nodeType)){
+//                    nodeInfoList.add(tempNodeInfo);
+//                    return nodeInfoList;
+//                }else{
+//
+//                }
             }else{
                 nodeInfoList.add(tempNodeInfo);
                 return nodeInfoList;
@@ -2131,6 +2133,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     tempNodeInfo.setPreLineName(nextNodes.get(tempActivity));
                     nodeInfoList.add(tempNodeInfo);
                 }
+            }
+        }
+        if(counterSignLastTask && nodeInfoList!=null && !nodeInfoList.isEmpty()){
+            for(NodeInfo nodeInfo:nodeInfoList){
+                nodeInfo.setCounterSignLastTask(true);
             }
         }
         return nodeInfoList;
