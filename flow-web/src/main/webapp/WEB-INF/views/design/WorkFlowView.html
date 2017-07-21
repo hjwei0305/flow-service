@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" style="overflow: auto;">
 <head>
     <th:block th:include="base/base::base_head"></th:block>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -27,23 +27,23 @@
         var orgCode = EUI.util.getUrlParam("orgCode");
         var versionCode = EUI.util.getUrlParam("versionCode");
         var businessModelId = EUI.util.getUrlParam("businessModelId");
-        var isCopy = EUI.util.getUrlParam("isCopy")=="true";
-        var isFromVersion=EUI.util.getUrlParam("isFromVersion")=="true";
+        var isCopy = EUI.util.getUrlParam("isCopy") == "true";
+        var isFromVersion = EUI.util.getUrlParam("isFromVersion") == "true";
         EUI.onReady(function () {
             flowView = new EUI.WorkFlowView({
                 id: id,
                 orgId: orgId,
-                orgCode:orgCode,
+                orgCode: orgCode,
                 businessModelId: businessModelId,
                 versionCode: versionCode || -1,
-                isCopy:isCopy,
-                isFromVersion:isFromVersion,
+                isCopy: isCopy,
+                isFromVersion: isFromVersion,
                 renderTo: "content"
             });
         });
     </script>
 </head>
-<body style="background: white;">
+<body style="background: white;min-width: 1260px;">
 <div id="content"></div>
 </body>
 </html>
