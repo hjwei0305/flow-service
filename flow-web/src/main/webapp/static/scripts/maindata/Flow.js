@@ -266,17 +266,17 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
-            if (item.currentTaskType == "CounterSign") {
+            if (item.currentTaskType == "CounterSign" && !item.counterSignLastTask) {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
-            }else if(item.currentTaskType == "ParallelTask"){
+            }else if(item.currentTaskType == "ParallelTask" && !item.counterSignLastTask){
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【并行任务】</div></div></div>';
                 // g.initDealCheckBox();
                 this.desionType = 2;
-            }else if(item.currentTaskType == "SerialTask"){
+            }else if(item.currentTaskType == "SerialTask" && !item.counterSignLastTask){
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【串行任务】</div></div></div>';
                 // g.initDealCheckBox();
@@ -466,7 +466,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
             if (iconCss == "choose-radio") {
-                if (node.executorSet.length == 1) {
+                if (node.executorSet && node.executorSet.length == 1) {
                     var html = g.showUserItem(node, nodeHtml, iconCss, nodeType);
                     $(".flow-operate").before(html);
                     $("div[index=" + i + "]").children().eq(1).children().eq(0).addClass("select");
