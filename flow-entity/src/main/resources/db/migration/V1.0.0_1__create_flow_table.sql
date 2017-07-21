@@ -1,6 +1,6 @@
 ﻿/*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/7/19 9:27:34                            */
+/* Created on:     2017/7/20 18:21:08                           */
 /*==============================================================*/
 
 
@@ -357,7 +357,7 @@ create table flow_history
    next_id              varchar(36) comment '下一个任务ID',
    task_status          varchar(80) comment '任务状态',
    canCancel            bit(1) comment '能否驳回',
-   taskJsonDef          varchar(1200) comment '任务json定义 ',
+   taskJsonDef          text comment '任务json定义 ',
    creator_id           varchar(36) comment '创建人ID',
    creator_account      varchar(50) comment '创建者账号',
    creator_name         varchar(50) comment '创建者名称',
@@ -471,7 +471,7 @@ create table flow_task
    pre_id               varchar(36),
    canReject            bit(1) comment '能否驳回',
    canSuspension        bit(1) comment '能否中止',
-   taskJsonDef          varchar(1200) comment '任务json定义 ',
+   taskJsonDef          text comment '任务json定义 ',
    businessModelRemark  varchar(255) comment '业务摘要',
    executeTime          int comment '额定工时(分钟)',
    creator_id           varchar(36) comment '创建人ID',
