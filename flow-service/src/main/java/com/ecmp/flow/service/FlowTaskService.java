@@ -14,6 +14,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
+import com.ecmp.flow.activiti.ext.PvmNodeInfo;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
@@ -1458,7 +1459,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if(tempActivity!=null && ifGageway(tempActivity)){
                     List<PvmActivity> results = new ArrayList<PvmActivity>();
                     includeNodeIdsNew.remove(includeNodeId);
-                    this.gateWayCheckFuHeConditon(tempActivity.getProperties().get("type")+"",tempActivity,results,v);
+                    PvmNodeInfo pvmNodeInfo = this.checkFuHeConditon(tempActivity,v);
+                    this.initPvmActivityList(pvmNodeInfo,results);
                     if(results !=null){
                         for(PvmActivity p:results){
                             includeNodeIdsNew.add(p.getId());
@@ -1985,15 +1987,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-            if(completeCounter+1==instanceOfNumbers){//会签最后一个执行人
+            if(completeCounter+1==instanceOfNumbers){//会签,串，并最后一个执行人
                 tempNodeInfo.setCounterSignLastTask(true);
                 counterSignLastTask = true;
-//                if("CounterSign".equalsIgnoreCase(nodeType)){
-//                    nodeInfoList.add(tempNodeInfo);
-//                    return nodeInfoList;
-//                }else{
-//
-//                }
             }else{
                 nodeInfoList.add(tempNodeInfo);
                 return nodeInfoList;
@@ -2231,26 +2227,54 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+
+
+    private PvmNodeInfo pvmNodeInfoGateWayInit(Boolean ifGateWay,PvmNodeInfo pvmNodeInfo,PvmActivity nextTempActivity,Map<String,Object> v)
+            throws NoSuchMethodException, SecurityException {
+        if (ifGateWay) {
+            PvmNodeInfo pvmNodeInfoTemp =  checkFuHeConditon(nextTempActivity, v);
+            pvmNodeInfoTemp.setParent(pvmNodeInfo);
+            if(pvmNodeInfoTemp!=null && pvmNodeInfoTemp.getChildren().isEmpty()){
+                String defaultSequenceId = nextTempActivity.getProperty("default") + "";
+                if (StringUtils.isNotEmpty(defaultSequenceId)) {
+                    PvmTransition pvmTransition = nextTempActivity.findOutgoingTransition(defaultSequenceId);
+                    if (pvmTransition != null) {
+                        PvmNodeInfo pvmNodeInfoDefault = new PvmNodeInfo();
+                        pvmNodeInfoDefault.setCurrActivity(pvmTransition.getDestination());
+                        pvmNodeInfoDefault.setParent(pvmNodeInfoTemp);
+                        pvmNodeInfoTemp.getChildren().add(pvmNodeInfoDefault);
+                    }
+                }
+            }
+            pvmNodeInfo.getChildren().add(pvmNodeInfoTemp);
+        } else {
+            PvmNodeInfo pvmNodeInfoTemp = new PvmNodeInfo();
+            pvmNodeInfoTemp.setParent(pvmNodeInfo);
+            pvmNodeInfoTemp.setCurrActivity(nextTempActivity);
+            pvmNodeInfo.getChildren().add(pvmNodeInfoTemp);
+        }
+        return pvmNodeInfo;
+    }
     /**
      * 注入符合条件的下一步节点
      *
      * @param currActivity
      * @param v
-     * @param results
      * @throws NoSuchMethodException
      * @throws SecurityException
      */
-    private void checkFuHeConditon(PvmActivity currActivity, Map<String, Object> v, List<PvmActivity> results)
+    private PvmNodeInfo checkFuHeConditon(PvmActivity currActivity, Map<String, Object> v)
             throws NoSuchMethodException, SecurityException {
-        boolean result = false;
-        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
 
+        PvmNodeInfo pvmNodeInfo = new PvmNodeInfo();
+        pvmNodeInfo.setCurrActivity(currActivity);
+
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+            String currentActivtityType = currActivity.getProperty("type").toString();
             for (PvmTransition pv : nextTransitionList) {
                 String conditionText = (String) pv.getProperty("conditionText");
                 PvmActivity nextTempActivity = pv.getDestination();
-                String nextActivtityType = nextTempActivity.getProperty("type").toString();
-                String currentActivtityType = currActivity.getProperty("type").toString();
                 Boolean ifGateWay = ifGageway(nextTempActivity);//当前节点的子节点是否为网关
 
                 if ("ExclusiveGateway".equalsIgnoreCase(currentActivtityType) || "inclusiveGateway".equalsIgnoreCase(currentActivtityType)) {
@@ -2259,75 +2283,80 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
-                                if (ifGateWay) {
-                                    gateWayCheckFuHeConditon(nextActivtityType, nextTempActivity, results, v);
-                                } else {
-                                    results.add(nextTempActivity);
-                                }
-
+                                pvmNodeInfo =  pvmNodeInfoGateWayInit( ifGateWay, pvmNodeInfo, nextTempActivity, v);
                             }
                         } else {//其他的用UEL表达式验证
                             Object tempResult = ConditionUtil.uelResult(conditionText, v);
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
-                                if (resultB == true) {
-                                    if (ifGateWay) {
-                                        gateWayCheckFuHeConditon(nextActivtityType, nextTempActivity, results, v);
-                                    } else {
-                                        results.add(nextTempActivity);
-                                    }
+                                if(resultB == true){
+                                    pvmNodeInfo =  pvmNodeInfoGateWayInit( ifGateWay, pvmNodeInfo, nextTempActivity, v);
+                                 }
                                 }
                             }
                         }
                     }
-                } else {
-                    if (ifGateWay) {
-                        gateWayCheckFuHeConditon(nextActivtityType, nextTempActivity, results, v);
-                    } else {
-                        results.add(nextTempActivity);
+                else {
+                    pvmNodeInfo =  pvmNodeInfoGateWayInit( ifGateWay, pvmNodeInfo, nextTempActivity, v);
+                }
+            }
+        }
+          return pvmNodeInfo;
+    }
+
+//    private void gateWayCheckFuHeConditon(String nextActivtityType, PvmActivity nextTempActivity, List<PvmActivity> results, Map<String, Object> v) throws NoSuchMethodException, SecurityException {
+//        List<PvmActivity> resultsTemp = new ArrayList<PvmActivity>();
+//        if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关
+//            checkFuHeConditon(nextTempActivity, v, resultsTemp);
+//            results.addAll(resultsTemp);
+//        } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {//排他网关
+//            checkFuHeConditon(nextTempActivity, v, resultsTemp);
+//            if (resultsTemp.isEmpty()) {//如果为空，查找节点的default路径节点
+//                String defaultSequenceId = nextTempActivity.getProperty("default") + "";
+//                if (StringUtils.isNotEmpty(defaultSequenceId)) {
+//                    PvmTransition pvmTransition = nextTempActivity.findOutgoingTransition(defaultSequenceId);
+//                    if (pvmTransition != null) {
+//                        resultsTemp.add(pvmTransition.getDestination());
+//                    }
+//                }
+//            } else if (resultsTemp.size() > 1 && "ExclusiveGateway".equalsIgnoreCase(nextActivtityType)) {
+//                PvmActivity reTemp = resultsTemp.get(0);
+//                resultsTemp.clear();
+//                resultsTemp.add(reTemp);
+//            }
+//            results.addAll(resultsTemp);
+//        } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) {//包容网关
+//            checkFuHeConditon(nextTempActivity, v, resultsTemp);
+//            if (resultsTemp.isEmpty()) {//如果为空，查找节点的default路径节点
+//                String defaultSequenceId = nextTempActivity.getProperty("default") + "";
+//                if (StringUtils.isNotEmpty(defaultSequenceId)) {
+//                    PvmTransition pvmTransition = nextTempActivity.findOutgoingTransition(defaultSequenceId);
+//                    if (pvmTransition != null) {
+//                        resultsTemp.add(pvmTransition.getDestination());
+//                    }
+//                }
+//            }
+//            results.addAll(resultsTemp);
+//        }
+//    }
+
+
+    private  List<PvmActivity> initPvmActivityList(PvmNodeInfo pvmNodeInfo,List<PvmActivity> results){
+        if(pvmNodeInfo!=null && !pvmNodeInfo.getChildren().isEmpty()){
+            Set<PvmNodeInfo> children = pvmNodeInfo.getChildren();
+            for(PvmNodeInfo p:children){
+                PvmActivity currActivity =  p.getCurrActivity();
+                if(currActivity!=null){
+                    if(ifGageway(currActivity)){
+                        results=this.initPvmActivityList(p,results);
+                    }else {
+                        results.add(currActivity);
                     }
                 }
             }
         }
-
+        return results;
     }
-
-    private void gateWayCheckFuHeConditon(String nextActivtityType, PvmActivity nextTempActivity, List<PvmActivity> results, Map<String, Object> v) throws NoSuchMethodException, SecurityException {
-        List<PvmActivity> resultsTemp = new ArrayList<PvmActivity>();
-        if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { // 并行网关
-            checkFuHeConditon(nextTempActivity, v, resultsTemp);
-            results.addAll(resultsTemp);
-        } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {//排他网关
-            checkFuHeConditon(nextTempActivity, v, resultsTemp);
-            if (resultsTemp.isEmpty()) {//如果为空，查找节点的default路径节点
-                String defaultSequenceId = nextTempActivity.getProperty("default") + "";
-                if (StringUtils.isNotEmpty(defaultSequenceId)) {
-                    PvmTransition pvmTransition = nextTempActivity.findOutgoingTransition(defaultSequenceId);
-                    if (pvmTransition != null) {
-                        resultsTemp.add(pvmTransition.getDestination());
-                    }
-                }
-            } else if (resultsTemp.size() > 1 && "ExclusiveGateway".equalsIgnoreCase(nextActivtityType)) {
-                PvmActivity reTemp = resultsTemp.get(0);
-                resultsTemp.clear();
-                resultsTemp.add(reTemp);
-            }
-            results.addAll(resultsTemp);
-        } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) {//包容网关
-            checkFuHeConditon(nextTempActivity, v, resultsTemp);
-            if (resultsTemp.isEmpty()) {//如果为空，查找节点的default路径节点
-                String defaultSequenceId = nextTempActivity.getProperty("default") + "";
-                if (StringUtils.isNotEmpty(defaultSequenceId)) {
-                    PvmTransition pvmTransition = nextTempActivity.findOutgoingTransition(defaultSequenceId);
-                    if (pvmTransition != null) {
-                        resultsTemp.add(pvmTransition.getDestination());
-                    }
-                }
-            }
-            results.addAll(resultsTemp);
-        }
-    }
-
 
     /**
      * 选择符合条件的节点
@@ -2341,14 +2370,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             throws NoSuchMethodException, SecurityException {
         List<NodeInfo> qualifiedNode = new ArrayList<NodeInfo>();
         List<PvmActivity> results = new ArrayList<PvmActivity>();
-        String nextActivtityType = currActivity.getProperty("type").toString();
-        Boolean ifGateWay = ifGageway(currActivity);
-//        if(ifGateWay){
-            gateWayCheckFuHeConditon( nextActivtityType,currActivity, results, v);
-//        }else {
-//            checkFuHeConditon(currActivity, v, results);
-//        }
-
+        PvmNodeInfo pvmNodeInfo = checkFuHeConditon(currActivity,v);
+        initPvmActivityList(pvmNodeInfo,results);
         // 前端需要的数据
         if (!results.isEmpty()) {
             for (PvmActivity tempActivity : results) {
@@ -2359,7 +2382,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
                 tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
-//                tempNodeInfo.setUiType("readOnly");
                 qualifiedNode.add(tempNodeInfo);
             }
         }
