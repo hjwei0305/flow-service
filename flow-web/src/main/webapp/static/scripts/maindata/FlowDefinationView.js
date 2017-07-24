@@ -357,7 +357,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 displayText:g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
-                    g.treeCmp.data&&g.treeCmp.afterShowTree(g.treeCmp.data);
+                    if(g.treeCmp.data&&g.treeCmp.data.length>0){
+                        g.treeCmp.afterShowTree(g.treeCmp.data);
+                    }
                     g.selectedNodeId = null;
                     g.selectedNodeOrgCode = null;
                     g.selectedNodeName = null;
