@@ -1,0 +1,797 @@
+/**
+ * *************************************************************************************************
+ * <br>
+ * 实现功能：
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 版本          变更时间             变更人                     变更原因
+ * <br>
+ * ------------------------------------------------------------------------------------------------
+ * <br>
+ * 1.0.00      2017/5/24 14:20      陈飞(fly)                    新建
+ * <br>
+ * *************************************************************************************************<br>
+ */
+
+/*
+*审批组件css
+ */
+html,body{
+    overflow: auto;
+}
+body{
+    min-width: 1100px;
+}
+.flow-approve {
+    border: 1px solid #dddddd;
+}
+
+.flow-info {
+    height: 130px;
+    color: #333333;
+    border-bottom: 1px solid #dddddd;
+    background: #F8F9F9;
+}
+
+.flow-info-item {
+    float: left;
+    width: 49%;
+    height: 100%;
+}
+
+.flow-ordernum {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.flow-info-creater {
+    font-size: 18px;
+    float: left;
+}
+
+.flow-info-createtime {
+    color: #666666;
+    float: left;
+    margin: 4px 0 0 40px;
+}
+
+.flow-info-text {
+    font-size: 16px;
+    float: left;
+}
+
+.flow-info-excutor {
+    font-size: 16px;
+    font-weight: bold;
+    float: left;
+}
+
+.flow-info-remark {
+    float: left;
+    color: #06c595;
+    font-size: 16px;
+}
+
+.flow-info-item > div {
+    display: inline-block;
+    width: 100%;
+    padding: 20px 0 20px 20px;
+}
+
+.flow-nodetitle {
+    color: #333333;
+    float: left;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 20px;
+    line-height: 30px;
+}
+
+
+.flow-remark {
+    border: 1px solid #dddddd;
+    float: left;
+    height: 100px;
+    margin-left: 20px;
+    padding: 5px;
+    resize: none;
+    width: 350px;
+}
+
+.flow-next {
+    background: #71d1fe none repeat scroll 0 0;
+    color: white;
+    margin-left: 40px;
+    margin-top: 72px;
+}
+
+.flow-iframe {
+    border: 1px solid #dddddd;
+    width: 100%;
+}
+
+.flow-order-titlebox {
+    padding: 15px;
+    color: #333333;
+    border-top: 1px solid #dddddd;
+    cursor: pointer;
+}
+
+.flow-order-titlebox .expand, .close {
+    float: right;
+}
+
+.flow-order-titlebox .expand::after {
+    background: url("../images/trigger.png") no-repeat;
+    content: "";
+    display: inline-block;
+    height: 5px;
+    margin: 0 0 2px 10px;
+    width: 10px;
+}
+
+.flow-order-titlebox .close::after {
+    background: url("../images/trigger.png") no-repeat scroll -10px 0;
+    content: "";
+    display: inline-block;
+    height: 5px;
+    margin: 0 0 2px 10px;
+    width: 10px;
+}
+
+.chooseuser-title {
+    border-bottom: 2px solid #5cc0ff;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+.flow-node-box {
+    border: 1px solid #eaeaea;
+    margin: 20px;
+    position: relative;
+}
+
+.flow-excutor-title {
+    background: #f8f9f9 none repeat scroll 0 0;
+    border-bottom: 1px solid #eaeaea;
+    color: #222222;
+    font-weight: bold;
+    padding: 12px;
+}
+
+.choose-icon {
+    display: inline-block;
+    float: left;
+    height: 17px;
+    margin: 2px 10px 0 0;
+    width: 17px;
+    cursor: pointer;
+}
+
+.choose-radio {
+    background: url("../images/radio.png");
+}
+
+.select .choose-radio{
+    background: url("../images/radio-select.png");
+}
+.choose-checkbox {
+    background: url("../images/checkbox.png");
+}
+
+.select .choose-checkbox{
+    background: url("../images/checkbox-select.png");
+}
+
+.choose-delete{
+    background: url("../images/ChooseDelete.png");
+}
+
+.flow-excutor-content {
+    padding: 5px 0 20px;
+}
+
+.flow-excutor-content > div {
+    padding: 15px 0 0 20px;
+}
+
+.flow-excutor-content2 {
+    padding: 5px 0 20px;
+    /*width: 643px;*/
+    height: 230px;
+    overflow-y:auto;
+    /*border:1px solid #CCCCCC;*/
+}
+.flow-excutor-content2 > div {
+    padding: 15px 0 0 20px;
+}
+.choose-btn{
+    background: #F2F6FD none repeat scroll 0 0;
+    border-radius: 4px;
+    color: black;
+    cursor: pointer;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    right: 30px;
+    top: 60px;
+    text-align: center;
+    width: 80px;
+    border: 1px solid #cccccc;
+}
+
+.add-excutor {
+    background: #f2f6fc none repeat scroll 0 0;
+    border: 1px solid #5cc0ff;
+    border-radius: 6px;
+    display: inline-block;
+    float: right;
+    margin: 20px;
+    padding: 8px 0;
+    text-align: center;
+    width: 100px;
+    cursor: pointer;
+}
+
+.excutor-item-title {
+    cursor: pointer;
+    display: inline-block;
+}
+
+.flow-operate {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+.flow-btn {
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    /*float: left;*/
+    padding: 10px 30px;
+}
+
+.flow-operate .submit {
+    background: #71d1fe none repeat scroll 0 0;
+    color: white;
+    padding: 10px 37px;
+    margin-left: 40px;
+}
+
+.flow-operate .pre-step {
+    border: 1px solid #eaeaea;
+}
+
+.flow-chooseuser{
+    display: none;
+}
+
+.flow-decision {
+    float: left;
+    height: 100%;
+    width: 49%;
+}
+
+.flow-decision-box {
+    float: left;
+    height: 50px;
+    margin-top: 25px;
+    width: 80%;
+}
+
+.flow-decision-item{
+    margin-bottom: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.excutor-item-title>div{
+    display: inline-block;
+}
+.flow-countersign{
+    font-weight: bold;
+}
+.gateway-name{
+    font-weight: bold;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.approve-arrows-right{
+    width: 37px;
+    height: 8px;
+    background: url("../images/approve-arrows-right.png") no-repeat;
+    background-size: cover;
+    margin: 0 5px;
+}
+/*.flow-info-item>.flow-deal-opinion{
+    padding: 20px 0 0 20px;
+}*/
+#flow-deal-checkbox{
+    height: 30px;
+    line-height: 30px;
+    margin-left: 15%;
+    padding: 0 0 0 20px;
+    margin-top: -2px;
+}
+.flow-info-item > .flow-deal-opinion{
+    display: inline-block;
+    padding: 20px 0 20px 20px;
+    width: 100%;
+}
+.flow-deal-opinion>.flow-nodetitle{
+    padding: 0;
+}
+
+
+
+/*
+*启动组件css
+ */
+.flowstart-node-box {
+    border: 1px solid #eaeaea;
+    margin: 20px;
+    overflow-y:auto;
+    max-height: 350px;
+    position: relative;
+}
+
+.flowstart-excutor-title {
+    background: #f8f9f9 none repeat scroll 0 0;
+    /*border-bottom: 1px solid #eaeaea;*/
+    color: #222222;
+    font-weight: bold;
+    padding: 12px;
+}
+
+
+.flowstart-excutor-content2 {
+    padding: 5px 0 20px;
+    height: 230px;
+    overflow-y:auto;
+}
+.flowstart-excutor-content2 > div {
+    padding: 15px 0 0 20px;
+}
+.flowstartchoose-btn{
+    background: #f2f6fd none repeat scroll 0 0;
+    border-radius: 4px;
+    color: black;
+    cursor: pointer;
+    height: 30px;
+    line-height: 30px;
+    position: absolute;
+    right:20px;
+    text-align: center;
+    top: 60px;
+    width: 80px;
+}
+
+
+/*
+*流程历史组件css
+ */
+.container {
+    width: 600px;
+    height: 450px;
+    border: 1px solid #000;
+}
+
+.toptop-right{
+    width: 40px;
+    height: 40px;
+}
+.flow-toptoptabicon{
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
+}
+
+.flow-infoimg:hover  {
+    background: url(../images/img/flowSelDesgin.png) no-repeat;
+}
+
+
+.top {
+    width: 600px;
+    height: 55px;
+    /*border: 1px solid #000;*/
+    overflow: hidden;
+}
+
+.top-left {
+    width: 299px;
+    height: 55px;
+    float: left;
+    text-align: center;
+    /*border: 1px solid #000;*/
+}
+
+.flow-line {
+    border-left: 1px solid #8edede;
+    float: left;
+    height: 38px;
+    margin-top: 5px;
+    width: 1px;
+}
+
+.flow-status {
+    width: 200px;
+    height: 70px;
+    margin: 0 auto;
+    margin-top: 15px;
+    cursor: pointer;
+    /*border: 1px solid #000;*/
+}
+
+.flow-statusimg {
+    /*background: url(../images/img/flowstatusImg.png) no-repeat;
+    background-size: cover;*/
+}
+
+/*.flowselect .flow-statusimg {
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+	background-size: cover;
+}*/
+.ecmp-flow-handlestatus{
+    color:#cfcfcf;
+    font-size:31px;
+}
+.flowselect .ecmp-flow-handlestatus{
+    color:#45b7ff;
+}
+/*.navbar:hover .flow-statusimg {
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+	background-size: cover;
+}*/
+.navbar:hover .ecmp-flow-handlestatus{
+    color:#45b7ff;
+}
+
+/*.flow-statusimg:hover{
+	width: 40px;
+	height: 40px;
+	 margin:0 auto;
+	background: url(../images/img/flowstatusSelImg.png) no-repeat;
+}*/
+
+.navbar:hover .text {
+    color: #45b7ff;
+}
+
+.flowselect .text {
+    color: #45b7ff;
+}
+
+.flow-tabicon {
+    width: 30px;
+    height: 30px;
+    margin: 3px auto 0 ;
+    line-height:30px;
+}
+
+.top-center {
+    width: 298px;
+    height: 55px;
+    float: left;
+    /*border: 1px solid #000;*/
+}
+
+.flow-history {
+    width: 190px;
+    height: 70px;
+    margin: 0 auto;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+/*.navbar:hover .flow-historyimg {
+	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+	background-size: cover;
+
+}*/
+.ecmp-flow-handlehistory {
+    font-size:33px;
+    color: #cfcfcf
+}
+.navbar:hover .ecmp-flow-handlehistory {
+    color:#45b7ff;
+}
+.flow-historyimg {
+    /*background: url(../images/img/flowhistoryImg.png) no-repeat;*/
+    /*background-size: cover;*/
+}
+
+/*.flowselect .flow-historyimg {
+	background: url(../images/img/flowhistorySelImg.png) no-repeat;
+	background-size: cover;
+
+}*/
+
+.flowselect .ecmp-flow-handlehistory{
+    color:#45b7ff;
+}
+
+/*.flow-historyimg:hover{
+	width: 40px;
+	height: 40px;
+	 margin:0 auto;
+	background:url(../images/img/flowhistorySelImg.png)
+}*/
+
+.select-text {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #45b7ff;
+}
+
+.top-right {
+    width: 190px;
+    height: 55px;
+    float: left;
+    /*border: 1px solid #000;*/
+}
+
+.navbar:hover .flow-infoimg {
+    background: url(../images/img/flowSelDesgin.png) no-repeat;
+}
+
+.flow-infoimg {
+    background: url(../images/img/flowDesgin.png)
+}
+
+.flowselect .flow-infoimg {
+    background: url(../images/img/flowSelDesgin.png)
+}
+
+.flow-hsitorycenter {
+    height: 360px;
+    /*margin: 0px 20px 20px;*/
+    padding: 20px;
+    background-color: #f8f9f9;
+    overflow-y:auto;
+}
+
+.historycenter-info {
+    height: 315px;
+    /*border: 1px solid #000000;*/
+}
+
+.flow-start {
+    height: 52px;
+    /*border: 1px solid #000000;*/
+    overflow: hidden;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.flow-startimg {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin-top: -2px;
+    font-size:21px;
+    /*background: url(../images/img/flowstartImg.png);*/
+}
+
+.flow-startfield{
+    font-size: 14px;
+    color: #45b7ff;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 10px;
+    float: left;
+}
+
+.flow-end {
+    height: 25px;
+    /*border: 1px solid #000000;*/
+    overflow: hidden;
+    margin-top: 10px;
+    /*border-bottom: 1px solid #EEEEEE;*/
+}
+.flow-endImg {
+    width: 20px;
+    height: 20px;
+    float: left;
+    margin-top: 3px;
+    margin-right:-5px;
+    font-size:18px;
+}
+.flow-endfield{
+    font-size: 14px;
+    color: #45b7ff;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-left: 10px;
+    float: left;
+}
+.flow-endright {
+    float: right;
+    margin-top: 5px;
+    overflow: hidden;
+}
+.flow-endtime {
+    float: left;
+    font-size: 14px;
+    margin-left: 10px;
+    color: #333333;
+}
+
+.text {
+    color: #666666;
+    font-size: 14px;
+
+    /*    margin-left: 10px;*/
+    text-align: center;
+}
+
+.flow-startright {
+    float: right;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.flow-startuser {
+    font-size: 14px;
+    color: #333333;
+    float: left;
+}
+
+.flow-startline {
+    height: 13px;
+    width: 1px;
+    float: left;
+    margin-top: 4px;
+    margin-left: 10px;
+    border-left: 1px solid #000000;
+}
+
+.flow-starttime {
+    float: left;
+    font-size: 14px;
+    margin-left: 10px;
+    color: #333333;
+}
+
+.flow-historyprogress {
+    margin-left: 20px;
+}
+
+.flow-historyinfoone {
+    height: 110px;
+    border-top: 1px solid #EEEEEE;
+    border-left: 1px solid #EEEEEE;
+    border-bottom: 1px solid #EEEEEE;
+    position: relative;
+}
+
+.flow-historyinfotwo {
+    height: 110px;
+    border: 1px solid #000000;
+}
+
+.flow-historyinfotop {
+    height: 18px;
+    margin-top: 20px;
+    overflow: hidden;
+    /*border: 1px solid #000000;*/
+}
+
+.flow-historydot {
+    width: 16px;
+    height: 16px;
+    /*background: url(../images/img/flowDot.png);*/
+    float: left;
+    position: absolute;
+    top: 18px;
+    left: -9px;
+    z-index: 1;
+}
+
+.ecmp-flow-nodedot{
+    color: #B3B3B3;
+    font-size: 17px;
+}
+.flow-historystatus {
+    margin-left: 18px;
+    font-size: 14px;
+    color: #333333;
+    font-weight: bold;
+    float: left;
+}
+
+.flow-historyright {
+    float: right;
+    font-size: 14px;
+    color: #999;
+}
+
+.flow-usetime {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #999;
+    text-align: right;
+}
+
+.flowhistory-remark {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #999;
+    text-align: right;
+}
+
+.flow-statuscenter {
+    height: 360px;
+    /*margin: 0px 20px 20px;*/
+    padding: 20px;
+    background-color: #f8f9f9;
+    overflow-y:auto;
+}
+
+.statuscenter-info {
+    width: 520px;
+    height: 305px;
+    /*border:1px solid #000000;*/
+}
+
+.text-center{
+    text-align: center;
+    font-weight: 200;
+    font-size: 25px;
+    line-height:270px
+}
+
+.flow-progress {
+    width: 520px;
+    height: 60px;
+    /*border:1px solid #000000;*/
+    border-bottom: 1px solid #eeeeee;
+}
+
+.flow-progresstitle {
+    width: 520px;
+    height: 25px;
+    /*border:1px solid #000000;*/
+    font-size: 14px;
+    color: #45b7ff;
+    font-weight: bold;
+}
+
+.flow-progressinfo {
+    width: 520px;
+    height: 25px;
+    /*border:1px solid #000000;*/
+    font-size: 14px;
+    color: #333;
+    overflow: hidden;
+}
+
+.flow-progressinfoleft {
+    width: 30%;
+    height: 25px;
+    /*border:1px solid #000000;*/
+    float: left;
+}
+
+.flow-progressline {
+    height: 15px;
+    width: 1px;
+    margin-top: 3px;
+    margin-left: 10px;
+    float: left;
+    border-left: 1px solid #000000;
+}
+
+.flow-progressinforight {
+    height: 25px;
+    margin-left: 10px;
+    /*border:1px solid #000000;*/
+    float: left;
+}

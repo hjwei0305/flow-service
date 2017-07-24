@@ -53,7 +53,6 @@ public class CommonUserTaskCompleteListener implements TaskListener{
     private final Logger logger = LoggerFactory.getLogger(CommonUserTaskCompleteListener.class);
 
 	public CommonUserTaskCompleteListener(){
-		System.out.println("commonUserTaskCompleteListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
 

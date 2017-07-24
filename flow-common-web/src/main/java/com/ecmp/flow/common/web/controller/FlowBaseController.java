@@ -171,13 +171,13 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     /**
      * 签收任务
      * @param taskId  任务id
-     * @param userId  用户id
      * @return
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String claimTask(String taskId, String userId){
+    public String claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
@@ -190,11 +190,12 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      * @param businessId 业务表单ID
      * @param opinion    审批意见
      * @param taskList   任务完成传输对象
+     * @param
      * @return 操作结果
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected) {
+    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected,String approved ) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -230,6 +231,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             }
 
             //  Map<String,Object> v = new HashMap<String,Object>();
+            v.put("approved",approved);//针对会签时同意、不同意、弃权等操作
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
@@ -275,7 +277,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
-        operateStatus = new OperateStatus(true, result.getMessage());
+        operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -309,19 +311,24 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId, String includeNodeIdsStr) throws NoSuchMethodException {
+    public String getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
-        if (!StringUtils.isEmpty(includeNodeIdsStr)) {
+        if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId, includeNodeIds);
+        if(StringUtils.isEmpty(approved)){
+            approved="APPROVED";
+        }
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");
             if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
                 operateStatus.setData("EndEvent");
+            }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
+                operateStatus.setData("CounterSignNotEnd");
             }else {
                 operateStatus.setData(nodeInfoList);
             }

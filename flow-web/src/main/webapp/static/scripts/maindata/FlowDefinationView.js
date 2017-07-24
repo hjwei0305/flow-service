@@ -18,7 +18,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         this.gridCmp = EUI.getCmp("gridPanel");
         this.treeCmp = EUI.getCmp("treePanel");
         this.editFormCmp = EUI.getCmp("editForm");
-       // this.getOrgTreeData();
         this.addEvents();
     },
     addEvents: function () {
@@ -27,7 +26,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     },
     operateBtnEvents: function () {
         var g = this;
-        $(".ecmp-common-edit").live("click", function () {
+        $("#defFlow >.ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
             g.updateFlowDefnation(data);
         });
@@ -38,14 +37,33 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         $("#defFlow > .ecmp-common-view").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             g.lookPropertyWindow(rowData);
-            g.addDefVersionWinEvents();
+        });
+        $("#defFlow>.ecmp-common-activate").live("click", function () {
+            var rowData = EUI.getCmp("gridPanel").getSelectRow();
+            g.activateOrFreezeFlow("gridPanel",{id:rowData.id,status:'Activate'},"../flowDefination/activateOrFreezeFlowDef",true);
+        });
+        $("#defFlow>.ecmp-common-suspend").live("click", function () {
+            var rowData = EUI.getCmp("gridPanel").getSelectRow();
+            g.activateOrFreezeFlow("gridPanel",{id:rowData.id,status:'Freeze'},"../flowDefination/activateOrFreezeFlowDef",false);
         });
     },
     addDefVersionWinEvents:function () {
       var g=this;
+        $("#defVersion>.ecmp-common-edit").live("click", function () {
+            var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            g.updateFlowDefVersion(data);
+        });
         $("#defVersion>.ecmp-common-view").live("click", function () {
             var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
             g.viewFlowDefnation(rowData);
+        });
+        $("#defVersion>.ecmp-common-suspend").live("click", function () {
+            var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            g.activateOrFreezeFlow("defViesonGridPanel",{id:rowData.id,status:'Freeze'},"../flowDefination/activateOrFreezeFlowVer",false);
+        });
+        $("#defVersion>.ecmp-common-activate").live("click", function () {
+            var rowData = EUI.getCmp("defViesonGridPanel").getSelectRow();
+            g.activateOrFreezeFlow("defViesonGridPanel",{id:rowData.id,status:'Activate'},"../flowDefination/activateOrFreezeFlowVer",true);
         });
     },
     deleteFlowDefinationWind:function(rowData){
@@ -98,8 +116,12 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initWindTbar(rowData), this.initWindGrid(rowData)]
+            items: [this.initWindTbar(rowData), this.initWindGrid(rowData)],
+            afterClose:function () {
+                g.remove();
+            }
         });
+        g.addDefVersionWinEvents();
     },
     initWindTbar: function (rowData) {
         var g = this;
@@ -166,14 +188,30 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.operateText,
                     name: "operate",
                     index: "operate",
-                    align: "center",
-                    formatter: function (cellvalue, options, rowObject) {
-                        //viewText:"查看"
-                        return '<div id="defVersion"><i class="ecmp-common-view fontcusor" title="'+g.lang.viewText+'"></i></div>';
+                    align: "left",
+                    width:120,
+                    formatter : function(cellvalue, options, rowObject) {
+                        //viewFlowDefText:"查看流程定义"
+                        var str='<div id="defVersion"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i><i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.viewFlowDefText+'"></i>';
+                        if('Activate' == rowObject.flowDefinationStatus){
+                            str=str+'<i class="ecmp-common-suspend fontcusor" title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor" style="display: none"  title="'+g.lang.activeText+'"></i></div>';
+                        }
+                        else if('Freeze' == rowObject.flowDefinationStatus){
+                            str=str+'<i class="ecmp-common-suspend fontcusor" style="display: none" title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor"  title="'+g.lang.activeText+'"></i></div>';
+                        }
+                        return str;
                     }
                 },{
                     name: "id",
                     index: "id",
+                    hidden: true
+                },{
+                    name: "flowDefination.flowType.businessModel.id",
+                    index: "flowDefination.flowType.businessModel.id",
+                    hidden: true
+                },{
+                    name: "flowDefinationStatus",
+                    index: "flowDefinationStatus",
                     hidden: true
                 },{
                     name: "flowDefination.orgCode",
@@ -220,7 +258,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     index: "depict"
                 },{
                     label: g.lang.flowDefinitionStatusText,
-                    name: "flowDefinationStatus",
+                    name: "flowDefinationStatusText",
                     index: "flowDefinationStatus",
                     formatter : function(cellvalue, options, rowObject) {
                         var strVar = '';
@@ -230,7 +268,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                             strVar = g.lang.activeText;
                         }
                         else if('Freeze' == rowObject.flowDefinationStatus){
-                            strVar = g.lang.frozenText;
+                            strVar = g.lang.suspendText;
                         }
                         return strVar;
                     }
@@ -238,11 +276,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             }
         };
     },
+
     viewFlowDefnation: function (data) {
         var g = this;
         var tab = {
-            title: g.lang.viewText+data.name,
-            //url: _ctxPath + "/design/getFlowDefByVersionId?id="+data.id+"&viewFlowDefByVersionId=true"
+            title: g.lang.viewFlowDefText+data.name,
             url: _ctxPath + "/design/showLook?id="+data.id+"&viewFlowDefByVersionId=true"
         };
         g.addTab(tab);
@@ -264,22 +302,23 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         };
         g.addTab(tab);
     },
-    copyFlowDefination: function (data) {
-        var g = this;
-        var tab = {
-            // copyFlowDefinitionText: "参考创建流程定义",
-            title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
-        };
-        g.addTab(tab);
-    },
     copyFlowDefination: function (data,isFromVersion) {
         var g = this;
         var id= isFromVersion?data["flowDefination.id"]:data.id;
+        var businessModelId=isFromVersion?data["flowDefination.flowType.businessModel.id"]:data["flowType.businessModel.id"];
         var tab = {
             // copyFlowDefinitionText: "参考创建流程定义",
             title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+data["flowType.businessModel.id"]+"&isCopy="+true,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion,
+        };
+        g.addTab(tab);
+    },
+    updateFlowDefVersion: function (data) {
+        var g = this;
+        var tab = {
+            // copyFlowDefinitionText: "参考创建流程定义",
+            title: g.lang.copyFlowDefinitionText,
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data["flowDefination.orgCode"]+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowDefination.flowType.businessModel.id"],
         };
         g.addTab(tab);
     },
@@ -314,10 +353,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             isOverFlow: false,
             items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
-                width:159,
+                width:209,
                 displayText:g.lang.searchDisplayText,
+                canClear: true,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
+                    if(g.treeCmp.data&&g.treeCmp.data.length>0){
+                        g.treeCmp.afterShowTree(g.treeCmp.data);
+                    }
                     g.selectedNodeId = null;
                     g.selectedNodeOrgCode = null;
                     g.selectedNodeName = null;
@@ -340,7 +383,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             id: "treePanel",
-            searchField:["name"],
+            searchField:["code","name"],
             showField: "name",
             style: {
                 "background": "#fff"
@@ -453,18 +496,29 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: g.lang.operateText,
                         name: "operate",
                         index: "operate",
-                        width: 110,
-                        align: "center",
-                        formatter: function (cellvalue, options, rowObject) {
-                            return '<div id="defFlow"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
+                        width: 120,
+                        align: "left",
+                        formatter : function(cellvalue, options, rowObject) {
+                            var str='<div id="defFlow"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
                                 '<i class="ecmp-common-delete  icon-space fontcusor" title="'+g.lang.deleteText+'"></i>' +
-                                '<i class="ecmp-common-view fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i></div>';
+                                '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
+                            if('Activate' == rowObject.flowDefinationStatus){
+                                str=str+'<i class="ecmp-common-suspend fontcusor"  title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor" style="display: none" title="'+g.lang.activeText+'"></i></div>';
+                            }
+                            else if('Freeze' == rowObject.flowDefinationStatus){
+                                str=str+'<i class="ecmp-common-suspend fontcusor" style="display: none" title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor"  title="'+g.lang.activeText+'"></i></div>';
+                            }
+                            return str;
                         }
                     }, {
                         name: "id",
                         index: "id",
                         hidden: true
                     }, {
+                        name: "flowDefinationStatus",
+                        index: "flowDefinationStatus",
+                        hidden: true
+                    },{
                         label: g.lang.nameText,
                         name: "name",
                         index: "name",
@@ -513,7 +567,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         hidden:true
                     },{
                         label: g.lang.flowDefinitionStatusText,
-                        name: "flowDefinationStatus",
+                        name: "flowDefinationStatusText",
                         index: "flowDefinationStatus",
                         align:"center",
                         width:110,
@@ -525,7 +579,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                                 strVar = g.lang.activeText;
                             }
                             else if('Freeze' == rowObject.flowDefinationStatus){
-                                strVar = g.lang.frozenText;
+                                strVar = g.lang.suspendText;
                             }
                             return strVar;
                         }
@@ -543,6 +597,62 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         }
+    },
+    //激活或冻结流程
+    activateOrFreezeFlow:function (gridId,data,url,active) {
+        var g = this;
+        var infoBox = EUI.MessageBox({
+            //hintText: 提示
+            title: g.lang.hintText,
+            // activateHintMessageText:"您确定要激活吗？",
+            // freezeHintMessageText:"您确定要冻结吗？",
+            msg: active ? g.lang.activateHintMessageText : g.lang.freezeHintMessageText,
+            buttons: [{
+                //okText: 确定
+                title: g.lang.okText,
+                iconCss: "ecmp-common-ok",
+                selected: true,
+                handler: function () {
+                    infoBox.remove();
+                    var myMask = EUI.LoadMask({
+                        // activateMaskMessageText: "正在激活，请稍候...",
+                        // freezeMaskMessageText: "正在冻结，请稍候...",
+                        msg: active ? g.lang.activateMaskMessageText : g.lang.freezeMaskMessageText,
+                    });
+                    EUI.Store({
+                        url: url,
+                        params: data,
+                        success: function (result) {
+                            myMask.hide();
+                            EUI.getCmp(gridId).grid.trigger("reloadGrid");
+                            EUI.ProcessStatus(result);
+                        },
+                        failure: function (re) {
+                            myMask.hide();
+                            var status = {
+                                msg: re.msg,
+                                success: false,
+                                showTime: 6
+                            }
+                            EUI.ProcessStatus(status);
+                        }
+                    });
+                }
+            }, {
+                //cancelText:取消
+                title: g.lang.cancelText,
+                iconCss: "ecmp-common-delete",
+                handler: function () {
+                    infoBox.remove();
+                }
+            }]
+        });
+    },
+    remove: function () {
+        $("#defVersion>.ecmp-common-edit").die();
+        $("#defVersion>.ecmp-common-view").die();
+        $("#defVersion>.ecmp-common-suspend").die();
+        $("#defVersion>.ecmp-common-activate").die();
     },
     initTitle: function (title) {
         return {

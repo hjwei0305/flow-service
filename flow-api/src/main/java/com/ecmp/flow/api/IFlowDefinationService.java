@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
@@ -176,4 +177,17 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过vo对象启动流程实体",notes = "测试")
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException;
+
+    /**
+     * 切换版本状态
+     * @param id
+     * @param status
+     * @return
+     */
+    @POST
+    @Path("changeStatus/{id}/{status}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
+    public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status);
 }

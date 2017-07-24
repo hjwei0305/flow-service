@@ -5,6 +5,7 @@ import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Position;
 import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
@@ -72,13 +73,14 @@ public class FlowDesignController {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        String id=definition.getProcess().getId();
+        String reg="\\w{6,80}";
+        String reg1=".*[a-zA-Z]+.*";
+        if(!id.matches(reg) || !id.matches(reg1)){
+            status=new OperateStatus(false, ContextUtil.getMessage("10001"));
+            return JsonUtil.serialize(status);
+        }
         definition.setDefJson(def);
-//        net.sf.json.JSONObject test= definition.getProcess().getNodes().getJSONObject("UserTask_1");
-//        net.sf.json.JSONObject executor= test.getJSONObject("nodeConfig").getJSONObject("executor");
-//         if(executor!=null){
-//            String userType = (String)executor.get("userType");
-//            String ids = (String)executor.get("ids");
-//         }
         if (!deploy) {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
@@ -90,7 +92,6 @@ public class FlowDesignController {
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
             String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
-//            FlowInstance flowInstance = proxy2.startById(result.getData().getFlowDefination().getId(), "admin", "0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7", null);
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(result);

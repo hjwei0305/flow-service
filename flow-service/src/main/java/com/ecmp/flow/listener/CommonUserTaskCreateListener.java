@@ -41,7 +41,6 @@ public class CommonUserTaskCreateListener implements TaskListener{
 
     private final Logger logger = LoggerFactory.getLogger(CommonUserTaskCreateListener.class);
 	public CommonUserTaskCreateListener(){
-		System.out.println("commonUserTaskCreateListener-------------------------");
 	}
     private static final long serialVersionUID = 1L;
 

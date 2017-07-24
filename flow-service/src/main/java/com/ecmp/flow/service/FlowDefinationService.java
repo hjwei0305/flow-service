@@ -23,6 +23,8 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import io.swagger.annotations.OAuth2Definition;
+import io.swagger.models.auth.In;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -38,6 +40,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
@@ -46,6 +49,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import javax.ws.rs.core.GenericType;
 import javax.xml.soap.Node;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -83,6 +87,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Autowired
     private FlowTaskDao flowTaskDao;
+
+    @Autowired
+    private FlowExecutorConfigDao  flowExecutorConfigDao;
 
 
     @Autowired
@@ -435,13 +442,23 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
-            if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
+
+            if(flowDefVersion==null ||flowDefVersion.getActDefId() == null || (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate)) {//启动该版本激活状态下的最高版本
+                List<FlowDefVersion>  flowDefVersionsActivates =  flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
+                if(flowDefVersionsActivates!=null && !flowDefVersionsActivates.isEmpty()) {
+                    flowDefVersion = flowDefVersionsActivates.get(0);
+                }
+            }
+            if (flowDefVersion != null && flowDefVersion.getActDefId() != null&& (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
 //                String proessDefId = flowDefVersion.getActDefId();
+                String actDefId = flowDefVersion.getActDefId();
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
-                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
+//                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
+                    processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
                 } else {
-                    processInstance = this.startFlowByKey(key, businessKey, variables);
+//                    processInstance = this.startFlowByKey(key, businessKey, variables);
+                    processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
 
                 Map<String, Object> vNew = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);//再获取一次，预防事件对单据进行了更新
@@ -472,25 +489,58 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowInstance;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException{
         FlowStartResultVO  flowStartResultVO =  new FlowStartResultVO();
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
+        FlowDefination finalFlowDefination = null;
+        List<FlowType> flowTypeList =null;
         if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
-            List<FlowType> flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
-            if (flowTypeList != null && !flowTypeList.isEmpty()) {
-//                if (flowTypeList.size() > 1) {//流程类型大于2，让用户选择
+            flowTypeList  = flowTypeDao.findListByProperty("businessModel", businessModel);
+        }else {
+            flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
+            flowTypeList = new ArrayList<FlowType>();
+            if(flowType!=null){
+                flowTypeList.add(flowType);
+            }
+        }
+        if (flowTypeList != null && !flowTypeList.isEmpty()) {
+                //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
+                String businessId = flowStartVO.getBusinessKey();
+                String businessModelId = businessModel.getId();
+                String appModuleId = businessModel.getAppModuleId();
+                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+                String orgCodePath = v.get("orgPath")+"";
+                orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
                     flowStartResultVO.setFlowTypeList(flowTypeList);
-//                    return flowStartResultVO;
-//                }
-                flowType = flowTypeList.get(0);
+                    for(FlowType flowTypeTemp:flowTypeList){
+                        String[] orgCodes =  orgCodePath.split("\\|");
+                        finalFlowDefination = this.flowDefLuYou( v, flowTypeTemp, orgCodes , 1);
+                        if(finalFlowDefination!=null){
+                            FlowDefination finalFlowDefinationTemp = new FlowDefination();
+                            BeanUtils.copyProperties(finalFlowDefination,finalFlowDefinationTemp);
+//                            finalFlowDefinationTemp.setFlowType(null);
+                            flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
+                        }
+                    }
+            for(FlowType flowTypeTemp:flowTypeList){
+               if(flowTypeTemp.getFlowDefinations()!=null && !flowTypeTemp.getFlowDefinations().isEmpty()){
+                   flowType=flowTypeTemp;
+                   flowTypeList.remove(flowTypeTemp);
+                   break;
+               }
+            }
+            if(flowType!=null){
+                flowTypeList.add(0,flowType);
+            }
             } else {
                 flowStartResultVO = null;
             }
-        } else {
-            flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
-        }
 
         if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
                 Map<String, Object> v = new HashMap<String, Object>();
@@ -502,23 +552,22 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
-            //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
-            String businessId = flowStartVO.getBusinessKey();
-            FlowDefination finalFlowDefination = null;
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-//        String orgId = v.get("orgId")+"";
-//        String orgCode = v.get("orgCode")+"";
-            String orgCodePath = v.get("orgPath")+"";
-            orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
-            String[] orgCodes =  orgCodePath.split("\\|");
-            finalFlowDefination = this.flowDefLuYou( v, flowType, orgCodes , 1);
-            List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
-            flowStartResultVO.setNodeInfoList(nodeInfoList);
+            if(flowType!=null && flowType.getFlowDefinations()!=null && !flowType.getFlowDefinations().isEmpty()){
+                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
+                List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
+                flowStartResultVO.setNodeInfoList(nodeInfoList);
+            }
+        }
+
+        if(flowTypeList !=null && !flowTypeList.isEmpty()){
+            for(FlowType flowTypeTemp:flowTypeList){
+               Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
+               if(flowDefinationSet != null && !flowDefinationSet.isEmpty()){
+                   for(FlowDefination flowDefination :flowDefinationSet){
+                       flowDefination.setFlowType(null);
+                   }
+               }
+            }
         }
          return flowStartResultVO;
     }
@@ -550,9 +599,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
             nodeInfo.setUiType("checkbox");
             nodeInfo.setFlowTaskType("countersign");
-//                    MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
-//                    multiInstanceConfig.setUserIds("${"+userTaskTemp.getId()+"_List_CounterSign}");
-//                    multiInstanceConfig.setVariable("${"+userTaskTemp.getId()+"_CounterSign}");
+        }else if ("ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+            nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+            nodeInfo.setUiType("checkbox");
+            nodeInfo.setFlowTaskType(userTaskTemp.getNodeType());
         }else {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
         }
@@ -562,28 +612,47 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String ids = executor.get("ids")+"";
             Set<Executor> employeeSet = new HashSet<Executor>();
             List<Executor> employees = null;
+            nodeInfo.setUiUserType(userType);
             if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
                 IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                 String  startUserId =  ContextUtil.getSessionUser().getUserId();
                 employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 
             } else {
-                if (!StringUtils.isEmpty(ids)) {
-                    nodeInfo.setUiUserType(userType);
-                    String[] idsShuZhu = ids.split(",");
-                    List<String> idList = java.util.Arrays.asList(idsShuZhu);
-                    //StartUser、Position、PositionType、SelfDefinition、AnyOne
-                    if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                        employees = iPositionService.getExecutorsByPositionIds(idList);
-                    } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                        employees = iPositionService.getExecutorsByPosCateIds(idList);
-                    } else if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
-                    } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
-                    }
+                String selfDefId = executor.get("selfDefId")+"";
+                if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
+
+                      if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
+
+                        FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                        String path = flowExecutorConfig.getUrl();
+                        String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
+                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                        String appModuleCode = appModule.getCode();
+                        Map<String, String>  params = new HashMap<String,String>();;
+                        String param = flowExecutorConfig.getParam();
+                        params.put("businessId",flowStartVO.getBusinessKey());
+                        params.put("paramJson",param);
+                        employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
+                    }else{
+
+                          String[] idsShuZhu = ids.split(",");
+                          List<String> idList = java.util.Arrays.asList(idsShuZhu);
+                          //StartUser、Position、PositionType、SelfDefinition、AnyOne
+                          if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
+                              IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                              employees = iPositionService.getExecutorsByPositionIds(idList);
+                          } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
+                              IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                              employees = iPositionService.getExecutorsByPosCateIds(idList);
+                          }else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
+                          }
+                      }
+
                 }
             }
             if (employees != null && !employees.isEmpty()) {
@@ -623,7 +692,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if(uel!=null && !uel.isEmpty()){
                     String isDefault = uel.get("isDefault")+"";
                     if("true".equalsIgnoreCase(isDefault)){
-                        resultDefault= initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        if(checkGateway(busType2)){
+                            this.findXunFanNodesInfo(resultDefault,flowStartVO,flowDefination,definition , nextNode);
+                        }else {
+                            resultDefault = initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        }
                         continue;
                     }
                     String groovyUel = uel.getString("groovyUel");
@@ -696,7 +769,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if(uel!=null && !uel.isEmpty()){
                     String isDefault = uel.get("isDefault")+"";
                     if("true".equalsIgnoreCase(isDefault)){
-                        resultDefault= initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        if(checkGateway(busType2)){
+                            this.findXunFanNodesInfo(resultDefault,flowStartVO,flowDefination,definition , nextNode);
+                        }else {
+                            resultDefault = initNodesInfo(resultDefault, flowStartVO, definition , targetId);
+                        }
                         continue;
                     }
                     String groovyUel = uel.getString("groovyUel");
@@ -718,7 +795,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 }else {
                                     initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                 }
-
 //                                break;
                             }
                         } else {//其他的用UEL表达式验证
@@ -790,6 +866,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String startUEL = flowDefination.getStartUel();
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            if(flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate){//当前
+                List<FlowDefVersion>  flowDefVersionsActivates =  flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
+                 if(flowDefVersionsActivates!=null && !flowDefVersionsActivates.isEmpty()) {
+                     flowDefVersion = flowDefVersionsActivates.get(0);
+                 }
+            }
             JSONObject defObj = JSONObject.fromObject(flowDefVersion.getDefJson());
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
             List<StartEvent> startEventList = definition.getProcess().getStartEvent();
@@ -797,6 +879,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 StartEvent startEvent = startEventList.get(0);
                 net.sf.json.JSONObject startEventNode = definition.getProcess().getNodes().getJSONObject(startEvent.getId());
                 result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , startEventNode);
+                if(!result.isEmpty()){
+                    for(NodeInfo nodeInfo:result){
+                        nodeInfo.setCurrentTaskType(startEvent.getType());
+                    }
+                }
             }
         }
         return result;
@@ -843,6 +930,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         } else {
             FlowDefination flowDefination = flowDefinationDao.findOne(id);            ;
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+        }
+        if(flowDefVersion.getFlowDefinationStatus()!=FlowDefinationStatus.Activate){
+
         }
         return flowDefVersion;
     }
@@ -1069,14 +1159,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void initTask(ProcessInstance instance) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-        if (instance.isEnded()) {//流程结束
-            flowInstance.setEnded(true);
-            flowInstance.setEndDate(new Date());
-            flowInstanceDao.save(flowInstance);
-            return;
-        }
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
+
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
@@ -1087,47 +1172,122 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 flowName = definition.getProcess().getName();
                 net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-                Integer executeTime = normalInfo.getInt("executeTime");
-                Boolean canReject = normalInfo.getBoolean("allowReject");
-                Boolean canSuspension = normalInfo.getBoolean("allowTerminate");
+                Integer executeTime = null;
+                Boolean canReject = null;
+                Boolean canSuspension = null;
+                if(normalInfo.get("executeTime")!=null){
+                    executeTime=normalInfo.getInt("executeTime");
+                }
+                if(normalInfo.get("allowReject")!=null){
+                    canReject = normalInfo.getBoolean("allowReject");
+                }
+                if(normalInfo.get("allowTerminate")!=null){
+                    canSuspension = normalInfo.getBoolean("allowTerminate");
+                }
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-                for (IdentityLink identityLink : identityLinks) {
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                    if(employees!=null && !employees.isEmpty()){
-                        Executor executor = employees.get(0);
-                        FlowTask flowTask = new FlowTask();
-                        flowTask.setCanReject(canReject);
-                        flowTask.setCanSuspension(canSuspension);
-                        flowTask.setTaskJsonDef(currentNode.toString());
-                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
-                        flowTask.setActTaskDefKey(actTaskDefKey);
-                        flowTask.setFlowName(flowName);
-                        flowTask.setTaskName(task.getName());
-                        flowTask.setActTaskId(task.getId());
-                        flowTask.setOwnerAccount(executor.getCode());
-                        flowTask.setOwnerName(executor.getName());
-                        flowTask.setExecutorAccount(executor.getCode());
-                        flowTask.setExecutorId(executor.getId());
-                        flowTask.setExecutorName(executor.getName());
-                        flowTask.setPriority(task.getPriority());
+                if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
+                    /** 获取流程变量 **/
+                    String executionId = task.getExecutionId();
+                   // Map<String, Object> tempV = task.getProcessVariables();
+                   String variableName = "" + actTaskDefKey + "_CounterSign";
+                   String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
+                   if(StringUtils.isNotEmpty(userId)){
+                       IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                       List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+                       if(employees!=null && !employees.isEmpty()){
+                           Executor executor = employees.get(0);
+                           FlowTask flowTask = new FlowTask();
+                           flowTask.setCanReject(canReject);
+                           flowTask.setCanSuspension(canSuspension);
+                           flowTask.setTaskJsonDef(currentNode.toString());
+                           flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                           flowTask.setActTaskDefKey(actTaskDefKey);
+                           flowTask.setFlowName(flowName);
+                           flowTask.setTaskName(task.getName());
+                           flowTask.setActTaskId(task.getId());
+                           flowTask.setOwnerAccount(executor.getCode());
+                           flowTask.setOwnerName(executor.getName());
+                           flowTask.setExecutorAccount(executor.getCode());
+                           flowTask.setExecutorId(executor.getId());
+                           flowTask.setExecutorName(executor.getName());
+                           flowTask.setPriority(task.getPriority());
 //                                flowTask.setExecutorAccount(identityLink.getUserId());
-                        flowTask.setActType(identityLink.getType());
-                        if(StringUtils.isEmpty(task.getDescription())){
-                            flowTask.setDepict("流程启动");
-                        }else{
-                            flowTask.setDepict(task.getDescription());
-                        }
+                           flowTask.setActType("candidate");
+                           if(StringUtils.isEmpty(task.getDescription())){
+                               flowTask.setDepict("流程启动");
+                           }else{
+                               flowTask.setDepict(task.getDescription());
+                           }
 
-                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                        flowTask.setFlowInstance(flowInstance);
-                        flowTaskDao.save(flowTask);
+                           flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                           flowTask.setFlowInstance(flowInstance);
+                           flowTaskDao.save(flowTask);
+                       }
+                   }
+                   // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
+                }else {
+                    for (IdentityLink identityLink : identityLinks) {
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                        if(employees!=null && !employees.isEmpty()){
+                            Executor executor = employees.get(0);
+                            FlowTask flowTask = new FlowTask();
+                            flowTask.setCanReject(canReject);
+                            flowTask.setCanSuspension(canSuspension);
+                            flowTask.setTaskJsonDef(currentNode.toString());
+                            flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                            flowTask.setActTaskDefKey(actTaskDefKey);
+                            flowTask.setFlowName(flowName);
+                            flowTask.setTaskName(task.getName());
+                            flowTask.setActTaskId(task.getId());
+                            flowTask.setOwnerAccount(executor.getCode());
+                            flowTask.setOwnerName(executor.getName());
+                            flowTask.setExecutorAccount(executor.getCode());
+                            flowTask.setExecutorId(executor.getId());
+                            flowTask.setExecutorName(executor.getName());
+                            flowTask.setPriority(task.getPriority());
+//                                flowTask.setExecutorAccount(identityLink.getUserId());
+                            flowTask.setActType(identityLink.getType());
+                            if(StringUtils.isEmpty(task.getDescription())){
+                                flowTask.setDepict("流程启动");
+                            }else{
+                                flowTask.setDepict(task.getDescription());
+                            }
+
+                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setFlowInstance(flowInstance);
+                            flowTaskDao.save(flowTask);
+                        }
                     }
                 }
+
 
             }
         }
 
     }
 
+
+    public OperateResultWithData<FlowDefination> changeStatus(String id,FlowDefinationStatus  status){
+        FlowDefination flowDefination = flowDefinationDao.findOne(id);
+        if(flowDefination == null){
+            return  OperateResultWithData.OperationFailure("10003");
+        }
+        if(status==FlowDefinationStatus.Freeze){
+            if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {
+                //10021=当前非激活状态，禁止冻结！
+                return  OperateResultWithData.OperationFailure("10021");
+            }
+        }else if (status==FlowDefinationStatus.Activate){
+            if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Freeze) {
+                //10020=当前非冻结状态，禁止激活！
+                return  OperateResultWithData.OperationFailure("10020");
+            }
+        }
+        flowDefination.setFlowDefinationStatus(status);
+        flowDefinationDao.save(flowDefination);
+        //10018=冻结成功
+        //10019=激活成功
+        return  OperateResultWithData.OperationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
+    }
 }

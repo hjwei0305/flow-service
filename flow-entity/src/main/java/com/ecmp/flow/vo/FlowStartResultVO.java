@@ -23,6 +23,9 @@ import java.util.Map;
 public class FlowStartResultVO implements Serializable{
 
     private com.ecmp.flow.entity.FlowInstance flowInstance;//流程启动实例
+
+    private com.ecmp.flow.entity.FlowDefination flowDefination;//选择的流程类型
+
     private List<FlowType> flowTypeList;//流程类型选择（一个流程实体存在多个流程类型的情况下）
     private List<NodeInfo> nodeInfoList;//启动时节点信息
 

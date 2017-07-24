@@ -14,10 +14,13 @@ import java.util.List;
 @Repository
 public interface FlowDefVersionDao extends BaseEntityDao<FlowDefVersion> {
 
-    @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.versionCode = :versionCode ")
+    @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.versionCode = :versionCode")
     public FlowDefVersion findByDefIdAndVersionCode(@Param("defId")String defId,@Param("versionCode")Integer versionCode);
 
-    public List<FlowDefVersion> findByFlowDefinationId(String flowDefinationId);
+    public List<FlowDefVersion> findByFlowDefinationId(String defId);
+
+    @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.flowDefinationStatus = 1 order by fv.versionCode desc")
+    public List<FlowDefVersion> findByFlowDefinationIdActivate(@Param("defId")String defId);
 
     public FlowDefVersion findByActDefId(String actDefId);
 

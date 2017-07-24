@@ -111,6 +111,30 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         return operateResult;
     }
 
+    public OperateResultWithData<FlowDefVersion> changeStatus(String id,FlowDefinationStatus  status){
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
+        if(flowDefVersion == null){
+            return  OperateResultWithData.OperationFailure("10003");
+        }
+        if(status==FlowDefinationStatus.Freeze){
+            if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {
+                //10021=当前非激活状态，禁止冻结！
+                return  OperateResultWithData.OperationFailure("10021");
+            }
+        }else if (status==FlowDefinationStatus.Activate){
+            if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Freeze) {
+                //10020=当前非冻结状态，禁止激活！
+                return  OperateResultWithData.OperationFailure("10020");
+            }
+        }
+        flowDefVersion.setFlowDefinationStatus(status);
+        flowDefVersionDao.save(flowDefVersion);
+        //10018=冻结成功
+        //10019=激活成功
+        return  OperateResultWithData.OperationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
+    }
+
+
     /**
      * 新增修改操作,保存前端json，
      * 转换成标准的BPMN

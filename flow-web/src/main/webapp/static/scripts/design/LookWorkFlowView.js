@@ -11,7 +11,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     connectInfo: {},
     uelInfo: {},
     businessModelId: null,//业务实体ID
-    viewFlowDefByVersionId:false,//根据流程定义版本id查看流程定义
+    viewFlowDefByVersionId: false,//根据流程定义版本id查看流程定义
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -47,7 +47,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 760,
+            width: 850,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -56,23 +56,24 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             border: false,
             itemspace: 5,
             defaultConfig: {
-                labelWidth: 88,
+                labelWidth: 80,
                 readonly: true,
                 xtype: "TextField"
             },
             items: [{
                 name: "flowTypeName",
-                title: "流程类型"
+                title: "流程类型",
+                width: 200
             }, {
                 name: "id",
-                width: 90,
+                width: 120,
                 labelWidth: 85,
                 title: "流程代码"
             }, {
                 xtype: "TextField",
                 title: "流程名称",
                 labelWidth: 85,
-                width: 200,
+                width: 250,
                 name: "name"
             }]
         }, {
@@ -81,7 +82,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             selected: true,
             iconCss: "ecmp-common-configuration",
             id: "setStartUel",
-            hidden:true,
+            hidden: true,
             handler: function () {
                 var scope = this;
                 new EUI.LookUELSettingView({
@@ -104,7 +105,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             "dblclick": function () {
                 var dom = $(this);
                 var type = dom.attr("type");
-                if (type == "StartEvent" || type == "EndEvent") {
+                if (type == "StartEvent" || type.indexOf("EndEvent") != -1) {
                     return;
                 }
                 var input = dom.find(".node-title");
@@ -157,7 +158,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 });
                 return;
             }
-            if(ueldata.isDefault){
+            if (ueldata.isDefault) {
                 return;
             }
             var type = $("#" + connection.sourceId).attr("bustype");
@@ -189,9 +190,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [5, 5],
-                // gap: 10,
                 cornerRadius: 5,
-                // alwaysRespectStubs: true
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
@@ -220,15 +219,15 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     loadData: function (data) {
         var g = this;
-        var url= _ctxPath + "/design/getLookInfo";
-        var postData= {
+        var url = _ctxPath + "/design/getLookInfo";
+        var postData = {
             id: this.id,
             instanceId: this.instanceId,
             versionCode: this.versionCode
         };
-        if(this.viewFlowDefByVersionId){
-            url=_ctxPath + "/design/getEntityByVersionId";
-            postData={
+        if (this.viewFlowDefByVersionId) {
+            url = _ctxPath + "/design/getEntityByVersionId";
+            postData = {
                 flowDefVersionId: this.id
             }
         }
@@ -236,7 +235,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             msg: "正在获取数据，请稍候..."
         });
         EUI.Store({
-            url:url,
+            url: url,
             params: postData,
             success: function (status) {
                 mask.hide();
@@ -249,11 +248,12 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         });
     },
     showDesign: function (defData) {
-        if(this.viewFlowDefByVersionId){
+        if (this.viewFlowDefByVersionId) {
             var data = JSON.parse(defData.defJson);
-        }else {
+        } else {
             var data = JSON.parse(defData.def.defJson);
             var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
+            currentNodes += ",";
         }
         this.businessModelId = data.businessModelId;
         this.loadHead(data);
@@ -263,7 +263,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             var type = node.type;
             if (type == "StartEvent") {
                 html += this.showStartNode(id, node);
-            } else if (type == "EndEvent") {
+            } else if (type.indexOf("EndEvent") != -1) {
                 html += this.showEndNode(id, node);
             } else if (type.indexOf("Task") != -1) {
                 html += this.showTaskNode(id, node, currentNodes);
@@ -302,7 +302,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
-        if(this.startUEL){
+        if (this.startUEL) {
             EUI.getCmp("setStartUel").show();
         }
     },
@@ -320,37 +320,60 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showEndNode: function (id, node) {
-        return "<div tabindex=0 type='EndEvent' id='"
+        var css = "flow-event-end";
+        if (node.type == "TerminateEndEvent") {
+            css = "flow-event-terminateend";
+        }
+        return "<div tabindex=0 type='" + node.type + "' id='"
             + id
             + "' class='flow-event-box flow-node node-choosed' style='cursor: pointer; left: "
             + node.x
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
-            + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
+            + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
+            + "<div class='node-title'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node, currentNodes) {
         var nodeCss = "flow-task flow-node node-choosed";
-        if(!this.viewFlowDefByVersionId){
-            if (currentNodes.indexOf(id) != -1) {
+        if (!this.viewFlowDefByVersionId) {
+            if (currentNodes.indexOf(id + ",") != -1) {
                 nodeCss += " currentNode";
             }
         }
         var css = node.css;
         if (!css) {
-            if (node.nodeType == "Normal") {
-                css = "usertask";
-            } else if (node.nodeType == "SingleSign") {
-                css = "singletask";
-            } else {
-                css = "countertask";
+            switch (node.nodeType) {
+                case "Normal":
+                    css = "usertask";
+                    break;
+                case "SingleSign":
+                    css = "singletask";
+                    break;
+                case "CounterSign":
+                    css = "countertask";
+                    node.nodeConfig.normal.isSequential = node.nodeConfig.normal.isSequential.toString();
+                    if (node.nodeConfig.normal.isSequential == "true") {
+                        css = "countertask serial-countertask";
+                    } else {
+                        css = "countertask parallel-countertask";
+                    }
+                    break;
+                case "Approve":
+                    css = "approvetask";
+                    break;
+                case "ParallelTask":
+                    css = "paralleltask";
+                    break;
+                case "SerialTask":
+                    css = "serialtask";
+                    break;
             }
         }
         return "<div tabindex=0 id='" + id
             + "' class='" + nodeCss + "' type='"
-            + node.type + "' style='cursor: pointer; left: "
+            + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='" + css + "'></div>"
             + "<div class='node-title'>" + node.name + "</div>"
@@ -359,7 +382,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showGatewayNode: function (id, node, currentNodes) {
         var nodeCss = "flow-event-box flow-node node-choosed";
-        if(!this.viewFlowDefByVersionId) {
+        if (!this.viewFlowDefByVersionId) {
             if (currentNodes.indexOf(id) != -1) {
                 nodeCss += " currentNode";
             }

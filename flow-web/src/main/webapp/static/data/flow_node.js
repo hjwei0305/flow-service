@@ -7,6 +7,10 @@ var _flownode = {
         name: "endEventText",
         type: "EndEvent",
         css: "flow-event-end"
+    }, {
+        name: "terminateEndEventText",
+        type: "TerminateEndEvent",
+        css: "flow-event-terminateend"
     }],
     task: [{
         name: "normalTaskText",
@@ -32,12 +36,12 @@ var _flownode = {
         name: "parallelTaskText",
         type: "UserTask",
         css: "paralleltask",
-        nodeType: "Normal"
+        nodeType: "ParallelTask"
     }, {
         name: "serialTaskText",
         type: "UserTask",
         css: "serialtask",
-        nodeType: "Normal"
+        nodeType: "SerialTask"
     }],
     gateway: [{
         name: "exclusiveGatewayText",

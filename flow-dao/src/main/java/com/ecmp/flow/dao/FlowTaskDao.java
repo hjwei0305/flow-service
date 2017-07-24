@@ -26,6 +26,8 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
 
     public long  deleteByActTaskId(String actTaskId);
 
+    public long  deleteByFlowInstanceId(String flowInstanceId);
+
     public  FlowTask findByActTaskId(String actTaskId);
 
     /**
@@ -34,7 +36,15 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
      * @return
      */
     @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
-    public  FlowTask findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
+    public  List<FlowTask> findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
+
+    /**
+     * 根据流程实例id查询待办
+     * @param actInstanceId
+     * @return
+     */
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
+    public  Integer findCountByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
 
     /**
      * 根据流程实例id查询待办

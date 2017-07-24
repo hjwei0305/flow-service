@@ -299,6 +299,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var date = new Date();
         var endTime = date.getTime();
+        startTime = startTime.replace(new RegExp("-","gm"),"/");
         startTime = new Date(startTime).getTime();
         var time = endTime - startTime;
         if (time <= 60000) {//如果结束时间小于开始时间

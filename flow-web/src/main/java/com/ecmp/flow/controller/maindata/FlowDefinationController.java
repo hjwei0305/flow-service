@@ -2,16 +2,15 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.basic.entity.Organization;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -161,4 +160,33 @@ public class FlowDefinationController {
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 激活或冻结流程定义
+     * @param id 流程定义id
+     * @param status 状态
+     * @return 操作结果
+     */
+    @RequestMapping(value = "activateOrFreezeFlowDef")
+    @ResponseBody
+    public String activateOrFreezeFlowDef(String id,FlowDefinationStatus  status){
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        OperateResultWithData<FlowDefination> result=proxy.changeStatus(id,status);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 激活或冻结流程版本
+     * @param id 流程定义版本id
+     * @param status 状态
+     * @return 操作结果
+     */
+    @RequestMapping(value = "activateOrFreezeFlowVer")
+    @ResponseBody
+    public String activateOrFreezeFlowVer(String id,FlowDefinationStatus  status){
+        IFlowDefVersionService  proxy = ApiClient.createProxy(IFlowDefVersionService .class);
+        OperateResultWithData<FlowDefVersion> result=proxy.changeStatus(id,status);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return JsonUtil.serialize(operateStatus);
+    }
 }

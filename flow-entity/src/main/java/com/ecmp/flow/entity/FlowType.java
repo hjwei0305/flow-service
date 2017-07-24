@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -69,7 +70,7 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
      */
     @Transient
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowType")
-    private Set<FlowDefination> flowDefinations = new HashSet<FlowDefination>(0);
+    private Set<FlowDefination> flowDefinations = new LinkedHashSet<>(0);
 
 
     public String getName() {

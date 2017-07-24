@@ -150,7 +150,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "额定工时",
             allowNegative: false,
             name: "executeTime",
-            width: 262,
             labelWidth: 100,
             unit: "分钟"
         }, {
@@ -173,11 +172,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
         }];
         if (this.nodeType == "CounterSign") {
-            items.push({
+            items = items.concat([{
                 xtype: "NumberField",
                 title: "会签决策",
                 labelWidth: 100,
-                width: 283,
                 unit: "%",
                 minValue: 1,
                 maxValue: 100.1,
@@ -187,23 +185,36 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 allowNegative: false,
                 allowBlank: false,
                 name: "counterDecision"
-            })
+            }, {
+                xtype: "RadioBoxGroup",
+                name: "isSequential",
+                title: "执行策略",
+                labelWidth: 100,
+                items: [{
+                    title: "并行",
+                    name: false,
+                    checked: true
+                }, {
+                    title: "串行",
+                    name: true
+                }]
+            }]);
         }
-        items = items.concat([{
-            xtype: "CheckBox",
-            title: "允许流程发起人终止",
-            readonly: this.nodeType == "CounterSign" ? true : false,
-            name: "allowTerminate"
-        }, {
-            xtype: "CheckBox",
-            title: "允许撤回",
-            name: "allowPreUndo"
-        }, {
-            xtype: "CheckBox",
-            title: "允许驳回",
-            readonly: this.nodeType == "CounterSign" ? true : false,
-            name: "allowReject"
-        }]);
+        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"){
+            items = items.concat([{
+                xtype: "CheckBox",
+                title: "允许流程发起人终止",
+                name: "allowTerminate"
+            }, {
+                xtype: "CheckBox",
+                title: "允许撤回",
+                name: "allowPreUndo"
+            }, {
+                xtype: "CheckBox",
+                title: "允许驳回",
+                name: "allowReject"
+            }]);
+        }
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -737,7 +748,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowBlank: false,
             width: 340,
             hidden: true,
-            field: ["selfDefUserUrl"],
+            field: ["selfDefId"],
+            reader: {
+                field: ["id"]
+            },
             store: {
                 url: _ctxPath + "/flowExecutorConfig/listCombo",
                 params: {
@@ -1060,7 +1074,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         } else if (userType == "PositionType") {
             data = EUI.getCmp("positionTypeGrid").getGridData();
         } else if (userType == "SelfDefinition") {
-            data = EUI.getCmp("selfDefGrid").getGridData();
+            return EUI.getCmp("selfDef").sysValidater();
         } else {
             return true;
         }
@@ -1081,9 +1095,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             data.ids = this.getSelectIds(rowdata);
             data.rowdata = rowdata;
         } else if (userType == "SelfDefinition") {
-            rowdata = EUI.getCmp("selfDefGrid").getGridData();
-            data.ids = this.getSelectIds(rowdata);
-            data.rowdata = rowdata;
+            var selfData = EUI.getCmp("selfDef").getSubmitValue();
+            EUI.apply(data, selfData);
         }
         return data;
     },

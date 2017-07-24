@@ -12,7 +12,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     instance: null,
     connectInfo: {},
     uelInfo: {},
-    isCopy: false,
+    isCopy: false,//参考创建
+    isFromVersion:false,//流程定义版本参考创建（true）
     businessModelId: null,//业务实体ID
 
     initComponent: function () {
@@ -39,6 +40,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }, {
                 region: "center",
                 id: "center",
+                padding: 0,
                 html: this.getCenterHtml()
             }]
         });
@@ -54,7 +56,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 660,
+            width: 670,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -71,6 +73,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 field: ["flowTypeId"],
                 displayText: "请选择流程类型",
                 listWidth: 400,
+                showSearch: true,
+                searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
                 gridCfg: {
                     url: _ctxPath + "/flowType/listFlowType",
                     colModel: [{
@@ -82,19 +86,26 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         index: "businessModel.id",
                         hidden: true
                     }, {
+                        //businessModelText:"模块"
+                        label: this.lang.businessModelText,
+                        name: "businessModel.name",
+                        index: "businessModel.name",
+                        sortable:true
+                    }, {
                         label: this.lang.codeText,
                         name: "code",
                         index: "code",
-                        width: 100
+                        sortable:true
                     }, {
                         label: this.lang.nameText,
                         name: "name",
                         index: "name",
-                        width: 150
+                        sortable:true
                     }]
                 },
                 labelWidth: 85,
-                readonly: !isCopy && this.id ? true : false,
+                width: 190,
+                readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
                 allowBlank: false,
                 beforeSelect: function (data) {
                     var scope = this;
@@ -133,27 +144,43 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 reader: {
                     name: "name",
                     field: ["id"]
+                },
+                onSearch: function (data) {
+                    this.grid.setPostParams({
+                        Quick_value: data
+                    }, true);
                 }
             }, {
                 xtype: "TextField",
                 name: "id",
-                width: 100,
-                readonly: !isCopy && this.id ? true : false,
+                width: 110,
+                readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
-                displayText: "请输入流程代码"
+                maxlength:80,
+                minlength:6,
+                displayText: "请输入流程代码",
+                validateText: "必须包含字符,且长度在6-80之间",
+                validater: function (data) {
+                    var reg=/\w/;
+                    var regData=/[A-Za-z]+/;
+                    if (!reg.test(data)||!regData.test(data)) {
+                        return false;
+                    }
+                    return true;
+                }
             }, {
                 xtype: "TextField",
                 displayText: "请输入流程名称",
                 labelWidth: 85,
-                width: 220,
+                width: 243,
                 allowBlank: false,
                 name: "name"
             }, {
                 xtype: "NumberField",
                 displayText: "请输入优先级",
                 labelWidth: 85,
-                width: 90,
+                width: 100,
                 allowNegative: false,
                 name: "priority"
             }]
@@ -292,7 +319,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         // 初始化事件
         for (var i = 0; i < gateways.length; i++) {
             var item = gateways[i];
-            if (i == gateways.length - 1) {
+            if (item.type == "EventGateway") {
+                continue;
+            }
+            if (i == gateways.length - 1 || (gateways[i + 1].type == "EventGateway" && i == gateways.length - 2)) {
                 html += "<div class='flow-gateway-box flow-node last' bustype='" + item.busType + "' type='"
                     + item.type + "'><div class='flow-gateway-iconbox'><div class='" + item.css + "'></div></div>"
                     + "<div class='node-title'>" + this.lang[item.name]
@@ -314,16 +344,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".flow-item-title").bind("click", function () {
             if ($(this).hasClass("select")) {
-                return;
+                $(this).removeClass("select");
+                $(this).siblings(".flow-item-content").slideUp("normal");
+            } else {
+                $(this).addClass("select");
+                $(this).siblings(".flow-item-content").slideDown("normal");
             }
-            var preDom = $(".select.flow-item-title");
-            preDom.removeClass("select");
-            preDom.siblings(".flow-item-content").slideUp("normal");
-            $(this).addClass("select");
-            $(this).siblings(".flow-item-content").slideDown("normal");
-            $(this).parent().find(".flow-item-space:last").show();
-            $(this).parent().siblings().find(".flow-item-space:last")
-                .hide();
         });
         var dragging = false;
         var dragDom, preNode;
@@ -331,12 +357,56 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             mousedown: function (event) {
                 $(this).css("cursor", "move");
                 preNode = $(this);
-                dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
+                if(type=="StartEvent"){
+                    var nodeLength=$(".flow-event-box.flow-node.node-choosed.jtk-draggable.jtk-droppable[type='StartEvent']").length;
+                    if(nodeLength==1){
+                        return;
+                    }
+                }
+                dragDom = $(this).clone().appendTo($("body"));
                 g.count++;
+                var nodeType = $(this).attr("nodetype");
+                if (type == "UserTask" && nodeType == "CounterSign") {
+                    dragDom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
+                }
                 dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
+            }
+        });
+        $(".flow-content > .flow-node>.delete-node").live("click",function (e) {
+            var dom=$(this).parent(".flow-node");
+            g.instance.detachAllConnections(dom);
+            var sourceId = dom.attr("id");
+            for (var key in g.connectInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.connectInfo[key];
+                }
+            }
+            for (var key in g.uelInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.uelInfo[key];
+                }
+            }
+            dom.remove();
+            e.stopPropagation();
+        });
+        $(".flow-content > .flow-node").die().live({
+            "mouseleave": function () {
+                $(this).children("div.delete-node").remove();
+            },
+            "mouseenter": function () {
+                var className = $(this).attr("class");
+                var cssName="";
+                if(className.indexOf("flow-event-box")!=-1){
+                    cssName="flow-event-delete";
+                }else if(className.indexOf("flow-task")!=-1){
+                    cssName="flow-task-delete";
+                }else if (className.indexOf("flow-gateway-box")!=-1){
+                    cssName="flow-gateway-delete";
+                }
+                $(this).append('<div class="'+ cssName+' delete-node"><i class="ecmp-flow-delete" title="删除"></i></div>');
             }
         });
         $(document).bind({
@@ -372,7 +442,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             top: doffset.top - offset.top - 12
                         });
                         var type = dragDom.attr("type");
-                        if (type != "EndEvent") {
+                        if (type.indexOf("EndEvent") == -1) {
                             dragDom
                                 .append("<div class='node-dot' action='begin'></div>");
                         }
@@ -398,6 +468,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             delete g.connectInfo[key];
                         }
                     }
+                    for (var key in g.uelInfo) {
+                        if (key.indexOf(sourceId) != -1) {
+                            delete g.uelInfo[key];
+                        }
+                    }
                     $(this).remove();
                     e.stopPropagation();
                 }
@@ -405,7 +480,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             "dblclick": function () {
                 var dom = $(this);
                 var type = dom.attr("type");
-                if (type == "StartEvent" || type == "EndEvent") {
+                if (type == "StartEvent" || type.indexOf("EndEvent") != -1) {
                     return;
                 }
                 if (!g.businessModelId) {
@@ -421,14 +496,20 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         input.text(value);
                     });
                 } else {
+                    var nodeType = dom.attr("nodeType");
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
                         businessModelId: g.businessModelId,
                         data: dom.data(),
-                        nodeType: dom.attr("nodeType"),
+                        nodeType: nodeType,
                         afterConfirm: function (data) {
                             input.text(data.normal.name);
                             dom.data(data);
+                            if (data.normal.isSequential) {
+                                dom.find(".countertask").addClass("serial-countertask").removeClass("parallel-countertask");
+                            } else {
+                                dom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
+                            }
                         }
                     });
                 }
@@ -482,14 +563,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }
                 }
             }]],
-            Container: "body"
+            Container: $(".flow-content")
         });
 
         this.instance.registerConnectionType("basic", {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [0, 0],
-                cornerRadius: 5
+                cornerRadius: 0
             }]
         });
         // 双击连线弹出UEL配置界面
@@ -575,10 +656,19 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "#{approveResult == " + agree + "}",
+                            groovyUel: "${approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     } else if (nodeType == "CounterSign") {
+                        var bustype = $("#" + connection.targetId).attr("bustype");
+                        if(bustype=="ManualExclusiveGateway"){
+                            EUI.ProcessStatus({
+                                success: false,
+                                msg: "会签任务后禁止连接人工网关"
+                            });
+                            jsPlumb.detach(connection);
+                            return;
+                        }
                         var result = g.getApproveLineInfo(connection.sourceId);
                         var name = "通过", agree = true;
                         if (result == 0) {
@@ -591,7 +681,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
                             agree: agree,
-                            groovyUel: "#{approveResult == " + agree + "}",
+                            groovyUel: "${approveResult == " + agree + "}",
                             logicUel: ""
                         };
                     }
@@ -628,7 +718,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             anchor: "Continuous",
             connector: ["Flowchart", {
                 stub: [0, 0],
-                cornerRadius: 5
+                cornerRadius: 0
             }],
             connectorStyle: {
                 stroke: "#61B7CF",
@@ -675,6 +765,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var item = $(nodes[i]);
             var id = item.attr("id");
             var type = item.attr("type");
+            var nodeType = item.attr("nodetype");
             var name = item.find(".node-title").text();
             var nodeConfig = item.data();
             if (type.indexOf("Task") != -1 && Object.isEmpty(nodeConfig)) {
@@ -683,6 +774,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     msg: "请将节点：" + name + "，配置完整"
                 });
                 return;
+            }
+
+            if (nodeType == "Approve" || nodeType == "CounterSign") {
+                var result = this.checkApproveAndCounterSign(id, name);
+                if (!result) {
+                    return;
+                }
             }
 
             var flag = false;
@@ -703,18 +801,34 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         return true;
     }
     ,
+    checkApproveAndCounterSign: function (id, name) {
+        var count = 0;
+        for (var key in this.connectInfo) {
+            if (key.startsWith(id + ",")) {
+                count++;
+            }
+        }
+        if (count != 2) {
+            EUI.ProcessStatus({
+                success: false,
+                msg: "节点：" + name + "需要配置两条连线"
+            });
+            return false;
+        }
+        return true;
+    },
     getFlowData: function () {
         if (!this.checkValid()) {
             return;
         }
         var headForm = EUI.getCmp("formPanel");
-        if (!headForm.isValid()) {
-            EUI.ProcessStatus({
-                success: false,
-                msg: "请将流程信息填写完整"
-            });
-            return;
-        }
+        // if (!headForm.isValid()) {
+        //     EUI.ProcessStatus({
+        //         success: false,
+        //         msg: "请将流程信息填写完整"
+        //     });
+        //     return;
+        // }
         var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
@@ -800,8 +914,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     if (g.isCopy) {
-                        data.process.name = data.process.name + "_COPY";
-                        data.process.id = data.process.id + "_COPY";
+                        if (!g.isFromVersion) {
+                            data.process.id = data.process.id + "COPY";
+                        }
+                        data.process.name = data.process.name + "COPY";
                     }
                     g.showDesign(data);
                 } else {
@@ -823,7 +939,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var type = node.type;
             if (type == "StartEvent") {
                 html += this.showStartNode(id, node);
-            } else if (type == "EndEvent") {
+            } else if (type.indexOf("EndEvent") != -1) {
                 html += this.showEndNode(id, node);
             } else if (type.indexOf("Task") != -1) {
                 html += this.showTaskNode(id, node);
@@ -879,26 +995,53 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     }
     ,
     showEndNode: function (id, node) {
-        return "<div tabindex=0 type='EndEvent' id='"
+        var css = "flow-event-end";
+        if (node.type == "TerminateEndEvent") {
+            css = "flow-event-terminateend";
+        }
+        return "<div tabindex=0 type='" + node.type + "' id='"
             + id
             + "' class='flow-event-box flow-node node-choosed' style='cursor: pointer; left: "
             + node.x
             + "px; top: "
             + node.y
             + "px; opacity: 1;'>"
-            + "<div class='flow-event-iconbox'><div class='flow-event-end'></div></div>"
-            + "<div class='node-title'>" + this.lang.endEventText + "</div>	</div>";
+            + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
+            + "<div class='node-title'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node) {
         var css = node.css;
         if (!css) {
-            if (node.nodeType == "Normal") {
-                css = "usertask";
-            } else if (node.nodeType == "SingleSign") {
-                css = "singletask";
-            } else {
-                css = "countertask";
+            switch (node.nodeType) {
+                case "Normal":
+                    css = "usertask";
+                    break;
+                case "SingleSign":
+                    css = "singletask";
+                    break;
+                case "CounterSign":
+                    css = "countertask";
+                    if (node.nodeConfig.normal.isSequential == "true") {
+                        node.nodeConfig.normal.isSequential = true;
+                    } else if (node.nodeConfig.normal.isSequential == "false") {
+                        node.nodeConfig.normal.isSequential = false;
+                    }
+                    if (node.nodeConfig && node.nodeConfig.normal.isSequential) {
+                        css = "countertask serial-countertask";
+                    } else {
+                        css = "countertask parallel-countertask";
+                    }
+                    break;
+                case "Approve":
+                    css = "approvetask";
+                    break;
+                case "ParallelTask":
+                    css = "paralleltask";
+                    break;
+                case "SerialTask":
+                    css = "serialtask";
+                    break;
             }
         }
         return "<div tabindex=0 id='" + id
@@ -970,7 +1113,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             padding: 30,
             items: [{
                 xtype: "TextField",
-                title: "节点名称",
+                title: "名称",
                 labelWidth: 80,
                 width: 220,
                 id: "nodeName",
