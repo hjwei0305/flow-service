@@ -369,14 +369,40 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragging = true;
             }
         });
-        // $(".flow-content > .flow-node").die().live({
-        //     "mouseleave": function () {
-        //        // $(this).children("div.flow-node-delete").remove();
-        //     },
-        //     "mouseenter": function () {
-        //         $(this).append('<div class="flow-node-delete"><i class="ecmp-common-delete" title="删除"></i></div>');
-        //     }
-        // });
+        $(".flow-content > .flow-node>.delete-node").live("click",function (e) {
+            var dom=$(this).parent(".flow-node");
+            g.instance.detachAllConnections(dom);
+            var sourceId = dom.attr("id");
+            for (var key in g.connectInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.connectInfo[key];
+                }
+            }
+            for (var key in g.uelInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.uelInfo[key];
+                }
+            }
+            dom.remove();
+            e.stopPropagation();
+        });
+        $(".flow-content > .flow-node").die().live({
+            "mouseleave": function () {
+                $(this).children("div.delete-node").remove();
+            },
+            "mouseenter": function () {
+                var className = $(this).attr("class");
+                var cssName="";
+                if(className.indexOf("flow-event-box")!=-1){
+                    cssName="flow-event-delete";
+                }else if(className.indexOf("flow-task")!=-1){
+                    cssName="flow-task-delete";
+                }else if (className.indexOf("flow-gateway-box")!=-1){
+                    cssName="flow-gateway-delete";
+                }
+                $(this).append('<div class="'+ cssName+' delete-node"><i class="ecmp-flow-delete" title="删除"></i></div>');
+            }
+        });
         $(document).bind({
             "mousemove": function (event) {
                 if (dragging) {
