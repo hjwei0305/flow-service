@@ -157,11 +157,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
+                maxlength:80,
+                minlength:6,
                 displayText: "请输入流程代码",
                 validateText: "必须包含字符,且长度在6-80之间",
                 validater: function (data) {
-                    var reg = /(?=.*[a-zA-Z])(?=.*\d.*)[a-zA-Z0-9]{6,80}$/
-                    if (!reg.test(data)) {
+                    var reg=/\w/;
+                    var regData=/[A-Za-z]+/;
+                    if (!reg.test(data)||!regData.test(data)) {
                         return false;
                     }
                     return true;
@@ -364,6 +367,40 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
+            }
+        });
+        $(".flow-content > .flow-node>.delete-node").live("click",function (e) {
+            var dom=$(this).parent(".flow-node");
+            g.instance.detachAllConnections(dom);
+            var sourceId = dom.attr("id");
+            for (var key in g.connectInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.connectInfo[key];
+                }
+            }
+            for (var key in g.uelInfo) {
+                if (key.indexOf(sourceId) != -1) {
+                    delete g.uelInfo[key];
+                }
+            }
+            dom.remove();
+            e.stopPropagation();
+        });
+        $(".flow-content > .flow-node").die().live({
+            "mouseleave": function () {
+                $(this).children("div.delete-node").remove();
+            },
+            "mouseenter": function () {
+                var className = $(this).attr("class");
+                var cssName="";
+                if(className.indexOf("flow-event-box")!=-1){
+                    cssName="flow-event-delete";
+                }else if(className.indexOf("flow-task")!=-1){
+                    cssName="flow-task-delete";
+                }else if (className.indexOf("flow-gateway-box")!=-1){
+                    cssName="flow-gateway-delete";
+                }
+                $(this).append('<div class="'+ cssName+' delete-node"><i class="ecmp-flow-delete" title="删除"></i></div>');
             }
         });
         $(document).bind({
@@ -779,13 +816,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var headForm = EUI.getCmp("formPanel");
-        if (!headForm.isValid()) {
-            EUI.ProcessStatus({
-                success: false,
-                msg: "请将流程信息填写完整"
-            });
-            return;
-        }
+        // if (!headForm.isValid()) {
+        //     EUI.ProcessStatus({
+        //         success: false,
+        //         msg: "请将流程信息填写完整"
+        //     });
+        //     return;
+        // }
         var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
