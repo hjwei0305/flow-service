@@ -1,5 +1,6 @@
 package com.ecmp.flow;
 
+import com.ecmp.config.ServiceAPIConfig;
 import com.ecmp.context.ContextUtil;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -23,7 +24,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * *************************************************************************************************
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:applicationContext-activiti.xml")
+//@ContextConfiguration("classpath:applicationContext-activiti.xml")
+@ContextConfiguration(classes = ServiceAPIConfig.class)
 public abstract class BasicContextTestCase extends AbstractJUnit4SpringContextTests {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Before

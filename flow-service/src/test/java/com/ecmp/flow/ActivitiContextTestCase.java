@@ -1,5 +1,6 @@
 package com.ecmp.flow;
 
+import com.ecmp.config.ServiceAPIConfig;
 import org.activiti.engine.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,7 +24,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * *************************************************************************************************
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/applicationContext-activiti.xml")
+//@ContextConfiguration("/applicationContext-activiti.xml")
+@ContextConfiguration(classes = ServiceAPIConfig.class)
 public abstract class ActivitiContextTestCase extends AbstractJUnit4SpringContextTests {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
