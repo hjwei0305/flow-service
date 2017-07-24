@@ -64,7 +64,7 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Path("changeCreateDepict/{id}/{changeText}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    @ApiOperation(value = "测试事件", notes = "测试事件")
     public boolean changeCreateDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
 
     /**
@@ -76,7 +76,7 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Path("changeCompletedDepict/{id}/{changeText}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    @ApiOperation(value = "测试事件", notes = "测试事件")
     public boolean changeCompletedDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
 
     /**
