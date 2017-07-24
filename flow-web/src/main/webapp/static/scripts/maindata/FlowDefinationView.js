@@ -353,8 +353,9 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             isOverFlow: false,
             items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
-                width:159,
+                width:209,
                 displayText:g.lang.searchDisplayText,
+                canClear: true,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
                     if(g.treeCmp.data&&g.treeCmp.data.length>0){
