@@ -2408,6 +2408,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public List<NodeInfo> findNexNodesWithUserSet(String id,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask == null) {
+            return null;
+        }
         String businessId = flowTask.getFlowInstance().getBusinessId();
         List<NodeInfo> result = this.findNexNodesWithUserSet(id, businessId,approved, includeNodeIds);
         return result;
