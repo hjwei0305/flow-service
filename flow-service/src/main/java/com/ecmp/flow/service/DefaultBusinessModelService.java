@@ -77,6 +77,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
+    /**
+     *
+     * @param id  业务单据id
+     * @param changeText   参数文本
+     * @return
+     */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public boolean changeCompletedDepict(String id,String changeText){
         boolean result = false;
@@ -90,6 +96,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
+    /**
+     *
+     * @param businessId  业务单据id
+     * @param paramJson  参数json
+     * @return
+     */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public List<Executor> getPersonToExecutorConfig(String businessId,String paramJson){
         List<Executor> result = new ArrayList<Executor>();

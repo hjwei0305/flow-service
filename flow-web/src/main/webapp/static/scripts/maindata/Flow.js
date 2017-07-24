@@ -153,10 +153,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 
         $(".flow-order-titlebox").toggle(function () {
             $(".flow-iframe").show();
-            $(".expand").text(g.lang.collectText).addClass("close");
+            $(".expand").text(g.lang.collectText).addClass("close").removeClass("expand");
         }, function () {
             $(".flow-iframe").hide();
-            $(".expand").text(g.lang.spreadText).addClass("expand");
+            $(".close").text(g.lang.spreadText).addClass("expand").removeClass("close");
         });
         //决策选择
         $(".flow-decision-item").live("click", function () {

@@ -353,10 +353,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             isOverFlow: false,
             items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
-                width:159,
+                width:209,
                 displayText:g.lang.searchDisplayText,
+                canClear: true,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
+                    if(g.treeCmp.data&&g.treeCmp.data.length>0){
+                        g.treeCmp.afterShowTree(g.treeCmp.data);
+                    }
                     g.selectedNodeId = null;
                     g.selectedNodeOrgCode = null;
                     g.selectedNodeName = null;
@@ -379,7 +383,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             id: "treePanel",
-            searchField:["name"],
+            searchField:["code","name"],
             showField: "name",
             style: {
                 "background": "#fff"

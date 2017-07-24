@@ -506,7 +506,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowTypeList.add(flowType);
             }
         }
-
         if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
                 String businessId = flowStartVO.getBusinessKey();
@@ -553,7 +552,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
                 flowStartResultVO.setFlowInstance(flowInstance);
         }else {
-            if(!flowType.getFlowDefinations().isEmpty()){
+            if(flowType!=null && flowType.getFlowDefinations()!=null && !flowType.getFlowDefinations().isEmpty()){
                 finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
                 List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination,flowStartVO);
                 flowStartResultVO.setNodeInfoList(nodeInfoList);
