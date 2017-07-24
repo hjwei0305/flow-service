@@ -42,13 +42,13 @@ public class FlowClientController {
     /**
      * 签收任务
      * @param taskId  任务id
-     * @param userId  用户id
      * @return
      */
-    @RequestMapping(value = "listFlowTask")
+    @RequestMapping(value = "claimTask")
     @ResponseBody
-    public String claimTask(String taskId, String userId){
+    public String claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
