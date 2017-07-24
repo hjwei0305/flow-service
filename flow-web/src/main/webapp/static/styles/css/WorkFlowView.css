@@ -625,3 +625,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     margin: 45px auto 0;
     margin-top: 15px;
 }
+
+.flow-node-delete{
+   margin-top: -35px;
+}

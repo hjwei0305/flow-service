@@ -157,11 +157,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
                 labelWidth: 85,
                 allowBlank: false,
+                maxlength:80,
+                minlength:6,
                 displayText: "请输入流程代码",
                 validateText: "必须包含字符,且长度在6-80之间",
                 validater: function (data) {
-                    var reg = /(?=.*[a-zA-Z])(?=.*\d.*)[a-zA-Z0-9]{6,80}$/
-                    if (!reg.test(data)) {
+                    var reg=/\w/;
+                    var regData=/[A-Za-z]+/;
+                    if (!reg.test(data)||!regData.test(data)) {
                         return false;
                     }
                     return true;
@@ -366,6 +369,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragging = true;
             }
         });
+        // $(".flow-content > .flow-node").die().live({
+        //     "mouseleave": function () {
+        //        // $(this).children("div.flow-node-delete").remove();
+        //     },
+        //     "mouseenter": function () {
+        //         $(this).append('<div class="flow-node-delete"><i class="ecmp-common-delete" title="删除"></i></div>');
+        //     }
+        // });
         $(document).bind({
             "mousemove": function (event) {
                 if (dragging) {
@@ -779,13 +790,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var headForm = EUI.getCmp("formPanel");
-        if (!headForm.isValid()) {
-            EUI.ProcessStatus({
-                success: false,
-                msg: "请将流程信息填写完整"
-            });
-            return;
-        }
+        // if (!headForm.isValid()) {
+        //     EUI.ProcessStatus({
+        //         success: false,
+        //         msg: "请将流程信息填写完整"
+        //     });
+        //     return;
+        // }
         var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
