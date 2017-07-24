@@ -2308,7 +2308,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     pvmNodeInfo =  pvmNodeInfoGateWayInit( ifGateWay, pvmNodeInfo, nextTempActivity, v);
                 }
             }
-            if ("ExclusiveGateway".equalsIgnoreCase(currentActivtityType) || "inclusiveGateway".equalsIgnoreCase(currentActivtityType) && pvmNodeInfo.getChildren().isEmpty()) {
+            if (("ExclusiveGateway".equalsIgnoreCase(currentActivtityType) || "inclusiveGateway".equalsIgnoreCase(currentActivtityType) ) && pvmNodeInfo.getChildren().isEmpty() ) {
                 String defaultSequenceId = currActivity.getProperty("default") + "";
                 if (StringUtils.isNotEmpty(defaultSequenceId)) {
                     PvmTransition pvmTransition = currActivity.findOutgoingTransition(defaultSequenceId);
