@@ -357,8 +357,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             mousedown: function (event) {
                 $(this).css("cursor", "move");
                 preNode = $(this);
-                dragDom = $(this).clone().appendTo($("body"));
                 var type = $(this).attr("type");
+                if(type=="StartEvent"){
+                    var nodeLength=$(".flow-event-box.flow-node.node-choosed.jtk-draggable.jtk-droppable[type='StartEvent']").length;
+                    if(nodeLength==1){
+                        return;
+                    }
+                }
+                dragDom = $(this).clone().appendTo($("body"));
                 g.count++;
                 var nodeType = $(this).attr("nodetype");
                 if (type == "UserTask" && nodeType == "CounterSign") {
