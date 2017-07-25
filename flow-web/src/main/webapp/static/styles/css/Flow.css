@@ -17,12 +17,6 @@
 /*
 *审批组件css
  */
-html,body{
-    overflow: auto;
-}
-body{
-    min-width: 1100px;
-}
 .flow-approve {
     border: 1px solid #dddddd;
 }
@@ -296,7 +290,7 @@ body{
 }
 .gateway-name{
     font-weight: bold;
-    max-width: 250px;
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
@@ -794,4 +788,11 @@ body{
     margin-left: 10px;
     /*border:1px solid #000000;*/
     float: left;
+}
+.flow-decision-text{
+    max-width: 230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
 }

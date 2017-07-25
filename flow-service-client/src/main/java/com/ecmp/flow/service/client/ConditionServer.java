@@ -1,23 +1,23 @@
-package com.ecmp.flow.service;
+package com.ecmp.flow.service.client;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.entity.BaseEntity;
+import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
+import com.ecmp.flow.api.common.api.IConditionServer;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.IBusinessFlowEntity;
 import com.ecmp.flow.entity.IConditionPojo;
-import com.ecmp.flow.api.common.api.IConditionServer;
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -32,10 +32,15 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-public class ConditionServer   implements IConditionServer {
+@Component
+public class ConditionServer implements IConditionServer {
 
-    @Autowired
-    private BusinessModelDao businessModelDao;
+
+    private IBusinessModelService businessModelService;
+
+    public ConditionServer(){
+
+    }
 
     @Override
     public Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws ClassNotFoundException {
@@ -60,14 +65,14 @@ public class ConditionServer   implements IConditionServer {
         }else {
             return  null;
         }
-//        return  (IConditionPojo)method.invoke(appModuleDao,id);
     }
 
 
     @Override
     public Map<String, String> getPropertiesForConditionPojoByBusinessModelId(String businessModelId) throws ClassNotFoundException {
        String conditonPojoClassName = null;
-       BusinessModel businessModel = businessModelDao.findOne(businessModelId);
+       businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+       BusinessModel businessModel = businessModelService.findOne(businessModelId);
        if(businessModel != null){
            conditonPojoClassName = businessModel.getConditonBean();
        }
@@ -77,7 +82,8 @@ public class ConditionServer   implements IConditionServer {
     @Override
     public Map<String, Object> getPropertiesAndValuesByBusinessModelId(String businessModelId) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException{
         String conditonPojoClassName = null;
-        BusinessModel businessModel = businessModelDao.findOne(businessModelId);
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findOne(businessModelId);
         if(businessModel != null){
             conditonPojoClassName = businessModel.getConditonBean();
         }
@@ -89,7 +95,8 @@ public class ConditionServer   implements IConditionServer {
 
         String conditonPojoClassName = null;
         String daoBeanName = null;
-        BusinessModel businessModel = businessModelDao.findOne(businessModelId);
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findOne(businessModelId);
         if(businessModel != null){
             conditonPojoClassName = businessModel.getConditonBean();
             daoBeanName = businessModel.getDaoBean();
@@ -100,12 +107,12 @@ public class ConditionServer   implements IConditionServer {
 
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public Boolean resetState(String businessModelId,String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-        BusinessModel businessModel = businessModelDao.findOne(businessModelId);
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findOne(businessModelId);
         String   daoBeanName = null;
         if(businessModel != null){
           daoBeanName = businessModel.getDaoBean();
         }
-//        Class conditonPojoClass = Class.forName(conditonPojoClassName);
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao)applicationContext.getBean(daoBeanName);
         IBusinessFlowEntity content = (IBusinessFlowEntity)appModuleDao.findOne(id);

@@ -7,6 +7,7 @@ import org.activiti.engine.impl.persistence.StrongUuidGenerator;
 import org.activiti.spring.ProcessEngineFactoryBean;
 import org.activiti.spring.SpringProcessEngineConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -60,9 +61,10 @@ public class ActivityConfig {
     }
 
     @Bean("processEngine")
-    public ProcessEngine processEngine() throws Exception {
+    public ProcessEngine processEngine(ApplicationContext applicationContext) throws Exception {
         ProcessEngineFactoryBean processEngine = new ProcessEngineFactoryBean();
         processEngine.setProcessEngineConfiguration(processEngineConfiguration());
+        processEngine.setApplicationContext(applicationContext);
         return processEngine.getObject();
     }
 
