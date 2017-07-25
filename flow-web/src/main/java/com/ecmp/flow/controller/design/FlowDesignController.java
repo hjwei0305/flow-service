@@ -12,7 +12,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
-import com.ecmp.flow.api.common.api.IConditionServer;
+import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -110,7 +110,7 @@ public class FlowDesignController {
     @RequestMapping(value = "getProperties", method = RequestMethod.POST)
     public String getProperties(String businessModelId) throws ClassNotFoundException {
         OperateStatus status = OperateStatus.defaultSuccess();
-        IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
+        IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
         status.setData(result);
         return JsonUtil.serialize(status);

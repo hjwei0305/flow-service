@@ -6,7 +6,7 @@ import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
-import com.ecmp.flow.api.common.api.IConditionServer;
+import com.ecmp.flow.clientapi.ICommonConditionService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.IBusinessFlowEntity;
@@ -32,13 +32,12 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Component
-public class ConditionServer implements IConditionServer {
+public class CommonConditionService implements ICommonConditionService {
 
 
     private IBusinessModelService businessModelService;
 
-    public ConditionServer(){
+    public CommonConditionService(){
 
     }
 
