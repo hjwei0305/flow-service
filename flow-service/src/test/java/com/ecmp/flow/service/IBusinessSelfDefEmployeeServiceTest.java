@@ -24,7 +24,6 @@ public class IBusinessSelfDefEmployeeServiceTest extends BasicContextTestCase {
     @Test
     public void save() {
         BusinessSelfDefEmployee businessSelfDefEmployee = new BusinessSelfDefEmployee();
-
         OperateResultWithData<BusinessSelfDefEmployee> result  = businessSelfDefEmployeeService.save(businessSelfDefEmployee);
         businessSelfDefEmployee=result.getData();
         logger.debug("id = {}", businessSelfDefEmployee.getId());

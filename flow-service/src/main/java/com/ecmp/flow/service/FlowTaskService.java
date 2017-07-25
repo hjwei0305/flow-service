@@ -601,7 +601,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 result = this.activitiReject(flowTask, preFlowTask);
             }
         } else {
-            return OperateResult.OperationFailure("10016");
+            return OperateResult.OperationFailure("10023");
         }
         return result;
     }
