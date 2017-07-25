@@ -19,6 +19,7 @@ dependencies {
     compile project(':flow-entity')
     compile project(':flow-dao')
     compile project(':flow-api')
+    compile project(':flow-service-client')
     compile(
             "com.ecmp:core-service:$core_version",
             "com.ecmp:basic-api:$basic_version",
