@@ -161,7 +161,7 @@ public class MessageSendThread implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -225,7 +225,7 @@ public class MessageSendThread implements Runnable {
                             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -310,7 +310,7 @@ public class MessageSendThread implements Runnable {
                               List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                               notifyTypes.add(NotifyType.Email);
                               message.setNotifyTypes(notifyTypes);
-                              message.setCanToSender(true);
+                              message.setCanToSender(false);
 //                            iNotifyService.send(message);
                               new Thread(new Runnable() {
                                   @Override

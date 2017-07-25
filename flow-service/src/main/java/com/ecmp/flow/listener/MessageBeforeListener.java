@@ -58,8 +58,7 @@ import java.util.concurrent.Executors;
 public class MessageBeforeListener implements Serializable, org.activiti.engine.delegate.ExecutionListener{
 
     private final Logger logger = LoggerFactory.getLogger(MessageBeforeListener.class);
-	public MessageBeforeListener(){
-	}
+	public MessageBeforeListener(){}
     private static final long serialVersionUID = 1L;
     @Autowired
     private RuntimeService runtimeService;
