@@ -13,6 +13,7 @@ import com.ecmp.flow.api.common.api.IConditionServer;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
+@Component
 public class ConditionServer   implements IConditionServer {
 
     @Autowired
