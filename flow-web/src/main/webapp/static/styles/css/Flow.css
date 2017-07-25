@@ -296,7 +296,7 @@ body{
 }
 .gateway-name{
     font-weight: bold;
-    max-width: 245px;
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
