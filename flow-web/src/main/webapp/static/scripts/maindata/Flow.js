@@ -21,6 +21,14 @@ EUI.ns("Flow.flow");
 Flow.FlowApprove = function (options) {
     options.busId = EUI.util.getUrlParam("id");
     options.taskId = EUI.util.getUrlParam("taskId");
+    $("body").css({
+        "min-width": "1260px",
+        "overflow": "auto"
+    });
+    $("html").css({
+        "overflow": "auto"
+    });
+
     return new Flow.flow.FlowApprove(options);
 };
 Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
@@ -107,8 +115,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 name: "false",
                 onChecked: function (value) {
                     g.counterApprove = false;
-                 //   var title = $(this).attr("title");
-                  //  $(".flow-remark").text(title);
+                    //   var title = $(this).attr("title");
+                    //  $(".flow-remark").text(title);
                     $(".flow-remark").val("");
                 }
             }]
@@ -188,7 +196,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 } else {
                     $(this).addClass("select").siblings().removeClass("select");
                 }
-            }else if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "serialtask") {
+            } else if (type == "singlesign" || type == "countersign" || type == "paralleltask" || type == "serialtask") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -271,12 +279,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
-            }else if(item.currentTaskType == "ParallelTask" && !item.counterSignLastTask){
+            } else if (item.currentTaskType == "ParallelTask" && !item.counterSignLastTask) {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【并行任务】</div></div></div>';
                 // g.initDealCheckBox();
                 this.desionType = 2;
-            }else if(item.currentTaskType == "SerialTask" && !item.counterSignLastTask){
+            } else if (item.currentTaskType == "SerialTask" && !item.counterSignLastTask) {
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【串行任务】</div></div></div>';
                 // g.initDealCheckBox();
@@ -303,15 +311,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div class="flow-decision-text" title="'+item.name+'">' + item.name + '</div></div></div>';
+                    '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div class="flow-decision-text" title="' + item.name + '">' + item.name + '</div></div></div>';
 
             }
         }
 
-        if(data[0].currentTaskType==="CounterSign"||data[0].currentTaskType==="ParallelTask"||data[0].currentTaskType==="SerialTask"){
-            if(data[0].counterSignLastTask){
+        if (data[0].currentTaskType === "CounterSign" || data[0].currentTaskType === "ParallelTask" || data[0].currentTaskType === "SerialTask") {
+            if (data[0].counterSignLastTask) {
                 $(".flow-next").text(this.lang.nextStepText);
-            }else{
+            } else {
                 $(".flow-next").text(this.lang.finishText);
             }
         }
@@ -338,9 +346,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
-            if (text === "同意"){
+            if (text === "同意") {
                 $(".flow-remark").val(text);
-            }else if(text === "不同意"){
+            } else if (text === "不同意") {
                 $(".flow-remark").val("");
             }
         })
@@ -349,8 +357,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 //检查审批输入是否有效
     checkIsValid: function () {
         var flag = this.checkOpinion();
-        if (this.desionType == 2 ) {
-            if(!flag){
+        if (this.desionType == 2) {
+            if (!flag) {
                 return false;
             }
             return true;
@@ -364,7 +372,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 });
                 return false;
             }
-            if(!flag){
+            if (!flag) {
                 return false;
             }
             return true;
@@ -378,7 +386,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 });
                 return false;
             }
-            if(!flag){
+            if (!flag) {
                 return false;
             }
             return true;
@@ -386,13 +394,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         return false;
     }
     ,
-    checkOpinion: function(){
+    checkOpinion: function () {
         var opinionText = $(".flow-remark").val().trim();
-        if(!opinionText){
+        if (!opinionText) {
             EUI.ProcessStatus({
-                msg : "处理意见不能为空",
-                success : false,
-                showTime : 20
+                msg: "处理意见不能为空",
+                success: false,
+                showTime: 20
             });
             $(".flow-remark").focus();
             return false;
@@ -483,7 +491,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 continue;
             }
             var flowTaskType = "";
-            if(node.flowTaskType){
+            if (node.flowTaskType) {
                 flowTaskType = node.flowTaskType.toLowerCase();
             }
             if (flowTaskType == "singlesign") {
@@ -547,14 +555,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
                     '<div class="excutor-item-title">' +
-                     String.format(this.lang.showUserInfo2Text,item.name,item.organizationName,item.code)+
+                    String.format(this.lang.showUserInfo2Text, item.name, item.organizationName, item.code) +
                     '</div>' +
                     '</div>';
             } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
                     '<div class="excutor-item-title">' +
-                    String.format(this.lang.showUserInfoText,item.name,item.positionName,item.organizationName,item.code)+
+                    String.format(this.lang.showUserInfoText, item.name, item.positionName, item.organizationName, item.code) +
                     '</div>' +
                     '</div>';
             }
@@ -599,8 +607,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                  //  msg: this.lang.chooseMsgText + data.name + this.lang.executorMsgText
-                    msg: String.format(this.lang.chooseExecutorMsgText,data.name)
+                    //  msg: this.lang.chooseMsgText + data.name + this.lang.executorMsgText
+                    msg: String.format(this.lang.chooseExecutorMsgText, data.name)
                 });
                 return false;
             }
@@ -613,7 +621,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         if (!this.isEnd && !this.checkUserValid()) {
             return;
         }
-        if(!this.checkOpinion()){
+        if (!this.checkOpinion()) {
             return;
         }
         var mask = EUI.LoadMask({
@@ -858,8 +866,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' +
-                           // g.lang.nameText + rowData["user.userName"] +g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code +
-                            String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                            // g.lang.nameText + rowData["user.userName"] +g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code +
+                            String.format(g.lang.showUserInfo2Text, rowData["user.userName"], rowData["organization.name"], rowData.code) +
                             '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
@@ -883,8 +891,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">' +
-                  //  g.lang.nameText + item["user.userName"] +g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code +
-                    String.format(this.lang.showUserInfo2Text,item["user.userName"],item["organization.name"],item.code)+
+                    //  g.lang.nameText + item["user.userName"] +g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code +
+                    String.format(this.lang.showUserInfo2Text, item["user.userName"], item["organization.name"], item.code) +
                     '</div>' +
                     '</div>';
             }
@@ -1020,7 +1028,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     $(this).addClass("select").siblings().removeClass("select");
                 }
             }
-            if (type == "singlesign" || type == "countersign"||type == "paralleltask"||type == "serialtask") {
+            if (type == "singlesign" || type == "countersign" || type == "paralleltask" || type == "serialtask") {
                 if ($(this).hasClass("select")) {
                     $(this).removeClass("select");
                 } else {
@@ -1160,7 +1168,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 continue;
             }
             var flowTaskType = "";
-            if(node.flowTaskType){
+            if (node.flowTaskType) {
                 flowTaskType = node.flowTaskType.toLowerCase();
             }
             if (flowTaskType == "singlesign") {
@@ -1169,7 +1177,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             } else if (flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
                 iconCss = "choose-checkbox";
-            }else if (flowTaskType == "paralleltask") {
+            } else if (flowTaskType == "paralleltask") {
                 nodeType = this.lang.ParallelTaskText;
                 iconCss = "choose-checkbox";
             } else if (flowTaskType == "serialtask") {
@@ -1219,17 +1227,17 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (!item.positionId) {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">'+
-                   // '姓名：' + item.name + '，组织机构：' + item.organizationName + '，编号：' + item.code +
-                    String.format(this.lang.showUserInfo2Text,item.name,item.organizationName,item.code)+
+                    '<div class="excutor-item-title">' +
+                    // '姓名：' + item.name + '，组织机构：' + item.organizationName + '，编号：' + item.code +
+                    String.format(this.lang.showUserInfo2Text, item.name, item.organizationName, item.code) +
                     '</div>' +
                     '</div>';
             } else {
                 nodeHtml += '<div class="flow-user-item" type="' + node.flowTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">'+
-                   // '姓名：' + item.name + '，岗位：' + item.positionName +'，组织机构：' + item.organizationName + '，编号：' + item.code +
-                    String.format(this.lang.showUserInfoText,item.name,item.positionName,item.organizationName,item.code)+
+                    '<div class="excutor-item-title">' +
+                    // '姓名：' + item.name + '，岗位：' + item.positionName +'，组织机构：' + item.organizationName + '，编号：' + item.code +
+                    String.format(this.lang.showUserInfoText, item.name, item.positionName, item.organizationName, item.code) +
                     '</div>' +
                     '</div>';
             }
@@ -1275,8 +1283,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (itemDoms.length == 0) {
                 EUI.ProcessStatus({
                     success: false,
-                   // msg: "请选择[" + data.name + "]的执行人"
-                    msg: String.format(this.lang.chooseExecutorMsgText,data.name)
+                    // msg: "请选择[" + data.name + "]的执行人"
+                    msg: String.format(this.lang.chooseExecutorMsgText, data.name)
                 });
                 return false;
             }
@@ -1505,9 +1513,9 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">'+
-                          //  '姓名：' + rowData["user.userName"] + '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code +
-                            String.format(g.lang.showUserInfo2Text,rowData["user.userName"],rowData["organization.name"],rowData.code)+
+                            '<div class="excutor-item-title">' +
+                            //  '姓名：' + rowData["user.userName"] + '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code +
+                            String.format(g.lang.showUserInfo2Text, rowData["user.userName"], rowData["organization.name"], rowData.code) +
                             '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
@@ -1529,9 +1537,9 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">'+
-                   // '姓名：' + item["user.userName"] + '，组织机构：' + item["organization.name"] + '，编号：' + item.code +
-                    String.format(g.lang.showUserInfo2Text,item["user.userName"],item["organization.name"],item.code)+
+                    '<div class="excutor-item-title">' +
+                    // '姓名：' + item["user.userName"] + '，组织机构：' + item["organization.name"] + '，编号：' + item.code +
+                    String.format(g.lang.showUserInfo2Text, item["user.userName"], item["organization.name"], item.code) +
                     '</div>' +
                     '</div>';
             }
