@@ -296,7 +296,7 @@ body{
 }
 .gateway-name{
     font-weight: bold;
-    max-width: 250px;
+    max-width: 245px;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
@@ -794,4 +794,11 @@ body{
     margin-left: 10px;
     /*border:1px solid #000000;*/
     float: left;
+}
+.flow-decision-text{
+    max-width: 230px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
 }
