@@ -613,6 +613,9 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         if (!this.isEnd && !this.checkUserValid()) {
             return;
         }
+        if(!this.checkOpinion()){
+            return;
+        }
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText
         });
