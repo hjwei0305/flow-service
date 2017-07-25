@@ -100,15 +100,16 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 onChecked: function (value) {
                     g.counterApprove = true;
                     var title = $(this).attr("title");
-                    $(".flow-remark").text(title);
+                    $(".flow-remark").val(title);
                 }
             }, {
                 title: "不同意",
                 name: "false",
                 onChecked: function (value) {
                     g.counterApprove = false;
-                    var title = $(this).attr("title");
-                    $(".flow-remark").text(title);
+                 //   var title = $(this).attr("title");
+                  //  $(".flow-remark").text(title);
+                    $(".flow-remark").val("");
                 }
             }]
         })
@@ -337,16 +338,24 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-decision-box>div").live("click", function () {
             var clickId = $(".select", ".flow-decision-box").attr("id");
             var text = $(".gateway-name", "#" + clickId).text();
-            $(".flow-remark").text(text);
+            if (text === "同意"){
+                $(".flow-remark").val(text);
+            }else if(text === "不同意"){
+                $(".flow-remark").val("");
+            }
         })
     }
     ,
 //检查审批输入是否有效
     checkIsValid: function () {
-        if (this.desionType == 2) {
+        var flag = this.checkOpinion();
+        if (this.desionType == 2 ) {
+            if(!flag){
+                return false;
+            }
             return true;
         }
-        if (this.desionType == 1) {
+        else if (this.desionType == 1) {
             var doms = $(".select", ".flow-decision-box");
             if (doms.length != 1) {
                 EUI.ProcessStatus({
@@ -355,9 +364,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 });
                 return false;
             }
+            if(!flag){
+                return false;
+            }
             return true;
         }
-        if (this.desionType == 0) {
+        else if (this.desionType == 0) {
             var doms = $(".select", ".flow-decision-box");
             if (doms.length == 0) {
                 EUI.ProcessStatus({
@@ -366,12 +378,30 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 });
                 return false;
             }
+            if(!flag){
+                return false;
+            }
             return true;
         }
         return false;
     }
     ,
+    checkOpinion: function(){
+        var opinionText = $(".flow-remark").val().trim();
+        if(!opinionText){
+            EUI.ProcessStatus({
+                msg : "处理意见不能为空",
+                success : false,
+                showTime : 20
+            });
+            $(".flow-remark").focus();
+            return false;
+        }
+        return true;
+    }
+    ,
     goToNext: function () {
+
         if (!this.checkIsValid()) {
             return;
         }
