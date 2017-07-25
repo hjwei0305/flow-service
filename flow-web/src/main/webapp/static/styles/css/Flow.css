@@ -17,12 +17,6 @@
 /*
 *审批组件css
  */
-html,body{
-    overflow: auto;
-}
-body{
-    min-width: 1100px;
-}
 .flow-approve {
     border: 1px solid #dddddd;
 }
