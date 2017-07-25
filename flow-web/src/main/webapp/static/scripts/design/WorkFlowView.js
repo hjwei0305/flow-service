@@ -354,7 +354,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var dragging = false;
         var dragDom, preNode;
         $(".flow-node", ".flow-item-content").bind({
-            mousedown: function (event) {
+            "mousedown": function (event) {
                 $(this).css("cursor", "move");
                 preNode = $(this);
                 var type = $(this).attr("type");
@@ -373,6 +373,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom.attr("id", type + "_" + g.count);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
+            },
+            "mouseleave": function () {
+            },
+            "mouseenter": function () {
+
             }
         });
         $(".flow-content > .flow-node>.delete-node").live("click",function (e) {
@@ -547,7 +552,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 id: "label",
                 visible: false,
                 label: null,
-                cssClass: "flow-line-note"
+                cssClass: "flow-line-note node-title"
             }], ["Label", {
                 location: 0.7,
                 id: "delete",

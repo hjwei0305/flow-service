@@ -481,7 +481,8 @@
 }
 
 .node-choosed .node-title {
-    max-width: 130px;
+    max-width: 120px;
+    min-width: 72px;
 }
 
 .flow-gateway-iconbox {
@@ -628,17 +629,14 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 
 .flow-event-delete{
     margin-top: -71px;
-    margin-left: 43px;
 }
 
 .flow-task-delete{
     margin-top: -50px;
-    margin-left: 77px;
 }
 .flow-gateway-delete{
     margin-top: -73px;
-    margin-left: 60px;
 }
 .delete-node{
-    position: absolute;
+    float: right;
 }
