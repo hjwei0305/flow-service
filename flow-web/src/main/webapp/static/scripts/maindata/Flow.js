@@ -303,7 +303,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 }
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
                     '<div class="choose-icon ' + iconCss + '"></div>' +
-                    '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div>' + item.name + '</div></div></div>';
+                    '<div class="excutor-item-title">' + lineNameHtml + '<div class="approve-arrows-right"></div><div class="flow-decision-text" title="'+item.name+'">' + item.name + '</div></div></div>';
 
             }
         }
@@ -654,7 +654,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".gateway-name").live("mouseover", function () {
             var text = $(this).text();
             $(this).attr("title", text);
-        })
+        });
     }
     ,
     showChooseExecutorWind: function (currentChooseDivIndex, currentChooseTaskType) {
