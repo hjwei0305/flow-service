@@ -358,9 +358,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 $(this).css("cursor", "move");
                 preNode = $(this);
                 var type = $(this).attr("type");
-                if(type=="StartEvent"){
-                    var nodeLength=$(".flow-event-box.flow-node.node-choosed.jtk-draggable.jtk-droppable[type='StartEvent']").length;
-                    if(nodeLength==1){
+                if (type == "StartEvent") {
+                    var nodeLength = $(".flow-event-box.flow-node.node-choosed.jtk-draggable.jtk-droppable[type='StartEvent']").length;
+                    if (nodeLength == 1) {
                         return;
                     }
                 }
@@ -374,10 +374,67 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
             },
-            "mouseleave": function () {
-            },
             "mouseenter": function () {
-
+                var dom = $(this);
+                g.initTipBox();
+                var text = "";
+                var addTop=5;
+                var type = dom.attr("type");
+                switch (type) {
+                    case "StartEvent":
+                        addTop=3;
+                        text = "有且仅有一个，流程启动的入口";
+                        break;
+                    case "EndEvent":
+                        text = "允许有多个，代表流程分支的结束";
+                        break;
+                    case "TerminateEndEvent":
+                        text = "允许有多个，一旦执行，整个流程实例即宣告全部结束";
+                        break;
+                    case "UserTask":
+                        addTop=10;
+                        var nodeType = dom.attr("nodetype");
+                        if (nodeType == "Normal") {
+                            text = "只允许一个人拥有待办，只允许一个人执行";
+                        }
+                        else if (nodeType == "SingleSign") {
+                            text = "允许多个人拥有待办，只允许一个人执行，一旦任务被其中一个候选人签收或者执行，其他人的对该任务的待办即失效。";
+                        }
+                        else if (nodeType == "CounterSign") {
+                            text = "多个参与人，必须每人都完成任务，通过会签决策配置的百分比决定流程走向。";
+                        }
+                        else if (nodeType == "Approve") {
+                            text = "流程走向必须包含“同意”、“不同意”分支，只允许一个人拥有待办，只允许一个人执行审批";
+                        }
+                        else if (nodeType == "ParallelTask") {
+                            text = "同时生成该节点的多个子任务，分配给不同的执行人，执行顺序没有先后。";
+                        }
+                        else if (nodeType == "SerialTask") {
+                            text = "同时生成该节点的多个子任务，分配给不同的执行人，执行顺序有先后。";
+                        }
+                        break;
+                    case "ExclusiveGateway":
+                        var busType = dom.attr("bustype");
+                        if (busType == "ExclusiveGateway") {
+                            text = "只允许符合条件的一条分支路径执行成功，如果分支条件都不满足，走配置的默认分支。";
+                        } else if (busType == "ManualExclusiveGateway") {
+                            text = "由人工选择惟一的执行路径分支。";
+                        }
+                        break;
+                    case "ParallelGateway":
+                        text = "需要成对出现，允许将流程分成多条分支，也可以把多条分支汇聚到一起，并行网关不会解析条件。 即使顺序流中定义了条件，也会被忽略。";
+                        break;
+                    case "InclusiveGateway":
+                        text = "可以看做是排他网关和并行网关的结合体。 和排他网关一样，你可以在外出顺序流上定义条件，包含网关会解析它们。 但是主要的区别是包含网关可以选择多于一条顺序流，这和并行网关一样。"
+                        break;
+                    case "EventGateway":
+                        break;
+                }
+                g.showTipBox(dom, "<span>"+text+"</span>",addTop);
+            },
+            "mouseleave": function () {
+                var $tipbox = $("div.tipbox");
+                $tipbox.hide();
             }
         });
         $(".flow-content > .flow-node>.delete-node").live("click",function (e) {
@@ -528,8 +585,52 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 e.stopPropagation();
             }
         });
-    }
-    ,
+    },
+    initTipBox: function () {
+        if($(".tipbox").length!=0){
+            return;
+        }
+        var $tipbox = $("<div class='tipbox' style='display:none;'></div>");
+        var $h = $('<h3></h3>');
+        var $c = $('<div class="tip_content"></div>');
+        $tipbox.append($h).append($c);
+        $tipbox.appendTo('body');
+    },
+    showTipBox: function (thisdom,content,addTop) {
+        var tboxes = $("div.tipbox");
+        var $tipbox,title="描述";
+        for (var i = 0; i < tboxes.length; i++) {
+            if (tboxes[i].id === "") {
+                $tipbox = $(tboxes[i]);
+                break;
+            }
+        }
+        var $h = $tipbox.find("h3");
+        var $c = $tipbox.find("div");
+        $h.html(title);
+        $c.html(content);
+        var pos = thisdom.offset();
+        var top = thisdom.height() + addTop;
+        var left = thisdom.width() / 2;
+        //var width = 340;
+        var boxtop = pos.top + top;
+        var boxleft = pos.left + left;
+        if (boxtop + $tipbox.height() > $(window).height()) {
+            boxtop = pos.top - $tipbox.height() - $tipbox.find("b").height();
+            $tipbox.find("b").removeClass("tri_t").addClass("tri_b").css({ "left": 5, "margin-top": $tipbox.height() });
+        } else {
+            $tipbox.find("b").removeClass("tri_b").addClass("tri_t").css({ "left": 5, "margin-top": -7 });
+        }
+        $tipbox.css({
+            "top": boxtop,
+            "left": boxleft,
+            "position": "absolute",
+            //"width": width,
+            "max-width": 420,
+            "max-height":130,
+            "z-index": "9999999"
+        }).show();
+    },
     isInCenter: function (dom) {
         var offset = EUI.getCmp("center").getDom().offset();
         var domOffset = dom.offset();
@@ -1069,7 +1170,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
             + "<div class='" + css + "'></div></div>"
-            + "<div class='node-title'>" + node.name + "</div>"
+            + "<div class='node-title gateway-title'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
     ,

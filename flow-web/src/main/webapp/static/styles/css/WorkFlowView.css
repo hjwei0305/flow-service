@@ -479,12 +479,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .node-choosed .node-title {
-    max-width: 120px;
+    max-width: 89px;
     min-width: 72px;
 }
-
+.node-choosed .gateway-title{
+    max-width: 75px;
+}
 .flow-gateway-iconbox {
     display: inline-block;
     height: 55px;
@@ -639,4 +640,23 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 .delete-node{
     float: right;
+}
+
+.tipbox {
+    background: #fffcef none repeat scroll 0 0;
+    border: 1px solid #ffbb76;
+    border-radius: 3px;
+    padding: 3px;
+    position: relative;
+    text-align: left;
+}
+
+
+.tipbox h3 {
+    color: #333333;
+    font-size: 13px;
+    font-weight: bold;
+    height: 25px;
+    padding: 3px;
+    line-height: 25px;
 }
