@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.BpmnUtil;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -21,12 +22,16 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +69,10 @@ public class MessageSendThread implements Runnable {
     private HistoryService historyService;
 
     private  FlowHistoryDao flowHistoryDao;
+
+    private RuntimeService runtimeService;
+
+    private TaskService taskService;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -348,21 +357,7 @@ public class MessageSendThread implements Runnable {
             } else {
                 throw new RuntimeException("下一步的用户id为空");
             }
-        } else if ("after".equalsIgnoreCase(eventType)) {
-            List<IdentityLinkEntity> identityLinks = taskEntity.getIdentityLinks();
-            if (identityLinks == null || identityLinks.isEmpty()) {
-                logger.error("找不到当前任务执行人");
-                return receiverIds;
-            }
-            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-            for (IdentityLinkEntity identityLink : identityLinks) {
-                receiverIds.add(identityLink.getUserId());
-                List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                if (employees != null && !employees.isEmpty()) {
-                    Executor executor = employees.get(0);
-                    receiverIds.add(executor.getId());
-                }
-            }
+        } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
         }
         return receiverIds;
     }
@@ -398,5 +393,21 @@ public class MessageSendThread implements Runnable {
 
     public void setFlowHistoryDao(FlowHistoryDao flowHistoryDao) {
         this.flowHistoryDao = flowHistoryDao;
+    }
+
+    public RuntimeService getRuntimeService() {
+        return runtimeService;
+    }
+
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
+    }
+
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
     }
 }
