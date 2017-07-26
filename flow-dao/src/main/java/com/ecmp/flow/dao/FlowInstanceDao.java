@@ -28,6 +28,8 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended ")
     public List<FlowInstance> findByCreatorId(@Param("creatorId")String creatorId,@Param("ended")Boolean ended);
 
+    public  List<FlowInstance> findByFlowDefVersionId(String flowDefVersionId);
+
 
 
 }
