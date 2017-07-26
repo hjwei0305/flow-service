@@ -170,7 +170,7 @@ public class MessageSendThread implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -234,7 +234,7 @@ public class MessageSendThread implements Runnable {
                             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -319,7 +319,7 @@ public class MessageSendThread implements Runnable {
                               List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                               notifyTypes.add(NotifyType.Email);
                               message.setNotifyTypes(notifyTypes);
-                              message.setCanToSender(true);
+                              message.setCanToSender(false);
 //                            iNotifyService.send(message);
                               new Thread(new Runnable() {
                                   @Override
@@ -357,71 +357,7 @@ public class MessageSendThread implements Runnable {
             } else {
                 throw new RuntimeException("下一步的用户id为空");
             }
-        } else if ("after".equalsIgnoreCase(eventType)) {
-            String actTaskDefKey =  currentNode.get("id")+"";
-//            List<Task> taskList = taskService.createTaskQuery().processInstanceId(taskEntity.getProcessInstanceId()).taskDefinitionKey(actTaskDefKey).active().list();
-//            if (taskList != null && taskList.size() > 0) {
-//
-//                for (Task task : taskList) {
-//                    List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
-//                    if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
-//                        /** 获取流程变量 **/
-//                        String executionId = task.getExecutionId();
-//                        // Map<String, Object> tempV = task.getProcessVariables();
-//                        String variableName = "" + actTaskDefKey + "_CounterSign";
-//                        String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
-//                        if(StringUtils.isNotEmpty(userId)){
-//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                            List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
-//                            if(employees!=null && !employees.isEmpty()){
-//                                Executor executor = employees.get(0);
-//                            }
-//                        }
-//                        // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
-//                    }else{
-//                        for (IdentityLink identityLink : identityLinks) {
-//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                            List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-//                            if (employees != null && !employees.isEmpty()) {
-//                                Executor executor = employees.get(0);
-//
-//                            }
-//                        }
-//                    }
-//                }
-
-            List<IdentityLinkEntity> identityLinks = taskEntity.getIdentityLinks();
-            if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
-                    /** 获取流程变量 **/
-                    String executionId = execution.getId();
-                    // Map<String, Object> tempV = task.getProcessVariables();
-                    String variableName = "" + actTaskDefKey + "_CounterSign";
-                    String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
-                    if(StringUtils.isNotEmpty(userId)){
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
-                        if(employees!=null && !employees.isEmpty()){
-                            Executor executor = employees.get(0);
-                            receiverIds.add(executor.getId());
-                        }
-                    }else{
-                        logger.error("找不到当前任务执行人");
-                        return receiverIds;
-                    }
-            }else{
-              IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-              for (IdentityLinkEntity identityLink : identityLinks) {
-                  if("starter".equalsIgnoreCase(identityLink.getType())){
-                    continue;
-                  }
-                  List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                  if (employees != null && !employees.isEmpty()) {
-                      Executor executor = employees.get(0);
-                      receiverIds.add(executor.getId());
-                  }
-              }
-          }
-
+        } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
         }
         return receiverIds;
     }
