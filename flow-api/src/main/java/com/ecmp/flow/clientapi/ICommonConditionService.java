@@ -1,7 +1,6 @@
-package com.ecmp.flow.api.common.api;
+package com.ecmp.flow.clientapi;
 
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.entity.IConditionPojo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -22,9 +21,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Path("condition")
-@Api(value = "IConditionServer 条件通用服务API接口")
-public interface IConditionServer {
+public interface ICommonConditionService {
 
     /**
      * 获取条件POJO属性说明

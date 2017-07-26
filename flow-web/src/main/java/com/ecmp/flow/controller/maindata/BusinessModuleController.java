@@ -9,7 +9,7 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
-import com.ecmp.flow.api.common.api.IConditionServer;
+import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
@@ -166,7 +166,7 @@ public class BusinessModuleController {
     @RequestMapping(value = "getPropertiesForConditionPojo")
     @ResponseBody
     public String getPropertiesForConditionPojo(String conditonPojoClassName) throws  ClassNotFoundException {
-        IConditionServer proxy = ApiClient.createProxy(IConditionServer.class);
+        IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
         return JsonUtil.serialize(result);
     }
