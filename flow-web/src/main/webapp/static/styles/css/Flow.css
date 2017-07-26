@@ -342,6 +342,8 @@
     color: #222222;
     font-weight: bold;
     padding: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

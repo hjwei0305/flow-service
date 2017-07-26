@@ -271,7 +271,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
-                '<div class="flowstart-excutor-title">' + node.name + '-[' + nodeType +
+                '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType +']">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
             if (iconCss == "choose-radio") {
                 if (node.executorSet.length == 1) {
