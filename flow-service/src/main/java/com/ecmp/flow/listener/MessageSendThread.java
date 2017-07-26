@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.BpmnUtil;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -22,12 +23,15 @@ import net.sf.json.JSONObject;
 import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +71,8 @@ public class MessageSendThread implements Runnable {
     private  FlowHistoryDao flowHistoryDao;
 
     private RuntimeService runtimeService;
+
+    private TaskService taskService;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -164,7 +170,7 @@ public class MessageSendThread implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
-                            message.setCanToSender(false);
+                            message.setCanToSender(true);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -228,7 +234,7 @@ public class MessageSendThread implements Runnable {
                             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
-                            message.setCanToSender(false);
+                            message.setCanToSender(true);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -313,7 +319,7 @@ public class MessageSendThread implements Runnable {
                               List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                               notifyTypes.add(NotifyType.Email);
                               message.setNotifyTypes(notifyTypes);
-                              message.setCanToSender(false);
+                              message.setCanToSender(true);
 //                            iNotifyService.send(message);
                               new Thread(new Runnable() {
                                   @Override
@@ -352,11 +358,42 @@ public class MessageSendThread implements Runnable {
                 throw new RuntimeException("下一步的用户id为空");
             }
         } else if ("after".equalsIgnoreCase(eventType)) {
+            String actTaskDefKey =  currentNode.get("id")+"";
+//            List<Task> taskList = taskService.createTaskQuery().processInstanceId(taskEntity.getProcessInstanceId()).taskDefinitionKey(actTaskDefKey).active().list();
+//            if (taskList != null && taskList.size() > 0) {
+//
+//                for (Task task : taskList) {
+//                    List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
+//                    if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
+//                        /** 获取流程变量 **/
+//                        String executionId = task.getExecutionId();
+//                        // Map<String, Object> tempV = task.getProcessVariables();
+//                        String variableName = "" + actTaskDefKey + "_CounterSign";
+//                        String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
+//                        if(StringUtils.isNotEmpty(userId)){
+//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                            List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+//                            if(employees!=null && !employees.isEmpty()){
+//                                Executor executor = employees.get(0);
+//                            }
+//                        }
+//                        // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
+//                    }else{
+//                        for (IdentityLink identityLink : identityLinks) {
+//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                            List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+//                            if (employees != null && !employees.isEmpty()) {
+//                                Executor executor = employees.get(0);
+//
+//                            }
+//                        }
+//                    }
+//                }
+
             List<IdentityLinkEntity> identityLinks = taskEntity.getIdentityLinks();
             if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
                     /** 获取流程变量 **/
                     String executionId = execution.getId();
-                    String actTaskDefKey =  currentNode.get("id")+"";
                     // Map<String, Object> tempV = task.getProcessVariables();
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
@@ -374,7 +411,9 @@ public class MessageSendThread implements Runnable {
             }else{
               IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
               for (IdentityLinkEntity identityLink : identityLinks) {
-                  receiverIds.add(identityLink.getUserId());
+                  if("starter".equalsIgnoreCase(identityLink.getType())){
+                    continue;
+                  }
                   List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
                   if (employees != null && !employees.isEmpty()) {
                       Executor executor = employees.get(0);
@@ -426,5 +465,13 @@ public class MessageSendThread implements Runnable {
 
     public void setRuntimeService(RuntimeService runtimeService) {
         this.runtimeService = runtimeService;
+    }
+
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
     }
 }

@@ -21,6 +21,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
@@ -78,6 +79,9 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
     @Autowired
     private FlowHistoryDao flowHistoryDao;
 
+    @Autowired
+    private TaskService taskService;
+
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
     @Override
@@ -91,6 +95,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setHistoryService(this.historyService);
             messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
             messageSendThread.setRuntimeService(runtimeService);
+            messageSendThread.setTaskService(taskService);
             messageSendThread.run();
 //            pool.execute(messageSendThread);
 //            Thread.sleep(1000*60*2);
