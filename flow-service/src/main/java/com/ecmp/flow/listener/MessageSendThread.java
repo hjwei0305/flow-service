@@ -28,6 +28,7 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -345,17 +346,17 @@ public class MessageSendThread implements Runnable {
 
     private List<String> getReceiverIds(net.sf.json.JSONObject currentNode ,ExecutionEntity taskEntity ){
         List<String> receiverIds = new ArrayList<String>();
-
         if ("before".equalsIgnoreCase(eventType)) {
             String nodeParamName = BpmnUtil.getCurrentNodeParamName(currentNode);
-            String userIds = execution.getVariable(nodeParamName) + "";
+            String userIds = (String)execution.getVariable(nodeParamName);
+           // Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(execution.getId());
             if (StringUtils.isNotEmpty(userIds)) {
                 String[] userIdArray = userIds.split(",");
                 for (String userId : userIdArray) {
                     receiverIds.add(userId);
                 }
             } else {
-                throw new RuntimeException("下一步的用户id为空");
+//                throw new RuntimeException("下一步的用户id为空");
             }
         } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
         }
