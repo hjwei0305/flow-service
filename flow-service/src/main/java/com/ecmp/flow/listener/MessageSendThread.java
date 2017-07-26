@@ -21,6 +21,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
@@ -64,6 +65,8 @@ public class MessageSendThread implements Runnable {
     private HistoryService historyService;
 
     private  FlowHistoryDao flowHistoryDao;
+
+    private RuntimeService runtimeService;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -350,19 +353,36 @@ public class MessageSendThread implements Runnable {
             }
         } else if ("after".equalsIgnoreCase(eventType)) {
             List<IdentityLinkEntity> identityLinks = taskEntity.getIdentityLinks();
-            if (identityLinks == null || identityLinks.isEmpty()) {
-                logger.error("找不到当前任务执行人");
-                return receiverIds;
-            }
-            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-            for (IdentityLinkEntity identityLink : identityLinks) {
-                receiverIds.add(identityLink.getUserId());
-                List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                if (employees != null && !employees.isEmpty()) {
-                    Executor executor = employees.get(0);
-                    receiverIds.add(executor.getId());
-                }
-            }
+            if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
+                    /** 获取流程变量 **/
+                    String executionId = execution.getId();
+                    String actTaskDefKey =  currentNode.get("id")+"";
+                    // Map<String, Object> tempV = task.getProcessVariables();
+                    String variableName = "" + actTaskDefKey + "_CounterSign";
+                    String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
+                    if(StringUtils.isNotEmpty(userId)){
+                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+                        if(employees!=null && !employees.isEmpty()){
+                            Executor executor = employees.get(0);
+                            receiverIds.add(executor.getId());
+                        }
+                    }else{
+                        logger.error("找不到当前任务执行人");
+                        return receiverIds;
+                    }
+            }else{
+              IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+              for (IdentityLinkEntity identityLink : identityLinks) {
+                  receiverIds.add(identityLink.getUserId());
+                  List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                  if (employees != null && !employees.isEmpty()) {
+                      Executor executor = employees.get(0);
+                      receiverIds.add(executor.getId());
+                  }
+              }
+          }
+
         }
         return receiverIds;
     }
@@ -398,5 +418,13 @@ public class MessageSendThread implements Runnable {
 
     public void setFlowHistoryDao(FlowHistoryDao flowHistoryDao) {
         this.flowHistoryDao = flowHistoryDao;
+    }
+
+    public RuntimeService getRuntimeService() {
+        return runtimeService;
+    }
+
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 }

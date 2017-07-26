@@ -85,6 +85,7 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
             messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
+            messageSendThread.setRuntimeService(runtimeService);
             messageSendThread.run();
 //            new Thread(messageSendThread).start();
 //            pool.submit(messageSendThread);

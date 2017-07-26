@@ -90,6 +90,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
             messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
+            messageSendThread.setRuntimeService(runtimeService);
             messageSendThread.run();
 //            pool.execute(messageSendThread);
 //            Thread.sleep(1000*60*2);
