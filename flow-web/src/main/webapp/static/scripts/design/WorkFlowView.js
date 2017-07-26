@@ -1234,6 +1234,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
+                    if(!EUI.getCmp("nodeName").sysValidater()){
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: "最大长度为80"
+                        });
+                        return;
+                    }
                     callback && callback.call(this, name);
                     win.close();
                 }

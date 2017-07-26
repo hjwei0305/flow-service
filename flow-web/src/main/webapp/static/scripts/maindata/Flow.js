@@ -1185,7 +1185,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 iconCss = "choose-checkbox";
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
-                '<div class="flowstart-excutor-title">' + node.name + '-[' + nodeType +
+                '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType+']">' + node.name + '-[' + nodeType +
                 ']</div><div class="flow-excutor-content">';
             if (iconCss == "choose-radio") {
                 if (node.executorSet.length == 1) {
@@ -1213,7 +1213,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var nodeType = "任意执行人";
         var iconCss = "choose-delete";
         var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
-            '<div class="flowstart-excutor-title" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
+            '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType +
+            +']" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
             ']</div><div class="flowstart-excutor-content2">';
         nodeHtml += "</div>" +
             '<div class="flowstartchoose-btn">选择</div>' +
