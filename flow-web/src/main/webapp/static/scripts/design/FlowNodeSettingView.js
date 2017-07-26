@@ -426,7 +426,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             },
             html: '<div class="notify-west">' +
             '<div class="west-navbar select-navbar">任务达到时</div>' +
-            // '<div class="west-navbar">任务执行后</div>' +
+            '<div class="west-navbar">任务执行后</div>' +
             '</div>' +
             '<div class="notify-center">' +
             '<div class="notify-user">' +
@@ -438,7 +438,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             '</div>' +
             '<div class="notify-center" style="display: none;">' +
             '<div class="notify-user">' +
-            '<div class="notify-user-item select">通知执行人</div>' +
+            // '<div class="notify-user-item select">通知执行人</div>' +
             '<div class="notify-user-item">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
