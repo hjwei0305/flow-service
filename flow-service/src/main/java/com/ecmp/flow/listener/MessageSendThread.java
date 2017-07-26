@@ -134,10 +134,14 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
                             List<String> receiverIds =  getReceiverIds(currentNode,taskEntity);
+                            if(receiverIds==null || receiverIds.isEmpty()){
+                                continue;
+                            }
                             message.setReceiverIds(receiverIds);
 
                             Map<String, String> contentTemplateParams = new HashMap<String, String>();
@@ -196,7 +200,8 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
 
@@ -282,7 +287,8 @@ public class MessageSendThread implements Runnable {
                               receiverIds.addAll(linkedHashSetReceiverIds);
                               INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                               EcmpMessage message = new EcmpMessage();
-                              message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                              String taskName = (String)taskEntity.getActivity().getProperty("name");
+                              message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                               String senderId = ContextUtil.getUserId();
                               message.setSenderId(senderId);
 
