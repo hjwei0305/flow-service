@@ -928,13 +928,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             return;
         }
         var headForm = EUI.getCmp("formPanel");
-        // if (!headForm.isValid()) {
-        //     EUI.ProcessStatus({
-        //         success: false,
-        //         msg: "请将流程信息填写完整"
-        //     });
-        //     return;
-        // }
+        if (!headForm.isValid()) {
+            EUI.ProcessStatus({
+                success: false,
+                msg: "请将流程信息填写完整"
+            });
+            return;
+        }
         var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
@@ -1020,6 +1020,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     if (g.isCopy) {
+                        g.id=null;
                         if (!g.isFromVersion) {
                             data.process.id = data.process.id + "COPY";
                         }
@@ -1180,9 +1181,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         if (!data) {
             return;
         }
-        if (!deploy && g.isCopy) {
-            delete data.id;
-        }
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText
         })
@@ -1197,6 +1195,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
                 if (result.success) {
                     g.flowDefVersionId = result.data.id;
+                    if(g.isCopy&&!g.deploy){
+                        g.id=result.data.flowDefination.id;
+                    }
                 }
             },
             failure: function (result) {
@@ -1222,6 +1223,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 title: "名称",
                 labelWidth: 80,
                 width: 220,
+                maxlength:80,
                 id: "nodeName",
                 name: "name",
                 value: title

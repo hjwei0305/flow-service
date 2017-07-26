@@ -144,6 +144,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             allowBlank: false,
             name: "name",
+            maxlength:80,
             value: this.title
         }, {
             xtype: "NumberField",
