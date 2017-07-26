@@ -672,7 +672,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (currentChooseTaskType == "common") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
         } else {
@@ -793,7 +793,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (currentChooseTaskType == "common") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
@@ -1328,7 +1328,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (currentChooseTaskType == "common") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
             isChooseOneTitle = "选择任意执行人【请双击进行选择】";
             saveBtnIsHidden = true;
         } else {
@@ -1445,7 +1445,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (currentChooseTaskType == "common") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
