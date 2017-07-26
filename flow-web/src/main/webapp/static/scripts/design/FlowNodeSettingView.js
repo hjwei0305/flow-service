@@ -23,6 +23,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "TabPanel",
                 isOverFlow: false,
+                showTabMenu:false,
                 defaultConfig: {
                     iframe: false,
                     closable: false
