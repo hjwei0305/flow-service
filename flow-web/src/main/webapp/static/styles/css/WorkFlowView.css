@@ -607,6 +607,11 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border-right: none;
 }
 
+.notify-user-item:nth-child(2):last-child{
+    border: 1px solid #bed5f3;
+    border-left: none;
+}
+
 .flow-content .currentNode {
     background: lightgreen none repeat scroll 0 0;
     border: 1px solid green;

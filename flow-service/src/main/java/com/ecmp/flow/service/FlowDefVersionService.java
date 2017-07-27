@@ -6,9 +6,11 @@ import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
+import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.XmlUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -54,6 +56,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
     @Autowired
     private FlowTypeDao flowTypeDao;
+
+    @Autowired
+    private FlowInstanceDao flowInstanceDao;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -272,7 +277,13 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
      */
     @Override
     public OperateResult delete(String id) {
+        OperateResult result =  OperateResult.OperationSuccess("core_00003");
         FlowDefVersion  entity = flowDefVersionDao.findOne(id);
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findByFlowDefVersionId(entity.getId());
+        if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
+            result = OperateResult.OperationFailure("10024");
+            return result;
+        }
         FlowDefination flowDefination = entity.getFlowDefination();
         String actDeployId = entity.getActDeployId();
         if(StringUtils.isNotEmpty(actDeployId)){
@@ -283,7 +294,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         if(flowDefVersionList==null || flowDefVersionList.isEmpty()){//找不到对应的版本，删除流程定义
             flowDefinationDao.delete(flowDefination);
         }
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+
         return result;
     }
 

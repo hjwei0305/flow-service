@@ -28,6 +28,7 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -133,10 +134,14 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
                             List<String> receiverIds =  getReceiverIds(currentNode,taskEntity);
+                            if(receiverIds==null || receiverIds.isEmpty()){
+                                continue;
+                            }
                             message.setReceiverIds(receiverIds);
 
                             Map<String, String> contentTemplateParams = new HashMap<String, String>();
@@ -195,7 +200,8 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
 
@@ -281,7 +287,8 @@ public class MessageSendThread implements Runnable {
                               receiverIds.addAll(linkedHashSetReceiverIds);
                               INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                               EcmpMessage message = new EcmpMessage();
-                              message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                              String taskName = (String)taskEntity.getActivity().getProperty("name");
+                              message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                               String senderId = ContextUtil.getUserId();
                               message.setSenderId(senderId);
 
@@ -345,17 +352,17 @@ public class MessageSendThread implements Runnable {
 
     private List<String> getReceiverIds(net.sf.json.JSONObject currentNode ,ExecutionEntity taskEntity ){
         List<String> receiverIds = new ArrayList<String>();
-
         if ("before".equalsIgnoreCase(eventType)) {
             String nodeParamName = BpmnUtil.getCurrentNodeParamName(currentNode);
-            String userIds = execution.getVariable(nodeParamName) + "";
+            String userIds = (String)execution.getVariable(nodeParamName);
+           // Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(execution.getId());
             if (StringUtils.isNotEmpty(userIds)) {
                 String[] userIdArray = userIds.split(",");
                 for (String userId : userIdArray) {
                     receiverIds.add(userId);
                 }
             } else {
-                throw new RuntimeException("下一步的用户id为空");
+//                throw new RuntimeException("下一步的用户id为空");
             }
         } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
         }
