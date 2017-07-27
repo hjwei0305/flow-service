@@ -371,6 +371,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     dragDom.find(".countertask").addClass("parallel-countertask").removeClass("serial-countertask");
                 }
                 dragDom.attr("id", type + "_" + g.count);
+                var titleText=dragDom.find(".node-title").html();
+                dragDom.find(".node-title").attr("title",titleText);
                 dragDom.addClass("node-choosed").attr("tabindex", 0);
                 dragging = true;
             },
@@ -556,6 +558,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 if (type.endsWith("Gateway")) {
                     g.showSimpleNodeConfig(input.text(), function (value) {
                         input.text(value);
+                        input.attr("title",value);
                     });
                 } else {
                     var nodeType = dom.attr("nodeType");
@@ -566,6 +569,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         nodeType: nodeType,
                         afterConfirm: function (data) {
                             input.text(data.normal.name);
+                            input.attr("title",data.normal.name);
                             dom.data(data);
                             if (data.normal.isSequential) {
                                 dom.find(".countertask").addClass("serial-countertask").removeClass("parallel-countertask");
@@ -700,6 +704,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     };
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(value);
+                    $(overlay.canvas).attr("title",value);
                     overlay.show();
                 });
                 return;
@@ -716,6 +721,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(data.name);
+                    $(overlay.canvas).attr("title",data.name);
                     overlay.show();
                 }
             });
@@ -734,12 +740,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (uel) {
                 var overlay = connection.connection.getOverlay("label");
                 overlay.setLabel(uel.name);
+                $(overlay.canvas).attr("title",uel.name);
                 overlay.show();
             } else {
                 var busType = $("#" + connection.sourceId).attr("bustype");
                 if (busType == "ExclusiveGateway" || busType == "InclusiveGateway") {
                     var overlay = connection.connection.getOverlay("label");
                     overlay.setLabel("默认");
+                    $(overlay.canvas).attr("title","默认");
                     overlay.show();
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: "默认",
@@ -758,6 +766,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
+                        $(overlay.canvas).attr("title",name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
@@ -783,6 +792,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
+                        $(overlay.canvas).attr("title",name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
@@ -1097,7 +1107,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.y
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
-            + "<div class='node-title'>" + this.lang.startEventText + "</div>"
+            + "<div class='node-title' title='" + this.lang.startEventText + "'>" + this.lang.startEventText + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
     ,
@@ -1114,7 +1124,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.y
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
-            + "<div class='node-title'>" + node.name + "</div>	</div>";
+            + "<div class='node-title' title='" + node.name + "'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node) {
@@ -1156,7 +1166,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='" + css + "'></div>"
-            + "<div class='node-title'>" + node.name + "</div>"
+            + "<div class='node-title' title='" + node.name + "'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
     ,
@@ -1171,7 +1181,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
             + "<div class='" + css + "'></div></div>"
-            + "<div class='node-title gateway-title'>" + node.name + "</div>"
+            + "<div class='node-title gateway-title' title='" + node.name + "'>" + node.name + "</div>"
             + "<div class='node-dot' action='begin'></div></div>";
     }
     ,
