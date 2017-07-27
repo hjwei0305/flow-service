@@ -1214,7 +1214,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var iconCss = "choose-delete";
         var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
             '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType +
-            +']" flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
+            ']"  flowTaskType="' + node.flowTaskType + '">' + node.name + '-[' + nodeType +
             ']</div><div class="flowstart-excutor-content2">';
         nodeHtml += "</div>" +
             '<div class="flowstartchoose-btn">选择</div>' +
