@@ -704,6 +704,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     };
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(value);
+                    $(overlay.canvas).attr("title",value);
                     overlay.show();
                 });
                 return;
@@ -720,6 +721,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(data.name);
+                    $(overlay.canvas).attr("title",data.name);
                     overlay.show();
                 }
             });
@@ -738,12 +740,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (uel) {
                 var overlay = connection.connection.getOverlay("label");
                 overlay.setLabel(uel.name);
+                $(overlay.canvas).attr("title",uel.name);
                 overlay.show();
             } else {
                 var busType = $("#" + connection.sourceId).attr("bustype");
                 if (busType == "ExclusiveGateway" || busType == "InclusiveGateway") {
                     var overlay = connection.connection.getOverlay("label");
                     overlay.setLabel("默认");
+                    $(overlay.canvas).attr("title","默认");
                     overlay.show();
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: "默认",
@@ -762,6 +766,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
+                        $(overlay.canvas).attr("title",name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
@@ -787,6 +792,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
+                        $(overlay.canvas).attr("title",name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
