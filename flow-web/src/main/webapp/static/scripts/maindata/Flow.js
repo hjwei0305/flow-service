@@ -186,7 +186,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
-            if (type == "common") {
+            if (type == "common"||type == "approve") {
                 if ($(this).parent().children("div").length == 1) {
                     if ($(this).hasClass("select")) {
                         $(this).removeClass("select");
@@ -1017,7 +1017,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
-            if (type == "common") {
+            if (type == "common"||type == "approve") {
                 if ($(this).parent().children("div").length == 1) {
                     if ($(this).hasClass("select")) {
                         $(this).removeClass("select");
