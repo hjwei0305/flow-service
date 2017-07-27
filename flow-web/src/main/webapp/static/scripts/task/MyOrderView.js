@@ -84,13 +84,13 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         EUI.FieldGroup({
             renderTo: "dateField",
             itemspace: 10,
-            width: 266,
+            width: 260,
             items: [{
                 xtype: "DateField",
                 name:"startDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 100,
+                width: 112,
                 allowBlank:false,
                 value:g.startTime,
                 beforeSelect:function (data) {
@@ -111,7 +111,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 name:"endDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 100,
+                width: 112,
                 allowBlank:false,
                 value:g.endTime,
                 beforeSelect:function (data) {
@@ -157,7 +157,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         var g=this;
         EUI.SearchBox({
             renderTo:"order-searchBox",
-            width:198,
+            width:220,
             displayText:"输入单据说明关键字查询",
             canClear:true,
             colon:false,

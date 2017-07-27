@@ -78,7 +78,7 @@ public class ExpressionUtil {
                 .accept(MediaType.APPLICATION_JSON)
                 .get(Map.class);
 
-//        com.ecmp.flow.api.common.api.IConditionServer proxy2 = ApiClient.createProxy(com.ecmp.flow.api.common.api.IConditionServer.class);
+//        com.ecmp.flow.clientapi.ICommonConditionService proxy2 = ApiClient.createProxy(com.ecmp.flow.clientapi.ICommonConditionService.class);
 //        Map<String,Object> pvs = proxy2.getPropertiesAndValues(clientClassName);
 
        result = ConditionUtil.groovyTest(expression,pvs);

@@ -190,8 +190,8 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
         var g=this;
         EUI.SearchBox({
             renderTo:"searchBox",
-            width:198,
-            displayText:"输入单据说明关键字查询",
+            width:220,
+            displayText:"输入工作说明关键字查询",
             canClear:true,
             colon:false,
             onSearch:function (data) {

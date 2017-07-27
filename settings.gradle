@@ -5,4 +5,5 @@ include 'flow-service'
 include 'flow-api'
 include 'flow-web'
 include 'flow-common-web'
+include 'flow-service-client'
 

@@ -479,11 +479,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .node-choosed .node-title {
-    max-width: 130px;
+    max-width: 89px;
+    min-width: 72px;
 }
-
+.node-choosed .gateway-title{
+    max-width: 75px;
+}
 .flow-gateway-iconbox {
     display: inline-block;
     height: 55px;
@@ -605,6 +607,11 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border-right: none;
 }
 
+.notify-user-item:nth-child(2):last-child{
+    border: 1px solid #bed5f3;
+    border-left: none;
+}
+
 .flow-content .currentNode {
     background: lightgreen none repeat scroll 0 0;
     border: 1px solid green;
@@ -628,17 +635,33 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 
 .flow-event-delete{
     margin-top: -71px;
-    margin-left: 43px;
 }
 
 .flow-task-delete{
     margin-top: -50px;
-    margin-left: 77px;
 }
 .flow-gateway-delete{
     margin-top: -73px;
-    margin-left: 60px;
 }
 .delete-node{
-    position: absolute;
+    float: right;
+}
+
+.tipbox {
+    background: #fffcef none repeat scroll 0 0;
+    border: 1px solid #ffbb76;
+    border-radius: 3px;
+    padding: 3px;
+    position: relative;
+    text-align: left;
+}
+
+
+.tipbox h3 {
+    color: #333333;
+    font-size: 13px;
+    font-weight: bold;
+    height: 25px;
+    padding: 3px;
+    line-height: 25px;
 }

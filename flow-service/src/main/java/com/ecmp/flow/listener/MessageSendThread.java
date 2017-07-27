@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.BpmnUtil;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -21,12 +22,17 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +70,10 @@ public class MessageSendThread implements Runnable {
     private HistoryService historyService;
 
     private  FlowHistoryDao flowHistoryDao;
+
+    private RuntimeService runtimeService;
+
+    private TaskService taskService;
 
     private String dateFormat = "yyyy-MM-dd HH:mm:ss";
 
@@ -124,10 +134,14 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
                             List<String> receiverIds =  getReceiverIds(currentNode,taskEntity);
+                            if(receiverIds==null || receiverIds.isEmpty()){
+                                continue;
+                            }
                             message.setReceiverIds(receiverIds);
 
                             Map<String, String> contentTemplateParams = new HashMap<String, String>();
@@ -161,7 +175,7 @@ public class MessageSendThread implements Runnable {
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -186,7 +200,8 @@ public class MessageSendThread implements Runnable {
                         if ("EMAIL".equalsIgnoreCase(type.toString())) {
                             INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                             EcmpMessage message = new EcmpMessage();
-                            message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                            String taskName = (String)taskEntity.getActivity().getProperty("name");
+                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                             String senderId = ContextUtil.getUserId();
                             message.setSenderId(senderId);
 
@@ -225,7 +240,7 @@ public class MessageSendThread implements Runnable {
                             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                             notifyTypes.add(NotifyType.Email);
                             message.setNotifyTypes(notifyTypes);
-                            message.setCanToSender(true);
+                            message.setCanToSender(false);
 //                            iNotifyService.send(message);
                             new Thread(new Runnable() {
                                 @Override
@@ -272,7 +287,8 @@ public class MessageSendThread implements Runnable {
                               receiverIds.addAll(linkedHashSetReceiverIds);
                               INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                               EcmpMessage message = new EcmpMessage();
-                              message.setSubject(flowDefVersion.getName() + ":" + taskEntity.getCurrentActivityName());//流程名+任务名
+                              String taskName = (String)taskEntity.getActivity().getProperty("name");
+                              message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                               String senderId = ContextUtil.getUserId();
                               message.setSenderId(senderId);
 
@@ -310,7 +326,7 @@ public class MessageSendThread implements Runnable {
                               List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                               notifyTypes.add(NotifyType.Email);
                               message.setNotifyTypes(notifyTypes);
-                              message.setCanToSender(true);
+                              message.setCanToSender(false);
 //                            iNotifyService.send(message);
                               new Thread(new Runnable() {
                                   @Override
@@ -336,33 +352,19 @@ public class MessageSendThread implements Runnable {
 
     private List<String> getReceiverIds(net.sf.json.JSONObject currentNode ,ExecutionEntity taskEntity ){
         List<String> receiverIds = new ArrayList<String>();
-
         if ("before".equalsIgnoreCase(eventType)) {
             String nodeParamName = BpmnUtil.getCurrentNodeParamName(currentNode);
-            String userIds = execution.getVariable(nodeParamName) + "";
+            String userIds = (String)execution.getVariable(nodeParamName);
+           // Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(execution.getId());
             if (StringUtils.isNotEmpty(userIds)) {
                 String[] userIdArray = userIds.split(",");
                 for (String userId : userIdArray) {
                     receiverIds.add(userId);
                 }
             } else {
-                throw new RuntimeException("下一步的用户id为空");
+//                throw new RuntimeException("下一步的用户id为空");
             }
-        } else if ("after".equalsIgnoreCase(eventType)) {
-            List<IdentityLinkEntity> identityLinks = taskEntity.getIdentityLinks();
-            if (identityLinks == null || identityLinks.isEmpty()) {
-                logger.error("找不到当前任务执行人");
-                return receiverIds;
-            }
-            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-            for (IdentityLinkEntity identityLink : identityLinks) {
-                receiverIds.add(identityLink.getUserId());
-                List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                if (employees != null && !employees.isEmpty()) {
-                    Executor executor = employees.get(0);
-                    receiverIds.add(executor.getId());
-                }
-            }
+        } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
         }
         return receiverIds;
     }
@@ -398,5 +400,21 @@ public class MessageSendThread implements Runnable {
 
     public void setFlowHistoryDao(FlowHistoryDao flowHistoryDao) {
         this.flowHistoryDao = flowHistoryDao;
+    }
+
+    public RuntimeService getRuntimeService() {
+        return runtimeService;
+    }
+
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
+    }
+
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
     }
 }

@@ -21,8 +21,11 @@ public class BpmnUtil {
             result = id+"_Normal";
         }else if("SingleSign".equalsIgnoreCase(flowTaskType)){
             result = id+"_SingleSign";
-        }else if("CounterSign".equalsIgnoreCase(flowTaskType)){
+        }else if("CounterSign".equalsIgnoreCase(flowTaskType)|| "ParallelTask".equalsIgnoreCase(flowTaskType)
+                || "SerialTask".equals(flowTaskType)){
             result = id+"_CounterSign";
+        }else if("Approve".equalsIgnoreCase(flowTaskType)){
+            result = id+"_Approve";
         }
         return result;
     }

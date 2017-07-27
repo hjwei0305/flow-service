@@ -23,6 +23,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "TabPanel",
                 isOverFlow: false,
+                showTabMenu:false,
                 defaultConfig: {
                     iframe: false,
                     closable: false
@@ -144,6 +145,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             allowBlank: false,
             name: "name",
+            maxlength:80,
             value: this.title
         }, {
             xtype: "NumberField",
@@ -437,7 +439,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             '</div>' +
             '<div class="notify-center" style="display: none;">' +
             '<div class="notify-user">' +
-            '<div class="notify-user-item select">通知执行人</div>' +
+            // '<div class="notify-user-item select">通知执行人</div>' +
             '<div class="notify-user-item">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +

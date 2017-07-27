@@ -157,7 +157,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     getNotWorkData: function () {
         $("#" + this.renderTo).empty();
         var html = '<div class="todo-not-data">' +
-            '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
+            '<div class="not-data-msg">------------您当前没有已完成的单据------------</div></div>';
         $("#" + this.renderTo).append(html);
     },
     //底部翻页绑定事件
