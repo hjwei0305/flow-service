@@ -1276,19 +1276,23 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         if (nodeDoms.length == 0) {
             return false;
         }
+        var msg = "";
         for (var i = 0; i < nodeDoms.length; i++) {
             var nodeDom = $(nodeDoms[i]);
             var index = nodeDom.attr("index");
             var data = this.data.nodeInfoList[index];
             var itemDoms = $(".select", nodeDom);
             if (itemDoms.length == 0) {
-                EUI.ProcessStatus({
-                    success: false,
-                    // msg: "请选择[" + data.name + "]的执行人"
-                    msg: String.format(this.lang.chooseExecutorMsgText, data.name)
-                });
-                return false;
+                msg = msg+data.name+"、";
             }
+        }
+        if(msg){
+            msg = msg.substring(0,msg.length-1);
+            EUI.ProcessStatus({
+                success: false,
+                msg: String.format(this.lang.chooseExecutorMsgText, msg)
+            });
+            return false;
         }
         return true;
     },
