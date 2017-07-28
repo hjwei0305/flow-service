@@ -803,7 +803,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }
                     var type = $("#" + connection.sourceId).attr("type");
                     var busType = $("#" + connection.targetId).attr("bustype");
-                    if(type="StartEvent"&&busType=="ManualExclusiveGateway") {
+                    if(type=="StartEvent"&&busType=="ManualExclusiveGateway") {
                         EUI.ProcessStatus({
                             success: false,
                             msg: "开始任务后禁止连接人工网关"
