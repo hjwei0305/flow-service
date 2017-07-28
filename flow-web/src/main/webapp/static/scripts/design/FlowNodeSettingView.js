@@ -385,6 +385,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "任务执行前",
                 colon: false,
                 labelWidth: 100,
+                canClear:true,
                 width: 220,
                 store: {
                     url: _ctxPath + "/design/listAllServiceUrl",
@@ -401,6 +402,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "afterExcuteService",
                 field: ["afterExcuteServiceId"],
                 title: "任务执行后",
+                canClear:true,
                 colon: false,
                 labelWidth: 100,
                 width: 220,
