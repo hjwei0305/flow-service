@@ -694,7 +694,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
             var type = $("#" + connection.sourceId).attr("bustype");
-            if (type == "ManualExclusiveGateway") {
+            if (type == "ManualExclusiveGateway"||type =="ParallelGateway") {
                 var name = ueldata ? ueldata.name : "";
                 g.showSimpleNodeConfig(name, function (value) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {

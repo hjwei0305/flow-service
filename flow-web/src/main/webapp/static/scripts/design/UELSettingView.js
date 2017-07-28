@@ -101,12 +101,19 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
+                };
+                var logicUel=g.logicUelCmp.getValue();
+                if(!g.isDefault&&!logicUel){
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: "请填写表达式"
+                    });
+                    return;
                 }
-                ;
                 var data = {
                     name: name,
                     isDefault: isDefault,
-                    logicUel: g.logicUelCmp.getValue(),
+                    logicUel:logicUel ,
                     groovyUel: g.groovyUelCmp.getValue()
                 };
                 g.afterConfirm && g.afterConfirm.call(this, data);
