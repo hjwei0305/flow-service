@@ -1201,9 +1201,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         if (!data) {
             return;
         }
+        if(!data.process||!data.process.nodes||Object.isEmpty(data.process.nodes)){
+            EUI.ProcessStatus({
+                msg: "请完成流程设计",
+                success: false
+            });
+            return;
+        }
         var mask = EUI.LoadMask({
             msg: this.lang.nowSaveMsgText
-        })
+        });
         EUI.Store({
             url: _ctxPath + "/design/save",
             params: {
@@ -1230,7 +1237,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.count = 0;
         this.connectInfo = {};
         this.uelInfo = {};
-        this.startUEL = null,
+        this.startUEL = null;
             this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
