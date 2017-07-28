@@ -26,6 +26,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "TabPanel",
                 isOverFlow: false,
+                showTabMenu:false,
                 defaultConfig: {
                     iframe: false,
                     closable: false
@@ -65,7 +66,9 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("select").siblings().removeClass("select");
             EUI.getCmp(g.nowNotifyTab.items[0]).hide();
             EUI.getCmp(g.nowNotifyTab.items[1]).hide();
-            EUI.getCmp(g.nowNotifyTab.items[2]).hide();
+            if(g.nowNotifyTab.items[2]){
+                EUI.getCmp(g.nowNotifyTab.items[2]).hide();
+            }
             var index = $(this).index();
             switch (index) {
                 case 0:
@@ -75,7 +78,9 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp(g.nowNotifyTab.items[1]).show();
                     break;
                 case 2:
-                    EUI.getCmp(g.nowNotifyTab.items[2]).show();
+                    if(g.nowNotifyTab.items[2]){
+                        EUI.getCmp(g.nowNotifyTab.items[2]).show();
+                    }
                     break;
                 default:
                     break;
@@ -299,8 +304,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             '</div>' +
             '<div class="notify-center" style="display: none;">' +
             '<div class="notify-user">' +
-            '<div class="notify-user-item select">通知执行人</div>' +
-            '<div class="notify-user-item">通知发起人</div>' +
+            '<div class="notify-user-item select">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
             '<div id="notify-after"></div>' +
@@ -584,7 +588,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var notifyBefore = EUI.getCmp("notify-before");
         var notifyAfter = EUI.getCmp("notify-after");
         this.loadNotifyData(notifyBefore, this.data.nodeConfig.notify.before);
-        this.loadNotifyData(notifyAfter, this.data.nodeConfig.notify.after);
+        this.loadNotifyDataAfter(notifyAfter, this.data.nodeConfig.notify.after);
 
         this.loadNotifyChoosePositonData(this.data.nodeConfig);
         this.notifyBeforePositionData = this.data.nodeConfig.notify.before.notifyPosition.positionData;
@@ -594,6 +598,11 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
         EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
+    },
+    loadNotifyDataAfter: function (tab, data) {
+        // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
+        EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
+        EUI.getCmp(tab.items[1]).loadData(data.notifyPosition);
     },
     loadNotifyChoosePositonData: function (data) {
         if (!data.notify.before.notifyPosition.positionData) {
