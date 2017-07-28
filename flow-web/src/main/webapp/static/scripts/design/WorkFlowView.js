@@ -887,6 +887,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     checkValid: function () {
         var nodes = $(".node-choosed");
+        if(!nodes||nodes.length<=0){
+            EUI.ProcessStatus({
+                msg: "请完成流程设计",
+                success: false
+            });
+            return false;
+        }
         for (var i = 0; i < nodes.length; i++) {
             var item = $(nodes[i]);
             var id = item.attr("id");
@@ -1199,13 +1206,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var data = this.getFlowData();
         if (!data) {
-            return;
-        }
-        if(!data.process||!data.process.nodes||Object.isEmpty(data.process.nodes)){
-            EUI.ProcessStatus({
-                msg: "请完成流程设计",
-                success: false
-            });
             return;
         }
         var mask = EUI.LoadMask({
