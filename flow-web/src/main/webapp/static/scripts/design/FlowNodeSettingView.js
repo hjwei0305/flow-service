@@ -78,7 +78,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("select").siblings().removeClass("select");
             EUI.getCmp(g.nowNotifyTab.items[0]).hide();
             EUI.getCmp(g.nowNotifyTab.items[1]).hide();
-            EUI.getCmp(g.nowNotifyTab.items[2]).hide();
+            if(g.nowNotifyTab.items[2]){
+                EUI.getCmp(g.nowNotifyTab.items[2]).hide();
+            }
             var index = $(this).index();
             switch (index) {
                 case 0:
@@ -88,7 +90,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp(g.nowNotifyTab.items[1]).show();
                     break;
                 case 2:
-                    EUI.getCmp(g.nowNotifyTab.items[2]).show();
+                    if(g.nowNotifyTab.items[2]){
+                        EUI.getCmp(g.nowNotifyTab.items[2]).show();
+                    }
                     break;
                 default:
                     break;
@@ -439,8 +443,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             '</div>' +
             '<div class="notify-center" style="display: none;">' +
             '<div class="notify-user">' +
-            // '<div class="notify-user-item select">通知执行人</div>' +
-            '<div class="notify-user-item">通知发起人</div>' +
+
+            '<div class="notify-user-item select">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
             '<div id="notify-after"></div>' +
@@ -488,9 +492,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 itemspace: 10
             },
             items: [{
-                items: this.getNotifyItem()
-            }, {
-                hidden: true,
                 items: this.getNotifyItem()
             }, {
                 hidden: true,
@@ -607,7 +608,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
         var beforePosition = EUI.getCmp(notifyTab1.items[2]).getFormValue();
-        var afterPosition = EUI.getCmp(notifyTab2.items[2]).getFormValue();
+        var afterPosition = EUI.getCmp(notifyTab2.items[1]).getFormValue();
         beforePosition.positionData = this.notifyBeforePositionData || [];
         beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
         afterPosition.positionData = this.notifyAfterPositionData || [];
@@ -618,8 +619,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             notifyPosition: beforePosition
         };
         data.after = {
-            notifyExecutor: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
-            notifyStarter: EUI.getCmp(notifyTab2.items[1]).getFormValue(),
+            notifyExecutor: "",
+            notifyStarter: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
             notifyPosition: afterPosition
         };
         return data;
@@ -1140,7 +1141,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var notifyBefore = EUI.getCmp("notify-before");
         var notifyAfter = EUI.getCmp("notify-after");
         this.loadNotifyData(notifyBefore, this.data.notify.before);
-        this.loadNotifyData(notifyAfter, this.data.notify.after);
+        this.loadNotifyDataAfter(notifyAfter, this.data.notify.after);
 
         this.loadNotifyChoosePositonData(this.data);
         this.notifyBeforePositionData = this.data.notify.before.notifyPosition.positionData;
@@ -1150,6 +1151,11 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
         EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
+    },
+    loadNotifyDataAfter: function (tab, data) {
+        // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
+        EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
+        EUI.getCmp(tab.items[1]).loadData(data.notifyPosition);
     },
     loadNotifyChoosePositonData: function (data) {
         if (!data.notify.before.notifyPosition.positionData) {

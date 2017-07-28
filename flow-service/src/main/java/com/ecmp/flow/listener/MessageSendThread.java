@@ -374,6 +374,7 @@ public class MessageSendThread implements Runnable {
                 }
             }
         } else if ("after".equalsIgnoreCase(eventType)) {//不做处理
+
         }
         return receiverIds;
     }
