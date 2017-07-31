@@ -8,6 +8,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     businessModelId: null,
     properties: null,
     isDefault: false,
+    flowTypeId:null,
 
     initComponent: function () {
         this.isDefault = this.data ? this.data.isDefault : false;
@@ -110,14 +111,31 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                var data = {
-                    name: name,
-                    isDefault: isDefault,
-                    logicUel:logicUel ,
-                    groovyUel: g.groovyUelCmp.getValue()
-                };
-                g.afterConfirm && g.afterConfirm.call(this, data);
-                g.window.close();
+                var myMask = EUI.LoadMask({
+                    msg: "正在验证表达式，请稍后..."
+                });
+                EUI.Store({
+                    url: _ctxPath + "/flowClient/validateExpression",
+                    params: {
+                        flowTypeId:g.flowTypeId,
+                        expression:g.groovyUelCmp.getValue()
+                    },
+                    success: function (result) {
+                        myMask.hide();
+                        var data = {
+                            name: name,
+                            isDefault: isDefault,
+                            logicUel:logicUel ,
+                            groovyUel: g.groovyUelCmp.getValue()
+                        };
+                        g.afterConfirm && g.afterConfirm.call(this, data);
+                        g.window.close();
+                    },
+                    failure: function (result) {
+                        myMask.hide();
+                        EUI.ProcessStatus(result);
+                    }
+                })
             }
         }, {
             title: "取消",
