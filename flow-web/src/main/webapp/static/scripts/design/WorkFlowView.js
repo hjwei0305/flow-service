@@ -987,7 +987,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var baseDoms = $(".flow-info-text");
         var process = {
             name: baseInfo.name,
-            id: baseInfo.id,
+            id: $.trim(baseInfo.id),
             flowDefVersionId: this.flowDefVersionId || "",
             isExecutable: true,
             startUEL: this.startUEL,
