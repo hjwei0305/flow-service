@@ -9,10 +9,13 @@ import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.vo.OperateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * *************************************************************************************************
@@ -39,6 +42,36 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     @Override
     public List<BusinessModel> findByAppModuleId(String appModuleId) {
         return businessModelDao.findByAppModuleId(appModuleId);
+    }
+
+    /**
+     * 主键删除
+     *
+     * @param id 主键
+     * @return 返回操作结果对象
+     */
+    public OperateResult delete(String id) {
+        OperateResult operateResult = preDelete(id);
+        if (Objects.isNull(operateResult) || operateResult.successful()) {
+            BusinessModel entity = findOne(id);
+            if (entity != null) {
+                try {
+                    getDao().delete(entity);
+                }catch (org.springframework.dao.DataIntegrityViolationException e){
+                    e.printStackTrace();
+                    SQLException sqlException = (SQLException)e.getCause().getCause();
+                    if(sqlException!=null && "23000".equals(sqlException.getSQLState())){
+                        return OperateResult.OperationFailure("10027");
+                    }else {
+                        throw  e;
+                    }
+                }
+                return OperateResult.OperationSuccess("core_00003");
+            } else {
+                return OperateResult.OperationWarning("core_00004");
+            }
+        }
+        return operateResult;
     }
 
 }
