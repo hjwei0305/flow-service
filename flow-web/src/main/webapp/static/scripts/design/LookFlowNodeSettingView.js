@@ -353,10 +353,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             },
             items: [{
                 items: this.getNotifyItem()
-            }, {
-                hidden: true,
-                items: this.getNotifyItem()
-            }, {
+            },{
                 hidden: true,
                 // items: this.getNotifyItem()
                 items: this.getNotifyChoosePositionItem("notifyAfter")
