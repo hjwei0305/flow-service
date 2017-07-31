@@ -1037,7 +1037,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return {
             flowTypeId: baseInfo.flowTypeId,
-            flowTypeName: baseInfo.flowTypeName,
+            //flowTypeName: baseInfo.flowTypeName,
             orgId: this.orgId,
             orgCode: this.orgCode,
             id: this.id,
@@ -1071,6 +1071,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         data.process.name = data.process.name + "COPY";
                     }
+                    data.flowTypeName=status.data.flowDefination.flowType.name;
                     g.showDesign(data);
                 } else {
                     EUI.ProcessStatus(status);
