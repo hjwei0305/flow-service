@@ -52,6 +52,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import javax.ws.rs.core.GenericType;
 import javax.xml.soap.Node;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -1293,5 +1294,38 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         //10018=冻结成功
         //10019=激活成功
         return  OperateResultWithData.OperationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
+    }
+
+
+    public OperateResultWithData<FlowDefination> validateExpression(String flowTypeId,String expression)
+            throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+            InvocationTargetException {
+        if (expression.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+            String conditonFinal = expression.substring(expression.indexOf("#{") + 2,
+                    expression.lastIndexOf("}"));
+            if(StringUtils.isNotEmpty(flowTypeId)){
+                FlowType flowType = flowTypeDao.findOne(flowTypeId);
+                if(flowType == null){
+                    return  OperateResultWithData.OperationFailure("10007");
+                }
+                BusinessModel businessModel = flowType.getBusinessModel();
+                String businessModelId = businessModel.getId();
+                String appModuleId = businessModel.getAppModuleId();
+                String clientClassName = businessModel.getConditonBean();
+                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                Boolean result = ExpressionUtil.validate(clientApiBaseUrl, clientClassName, conditonFinal);
+                if(result == null){
+                    return  OperateResultWithData.OperationFailure("10025");
+                }else{
+                    return  OperateResultWithData.OperationSuccess("10026");
+                }
+            }else {
+                return  OperateResultWithData.OperationFailure("10007");
+            }
+         }else {
+            return  OperateResultWithData.OperationFailure("10025");
+        }
     }
 }

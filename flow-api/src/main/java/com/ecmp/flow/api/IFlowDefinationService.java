@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -190,4 +191,19 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
     public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status);
+
+
+    /**
+     * 切换版本状态
+     * @param flowTypeId  流程类型id
+     * @param expression 表达式UEL
+     * @return
+     */
+    @POST
+    @Path("validateExpression")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "验证UEL表达式是否正常",notes = "验证UEL表达式是否正常")
+    public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId,@QueryParam("expression")String expression)  throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+            InvocationTargetException;
 }

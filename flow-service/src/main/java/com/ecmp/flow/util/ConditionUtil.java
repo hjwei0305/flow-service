@@ -35,9 +35,9 @@ public class ConditionUtil {
        return e.getValue(context);
       // System.out.println(e.getValue(context)); // --> 2  
    }
-    public static boolean groovyTest(String condition,Map<String, Object> map){
+    public static Boolean groovyTest(String condition,Map<String, Object> map){
 
-        boolean result = false;
+        Boolean result = null;
 
         Binding bind = new Binding();
         for (Map.Entry<String, Object> pv : map.entrySet()) {
@@ -50,7 +50,7 @@ public class ConditionUtil {
                 result = (Boolean) obj;
             }
         } catch (Exception e) {
-            result = false;
+            result = null;
             e.printStackTrace();
         }
 
