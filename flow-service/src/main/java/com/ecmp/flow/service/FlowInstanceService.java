@@ -307,7 +307,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             int index=0;
             for(FlowTask flowTask:flowTaskList){
                 Boolean canCancel = flowTask.getCanSuspension();
-                if(canCancel){
+                if(canCancel!=null && canCancel){
                     index++;
                 }
             }
