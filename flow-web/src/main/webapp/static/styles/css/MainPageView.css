@@ -238,9 +238,9 @@ div, span, p {
     overflow: auto;
 }
 
-.info-items:nth-child(odd) {
+/*.info-items:nth-child(odd) {
     margin-right: 5.5%;
-}
+}*/
 
 .info-item {
     width: 100%;
@@ -251,8 +251,8 @@ div, span, p {
 }
 
 .info-items {
-    width: 45%;
-    float: left;
+    /*width: 45%;*/
+    /*float: left;*/
     border-bottom: 1px solid #eeeeee;
     padding: 5px 10px;
     overflow: hidden;

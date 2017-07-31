@@ -83,17 +83,17 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                 html = $('<div class="info-items">' +
                     '                            <div class="item">' +
                     '                                <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
-                    '                                <span class="item-right general" title="流程结束时间">' + item.endDate + '</span>' +
                     '                            </div>' +
                     '                            <div class="item">' +
                     '                                <div class="remark">'+item.businessModelRemark+
                     '                                </div>'+
                     '                            </div>' +
-                    '                            <div class="item item-right">' +
+                    '                            <div class="item">' +
                     '                               <div class="end">' +
                     '                                    <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                     '                                    <div class="todo-btn todo-end-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                     '                               </div>' +
+                    '                                <span class="item-right general" title="流程结束时间">' + item.endDate + '</span>' +
                     '                            </div>' +
                     '                        </div>');
                 html.data(item);
