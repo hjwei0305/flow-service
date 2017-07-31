@@ -274,19 +274,23 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
+            var taskMsg = item.name;
             if (item.currentTaskType == "CounterSign") {
+                taskMsg+="-【会签任务】";
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【会签任务】</div></div></div>';
+                    '<div class="excutor-item-title" ><div class="flow-countersign" title="'+taskMsg+'">' + taskMsg +'</div></div></div>';
                 g.initDealCheckBox();
                 this.desionType = 2;
             } else if (item.currentTaskType == "ParallelTask" && !item.counterSignLastTask) {
+                taskMsg+="-【并行任务】";
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【并行任务】</div></div></div>';
+                    '<div class="excutor-item-title"><div class="flow-countersign" title="'+taskMsg+'">' + taskMsg +'</div></div></div>';
                 // g.initDealCheckBox();
                 this.desionType = 2;
             } else if (item.currentTaskType == "SerialTask" && !item.counterSignLastTask) {
+                taskMsg+="-【串行任务】";
                 html += '<div class="flow-decision-item" id="' + item.id + '" type="' + item.type.toLowerCase() + '">' +
-                    '<div class="excutor-item-title"><div class="flow-countersign">' + item.name + '-【串行任务】</div></div></div>';
+                    '<div class="excutor-item-title"><div class="flow-countersign" title="'+taskMsg+'">' + taskMsg +'</div></div></div>';
                 // g.initDealCheckBox();
                 this.desionType = 2;
             } else {
