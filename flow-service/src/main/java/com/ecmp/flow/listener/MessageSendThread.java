@@ -124,9 +124,10 @@ public class MessageSendThread implements Runnable {
 
             JSONObject currentNotify = notify.getJSONObject(eventType);
 //            String[] notifyType = {"notifyExecutor", "notifyStarter", "notifyPosition"};
-            if (currentNotify != null) {
+            if (currentNotify != null && "before".equalsIgnoreCase(eventType)) {//只有执行前才能发给执行人
 //发送给流程的实际执行人
                 JSONObject notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
+
                 JSONArray selectType = notifyExecutor.getJSONArray("type");
                 if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
                     Object[] types = selectType.toArray();
