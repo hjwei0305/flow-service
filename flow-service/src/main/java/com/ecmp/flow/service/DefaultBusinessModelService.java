@@ -71,7 +71,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         if(entity != null){
             entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
             defaultBusinessModelDao.save(entity);
-            defaultBusinessModelDao.saveAndFlush(entity);
+//            defaultBusinessModelDao.saveAndFlush(entity);
             result = true;
         }
         return result;
@@ -90,7 +90,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         if(entity != null){
             entity.setWorkCaption(entity.getWorkCaption()+":"+changeText);
             defaultBusinessModelDao.save(entity);
-            defaultBusinessModelDao.saveAndFlush(entity);
+//            defaultBusinessModelDao.saveAndFlush(entity);
             result = true;
         }
         return result;

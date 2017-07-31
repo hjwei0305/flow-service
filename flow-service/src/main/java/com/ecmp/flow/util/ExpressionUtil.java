@@ -64,8 +64,8 @@ public class ExpressionUtil {
      * @param expression 表达式
      * @return
      */
-    public static boolean validate(String clientApiBaseUrl,String clientClassName,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        boolean result = true;
+    public static Boolean validate(String clientApiBaseUrl,String clientClassName,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Boolean result = true;
         //平台API服务使用的JSON序列化提供类
         List<Object> providers = new ArrayList<>();
         providers.add(new ApiRestJsonProvider());

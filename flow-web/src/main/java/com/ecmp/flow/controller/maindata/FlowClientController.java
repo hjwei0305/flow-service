@@ -4,9 +4,11 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
+import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -185,6 +188,25 @@ public class FlowClientController {
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    /**
+     * 验证UEL表达式是否正常
+     *
+     * @param flowTypeId 流程类型ID
+     * @param  expression  uel表达式内容
+     * @return 操作结果
+     */
+    @RequestMapping(value = "validateExpression")
+    @ResponseBody
+    public String validateExpression(String flowTypeId,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+            InvocationTargetException{
+        OperateStatus operateStatus = null;
+        expression="#{unitPrice>0}";
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        OperateResultWithData<FlowDefination> result= proxy.validateExpression(flowTypeId,expression);
+        operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 }
