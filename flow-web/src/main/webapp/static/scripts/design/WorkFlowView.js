@@ -693,8 +693,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 return;
             }
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
-            var type = $("#" + connection.sourceId).attr("bustype");
-            if (type == "ManualExclusiveGateway"||type =="ParallelGateway") {
+            var type = $("#" + connection.sourceId).attr("type");
+            var noUELSetting=false;
+            if(type=="UserTask"){
+                var nodeType = $("#" + connection.sourceId).attr("nodetype");
+               switch (nodeType){
+                   case "SingleSign":  //单签
+                   case "Normal":      //普通
+                   case "ParallelTask"://并行
+                   case "SerialTask":  //串行
+                       noUELSetting=true;
+                       break;
+                   default:break;
+               }
+            }
+            var busType = $("#" + connection.sourceId).attr("bustype");
+            if (busType == "ManualExclusiveGateway"||busType =="ParallelGateway"||noUELSetting) {
                 var name = ueldata ? ueldata.name : "";
                 g.showSimpleNodeConfig(name, function (value) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
