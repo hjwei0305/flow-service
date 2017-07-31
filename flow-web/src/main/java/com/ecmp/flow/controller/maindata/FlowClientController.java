@@ -192,9 +192,10 @@ public class FlowClientController {
     }
 
     /**
-     * 获取任务抬头信息信息任务
+     * 验证UEL表达式是否正常
      *
-     * @param flowTypeId
+     * @param flowTypeId 流程类型ID
+     * @param  expression  uel表达式内容
      * @return 操作结果
      */
     @RequestMapping(value = "validateExpression")
