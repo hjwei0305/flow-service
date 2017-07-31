@@ -203,7 +203,6 @@ public class FlowClientController {
     public String validateExpression(String flowTypeId,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
             InvocationTargetException{
         OperateStatus operateStatus = null;
-        expression="#{unitPrice>0}";
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result= proxy.validateExpression(flowTypeId,expression);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
