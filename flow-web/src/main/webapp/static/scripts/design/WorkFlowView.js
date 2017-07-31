@@ -160,7 +160,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 maxlength:80,
                 minlength:6,
                 displayText: "请输入流程代码",
-                validateText: "必须包含字符,且长度在6-80之间",
+                validateText: "允许数字或字母，至少包含一个字母,且长度在6-80之间",
                 validater: function (data) {
                     var reg=/\w/;
                     var regData=/[A-Za-z]+/;
