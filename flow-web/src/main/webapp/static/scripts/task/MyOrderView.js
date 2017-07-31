@@ -40,8 +40,8 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
             '            <div class="center-top">' +
             '                <div class="top-header">' +
             '                    <div class="header-left">' +
-            '                        <span class="wait-invoices active">待办单据</span>' +
-            '                        <span class="taken-work taken-invoices">已办单据</span>' +
+            '                        <span class="wait-invoices active">' +this.lang.orderInFlowText+ '</span>' +
+            '                        <span class="taken-work taken-invoices">' +this.lang.orderCompleteText+ '</span>' +
             '                        <div class="data">' +
             '                            <div id="dateField"></div>' +
             '                        </div>' +
@@ -59,8 +59,8 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         return '            <div class="center-top">' +
             '                <div class="top-header invoices-header">' +
             '                    <div class="header-left">' +
-            '                        <span class="wait-invoices active">待办单据</span>' +
-            '                        <span class="taken-work taken-invoices">已办单据</span>' +
+            '                        <span class="wait-invoices active">' +this.lang.orderInFlowText+ '</span>' +
+            '                        <span class="taken-work taken-invoices">' +this.lang.orderCompleteText+ '</span>' +
             '                        <div class="data">' +
             '                            <div id="dateField"></div>' +
             '                        </div>' +
