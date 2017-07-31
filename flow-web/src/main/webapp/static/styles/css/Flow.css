@@ -365,7 +365,7 @@
     position: absolute;
     right:20px;
     text-align: center;
-    top: 80px;
+    top: 100px;
     width: 80px;
 }
 
@@ -732,7 +732,7 @@
 }
 
 .statuscenter-info {
-    width: 520px;
+    width: 580px;
     height: 305px;
     /*border:1px solid #000000;*/
 }
@@ -745,15 +745,15 @@
 }
 
 .flow-progress {
-    width: 520px;
-    height: 60px;
+    width: 580px;
+    height: 80px;
     /*border:1px solid #000000;*/
     border-bottom: 1px solid #eeeeee;
 }
 
 .flow-progresstitle {
-    width: 520px;
-    height: 25px;
+    width: 580px;
+    height: 45px;
     /*border:1px solid #000000;*/
     font-size: 14px;
     color: #45b7ff;
@@ -761,7 +761,7 @@
 }
 
 .flow-progressinfo {
-    width: 520px;
+    width: 580px;
     height: 25px;
     /*border:1px solid #000000;*/
     font-size: 14px;
