@@ -270,10 +270,10 @@
 }
 
 .flow-decision-box {
-    float: left;
+    /*float: left;*/
     height: 50px;
     margin-top: 25px;
-    width: 80%;
+    /*width: 80%;*/
 }
 
 .flow-decision-item{
@@ -287,6 +287,10 @@
 }
 .flow-countersign{
     font-weight: bold;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .gateway-name{
     font-weight: bold;
