@@ -782,6 +782,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 msg: "会签任务后禁止连接人工网关"
                             });
                             jsPlumb.detach(connection);
+                            delete g.uelInfo[connection.sourceId + "," + connection.targetId];
+                            delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                             return;
                         }
                         var result = g.getApproveLineInfo(connection.sourceId);
@@ -809,6 +811,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             msg: "开始任务后禁止连接人工网关"
                         });
                         jsPlumb.detach(connection);
+                        delete g.uelInfo[connection.sourceId + "," + connection.targetId]
+                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                         return;
                     }
                 }
