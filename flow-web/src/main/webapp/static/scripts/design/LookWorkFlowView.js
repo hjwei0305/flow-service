@@ -136,7 +136,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 id: "label",
                 visible: false,
                 label: null,
-                cssClass: "flow-line-note"
+                cssClass: "flow-line-note node-title"
             }]],
             Container: "body"
         });
@@ -179,6 +179,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             if (uel) {
                 var overlay = connection.connection.getOverlay("label");
                 overlay.setLabel(uel.name);
+                $(overlay.canvas).attr("title",uel.name);
                 overlay.show();
             }
         });
@@ -315,7 +316,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.y
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='flow-event-start'></div></div>"
-            + "<div class='node-title'>" + this.lang.startEventText + "</div>"
+            + "<div class='node-title' title='"+this.lang.startEventText +"'>" + this.lang.startEventText + "</div>"
             + "</div>";
     }
     ,
@@ -332,7 +333,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.y
             + "px; opacity: 1;'>"
             + "<div class='flow-event-iconbox'><div class='" + css + "'></div></div>"
-            + "<div class='node-title'>" + node.name + "</div>	</div>";
+            + "<div class='node-title' title='"+ node.name+"'>" + node.name + "</div>	</div>";
     }
     ,
     showTaskNode: function (id, node, currentNodes) {
@@ -376,7 +377,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.type + "' nodeType='" + node.nodeType + "' style='cursor: pointer; left: "
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='" + css + "'></div>"
-            + "<div class='node-title'>" + node.name + "</div>"
+            + "<div class='node-title' title='"+ node.name+"'>" + node.name + "</div>"
             + "</div>";
     }
     ,
@@ -397,7 +398,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + node.x + "px; top: " + node.y + "px; opacity: 1;'>"
             + "<div class='flow-gateway-iconbox'>"
             + "<div class='" + css + "'></div></div>"
-            + "<div class='node-title'>" + node.name + "</div>"
+            + "<div class='node-title' title='"+ node.name+"'>" + node.name + "</div>"
             + "</div>";
     },
     showSimpleNodeConfig: function (title) {
