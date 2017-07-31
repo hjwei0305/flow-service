@@ -124,74 +124,75 @@ public class MessageSendThread implements Runnable {
 
             JSONObject currentNotify = notify.getJSONObject(eventType);
 //            String[] notifyType = {"notifyExecutor", "notifyStarter", "notifyPosition"};
-            if (currentNotify != null && "before".equalsIgnoreCase(eventType)) {//只有执行前才能发给执行人
+            if (currentNotify != null ) {//只有执行前才能发给执行人
+                JSONArray selectType = null;
 //发送给流程的实际执行人
-                JSONObject notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
-
-                JSONArray selectType = notifyExecutor.getJSONArray("type");
-                if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
-                    Object[] types = selectType.toArray();
-                    for (Object type : types) {
-                        if ("EMAIL".equalsIgnoreCase(type.toString())) {
-                            INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
-                            EcmpMessage message = new EcmpMessage();
-                            String taskName = (String)taskEntity.getActivity().getProperty("name");
-                            message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
-                            String senderId = ContextUtil.getUserId();
-                            message.setSenderId(senderId);
-                            List<String> receiverIds =  getReceiverIds(currentNode,taskEntity);
-                            if(receiverIds==null || receiverIds.isEmpty()){
-                                continue;
-                            }
-                            message.setReceiverIds(receiverIds);
-
-                            Map<String, String> contentTemplateParams = new HashMap<String, String>();
-                            String workCaption = (String) execution.getVariable("workCaption");
-                            String businessName = (String) execution.getVariable("name");
-                            String businessCode = (String) execution.getVariable("businessCode");
-                            String preOpinion = null;
-                            String opinion = null;
-
-                            if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                preOpinion =  execution.getVariable("opinion")+"";
-                            }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                opinion =  execution.getVariable("opinion")+"";
-                            }
-
-                            contentTemplateParams.put("businessName", businessName);//业务单据名称
-                            contentTemplateParams.put("businessCode", businessCode);//业务单据代码
-//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                            if ("before".equalsIgnoreCase(eventType)) {
-                                contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
-                            } else if ("after".equalsIgnoreCase(eventType)) {
-                                contentTemplateParams.put("opinion", opinion);//审批意见
-                            }
-                            contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
-//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
-                            contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
-                            message.setContentTemplateParams(contentTemplateParams);
-                            message.setContentTemplateCode(contentTemplateCode);//模板代码
-
-                            List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-                            notifyTypes.add(NotifyType.Email);
-                            message.setNotifyTypes(notifyTypes);
-//                            System.out.println(JsonUtils.toJson(message));
-                            message.setCanToSender(false);
-//                            iNotifyService.send(message);
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    iNotifyService.send(message);
+                if("before".equalsIgnoreCase(eventType)) {
+                    JSONObject notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
+                    selectType = notifyExecutor.getJSONArray("type");
+                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                        Object[] types = selectType.toArray();
+                        for (Object type : types) {
+                            if ("EMAIL".equalsIgnoreCase(type.toString())) {
+                                INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+                                EcmpMessage message = new EcmpMessage();
+                                String taskName = (String) taskEntity.getActivity().getProperty("name");
+                                message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
+                                String senderId = ContextUtil.getUserId();
+                                message.setSenderId(senderId);
+                                List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
+                                if (receiverIds == null || receiverIds.isEmpty()) {
+                                    continue;
                                 }
-                            }).start();
-                        } else if ("SMS".equalsIgnoreCase(type.toString())) {
+                                message.setReceiverIds(receiverIds);
 
-                        } else if ("APP".equalsIgnoreCase(type.toString())) {
+                                Map<String, String> contentTemplateParams = new HashMap<String, String>();
+                                String workCaption = (String) execution.getVariable("workCaption");
+                                String businessName = (String) execution.getVariable("name");
+                                String businessCode = (String) execution.getVariable("businessCode");
+                                String preOpinion = null;
+                                String opinion = null;
 
+                                if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
+                                    preOpinion = execution.getVariable("opinion") + "";
+                                } else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
+                                    opinion = execution.getVariable("opinion") + "";
+                                }
+
+                                contentTemplateParams.put("businessName", businessName);//业务单据名称
+                                contentTemplateParams.put("businessCode", businessCode);//业务单据代码
+//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
+                                if ("before".equalsIgnoreCase(eventType)) {
+                                    contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
+                                } else if ("after".equalsIgnoreCase(eventType)) {
+                                    contentTemplateParams.put("opinion", opinion);//审批意见
+                                }
+                                contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
+//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
+                                contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
+                                message.setContentTemplateParams(contentTemplateParams);
+                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+
+                                List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+                                notifyTypes.add(NotifyType.Email);
+                                message.setNotifyTypes(notifyTypes);
+//                            System.out.println(JsonUtils.toJson(message));
+                                message.setCanToSender(false);
+//                            iNotifyService.send(message);
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iNotifyService.send(message);
+                                    }
+                                }).start();
+                            } else if ("SMS".equalsIgnoreCase(type.toString())) {
+
+                            } else if ("APP".equalsIgnoreCase(type.toString())) {
+
+                            }
                         }
                     }
                 }
-
               String multiInstance =  (String)taskEntity.getActivity().getProperty("multiInstance");
                Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
               if((isMmultiInstance && taskEntity.getTransition()!=null) ||  !isMmultiInstance){
