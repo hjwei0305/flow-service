@@ -202,6 +202,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     data: g.startUEL,
                     showName: false,
                     businessModelId: g.businessModelId,
+                    flowTypeId:EUI.getCmp("formPanel").getFormValue().flowTypeId,
                     afterConfirm: function (data) {
                         g.startUEL = data;
                     }
@@ -731,6 +732,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 title: "表达式配置",
                 data: ueldata,
                 businessModelId: g.businessModelId,
+                flowTypeId:EUI.getCmp("formPanel").getFormValue().flowTypeId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
                     var overlay = connection.getOverlay("label");
