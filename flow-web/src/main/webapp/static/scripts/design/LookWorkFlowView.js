@@ -257,6 +257,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             currentNodes += ",";
         }
         this.businessModelId = data.businessModelId;
+        data.flowTypeName=defData.def.flowDefination.flowType.name;
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
