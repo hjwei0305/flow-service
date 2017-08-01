@@ -11,27 +11,52 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     flowTypeId: null,
     notifyBeforePositionData: null,
     notifyAfterPositionData: null,
+    type:null,
     initComponent: function () {
-        this.window = EUI.Window({
-            width: 550,
-            height: 420,
-            padding: 15,
-            buttons: this.getButtons(),
-            afterRender: function () {
-                this.dom.find(".ux-window-content").css("border-radius", "6px");
-            },
-            items: [{
-                xtype: "TabPanel",
-                isOverFlow: false,
-                showTabMenu:false,
-                defaultConfig: {
-                    iframe: false,
-                    closable: false
+        if(this.type == "ServiceTask"){
+            this.window = EUI.Window({
+                width: 550,
+                height: 420,
+                padding: 15,
+                buttons: this.getButtons(),
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
                 },
-                items: [this.getNormalTab(), this.getExcutorTab(), this.getEventTab(),
-                    this.getNotifyTab()]
-            }]
-        });
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getServiceTaskNormalTab(), this.getEventTab(),
+                        this.getNotifyTab()]
+                }]
+            });
+        }else {
+            this.window = EUI.Window({
+                width: 550,
+                height: 420,
+                padding: 15,
+                buttons: this.getButtons(),
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                },
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getNormalTab(), this.getExcutorTab(), this.getEventTab(),
+                        this.getNotifyTab()]
+                }]
+            });
+        }
+
         this.initNotify();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
@@ -114,7 +139,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if (!g.checkExcutor()) {
+                if (g.type!='ServiceTask' && !g.checkExcutor()) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请将执行人项配置完整"
@@ -127,7 +152,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var eventData = eventForm.getFormValue();
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
-                    executor: g.getExcutorData(),
+                    executor:g.type!='ServiceTask'? g.getExcutorData():'',
                     event: eventData,
                     notify: g.getNotifyData()
                 });
@@ -206,7 +231,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }]);
         }
-        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"){
+        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"){
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -221,6 +246,57 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "allowReject"
             }]);
         }
+        return {
+            title: "常规",
+            xtype: "FormPanel",
+            id: "normal",
+            padding: 10,
+            defaultConfig: {
+                width: 300,
+                xtype: "TextField",
+                labelWidth: 150,
+                colon: false
+            },
+            style: {
+                padding: "10px 30px"
+            },
+            items: items
+        };
+    },
+    getServiceTaskNormalTab: function () {
+        var items = [{
+            title: "节点名称",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "name",
+            maxlength:80,
+            value: this.title
+        }, {
+            xtype: "NumberField",
+            title: "额定工时",
+            allowNegative: false,
+            name: "executeTime",
+            labelWidth: 100,
+            unit: "分钟"
+        }, {
+            xtype: "ComboBox",
+            title: "服务名称",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "serviceTask",
+            field: ["serviceTaskId"],
+            canClear:true,
+            store: {
+                url: _ctxPath + "/design/listAllServiceUrl",
+                params: {
+                    "busModelId": this.businessModelId
+                }
+            },
+            reader: {
+                name: "name",
+                field: ["id"]
+            }
+        }];
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -1128,10 +1204,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        var userType = this.data.executor.userType;
-        var userTypeCmp = EUI.getCmp("userType");
-        userTypeCmp.setValue(userType);
-        this.showChooseUserGrid(userType, this.data.executor);
+        if(g.type!='ServiceTask'){
+            var userType = this.data.executor.userType;
+            var userTypeCmp = EUI.getCmp("userType");
+            userTypeCmp.setValue(userType);
+            this.showChooseUserGrid(userType, this.data.executor);
+        }
 
         //加载事件配置
         eventForm.loadData(this.data.event);

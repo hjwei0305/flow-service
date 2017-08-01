@@ -569,6 +569,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         businessModelId: g.businessModelId,
                         data: dom.data(),
                         nodeType: nodeType,
+                        type:type,
                         afterConfirm: function (data) {
                             input.text(data.normal.name);
                             input.attr("title",data.normal.name);
