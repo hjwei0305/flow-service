@@ -153,7 +153,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 '                                    <div class="todo-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                 '                                </div>' +
                 '                                <span class="item-right task-item-right">' +
-                '                                    <div class="userName">发起人：' + items[j].flowDefination.creatorName + '</div>' +
+                '                                    <div class="userName">发起人：' + items[j].flowInstance.creatorName + '</div>' +
                 '                                    <div class="todo-date"><i class="ecmp-flow-history flow-time-icon time-icon-size" title="流程历史"></i><span>处理时间：' + items[j].actEndTime + '</span></div>' +
                 '                                </span>' +
                 '                            </div>' +
