@@ -9,6 +9,7 @@ import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +85,41 @@ public class FlowTaskController {
         search.addQuickSearchProperty("creatorName");
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByBusinessModelId(modelId,search);
+
+        //检查是否允许对流程实例进行终止,针对并行网关，包容网关的情况下
+        List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
+        Map<FlowInstance,List<FlowTask>> flowInstanceListMap = new HashMap<FlowInstance, List<FlowTask>>();
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            for(FlowTask flowTask:flowTaskList){
+                List<FlowTask> flowTaskListTemp =  flowInstanceListMap.get(flowTask.getFlowInstance());
+                if(flowTaskListTemp==null){
+                    flowTaskListTemp = new ArrayList<FlowTask>();
+                }
+                flowTaskListTemp.add(flowTask);
+                flowInstanceListMap.put(flowTask.getFlowInstance(),flowTaskListTemp);
+            }
+        }
+        if(!flowInstanceListMap.isEmpty()){
+            for(Map.Entry<FlowInstance,List<FlowTask>> temp:flowInstanceListMap.entrySet()){
+                List<FlowTask> flowTaskListTemp = temp.getValue();
+                if(flowTaskListTemp!=null && !flowTaskListTemp.isEmpty()){
+                    boolean canEnd = true;
+                    for(FlowTask flowTask:flowTaskList){
+                        Boolean canCancel = flowTask.getCanSuspension();
+                        if(canCancel==null || !canCancel){
+                            canEnd = false;
+                            break;
+                        }
+                    }
+                    if(!canEnd){
+                        for(FlowTask flowTask:flowTaskList){
+                            flowTask.setCanSuspension(false);
+                        }
+                    }
+                }
+            }
+        }
+
         return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
     }
 
