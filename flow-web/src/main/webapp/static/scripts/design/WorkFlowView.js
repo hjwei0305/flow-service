@@ -498,13 +498,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     if (!g.isInCenter(dragDom)) {
                         dragDom.remove();
                     } else {
-                        var offset = $("#center").offset();
+                        var centerDom = $("#center");
+                        var offset = centerDom.offset();
                         var doffset = dragDom.offset();
                         dragDom.css({
                             cursor: "pointer",
                             opacity: 1,
-                            left: doffset.left - offset.left,
-                            top: doffset.top - offset.top - 12
+                            left: doffset.left - offset.left + centerDom.scrollLeft(),
+                            top: doffset.top - offset.top - 12 + centerDom.scrollTop()
                         });
                         var type = dragDom.attr("type");
                         if (type.indexOf("EndEvent") == -1) {
