@@ -501,8 +501,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         var centerDom = EUI.getCmp("center").content;
                         var offset = centerDom.offset();
                         var doffset = dragDom.offset();
-                        console.log(centerDom.scrollLeft());
-                        console.log(centerDom.scrollTop());
                         dragDom.css({
                             cursor: "pointer",
                             opacity: 1,
