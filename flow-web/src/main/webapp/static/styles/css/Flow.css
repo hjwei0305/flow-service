@@ -232,6 +232,7 @@
 .excutor-item-title {
     cursor: pointer;
     display: inline-block;
+    width: 100%;
 }
 
 .flow-operate {
@@ -273,7 +274,7 @@
     /*float: left;*/
     height: 50px;
     margin-top: 25px;
-    /*width: 80%;*/
+    width: 100%;
 }
 
 .flow-decision-item{
@@ -287,14 +288,14 @@
 }
 .flow-countersign{
     font-weight: bold;
-    max-width: 70%;
+    max-width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .gateway-name{
     font-weight: bold;
-    max-width: 173px;
+    max-width: 30%;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
@@ -796,7 +797,7 @@
     float: left;
 }
 .flow-decision-text{
-    max-width: 230px;
+    max-width: 50%;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
