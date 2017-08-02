@@ -149,11 +149,17 @@ public class CustomExecutorController {
         return JsonUtil.serialize(operateStatus);
     }
 
+    /**
+     * 根据组织机构的id获取员工(不包含冻结)
+     *
+     * @param organizationId 组织机构的id
+     * @return 员工清单
+     */
     @RequestMapping(value = "listAllUser")
     @ResponseBody
     public List<Employee> listAllUser(String organizationId) {
         IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
-        List<Employee> employees = proxy.findByOrganizationId(organizationId);
+        List<Employee> employees = proxy.findByOrganizationIdWithoutFrozen(organizationId);
         return employees;
     }
 }
