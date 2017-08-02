@@ -42,7 +42,14 @@ var _flownode = {
         type: "UserTask",
         css: "serialtask",
         nodeType: "SerialTask"
-    }],
+    }
+    , {
+        name: "serviceTaskText",
+        type: "ServiceTask",
+        css: "servicetask ",
+        nodeType: "ServiceTask"
+    }
+    ],
     gateway: [{
         name: "exclusiveGatewayText",
         type: "ExclusiveGateway",

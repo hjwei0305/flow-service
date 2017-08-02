@@ -483,3 +483,10 @@ if (EUI.FlowTypeView) {
 if (EUI.WorkPageUrlView) {
     EUI.apply(EUI.WorkPageUrlView.prototype.lang, {}, common_lang);
 }
+
+if (EUI.MyOrderView) {
+    EUI.MyOrderView.prototype.lang = EUI.applyIf( {
+        orderInFlowText: "流程中",
+        orderCompleteText: "已完成"
+    }, common_lang);
+}
