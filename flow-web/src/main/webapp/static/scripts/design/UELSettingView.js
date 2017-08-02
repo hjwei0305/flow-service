@@ -104,11 +104,22 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     }
                 };
                 var logicUel=g.logicUelCmp.getValue();
-                if(!g.isDefault&&!logicUel){
+                if(!g.isDefault&&!logicUel&&g.showName){
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请填写表达式"
                     });
+                    return;
+                }
+                if(!g.isDefault&&!logicUel&&!g.showName){
+                    var data = {
+                        name: name,
+                        isDefault: isDefault,
+                        logicUel:logicUel ,
+                        groovyUel: g.groovyUelCmp.getValue()
+                    };
+                    g.afterConfirm && g.afterConfirm.call(this, data);
+                    g.window.close();
                     return;
                 }
                 var myMask = EUI.LoadMask({
