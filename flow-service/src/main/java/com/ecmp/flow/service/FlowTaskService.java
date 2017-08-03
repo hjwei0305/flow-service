@@ -468,6 +468,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         OperateResultWithData<FlowStatus> result = OperateResultWithData.OperationSuccess("10017");
         if (instance == null || instance.isEnded()) {
             result.setData(FlowStatus.COMPLETED);//任务结束
+            flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
         }
         return result;
     }

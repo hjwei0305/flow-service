@@ -69,7 +69,8 @@ public class EndEventCompleteListener implements ExecutionListener {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
-                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
+                flowInstanceDao.save(flowInstance);
+              //  flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
             }
         }
     }
