@@ -11,7 +11,9 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -35,7 +37,7 @@ import org.springframework.stereotype.Component;
  * *************************************************************************************************
  */
 @Component(value="commonUserTaskCompleteListener")
-public class CommonUserTaskCompleteListener implements TaskListener{
+public class CommonUserTaskCompleteListener implements ExecutionListener {
 
     @Autowired
     private RuntimeService runtimeService;
@@ -56,13 +58,11 @@ public class CommonUserTaskCompleteListener implements TaskListener{
 	}
     private static final long serialVersionUID = 1L;
 
-    public void notify(DelegateTask delegateTask) {
+    public void notify(DelegateExecution delegateTask) {
         try {
-            ExecutionEntity taskEntity = (ExecutionEntity) delegateTask.getExecution();
-            String actTaskDefKey = taskEntity.getActivityId();
+            String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-            ProcessInstance instance = taskEntity.getProcessInstance();
-            String businessId = instance.getBusinessKey();
+            String businessId =delegateTask.getProcessBusinessKey();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);

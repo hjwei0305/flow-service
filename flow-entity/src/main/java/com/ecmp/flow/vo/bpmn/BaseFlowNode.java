@@ -71,6 +71,13 @@ public class BaseFlowNode extends BaseNode implements Serializable {
     @XmlTransient
     private JSONObject nodeConfig;
 
+
+    /**
+     * activti扩展属性，任务监听器之类
+     */
+    @XmlElement(name = "extensionElements")
+    private ExtensionElement extensionElement;
+
     public String getName() {
         return name;
     }
@@ -145,6 +152,14 @@ public class BaseFlowNode extends BaseNode implements Serializable {
 
     public void setDefaultSequence(String defaultSequence) {
         this.defaultSequence = defaultSequence;
+    }
+
+    public ExtensionElement getExtensionElement() {
+        return extensionElement;
+    }
+
+    public void setExtensionElement(ExtensionElement extensionElement) {
+        this.extensionElement = extensionElement;
     }
 
     public static void main(String[] args) {

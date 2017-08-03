@@ -60,24 +60,24 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
      *
      * @return 执行结果
      */
-    @GET
-    @Path("changeCreateDepict/{id}/{changeText}")
+    @POST
+    @Path("changeCreateDepict")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public boolean changeCreateDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
+    public boolean changeCreateDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
 
     /**
      * 测试事后
      *
      * @return 执行结果
      */
-    @GET
-    @Path("changeCompletedDepict/{id}/{changeText}")
+    @POST
+    @Path("changeCompletedDepict")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public boolean changeCompletedDepict(@PathParam("id") String id,@PathParam("changeText") String changeText);
+    public boolean changeCompletedDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
 
     /**
      * 测试自定义执行人选择

@@ -12,10 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.context.ApplicationContext;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -41,18 +40,10 @@ public class ServiceCallUtil {
               String appModuleId = flowServiceUrl.getBusinessModel().getAppModuleId();
               com.ecmp.basic.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
               AppModule appModule = iAppModuleService.findOne(appModuleId);
-                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-                //平台API服务使用的JSON序列化提供类
-
-                List<Object> providers = new ArrayList<>();
-                providers.add(new ApiRestJsonProvider());
-                //API会话检查的客户端过滤器
-                providers.add(new SessionClientRequestFilter());
-
-                result = WebClient.create(clientApiBaseUrl, providers)
-                        .path(clientUrl+"/{id}/{changeText}",businessId,args[0])
-                        .accept(MediaType.APPLICATION_JSON)
-                        .get(boolean.class);
+              Map<String, String> params = new HashMap<String,String>();;
+              params.put("id",businessId);
+              params.put("paramJson",args[0]);
+              result = ApiClient.postViaProxyReturnResult(appModule.getCode(),  clientUrl,new GenericType<Boolean>() {}, params);
             }else {
                 throw new RuntimeException("服务对象找不到");
             }

@@ -107,17 +107,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowTask> findByPage(Search searchConfig);
 
-    /**
-     * 通过任务Id检查当前任务的出口节点是否存在条件表达式
-     * @param id 任务id
-     * @return 结果
-     */
-    @GET
-    @Path("checkHasConditon/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "检查当前任务的出口节点是否存在条件表达式",notes = "测试")
-    public boolean checkHasConditon(@PathParam("id")String id);
+//    /**
+//     * 通过任务Id检查当前任务的出口节点是否存在条件表达式
+//     * @param id 任务id
+//     * @return 结果
+//     */
+//    @GET
+//    @Path("checkHasConditon/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "检查当前任务的出口节点是否存在条件表达式",notes = "测试")
+//    public boolean checkHasConditon(@PathParam("id")String id);
 
 
     /**
@@ -160,19 +160,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public List<NodeInfo> findNextNodes(@PathParam("id")String id) throws NoSuchMethodException;
 
 
-    /**
-     * 通过任务ID与业务ID选择下一步带用户信息的执行的节点信息
-     * @param id 任务ID
-     * @param businessId 业务ID
-     * @return
-     * @throws NoSuchMethodException
-     */
-    @GET
-    @Path("findNexNodesByIdAndBusinessIdWithUserSet/{id}/{businessId}/{approved}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过任务ID与业务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id, @PathParam("businessId")String businessId, @PathParam("approved")String approved) throws NoSuchMethodException;
+//    /**
+//     * 通过任务ID与业务ID选择下一步带用户信息的执行的节点信息
+//     * @param id 任务ID
+//     * @param businessId 业务ID
+//     * @return
+//     * @throws NoSuchMethodException
+//     */
+//    @GET
+//    @Path("findNexNodesByIdAndBusinessIdWithUserSet/{id}/{businessId}/{approved}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "通过任务ID与业务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
+//    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id, @PathParam("businessId")String businessId, @PathParam("approved")String approved) throws NoSuchMethodException;
 
 
     /**

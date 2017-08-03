@@ -8,9 +8,12 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
@@ -22,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 
 /**
@@ -37,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
  * *************************************************************************************************
  */
 @Component(value="commonUserTaskCreateListener")
-public class CommonUserTaskCreateListener implements TaskListener{
+public class CommonUserTaskCreateListener implements ExecutionListener {
 
     private final Logger logger = LoggerFactory.getLogger(CommonUserTaskCreateListener.class);
 	public CommonUserTaskCreateListener(){
@@ -57,13 +62,12 @@ public class CommonUserTaskCreateListener implements TaskListener{
     private FlowDefinationDao flowDefinationDao;
 
     @Transactional( propagation= Propagation.REQUIRED)
-    public void notify(DelegateTask delegateTask) {
+    public void notify(DelegateExecution delegateTask) {
         try {
-            ExecutionEntity taskEntity = (ExecutionEntity) delegateTask.getExecution();
-            String actTaskDefKey = taskEntity.getActivityId();
+          //  ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+            String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-            ProcessInstance instance = taskEntity.getProcessInstance();
-            String businessId = instance.getBusinessKey();
+            String businessId =delegateTask.getProcessBusinessKey();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -72,10 +76,10 @@ public class CommonUserTaskCreateListener implements TaskListener{
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
             //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
             net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
-            UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
             if (event != null) {
                 String beforeExcuteServiceId = (String) event.get("beforeExcuteServiceId");
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
+
                     ServiceCallUtil.callService(beforeExcuteServiceId, businessId, "before");
                 }
             }

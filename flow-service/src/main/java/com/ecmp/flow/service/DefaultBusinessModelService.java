@@ -12,8 +12,11 @@ import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.util.CodeGenerator;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResultWithData;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.misc.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -67,6 +67,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public boolean changeCreateDepict(String id,String changeText){
         boolean result = false;
+        HashMap<String,String> params=null;
+//        if(StringUtils.isNotEmpty(changeText)){
+//            params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
+//        }
+        changeText="before";
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
         if(entity != null){
             entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
@@ -86,6 +91,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public boolean changeCompletedDepict(String id,String changeText){
         boolean result = false;
+//        if(StringUtils.isNotEmpty(changeText)){
+//            HashMap<String,String> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,String>>() {});
+//        }
+        changeText="after";
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
         if(entity != null){
             entity.setWorkCaption(entity.getWorkCaption()+":"+changeText);

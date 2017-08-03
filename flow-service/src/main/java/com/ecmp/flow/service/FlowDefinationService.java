@@ -12,6 +12,7 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.util.ConditionUtil;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.TaskStatus;
@@ -453,6 +454,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null&& (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
 //                String proessDefId = flowDefVersion.getActDefId();
                 String actDefId = flowDefVersion.getActDefId();
+                 variables.put("flowDefVersionId",flowDefVersion.getId());
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
 //                    processInstance = this.startFlowByKey(key, startUserId, businessKey, variables);
@@ -470,21 +472,32 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     variables.putAll(vNew);
                 }
 
-                flowInstance = new FlowInstance();
-                flowInstance.setBusinessId(processInstance.getBusinessKey());
-                String workCaption = variables.get("workCaption")+"";//工作说明
-                flowInstance.setBusinessModelRemark(workCaption);
-                String businessCode = variables.get("businessCode")+"";//工作说明
-                flowInstance.setBusinessCode(businessCode);
-                String businessName = variables.get("name")+"";//业务单据名称
-                flowInstance.setBusinessName(businessName);
-
-                flowInstance.setFlowDefVersion(flowDefVersion);
-                flowInstance.setStartDate(new Date());
-                flowInstance.setFlowName(flowDefVersion.getName());
-                flowInstance.setActInstanceId(processInstance.getId());
-                flowInstanceDao.save(flowInstance);
-                initTask(processInstance);
+                 flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
+//                if(flowInstance==null){
+//                    flowInstance = new FlowInstance();
+//                    flowInstance.setBusinessId(processInstance.getBusinessKey());
+//                    String workCaption = variables.get("workCaption")+"";//工作说明
+//                    flowInstance.setBusinessModelRemark(workCaption);
+//                    String businessCode = variables.get("businessCode")+"";//工作说明
+//                    flowInstance.setBusinessCode(businessCode);
+//                    String businessName = variables.get("name")+"";//业务单据名称
+//                    flowInstance.setBusinessName(businessName);
+//
+//                    flowInstance.setFlowDefVersion(flowDefVersion);
+//                    flowInstance.setStartDate(new Date());
+//                    flowInstance.setFlowName(flowDefVersion.getName());
+//                    flowInstance.setActInstanceId(processInstance.getId());
+//                    flowInstanceDao.save(flowInstance);
+//                }
+                if (processInstance == null || processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                    //result.setData(FlowStatus.COMPLETED);//任务结束
+//                    flowInstance.setEnded(true);
+//                    flowInstance.setEndDate(new Date());
+//                    flowInstanceDao.save(flowInstance);
+                   // flowTaskDao.deleteByFlowInstanceId(flowTask.getFlowInstance().getId());//针对终止结束时，删除所有待办
+                }else{
+                    initTask(processInstance);
+                }
             }
         }
         return flowInstance;
@@ -835,6 +848,25 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //                    result = initNodesInfo(result, flowStartVO, definition , targetId);
 //                }
 //            }
+        }else if("ServiceTask".equalsIgnoreCase(type)){//服务任务
+            NodeInfo nodeInfo = new NodeInfo();
+            nodeInfo.setId(nodeId);
+            net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+            ServiceTask serviceTaskTemp = (ServiceTask) JSONObject.toBean(currentNode, ServiceTask.class);
+            nodeInfo.setName(serviceTaskTemp.getName());
+            nodeInfo.setType(serviceTaskTemp.getType());
+            nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
+            nodeInfo.setUiType("radiobox");
+            nodeInfo.setFlowTaskType("common");
+            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+            String  startUserId =  ContextUtil.getSessionUser().getUserId();
+            List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                Set<Executor> employeeSet = new HashSet<Executor>();
+                employeeSet.addAll(employees);
+                nodeInfo.setExecutorSet(employeeSet);
+            }
+            result.add(nodeInfo);
         }
         else if("startEvent".equalsIgnoreCase(type)){//开始节点向下遍历
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
