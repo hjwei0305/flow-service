@@ -257,7 +257,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             currentNodes += ",";
         }
         this.businessModelId = data.businessModelId;
-        data.flowTypeName=defData.def.flowDefination.flowType.name;
+        data.flowTypeName=this.viewFlowDefByVersionId?defData.flowDefination.flowType.name:defData.def.flowDefination.flowType.name;
         this.loadHead(data);
         var html = "";
         for (var id in data.process.nodes) {
@@ -370,6 +370,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "SerialTask":
                     css = "serialtask";
+                    break;
+                case "ServiceTask":
+                    css="servicetask";
                     break;
             }
         }
