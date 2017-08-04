@@ -1273,6 +1273,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }else if("serviceTask".equalsIgnoreCase(nodeInfo.getType())){
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
                     nodeInfo.setUiType("radiobox");
+                    nodeInfo.setFlowTaskType("serviceTask");
                     IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));

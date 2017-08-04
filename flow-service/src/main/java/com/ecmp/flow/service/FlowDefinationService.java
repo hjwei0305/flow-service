@@ -857,7 +857,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setType(serviceTaskTemp.getType());
             nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
             nodeInfo.setUiType("radiobox");
-            nodeInfo.setFlowTaskType("common");
+            nodeInfo.setFlowTaskType("serviceTask");
             IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
             String  startUserId =  ContextUtil.getSessionUser().getUserId();
             List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
@@ -1301,6 +1301,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
             }
         }
+
+
 
     }
 
