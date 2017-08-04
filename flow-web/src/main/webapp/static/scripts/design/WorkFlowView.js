@@ -1199,6 +1199,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 case "SerialTask":
                     css = "serialtask";
                     break;
+                case "ServiceTask":
+                    css="servicetask";
+                    break;
             }
         }
         return "<div tabindex=0 id='" + id
