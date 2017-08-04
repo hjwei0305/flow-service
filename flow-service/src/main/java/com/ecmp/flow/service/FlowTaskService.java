@@ -37,7 +37,6 @@ import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -1047,26 +1046,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     private void initTask(ProcessInstance instance, String actTaskDefKey, FlowHistory preTask) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
-//        if (instance.isEnded()) {//流程结束
-//            flowInstance.setEnded(true);
-//            flowInstance.setEndDate(new Date());
-//            flowInstanceDao.save(flowInstance);
-//            return;
-//        }
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).active().list();
-////        List<Task> unsignedTasks = taskService.createTaskQuery().taskCandidateUser(assignee).active().list();
-//        List<Task> testTask = taskService.createTaskQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).list();
-//System.out.println(testTask);
-//        List<Task> unsignedTasks = taskService.createTaskQuery().processInstanceId(instance.getId()).taskCandidateUser(ContextUtil.getUserId()).active().list();
-//        System.out.println(unsignedTasks);
-//        HistoricTaskInstance unsignedTasks2 =  historyService
-//                .createHistoricTaskInstanceQuery().processInstanceId(instance.getId()).taskDefinitionKey(actTaskDefKey).unfinished().singleResult();
-//        System.out.println(unsignedTasks2);
-//        // 合并
-////        list.addAll(unsignedTasks);
-
         if (taskList != null && taskList.size() > 0) {
             String flowName = null;
             String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
@@ -1085,12 +1067,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
-//                if (task.getAssignee() != null && !"".equals(task.getAssignee())) {
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                 if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
                     /** 获取流程变量 **/
                     String executionId = task.getExecutionId();
-                    // Map<String, Object> tempV = task.getProcessVariables();
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
@@ -1113,7 +1093,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             flowTask.setExecutorId(executor.getId());
                             flowTask.setExecutorName(executor.getName());
                             flowTask.setPriority(task.getPriority());
-//                                flowTask.setExecutorAccount(identityLink.getUserId());
                             flowTask.setActType("candidate");
                             if(StringUtils.isEmpty(task.getDescription())){
                                 flowTask.setDepict("流程启动");
@@ -1126,7 +1105,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             flowTaskDao.save(flowTask);
                         }
                     }
-                    // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
                 }else{
                     for (IdentityLink identityLink : identityLinks) {
                         IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
@@ -1155,15 +1133,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             if (preTask != null) {
                                 if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
-//                                String oldPreId = preTask.getPreId();//前一个任务的前一个任务ID
-//                                if(!StringUtils.isEmpty(oldPreId)){
-//                                    FlowHistory oldPreFlowHistory = flowHistoryDao.findOne(oldPreId);
-//                                    if (oldPreFlowHistory != null) {
-//                                        flowTask.setPreId(oldPreFlowHistory.getId());
-//                                    } else {
-//                                        flowTask.setPreId(null);
-//                                    }
-//                                }
                                     flowTask.setTaskStatus(TaskStatus.REJECT.toString());
                                 } else {
                                     flowTask.setPreId(preTask.getId());
@@ -1178,8 +1147,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
-//                flowTask.setCandidateAccount(instance.get);
-
         }
 
     }
@@ -1220,18 +1187,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
     }
 
-
-//    /**
-//     * 通过任务Id检查当前任务的出口节点是否存在条件表达式
-//     *
-//     * @param actTaskId 任务实际ID
-//     * @return
-//     */
-//    public boolean checkHasConditon(String actTaskId) {
-//        PvmActivity currActivity = this.getActivitNode(actTaskId);
-//        return this.checkHasConditon(currActivity);
-//    }
-
     /**
      * 检查当前任务的出口节点线上是否存在条件表达式
      *
@@ -1246,11 +1201,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             for (PvmTransition pv : nextTransitionList) {
                 PvmActivity currTempActivity = pv.getDestination();
                 String nextActivtityType = currTempActivity.getProperty("type").toString();
-//       		 if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)){//排他网关
-//
-//       		 } else if("inclusiveGateway".equalsIgnoreCase(nextActivtityType)){ //包容网关
-//
-//       		 } else
                 if ("parallelGateWay".equalsIgnoreCase(nextActivtityType)) { //并行网关,直接忽略
                     return false;
                 }
@@ -1267,9 +1217,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String conditionText = (String) pv.getProperty("conditionText");
                 String name = (String) pv.getProperty("name");
                 Condition conditon = (Condition) pv.getProperty("condition");
-//                System.out.println(conditon);
-//                System.out.println(type);
-//                System.out.println(conditionText);
                 if (conditon != null || conditionText != null) {
                     result = true;
                     break;
@@ -1364,24 +1311,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                                     .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
                             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-//                            Map<String,Object> v = instance.getProcessVariables();
                             String startUserId = historicProcessInstance.getStartUserId();
                             IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                             employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
-//                            if(v != null){
-//                                startUserId = (String) v.get("startUserId");
-//                            }
-//                            if(StringUtils.isEmpty(startUserId)){
-//                                startUserId = flowTask.getFlowInstance().getCreatedBy();
-//                            }
-
                         } else {
                             String selfDefId = (String)executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
                                 if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-//                                IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                                employees = iEmployeeService.getExecutorsByEmployeeIds(idList);
-
                                     FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                                     String path = flowExecutorConfig.getUrl();
                                     String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
@@ -1678,33 +1614,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTask = flowTaskDao.findOne(id);
         String processInstanceId = flowTask.getFlowInstance().getActInstanceId();
         ProcessInstance processInstance =  runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-
         flowTask.setProcessInstance(processInstance);
         return this.selectNextAllNodes(flowTask, includeNodeIds);
-//        this.checkManualExclusiveGateway(flowTask);
-//        if (checkHasConditon(actTaskId)) {//判断出口任务节点中是否包含有条件表达式
-//            if (StringUtils.isEmpty(businessId)) {
-//                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
-//            }
-////            String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-////            JSONObject defObj = JSONObject.fromObject(defJson);
-//            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-//            String businessModelId = businessModel.getId();
-//            String appModuleId = businessModel.getAppModuleId();
-//            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-//            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-//           System.out.println( ContextUtil.getAppModule().getApiBaseAddress());
-////            System.out.println(ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress());
-////            String clientApiBaseUrl =  GlobalParam.environmentFormat(appModule.getApiBaseAddress());
-//
-//            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-////            clientApiBaseUrl =    ContextUtil.getHost();
-////            clientApiBaseUrl = "http://localhost:8080/";//测试地址，上线后去掉
-//            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-//            return this.selectQualifiedNode(actTaskId, v, includeNodeIds);
-//        } else {
-//            return this.selectNextAllNodes(actTaskId, includeNodeIds);
-//        }
     }
 
     /**
@@ -1854,8 +1765,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     tempNodeInfo.setUiType(uiType);
                     tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
                     nodeInfoList.add(tempNodeInfo);
-
-
                 }
             }
             if ("Approve".equalsIgnoreCase(nodeType)) {//如果是审批结点
