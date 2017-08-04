@@ -186,7 +186,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
-            if (type == "common"||type == "approve") {
+            if (type == "common"||type == "approve"|| type == "servicetask") {
                 if ($(this).parent().children("div").length == 1) {
                     if ($(this).hasClass("select")) {
                         $(this).removeClass("select");
@@ -498,20 +498,27 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (node.flowTaskType) {
                 flowTaskType = node.flowTaskType.toLowerCase();
             }
+            if(node.uiType==="radiobox"){
+                iconCss = "choose-radio";
+            }else if(node.uiType==="checkbox"){
+                iconCss = "choose-checkbox";
+            }
             if (flowTaskType == "singlesign") {
                 nodeType = this.lang.singleSignTaskText;
-                iconCss = "choose-checkbox";
+                // iconCss = "choose-checkbox";
             } else if (flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
-                iconCss = "choose-checkbox";
+                // iconCss = "choose-checkbox";
             } else if (flowTaskType == "approve") {
                 nodeType = this.lang.approveTaskText;
             } else if (flowTaskType == "paralleltask") {
                 nodeType = this.lang.ParallelTaskText;
-                iconCss = "choose-checkbox";
+                // iconCss = "choose-checkbox";
             } else if (flowTaskType == "serialtask") {
                 nodeType = this.lang.SerialTaskText;
-                iconCss = "choose-checkbox";
+                // iconCss = "choose-checkbox";
+            } else if(flowTaskType==="servicetask"){
+                nodeType = this.lang.serviceTaskText;
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
@@ -676,7 +683,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve"||currentChooseTaskType==="servicetask") {
             isChooseOneTitle = g.lang.chooseArbitraryExecutorMsgText;
             saveBtnIsHidden = true;
         } else {
@@ -1021,7 +1028,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
-            if (type == "common"||type == "approve") {
+            if (type == "common"||type == "approve"||type==="servicetask" ) {
                 if ($(this).parent().children("div").length == 1) {
                     if ($(this).hasClass("select")) {
                         $(this).removeClass("select");
@@ -1175,18 +1182,25 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (node.flowTaskType) {
                 flowTaskType = node.flowTaskType.toLowerCase();
             }
+            if(node.uiType==="radiobox") {
+                iconCss = "choose-radio";
+            }else if(node.uiType==="checkbox"){
+                iconCss = "choose-checkbox";
+            }
             if (flowTaskType == "singlesign") {
                 nodeType = this.lang.singleSignTaskText;
-                iconCss = "choose-checkbox";
+            //    iconCss = "choose-checkbox";
             } else if (flowTaskType == "countersign") {
                 nodeType = this.lang.counterSignTaskText;
-                iconCss = "choose-checkbox";
+            //    iconCss = "choose-checkbox";
             } else if (flowTaskType == "paralleltask") {
                 nodeType = this.lang.ParallelTaskText;
-                iconCss = "choose-checkbox";
+             //   iconCss = "choose-checkbox";
             } else if (flowTaskType == "serialtask") {
                 nodeType = this.lang.SerialTaskText;
-                iconCss = "choose-checkbox";
+             //   iconCss = "choose-checkbox";
+            } else if(flowTaskType === "servicetask"){
+                nodeType = this.lang.serviceTaskText;
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
                 '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType+']">' + node.name + '-[' + nodeType +
@@ -1337,7 +1351,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         var g = this;
         var isChooseOneTitle;
         var saveBtnIsHidden;
-        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve"||currentChooseTaskType==="servicetask") {
             isChooseOneTitle = "选择任意执行人【请双击进行选择】";
             saveBtnIsHidden = true;
         } else {
@@ -1454,7 +1468,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
     InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
-        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve") {
+        if (currentChooseTaskType == "common"||currentChooseTaskType == "approve"||currentChooseTaskType ==="servicetask") {
             isShowMultiselect = false;
         } else {
             isShowMultiselect = true;
