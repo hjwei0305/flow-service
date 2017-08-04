@@ -432,6 +432,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         break;
                     case "EventGateway":
                         break;
+                    case "ServiceTask":
+                        text = "系统调用配置服务接口，自动执行";
                 }
                 g.showTipBox(dom, "<span>"+text+"</span>",addTop);
             },
