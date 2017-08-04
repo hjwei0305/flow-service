@@ -112,6 +112,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private ProcessEngine processEngine;
 
+    @Autowired
+    private FlowInstanceService flowInstanceService;
+
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
     private  Lock lock = new ReentrantLock();
@@ -1148,7 +1151,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
         }
-
+        flowInstanceService.checkCanEnd(flowInstance.getId());
     }
 
     /**

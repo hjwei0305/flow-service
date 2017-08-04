@@ -118,6 +118,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Autowired
     private BusinessModelDao businessModelDao;
 
+    @Autowired
+    private FlowInstanceService flowInstanceService;
+
     /**
      * 新增修改操作
      *
@@ -1301,9 +1304,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
             }
         }
-
-
-
+        flowInstanceService.checkCanEnd(flowInstance.getId());
     }
 
 
