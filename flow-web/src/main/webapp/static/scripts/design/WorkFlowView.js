@@ -433,7 +433,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     case "EventGateway":
                         break;
                     case "ServiceTask":
-                        text = "系统调用配置服务接口，自动执行";
+                        text = "系统调用配置服务接口，自动执行"
+                        break;
+                    case "ManualTask":
+                        text = "手工任务，不执行任何动作，仅用于代表线下一个执行动作或者用于节点的合并";
                 }
                 g.showTipBox(dom, "<span>"+text+"</span>",addTop);
             },
@@ -559,7 +562,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     return;
                 }
                 var input = dom.find(".node-title");
-                if (type.endsWith("Gateway")) {
+                if (type.endsWith("Gateway")||type=='ManualTask') {
                     g.showSimpleNodeConfig(input.text(), function (value) {
                         input.text(value);
                         input.attr("title",value);
@@ -817,12 +820,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         overlay.setLabel(name);
                         $(overlay.canvas).attr("title", name);
                         overlay.show();
-                        g.uelInfo[connection.sourceId + "," + connection.targetId] = {
-                            name: name,
-                            agree: agree,
-                            groovyUel: "${approveResult == " + agree + "}",
-                            logicUel: ""
-                        };
+                        if(agree){
+                            g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                                name: name,
+                                agree: agree,
+                                groovyUel: "${approveResult == " + agree + "}",
+                                logicUel: ""
+                            };
+                        }else{
+                            g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                                name: name,
+                                isDefault: true,
+                                logicUel: "",
+                                groovyUel: ""
+                            };
+                        }
+
                     }
                     var type = $("#" + connection.sourceId).attr("type");
                     var busType = $("#" + connection.targetId).attr("bustype");
@@ -925,7 +938,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var nodeType = item.attr("nodetype");
             var name = item.find(".node-title").text();
             var nodeConfig = item.data();
-            if (type.indexOf("Task") != -1 && Object.isEmpty(nodeConfig)) {
+            if (type.indexOf("Task") != -1 && Object.isEmpty(nodeConfig) && type!='ManualTask') {
                 EUI.ProcessStatus({
                     success: false,
                     msg: "请将节点：" + name + "，配置完整"
@@ -1203,6 +1216,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ServiceTask":
                     css="servicetask";
+                case "Manualtask":
+                    css="manualtask";
                     break;
             }
         }

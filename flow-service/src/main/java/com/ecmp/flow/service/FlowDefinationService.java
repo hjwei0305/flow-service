@@ -1300,11 +1300,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         }
                     }
                 }
-
-
             }
+            flowInstanceService.checkCanEnd(flowInstance.getId());
         }
-        flowInstanceService.checkCanEnd(flowInstance.getId());
     }
 
 

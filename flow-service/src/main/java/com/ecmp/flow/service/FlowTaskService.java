@@ -298,50 +298,54 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 PvmActivity destinationActivity = null;
                 if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
-                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
-                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                        for (PvmTransition pv : nextTransitionList) {
-                            String conditionText = (String) pv.getProperty("conditionText");
-                            if("${approveResult == true}".equalsIgnoreCase(conditionText)){
-                                destinationActivity = pv.getDestination();
-                                 break;
-                            }
-                        }
-                    }
+//                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+//                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+//                        for (PvmTransition pv : nextTransitionList) {
+//                            String conditionText = (String) pv.getProperty("conditionText");
+//                            if("${approveResult == true}".equalsIgnoreCase(conditionText)){
+                    variables.put("approveResult",true);
+//                                runtimeService.setVariable(executionId,"approveResult", true);
+//                                destinationActivity = pv.getDestination();
+//                                 break;
+//                            }
+//                        }
+//                    }
                 }
                 else{
-                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
-                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                        for (PvmTransition pv : nextTransitionList) {
-                            String conditionText = (String) pv.getProperty("conditionText");
-                            if("${approveResult == false}".equalsIgnoreCase(conditionText)){
-                                destinationActivity = pv.getDestination();
-                                break;
-                            }
-                        }
-                    }
+                    variables.put("approveResult",false);
+//                    runtimeService.setVariable(executionId,"approveResult", false);
+//                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+//                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+//                        for (PvmTransition pv : nextTransitionList) {
+//                            String conditionText = (String) pv.getProperty("conditionText");
+//                            if("${approveResult == false}".equalsIgnoreCase(conditionText)){
+////                                destinationActivity = pv.getDestination();
+//                                break;
+//                            }
+//                        }
+//                    }
 //                    approveResult=false;
                 }
 //                variables.put("approveResult",approveResult);
-                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
-                List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
-                for (PvmTransition pvmTransition : pvmTransitionList) {
-                    oriPvmTransitionList.add(pvmTransition);
-                }
-                pvmTransitionList.clear();
-
-                // 定位到人工选择的节点目标
-                TransitionImpl newTransition = currActivity.createOutgoingTransition();
-                newTransition.setDestination((ActivityImpl)destinationActivity);
+//                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
+//                List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
+//                for (PvmTransition pvmTransition : pvmTransitionList) {
+//                    oriPvmTransitionList.add(pvmTransition);
+//                }
+//                pvmTransitionList.clear();
+//
+//                // 定位到人工选择的节点目标
+//                TransitionImpl newTransition = currActivity.createOutgoingTransition();
+//                newTransition.setDestination((ActivityImpl)destinationActivity);
                 //执行任务
                 this.completeActiviti(actTaskId, variables);
                 // 恢复方向
-                destinationActivity.getIncomingTransitions().remove(newTransition);
-                List<PvmTransition> pvmTList = currActivity.getOutgoingTransitions();
-                pvmTList.clear();
-                for (PvmTransition pvmTransition : oriPvmTransitionList) {
-                    pvmTransitionList.add(pvmTransition);
-                }
+//                destinationActivity.getIncomingTransitions().remove(newTransition);
+//                List<PvmTransition> pvmTList = currActivity.getOutgoingTransitions();
+//                pvmTList.clear();
+//                for (PvmTransition pvmTransition : oriPvmTransitionList) {
+//                    pvmTransitionList.add(pvmTransition);
+//                }
             }else {
                 this.completeActiviti(actTaskId, variables);
             }
@@ -494,8 +498,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (nextNodes != null && nextNodes.size() > 0) {
             for (PvmTransition node : nextNodes) {
                 PvmActivity nextActivity = node.getDestination();
-                if (ifGageway(nextActivity)) {
+                if (ifGageway(nextActivity)||"ManualTask".equalsIgnoreCase(nextActivity.getProperty("type") + "")) {
                     callInitTaskBack(nextActivity, instance, flowHistory,counterSignLastTask);
+                    continue;
                 }
                 String key = nextActivity.getProperty("key") != null ? nextActivity.getProperty("key").toString() : null;
                 if (key == null) {
@@ -981,7 +986,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Boolean result = false;
         if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
-                || "parallelGateWay".equalsIgnoreCase(nextActivtityType)) { //并行网关
+                || "parallelGateWay".equalsIgnoreCase(nextActivtityType)//并行网关
+              ) { //手工节点
             result = true;
         }
         return result;
@@ -1150,8 +1156,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
+            flowInstanceService.checkCanEnd(flowInstance.getId());
         }
-        flowInstanceService.checkCanEnd(flowInstance.getId());
     }
 
     /**
@@ -1521,16 +1527,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if("true".equalsIgnoreCase(approved)){
                         counterSignAgree++;
                     }
-
                     if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
                         approveResult = true;
-                        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+                        PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
+                        List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
                         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
                             for (PvmTransition pv : nextTransitionList) {
                                 String conditionText = (String) pv.getProperty("conditionText");
                                 if("${approveResult == true}".equalsIgnoreCase(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
-                                    if(ifGageway(currTempActivity)){
+                                    String type = currTempActivity.getProperty("type")+"";
+                                    if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
                                     }else{
@@ -1543,13 +1550,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }else {//获取不通过节点
                         approveResult = false;
-                        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+                        PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
+                        List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
                         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
                             for (PvmTransition pv : nextTransitionList) {
                                 String conditionText = (String) pv.getProperty("conditionText");
-                                if("${approveResult == false}".equalsIgnoreCase(conditionText)){
+                                if(StringUtils.isEmpty(conditionText)){
                                     PvmActivity currTempActivity = pv.getDestination();
-                                    if(ifGageway(currTempActivity)){
+                                    String type = currTempActivity.getProperty("type")+"";
+                                    if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
                                     }else{
@@ -2085,14 +2094,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 value.add(lineName);
                 value.add(index);
                 Boolean ifGateWay = ifGageway(currTempActivity);
+                String type = currTempActivity.getProperty("type")+"";
                 if (ifGateWay && index < 1) {//如果是网关，其他直绑节点自行忽略
-                 //   nextNodes.clear();
+//                    nextNodes.clear();
                     nextNodes.put(currTempActivity, value);//把网关放入第一个节点
 //                    if(!"Approve".equalsIgnoreCase(nodeType)){//非审批任务
                         initNextNodes(currTempActivity, nextNodes, 1,nodeType);
 //                    }
 
                     // break;
+                }else if("ManualTask".equalsIgnoreCase(type)){
+                    initNextNodes(currTempActivity, nextNodes, index,nodeType);
                 } else {
                     nextNodes.put(currTempActivity, value);
                 }

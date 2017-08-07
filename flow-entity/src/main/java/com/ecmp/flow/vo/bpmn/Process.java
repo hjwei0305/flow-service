@@ -125,6 +125,8 @@ public class Process extends BaseNode implements Serializable {
                 ExtensionElement extensionElement = null;
                 ExecutionListener executionListener = null;
                 List<ExecutionListener> executionListeners = null;
+                ExclusiveGateway exclusiveGatewayIn = null;
+                String exclusiveGatewayInId = null;
                 switch (node.getString("type")) {
                     case "StartEvent":
                         StartEvent startEventTemp = (StartEvent) JSONObject.toBean(node, StartEvent.class);
@@ -209,7 +211,6 @@ public class Process extends BaseNode implements Serializable {
 
                             extensionElement.setTaskListener(taskListeners);
                             userTaskTemp.setExtensionElement(extensionElement);
-
                         }else if("ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())){//并行任务
                             MultiInstanceConfig multiInstanceConfig = new MultiInstanceConfig();
                             multiInstanceConfig.setUserIds("" + userTaskTemp.getId() + "_List_CounterSign");
@@ -324,32 +325,18 @@ public class Process extends BaseNode implements Serializable {
                             e.printStackTrace();
 //                            logger.error(e.getMessage());
                         }
-
-//                        extensionElement  = userTaskTemp.getExtensionElement();
-//                        if(extensionElement == null){
-//                            extensionElement = new ExtensionElement();
-//                        }
-//                        //添加默认任务到达监听器
-//                        executionListener = new ExecutionListener();
-//                        executionListener.setEvent("start");
-//                        executionListener.setDelegateExpression("${taskCreateInitTaskListener}");
-//
-//                        executionListeners = extensionElement.getExecutionListener();
-//                        if(executionListeners == null){
-//                            executionListeners = new ArrayList<ExecutionListener>();
-//                        }
-//                        executionListeners.add(executionListener);
-//
-//                        executionListener = new ExecutionListener();
-//                        executionListener.setEvent("end");
-//                        executionListener.setDelegateExpression("${taskEndInitHistoryListener}");
-//                        executionListeners.add(executionListener);
-//
-//                        extensionElement.setExecutionListener(executionListeners);
-//                        userTaskTemp.setExtensionElement(extensionElement);
-
                         userTask.add(userTaskTemp);
                         baseFlowNodeTemp  = userTaskTemp;
+                        if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            exclusiveGatewayIn = new ExclusiveGateway();
+                            exclusiveGateway.add(exclusiveGatewayIn);
+                            exclusiveGatewayInId = "ExclusiveGateway_In_"+System.currentTimeMillis();
+                            exclusiveGatewayIn.setId(exclusiveGatewayInId);
+                            String id = "flow" + (++lineCount);
+                            SequenceFlow sf = new SequenceFlow(id, userTaskTemp.getId(), exclusiveGatewayInId, null);
+                            sequenceFlow.add(sf);
+                            baseFlowNodeTemp = exclusiveGatewayIn;
+                        }
                         break;
                     }
                     case "MailTask":
@@ -426,9 +413,13 @@ public class Process extends BaseNode implements Serializable {
                 JSONObject uelObject = target.getJSONObject("uel");
                 if(uelObject!=null){
                     String isDefault = uelObject.get("isDefault")+"";
-                    if("true".equalsIgnoreCase(isDefault)&&currentNode.getDefaultSequence()==null){
+                    if("true".equalsIgnoreCase(isDefault) && currentNode.getDefaultSequence()==null){
                         currentNode.setDefaultSequence(id);
                     }
+//                    Boolean agree = (Boolean)uelObject.get("agree");//针对扩展的审批、会签节点
+//                    if(agree == false){
+//                       currentNode.setDefaultSequence(id);
+//                    }
                 }}catch (Exception e){
                     e.printStackTrace();
                 }

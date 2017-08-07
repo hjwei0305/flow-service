@@ -49,6 +49,12 @@ var _flownode = {
         css: "servicetask ",
         nodeType: "ServiceTask"
     }
+    , {
+            name: "manualTaskText",
+            type: "ManualTask",
+            css: "manualtask ",
+            nodeType: "ManualTask"
+        }
     ],
     gateway: [{
         name: "exclusiveGatewayText",
