@@ -759,6 +759,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         // 连接事件
         this.instance.bind("connection", function (connection, originalEvent) {
+            if(g.connectInfo[connection.sourceId + "," + connection.targetId]){
+                jsPlumb.detach(connection);
+                return;
+            }
             g.connectInfo[connection.sourceId + "," + connection.targetId] = true;
             var uel = g.uelInfo[connection.sourceId + "," + connection.targetId];
             if (uel) {
