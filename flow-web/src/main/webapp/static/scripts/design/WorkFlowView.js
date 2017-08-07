@@ -53,6 +53,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
     },
     getTopItems: function () {
+
         var g = this;
         return [{
             xtype: "FormPanel",
