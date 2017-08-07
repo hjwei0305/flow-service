@@ -699,21 +699,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
             var type = $("#" + connection.sourceId).attr("type");
-            var noUELSetting=false;
-            if(type=="UserTask"){
+            var noUELSetting = false;
+            if (type == "UserTask") {
                 var nodeType = $("#" + connection.sourceId).attr("nodetype");
-               switch (nodeType){
-                   case "SingleSign":  //单签
-                   case "Normal":      //普通
-                   case "ParallelTask"://并行
-                   case "SerialTask":  //串行
-                       noUELSetting=true;
-                       break;
-                   default:break;
-               }
+                switch (nodeType) {
+                    case "SingleSign":  //单签
+                    case "Normal":      //普通
+                    case "ParallelTask"://并行
+                    case "SerialTask":  //串行
+                        noUELSetting = true;
+                        break;
+                    default:
+                        break;
+                }
             }
             var busType = $("#" + connection.sourceId).attr("bustype");
-            if (busType == "ManualExclusiveGateway"||busType =="ParallelGateway"||noUELSetting) {
+            if (busType == "ManualExclusiveGateway" || busType == "ParallelGateway" || noUELSetting) {
                 var name = ueldata ? ueldata.name : "";
                 g.showSimpleNodeConfig(name, function (value) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
@@ -723,7 +724,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     };
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(value);
-                    $(overlay.canvas).attr("title",value);
+                    $(overlay.canvas).attr("title", value);
                     overlay.show();
                 });
                 return;
@@ -736,12 +737,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 title: "表达式配置",
                 data: ueldata,
                 businessModelId: g.businessModelId,
-                flowTypeId:EUI.getCmp("formPanel").getFormValue().flowTypeId,
+                flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;
                     var overlay = connection.getOverlay("label");
                     overlay.setLabel(data.name);
-                    $(overlay.canvas).attr("title",data.name);
+                    $(overlay.canvas).attr("title", data.name);
                     overlay.show();
                 }
             });
@@ -760,14 +761,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (uel) {
                 var overlay = connection.connection.getOverlay("label");
                 overlay.setLabel(uel.name);
-                $(overlay.canvas).attr("title",uel.name);
+                $(overlay.canvas).attr("title", uel.name);
                 overlay.show();
             } else {
                 var busType = $("#" + connection.sourceId).attr("bustype");
                 if (busType == "ExclusiveGateway" || busType == "InclusiveGateway") {
                     var overlay = connection.connection.getOverlay("label");
                     overlay.setLabel("默认");
-                    $(overlay.canvas).attr("title","默认");
+                    $(overlay.canvas).attr("title", "默认");
                     overlay.show();
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: "默认",
@@ -786,7 +787,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
-                        $(overlay.canvas).attr("title",name);
+                        $(overlay.canvas).attr("title", name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
@@ -796,7 +797,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         };
                     } else if (nodeType == "CounterSign") {
                         var bustype = $("#" + connection.targetId).attr("bustype");
-                        if(bustype=="ManualExclusiveGateway"){
+                        if (bustype == "ManualExclusiveGateway") {
                             EUI.ProcessStatus({
                                 success: false,
                                 msg: "会签任务后禁止连接人工网关"
@@ -814,7 +815,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         }
                         var overlay = connection.connection.getOverlay("label");
                         overlay.setLabel(name);
-                        $(overlay.canvas).attr("title",name);
+                        $(overlay.canvas).attr("title", name);
                         overlay.show();
                         g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                             name: name,
@@ -825,7 +826,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     }
                     var type = $("#" + connection.sourceId).attr("type");
                     var busType = $("#" + connection.targetId).attr("bustype");
-                    if(type=="StartEvent"&&busType=="ManualExclusiveGateway") {
+                    if (type == "StartEvent" && busType == "ManualExclusiveGateway") {
                         EUI.ProcessStatus({
                             success: false,
                             msg: "开始任务后禁止连接人工网关"
@@ -835,23 +836,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                         return;
                     }
-                    var nodetype = $("#" + connection.sourceId).attr("nodetype");
-                    if(nodetype=="CounterSign"||nodeType=="Approve"&&busType=="ParallelGateway"){
-                        var nodeName=connection.source.innerText.trim();
-                        EUI.ProcessStatus({
-                            success: false,
-                            msg:nodeName+"后禁止连接并行网关"
-                        });
-                        jsPlumb.detach(connection);
-                        delete g.uelInfo[connection.sourceId + "," + connection.targetId]
-                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
-                        return;
-                    }
                 }
             }
         });
-    }
-    ,
+    },
     getApproveLineInfo: function (id) {
         for (var key in this.uelInfo) {
             if (key.startsWith(id + ",")) {
