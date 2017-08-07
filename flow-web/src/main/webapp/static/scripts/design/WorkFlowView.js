@@ -835,6 +835,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                         return;
                     }
+                    var nodetype = $("#" + connection.sourceId).attr("nodetype");
+                    if(nodetype=="CounterSign"||nodeType=="Approve"&&busType=="ParallelGateway"){
+                        var nodeName=connection.source.innerText.trim();
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg:nodeName+"后禁止连接并行网关"
+                        });
+                        jsPlumb.detach(connection);
+                        delete g.uelInfo[connection.sourceId + "," + connection.targetId]
+                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                        return;
+                    }
                 }
             }
         });
