@@ -361,12 +361,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-            //当前处于激活状态的任务实例
-//            Integer nrOfActiveInstances=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-//            Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowInstance.getActInstanceId());
             if(completeCounter+1==instanceOfNumbers){//会签最后一个任务
                 counterSignLastTask=true;
-//              Boolean  approveResult = null;
                 //通过票数
                 Integer counterSignAgree = 0;
                 if(processVariables.get("counterSign_agree"+currTask.getTaskDefinitionKey())!=null) {
@@ -395,66 +391,25 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 PvmActivity destinationActivity = null;
                 if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
-//                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
-//                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-//                        for (PvmTransition pv : nextTransitionList) {
-//                            String conditionText = (String) pv.getProperty("conditionText");
-//                            if("${approveResult == true}".equalsIgnoreCase(conditionText)){
                     variables.put("approveResult",true);
-//                                runtimeService.setVariable(executionId,"approveResult", true);
-//                                destinationActivity = pv.getDestination();
-//                                 break;
-//                            }
-//                        }
-//                    }
                 }
                 else{
                     variables.put("approveResult",false);
-//                    runtimeService.setVariable(executionId,"approveResult", false);
-//                    List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
-//                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-//                        for (PvmTransition pv : nextTransitionList) {
-//                            String conditionText = (String) pv.getProperty("conditionText");
-//                            if("${approveResult == false}".equalsIgnoreCase(conditionText)){
-////                                destinationActivity = pv.getDestination();
-//                                break;
-//                            }
-//                        }
-//                    }
-//                    approveResult=false;
                 }
-//                variables.put("approveResult",approveResult);
-//                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
-//                List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
-//                for (PvmTransition pvmTransition : pvmTransitionList) {
-//                    oriPvmTransitionList.add(pvmTransition);
-//                }
-//                pvmTransitionList.clear();
-//
-//                // 定位到人工选择的节点目标
-//                TransitionImpl newTransition = currActivity.createOutgoingTransition();
-//                newTransition.setDestination((ActivityImpl)destinationActivity);
                 //执行任务
                 this.completeActiviti(actTaskId, variables);
-                // 恢复方向
-//                destinationActivity.getIncomingTransitions().remove(newTransition);
-//                List<PvmTransition> pvmTList = currActivity.getOutgoingTransitions();
-//                pvmTList.clear();
-//                for (PvmTransition pvmTransition : oriPvmTransitionList) {
-//                    pvmTransitionList.add(pvmTransition);
-//                }
             }else {
                 this.completeActiviti(actTaskId, variables);
             }
-//            else {
-//                try {
-//                    lock.lock(); // 加锁
-//                    this.completeActiviti(actTaskId, variables);
-//                } finally {
-//                    lock.unlock(); // 释放锁
-//                }
-//            }
 
+        }else if("Approve".equalsIgnoreCase(nodeType)){
+            String approved = variables.get("approved")+"";
+            if("true".equalsIgnoreCase(approved)){
+                variables.put("approveResult",true);
+            }else {
+                variables.put("approveResult",false);
+            }
+            this.completeActiviti(actTaskId, variables);
         }else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){
             String executionId = currTask.getExecutionId();
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
@@ -527,34 +482,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
                 flowHistory.setActDurationInMillis(actDurationInMillis);
             }
-//            if (reject != null && reject == 1) {
-//                flowHistory.setDepict("【被驳回】"+flowHistory.getDepict());
-//                flowHistory.setTaskStatus(TaskStatus.REJECT.toString());
-//            } else {
-//                flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-//            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
 
             if("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
                 flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
-//                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-//                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-//                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-//                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-//                try {
-//                    //逻辑代码，可以写上你的逻辑处理代码
-//
-//
-//                    transactionManager.commit(status);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    transactionManager.rollback(status);
-//                    throw e;
-//                }
             }
-
-
 
             //初始化新的任务
             String actTaskDefKey = flowTask.getActTaskDefKey();
@@ -1209,7 +1142,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }else{
                                 flowTask.setDepict(task.getDescription());
                             }
-
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
@@ -1585,8 +1517,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
             String nodeType = defObj.get("nodeType") + "";
+        List<NodeInfo> result = new ArrayList<NodeInfo>();
             if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务
-                List<NodeInfo> result = new ArrayList<NodeInfo>();
+
                 int counterDecision=100;
                 try {
                     counterDecision = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
@@ -1599,16 +1532,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .singleResult();
                 String executionId = currTask.getExecutionId();
                 Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(executionId);
-
-
-//                //完成会签的次数
+               //完成会签的次数
                 Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 //总循环次数
                 Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-//                //当前处于激活状态的任务实例
-//                Integer nrOfActiveInstances = flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(flowTask.getActTaskDefKey(),flowTask.getFlowInstance().getActInstanceId());
-////        //当前处于激活状态的任务实例
-//        Integer nrOfActiveInstances2=(Integer)processVariables.get("nrOfActiveInstances").getValue();
                 if(completeCounter+1==instanceOfNumbers){//会签最后一个执行人
                     Boolean  approveResult = null;
                     //通过票数
@@ -1671,8 +1598,59 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     result.add(tempNodeInfo);
                 }
                 return result;
-            }else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){
-                List<NodeInfo> result = new ArrayList<NodeInfo>();
+            }
+          else if("Approve".equalsIgnoreCase(nodeType)){//审批任务
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                    .singleResult();
+            String executionId = currTask.getExecutionId();
+            Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(executionId);
+
+                if("true".equalsIgnoreCase(approved)){ //获取通过节点
+                    PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
+                    List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
+                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+                        for (PvmTransition pv : nextTransitionList) {
+                            String conditionText = (String) pv.getProperty("conditionText");
+                            if("${approveResult == true}".equalsIgnoreCase(conditionText)){
+                                PvmActivity currTempActivity = pv.getDestination();
+                                String type = currTempActivity.getProperty("type")+"";
+                                if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
+                                    List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
+                                    result.addAll(temp);
+                                }else{
+                                    NodeInfo tempNodeInfo = new NodeInfo();
+                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                    result.add(tempNodeInfo);
+                                }
+                            }
+                        }
+                    }
+                }else {//获取不通过节点
+                    PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
+                    List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
+                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+                        for (PvmTransition pv : nextTransitionList) {
+                            String conditionText = (String) pv.getProperty("conditionText");
+                            if(StringUtils.isEmpty(conditionText)){
+                                PvmActivity currTempActivity = pv.getDestination();
+                                String type = currTempActivity.getProperty("type")+"";
+                                if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
+                                    List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
+                                    result.addAll(temp);
+                                }else{
+                                    NodeInfo tempNodeInfo = new NodeInfo();
+                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                                    result.add(tempNodeInfo);
+                                }
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+            else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){
                 // 取得当前任务
                 HistoricTaskInstance currTask = historyService
                         .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
@@ -1696,7 +1674,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (StringUtils.isEmpty(businessId)) {
                 throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
             }
-            List<NodeInfo> result=null;
             if(includeNodeIdsNew!=null && !includeNodeIdsNew.isEmpty()){
                 result=  getNodeInfo(includeNodeIdsNew,flowTask);
             }else {
