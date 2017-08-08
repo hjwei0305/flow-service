@@ -1043,7 +1043,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         for (PvmTransition nextTransition : nextTransitionList) {
             PvmActivity nextActivity = nextTransition.getDestination();
             Boolean ifGateWay = ifGageway(nextActivity);
-            if (ifGateWay) {
+            String type = nextActivity.getProperty("type")+"";
+            if("ServiceTask".equalsIgnoreCase(type)){//服务任务不允许撤回
+                return false;
+            }
+            if (ifGateWay|| "ManualTask".equalsIgnoreCase(type)) {
                 result = checkNextNodeNotCompleted(nextActivity, instance, definition, destnetionTask);
                 if (!result) {
                     return result;
