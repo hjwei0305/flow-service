@@ -2006,6 +2006,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         String uiType = "readOnly";
         Boolean counterSignLastTask = false;
+        if("Approve".equalsIgnoreCase(nodeType)){
+
+            NodeInfo tempNodeInfo = new NodeInfo();
+            tempNodeInfo.setCurrentTaskType(nodeType);
+            tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
+            tempNodeInfo.setUiType(uiType);
+            nodeInfoList.add(tempNodeInfo);
+            return nodeInfoList;
+        }
         if("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){//多实例节点，直接返回当前会签节点信息
 
             NodeInfo tempNodeInfo = new NodeInfo();
