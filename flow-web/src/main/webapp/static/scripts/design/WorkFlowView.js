@@ -1290,10 +1290,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 mask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-                    g.flowDefVersionId = result.data.id;
-                    if(g.isCopy&&!g.deploy){
-                        g.id=result.data.flowDefination.id;
-                    }
+                    g.flowDefVersionId = result.data.data.id;
+                    // if(g.isCopy&&!g.deploy){
+                        g.id=result.data.data.flowDefination.id;
+                    // }
                 }
             },
             failure: function (result) {
