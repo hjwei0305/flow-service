@@ -304,7 +304,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
-        if (this.startUEL) {
+        if (this.startUEL&&this.startUEL.groovyUel&&this.startUEL.logicUel) {
             EUI.getCmp("setStartUel").show();
         }
     },

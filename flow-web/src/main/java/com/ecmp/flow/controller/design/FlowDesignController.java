@@ -74,9 +74,8 @@ public class FlowDesignController {
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         String id=definition.getProcess().getId();
-        String reg="\\w{6,80}";
-        String reg1=".*[a-zA-Z]+.*";
-        if(!id.matches(reg) || !id.matches(reg1)){
+        String reg="^[a-zA-Z][A-Za-z0-9]{5,79}$";
+        if(!id.matches(reg)){
             status=new OperateStatus(false, ContextUtil.getMessage("10001"));
             return JsonUtil.serialize(status);
         }
