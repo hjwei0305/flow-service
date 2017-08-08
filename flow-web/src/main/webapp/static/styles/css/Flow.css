@@ -271,10 +271,10 @@
 }
 
 .flow-decision-box {
-    /*float: left;*/
-    height: 50px;
+    float: left;
+    /*height: 50px;*/
     margin-top: 25px;
-    width: 100%;
+    width: 83%;
 }
 
 .flow-decision-item{
