@@ -1241,6 +1241,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ServiceTask":
                     css="servicetask";
+                    break;
                 case "ManualTask":
                     css="manualtask";
                     break;
