@@ -86,7 +86,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
-                g.modelId = modelId ? modelId : status.data[0].businessModeId;
+                if(modelId){
+                    g.modelId = modelId;
+                    if($(".navber-count[data-id='" + modelId + "']").length<=0){
+                        g.modelId = status.data[0].businessModeId;
+                    }
+                }else{
+                    g.modelId = status.data[0].businessModeId;
+                }
                 if (g.modelId) {
                     $(".navber-count[data-id='" + g.modelId + "']").click();//对当前模块或者第一个模块模拟点击事件进行刷新
                 }
