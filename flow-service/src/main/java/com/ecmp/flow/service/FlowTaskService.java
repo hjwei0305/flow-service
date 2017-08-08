@@ -2007,7 +2007,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String uiType = "readOnly";
         Boolean counterSignLastTask = false;
         if("Approve".equalsIgnoreCase(nodeType)){
-
             NodeInfo tempNodeInfo = new NodeInfo();
             tempNodeInfo.setCurrentTaskType(nodeType);
             tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);

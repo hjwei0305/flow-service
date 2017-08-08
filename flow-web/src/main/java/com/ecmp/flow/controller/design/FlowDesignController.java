@@ -89,8 +89,10 @@ public class FlowDesignController {
         } else {
             IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
-            IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
-            String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+            if(	result.successful()){
+                IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
+                String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+            }
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
             status.setData(result);
