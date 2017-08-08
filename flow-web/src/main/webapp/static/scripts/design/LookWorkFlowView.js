@@ -374,6 +374,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 case "ServiceTask":
                     css="servicetask";
                     break;
+                case "ManualTask":
+                    css="manualtask";
+                    break;
             }
         }
         return "<div tabindex=0 id='" + id
