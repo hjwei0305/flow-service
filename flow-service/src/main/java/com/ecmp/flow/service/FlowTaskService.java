@@ -1350,9 +1350,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
-        String processInstanceId = flowTask.getFlowInstance().getActInstanceId();
-        ProcessInstance processInstance =  runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        flowTask.setProcessInstance(processInstance);
         return this.findNexNodesWithUserSet(flowTask, approved,null);
     }
 
@@ -1567,15 +1564,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String actTaskId = flowTask.getActTaskId();
         String businessId = flowTask.getFlowInstance().getBusinessId();
         String actTaskDefKey = flowTask.getActTaskDefKey();
-        ProcessDefinitionImpl processDefinition = null;
-        try {
-            processDefinition = ((ExecutionEntity) flowTask.getProcessInstance()).getProcessDefinition();
-        }catch(Exception e){}
-        if(processDefinition == null){
-            processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(flowTask.getProcessInstance().getProcessDefinitionId());
-        }
-        ProcessDefinitionEntity definition = (ProcessDefinitionEntity)processDefinition;
+
+        String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                .getDeployedProcessDefinition(actProcessDefinitionId);
         PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
 
         BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
@@ -1726,9 +1718,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public List<NodeInfo> findNextNodes(String id, String businessId, List<String> includeNodeIds) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
-        String processInstanceId = flowTask.getFlowInstance().getActInstanceId();
-        ProcessInstance processInstance =  runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        flowTask.setProcessInstance(processInstance);
         return this.selectNextAllNodes(flowTask, includeNodeIds);
     }
 
@@ -2008,15 +1997,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String nodeType = defObj.get("nodeType") + "";
 
         String actTaskDefKey = flowTask.getActTaskDefKey();
-        ProcessDefinitionImpl processDefinition = null;
-        try {
-            processDefinition = ((ExecutionEntity) flowTask.getProcessInstance()).getProcessDefinition();
-        }catch(Exception e){}
-        if(processDefinition == null){
-             processDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(flowTask.getProcessInstance().getProcessDefinitionId());
-        }
-        ProcessDefinitionEntity definition = (ProcessDefinitionEntity)processDefinition;
+        String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                .getDeployedProcessDefinition(actProcessDefinitionId);
+
         PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
@@ -2467,9 +2451,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
-        String processInstanceId = flowTask.getFlowInstance().getActInstanceId();
-        ProcessInstance processInstance =  runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        flowTask.setProcessInstance(processInstance);
         return this.findNexNodesWithUserSet(flowTask,null,null);
     }
 
@@ -2485,9 +2466,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
-        String processInstanceId = flowTask.getFlowInstance().getActInstanceId();
-        ProcessInstance processInstance =  runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-        flowTask.setProcessInstance(processInstance);
         List<NodeInfo> result = this.findNexNodesWithUserSet( flowTask ,approved, includeNodeIds);
         return result;
     }

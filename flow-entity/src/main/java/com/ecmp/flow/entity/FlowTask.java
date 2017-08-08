@@ -2,8 +2,6 @@ package com.ecmp.flow.entity;
 
 
 import javax.persistence.*;
-
-import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -234,12 +232,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	 */
 	@Column(name = "owner_id")
 	private String ownerId;
-
-
-	@Transient
-	private ProcessInstance processInstance;
-
-
 
 	public FlowTask() {
 	}
@@ -530,14 +522,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setExecuteTime(Integer executeTime) {
 		this.executeTime = executeTime;
-	}
-
-	public ProcessInstance getProcessInstance() {
-		return processInstance;
-	}
-
-	public void setProcessInstance(ProcessInstance processInstance) {
-		this.processInstance = processInstance;
 	}
 
 	@Override

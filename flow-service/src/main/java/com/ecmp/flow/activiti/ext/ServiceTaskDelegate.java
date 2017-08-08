@@ -74,7 +74,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
 
-              ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+            ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
@@ -94,40 +94,16 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     String param = JsonUtils.toJson(tempV);
 
                     FlowHistory flowHistory = new FlowHistory();
-                   // flowHistory.setFlowDefinitionId(flowTask.getFlowDefinitionId());
-                  //  flowHistory.setActType(delegateTask.);
                     flowHistory.setTaskJsonDef(currentNode.toString());
-//            flowHistory.setBusinessModelRemark();
-//                    flowHistory.setCanCancel(canCancel);
                     flowHistory.setFlowName(definition.getProcess().getName());
                     flowHistory.setDepict("服务任务【自动执行】");
 //                    flowHistory.setActClaimTime(flowTask.getActClaimTime());
                     flowHistory.setFlowTaskName(flowTaskName);
                     flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
-//            flowHistory.setFlowInstanceId(flowTask.getFlowInstanceId());
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
-//                    ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-//                            .processInstanceId(actProcessInstanceId).singleResult();
-                    ProcessInstance     processInstance  = taskEntity.getProcessInstance();
                     List<TaskEntity> taskList = taskEntity.getTasks();
                     System.out.println(taskList);
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
-//                    if(flowInstance==null){
-//                        flowInstance = new FlowInstance();
-//                        flowInstance.setBusinessId(processInstance.getBusinessKey());
-//                        String workCaption = tempV.get("workCaption")+"";//工作说明
-//                        flowInstance.setBusinessModelRemark(workCaption);
-//                        String businessCode = tempV.get("businessCode")+"";//工作说明
-//                        flowInstance.setBusinessCode(businessCode);
-//                        String businessName = tempV.get("name")+"";//业务单据名称
-//                        flowInstance.setBusinessName(businessName);
-//
-//                        flowInstance.setFlowDefVersion(flowDefVersion);
-//                        flowInstance.setStartDate(new Date());
-//                        flowInstance.setFlowName(flowDefVersion.getName());
-//                        flowInstance.setActInstanceId(processInstance.getId());
-//                        flowInstanceDao.save(flowInstance);
-//                    }
                     flowHistory.setFlowInstance(flowInstance);
 
                     flowHistory.setOwnerAccount("admin");
@@ -151,14 +127,12 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     FlowTask flowTask = new FlowTask();
                     BeanUtils.copyProperties(flowHistory,flowTask);
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                    flowTask.setProcessInstance(processInstance);
 //                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
                     List<NodeInfo> results = flowTaskService.findNexNodesWithUserSet(flowTask);
                     List<String> nextNodeIds = new ArrayList<String>();
                     if(results !=null &&  !results.isEmpty()){
-//                        Map<String,Object> nextUserMap = new HashMap<String,Object>();
                         for(NodeInfo nodeInfo:results){
                             if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                                 nodeInfo.setType("EndEvent");
@@ -167,7 +141,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                             nextNodeIds.add(nodeInfo.getId());
                            String taskType = nodeInfo.getFlowTaskType();
                             String uiUserType = nodeInfo.getUiUserType();
-
 //                            if ("Normal".equalsIgnoreCase(taskType)) {
 //                                nodeInfo.setUserVarName(nodeInfo.getId() + "_Normal");
 //                            } else if ("SingleSign".equalsIgnoreCase(taskType)) {
