@@ -785,6 +785,18 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 } else {
                     var nodeType = $("#" + connection.sourceId).attr("nodetype");
                     if (nodeType == "Approve") {
+                        var bustype = $("#" + connection.targetId).attr("bustype");
+                        if (bustype == "ManualExclusiveGateway") {
+                            var nodeName=connection.source.innerText.trim();
+                            EUI.ProcessStatus({
+                                success: false,
+                                msg: "审批任务后禁止连接人工网关"
+                            });
+                            jsPlumb.detach(connection);
+                            delete g.uelInfo[connection.sourceId + "," + connection.targetId];
+                            delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                            return;
+                        }
                         var result = g.getApproveLineInfo(connection.sourceId);
                         var name = "同意", agree = true;
                         if (result == 0) {
@@ -1229,6 +1241,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ServiceTask":
                     css="servicetask";
+                    break;
                 case "ManualTask":
                     css="manualtask";
                     break;
