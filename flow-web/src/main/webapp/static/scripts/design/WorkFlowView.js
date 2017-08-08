@@ -792,12 +792,22 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         overlay.setLabel(name);
                         $(overlay.canvas).attr("title", name);
                         overlay.show();
-                        g.uelInfo[connection.sourceId + "," + connection.targetId] = {
-                            name: name,
-                            agree: agree,
-                            groovyUel: "${approveResult == " + agree + "}",
-                            logicUel: ""
-                        };
+                        if(agree){
+                            g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                                name: name,
+                                agree: agree,
+                                groovyUel: "${approveResult == " + agree + "}",
+                                logicUel: ""
+                            };
+                        }else {
+                            g.uelInfo[connection.sourceId + "," + connection.targetId] = {
+                                name: name,
+                                isDefault: true,
+                                logicUel: "",
+                                groovyUel: ""
+                            };
+                        }
+
                     } else if (nodeType == "CounterSign") {
                         var bustype = $("#" + connection.targetId).attr("bustype");
                         if (bustype == "ManualExclusiveGateway") {

@@ -327,7 +327,7 @@ public class Process extends BaseNode implements Serializable {
                         }
                         userTask.add(userTaskTemp);
                         baseFlowNodeTemp  = userTaskTemp;
-                        if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                        if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             exclusiveGatewayIn = new ExclusiveGateway();
                             exclusiveGateway.add(exclusiveGatewayIn);
                             exclusiveGatewayInId = "ExclusiveGateway_In_"+System.currentTimeMillis();
