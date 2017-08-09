@@ -410,7 +410,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             EUI.ProcessStatus({
                 msg: "处理意见不能为空",
                 success: false,
-                showTime: 20
+                showTime: 6
             });
             $(".flow-remark").focus();
             return false;
