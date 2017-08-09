@@ -142,7 +142,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
@@ -304,6 +304,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         FlowInstance flowInstance = flowTask.getFlowInstance();
@@ -449,13 +450,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
             flowHistory.setActType(flowTask.getActType());
             flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
+            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
 //            flowHistory.setBusinessModelRemark();
             flowHistory.setCanCancel(canCancel);
             flowHistory.setFlowName(flowTask.getFlowName());
             flowHistory.setDepict(flowTask.getDepict());
             flowHistory.setActClaimTime(flowTask.getActClaimTime());
             flowHistory.setFlowTaskName(flowTask.getTaskName());
-            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
 //            flowHistory.setFlowInstanceId(flowTask.getFlowInstanceId());
             flowHistory.setFlowInstance(flowTask.getFlowInstance());
             flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
@@ -559,6 +560,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param id
      * @return
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
@@ -582,7 +584,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskId
      * @param variables
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     private void completeActiviti(String taskId, Map<String, Object> variables) {
         taskService.complete(taskId, variables);
     }
@@ -612,6 +614,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return 结果
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) {
         OperateResult result = OperateResult.OperationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
@@ -639,6 +642,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param preFlowTask 上一个任务
      * @return 结果
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) {
         OperateResult result = OperateResult.OperationSuccess("10015");
         // 取得当前任务
@@ -712,6 +716,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     private OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
         OperateResult result = OperateResult.OperationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
@@ -898,6 +903,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     /**
      * 删除其他到达的节点
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     private Boolean deleteOtherNode(PvmActivity currActivity, ProcessInstance instance,
                                     ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
@@ -921,19 +927,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
 
-                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-                try {
+//                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+//                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+//                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+//                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+//                try {
                     //逻辑代码，可以写上你的逻辑处理代码
                     flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
-                    transactionManager.commit(status);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    transactionManager.rollback(status);
-                    throw e;
-                }
+//                    transactionManager.commit(status);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    transactionManager.rollback(status);
+//                    throw e;
+//                }
 
 
             }
