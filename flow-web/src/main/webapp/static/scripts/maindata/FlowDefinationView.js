@@ -34,7 +34,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             g.deleteFlowDefinationWind(rowData);
         });
-        $("#defFlow > .ecmp-common-view").live("click", function () {
+        $("#defFlow > .def-version").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
             g.lookPropertyWindow(rowData);
         });
@@ -501,7 +501,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         formatter : function(cellvalue, options, rowObject) {
                             var str='<div id="defFlow"><i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
                                 '<i class="ecmp-common-delete  icon-space fontcusor" title="'+g.lang.deleteText+'"></i>' +
-                                '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
+                                '<i class="ecmp-common-version def-version icon-space fontcusor" title="'+g.lang.flowDefinitionVersionText+'"></i>';
                             if('Activate' == rowObject.flowDefinationStatus){
                                 str=str+'<i class="ecmp-common-suspend fontcusor"  title="'+g.lang.suspendText+'"></i><i class="ecmp-common-activate fontcusor" style="display: none" title="'+g.lang.activeText+'"></i></div>';
                             }
