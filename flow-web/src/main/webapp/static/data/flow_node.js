@@ -55,6 +55,18 @@ var _flownode = {
             css: "manualtask ",
             nodeType: "ManualTask"
         }
+        , {
+            name: "receiveTaskText",
+            type: "ReceiveTask",
+            css: "receiveTask ",
+            nodeType: "ReceiveTask"
+        }
+        , {
+            name: "callActivityText",
+            type: "CallActivity",
+            css: "callActivity ",
+            nodeType: "CallActivity"
+        }
     ],
     gateway: [{
         name: "exclusiveGatewayText",

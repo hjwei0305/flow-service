@@ -435,7 +435,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         text = "系统调用配置服务接口，自动执行"
                         break;
                     case "ManualTask":
-                        text = "手工任务，不执行任何动作，仅用于代表线下一个执行动作或者用于节点的合并";
+                        text = "手动任务，手动任务几乎不在程序中做什么事情---只是在流程的历史中留下一点痕迹，表明流程是走过某些节点的，用于表示线下的某个动作或者当作空任务来做其他分支的合并"
+                        break;
+                    case "ReceiveTask":
+                        text = "接收任务，当执行到该结点后流程暂时停止运行，直到收到外部发送的信号以后，才会继续向前推进";
+                        break;
+                    case "CallActivity":
+                        text = "调用子流程，当流程执行到该结点时，会创建一个新分支，它是到达调用节点的流程的分支。 这个分支会用来执行子流程，默认创建并行子流程，就像一个普通的流程。 上级流程会等待子流程完成，然后才会继续向下执行。";
+                        break;
                 }
                 g.showTipBox(dom, "<span>"+text+"</span>",addTop);
             },
@@ -1244,6 +1251,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ManualTask":
                     css="manualtask";
+                    break;
+                case "ReceiveTask":
+                    css="receiveTask";
+                    break;
+                case "CallActivity":
+                    css="callActivity";
                     break;
             }
         }
