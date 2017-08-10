@@ -383,6 +383,22 @@ public class Process extends BaseNode implements Serializable {
                     case "TerminateEndEvent":
                         EndEvent terminateEndEventTemp = (EndEvent) JSONObject.toBean(node, EndEvent.class);
                         terminateEndEventTemp.setTerminateEventDefinition("");
+
+                        extensionElement  = terminateEndEventTemp.getExtensionElement();
+                        if(extensionElement == null){
+                            extensionElement = new ExtensionElement();
+                        }
+                        //添加默认启动完成监听器
+                        executionListener = new ExecutionListener();
+                        executionListener.setEvent("end");
+                        executionListener.setDelegateExpression("${endEventCompleteListener}");
+                        executionListeners = extensionElement.getExecutionListener();
+                        if(executionListeners == null){
+                            executionListeners = new ArrayList<ExecutionListener>();
+                        }
+                        executionListeners.add(executionListener);
+                        extensionElement.setExecutionListener(executionListeners);
+                        terminateEndEventTemp.setExtensionElement(extensionElement);
                         endEvent.add(terminateEndEventTemp);
                         baseFlowNodeTemp  = terminateEndEventTemp;
                         break;

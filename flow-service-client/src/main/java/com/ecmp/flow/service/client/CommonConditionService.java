@@ -101,7 +101,7 @@ public class CommonConditionService implements ICommonConditionService {
     }
 
 
-    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    @Transactional( propagation= Propagation.REQUIRED)
     public Boolean resetState(String businessModelId,String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         businessModelService = ApiClient.createProxy(IBusinessModelService.class);
         BusinessModel businessModel = businessModelService.findOne(businessModelId);

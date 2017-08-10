@@ -497,11 +497,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             .getProcessDefinitionId());
             PvmActivity currentNode = this.getActivitNode(definition,actTaskDefKey);
 
-
             if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
                 callInitTaskBack(currentNode, instance, flowHistory,counterSignLastTask);
             }
-
         }
 
         OperateResultWithData<FlowStatus> result = OperateResultWithData.OperationSuccess("10017");
@@ -747,9 +745,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (execution == null) {
                 return OperateResult.OperationFailure("10014");//当前任务不允许撤回
             }
-//            for(HistoricVariableInstance h: historicVariableInstances){
-//
-//            }
             // 取得下一步活动
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
@@ -826,18 +821,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             newTask.setPriority(currTask.getPriority());
             newTask.setTenantId(currTask.getTenantId());
             newTask.setCreateTime(new Date());
-            // newTask.setDeleted(false);
-            // newTask.setDueDate(currTask.getDueDate());
-            // newTask.setEventName(currTask.gete);
+
             newTask.setId(currTask.getId());
             newTask.setExecutionId(currTask.getExecutionId());
             newTask.setProcessDefinitionId(currTask.getProcessDefinitionId());
             newTask.setProcessInstanceId(currTask.getProcessInstanceId());
             newTask.setVariables(currTask.getProcessVariables());
-//            newTask.setDescription("【被撤销】"+opinion);
-            // newTnewTaskask.setExecution((DelegateExecution) execution);
-            // newTask.setProcessInstance(instance);
-            // newTask.setTaskDefinition(currActivity.gett);
             newTask.setTaskDefinitionKey(currTask.getTaskDefinitionKey());
 
             taskService.callBackTask(newTask, execution);
@@ -926,24 +915,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 taskService.deleteRuningTask(nextTask.getId(), false);
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
-
-//                org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-//                DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-//                def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-//                TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
-//                try {
-                    //逻辑代码，可以写上你的逻辑处理代码
-                    flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
-//                    transactionManager.commit(status);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    transactionManager.rollback(status);
-//                    throw e;
-//                }
-
-
+                flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
             }
-
             if ((nextTasks != null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
 
                 HistoricActivityInstance gateWayActivity = historyService.createHistoricActivityInstanceQuery()

@@ -15,6 +15,7 @@ import com.ecmp.flow.entity.AbstractBusinessModel;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import io.swagger.annotations.OAuth2Definition;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -153,7 +154,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             if (flowStartResultVO != null) {
                if( flowStartResultVO.getFlowInstance()!=null){
                    defaultBusinessModel = (V) baseService.findOne(businessKey);
-                   defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
+                   if(flowStartResultVO.getFlowInstance().isEnded()){
+                       defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+                   }else {
+                       defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
+                   }
                    baseService.save(defaultBusinessModel);
                }
                 operateStatus = new OperateStatus(true, "成功");
