@@ -290,10 +290,14 @@
 }
 
 .flow-task .callActivity  {
-    background: url("../images/flow_task_script.png") no-repeat;
-    display: inline-block;
-    height: 20px;
-    width: 20px;
+    /*background: url("../images/flow_task_script.png") no-repeat;*/
+    /*display: inline-block;*/
+    /*height: 20px;*/
+    /*width: 20px;*/
+    margin-top: 10px;
+}
+.flow-task[type="CallActivity"]{
+    border-width: 4px;
 }
 
 .node-dot {
