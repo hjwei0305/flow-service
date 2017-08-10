@@ -147,7 +147,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         // copyHintMessage:"请选择一条要参考的行项目!",
                         g.message(g.lang.copyHintMessage);
                     }
-
                 }
             },'->', {
                 xtype: "SearchBox",
@@ -306,10 +305,14 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var id= isFromVersion?data["flowDefination.id"]:data.id;
         var businessModelId=isFromVersion?data["flowDefination.flowType.businessModel.id"]:data["flowType.businessModel.id"];
+        var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&orgName="+encodeURIComponent(encodeURIComponent(data.orgName))+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion;
+        if(isFromVersion){
+            var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion;
+        }
         var tab = {
             // copyFlowDefinitionText: "参考创建流程定义",
             title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion,
+            url:url
         };
         g.addTab(tab);
     },
@@ -458,6 +461,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     handler: function() {
                         var rowData =EUI.getCmp("gridPanel").getSelectRow();
                         if (rowData && rowData.id) {
+                            rowData.orgName=EUI.getCmp("treePanel").getNodeData(rowData.orgId).name
                             g.copyFlowDefination(rowData,false);
                         } else {
                             // copyHintMessage:"请选择一条要参考的行项目!",
@@ -522,6 +526,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: g.lang.nameText,
                         name: "name",
                         index: "name",
+                        sortable: true,
                         width:110
                     }, {
                         label: g.lang.latestVersionIDText,
@@ -532,11 +537,13 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: g.lang.definitionKEYText,
                         name: "defKey",
                         index: "defKey",
+                        sortable: true,
                         width:110
                     }, {
                         label: g.lang.flowTypeText,
                         name: "flowType.name",
                         index: "flowType.name",
+                        sortable: true,
                         width:110
                     }, {
                         label: g.lang.businessEntityIDText,
@@ -570,7 +577,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         name: "flowDefinationStatusText",
                         index: "flowDefinationStatus",
                         align:"center",
-                        width:110,
+                        sortable: true,
+                        width:120,
                         formatter : function(cellvalue, options, rowObject) {
                             var strVar = '';
                             if('INIT' == rowObject.flowDefinationStatus){
@@ -587,6 +595,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: g.lang.priorityText,
                         name: "priority",
                         index: "priority",
+                        sortable: true,
                         width:80
                     }],
                     shrinkToFit: false,//固定宽度

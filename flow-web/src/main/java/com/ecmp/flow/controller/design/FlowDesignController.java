@@ -23,8 +23,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
@@ -53,6 +55,7 @@ public class FlowDesignController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
     public String show() {
+//        model.addAttribute("orgName", orgName);
         return "/design/WorkFlowView";
     }
 

@@ -21,7 +21,7 @@
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
-        var flowView;
+        var flowView,orgName;
         var id = EUI.util.getUrlParam("id");
         var orgId = EUI.util.getUrlParam("orgId");
         var orgCode = EUI.util.getUrlParam("orgCode");
@@ -29,11 +29,15 @@
         var businessModelId = EUI.util.getUrlParam("businessModelId");
         var isCopy = EUI.util.getUrlParam("isCopy") == "true";
         var isFromVersion = EUI.util.getUrlParam("isFromVersion") == "true";
+        if(isCopy&&!isFromVersion) {
+            orgName= decodeURIComponent(EUI.util.getUrlParam("orgName"));
+        }
         EUI.onReady(function () {
             flowView = new EUI.WorkFlowView({
                 id: id,
                 orgId: orgId,
                 orgCode: orgCode,
+                orgName: orgName,
                 businessModelId: businessModelId,
                 versionCode: versionCode || -1,
                 isCopy: isCopy,

@@ -54,9 +54,149 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     },
     getTopItems: function () {
         var g = this;
+        var item=[{
+            xtype: "ComboGrid",
+            name: "flowTypeName",
+            field: ["flowTypeId"],
+            displayText: "请选择流程类型",
+            listWidth: 400,
+            showSearch: true,
+            searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
+            gridCfg: {
+                url: _ctxPath + "/flowType/listFlowType",
+                colModel: [{
+                    name: "id",
+                    index: "id",
+                    hidden: true
+                }, {
+                    name: "businessModel.id",
+                    index: "businessModel.id",
+                    hidden: true
+                }, {
+                    //businessModelText:"模块"
+                    label: this.lang.businessModelText,
+                    name: "businessModel.name",
+                    index: "businessModel.name",
+                    sortable:true
+                }, {
+                    label: this.lang.codeText,
+                    name: "code",
+                    index: "code",
+                    sortable:true
+                }, {
+                    label: this.lang.nameText,
+                    name: "name",
+                    index: "name",
+                    sortable:true
+                }]
+            },
+            labelWidth: 85,
+            width: 190,
+            readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
+            allowBlank: false,
+            beforeSelect: function (data) {
+                var scope = this;
+                var busModelId = data.data["businessModel.id"];
+                if (g.businessModelId && g.businessModelId != busModelId) {
+                    var msgBox = EUI.MessageBox({
+                        title: "操作提示",
+                        msg: "切换流程类型将清空所有流程设计，请确定是否继续?",
+                        buttons: [{
+                            title: "确定",
+                            iconCss: "ecmp-common-ok",
+                            handler: function () {
+                                g.businessModelId = busModelId;
+                                scope.setSubmitValue({
+                                    flowTypeName: data.data.name,
+                                    flowTypeId: busModelId
+                                });
+                                g.clear();
+                                msgBox.remove();
+                            }
+                        }, {
+                            title: "取消",
+                            iconCss: "ecmp-common-delete",
+                            handler: function () {
+                                msgBox.remove();
+                            }
+                        }]
+                    });
+                    return false;
+                }
+            },
+            afterSelect: function (data) {
+                var busModelId = data.data["businessModel.id"];
+                g.businessModelId = busModelId;
+            },
+            reader: {
+                name: "name",
+                field: ["id"]
+            },
+            onSearch: function (data) {
+                this.grid.setPostParams({
+                    Quick_value: data
+                }, true);
+            }
+        }, {
+            xtype: "TextField",
+            name: "id",
+            width: 110,
+            readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
+            labelWidth: 85,
+            allowBlank: false,
+            maxlength:80,
+            minlength:6,
+            displayText: "请输入流程代码",
+            validateText: "以字母开头，包含数字或字母，且长度在6-80之间",
+            validater: function (data) {
+                var reg=/^[A-Za-z][0-9a-zA-Z]*$/g;
+                if (!reg.test(data)) {
+                    return false;
+                }
+                return true;
+            }
+        }, {
+            xtype: "TextField",
+            displayText: "请输入流程名称",
+            labelWidth: 85,
+            width: 240,
+            allowBlank: false,
+            name: "name"
+        }, {
+            xtype: "NumberField",
+            displayText: "请输入优先级",
+            labelWidth: 65,
+            width: 80,
+            allowNegative: false,
+            name: "priority"
+        }];
+        if(isCopy&&!isFromVersion){//流程定义惨老创建
+            item=[{
+                xtype: "ComboTree",
+                id: "orgtree",
+                field: ["orgId","orgCode"],
+                name: "orgName",
+                allowBlank: false,
+                data: [],
+                async : false,
+                canClear: false,
+                width: 150,
+                treeCfg: {
+                    autoLoad:true,
+                    async : false,
+                    // url: _ctxPath + "/flowDefination/listAllOrgs",
+                    url: "../flowDefination/listAllOrgs",
+                    showField: "name"
+                },
+                reader: {
+                    field: ["id","code"],
+                    name: "name"
+                }
+            }].concat(item);
+        }
         return [{
             xtype: "FormPanel",
-            width: 670,
+            width: 828,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -67,122 +207,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 88,
                 allowBlank: false
             },
-            items: [{
-                xtype: "ComboGrid",
-                name: "flowTypeName",
-                field: ["flowTypeId"],
-                displayText: "请选择流程类型",
-                listWidth: 400,
-                showSearch: true,
-                searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
-                gridCfg: {
-                    url: _ctxPath + "/flowType/listFlowType",
-                    colModel: [{
-                        name: "id",
-                        index: "id",
-                        hidden: true
-                    }, {
-                        name: "businessModel.id",
-                        index: "businessModel.id",
-                        hidden: true
-                    }, {
-                        //businessModelText:"模块"
-                        label: this.lang.businessModelText,
-                        name: "businessModel.name",
-                        index: "businessModel.name",
-                        sortable:true
-                    }, {
-                        label: this.lang.codeText,
-                        name: "code",
-                        index: "code",
-                        sortable:true
-                    }, {
-                        label: this.lang.nameText,
-                        name: "name",
-                        index: "name",
-                        sortable:true
-                    }]
-                },
-                labelWidth: 85,
-                width: 190,
-                readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
-                allowBlank: false,
-                beforeSelect: function (data) {
-                    var scope = this;
-                    var busModelId = data.data["businessModel.id"];
-                    if (g.businessModelId && g.businessModelId != busModelId) {
-                        var msgBox = EUI.MessageBox({
-                            title: "操作提示",
-                            msg: "切换流程类型将清空所有流程设计，请确定是否继续?",
-                            buttons: [{
-                                title: "确定",
-                                iconCss: "ecmp-common-ok",
-                                handler: function () {
-                                    g.businessModelId = busModelId;
-                                    scope.loadData({
-                                        flowTypeName: data.data.name,
-                                        flowTypeId: busModelId
-                                    });
-                                    g.clear();
-                                    msgBox.remove();
-                                }
-                            }, {
-                                title: "取消",
-                                iconCss: "ecmp-common-delete",
-                                handler: function () {
-                                    msgBox.remove();
-                                }
-                            }]
-                        });
-                        return false;
-                    }
-                },
-                afterSelect: function (data) {
-                    var busModelId = data.data["businessModel.id"];
-                    g.businessModelId = busModelId;
-                },
-                reader: {
-                    name: "name",
-                    field: ["id"]
-                },
-                onSearch: function (data) {
-                    this.grid.setPostParams({
-                        Quick_value: data
-                    }, true);
-                }
-            }, {
-                xtype: "TextField",
-                name: "id",
-                width: 110,
-                readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
-                labelWidth: 85,
-                allowBlank: false,
-                maxlength:80,
-                minlength:6,
-                displayText: "请输入流程代码",
-                validateText: "以字母开头，包含数字或字母，且长度在6-80之间",
-                validater: function (data) {
-                    var reg=/^[A-Za-z][0-9a-zA-Z]*$/g;
-                    if (!reg.test(data)) {
-                        return false;
-                    }
-                    return true;
-                }
-            }, {
-                xtype: "TextField",
-                displayText: "请输入流程名称",
-                labelWidth: 85,
-                width: 243,
-                allowBlank: false,
-                name: "name"
-            }, {
-                xtype: "NumberField",
-                displayText: "请输入优先级",
-                labelWidth: 85,
-                width: 100,
-                allowNegative: false,
-                name: "priority"
-            }]
+            items: item
         }, {
             xtype: "Button",
             title: "启动条件",
@@ -1137,6 +1162,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     ,
     showDesign: function (data) {
         this.loadHead(data);
+        if(this.isCopy&&!this.isFromVersion) {
+            EUI.getCmp("orgtree").setSubmitValue({
+                orgName: this.orgName,
+                orgId: this.orgId,
+                orgCode: this.orgCode,
+            });
+        }
         var html = "";
         for (var id in data.process.nodes) {
             var node = data.process.nodes[id];
