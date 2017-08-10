@@ -196,7 +196,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return [{
             xtype: "FormPanel",
-            width: 828,
+            width: 815,
             isOverFlow: false,
             height: 40,
             padding: 0,
