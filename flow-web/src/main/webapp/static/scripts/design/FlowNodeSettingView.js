@@ -31,9 +31,10 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         closable: false
                     },
                     items: [this.getServiceTaskNormalTab(), this.getEventTab(),
-                        this.getNotifyTab()]
+                        this.getNotifyTab(true)]
                 }]
             });
+            this.initNotify(true);
         }else {
             this.window = EUI.Window({
                 width: 550,
@@ -55,9 +56,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         this.getNotifyTab()]
                 }]
             });
+            this.initNotify();
         }
-
-        this.initNotify();
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
@@ -271,13 +271,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             name: "name",
             maxlength:80,
             value: this.title
-        }, {
-            xtype: "NumberField",
-            title: "额定工时",
-            allowNegative: false,
-            name: "executeTime",
-            labelWidth: 100,
-            unit: "分钟"
         }, {
             xtype: "ComboBox",
             title: "服务名称",
@@ -495,7 +488,31 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    getNotifyTab: function () {
+    getNotifyTab: function (noExcutor){
+        var html = '<div class="notify-west">' +
+            '<div class="west-navbar select-navbar">任务达到时</div>' +
+            '<div class="west-navbar">任务执行后</div>' +
+            '</div>' +
+            '<div class="notify-center">' +
+            '<div class="notify-user">';
+            if(!noExcutor){
+                html+= '<div class="notify-user-item select">通知执行人</div>';
+                html+='<div class="notify-user-item">通知发起人</div>';
+            }else {
+                html+='<div class="notify-user-item select">通知发起人</div>';
+            }
+         html+= '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-before"></div>' +
+            '</div>' +
+            '<div class="notify-center" style="display: none;">' +
+            '<div class="notify-user">' +
+
+            '<div class="notify-user-item select">通知发起人</div>' +
+            '<div class="notify-user-item">通知岗位</div>' +
+            '</div>' +
+            '<div id="notify-after"></div>' +
+            '</div>';
         return {
             title: "通知",
             padding: 10,
@@ -507,29 +524,31 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 xtype: "TextField",
                 colon: false
             },
-            html: '<div class="notify-west">' +
-            '<div class="west-navbar select-navbar">任务达到时</div>' +
-            '<div class="west-navbar">任务执行后</div>' +
-            '</div>' +
-            '<div class="notify-center">' +
-            '<div class="notify-user">' +
-            '<div class="notify-user-item select">通知执行人</div>' +
-            '<div class="notify-user-item">通知发起人</div>' +
-            '<div class="notify-user-item">通知岗位</div>' +
-            '</div>' +
-            '<div id="notify-before"></div>' +
-            '</div>' +
-            '<div class="notify-center" style="display: none;">' +
-            '<div class="notify-user">' +
-
-            '<div class="notify-user-item select">通知发起人</div>' +
-            '<div class="notify-user-item">通知岗位</div>' +
-            '</div>' +
-            '<div id="notify-after"></div>' +
-            '</div>'
+            html: html
         };
     },
-    initNotify: function () {
+    initNotify: function (noExcutor) {
+        var items = null;
+        if(noExcutor){
+            items = [{
+                items: this.getNotifyItem()
+            },{
+                hidden: true,
+                //  items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyBefore")
+            }];
+        }else {
+            items = [{
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                //  items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyBefore")
+            }];
+        }
         this.nowNotifyTab = EUI.Container({
             width: 445,
             height: 330,
@@ -544,16 +563,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 itemspace: 10
             },
-            items: [{
-                items: this.getNotifyItem()
-            }, {
-                hidden: true,
-                items: this.getNotifyItem()
-            }, {
-                hidden: true,
-                //  items: this.getNotifyItem()
-                items: this.getNotifyChoosePositionItem("notifyBefore")
-            }]
+            items:items
         });
         var nextTab = EUI.Container({
             width: 445,
@@ -685,8 +695,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var data = {};
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
-        var beforePosition = EUI.getCmp(notifyTab1.items[2]).getFormValue();
-        var afterPosition = EUI.getCmp(notifyTab2.items[1]).getFormValue();
+        var beforePosition = EUI.getCmp(notifyTab1.items[notifyTab1.items.length-1]).getFormValue();
+        var afterPosition = EUI.getCmp(notifyTab2.items[notifyTab2.items.length-1]).getFormValue();
         beforePosition.positionData = this.notifyBeforePositionData || [];
         beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
         afterPosition.positionData = this.notifyAfterPositionData || [];
@@ -1230,7 +1240,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     loadNotifyData: function (tab, data) {
         EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
-        EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
+        EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
     },
     loadNotifyDataAfter: function (tab, data) {
         // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);

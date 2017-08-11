@@ -229,102 +229,9 @@ public class Process extends BaseNode implements Serializable {
                             userTaskTemp.setConfig(multiInstanceConfig);
                         }
                         //添加自定义用户任务事件监听（用于用户任务事前、事后）
-                        try {
-                            net.sf.json.JSONObject event = node.getJSONObject("nodeConfig").getJSONObject("event");
-                            if (event != null && !event.isEmpty()) {
-                                String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
-                                extensionElement  = userTaskTemp.getExtensionElement();
-                                if(extensionElement == null){
-                                    extensionElement = new ExtensionElement();
-                                }
-                                if(!StringUtils.isEmpty(beforeExcuteServiceId)){
-                                    //添加默认任务创建监听器
-                                    executionListener = new ExecutionListener();
-                                    executionListener.setEvent("start");
-                                    executionListener.setDelegateExpression("${commonUserTaskCreateListener}");
-                                    executionListeners = extensionElement.getExecutionListener();
-                                    if(executionListeners == null){
-                                        executionListeners = new ArrayList<ExecutionListener>();
-                                    }
-                                    executionListeners.add(executionListener);
-                                    extensionElement.setExecutionListener(executionListeners);
-                                    userTaskTemp.setExtensionElement(extensionElement);
-                                }
-                                String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
-                                if(!StringUtils.isEmpty(afterExcuteServiceId)){
-                                    //添加默认任务完成监听器
-                                    executionListener = new ExecutionListener();
-                                    executionListener.setEvent("end");
-                                    executionListener.setDelegateExpression("${commonUserTaskCompleteListener}");
-                                    executionListeners = extensionElement.getExecutionListener();
-                                    if(executionListeners == null){
-                                        executionListeners = new ArrayList<ExecutionListener>();
-                                    }
-                                    executionListeners.add(executionListener);
-                                    extensionElement.setExecutionListener(executionListeners);
-                                    userTaskTemp.setExtensionElement(extensionElement);
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-//                            logger.error(e.getMessage());
-                        }
+                        initEventListener(userTaskTemp,node);
+                        initMessageListener(userTaskTemp,node);
 
-
-                        //添加任务执行监听器，（目前只用于邮件发送）
-                        try {
-                            String[] notifyType={"notifyExecutor","notifyStarter","notifyPosition"};
-                            net.sf.json.JSONObject notify = node.getJSONObject("nodeConfig").getJSONObject("notify");
-                            if (notify != null && !notify.isEmpty()) {
-                                JSONObject beforeNotify =  notify.getJSONObject("before");
-                                extensionElement  = userTaskTemp.getExtensionElement();
-                                if(extensionElement == null){
-                                    extensionElement = new ExtensionElement();
-                                }
-                                if(beforeNotify != null ){
-                                    for(int i=0;i<notifyType.length;i++){
-                                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
-                                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
-                                            //添加执行前事件监听器
-                                            executionListener = new ExecutionListener();
-                                            executionListener.setEvent("start");
-                                            executionListener.setDelegateExpression("${messageBeforeListener}");
-                                            executionListeners = extensionElement.getExecutionListener();
-                                            if(executionListeners == null){
-                                                executionListeners = new ArrayList<ExecutionListener>();
-                                            }
-                                            executionListeners.add(executionListener);
-                                            extensionElement.setExecutionListener(executionListeners);
-                                            userTaskTemp.setExtensionElement(extensionElement);
-                                            break;
-                                        }
-                                    }
-                                }
-                                JSONObject afterNotify =  notify.getJSONObject("after");
-                                if(afterNotify != null ){
-                                    for(int i=0;i<notifyType.length;i++){
-                                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
-                                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
-                                            //添加执行前事件监听器
-                                            executionListener = new ExecutionListener();
-                                            executionListener.setEvent("end");
-                                            executionListener.setDelegateExpression("${messageAfterListener}");
-                                            executionListeners = extensionElement.getExecutionListener();
-                                            if(executionListeners == null){
-                                                executionListeners = new ArrayList<ExecutionListener>();
-                                            }
-                                            executionListeners.add(executionListener);
-                                            extensionElement.setExecutionListener(executionListeners);
-                                            userTaskTemp.setExtensionElement(extensionElement);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-//                            logger.error(e.getMessage());
-                        }
                         userTask.add(userTaskTemp);
                         baseFlowNodeTemp  = userTaskTemp;
                         if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
@@ -357,6 +264,8 @@ public class Process extends BaseNode implements Serializable {
                     case "ServiceTask":
                         ServiceTask serviceTaskTemp = (ServiceTask) JSONObject.toBean(node, ServiceTask.class);
                         serviceTaskTemp.setDelegateExpression("${serviceTaskDelegate}");
+                        initEventListener(serviceTaskTemp,node);
+                        initMessageListener(serviceTaskTemp,node);
                         serviceTask.add(serviceTaskTemp);
                         baseFlowNodeTemp  = serviceTaskTemp;
                         break;
@@ -409,11 +318,116 @@ public class Process extends BaseNode implements Serializable {
             }
         }
     }
-//
-//    private void initMessageListener( UserTask userTaskTemp,ExtensionElement extensionElement ,JSONObject beforeNotify){
-//
-//
-//    }
+
+    //添加自定义事件监听（用于用户任务事前、事后）
+    private void initEventListener( BaseFlowNode currentFlowTemp ,JSONObject node){
+        ExtensionElement extensionElement = null;
+        ExecutionListener executionListener = null;
+        List<ExecutionListener> executionListeners = null;
+        try {
+            net.sf.json.JSONObject event = node.getJSONObject("nodeConfig").getJSONObject("event");
+            if (event != null && !event.isEmpty()) {
+                String beforeExcuteServiceId =  (String)event.get("beforeExcuteServiceId");
+                extensionElement  = currentFlowTemp.getExtensionElement();
+                if(extensionElement == null){
+                    extensionElement = new ExtensionElement();
+                }
+                if(!StringUtils.isEmpty(beforeExcuteServiceId)){
+                    //添加默认任务创建监听器
+                    executionListener = new ExecutionListener();
+                    executionListener.setEvent("start");
+                    executionListener.setDelegateExpression("${commonUserTaskCreateListener}");
+                    executionListeners = extensionElement.getExecutionListener();
+                    if(executionListeners == null){
+                        executionListeners = new ArrayList<ExecutionListener>();
+                    }
+                    executionListeners.add(executionListener);
+                    extensionElement.setExecutionListener(executionListeners);
+                    currentFlowTemp.setExtensionElement(extensionElement);
+                }
+                String afterExcuteServiceId =  (String)event.get("afterExcuteServiceId");
+                if(!StringUtils.isEmpty(afterExcuteServiceId)){
+                    //添加默认任务完成监听器
+                    executionListener = new ExecutionListener();
+                    executionListener.setEvent("end");
+                    executionListener.setDelegateExpression("${commonUserTaskCompleteListener}");
+                    executionListeners = extensionElement.getExecutionListener();
+                    if(executionListeners == null){
+                        executionListeners = new ArrayList<ExecutionListener>();
+                    }
+                    executionListeners.add(executionListener);
+                    extensionElement.setExecutionListener(executionListeners);
+                    currentFlowTemp.setExtensionElement(extensionElement);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    private void initMessageListener( BaseFlowNode currentFlowTemp ,JSONObject node){
+        //添加自定义事件监听（用于用户任务事前、事后）
+        ExtensionElement extensionElement = null;
+        ExecutionListener executionListener = null;
+        List<ExecutionListener> executionListeners = null;
+        //添加任务执行监听器，（目前只用于邮件发送）
+        try {
+            String[] notifyType={"notifyExecutor","notifyStarter","notifyPosition"};
+            net.sf.json.JSONObject notify = node.getJSONObject("nodeConfig").getJSONObject("notify");
+            if (notify != null && !notify.isEmpty()) {
+                JSONObject beforeNotify =  notify.getJSONObject("before");
+                extensionElement  = currentFlowTemp.getExtensionElement();
+                if(extensionElement == null){
+                    extensionElement = new ExtensionElement();
+                }
+                if(beforeNotify != null ){
+                    for(int i=0;i<notifyType.length;i++){
+                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
+                            //添加执行前事件监听器
+                            executionListener = new ExecutionListener();
+                            executionListener.setEvent("start");
+                            executionListener.setDelegateExpression("${messageBeforeListener}");
+                            executionListeners = extensionElement.getExecutionListener();
+                            if(executionListeners == null){
+                                executionListeners = new ArrayList<ExecutionListener>();
+                            }
+                            executionListeners.add(executionListener);
+                            extensionElement.setExecutionListener(executionListeners);
+                            currentFlowTemp.setExtensionElement(extensionElement);
+                            break;
+                        }
+                    }
+                }
+                JSONObject afterNotify =  notify.getJSONObject("after");
+                if(afterNotify != null ){
+                    for(int i=0;i<notifyType.length;i++){
+                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                        if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
+                            //添加执行前事件监听器
+                            executionListener = new ExecutionListener();
+                            executionListener.setEvent("end");
+                            executionListener.setDelegateExpression("${messageAfterListener}");
+                            executionListeners = extensionElement.getExecutionListener();
+                            if(executionListeners == null){
+                                executionListeners = new ArrayList<ExecutionListener>();
+                            }
+                            executionListeners.add(executionListener);
+                            extensionElement.setExecutionListener(executionListeners);
+                            currentFlowTemp.setExtensionElement(extensionElement);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
 
 
 

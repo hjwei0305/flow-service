@@ -12,30 +12,58 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAfterPositionData: null,
     initComponent: function () {
         var g = this;
-        this.window = EUI.Window({
-            title: "节点配置",
-            width: 550,
-            height: 420,
-            padding: 15,
-            afterRender: function () {
-                this.dom.find(".ux-window-content").css("border-radius", "6px");
-            },
-            afterClose: function () {
-                g.remove();
-            },
-            items: [{
-                xtype: "TabPanel",
-                isOverFlow: false,
-                showTabMenu:false,
-                defaultConfig: {
-                    iframe: false,
-                    closable: false
+        if(g.type == "ServiceTask" || g.nodeType == "ServiceTask" ){
+            this.window = EUI.Window({
+                title: "节点配置",
+                width: 550,
+                height: 420,
+                padding: 15,
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
                 },
-                items: [this.getNormalTab(), this.getExcutorTab(), this.getEventTab(),
-                    this.getNotifyTab()]
-            }]
-        });
-        this.initNotify();
+                afterClose: function () {
+                    g.remove();
+                },
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getServiceTaskNormalTab(), this.getEventTab(),
+                        this.getNotifyTab(true)]
+                }]
+            });
+            this.initNotify(true);
+        }else {
+            this.window = EUI.Window({
+                title: "节点配置",
+                width: 550,
+                height: 420,
+                padding: 15,
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                },
+                afterClose: function () {
+                    g.remove();
+                },
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getNormalTab(), this.getExcutorTab(), this.getEventTab(),
+                        this.getNotifyTab()]
+                }]
+            });
+            this.initNotify();
+        }
+
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
         }
@@ -141,6 +169,53 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "allowReject"
             }]);
         }
+        return {
+            title: "常规",
+            xtype: "FormPanel",
+            id: "normal",
+            padding: 10,
+            defaultConfig: {
+                width: 300,
+                xtype: "TextField",
+                labelWidth: 150,
+                colon: false,
+                readonly: true
+            },
+            style: {
+                padding: "10px 30px"
+            },
+            items: items
+        };
+    },
+    getServiceTaskNormalTab: function () {
+        var items = [{
+            title: "节点名称",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "name",
+            maxlength:80,
+            value: this.title,
+            readonly: true
+        }, {
+            xtype: "ComboBox",
+            title: "服务名称",
+            labelWidth: 100,
+            allowBlank: false,
+            name: "serviceTask",
+            field: ["serviceTaskId"],
+            canClear:false,
+            readonly: true,
+            store: {
+                url: _ctxPath + "/design/listAllServiceUrl",
+                params: {
+                    "busModelId": this.businessModelId
+                }
+            },
+            reader: {
+                name: "name",
+                field: ["id"]
+            }
+        }];
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -281,37 +356,67 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         };
     }
     ,
-    getNotifyTab: function () {
-        return {
-            title: "通知",
-            padding: 10,
-            defaultConfig: {
-                width: 300,
-                xtype: "TextField",
-                colon: false
-            },
-            html: '<div class="notify-west">' +
+    getNotifyTab: function (noExcutor) {
+        var html = '<div class="notify-west">' +
             '<div class="west-navbar select-navbar">任务达到时</div>' +
             '<div class="west-navbar">任务执行后</div>' +
             '</div>' +
             '<div class="notify-center">' +
-            '<div class="notify-user">' +
-            '<div class="notify-user-item select">通知执行人</div>' +
-            '<div class="notify-user-item">通知发起人</div>' +
-            '<div class="notify-user-item">通知岗位</div>' +
+            '<div class="notify-user">';
+        if(!noExcutor){
+            html+= '<div class="notify-user-item select">通知执行人</div>';
+            html+='<div class="notify-user-item">通知发起人</div>';
+        }else {
+            html+='<div class="notify-user-item select">通知发起人</div>';
+        }
+        html+= '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
             '<div id="notify-before"></div>' +
             '</div>' +
             '<div class="notify-center" style="display: none;">' +
             '<div class="notify-user">' +
+
             '<div class="notify-user-item select">通知发起人</div>' +
             '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
             '<div id="notify-after"></div>' +
-            '</div>'
+            '</div>';
+        return {
+            title: "通知",
+            padding: 10,
+            style: {
+                "position": "relative"
+            },
+            defaultConfig: {
+                width: 300,
+                xtype: "TextField",
+                colon: false
+            },
+            html: html
         };
     },
-    initNotify: function () {
+    initNotify: function (noExcutor) {
+        var items = null;
+        if(noExcutor){
+            items = [{
+                items: this.getNotifyItem()
+            },{
+                hidden: true,
+                //  items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyBefore")
+            }];
+        }else {
+            items = [{
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                items: this.getNotifyItem()
+            }, {
+                hidden: true,
+                //  items: this.getNotifyItem()
+                items: this.getNotifyChoosePositionItem("notifyBefore")
+            }];
+        }
         this.nowNotifyTab = EUI.Container({
             width: 445,
             height: 330,
@@ -322,20 +427,11 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 iframe: false,
                 xtype: "FormPanel",
                 width: 425,
-                height: 310,
+                height: 305,
                 padding: 0,
                 itemspace: 10
             },
-            items: [{
-                items: this.getNotifyItem()
-            }, {
-                hidden: true,
-                items: this.getNotifyItem()
-            }, {
-                hidden: true,
-                // items: this.getNotifyItem()
-                items: this.getNotifyChoosePositionItem("notifyBefore")
-            }]
+            items:items
         });
         var nextTab = EUI.Container({
             width: 445,
@@ -594,7 +690,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     loadNotifyData: function (tab, data) {
         EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
-        EUI.getCmp(tab.items[2]).loadData(data.notifyPosition);
+        EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
     },
     loadNotifyDataAfter: function (tab, data) {
         // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
