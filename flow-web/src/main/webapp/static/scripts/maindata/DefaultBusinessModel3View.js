@@ -347,7 +347,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             items: [g.initTitle("组织机构"),'->', {
                 xtype:"SearchBox",
                 width:159,
-                displayText: "请输入代码或名称查询",
+                displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
                     g.selectedNodeId = null;

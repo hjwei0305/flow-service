@@ -35,7 +35,8 @@ var common_lang = {
     unFilledText: "存在必填项未输入，请确认！",
     searchByNameMsgText: "请输入名称进行搜索",
     copyHintMessage: "请选择一条要参考的行项目!",
-    searchByCodeOrNameText: "请输入代码或名称进行搜索"
+    searchByCodeOrNameText: "请输入代码或名称进行搜索",
+    searchDisplayText: "请输入代码或名称查询"
 };
 
 if (EUI.BusinessModelView) {
@@ -495,4 +496,22 @@ if (EUI.MyOrderView) {
         orderInFlowText: "流程中",
         orderCompleteText: "已完成"
     }, common_lang);
+}
+if (EUI.MainPageView) {
+    EUI.MainPageView.prototype.lang = EUI.applyIf( {
+        todoSearchText: "输入工作说明关键字查询",
+        batchProcessText: "待办项批量处理"
+    }, common_lang);
+}
+
+if (EUI.DefaultBusinessModel3View) {
+    EUI.DefaultBusinessModel3View.prototype.lang = EUI.applyIf( {}, common_lang);
+}
+
+if (EUI.DefaultBusinessModel2View) {
+    EUI.DefaultBusinessModel2View.prototype.lang = EUI.applyIf( {}, common_lang);
+}
+
+if (EUI.BuiltInApproveView) {
+    EUI.BuiltInApproveView.prototype.lang = EUI.applyIf( {}, common_lang);
 }
