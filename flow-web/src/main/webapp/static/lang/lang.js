@@ -385,6 +385,7 @@ if (Flow.flow.FlowHistory) {
         hourText: "小时",
         minuteText: "分",
         secondText: "秒",
+        milliSecondsText: "毫秒",
         flowDiagramText: "流程图"
 
     }, common_lang);
@@ -411,6 +412,7 @@ if (EUI.FlowHistoryView) {
         hourText: "小时",
         minuteText: "分",
         secondText: "秒",
+        milliSecondsText: "毫秒",
         reverseTaskMsgText: "确定撤销当前任务吗？",
         processingText: "正在执行"
 

@@ -1842,6 +1842,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var hour = Math.floor((value - day * 60 * 60 * 1000 * 24) / (60 * 60 * 1000));
         var minute = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000) / (60 * 1000));
         var second = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000) / 1000);
+        var milliSeconds = Math.floor((value - day * 60 * 60 * 1000 * 24 - hour * 60 * 60 * 1000 - minute * 60 * 1000-second * 60 * 1000));
         if (day > 0) {
             strVar += day + this.lang.dayText;
         }
@@ -1853,6 +1854,9 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         }
         if (second > 0) {
             strVar += second + this.lang.secondText;
+        }
+        if (milliSeconds > 0) {
+            strVar += milliSeconds + this.lang.milliSecondsText;
         }
         return strVar;
     },
