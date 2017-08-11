@@ -384,7 +384,12 @@ public class Process extends BaseNode implements Serializable {
                 }
                 if(beforeNotify != null ){
                     for(int i=0;i<notifyType.length;i++){
-                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                        JSONObject notifyTypeJsonObject = beforeNotify.getJSONObject(notifyType[i]);
+                        if(notifyTypeJsonObject==null || notifyTypeJsonObject.isEmpty()){
+                            continue;
+                        }
+                        JSONArray selectType = notifyTypeJsonObject
+                                .getJSONArray("type");
                         if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
                             //添加执行前事件监听器
                             executionListener = new ExecutionListener();
@@ -403,8 +408,12 @@ public class Process extends BaseNode implements Serializable {
                 }
                 JSONObject afterNotify =  notify.getJSONObject("after");
                 if(afterNotify != null ){
-                    for(int i=0;i<notifyType.length;i++){
-                        JSONArray selectType = beforeNotify.getJSONObject(notifyType[i]).getJSONArray("type");
+                    for(int i=1;i<notifyType.length;i++){
+                        JSONObject notifyTypeJsonObject = afterNotify.getJSONObject(notifyType[i]);
+                        if(notifyTypeJsonObject==null || notifyTypeJsonObject.isEmpty()){
+                            continue;
+                        }
+                        JSONArray selectType = notifyTypeJsonObject.getJSONArray("type");
                         if(selectType !=null && !selectType.isEmpty() && selectType.size()>0){
                             //添加执行前事件监听器
                             executionListener = new ExecutionListener();

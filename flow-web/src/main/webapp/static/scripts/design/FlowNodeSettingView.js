@@ -701,11 +701,20 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
         afterPosition.positionData = this.notifyAfterPositionData || [];
         afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
-        data.before = {
-            notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
-            notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
-            notifyPosition: beforePosition
-        };
+        var g = this;
+        if(g.type == "ServiceTask"){
+            data.before = {
+                notifyStarter: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
+                notifyPosition: beforePosition
+            };
+        }else {
+            data.before = {
+                notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
+                notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
+                notifyPosition: beforePosition
+            };
+        }
+
         data.after = {
             notifyExecutor: "",
             notifyStarter: EUI.getCmp(notifyTab2.items[0]).getFormValue(),
@@ -1238,9 +1247,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         this.notifyAfterPositionData = this.data.notify.after.notifyPosition.positionData;
     },
     loadNotifyData: function (tab, data) {
-        EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
-        EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
-        EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        var g = this;
+        if(g.type == "ServiceTask"){
+            EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
+            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        }else {
+            EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
+            EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
+            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        }
     },
     loadNotifyDataAfter: function (tab, data) {
         // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
