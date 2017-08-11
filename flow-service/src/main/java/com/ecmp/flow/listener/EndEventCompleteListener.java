@@ -83,7 +83,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                 IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
                 flowCommonConditionService.resetState(businessModelId,flowInstance.getBusinessId(), FlowStatus.COMPLETED);
-                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
+//                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
             }
         }
     }
