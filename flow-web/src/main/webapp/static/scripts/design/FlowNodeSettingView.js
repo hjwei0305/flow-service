@@ -202,6 +202,49 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 field: ["url"]
             }
         }];
+        // if(this.nodeType=="CallActivity"){
+        //     items = items.concat([{
+        //         xtype: "ComboGrid",
+        //         title: "子流程",
+        //         displayText: "请选择子流程",
+        //         name: "callActivityDefName",
+        //         allowBlank: false,
+        //         field: ["callActivityDefId"],
+        //         listWidth: 400,
+        //         labelWidth: 100,
+        //         showSearch:true,
+        //         onSearch: function (data) {
+        //             this.grid.setPostParams({
+        //                 Quick_value: data,
+        //                 Q_EQ_subProcess__Boolean: true,
+        //             }, true);
+        //         },
+        //         gridCfg: {
+        //             url: _ctxPath + "/flowDefination/listFlowDefination",
+        //             postData: {
+        //                 Q_EQ_subProcess__Boolean: true,
+        //             },
+        //             loadonce:false,
+        //             colModel: [{
+        //                 name: "id",
+        //                 index: "id",
+        //                 hidden: true
+        //             }, {
+        //                 label: "定义KEY",
+        //                 name: "defKey",
+        //                 index: "defKey"
+        //             }, {
+        //                 label: this.lang.nameText,
+        //                 name: "name",
+        //                 index: "name"
+        //             }]
+        //         },
+        //         reader: {
+        //             name: "name",
+        //             filed: ["id"]
+        //         }
+        //     }]);
+        // }
         if (this.nodeType == "CounterSign") {
             items = items.concat([{
                 xtype: "NumberField",

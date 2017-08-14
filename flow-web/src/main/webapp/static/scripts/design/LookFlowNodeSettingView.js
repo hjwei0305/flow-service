@@ -132,7 +132,17 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "工作界面",
             labelWidth: 100,
             name: "workPageName"
-        }, {
+        }];
+        // if(this.nodeType=="CallActivity") {
+        //     items = items.concat([{
+        //         title: "子流程",
+        //         name: "callActivityDefName",
+        //         allowBlank: false,
+        //         field: ["callActivityDefId"],
+        //         listWidth: 400
+        //     }]);
+        // }
+        items.concat([{
             xtype: "NumberField",
             title: "会签决策",
             labelWidth: 100,
@@ -153,8 +163,8 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "串行",
                 name: "true"
             }]
-        }];
-        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask") {
+        }]);
+        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask") {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",

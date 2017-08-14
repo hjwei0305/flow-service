@@ -71,6 +71,8 @@ public class FlowDefinationController {
     @ResponseBody
     public String listFlowDefination(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
+        search.addQuickSearchProperty("defKey");
+        search.addQuickSearchProperty("name");
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         PageResult<FlowDefination> flowDefinationPageResult = proxy.findByPage(search);
         return JsonUtil.serialize(flowDefinationPageResult);

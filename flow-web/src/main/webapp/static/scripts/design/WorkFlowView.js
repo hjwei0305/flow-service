@@ -59,7 +59,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: "flowTypeName",
             field: ["flowTypeId"],
             displayText: "请选择流程类型",
-            listWidth: 400,
+            listWidth: isCopy && !isFromVersion?370:400,
             showSearch: true,
             searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
             gridCfg: {
@@ -91,7 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }]
             },
             labelWidth: 85,
-            width: 190,
+            width: isCopy && !isFromVersion?160:190,
             readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
             allowBlank: false,
             beforeSelect: function (data) {
@@ -140,7 +140,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "TextField",
             name: "id",
-            width: 110,
+            width: isCopy && !isFromVersion?100:110,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
             labelWidth: 85,
             allowBlank: false,
@@ -159,18 +159,28 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "TextField",
             displayText: "请输入流程名称",
             labelWidth: 85,
-            width: 240,
+            width: isCopy && !isFromVersion?160:240,
             allowBlank: false,
             name: "name"
         }, {
             xtype: "NumberField",
             displayText: "请输入优先级",
-            labelWidth: 65,
-            width: 80,
+            labelWidth: isCopy && !isFromVersion?65:85,
+            width: isCopy && !isFromVersion?80:100,
             allowNegative: false,
             name: "priority"
-        }];
-        if(isCopy&&!isFromVersion){//流程定义惨老创建
+        },
+        //     {
+        //     xtype: "ComboBox",
+        //     width: 141,
+        //     displayText: "是否允许为子流程",
+        //     name: "subProcessName",
+        //     reader: {name: 'name', field: ['value']},
+        //     field: ["subProcess"],
+        //     data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
+        // }
+        ];
+        if(isCopy&&!isFromVersion){//流程定义参考创建
             item=[{
                 xtype: "ComboTree",
                 id: "orgtree",
@@ -180,23 +190,27 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 data: [],
                 async : false,
                 canClear: false,
-                width: 150,
+                width: 130,
                 treeCfg: {
                     autoLoad:true,
                     async : false,
-                    // url: _ctxPath + "/flowDefination/listAllOrgs",
-                    url: "../flowDefination/listAllOrgs",
+                    url: _ctxPath + "/flowDefination/listAllOrgs",
                     showField: "name"
                 },
                 reader: {
                     field: ["id","code"],
                     name: "name"
+                },
+                afterSelect:function (data) {
+                    g.orgId=data.data.id;
+                    g.orgCode=data.data.code;
+                    g.orgName=data.data.name;
                 }
             }].concat(item);
         }
         return [{
             xtype: "FormPanel",
-            width: 815,
+            width: 816,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -1120,6 +1134,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             versionCode: this.versionCode,
             priority: baseInfo.priority,
             businessModelId: this.businessModelId,
+            //subprocess:baseInfo.subprocess,
             process: process
         };
     }
@@ -1206,6 +1221,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
     },
     loadHead: function (data) {
+        // if(data.subProcess){
+        //     data.subProcessName="是";
+        // }else {
+        //     data.subProcessName="否";
+        // }
         var headData = {
             name: data.process.name,
             id: data.process.id,
