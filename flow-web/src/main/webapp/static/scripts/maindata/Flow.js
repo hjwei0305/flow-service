@@ -1623,7 +1623,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 g.showWind();
                 g.showFlowHistoryTopData(g.defaultData.data.flowInstance);
                 g.showFlowHistoryData(g.defaultData.data.flowHistoryList);
-                g.showFlowStatusData(g.defaultData.data.flowTaskList);
+                g.showFlowStatusData(g.defaultData.data.flowTaskList,g.defaultData.data.flowInstance);
                 myMask.hide();
             }, failure: function (result) {
                 myMask.hide();
@@ -1701,7 +1701,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                     $(".flow-historyprogress").html("");
                     $(".flow-end").css("display", "none");
                     g.showFlowHistoryData(data.data.data.flowHistoryList);
-                    g.showFlowStatusData(data.data.data.flowTaskList);
+                    g.showFlowStatusData(data.data.data.flowTaskList,data.data.data.flowInstance);
                 }
             }, {
                 xtype: "Button",
@@ -1815,14 +1815,16 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         }
     },
     //拼接流程状态数据的html
-    showFlowStatusData: function (data) {
+    showFlowStatusData: function (data,flowInstance) {
         var g = this;
         var html = "";
         if (data.length == 0) {
             if (g.isManuallyEnd) {
                 html = "流程已被发起人终止";
-            } else {
+            } else if(!flowInstance || flowInstance.ended){
                 html = g.lang.flowFinishedText;
+            }else {
+                html = g.lang.flowInSuspendText;
             }
             $(".statuscenter-info").addClass("text-center")
         } else {

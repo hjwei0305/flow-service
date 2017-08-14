@@ -380,6 +380,7 @@ if (Flow.flow.FlowHistory) {
         handleAbstractText: "处理摘要：",
         noneText: "无",
         flowFinishedText: "流程已处理完成",
+        flowInSuspendText: "流程处理中，还未生成待办",
         waitProcessorText: "等待处理人：",
         taskArrivalTimeText: "任务到达时间：",
         dayText: "天",
