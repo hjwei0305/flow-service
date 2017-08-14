@@ -63,6 +63,7 @@ public class Process extends BaseNode implements Serializable {
     private List<ManualTask> manualTask;
     private List<ScriptTask> scriptTask;
     private List<ServiceTask> serviceTask;
+    private List<ReceiveTask> receiveTask;
     private List<ExclusiveGateway> exclusiveGateway;
     private List<InclusiveGateway> inclusiveGateway;
     private List<ParallelGateway> parallelGateway;
@@ -110,6 +111,7 @@ public class Process extends BaseNode implements Serializable {
             manualTask = new ArrayList<ManualTask>();
             scriptTask = new ArrayList<ScriptTask>();
             serviceTask = new ArrayList<ServiceTask>();
+            receiveTask = new ArrayList<ReceiveTask>();
             exclusiveGateway = new ArrayList<ExclusiveGateway>();
             inclusiveGateway = new ArrayList<InclusiveGateway>();
             parallelGateway = new ArrayList<ParallelGateway>();
@@ -268,6 +270,35 @@ public class Process extends BaseNode implements Serializable {
                         initMessageListener(serviceTaskTemp,node);
                         serviceTask.add(serviceTaskTemp);
                         baseFlowNodeTemp  = serviceTaskTemp;
+                        break;
+                    case "ReceiveTask":
+                        ReceiveTask receiveTaskTemp = (ReceiveTask) JSONObject.toBean(node, ReceiveTask.class);
+                        extensionElement  = receiveTaskTemp.getExtensionElement();
+                        if(extensionElement == null){
+                            extensionElement = new ExtensionElement();
+                        }
+                        //添加默认任务到达监听器
+                        executionListener = new ExecutionListener();
+                        executionListener.setEvent("start");
+                        executionListener.setDelegateExpression("${receiveTaskBeforeListener}");
+                        executionListeners = extensionElement.getExecutionListener();
+                        if(executionListeners == null){
+                            executionListeners = new ArrayList<ExecutionListener>();
+                        }
+                        executionListeners.add(executionListener);
+
+                        //添加默认任务执行后监听器
+                        executionListener = new ExecutionListener();
+                        executionListener.setEvent("end");
+                        executionListener.setDelegateExpression("${receiveTaskAfterListener}");
+                        executionListeners.add(executionListener);
+
+                        extensionElement.setExecutionListener(executionListeners);
+                        receiveTaskTemp.setExtensionElement(extensionElement);
+                        initEventListener(receiveTaskTemp,node);
+                        initMessageListener(receiveTaskTemp,node);
+                        receiveTask.add(receiveTaskTemp);
+                        baseFlowNodeTemp  = receiveTaskTemp;
                         break;
                     case "ExclusiveGateway":
                         ExclusiveGateway exclusiveGatewayTemp = (ExclusiveGateway) JSONObject.toBean(node, ExclusiveGateway.class);
@@ -573,5 +604,13 @@ public class Process extends BaseNode implements Serializable {
 
     public void setFlowDefVersionId(String flowDefVersionId) {
         this.flowDefVersionId = flowDefVersionId;
+    }
+
+    public List<ReceiveTask> getReceiveTask() {
+        return receiveTask;
+    }
+
+    public void setReceiveTask(List<ReceiveTask> receiveTask) {
+        this.receiveTask = receiveTask;
     }
 }

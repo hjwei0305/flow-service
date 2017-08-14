@@ -13,7 +13,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAfterPositionData: null,
     type:null,
     initComponent: function () {
-        if(this.type == "ServiceTask"){
+        if(this.type == "ServiceTask"|| this.type == "ReceiveTask"){
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -139,7 +139,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if (g.type!='ServiceTask' && !g.checkExcutor()) {
+                if ((g.type!='ServiceTask'&& g.type!='ReceiveTask') && !g.checkExcutor()) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请将执行人项配置完整"
@@ -150,9 +150,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var eventForm = EUI.getCmp("event");
                 var normalData = normalForm.getFormValue();
                 var eventData = eventForm.getFormValue();
+                var executor = '';
+                if(g.type!='ServiceTask'&& g.type!='ReceiveTask'){
+                    executor = g.getExcutorData()
+                }
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
-                    executor:g.type!='ServiceTask'? g.getExcutorData():'',
+                    executor: executor,
                     event: eventData,
                     notify: g.getNotifyData()
                 });
@@ -274,7 +278,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }]);
         }
-        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"){
+        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"){
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -745,7 +749,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         afterPosition.positionData = this.notifyAfterPositionData || [];
         afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
         var g = this;
-        if(g.type == "ServiceTask"){
+        if(g.type == "ServiceTask" || g.type == "ReceiveTask"){
             data.before = {
                 notifyStarter: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
                 notifyPosition: beforePosition
@@ -1266,7 +1270,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        if(g.type!='ServiceTask'){
+        if(g.type!='ServiceTask' &&　g.type!='ReceiveTask'){
             var userType = this.data.executor.userType;
             var userTypeCmp = EUI.getCmp("userType");
             userTypeCmp.setValue(userType);
@@ -1291,7 +1295,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     loadNotifyData: function (tab, data) {
         var g = this;
-        if(g.type == "ServiceTask"){
+        if(g.type == "ServiceTask" || g.type == "ReceiveTask"){
             EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
             EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
         }else {

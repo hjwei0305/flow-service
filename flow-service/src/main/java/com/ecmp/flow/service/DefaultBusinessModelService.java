@@ -9,12 +9,14 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
+import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.type.TypeReference;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.misc.Hash;
 import org.slf4j.Logger;
@@ -128,6 +130,46 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 //获取执行人
                 result = proxy.getExecutorsByEmployeeIds(idList);
             }
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     * @param id  业务单据id
+     * @param changeText   参数文本
+     * @return
+     */
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public boolean testReceiveCall(String id,String changeText){
+        boolean result = false;
+      String receiveTaskActDefId = null;
+        if(StringUtils.isNotEmpty(changeText)){
+            JSONObject jsonObject = JSONObject.fromObject(changeText);
+            //HashMap<String,Object> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
+            receiveTaskActDefId = jsonObject.get("receiveTaskActDefId")+"";
+        }
+        changeText="ReceiveCall";
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
+        if(entity != null){
+            entity.setWorkCaption(entity.getWorkCaption()+":"+changeText);
+            defaultBusinessModelDao.save(entity);
+            final String  fReceiveTaskActDefId = receiveTaskActDefId;
+            new Thread(new Runnable() {//模拟异步
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000*10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+                    proxy.signalByBusinessId(id,fReceiveTaskActDefId,null);
+                }
+            }).start();
+
+            result = true;
         }
         return result;
     }

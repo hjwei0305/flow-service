@@ -525,6 +525,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 // iconCss = "choose-checkbox";
             } else if(flowTaskType==="servicetask"){
                 nodeType = this.lang.serviceTaskText;
+            }else if(flowTaskType==="receiveTask"){
+                nodeType = this.lang.receiveTaskText;
             }
             var nodeHtml = '<div class="flow-node-box" index="' + i + '">' +
                 '<div class="flow-excutor-title">' + node.name + '-[' + nodeType +
@@ -1207,6 +1209,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
              //   iconCss = "choose-checkbox";
             } else if(flowTaskType === "servicetask"){
                 nodeType = this.lang.serviceTaskText;
+            } else if(flowTaskType === "receivetask"){
+                nodeType = this.lang.receiveTaskText;
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
                 '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType+']">' + node.name + '-[' + nodeType +

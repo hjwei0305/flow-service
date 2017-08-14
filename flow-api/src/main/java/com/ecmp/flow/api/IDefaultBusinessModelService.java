@@ -1,19 +1,14 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.basic.entity.Employee;
 import com.ecmp.basic.entity.vo.Executor;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.DefaultBusinessModel;
-import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -90,5 +85,19 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
     public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId,@QueryParam("paramJson")String paramJson);
+
+
+ /**
+  *
+  * @param id  业务单据id
+  * @param changeText   参数文本
+  * @return
+  */
+ @POST
+ @Path("testReceiveCall")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试ReceiveCall",notes = "测试ReceiveCall")
+ public boolean testReceiveCall(@QueryParam("id")String id,@QueryParam("paramJson")String changeText);
 
 }

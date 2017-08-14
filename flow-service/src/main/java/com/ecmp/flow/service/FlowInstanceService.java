@@ -19,6 +19,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -170,7 +171,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     public FlowInstance  findLastInstanceByBusinessId(String businessId){
         List<FlowInstance> list =flowInstanceDao.findByBusinessIdOrder(businessId);
-        if(list!=null){
+        if(list!=null && !list.isEmpty()){
             return list.get(0);
         }else {
             return null;
@@ -384,5 +385,28 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
         return  this.end(flowInstance.getId());
     }
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult signalByBusinessId(String businessId,String receiveTaskActDefId,Map<String,Object> v){
+        if(StringUtils.isEmpty(receiveTaskActDefId)){
+            return OperateResult.OperationFailure("10032");
+        }
+        OperateResult result =  OperateResult.OperationSuccess("10029");
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricActivityInstance receiveTaskActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(actInstanceId).activityId(receiveTaskActDefId).unfinished().singleResult();
+            if(receiveTaskActivityInstance != null ){
+                    String executionId = receiveTaskActivityInstance.getExecutionId();
+                    runtimeService.signal(executionId,v);
+            }else{
+                    result =  OperateResult.OperationFailure("10031");
+            }
+        }else{
+            result =  OperateResult.OperationFailure("10030");
+        }
+           return result;
+    }
+
 
 }

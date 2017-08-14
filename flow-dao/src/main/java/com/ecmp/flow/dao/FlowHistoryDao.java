@@ -30,10 +30,20 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>,CustomFlowHis
 
 
     /**
-     * 根据流程实例id查询待办
+     * 根据流程实例id查询历史
      * @param actInstanceId
      * @return
      */
     @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
-    public  FlowHistory findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
+    public   List<FlowHistory> findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
+
+
+
+    /**
+     * 根据流程实例id查询历史
+     * @param actInstanceId
+     * @return
+     */
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
+    public  Integer findCountByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
 }

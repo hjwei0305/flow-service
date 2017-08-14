@@ -956,7 +956,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             PvmActivity nextActivity = nextTransition.getDestination();
             Boolean ifGateWay = ifGageway(nextActivity);
             String type = nextActivity.getProperty("type")+"";
-            if("ServiceTask".equalsIgnoreCase(type)){//服务任务不允许撤回
+            if("ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)){//服务任务/接收任务不允许撤回
                 return false;
             }
             if (ifGateWay|| "ManualTask".equalsIgnoreCase(type)) {
@@ -1292,6 +1292,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("serviceTask");
+                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                    String  startUserId =  ContextUtil.getSessionUser().getUserId();
+                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        employeeSet.addAll(employees);
+                        nodeInfo.setExecutorSet(employeeSet);
+                    }
+                }else if("receiveTask".equalsIgnoreCase(nodeInfo.getType())){
+                    nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
+                    nodeInfo.setUiType("radiobox");
+                    nodeInfo.setFlowTaskType("receiveTask");
                     IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
@@ -2241,6 +2253,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else if("ServiceTask".equals(nodeType)){//服务任务
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("serviceTask");
+        }else if("ReceiveTask".equals(nodeType)){//服务任务
+            tempNodeInfo.setUiType("radiobox");
+            tempNodeInfo.setFlowTaskType("receiveTask");
         }else {
             throw new RuntimeException("流程任务节点配置有错误");
         }

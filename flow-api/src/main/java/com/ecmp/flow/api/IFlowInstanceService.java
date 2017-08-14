@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -210,4 +211,19 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
     public OperateResult endByBusinessId(@PathParam("businessId")String businessId);
+
+
+    /**
+     * 激活ReceiveTask
+     *
+     * @param businessId 业务单据id
+     * @param receiveTaskActDefId 实际节点id
+     * @param v 其他参数值Map
+     */
+    @POST
+    @Path("signalByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
+    public OperateResult signalByBusinessId(@QueryParam("businessId")String businessId,@QueryParam("receiveTaskActDefId")String receiveTaskActDefId,Map<String,Object> v);
 }

@@ -269,6 +269,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             } else if (node.flowTaskType == "SerialTask") {
                 nodeType = "串行任务";
                 iconCss = "choose-checkbox";
+            }else if (node.flowTaskType == "serviceTask") {
+                nodeType = "服务任务";
+            }else if (node.flowTaskType == "receiveTask") {
+                nodeType = "接收任务";
             }
             var nodeHtml = '<div class="flowstart-node-box" index="' + i + '">' +
                 '<div class="flowstart-excutor-title" title="'+ node.name + '-[' + nodeType +']">' + node.name + '-[' + nodeType +

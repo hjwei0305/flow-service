@@ -275,6 +275,7 @@ if (Flow.flow.FlowStart) {
         SerialTaskText: "串行任务",
         ParallelTaskText: "并行任务",
         serviceTaskText: "服务任务",
+        receiveTaskText: "接收任务",
         showUserInfoText: "名称：{0}，岗位：{1}，组织机构：{2}，编号：{3}",
         showUserInfo2Text: "名称：{0}，组织机构：{1}，编号：{2}",
         chooseExecutorMsgText: "请选择[{0}]的执行人",
