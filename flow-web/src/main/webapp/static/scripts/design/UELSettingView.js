@@ -111,7 +111,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if(!g.isDefault&&!logicUel&&!g.showName){
+                if((!g.isDefault&&!logicUel&&!g.showName)||g.isDefault){
                     var data = {
                         name: name,
                         isDefault: isDefault,
