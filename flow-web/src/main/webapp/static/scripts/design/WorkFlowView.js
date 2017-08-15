@@ -1231,7 +1231,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: data.flowTypeId,
             flowTypeName: data.flowTypeName,
             baseInfo: data.baseInfo,
-            priority: data.priority
+            priority: data.priority,
+            subProcess:data.subProcess,
+            subProcessName:data.subProcessName
         };
         this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
@@ -1354,9 +1356,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 mask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-                     result.data.id;
                     // if(g.isCopy&&!g.deploy){
-                        g.id=result.data.flowDefination.id;
+                        g.id=result.data.data.flowDefination.id;
                     // }
                 }
             },

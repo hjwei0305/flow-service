@@ -155,6 +155,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
+        Boolean canAsSubProcess = definition.getSubProcess();
         if(definition.getId()!=null){
             flowDefination = flowDefinationDao.findOne(definition.getId());
         }
@@ -186,6 +187,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
            // flowDefination.setCurrentFlowDefVersion(1L);I
             flowDefination.setFlowDefinationStatus(FlowDefinationStatus.INIT);
             flowDefination.setPriority(definition.getPriority());
+            flowDefination.setSubProcess(canAsSubProcess);
             flowDefinationDao.save(flowDefination);
 
             entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
@@ -198,6 +200,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 //            entity.setDefBpmn(defBpm);
             entity.setDefXml(defBpm);
             entity.setPriority(definition.getPriority());
+            entity.setSubProcess(canAsSubProcess);
 
             flowDefVersionDao.save(entity);
             logger.info("Saved FlowDefVersion id is {}", entity.getId());
@@ -229,10 +232,12 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setDefXml(defBpm);
                 entity.setName(process.getName());
                 entity.setPriority(definition.getPriority());
+                entity.setSubProcess(canAsSubProcess);
                 flowDefVersionDao.save(entity);
                 flowDefination.setLastVersionId(entity.getId());
                 flowDefination.setPriority(definition.getPriority());
                 flowDefination.setName(process.getName());
+                flowDefination.setSubProcess(canAsSubProcess);
                 flowDefinationDao.save(flowDefination);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());
             }else {//版本为空
@@ -251,11 +256,13 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     entity.setStartUel(process.getStartUEL().toString());
                 }
                 entity.setPriority(definition.getPriority());
+                entity.setSubProcess(canAsSubProcess);
                 flowDefVersionDao.save(entity);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());
                 flowDefination.setName(process.getName());
                 flowDefination.setLastVersionId(entity.getId());
                 flowDefination.setPriority(definition.getPriority());
+                flowDefination.setSubProcess(canAsSubProcess);
                 flowDefinationDao.save(flowDefination);
                 logger.info("Saved FlowDefination id is {}", flowDefination.getId());
             }
