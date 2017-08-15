@@ -108,9 +108,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         logger.info("Saved FlowDefination id is {}", flowDefination.getId());
         OperateResultWithData<FlowDefVersion> operateResult;
         if (isNew) {
-            operateResult = OperateResultWithData.OperationSuccess("core_00001");
+            operateResult = OperateResultWithData.operationSuccess("core_00001");
         } else {
-            operateResult = OperateResultWithData.OperationSuccess("core_00002");
+            operateResult = OperateResultWithData.operationSuccess("core_00002");
         }
         operateResult.setData(entity);
         return operateResult;
@@ -119,24 +119,24 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
     public OperateResultWithData<FlowDefVersion> changeStatus(String id,FlowDefinationStatus  status){
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
         if(flowDefVersion == null){
-            return  OperateResultWithData.OperationFailure("10003");
+            return  OperateResultWithData.operationFailure("10003");
         }
         if(status==FlowDefinationStatus.Freeze){
             if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {
                 //10021=当前非激活状态，禁止冻结！
-                return  OperateResultWithData.OperationFailure("10021");
+                return  OperateResultWithData.operationFailure("10021");
             }
         }else if (status==FlowDefinationStatus.Activate){
             if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Freeze) {
                 //10020=当前非冻结状态，禁止激活！
-                return  OperateResultWithData.OperationFailure("10020");
+                return  OperateResultWithData.operationFailure("10020");
             }
         }
         flowDefVersion.setFlowDefinationStatus(status);
         flowDefVersionDao.save(flowDefVersion);
         //10018=冻结成功
         //10019=激活成功
-        return  OperateResultWithData.OperationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
+        return  OperateResultWithData.operationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
     }
 
 
@@ -151,7 +151,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         String flowTypeId =definition.getFlowTypeId();
         FlowType flowType = flowTypeDao.findOne(flowTypeId);
         if(flowType == null){ //流程版本必须指定流程类型
-            return  OperateResultWithData.OperationFailure("10007");
+            return  OperateResultWithData.operationFailure("10007");
         }
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
@@ -162,7 +162,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         if(flowDefination == null){
             flowDefination = flowDefinationDao.findByDefKey(process.getId());
             if(flowDefination!=null){
-                return  OperateResultWithData.OperationFailure("10028");
+                return  OperateResultWithData.operationFailure("10028");
             }
         }
         String defBpm = XmlUtil.serialize(definition);
@@ -263,9 +263,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         OperateResultWithData<FlowDefVersion> operateResult;
         if (isNew) {
-            operateResult = OperateResultWithData.OperationSuccess("core_00001");
+            operateResult = OperateResultWithData.operationSuccess("core_00001");
         } else {
-            operateResult = OperateResultWithData.OperationSuccess("core_00002");
+            operateResult = OperateResultWithData.operationSuccess("core_00002");
         }
         operateResult.setData(entity);
         return operateResult;
@@ -278,11 +278,11 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
      */
     @Override
     public OperateResult delete(String id) {
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result =  OperateResult.operationSuccess("core_00003");
         FlowDefVersion  entity = flowDefVersionDao.findOne(id);
         List<FlowInstance> flowInstanceList = flowInstanceDao.findByFlowDefVersionId(entity.getId());
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
-            result = OperateResult.OperationFailure("10024");
+            result = OperateResult.operationFailure("10024");
             return result;
         }
         FlowDefination flowDefination = entity.getFlowDefination();

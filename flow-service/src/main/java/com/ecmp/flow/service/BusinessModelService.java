@@ -61,14 +61,14 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     e.printStackTrace();
                     SQLException sqlException = (SQLException)e.getCause().getCause();
                     if(sqlException!=null && "23000".equals(sqlException.getSQLState())){
-                        return OperateResult.OperationFailure("10027");
+                        return OperateResult.operationFailure("10027");
                     }else {
                         throw  e;
                     }
                 }
-                return OperateResult.OperationSuccess("core_00003");
+                return OperateResult.operationSuccess("core_00003");
             } else {
-                return OperateResult.OperationWarning("core_00004");
+                return OperateResult.operationWarning("core_00004");
             }
         }
         return operateResult;

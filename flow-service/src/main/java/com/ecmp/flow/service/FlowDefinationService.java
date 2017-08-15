@@ -148,9 +148,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         OperateResultWithData<FlowDefination> operateResult;
         if (isNew) {
-            operateResult = OperateResultWithData.OperationSuccess("core_00001");
+            operateResult = OperateResultWithData.operationSuccess("core_00001");
         } else {
-            operateResult = OperateResultWithData.OperationSuccess("core_00002");
+            operateResult = OperateResultWithData.operationSuccess("core_00002");
         }
         operateResult.setData(entity);
         return operateResult;
@@ -928,13 +928,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     @Override
     public OperateResult delete(String id) {
-        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.operationSuccess("core_00003");
         List<FlowDefVersion> flowDefVersions = flowDefVersionDao.findByFlowDefinationId(id);
             for (FlowDefVersion flowDefVersion : flowDefVersions) {
                 String actDeployId = flowDefVersion.getActDeployId();
                 List<FlowInstance> flowInstanceList = flowInstanceDao.findByFlowDefVersionId(flowDefVersion.getId());
                 if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
-                    result = OperateResult.OperationFailure("10024");
+                    result = OperateResult.operationFailure("10024");
                     return result;
                 }
                 flowDefVersionDao.delete(flowDefVersion);
@@ -1304,24 +1304,24 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     public OperateResultWithData<FlowDefination> changeStatus(String id,FlowDefinationStatus  status){
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if(flowDefination == null){
-            return  OperateResultWithData.OperationFailure("10003");
+            return  OperateResultWithData.operationFailure("10003");
         }
         if(status==FlowDefinationStatus.Freeze){
             if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {
                 //10021=当前非激活状态，禁止冻结！
-                return  OperateResultWithData.OperationFailure("10021");
+                return  OperateResultWithData.operationFailure("10021");
             }
         }else if (status==FlowDefinationStatus.Activate){
             if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Freeze) {
                 //10020=当前非冻结状态，禁止激活！
-                return  OperateResultWithData.OperationFailure("10020");
+                return  OperateResultWithData.operationFailure("10020");
             }
         }
         flowDefination.setFlowDefinationStatus(status);
         flowDefinationDao.save(flowDefination);
         //10018=冻结成功
         //10019=激活成功
-        return  OperateResultWithData.OperationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
+        return  OperateResultWithData.operationSuccess(status==FlowDefinationStatus.Freeze?"10018":"10019");
     }
 
 
@@ -1334,7 +1334,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if(StringUtils.isNotEmpty(flowTypeId)){
                 FlowType flowType = flowTypeDao.findOne(flowTypeId);
                 if(flowType == null){
-                    return  OperateResultWithData.OperationFailure("10007");
+                    return  OperateResultWithData.operationFailure("10007");
                 }
                 BusinessModel businessModel = flowType.getBusinessModel();
                 String businessModelId = businessModel.getId();
@@ -1345,15 +1345,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
                 Boolean result = ExpressionUtil.validate(clientApiBaseUrl, clientClassName, conditonFinal);
                 if(result == null){
-                    return  OperateResultWithData.OperationFailure("10025");
+                    return  OperateResultWithData.operationFailure("10025");
                 }else{
-                    return  OperateResultWithData.OperationSuccess("10026");
+                    return  OperateResultWithData.operationSuccess("10026");
                 }
             }else {
-                return  OperateResultWithData.OperationFailure("10007");
+                return  OperateResultWithData.operationFailure("10007");
             }
          }else {
-            return  OperateResultWithData.OperationFailure("10025");
+            return  OperateResultWithData.operationFailure("10025");
         }
     }
 }

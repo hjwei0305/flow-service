@@ -138,7 +138,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.setTaskStatus(TaskStatus.CLAIM.toString());
         flowTaskDao.save(flowTask);
         flowTaskDao.deleteNotClaimTask(actTaskId, id);
-        OperateResult result = OperateResult.OperationSuccess("10012");
+        OperateResult result = OperateResult.operationSuccess("10012");
         return result;
     }
 
@@ -502,7 +502,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
 
-        OperateResultWithData<FlowStatus> result = OperateResultWithData.OperationSuccess("10017");
+        OperateResultWithData<FlowStatus> result = OperateResultWithData.operationSuccess("10017");
         if (instance == null || instance.isEnded()) {
             result.setData(FlowStatus.COMPLETED);//任务结束
             flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
@@ -560,7 +560,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
-        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.operationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
         result = this.taskRollBack(flowHistory, opinion);
         return result;
@@ -614,21 +614,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) {
-        OperateResult result = OperateResult.OperationSuccess("10006");
+        OperateResult result = OperateResult.operationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
-            return OperateResult.OperationFailure("10009");
+            return OperateResult.operationFailure("10009");
         }
         flowTask.setDepict(opinion);
         if (flowTask != null && StringUtils.isNotEmpty(flowTask.getPreId())) {
             FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
             if (preFlowTask == null) {
-                return OperateResult.OperationFailure("10016");
+                return OperateResult.operationFailure("10016");
             } else {
                 result = this.activitiReject(flowTask, preFlowTask);
             }
         } else {
-            return OperateResult.OperationFailure("10023");
+            return OperateResult.operationFailure("10023");
         }
         return result;
     }
@@ -642,7 +642,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRED)
     private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) {
-        OperateResult result = OperateResult.OperationSuccess("10015");
+        OperateResult result = OperateResult.operationSuccess("10015");
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
                 .singleResult();
@@ -650,7 +650,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(currTask.getProcessInstanceId()).singleResult();
         if (instance == null) {
-            OperateResult.OperationFailure("10009");
+            OperateResult.operationFailure("10009");
         }
         Map variables = new HashMap();
         Map variablesProcess = instance.getProcessVariables();
@@ -665,7 +665,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                 .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
         if (definition == null) {
-            OperateResult.OperationFailure("10009");
+            OperateResult.operationFailure("10009");
         }
 
         // 取得当前任务标节点的活动
@@ -703,7 +703,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 pvmTransitionList.add(pvmTransition);
             }
         } else {
-            result = OperateResult.OperationFailure("10016");
+            result = OperateResult.operationFailure("10016");
         }
         return result;
     }
@@ -716,7 +716,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRED)
     private OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
-        OperateResult result = OperateResult.OperationSuccess("core_00003");
+        OperateResult result = OperateResult.operationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
             Map<String, Object> variables;
@@ -727,7 +727,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(currTask.getProcessInstanceId()).singleResult();
             if (instance == null) {
-                return OperateResult.OperationFailure("10002");//流程实例不存在或者已经结束
+                return OperateResult.operationFailure("10002");//流程实例不存在或者已经结束
             }
             variables = instance.getProcessVariables();
             Map variablesTask = currTask.getTaskLocalVariables();
@@ -736,27 +736,27 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
                 logger.error(ContextUtil.getMessage("10003"));
-                return OperateResult.OperationFailure("10003");//流程定义未找到找到");
+                return OperateResult.operationFailure("10003");//流程定义未找到找到");
             }
 
             String executionId = currTask.getExecutionId();
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
             List<HistoricVariableInstance> historicVariableInstances = historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
             if (execution == null) {
-                return OperateResult.OperationFailure("10014");//当前任务不允许撤回
+                return OperateResult.operationFailure("10014");//当前任务不允许撤回
             }
             // 取得下一步活动
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
             if (currTask.getEndTime() == null) {// 当前任务可能已经被还原
                 logger.error(ContextUtil.getMessage("10008"));
-                return OperateResult.OperationFailure("10008");//当前任务可能已经被还原
+                return OperateResult.operationFailure("10008");//当前任务可能已经被还原
             }
 
             Boolean resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
             if (!resultCheck) {
                 logger.info(ContextUtil.getMessage("10005"));
-                return OperateResult.OperationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
+                return OperateResult.operationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
             }
 
             HistoricActivityInstance historicActivityInstance = null;
@@ -778,7 +778,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             if (historicActivityInstance == null) {
                 logger.error(ContextUtil.getMessage("10009"));
-                return OperateResult.OperationFailure("10009");//当前任务找不到
+                return OperateResult.operationFailure("10009");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
                 if (execution.getActivityId() != null) {
@@ -855,7 +855,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             e.printStackTrace();
             logger.error(e.getMessage());
 
-            return OperateResult.OperationFailure("10004");//流程取回失败，未知错误
+            return OperateResult.operationFailure("10004");//流程取回失败，未知错误
         }
     }
 

@@ -91,7 +91,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String actInstanceId = entity.getActInstanceId();
         this.deleteActiviti(actInstanceId);
         flowInstanceDao.delete(entity);
-        OperateResult result =  OperateResult.OperationSuccess("core_00003");
+        OperateResult result =  OperateResult.operationSuccess("core_00003");
         return result;
     }
     /**
@@ -126,7 +126,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         FlowInstance entity = flowInstanceDao.findOne(id);
         String actInstanceId = entity.getActInstanceId();
         this.suspendActiviti(actInstanceId);
-        OperateResult result =  OperateResult.OperationSuccess("00001");
+        OperateResult result =  OperateResult.operationSuccess("00001");
         return result;
     }
 
@@ -311,7 +311,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult end(String id) {
-        OperateResult result =  OperateResult.OperationSuccess("10010");
+        OperateResult result =  OperateResult.operationSuccess("10010");
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
@@ -375,7 +375,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             FlowStatus status = FlowStatus.INIT;
             ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
         }else {
-            result =  OperateResult.OperationFailure("10011");//不能终止
+            result =  OperateResult.operationFailure("10011");//不能终止
         }
         return result;
     }
@@ -389,9 +389,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult signalByBusinessId(String businessId,String receiveTaskActDefId,Map<String,Object> v){
         if(StringUtils.isEmpty(receiveTaskActDefId)){
-            return OperateResult.OperationFailure("10032");
+            return OperateResult.operationFailure("10032");
         }
-        OperateResult result =  OperateResult.OperationSuccess("10029");
+        OperateResult result =  OperateResult.operationSuccess("10029");
         FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
         if(flowInstance != null && !flowInstance.isEnded()){
             String actInstanceId = flowInstance.getActInstanceId();
@@ -400,10 +400,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     String executionId = receiveTaskActivityInstance.getExecutionId();
                     runtimeService.signal(executionId,v);
             }else{
-                    result =  OperateResult.OperationFailure("10031");
+                    result =  OperateResult.operationFailure("10031");
             }
         }else{
-            result =  OperateResult.OperationFailure("10030");
+            result =  OperateResult.operationFailure("10030");
         }
            return result;
     }

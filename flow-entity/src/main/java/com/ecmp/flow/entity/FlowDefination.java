@@ -112,6 +112,13 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
 	/**
+	 * 是否允许做为子流程来进行引用
+	 */
+	@Column(name="sub_process")
+	private Boolean subProcess;
+
+
+	/**
 	 * 当前对应的流程版本
 	 */
 	@Transient
@@ -252,6 +259,14 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setLastDeloyVersionId(String lastDeloyVersionId) {
 		this.lastDeloyVersionId = lastDeloyVersionId;
+	}
+
+	public Boolean getSubProcess() {
+		return subProcess;
+	}
+
+	public void setSubProcess(Boolean subProcess) {
+		this.subProcess = subProcess;
 	}
 
 	@Override
