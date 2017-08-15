@@ -169,16 +169,15 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             width: isCopy && !isFromVersion?80:100,
             allowNegative: false,
             name: "priority"
-        },
-        //     {
-        //     xtype: "ComboBox",
-        //     width: 141,
-        //     displayText: "是否允许为子流程",
-        //     name: "subProcessName",
-        //     reader: {name: 'name', field: ['value']},
-        //     field: ["subProcess"],
-        //     data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
-        // }
+        },{
+            xtype: "ComboBox",
+            width: 141,
+            displayText: "是否允许为子流程",
+            name: "subProcessName",
+            reader: {name: 'name', field: ['value']},
+            field: ["subProcess"],
+            data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
+        }
         ];
         if(isCopy&&!isFromVersion){//流程定义参考创建
             item=[{
@@ -1134,7 +1133,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             versionCode: this.versionCode,
             priority: baseInfo.priority,
             businessModelId: this.businessModelId,
-            //subprocess:baseInfo.subprocess,
+            subprocess:baseInfo.subprocess,
             process: process
         };
     }
@@ -1221,11 +1220,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
     },
     loadHead: function (data) {
-        // if(data.subProcess){
-        //     data.subProcessName="是";
-        // }else {
-        //     data.subProcessName="否";
-        // }
+        if(data.subProcess){
+            data.subProcessName="是";
+        }else {
+            data.subProcessName="否";
+        }
         var headData = {
             name: data.process.name,
             id: data.process.id,

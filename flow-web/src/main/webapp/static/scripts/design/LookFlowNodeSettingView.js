@@ -133,15 +133,15 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             name: "workPageName"
         }];
-        // if(this.nodeType=="CallActivity") {
-        //     items = items.concat([{
-        //         title: "子流程",
-        //         name: "callActivityDefName",
-        //         allowBlank: false,
-        //         field: ["callActivityDefId"],
-        //         listWidth: 400
-        //     }]);
-        // }
+        if(this.nodeType=="CallActivity") {
+            items = items.concat([{
+                title: "子流程",
+                name: "callActivityDefName",
+                allowBlank: false,
+                field: ["callActivityDefId"],
+                listWidth: 400
+            }]);
+        }
         items.concat([{
             xtype: "NumberField",
             title: "会签决策",
