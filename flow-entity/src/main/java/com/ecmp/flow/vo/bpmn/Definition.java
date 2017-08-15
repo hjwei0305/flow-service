@@ -92,6 +92,12 @@ public class Definition implements Serializable {
     @XmlTransient
     private int versionCode;
 
+    /**
+     * 就否允许作为子流程引用
+     */
+    @XmlTransient
+    private Boolean subProcess;
+
 
     public Process getProcess() {
         return process;
@@ -182,5 +188,13 @@ public class Definition implements Serializable {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public Boolean getSubProcess() {
+        return subProcess;
+    }
+
+    public void setSubProcess(Boolean subProcess) {
+        this.subProcess = subProcess;
     }
 }

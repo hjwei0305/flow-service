@@ -12,7 +12,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAfterPositionData: null,
     initComponent: function () {
         var g = this;
-        if(g.type == "ServiceTask" || g.nodeType == "ServiceTask" ){
+        if(g.type == "ServiceTask" || g.nodeType == "ReceiveTask" ){
             this.window = EUI.Window({
                 title: "节点配置",
                 width: 550,
@@ -164,7 +164,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "true"
             }]
         }]);
-        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask") {
+        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask") {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",

@@ -1133,7 +1133,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             versionCode: this.versionCode,
             priority: baseInfo.priority,
             businessModelId: this.businessModelId,
-            subprocess:baseInfo.subprocess,
+            subProcess:baseInfo.subProcess,
             process: process
         };
     }
@@ -1354,7 +1354,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 mask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-                    g.flowDefVersionId = result.data.id;
+                     result.data.id;
                     // if(g.isCopy&&!g.deploy){
                         g.id=result.data.flowDefination.id;
                     // }
