@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
@@ -42,6 +43,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/businessModel")
+@IgnoreCheckAuth
 public class BusinessModuleController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)

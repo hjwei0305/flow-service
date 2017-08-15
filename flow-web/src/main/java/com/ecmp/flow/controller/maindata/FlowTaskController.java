@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
@@ -46,6 +47,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/flowTask")
+@IgnoreCheckAuth
 public class FlowTaskController {
 
 

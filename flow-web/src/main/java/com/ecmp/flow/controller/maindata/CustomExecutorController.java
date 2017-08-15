@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.basic.api.IEmployeeService;
 import com.ecmp.basic.entity.Employee;
 import com.ecmp.basic.entity.vo.EmployeeQueryParam;
@@ -39,6 +40,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/customExecutor")
+@IgnoreCheckAuth
 public class CustomExecutorController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)

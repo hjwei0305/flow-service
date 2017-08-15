@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping(value = "/defaultBusinessModel3")
+@IgnoreCheckAuth
 public class DefaultBusinessModel3Controller extends FlowBaseController<IDefaultBusinessModel3Service,DefaultBusinessModel3> {
 
     public DefaultBusinessModel3Controller(){

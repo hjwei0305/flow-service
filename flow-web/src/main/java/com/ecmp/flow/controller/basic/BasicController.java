@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.basic;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.basic.api.IOrganizationService;
 import com.ecmp.basic.api.IPositionCategoryService;
 import com.ecmp.basic.api.IPositionService;
@@ -34,6 +35,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/basic")
+@IgnoreCheckAuth
 public class BasicController {
 
 

@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
@@ -41,6 +42,7 @@ import java.text.ParseException;
  */
 @Controller
 @RequestMapping(value = "/flowHistory")
+@IgnoreCheckAuth
 public class FlowHistoryController extends FlowBaseController{
 
     @RequestMapping(value = "show", method = RequestMethod.GET)

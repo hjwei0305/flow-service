@@ -127,7 +127,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 //	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefVersion")
     private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
-    // Constructors
+
+    /**
+     * 是否允许做为子流程来进行引用
+     */
+    @Column(name="sub_process")
+    private Boolean subProcess;
+
 
     /**
      * default constructor
@@ -284,6 +290,14 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setFlowDefinationStatus(FlowDefinationStatus flowDefinationStatus) {
         this.flowDefinationStatus = flowDefinationStatus;
+    }
+
+    public Boolean getSubProcess() {
+        return subProcess;
+    }
+
+    public void setSubProcess(Boolean subProcess) {
+        this.subProcess = subProcess;
     }
 
     @Override

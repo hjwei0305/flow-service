@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
@@ -38,6 +39,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/flowType")
+@IgnoreCheckAuth
 public class FlowTypeController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)

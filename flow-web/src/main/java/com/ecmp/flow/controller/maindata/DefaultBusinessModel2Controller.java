@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.json.JsonUtil;
@@ -47,6 +48,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/defaultBusinessModel2")
+@IgnoreCheckAuth
 public class DefaultBusinessModel2Controller extends FlowBaseController<IDefaultBusinessModel2Service,DefaultBusinessModel2> {
 
     public DefaultBusinessModel2Controller(){

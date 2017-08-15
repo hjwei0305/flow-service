@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.entity.DefaultBusinessModel;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 @RequestMapping(value = "/builtInApprove")
+@IgnoreCheckAuth
 public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService, DefaultBusinessModel> {
 
 

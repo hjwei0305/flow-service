@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.maindata;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
@@ -46,6 +47,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping(value = "/flowHistoryInfo")
+@IgnoreCheckAuth
 public class FlowHistoryComponentController {
 //    /**
 //     * 根据流程实例id查询流程历史

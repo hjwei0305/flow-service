@@ -1,5 +1,6 @@
 package com.ecmp.flow.controller.design;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.basic.api.IPositionCategoryService;
 import com.ecmp.basic.api.IPositionService;
 import com.ecmp.basic.entity.Position;
@@ -51,6 +52,7 @@ import java.util.Set;
  */
 @Controller
 @RequestMapping(value = "/design")
+@IgnoreCheckAuth
 public class FlowDesignController {
 
     @RequestMapping(value = "show", method = RequestMethod.GET)
