@@ -376,6 +376,11 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ManualTask":
                     css="manualtask";
+                case "ReceiveTask":
+                    css="receiveTask";
+                    break;
+                case "CallActivity":
+                    css="callActivity";
                     break;
             }
         }
