@@ -160,7 +160,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(1000*10);
+                        Thread.sleep(1000*20);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

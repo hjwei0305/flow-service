@@ -81,7 +81,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
-
+            String actProcessInstanceId = delegateTask.getProcessInstanceId();
             ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
@@ -94,40 +94,61 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
             JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
             if (normal != null) {
                     String flowTaskName = (String) normal.get("name");
+                    FlowTask flowTask = null;
                     FlowHistory flowHistory = new FlowHistory();
-                    flowHistory.setTaskJsonDef(currentNode.toString());
-                    flowHistory.setFlowName(definition.getProcess().getName());
-                    flowHistory.setDepict("服务任务【自动执行】");
-//                    flowHistory.setActClaimTime(flowTask.getActClaimTime());
-                    flowHistory.setFlowTaskName(flowTaskName);
-                    flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
-                    String actProcessInstanceId = delegateTask.getProcessInstanceId();
-                    List<TaskEntity> taskList = taskEntity.getTasks();
-                    System.out.println(taskList);
-                    FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
-                    flowHistory.setFlowInstance(flowInstance);
+                    List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,actProcessInstanceId);
+                    if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                        flowTask = flowTaskList.get(0);
+                        flowTaskDao.delete(flowTask);
+                    }
+                    if(flowTask!=null){
+                        BeanUtils.copyProperties(flowTask,flowHistory);
+                        flowHistory.setId(null);
+                        flowHistory.setActStartTime(flowTask.getActDueDate());
+                    }else{
+                        flowTask = new FlowTask();
+                        flowHistory.setTaskJsonDef(currentNode.toString());
+                        flowHistory.setFlowName(definition.getProcess().getName());
+                        flowHistory.setFlowTaskName(flowTaskName);
 
-                    flowHistory.setOwnerAccount("admin");
-                    flowHistory.setOwnerName("系统自动");
-                    flowHistory.setExecutorAccount("admin");
-                    flowHistory.setExecutorId("");
-                    flowHistory.setExecutorName("系统自动");
-                    flowHistory.setCandidateAccount("");
-                    flowHistory.setActStartTime(new Date());
 
-                    flowHistory.setActHistoryId(null);
-                    flowHistory.setActTaskDefKey(actTaskDefKey);
-                    flowHistory.setPreId(null);
-                    flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-                    flowHistory.setActEndTime(new Date());
+                        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
+                        flowHistory.setFlowInstance(flowInstance);
+                        String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
+                        String appModuleId = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModuleId();
+                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
+                            ownerName = appModule.getName();
+                        }
+                        flowHistory.setOwnerAccount("admin");
+                        flowHistory.setOwnerName(ownerName);
+                        flowHistory.setExecutorAccount("admin");
+                        flowHistory.setExecutorId("");
+                        flowHistory.setExecutorName(ownerName);
+                        flowHistory.setCandidateAccount("");
+                        flowHistory.setActStartTime(new Date());
+
+                        flowHistory.setActHistoryId(null);
+                        flowHistory.setActTaskDefKey(actTaskDefKey);
+                        flowHistory.setPreId(null);
+
+                        BeanUtils.copyProperties(flowHistory,flowTask);
+                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                    }
+                     flowHistory.setFlowName(definition.getProcess().getName());
+                     flowHistory.setFlowTaskName(flowTaskName);
+                     flowHistory.setDepict("接收任务【执行完成】");
+                     flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
+                     flowHistory.setActEndTime(new Date());
+                     flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
+
                     if(flowHistory.getActDurationInMillis() == null){
                         Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
                         flowHistory.setActDurationInMillis(actDurationInMillis);
                     }
                     flowHistoryDao.save(flowHistory);
-                    FlowTask flowTask = new FlowTask();
-                    BeanUtils.copyProperties(flowHistory,flowTask);
-                    flowTask.setTaskStatus(TaskStatus.INIT.toString());
+
 //                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");

@@ -68,6 +68,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
+            Date now = new Date();
             ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
@@ -88,6 +89,38 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     if(!result){
                         throw new RuntimeException("调用服务:'"+serviceTaskId+"'失败！");
                     }
+
+                    String flowTaskName = (String) normal.get("name");
+                    FlowTask flowTask = new FlowTask();
+                    flowTask.setTaskJsonDef(currentNode.toString());
+                    flowTask.setFlowName(definition.getProcess().getName());
+                    flowTask.setDepict("接收任务【等待执行】");
+                    flowTask.setTaskName(flowTaskName);
+                    flowTask.setFlowDefinitionId(flowDefVersion.getFlowDefination().getId());
+                    String actProcessInstanceId = delegateTask.getProcessInstanceId();
+                    FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
+                    flowTask.setFlowInstance(flowInstance);
+                    String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
+                    String appModuleId = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModuleId();
+                    com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                    com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                    if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
+                        ownerName = appModule.getName();
+                    }
+                    flowTask.setOwnerAccount("admin");
+                    flowTask.setOwnerName(ownerName);
+                    flowTask.setExecutorAccount("admin");
+                    flowTask.setExecutorId("");
+                    flowTask.setExecutorName(ownerName);
+                    flowTask.setCandidateAccount("");
+                    flowTask.setActDueDate(now);
+
+                    flowTask.setActTaskDefKey(actTaskDefKey);
+                    flowTask.setPreId(null);
+                    flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
+                    flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                    flowTaskDao.save(flowTask);
+
                 }else{
                     throw new RuntimeException("服务地址不能为空！");
                 }
