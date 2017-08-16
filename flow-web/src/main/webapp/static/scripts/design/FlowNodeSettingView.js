@@ -249,7 +249,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 reader: {
                     name: "name",
-                    filed: ["id"]
+                    field: ["id"]
                 }
             }]);
         }
