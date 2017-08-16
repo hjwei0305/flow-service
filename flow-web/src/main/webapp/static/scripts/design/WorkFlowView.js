@@ -616,6 +616,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
                         businessModelId: g.businessModelId,
+                        flowDefinitionId:g.id,
                         data: dom.data(),
                         nodeType: nodeType,
                         type:type,

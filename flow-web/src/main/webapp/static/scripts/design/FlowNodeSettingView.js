@@ -4,6 +4,7 @@
 EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
     data: null,
+    flowDefinitionId:null,
     nowNotifyTab: null,
     nodeType: null,
     afterConfirm: null,
@@ -173,6 +174,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }];
     },
     getNormalTab: function () {
+        var g = this;
         var items = [{
             title: "节点名称",
             labelWidth: 100,
@@ -221,12 +223,14 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     this.grid.setPostParams({
                         Quick_value: data,
                         Q_EQ_subProcess__Boolean: true,
+                        Q_NE_id__String: g.flowDefinitionId,
                     }, true);
                 },
                 gridCfg: {
                     url: _ctxPath + "/flowDefination/listFlowDefination",
                     postData: {
                         Q_EQ_subProcess__Boolean: true,
+                        Q_NE_id__String: g.flowDefinitionId,
                     },
                     loadonce:false,
                     colModel: [{

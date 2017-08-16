@@ -69,6 +69,7 @@ public class Process extends BaseNode implements Serializable {
     private List<ParallelGateway> parallelGateway;
     private List<EventGateway> eventGateway;
     private List<SequenceFlow> sequenceFlow;
+    private List<CallActivity> callActivity;
 
     @XmlTransient
     private int lineCount = 0;
@@ -112,6 +113,7 @@ public class Process extends BaseNode implements Serializable {
             scriptTask = new ArrayList<ScriptTask>();
             serviceTask = new ArrayList<ServiceTask>();
             receiveTask = new ArrayList<ReceiveTask>();
+            callActivity = new ArrayList<CallActivity>();
             exclusiveGateway = new ArrayList<ExclusiveGateway>();
             inclusiveGateway = new ArrayList<InclusiveGateway>();
             parallelGateway = new ArrayList<ParallelGateway>();
@@ -341,6 +343,11 @@ public class Process extends BaseNode implements Serializable {
                         terminateEndEventTemp.setExtensionElement(extensionElement);
                         endEvent.add(terminateEndEventTemp);
                         baseFlowNodeTemp  = terminateEndEventTemp;
+                        break;
+                    case "CallActivity":
+                        CallActivity callActivityTemp = (CallActivity) JSONObject.toBean(node, CallActivity.class);
+                        callActivity.add(callActivityTemp);
+                        baseFlowNodeTemp  = callActivityTemp;
                         break;
                     default:
                         break;
