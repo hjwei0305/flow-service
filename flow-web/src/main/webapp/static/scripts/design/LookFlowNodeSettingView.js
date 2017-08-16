@@ -12,7 +12,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAfterPositionData: null,
     initComponent: function () {
         var g = this;
-        if(g.type == "ServiceTask" || g.nodeType == "ReceiveTask" ){
+        if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask" ){
             this.window = EUI.Window({
                 title: "节点配置",
                 width: 550,
