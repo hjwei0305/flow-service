@@ -698,9 +698,15 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         this.notifyAfterPositionData = this.data.nodeConfig.notify.after.notifyPosition.positionData;
     },
     loadNotifyData: function (tab, data) {
-        EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
-        EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
-        EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        var g = this;
+        if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask"){
+            EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
+            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        }else {
+            EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
+            EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
+            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+        }
     },
     loadNotifyDataAfter: function (tab, data) {
         // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
