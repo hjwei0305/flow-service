@@ -136,8 +136,8 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         if(this.nodeType=="CallActivity") {
             items = items.concat([{
                 title: "子流程",
+                labelWidth: 100,
                 name: "callActivityDefName",
-                allowBlank: false,
                 field: ["callActivityDefId"],
                 listWidth: 400
             }]);

@@ -1192,7 +1192,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 html += this.showStartNode(id, node);
             } else if (type.indexOf("EndEvent") != -1) {
                 html += this.showEndNode(id, node);
-            } else if (type.indexOf("Task") != -1) {
+            } else if (type.indexOf("Task") != -1||type=="CallActivity") {
                 html += this.showTaskNode(id, node);
             } else if (type.indexOf("Gateway") != -1) {
                 html += this.showGatewayNode(id, node);
