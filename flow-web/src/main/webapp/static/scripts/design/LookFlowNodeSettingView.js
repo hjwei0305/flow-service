@@ -138,7 +138,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "子流程",
                 labelWidth: 100,
                 name: "callActivityDefName",
-                field: ["callActivityDefId"],
+                field: ["callActivityDefKey"],
                 listWidth: 400
             }]);
         }

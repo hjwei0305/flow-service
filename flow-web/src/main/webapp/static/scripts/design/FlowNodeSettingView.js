@@ -215,7 +215,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 displayText: "请选择子流程",
                 name: "callActivityDefName",
                 allowBlank: false,
-                field: ["callActivityDefId"],
+                field: ["callActivityDefKey"],
                 listWidth: 400,
                 labelWidth: 100,
                 showSearch:true,
@@ -249,7 +249,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 reader: {
                     name: "name",
-                    field: ["id"]
+                    field: ["defKey"]
                 }
             }]);
         }
