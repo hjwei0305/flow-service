@@ -1358,7 +1358,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 EUI.ProcessStatus(result);
                 if (result.success) {
                     // if(g.isCopy&&!g.deploy){
-                        g.id=result.data.data.flowDefination.id;
+                        g.id=result.data.flowDefination?result.data.flowDefination.id:result.data.data.flowDefination.id;
                     // }
                 }
             },
