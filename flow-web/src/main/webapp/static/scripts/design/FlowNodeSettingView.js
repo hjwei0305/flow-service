@@ -14,7 +14,27 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     notifyAfterPositionData: null,
     type:null,
     initComponent: function () {
-        if(this.type == "ServiceTask"|| this.type == "ReceiveTask"){
+        if(this.type == "CallActivity"){
+            this.window = EUI.Window({
+                width: 550,
+                height: 420,
+                padding: 15,
+                buttons: this.getButtons(),
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                },
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getNormalTab()]
+                }]
+            });
+        }else if(this.type == "ServiceTask"|| this.type == "ReceiveTask"){
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -140,7 +160,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if ((g.type!='ServiceTask'&& g.type!='ReceiveTask') && !g.checkExcutor()) {
+                if ((g.type!='ServiceTask'&& g.type!='ReceiveTask'&& g.type!='CallActivity' ) && !g.checkExcutor()) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请将执行人项配置完整"
@@ -150,16 +170,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var executorForm = EUI.getCmp("excutor");
                 var eventForm = EUI.getCmp("event");
                 var normalData = normalForm.getFormValue();
-                var eventData = eventForm.getFormValue();
+                var eventData = eventForm?eventForm.getFormValue():null;
                 var executor = '';
-                if(g.type!='ServiceTask'&& g.type!='ReceiveTask'){
+                if(g.type!='ServiceTask'&& g.type!='ReceiveTask'&&g.type!='CallActivity'){
                     executor = g.getExcutorData()
                 }
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
                     executor: executor,
                     event: eventData,
-                    notify: g.getNotifyData()
+                    notify: g.type == "CallActivity"?null:g.getNotifyData()
                 });
                 g.remove();
                 g.window.close();
@@ -209,7 +229,14 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }
         }];
         if(this.nodeType=="CallActivity"){
-            items = items.concat([{
+            items = [{
+                title: "节点名称",
+                labelWidth: 100,
+                allowBlank: false,
+                name: "name",
+                maxlength:80,
+                value: this.title
+            },{
                 xtype: "ComboGrid",
                 title: "子流程",
                 displayText: "请选择子流程",
@@ -251,7 +278,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     field: ["defKey"]
                 }
-            }]);
+            }];
         }
         if (this.nodeType == "CounterSign") {
             items = items.concat([{
@@ -282,7 +309,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }]);
         }
-        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"){
+        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"&&this.type!='CallActivity'){
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -1274,13 +1301,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        if(g.type!='ServiceTask' &&　g.type!='ReceiveTask'){
+        if(g.type!='ServiceTask' &&　g.type!='ReceiveTask' && g.type!='CallActivity'){
             var userType = this.data.executor.userType;
             var userTypeCmp = EUI.getCmp("userType");
             userTypeCmp.setValue(userType);
             this.showChooseUserGrid(userType, this.data.executor);
         }
-
+        if(g.type=='CallActivity') {
+            return;
+        }
         //加载事件配置
         eventForm.loadData(this.data.event);
 
@@ -1353,8 +1382,8 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         });
     },
     remove: function () {
-        EUI.getCmp("notify-before").remove();
-        EUI.getCmp("notify-after").remove();
+        EUI.getCmp("notify-before")&&EUI.getCmp("notify-before").remove();
+        EUI.getCmp("notify-after")&&EUI.getCmp("notify-after").remove();
         $(".condetail-delete").die();
         $(".west-navbar").die();
         $(".notify-user-item").die();

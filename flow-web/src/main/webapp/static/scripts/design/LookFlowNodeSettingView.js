@@ -8,11 +8,36 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     businessModelId: null,
     flowTypeId: null,
+    id:null,
+    versionCode:null,
     notifyBeforePositionData: null,
     notifyAfterPositionData: null,
     initComponent: function () {
         var g = this;
-        if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask" ){
+        if(g.nodeType == "CallActivity"){
+            this.window = EUI.Window({
+                title: "节点配置",
+                width: 550,
+                height: 420,
+                padding: 15,
+                afterRender: function () {
+                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                },
+                afterClose: function () {
+                    g.remove();
+                },
+                items: [{
+                    xtype: "TabPanel",
+                    isOverFlow: false,
+                    showTabMenu:false,
+                    defaultConfig: {
+                        iframe: false,
+                        closable: false
+                    },
+                    items: [this.getNormalTab()]
+                }]
+            });
+        }else if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask" ){
             this.window = EUI.Window({
                 title: "节点配置",
                 width: 550,
@@ -116,6 +141,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         });
     },
     getNormalTab: function () {
+        var g=this;
         var items = [{
             title: "节点名称",
             labelWidth: 100,
@@ -133,15 +159,6 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             name: "workPageName"
         }];
-        if(this.nodeType=="CallActivity") {
-            items = items.concat([{
-                title: "子流程",
-                labelWidth: 100,
-                name: "callActivityDefName",
-                field: ["callActivityDefKey"],
-                listWidth: 400
-            }]);
-        }
         items.concat([{
             xtype: "NumberField",
             title: "会签决策",
@@ -164,7 +181,45 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "true"
             }]
         }]);
-        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask") {
+        if(this.nodeType=="CallActivity") {
+            items = [{
+                title: "节点名称",
+                labelWidth: 100,
+                name: "name",
+                value: this.title
+            },{
+                title: "子流程",
+                labelWidth: 100,
+                name: "callActivityDefName",
+                field: ["callActivityDefKey"],
+                listWidth: 400
+            },{
+                xtype: "Button",
+                width: 85,
+                height: 25,
+                title: "查看子流程",
+                style:{
+                    "margin-left": "291px",
+                    "position": "absolute",
+                    "top": "120px"
+                },
+                selected:true,
+                handler: function () {
+                    var instanceId=g.data.subProcessInstanceId;
+                    var tab = {
+                        title: g.lang.flowDiagramText,
+                        url: _ctxPath + "/design/showLook?id=" + g.id + "&instanceId=" + instanceId + "&versionCode=" + g.versionCode,
+                        id: instanceId
+                    };
+                    if (parent.homeView) {
+                        parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+                    } else {
+                        window.open(tab.url);
+                    }
+                }
+            }];
+        }
+        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"&&this.nodeType!="CallActivity") {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -673,7 +728,9 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
         //加载常规配置
         normalForm.loadData(nodeConfig.normal);
-
+        if(this.nodeType=='CallActivity') {
+            return;
+        }
         //加载执行人配置
         if (nodeConfig.executor) {
             var userType = nodeConfig.executor.userType;
@@ -728,8 +785,8 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
     },
     remove: function () {
-        EUI.getCmp("notify-before").remove();
-        EUI.getCmp("notify-after").remove();
+        EUI.getCmp("notify-before")&&EUI.getCmp("notify-before").remove();
+        EUI.getCmp("notify-after")&&EUI.getCmp("notify-after").remove();
         $(".west-navbar").die();
         $(".notify-user-item").die();
     },

@@ -115,6 +115,8 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                     new EUI.LookFlowNodeSettingView({
                         businessModelId: g.businessModelId,
                         data: dom.data(),
+                        id: g.id,
+                        versionCode: g.versionCode,
                         nodeType: dom.attr("nodeType")
                     });
                 }
@@ -291,6 +293,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             this.initNode(doms[i]);
             var item = $(doms[i]);
             var id = item.attr("id");
+            if(defData.currentNodes[id]){
+                data.process.nodes[id].subProcessInstanceId=  defData.currentNodes[id];
+            }
             item.data(data.process.nodes[id]);
         }
         for (var id in data.process.nodes) {
