@@ -640,6 +640,9 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     box-shadow: 0 0 8px lightgreen;
     color: white;
 }
+.flow-content .currentNode[type='CallActivity'] {
+    border-width: 4px;
+}
 
 .arrow-right {
     width: 22px;
