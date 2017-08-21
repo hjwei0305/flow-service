@@ -20,6 +20,9 @@ import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricActivityInstanceQuery;
+import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -134,14 +137,38 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 获取流程实例在线任务id列表
      * @param id
      */
-    public Set<String>  currentNodeIds(String id){
+    public Map<String,String>  currentNodeIds(String id){
         FlowInstance flowInstance = flowInstanceDao.findOne(id);
-        Set<String> nodeIds = new HashSet<String>();
+        Map<String,String> nodeIds = new HashMap<String,String>();
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
             for(FlowTask flowTask:flowTaskList){
-                nodeIds.add(flowTask.getActTaskDefKey());
+                nodeIds.put(flowTask.getActTaskDefKey(),"");
             }
+        }
+        FlowInstance parent = flowInstance.getParent();
+//        if(parent != null){
+            List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
+            if(children != null && !children.isEmpty()){
+                for(FlowInstance child :children){
+                    Map<String,String> resultTemp = currentNodeIds(child.getId());
+                    if(resultTemp != null && !resultTemp.isEmpty()){
+                        // 取得流程实例
+                        ProcessInstance instanceSon = runtimeService
+                                .createProcessInstanceQuery()
+                                .processInstanceId(child.getActInstanceId())
+                                .singleResult();
+                        String superExecutionId = instanceSon.getSuperExecutionId();
+                        HistoricActivityInstance historicActivityInstance = null;
+                        HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                                .executionId(superExecutionId).activityType("callActivity").unfinished();
+                        historicActivityInstance = his.singleResult();
+                        HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                        String activityId = he.getActivityId();
+                        nodeIds.put(activityId,child.getId());
+                    }
+                }
+//            }
         }
         return nodeIds;
     }
@@ -237,20 +264,62 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     public List<ProcessTrackVO> getProcessTrackVO(String businessId){
         List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessIdOrder(businessId);
-        List<ProcessTrackVO> result = null;
+        List<ProcessTrackVO> result = new ArrayList<ProcessTrackVO>();
+        List<FlowInstance> flowInstanceListReal = new ArrayList<>();
+
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
-            result = new ArrayList<ProcessTrackVO>();
+            flowInstanceListReal.addAll(flowInstanceList);
             for(FlowInstance flowInstance:flowInstanceList){
-                ProcessTrackVO pv = new ProcessTrackVO();
-                pv.setFlowInstance(flowInstance);
-                List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
-                List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
-                pv.setFlowHistoryList(flowHistoryList);
-                pv.setFlowTaskList(flowTaskList);
-                result.add(pv);
+                FlowInstance parent = flowInstance.getParent();
+                while(parent!=null){
+                    flowInstanceListReal.remove(parent);
+                    parent = parent.getParent();
+                }
             }
         }
+        Map<FlowInstance,ProcessTrackVO> resultMap = new LinkedHashMap<FlowInstance,ProcessTrackVO>();
+
+        if(flowInstanceListReal!=null && !flowInstanceListReal.isEmpty()){
+            for(FlowInstance flowInstance:flowInstanceListReal){
+                initFlowInstance(resultMap,flowInstance);
+            }
+        }
+        result.addAll(resultMap.values());
         return result;
+    }
+
+    /**
+     *  用于父子流程的实例合并
+     * @param resultMap
+     * @param flowInstance
+     */
+    private void initFlowInstance(Map<FlowInstance,ProcessTrackVO> resultMap,FlowInstance flowInstance){
+
+        ProcessTrackVO pv = new ProcessTrackVO();
+        pv.setFlowInstance(flowInstance);
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+        pv.setFlowHistoryList(flowHistoryList);
+        pv.setFlowTaskList(flowTaskList);
+
+        FlowInstance parent = flowInstance.getParent();
+        ProcessTrackVO pProcessTrackVO = null;
+        if(parent != null) {
+            initFlowInstance(resultMap, parent);
+            while(parent!=null){
+                pProcessTrackVO = resultMap.get(parent);
+                if(pProcessTrackVO!=null){
+                    break;
+                }
+                parent = parent.getParent();
+            }
+            if (pProcessTrackVO != null) {
+                pProcessTrackVO.getFlowHistoryList().addAll(pv.getFlowHistoryList());
+                pProcessTrackVO.getFlowTaskList().addAll(pv.getFlowTaskList());
+            }
+        }else {
+            resultMap.put(flowInstance,pv);
+        }
     }
 
 

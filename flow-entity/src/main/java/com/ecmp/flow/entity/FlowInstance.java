@@ -102,6 +102,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
 	/**
+	 * 所属流程定义版本
+	 */
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "parent_id")
+	private FlowInstance parent;
+
+
+	/**
 	 * 是否挂起
 	 */
 	private Boolean suspended=false;
@@ -309,5 +317,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	public FlowInstance getParent() {
+		return parent;
+	}
+
+	public void setParent(FlowInstance parent) {
+		this.parent = parent;
 	}
 }

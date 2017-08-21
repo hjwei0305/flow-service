@@ -241,7 +241,7 @@ public class FlowDesignController {
         }
         data.put("def", def);
         IFlowInstanceService proxy2 = ApiClient.createProxy(IFlowInstanceService.class);
-        Set<String> nodeIds = proxy2.currentNodeIds(instanceId);
+        Map<String,String> nodeIds = proxy2.currentNodeIds(instanceId);
         data.put("currentNodes", nodeIds);
         status.setData(data);
         return JsonUtil.serialize(status);

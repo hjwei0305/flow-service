@@ -1785,6 +1785,8 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
     showFlowHistoryData: function (data) {
         var g = this;
         var html = "";
+        var ended = false;
+        var flowInstance = null;
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             html += '<div class="flow-historyinfoone">' +
@@ -1797,19 +1799,24 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '							<div class="flowhistory-remark">' + g.lang.handleAbstractText + (item.depict || g.lang.noneText) + '</div>' +
                 '							 <div class="clear"></div> ' +
                 '						</div>';
+            flowInstance = data[0].flowInstance;
+            while(flowInstance){
+                ended = flowInstance.ended;
+                flowInstance = flowInstance.parent;
+            }
         }
         $(".flow-historyprogress").append(html);
         if (typeof(data[0]) == "undefined") {
             return;
         } else {
-            if (data[0].flowInstance.ended == true) {
-                if (data[0].flowInstance.manuallyEnd == true) {
+            if (ended) {
+                if (flowInstance.manuallyEnd == true) {
                     g.isManuallyEnd = true;
                     $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(data[0].flowInstance.endDate);
+                    $(".flow-endright").html(flowInstance.endDate);
                 } else {
                     $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(data[0].flowInstance.endDate);
+                    $(".flow-endright").html(flowInstance.endDate);
                 }
             }
         }

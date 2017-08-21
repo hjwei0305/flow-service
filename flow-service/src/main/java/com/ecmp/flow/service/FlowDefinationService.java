@@ -276,7 +276,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setFlowName(flowDefVersion.getName() + ":" + businessKey);
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
-                initTask(processInstance);
+                initTask(flowInstance);
             }
         }
         return flowInstance;
@@ -336,7 +336,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInstance.setFlowName(flowDefVersion.getName());
                 flowInstance.setActInstanceId(processInstance.getId());
                 flowInstanceDao.save(flowInstance);
-                initTask(processInstance);
+                initTask(flowInstance);
             }
         }
         return flowInstance;
@@ -475,7 +475,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
                 if (processInstance == null || processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 }else{
-                    initTask(processInstance);
+                    initTask(flowInstance);
                 }
             }
         }
@@ -874,6 +874,30 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 net.sf.json.JSONObject jsonObjectReal = definition.getProcess().getNodes().getJSONObject(nodeRealId);
                 this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition ,jsonObjectReal);
               }
+        }else if("CallActivity".equalsIgnoreCase(type)){
+            net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject("nodeConfig").getJSONObject("normal");
+            String callActivityDefKey = (String)normal.get("callActivityDefKey");
+            List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(callActivityDefKey);
+            if(flowDefVersionList!=null && !flowDefVersionList.isEmpty()){
+                FlowDefVersion flowDefVersion = flowDefVersionList.get(0);
+                String def = flowDefVersion.getDefJson();
+                JSONObject defObj = JSONObject.fromObject(def);
+                Definition definitionSon = (Definition) JSONObject.toBean(defObj, Definition.class);
+                List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
+                if (startEventList != null && startEventList.size() == 1) {
+                    StartEvent startEvent = startEventList.get(0);
+                    net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
+                    result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definitionSon , startEventNode);
+                    if(!result.isEmpty()){
+                        for(NodeInfo nodeInfo:result){
+                            nodeInfo.setCurrentTaskType(startEvent.getType());
+                        }
+                    }
+                }
+            }else {
+                throw new RuntimeException("找不到子流程");
+            }
+
         }else{
             result = initNodesInfo(result, flowStartVO, definition , nodeId);
         }
@@ -1114,7 +1138,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     private ProcessInstance startFlowById(String proessDefId, Map<String, Object> variables) {
         ProcessInstance instance = this.runtimeService.startProcessInstanceById(proessDefId, variables);
-        initTask(instance);
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
+        initTask(flowInstance);
         return instance;
     }
 
@@ -1192,10 +1217,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return startFlowByKey(processDefKey, null, businessKey, variables);
     }
 
-    private void initTask(ProcessInstance instance) {
-        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
+    private void initTask(FlowInstance flowInstance) {
+        if(flowInstance == null){
+            return;
+        }
+        List<FlowInstance> flowInstanceSonList = flowInstanceDao.findByParentId(flowInstance.getId());
+        if(flowInstanceSonList!=null && !flowInstanceSonList.isEmpty()){//初始化子流程的任务
+            for(FlowInstance son:flowInstanceSonList){
+                initTask(son);
+            }
+        }
+        String actProcessInstanceId = flowInstance.getActInstanceId();
         // 根据当流程实例查询任务
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(instance.getId()).active().list();
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
 
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {

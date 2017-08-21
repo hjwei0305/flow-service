@@ -73,16 +73,31 @@ public class EndEventCompleteListener implements ExecutionListener {
         if(flowInstance==null){
              throw new RuntimeException("流程实例不存在！");
         }else {
+
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
                 flowInstanceDao.save(flowInstance);
+
                 //回写状态
-                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                String businessModelId = businessModel.getId();
-                ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-                IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
-                flowCommonConditionService.resetState(businessModelId,flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+                FlowInstance flowInstanceP = flowInstance.getParent();
+                if(flowInstanceP == null){
+                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                    String businessModelId = businessModel.getId();
+                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+                    IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
+                    flowCommonConditionService.resetState(businessModelId,flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+                }else {
+                    ExecutionEntity parent = taskEntity.getSuperExecution();
+                    if(parent != null){
+                        ProcessInstance   parentProcessInstance = parent.getProcessInstance();
+                        Map<String,Object> variablesParent = runtimeService.getVariables(parent.getId());
+                        String superExecutionId = processInstance.getSuperExecutionId();
+                        variablesParent.putAll(variables);
+                        variablesParent.put(processInstance.getId()+"_superExecutionId",superExecutionId);
+                        runtimeService.setVariables(parentProcessInstance.getId(),variablesParent);
+                    }
+                }
 //                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
             }
         }

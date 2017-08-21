@@ -13,6 +13,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -66,6 +68,16 @@ public class StartEventCompleteListener implements ExecutionListener {
         ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
         Map<String,Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance  = taskEntity.getProcessInstance();
+        ProcessInstance parentProcessInstance = null;
+        ExecutionEntity son = taskEntity.getSubProcessInstance();
+        ExecutionEntity parent = taskEntity.getSuperExecution();
+        if(parent != null){
+            parentProcessInstance = parent.getProcessInstance();
+            Map<String,Object> variablesParent = runtimeService.getVariables(parent.getId());
+            variables.putAll(variablesParent);
+
+            delegateTask.setVariables(variables);
+        }
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
         if(flowInstance==null){
             flowInstance = new FlowInstance();
@@ -85,6 +97,18 @@ public class StartEventCompleteListener implements ExecutionListener {
             flowInstance.setStartDate(new Date());
             flowInstance.setFlowName(flowDefVersion.getName());
             flowInstance.setActInstanceId(processInstance.getId());
+            if(parentProcessInstance !=null){
+                FlowInstance flowInstanceP = flowInstanceDao.findByActInstanceId(parentProcessInstance.getId());
+                String actDefinitionKey = processInstance.getProcessDefinitionKey();
+               List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(actDefinitionKey);
+                if(flowDefVersionList == null || flowDefVersionList.isEmpty()){
+                    throw new RuntimeException("子流程的流程版本找不到！");
+                }
+                flowDefVersion = flowDefVersionList.get(0);
+                flowInstance.setFlowDefVersion(flowDefVersion);
+                flowInstance.setBusinessId(flowInstanceP.getBusinessId());
+                flowInstance.setParent(flowInstanceP);
+            }
             flowInstanceDao.save(flowInstance);
         }
     }

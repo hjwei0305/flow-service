@@ -346,6 +346,9 @@ public class Process extends BaseNode implements Serializable {
                         break;
                     case "CallActivity":
                         CallActivity callActivityTemp = (CallActivity) JSONObject.toBean(node, CallActivity.class);
+                        net.sf.json.JSONObject normal = node.getJSONObject("nodeConfig").getJSONObject("normal");
+                        String callActivityDefKey = (String)normal.get("callActivityDefKey");
+                        callActivityTemp.setCalledElement(callActivityDefKey);
                         callActivity.add(callActivityTemp);
                         baseFlowNodeTemp  = callActivityTemp;
                         break;

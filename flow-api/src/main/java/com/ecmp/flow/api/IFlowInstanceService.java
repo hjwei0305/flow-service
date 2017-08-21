@@ -80,7 +80,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取流程实例在线任务节点定义ID列表", notes = "用于流程跟踪图")
-    public Set<String> currentNodeIds(@PathParam("id") String id);
+    public Map<String,String> currentNodeIds(@PathParam("id") String id);
 
     /**
      * 通过业务单据id获取单据生命周期所有任务历史记录

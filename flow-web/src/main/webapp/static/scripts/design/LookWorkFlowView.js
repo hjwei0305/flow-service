@@ -253,8 +253,17 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             var data = JSON.parse(defData.defJson);
         } else {
             var data = JSON.parse(defData.def.defJson);
-            var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
-            currentNodes += ",";
+            var currentNodes = "";
+            var currentNodesInfo = defData.currentNodes;
+            if(currentNodesInfo){
+                for(var tempP in currentNodesInfo){//用javascript的for/in循环遍历对象的属性
+                    currentNodes += tempP+",";
+                }
+            }else {
+                currentNodes += ",";
+            }
+           // var currentNodes = defData.currentNodes ? defData.currentNodes.join(",") : "";
+
         }
         this.businessModelId = data.businessModelId;
         data.flowTypeName=this.viewFlowDefByVersionId?defData.flowDefination.flowType.name:defData.def.flowDefination.flowType.name;

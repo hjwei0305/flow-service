@@ -491,15 +491,41 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
             //初始化新的任务
+            FlowInstance flowInstanceP = flowInstance.getParent();
             String actTaskDefKey = flowTask.getActTaskDefKey();
-            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(currTask
-                            .getProcessDefinitionId());
-            PvmActivity currentNode = this.getActivitNode(definition,actTaskDefKey);
-
-            if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
-                callInitTaskBack(currentNode, instance, flowHistory,counterSignLastTask);
+            String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+            ProcessDefinitionEntity definition = null;
+            PvmActivity currentNode = null;
+            if(flowInstance.isEnded() && (flowInstanceP != null && !flowInstanceP.isEnded())){//子流程结束，主流程未结束
+                actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
+                definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                        .getDeployedProcessDefinition(actProcessDefinitionId);
+                String superExecutionId = null;
+                superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(),flowInstance.getActInstanceId()+"_superExecutionId");
+                HistoricActivityInstance historicActivityInstance = null;
+                HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                        .executionId(superExecutionId).activityType("callActivity");
+                if (his != null) {
+                    historicActivityInstance = his.singleResult();
+                    HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                    actTaskDefKey = he.getActivityId();
+                    currentNode = this.getActivitNode(definition,actTaskDefKey);
+                    // 取得流程实例
+                    instance = runtimeService
+                            .createProcessInstanceQuery()
+                            .processInstanceId(flowInstanceP.getActInstanceId())
+                            .singleResult();
+                    callInitTaskBack(currentNode, instance, flowHistory,counterSignLastTask);
+                }
+            }else{
+                definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                        .getDeployedProcessDefinition(actProcessDefinitionId);
+                currentNode = this.getActivitNode(definition,actTaskDefKey);
+                if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
+                    callInitTaskBack(currentNode, instance, flowHistory,counterSignLastTask);
+                }
             }
+
         }
 
         OperateResultWithData<FlowStatus> result = OperateResultWithData.operationSuccess("10017");
@@ -2445,7 +2471,49 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
-        List<NodeInfo> result = this.findNexNodesWithUserSet( flowTask ,approved, includeNodeIds);
+        List<NodeInfo> result = null;
+        List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet( flowTask ,approved, includeNodeIds);
+        result = nodeInfoList;
+        FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) && parentFlowInstance != null){//针对子流程结束节点
+                FlowTask flowTaskTemp = new FlowTask();
+                org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTemp);
+                flowTaskTemp.setFlowInstance(parentFlowInstance);
+                // 取得流程实例
+                ProcessInstance instanceSon = runtimeService
+                        .createProcessInstanceQuery()
+                        .processInstanceId(flowTask.getFlowInstance().getActInstanceId())
+                        .singleResult();
+               String superExecutionId = instanceSon.getSuperExecutionId();
+                ProcessInstance instanceParent = runtimeService
+                        .createProcessInstanceQuery()
+                        .processInstanceId(parentFlowInstance.getActInstanceId())
+                        .singleResult();
+//                String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+//                ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+//                        .getDeployedProcessDefinition(actProcessDefinitionId);
+//                ((ProcessDefinitionImpl) definition)
+//                        .
+//                PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
+
+                HistoricActivityInstance historicActivityInstance = null;
+                HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                        .executionId(superExecutionId).activityType("callActivity").unfinished();
+                if (his != null) {
+                    historicActivityInstance = his.singleResult();
+                    HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                    flowTaskTemp.setActTaskKey(he.getActivityId());
+                    flowTaskTemp.setActTaskDefKey(he.getActivityId());
+                    String flowDefJson = parentFlowInstance.getFlowDefVersion().getDefJson();
+                    JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                    Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                    net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(he.getActivityId());
+                    flowTaskTemp.setTaskJsonDef(currentNode.toString());
+                    result = this.findNexNodesWithUserSet( flowTaskTemp ,approved, includeNodeIds);
+                }
+            }
+        }
         return result;
     }
 
