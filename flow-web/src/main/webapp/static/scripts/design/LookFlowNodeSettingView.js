@@ -217,11 +217,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         url: url,
                         id: instanceId
                     };
-                    if (parent.homeView) {
-                        parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
-                    } else {
-                        window.open(tab.url);
-                    }
+                    window.open(tab.url);
                 }
             }];
         }
