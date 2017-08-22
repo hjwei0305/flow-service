@@ -146,6 +146,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 nodeIds.put(flowTask.getActTaskDefKey(),"");
             }
         }
+        if(flowInstance == null){
+            return null;
+        }
          List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
          if(children != null && !children.isEmpty()){
                 for(FlowInstance child :children){

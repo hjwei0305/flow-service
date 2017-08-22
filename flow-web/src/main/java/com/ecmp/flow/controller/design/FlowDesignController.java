@@ -224,7 +224,7 @@ public class FlowDesignController {
      */
     @RequestMapping(value = "getLookInfo")
     @ResponseBody
-    public String getLookInfo(String id, int versionCode, String instanceId) {
+    public String getLookInfo(String id, String instanceId) {
         OperateStatus status = OperateStatus.defaultSuccess();
         FlowDefVersion def = null;
         Map<String, Object> data = new HashedMap();
@@ -236,8 +236,8 @@ public class FlowDesignController {
             }
         }
         if(def == null){
-            IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-            def = proxy.getFlowDefVersion(id, versionCode);
+            IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
+            def = proxy.findOne(id);
         }
         data.put("def", def);
         IFlowInstanceService proxy2 = ApiClient.createProxy(IFlowInstanceService.class);

@@ -876,10 +876,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               }
         }else if("CallActivity".equalsIgnoreCase(type)){
             net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject("nodeConfig").getJSONObject("normal");
-            String callActivityDefKey = (String)normal.get("callActivityDefKey");
-            List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(callActivityDefKey);
-            if(flowDefVersionList!=null && !flowDefVersionList.isEmpty()){
-                FlowDefVersion flowDefVersion = flowDefVersionList.get(0);
+//            String callActivityDefKey = (String)normal.get("callActivityDefKey");
+            String currentVersionId = (String)normal.get("currentVersionId");
+            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
+            if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
                 String def = flowDefVersion.getDefJson();
                 JSONObject defObj = JSONObject.fromObject(def);
                 Definition definitionSon = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -895,7 +895,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             }else {
-                throw new RuntimeException("找不到子流程");
+                throw new RuntimeException("找不到子流程,或子流程处于挂起状态");
             }
 
         }else{
