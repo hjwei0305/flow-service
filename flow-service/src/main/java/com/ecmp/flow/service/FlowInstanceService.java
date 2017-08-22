@@ -146,10 +146,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 nodeIds.put(flowTask.getActTaskDefKey(),"");
             }
         }
-        FlowInstance parent = flowInstance.getParent();
-//        if(parent != null){
-            List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
-            if(children != null && !children.isEmpty()){
+         List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
+         if(children != null && !children.isEmpty()){
                 for(FlowInstance child :children){
                     Map<String,String> resultTemp = currentNodeIds(child.getId());
                     if(resultTemp != null && !resultTemp.isEmpty()){
@@ -168,7 +166,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         nodeIds.put(activityId,child.getId());
                     }
                 }
-//            }
         }
         return nodeIds;
     }
@@ -285,6 +282,33 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
         result.addAll(resultMap.values());
+        //排序，主要针对有子任务的场景
+        if(!result.isEmpty()){
+            for(ProcessTrackVO processTrackVO:result){
+               List<FlowHistory> flowHistoryList = processTrackVO.getFlowHistoryList();
+               if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
+                   Collections.sort(flowHistoryList, new Comparator() {
+                       @Override
+                       public int compare(Object o1, Object o2) {
+                           FlowHistory flowHistory1 = (FlowHistory)o1;
+                           FlowHistory flowHistory2 = (FlowHistory)o2;
+                           Long time1= flowHistory1.getActEndTime().getTime();
+                           Long time2= flowHistory2.getActEndTime().getTime();
+                           int result = 0;
+                           if((time1-time2)>0){
+                               result = 1;
+                           }else if((time1-time2)==0){
+                               result = 0;
+                           }else {
+                               result = -1;
+                           }
+                           return  result;
+                       }
+                   });
+               }
+            }
+        }
+
         return result;
     }
 

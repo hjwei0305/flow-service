@@ -665,7 +665,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @param jsonObjectNode
      * @return
      */
-    private List<NodeInfo>  findXunFanNodesInfo(List<NodeInfo>  result,FlowStartVO flowStartVO,FlowDefination flowDefination,Definition definition , JSONObject jsonObjectNode)throws NoSuchMethodException, SecurityException{
+    public List<NodeInfo>  findXunFanNodesInfo(List<NodeInfo>  result,FlowStartVO flowStartVO,FlowDefination flowDefination,Definition definition , JSONObject jsonObjectNode)throws NoSuchMethodException, SecurityException{
       //  JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
         String busType = jsonObjectNode.get("busType")+"";
         String type = jsonObjectNode.get("type")+"";
@@ -1217,7 +1217,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return startFlowByKey(processDefKey, null, businessKey, variables);
     }
 
-    private void initTask(FlowInstance flowInstance) {
+    public void initTask(FlowInstance flowInstance) {
         if(flowInstance == null){
             return;
         }

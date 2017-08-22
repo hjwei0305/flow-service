@@ -1802,24 +1802,20 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             flowInstance = data[0].flowInstance;
             while(flowInstance){
                 ended = flowInstance.ended;
+                if (ended) {
+                    if (flowInstance.manuallyEnd == true) {
+                        g.isManuallyEnd = true;
+                        $(".flow-end").css("display", "block");
+                        $(".flow-endright").html(flowInstance.endDate);
+                    } else {
+                        $(".flow-end").css("display", "block");
+                        $(".flow-endright").html(flowInstance.endDate);
+                    }
+                }
                 flowInstance = flowInstance.parent;
             }
         }
         $(".flow-historyprogress").append(html);
-        if (typeof(data[0]) == "undefined") {
-            return;
-        } else {
-            if (ended) {
-                if (flowInstance.manuallyEnd == true) {
-                    g.isManuallyEnd = true;
-                    $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(flowInstance.endDate);
-                } else {
-                    $(".flow-end").css("display", "block");
-                    $(".flow-endright").html(flowInstance.endDate);
-                }
-            }
-        }
     },
     //拼接流程状态数据的html
     showFlowStatusData: function (data,flowInstance) {
