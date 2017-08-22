@@ -1897,30 +1897,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关
                     uiType = "radiobox";
-                }
-                if (isSizeBigTwo) {
-                    for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
-                            if (!includeNodeIds.contains(tempActivity.getId())) {
+                    if (isSizeBigTwo) {
+                        for (int i = 1; i < nextNodes.size(); i++) {
+                            PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
+                            if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
+                                if (!includeNodeIds.contains(tempActivity.getId())) {
+                                    continue;
+                                }
+                            }
+                            if (ifGageway(tempActivity)) {
+                                List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
+                                nodeInfoList.addAll(currentNodeInf);
                                 continue;
                             }
+                            NodeInfo tempNodeInfo = new NodeInfo();
+                            tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
+                            String gateWayName = firstActivity.getProperty("name") + "";
+                            // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
+                            tempNodeInfo.setGateWayName(gateWayName);
+                            tempNodeInfo.setUiType(uiType);
+                            tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
+                            nodeInfoList.add(tempNodeInfo);
                         }
-                        if (ifGageway(tempActivity)) {
-                            List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
-                            nodeInfoList.addAll(currentNodeInf);
-                            continue;
-                        }
-                        NodeInfo tempNodeInfo = new NodeInfo();
-                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
-                        String gateWayName = firstActivity.getProperty("name") + "";
-                        // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
-                        tempNodeInfo.setGateWayName(gateWayName);
-                        tempNodeInfo.setUiType(uiType);
-                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
-                        nodeInfoList.add(tempNodeInfo);
                     }
+                }else{
+                    List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, firstActivity, v, null);
+                    nodeInfoList.addAll(currentNodeInf);
                 }
+
             } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) { // 包容网关,checkbox,至少选择一个
                 if (isSizeBigTwo) {
                     for (int i = 1; i < nextNodes.size(); i++) {
