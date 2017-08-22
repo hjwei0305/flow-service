@@ -262,7 +262,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
                 .append("orgId", this.orgId)
                 .append("orgName", this.orgName)
 //                .append("version", this.version)
-                .append("flowStatus", this.orgPath)
+                .append("flowStatus", this.flowStatus)
                 .append("priority", this.priority)
                 .toString();
     }

@@ -99,7 +99,9 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     @ResponseBody
     public String save(V defaultBusinessModel) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
-        defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
+        if(defaultBusinessModel.getFlowStatus()==null){
+            defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
+        }
         OperateResultWithData<V> result = baseService.save(defaultBusinessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
         return JsonUtil.serialize(operateStatus);
