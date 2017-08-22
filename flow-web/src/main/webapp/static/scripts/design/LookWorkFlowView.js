@@ -117,6 +117,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                         data: dom.data(),
                         id: g.id,
                         versionCode: g.versionCode,
+                        isFromDefination:g.viewFlowDefByVersionId,
                         nodeType: dom.attr("nodeType")
                     });
                 }
@@ -293,7 +294,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             this.initNode(doms[i]);
             var item = $(doms[i]);
             var id = item.attr("id");
-            if(defData.currentNodes[id]){
+            if(defData.currentNodes && defData.currentNodes[id]){
                 data.process.nodes[id].subProcessInstanceId=  defData.currentNodes[id];
             }
             item.data(data.process.nodes[id]);

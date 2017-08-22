@@ -10,6 +10,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     flowTypeId: null,
     id:null,
     versionCode:null,
+    isFromDefination:false,
     notifyBeforePositionData: null,
     notifyAfterPositionData: null,
     initComponent: function () {
@@ -206,9 +207,14 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 selected:true,
                 handler: function () {
                     var instanceId=g.data.subProcessInstanceId;
+                    var id=EUI.getCmp("normal").getCmpByName("callActivityDefName").getSubmitValue().currentVersionId;
+                    var url=_ctxPath + "/design/showLook?id=" + id + "&instanceId=" + instanceId + "&versionCode=" + g.versionCode;
+                    if(g.isFromDefination) {
+                        url = _ctxPath + "/design/showLook?id="+ id +"&viewFlowDefByVersionId=true"
+                    }
                     var tab = {
                         title: g.lang.flowDiagramText,
-                        url: _ctxPath + "/design/showLook?id=" + g.id + "&instanceId=" + instanceId + "&versionCode=" + g.versionCode,
+                        url: url,
                         id: instanceId
                     };
                     if (parent.homeView) {
