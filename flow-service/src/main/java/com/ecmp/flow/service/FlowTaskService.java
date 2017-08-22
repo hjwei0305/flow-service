@@ -215,7 +215,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }else {//针对人工网关的情况
                 ActivityImpl  currActivityTemp = (ActivityImpl)currActivity.getOutgoingTransitions().get(0).getDestination();
-                if(ifExclusiveGateway(currActivityTemp)){
+                boolean gateWay = ifExclusiveGateway(currActivityTemp);
+                if(gateWay){
                     currActivity = currActivityTemp;
                 }
                 Map<PvmTransition,String> oriPvmTransitionMap = new LinkedHashMap<PvmTransition,String>();
@@ -238,7 +239,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             break;
                         }
                     }
-                    if(!isSet && uel == null){
+                    if(gateWay && !isSet && (uel == null || StringUtils.isEmpty(uelText))){
                         oriPvmTransitionMap.put(pvmTransition,uelText);
                         uelText = "${0>1}";
                         uel = new UelExpressionCondition(uelText);
@@ -253,9 +254,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     for(Map.Entry<PvmTransition,String> entry:oriPvmTransitionMap.entrySet()){
                         PvmTransition pvmTransition =  entry.getKey();
                         String uelText = entry.getValue();
-                        UelExpressionCondition uel = new UelExpressionCondition(uelText);
-                        ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
-                        ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
+                        if(StringUtils.isNotEmpty(uelText)){
+                            UelExpressionCondition uel = new UelExpressionCondition(uelText);
+                            ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
+                            ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
+                        }else {
+                            ((ProcessElementImpl)pvmTransition).setProperty("condition",null);
+                            ((ProcessElementImpl)pvmTransition).setProperty("conditionText",null);
+                        }
+
                     }
                 }
 //                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
