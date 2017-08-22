@@ -24,14 +24,10 @@
         var flowView;
         var id = EUI.util.getUrlParam("id");
         var instanceId = EUI.util.getUrlParam("instanceId");
-        var versionCode = EUI.util.getUrlParam("versionCode");
-        var viewFlowDefByVersionId = EUI.util.getUrlParam("viewFlowDefByVersionId")=="true";
         EUI.onReady(function () {
             flowView = new EUI.LookWorkFlowView({
                 id: id,
                 instanceId:instanceId,
-                versionCode:versionCode,
-                viewFlowDefByVersionId:viewFlowDefByVersionId,
                 renderTo: "content"
             });
         });

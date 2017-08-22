@@ -116,8 +116,6 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                         businessModelId: g.businessModelId,
                         data: dom.data(),
                         id: g.id,
-                        versionCode: g.versionCode,
-                        isFromDefination:g.viewFlowDefByVersionId,
                         nodeType: dom.attr("nodeType")
                     });
                 }

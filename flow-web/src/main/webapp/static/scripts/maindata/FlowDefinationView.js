@@ -280,7 +280,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: g.lang.viewFlowDefText+data.name,
-            url: _ctxPath + "/design/showLook?id="+data.id+"&viewFlowDefByVersionId=true"
+            url: _ctxPath + "/design/showLook?id="+data.id
         };
         g.addTab(tab);
     },
