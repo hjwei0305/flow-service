@@ -313,7 +313,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     this.manualSelected = true;
                 }
                 var lineNameHtml = "";
-                if (item.preLineName != "null") {
+                if (item.preLineName && item.preLineName != "null") {
                     lineNameHtml = '<div class="gateway-name">' + item.preLineName + '</div>';
                     if (item.preLineName == "同意" || item.preLineName == "不同意") {
                         g.getCheackBoxValue();
