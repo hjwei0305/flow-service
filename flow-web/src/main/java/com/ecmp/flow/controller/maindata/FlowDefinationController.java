@@ -6,6 +6,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
@@ -59,7 +60,7 @@ public class FlowDefinationController {
     public String listAllOrgs() {
         IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
         List<Organization> result = proxy.findOrgTreeWithoutFrozen();
-        OperateStatus operateStatus = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -117,7 +118,7 @@ public class FlowDefinationController {
     public String save(FlowDefination flowDefination)  {
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result = proxy.save(flowDefination);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -146,7 +147,7 @@ public class FlowDefinationController {
     public String saveDefVersion(FlowDefVersion flowDefVersion) {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         OperateResultWithData<FlowDefVersion> result = proxy.save(flowDefVersion);
-        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
         return JsonUtil.serialize(operateStatus);
     }
 
@@ -172,9 +173,9 @@ public class FlowDefinationController {
      */
     @RequestMapping(value = "activateOrFreezeFlowDef")
     @ResponseBody
-    public String activateOrFreezeFlowDef(String id,FlowDefinationStatus  status){
+    public String activateOrFreezeFlowDef(String id, FlowDefinationStatus  status) {
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
-        OperateResultWithData<FlowDefination> result=proxy.changeStatus(id,status);
+        OperateResultWithData<FlowDefination> result = proxy.changeStatus(id, status);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
@@ -187,9 +188,9 @@ public class FlowDefinationController {
      */
     @RequestMapping(value = "activateOrFreezeFlowVer")
     @ResponseBody
-    public String activateOrFreezeFlowVer(String id,FlowDefinationStatus  status){
+    public String activateOrFreezeFlowVer(String id, FlowDefinationStatus  status){
         IFlowDefVersionService  proxy = ApiClient.createProxy(IFlowDefVersionService .class);
-        OperateResultWithData<FlowDefVersion> result=proxy.changeStatus(id,status);
+        OperateResultWithData<FlowDefVersion> result = proxy.changeStatus(id, status);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return JsonUtil.serialize(operateStatus);
     }

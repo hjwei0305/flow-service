@@ -170,7 +170,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var executorForm = EUI.getCmp("excutor");
                 var eventForm = EUI.getCmp("event");
                 var normalData = normalForm.getFormValue();
-                var eventData = eventForm?eventForm.getFormValue():null;
+                var eventData = eventForm?eventForm.getFormValue():'';
                 var executor = '';
                 if(g.type!='ServiceTask'&& g.type!='ReceiveTask'&&g.type!='CallActivity'){
                     executor = g.getExcutorData()
@@ -179,7 +179,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     normal: normalData,
                     executor: executor,
                     event: eventData,
-                    notify: g.type == "CallActivity"?null:g.getNotifyData()
+                    notify: g.type == "CallActivity"?'':g.getNotifyData()
                 });
                 g.remove();
                 g.window.close();
@@ -242,7 +242,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 displayText: "请选择子流程",
                 name: "callActivityDefName",
                 allowBlank: false,
-                field: ["callActivityDefKey"],
+                field: ["callActivityDefKey","currentVersionId"],
                 listWidth: 400,
                 labelWidth: 100,
                 showSearch:true,
@@ -250,6 +250,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     this.grid.setPostParams({
                         Quick_value: data,
                         Q_EQ_subProcess__Boolean: true,
+                        Q_EQ_flowDefinationStatus__int: 1,
                         Q_NE_id__String: g.flowDefinitionId,
                     }, true);
                 },
@@ -257,12 +258,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     url: _ctxPath + "/flowDefination/listFlowDefination",
                     postData: {
                         Q_EQ_subProcess__Boolean: true,
+                        Q_EQ_flowDefinationStatus__int: 1,
                         Q_NE_id__String: g.flowDefinitionId,
                     },
                     loadonce:false,
                     colModel: [{
                         name: "id",
                         index: "id",
+                        hidden: true
+                    },{
+                        name: "lastDeloyVersionId",
                         hidden: true
                     }, {
                         label: "定义KEY",
@@ -276,7 +281,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 reader: {
                     name: "name",
-                    field: ["defKey"]
+                    field: ["defKey","lastDeloyVersionId"]
                 }
             }];
         }
