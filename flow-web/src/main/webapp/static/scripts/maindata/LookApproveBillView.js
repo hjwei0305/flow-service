@@ -163,9 +163,21 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 style:{
                     "padding-left":"20px"
                 }
+            },{
+                xtype: "TextField",
+                title: "<span class='name'>流程状态</span>",
+                name: "flowStatus",
+                width: 413,
+                id: "flowStatus",
+                colon: false,
+                hidden:true,
+                labelWidth: 100,
+                style:{
+                    "padding-left":"20px"
+                }
             }, {
                 xtype: "TextField",
-                title: "<span class='name'>页数</span>",
+                title: "<span class='name'>组织机构路径</span>",
                 name: "orgPath",
                 width: 413,
                 id: "orgPath",
