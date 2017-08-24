@@ -16,14 +16,21 @@ import javax.xml.bind.JAXBException;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <p>
  * 实现功能：流程定义版本服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/26 10:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("flowDefVersion")
@@ -57,6 +64,8 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     /**
      * 通过json流程定义数据，保存流程版本定义
      * @param definition json对象实体
+     * @throws    JAXBException  jaxb解析异常
+     * @throws    CloneNotSupportedException 复制异常
      * @return 保存后的流程版本定义实体
      */
     @POST
@@ -69,9 +78,9 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
 
     /**
      * 切换版本状态
-     * @param id
-     * @param status
-     * @return
+     * @param id 单据id
+     * @param status 状态
+     * @return 结果
      */
     @POST
     @Path("changeStatus/{id}/{status}")

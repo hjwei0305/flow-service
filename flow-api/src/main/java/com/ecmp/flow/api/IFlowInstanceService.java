@@ -20,14 +20,21 @@ import java.util.Set;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <p>
  * 实现功能：流程实例服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("flowInstance")
@@ -49,7 +56,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 将流程实例挂起
-     * @param id
+     * @param id 实例id
+     *  @return 操作结果
      */
     @POST
     @Path("suspend")
@@ -73,7 +81,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 获取流程实例在线任务id列表
-     * @param id
+     * @param id 实例id
+     * @return 当前激动节点
      */
     @GET
     @Path("currentNodeIds/{id}")
@@ -84,7 +93,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过业务单据id获取单据生命周期所有任务历史记录
-     * @param businessId
+     * @param businessId 业务单据id
+     * @return 流程执行历史
      */
     @GET
     @Path("findAllByBusinessId")
@@ -95,7 +105,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过业务单据id获取单据最近一次流程实例流程历史记录
-     * @param businessId
+     * @param businessId 业务单据id
+     * @return 流程执行历史
      */
     @GET
     @Path("findLastByBusinessId/{businessId}")
@@ -107,7 +118,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过业务单据id获取单据最近一次流程实例
-     * @param businessId
+     * @param businessId 业务单据id
+     * @return 流程实例
      */
     @GET
     @Path("findLastInstanceByBusinessId/{businessId}")
@@ -118,7 +130,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过业务单据id获取单据最近一次流程实例
-     * @param businessId
+     * @param businessId 业务单据id
+     * @return 流程实例
      */
     @GET
     @Path("findCurrentTaskByBusinessId/{businessId}")
@@ -130,7 +143,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过业务单据id获取最新流程实例待办任务id列表
-     * @param businessId
+     * @param businessId 业务单据id
+     * @return 最新流程实例待办任务id列表
      */
     @GET
     @Path("getLastNodeIdsByBusinessId/{businessId}")
@@ -141,8 +155,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 通过单据id，获取流程实例及关联待办及任务历史
-     * @param businessId
-     * @return
+     * @param businessId 业务单据id
+     * @return 流程实例及关联待办及任务历史
      */
     @GET
     @Path("getProcessTrackVO/{businessId}")
@@ -154,7 +168,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 获取流程实例任务历史id列表，以完成时间升序排序
-     * @param id
+     * @param id 业务单据id
+     * @return 流程实例及关联待办及任务历史
      */
     @GET
     @Path("getNodeHistoryIds/{id}")
@@ -166,7 +181,8 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 检查当前实例是否允许执行终止流程实例操作
-     * @param id 待操作数据ID
+     * @param id 业务单据id
+     * @return 当前实例是否允许执行终止流程实例操作
      */
     @GET
     @Path("checkCanEnd/{id}")
@@ -179,6 +195,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     /**
      * 检查实例集合是否允许执行终止流程实例操作
      * @param ids 待操作数据ID集合
+     * @return 集合是否可以终止列表
      */
     @POST
     @Path("checkIdsCanEnd")
@@ -192,6 +209,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param id 待操作数据ID
+     * @return 操作结果
      */
     @POST
     @Path("end/{id}")
@@ -204,6 +222,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
      * @param businessId 业务单据id
+     * @return 操作结果
      */
     @POST
     @Path("endByBusinessId/{businessId}")
@@ -219,6 +238,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param businessId 业务单据id
      * @param receiveTaskActDefId 实际节点id
      * @param v 其他参数值Map
+     * @return 操作结果
      */
     @POST
     @Path("signalByBusinessId")

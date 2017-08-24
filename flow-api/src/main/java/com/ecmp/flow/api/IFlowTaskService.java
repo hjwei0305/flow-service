@@ -18,14 +18,21 @@ import java.util.Map;
 
 /**
  * *************************************************************************************************
- * <p/>
- * 实现功能：流程服务地址服务API接口定义
+ * <p>
+ * 实现功能：流程任务服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("flowTask")
@@ -72,8 +79,10 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 撤回到指定任务节点
-     * @param id
-     * @return
+     * @param id 任务id
+     * @param opinion 意见
+     * @throws    CloneNotSupportedException 不能复制对象
+     * @return 操作结果
      */
     @POST
     @Path("rollBackTo/{id}")
@@ -85,6 +94,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 驳回任务（动态驳回）
      * @param id 任务id
+     * @param opinion 意见
      * @param variables 参数
      * @return 操作结果
      */
@@ -124,8 +134,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * 选择下一步执行的节点信息
      * @param id 任务ID
      * @param businessId 业务ID
-     * @return
-     * @throws NoSuchMethodException
+     * @return 下一步执行的节点信息
+     * @throws NoSuchMethodException 方法找不到异常
      */
     @POST
     @Path("findNextNodesWithBusinessId/{id}/{businessId}")
@@ -136,8 +146,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 根据流程实例ID查询待办
-     * @param instanceId
-     * @return
+     * @param instanceId 实例id
+     * @return 待办列表
      */
     @POST
     @Path("findByInstanceId")
@@ -149,8 +159,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 选择下一步执行的节点信息
      * @param id 任务ID
-     * @return
-     * @throws NoSuchMethodException
+     * @return 下一步执行的节点信息
+     * @throws NoSuchMethodException 方法找不到异常
      */
     @GET
     @Path("findNextNodes/{id}")
@@ -178,8 +188,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 只通过任务ID选择下一步带用户信息的执行的节点信息
      * @param id 任务ID
-     * @return
-     * @throws NoSuchMethodException
+     * @return 下一步执行的节点信息(带用户信息)
+     * @throws NoSuchMethodException 找不到方法异常
      */
     @GET
     @Path("findNexNodesByIdWithUserSet/{id}")
@@ -192,9 +202,10 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 只通过任务ID选择下一步带用户信息的执行的节点信息
      * @param id 任务ID
+     * @param approved 是否同意
      * @param includeNodeIds 只包含此节点
-     * @return
-     * @throws NoSuchMethodException
+     * @return 下一步执行的节点信息(带用户信息)
+     * @throws NoSuchMethodException 找不到方法异常
      */
     @POST
     @Path("findNexNodesByIdWithUserSetAndNodeIds/{id}/{approved}")
@@ -204,9 +215,9 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id,@PathParam("approved")String approved,List<String> includeNodeIds) throws NoSuchMethodException;
 
     /**
-     *
-     * @param id
-     * @return
+     * 获取当前流程抬头信息
+     * @param id 任务id
+     * @return  当前任务流程抬头信息
      */
     @GET
     @Path("getApprovalHeaderVO/{id}")
@@ -215,6 +226,10 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "选择当前流程抬头信息",notes = "测试")
    public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id")String id);
 
+    /**
+     * 获取待办汇总信息
+     * @return 待办汇总信息
+     */
     @GET
     @Path("findTaskSumHeader")
     @Produces(MediaType.APPLICATION_JSON)
@@ -222,6 +237,12 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public List<TodoBusinessSummaryVO> findTaskSumHeader();
 
+    /**
+     * 获取待办汇总信息
+     * @param businessModelId 业务实体id
+     * @param searchConfig 查询条件
+     * @return 待办汇总信息
+     */
     @POST
     @Path("findByBusinessModelId/{businessModelId}")
     @Produces(MediaType.APPLICATION_JSON)

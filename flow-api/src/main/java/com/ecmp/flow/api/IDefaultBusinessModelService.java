@@ -12,14 +12,21 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
- * 实现功能：默认业务表单服务API接口定义
+ * <p>
+ * 实现功能： 默认业务表单服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/26 10:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("defaultBusinessModel")
@@ -52,7 +59,8 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
 
    /**
      * 测试事前
-     *
+     * @param id 单据id
+    *  @param    paramJson json参数
      * @return 执行结果
      */
     @POST
@@ -64,7 +72,8 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
 
     /**
      * 测试事后
-     *
+     * @param id 单据id
+     * @param    paramJson json参数
      * @return 执行结果
      */
     @POST
@@ -76,7 +85,8 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
 
     /**
      * 测试自定义执行人选择
-     *
+     * @param businessId 单据id
+     * @param    paramJson json参数
      * @return 执行结果
      */
     @POST
@@ -88,10 +98,10 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
 
 
  /**
-  *
+  * 接收任务测试接口
   * @param id  业务单据id
   * @param changeText   参数文本
-  * @return
+  * @return 结果
   */
  @POST
  @Path("testReceiveCall")

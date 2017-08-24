@@ -16,21 +16,28 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <p>
  * 实现功能：工作流程服务通用基本API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/31 10:49      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 public interface IBaseService<T extends Persistable<? extends Serializable>, ID extends Serializable>  {
 
     /**
      * 通过Id获取实体
-     * @param id
+     * @param id 业务id
      * @return 实体
      */
     @GET
@@ -86,7 +93,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
 
     /**
      * 通过ID删除实体
-     * @param id
+     * @param id ID
      * @return 删除后的返回信息
      */
     @DELETE
@@ -98,7 +105,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
 
     /**
      * 通过ID集合批量删除实体
-     * @param ids
+     * @param ids id集合
      */
     @DELETE
     @Path("deleteByIds")
@@ -109,7 +116,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
 
     /**
      * 获取分页数据
-     *
+     * @param searchConfig 搜索条件对象
      * @return 实体清单
      */
     @POST

@@ -14,14 +14,21 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
- * 实现功能：业务实体自定义执行人API接口定义
+ * <p>
+ * 实现功能：业务实体自定义执行人配置管理服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/05/25 09:09      谭军(tanjun)                新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("businessSelfDefEmployee")
@@ -55,8 +62,8 @@ public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSe
 
     /**
      * 通过业务实体ID获取定义的企业员工
-     * @param businessModelId
-     * @return
+     * @param businessModelId 业务模块ID
+     * @return 企业员工
      */
     @GET
     @Path("findByBusinessModelId/{businessModelId}")
@@ -67,8 +74,8 @@ public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSe
 
     /**
      * 保存设置的执行人
-     * @param businessModelId
-     * @param selectedCustomExecutorIds
+     * @param businessModelId 业务模块id
+     * @param selectedCustomExecutorIds 选择的执行人id
      */
     @POST
     @Path("saveCustomExecutor/{businessModelId}")

@@ -21,14 +21,21 @@ import java.util.Map;
 
 /**
  * *************************************************************************************************
- * <p/>
+ * <p>
  * 实现功能：流程定义服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/30 10:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("flowDefination")
@@ -61,6 +68,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     /**
      * 通过流程定义ID发布最新版本的流程
      * @param id 实体
+     * @throws    UnsupportedEncodingException 编码异常
      * @return 发布id
      */
     @POST
@@ -73,6 +81,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     /**
      * 通过流程版本ID发布指定版本的流程
      * @param id 实体
+     * @throws    UnsupportedEncodingException 编码异常
      * @return 发布id
      */
     @POST
@@ -170,6 +179,8 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
     /**
      * 通过vo对象启动流程实体
+     * @param flowStartVO 启动传输对象
+     * @throws NoSuchMethodException     方法找不到异常
      * @return FlowStartResultVO 启动结果
      */
     @POST
@@ -181,9 +192,9 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
     /**
      * 切换版本状态
-     * @param id
-     * @param status
-     * @return
+     * @param id 单据id
+     * @param status 状态
+     * @return 操作结果
      */
     @POST
     @Path("changeStatus/{id}/{status}")
@@ -197,7 +208,13 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * 切换版本状态
      * @param flowTypeId  流程类型id
      * @param expression 表达式UEL
-     * @return
+     * @throws   ClassNotFoundException 类找不到异常
+     * @throws   IllegalAccessException 访问异常
+     * @throws   IllegalArgumentException 参数不匹配异常
+     * @throws   InvocationTargetException 目标异常
+     * @throws   InstantiationException 实例化异常
+     * @throws   NoSuchMethodException 方法找不到异常
+     * @return 操作结果
      */
     @POST
     @Path("validateExpression")

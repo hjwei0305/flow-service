@@ -11,14 +11,21 @@ import java.util.Map;
 
 /**
  * *************************************************************************************************
- * <p/>
- * 实现功能： 流程条件API定义
+ * <p>
+ * 实现功能：业务系统条件通用服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/4/26 13:19      谭军(tanjun)                    新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 public interface ICommonConditionService {
@@ -27,7 +34,7 @@ public interface ICommonConditionService {
      * 获取条件POJO属性说明
      * @param conditonPojoClassName 条件POJO类名
      * @return  POJO属性说明Map
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException 类找不到异常
      */
     @GET
     @Path("properties/{conditonPojoClassName}")
@@ -38,12 +45,13 @@ public interface ICommonConditionService {
 
     /**
      * 获取条件POJO属性说明及初始化值
-     * @param conditonPojoClassName
+     * @param conditonPojoClassName 条件实体类名称
      * @return  获取条件POJO属性说明及初始化值Map
-     * @throws ClassNotFoundException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @throws ClassNotFoundException 类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException 实例异常
+     * @throws IllegalAccessException 访问异常
+     * @throws NoSuchMethodException 没有方法异常
      */
     @GET
     @Path("propertiesAndValues/{conditonPojoClassName}")
@@ -59,11 +67,11 @@ public interface ICommonConditionService {
      * @param daoBeanName  对应的dao层BeanName
      * @param id  业务ID
      * @return POJO的值
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
+     * @throws ClassNotFoundException 类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException 实例异常
+     * @throws IllegalAccessException 访问异常
+     * @throws NoSuchMethodException 没有方法异常
      */
     @GET
     @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
@@ -77,7 +85,7 @@ public interface ICommonConditionService {
      * 获取条件POJO属性说明
      * @param businessModelId 业务实体ID
      * @return  POJO属性说明Map
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException 类找不到异常
      */
     @GET
     @Path("propertiesByBusinessModelId/{businessModelId}")
@@ -91,7 +99,11 @@ public interface ICommonConditionService {
      * 获取条件POJO属性说明
      * @param businessModelId 业务实体ID
      * @return  POJO属性说明Map
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException 类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException 实例异常
+     * @throws IllegalAccessException 访问异常
+     * @throws NoSuchMethodException 没有方法异常
      */
     @GET
     @Path("propertiesAndValuesByBusinessModelId/{businessModelId}")
@@ -104,8 +116,13 @@ public interface ICommonConditionService {
     /**
      * 获取条件POJO属性说明
      * @param businessModelId 业务实体ID
+     * @param id 单据id
      * @return  POJO属性说明Map
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException 类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException 实例异常
+     * @throws IllegalAccessException 访问异常
+     * @throws NoSuchMethodException 没有方法异常
      */
     @GET
     @Path("conditonPojoMapByBusinessModelId/{businessModelId}/{id}")
@@ -121,11 +138,12 @@ public interface ICommonConditionService {
      * @param businessModelId   业务实体id
      * @param id   单据id
      * @param status   状态
-     * @return
-     * @throws ClassNotFoundException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @return 返回结果
+     * @throws ClassNotFoundException 类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException 实例异常
+     * @throws IllegalAccessException 访问异常
+     * @throws NoSuchMethodException 没有方法异常
      */
     @GET
     @Path("resetState/{businessModelId}/{id}/{status}")

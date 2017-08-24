@@ -14,12 +14,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 /**
- * 表达式Entity相关工具方法
- * 
- * @author tanjun
- *
- * @param <T>
+ * *************************************************************************************************
+ * <p>
+ * 实现功能：表达式Entity相关工具方法
+ * </p>
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
+ * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
+ * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
+ * *************************************************************************************************
+ * @param <T> 条件实体
  */
 public class ExpressionUtil<T extends IConditionPojo> {
 	/**
@@ -28,7 +42,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param object
 	 *            entity对象
 	 * @return 结果
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException 类找不到异常
 	 */
 	public LinkedHashMap<String, String> getProperties(T object) throws ClassNotFoundException {
 		LinkedHashMap<String, String> result = null;
@@ -48,7 +62,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param excludeProperties
 	 *            排除字段
 	 * @return 结果
-	 * @throws ClassNotFoundException
+	 * @throws ClassNotFoundException 类找不到异常
 	 */
 	public LinkedHashMap<String, String> getProperties(T object, String[] excludeProperties)
 			throws ClassNotFoundException {
@@ -112,6 +126,14 @@ public class ExpressionUtil<T extends IConditionPojo> {
 		return result;
 	}
 
+	/**
+	 * 获取条件pojo属性、属性说明Map(有序)
+	 *
+	 * @param className
+	 *            类名称（全路径）
+	 * @return pojo属性、属性说明Map
+	 * @throws ClassNotFoundException 异常信息
+	 */
 	public static LinkedHashMap<String, String> getProperties(String className) throws ClassNotFoundException {
 		return getProperties(className, null);
 
@@ -123,11 +145,11 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param conditionPojo
 	 *            对象
 	 * @return pojo属性、属性说明Map
-	 * @throws ClassNotFoundException
-	 *             异常信息
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
+	 * @throws   ClassNotFoundException 类找不到异常
+	 * @throws   IllegalAccessException 访问异常
+	 * @throws   IllegalArgumentException 参数不匹配异常
+	 * @throws   InvocationTargetException 目标异常
+	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
 	public  Map<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
 		return this.getPropertiesAndValues(conditionPojo, null);
@@ -141,11 +163,11 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param excludeProperties
 	 *            需要排除的字段
 	 * @return pojo属性、属性说明Map
-	 * @throws ClassNotFoundException
-	 *             异常信息
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
+	 * @throws   ClassNotFoundException 类找不到异常
+	 * @throws   IllegalAccessException 访问异常
+	 * @throws   IllegalArgumentException 参数不匹配异常
+	 * @throws   InvocationTargetException 目标异常
+	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
 	public  Map<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties)
 			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException ,NoSuchMethodException{
@@ -185,12 +207,12 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param className
 	 *            类名称（全路径）
 	 * @return pojo属性、属性说明Map
-	 * @throws ClassNotFoundException
-	 *             异常信息
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws   ClassNotFoundException 类找不到异常
+	 * @throws   IllegalAccessException 访问异常
+	 * @throws   IllegalArgumentException 参数不匹配异常
+	 * @throws   InvocationTargetException 目标异常
+	 * @throws InstantiationException 实例化异常
+	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
 	public  static Map<String, Object> getPropertiesAndValues(String className)     throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
 		return getPropertiesAndValues(className, null);
@@ -205,12 +227,12 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @param excludeProperties
 	 *            需要排除的字段
 	 * @return pojo属性、属性说明Map
-	 * @throws ClassNotFoundException
-	 *             异常信息
-	 * @throws InvocationTargetException 
-	 * @throws IllegalArgumentException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws   ClassNotFoundException 类找不到异常
+	 * @throws   IllegalAccessException 访问异常
+	 * @throws   IllegalArgumentException 参数不匹配异常
+	 * @throws   InvocationTargetException 目标异常
+	 * @throws InstantiationException 实例化异常
+	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
 	public  static Map<String, Object> getPropertiesAndValues(String className, String[] excludeProperties)
             throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {

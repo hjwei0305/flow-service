@@ -15,18 +15,25 @@ import java.util.List;
 
 /**
  * *************************************************************************************************
- * <p/>
- * 实现功能：默认业务表单服务API接口定义
+ * <p>
+ * 实现功能：销售业务表单服务API接口定义
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p>
+ * <p>
  * 版本          变更时间             变更人                     变更原因
+ * </p>
+ * <p>
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/26 10:39      谭军(tanjun)               新建
- * <p/>
+ * </p>
+ * <p>
+ * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
+ * </p>
  * *************************************************************************************************
  */
 @Path("defaultBusinessModel3")
-@Api(value = "IDefaultBusinessModel3Service 采购业务表单服务API接口")
+@Api(value = "IDefaultBusinessModel3Service 销售业务表单服务API接口")
 public interface IDefaultBusinessModel3Service extends IBaseService<DefaultBusinessModel3, String> {
 
 //    /**
@@ -55,8 +62,9 @@ public interface IDefaultBusinessModel3Service extends IBaseService<DefaultBusin
 
     /**
      * 测试自定义执行人选择
-     *
-     * @return 执行结果
+     * @param businessId 业务单据id
+     * @param paramJson  json参数
+     * @return 执行人列表
      */
     @POST
     @Path("getPersonToExecutorConfig")
