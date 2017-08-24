@@ -35,6 +35,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 var flag = true;
                 g.initData(result);
                 g.showWind();
+                g.flowDefVersionId=g.defaultData.data.flowInstance.flowDefVersion.id;
                 g.showFlowHistoryTopData(g.defaultData.data.flowInstance);
                 g.showFlowHistoryData(g.defaultData.data.flowHistoryList);
                 g.showFlowStatusData(g.defaultData.data.flowTaskList);
@@ -109,6 +110,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 data: this.instanceData,
                 afterSelect: function (data) {
                     g.designInstanceId = data.data.id;
+                    g.flowDefVersionId=data.data.data.flowInstance.flowDefVersion.id;
                     g.designFlowDefinationId = data.data.data.flowInstance.flowDefVersion.flowDefination.id;
                     g.versionCode = data.data.data.flowInstance.flowDefVersion.versionCode;
                     $(".statuscenter-info").html("").removeClass("text-center");
@@ -293,7 +295,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: g.lang.flowDiagramText,
-            url: _ctxPath + "/design/showLook?id=" + this.designFlowDefinationId + "&instanceId=" + this.designInstanceId + "&versionCode=" + this.versionCode,
+            url: _ctxPath + "/design/showLook?id=" + this.flowDefVersionId + "&instanceId=" + this.designInstanceId,
             id: this.designInstanceId
         };
         g.addTab(tab);

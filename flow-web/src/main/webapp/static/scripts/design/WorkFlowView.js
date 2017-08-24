@@ -59,7 +59,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: "flowTypeName",
             field: ["flowTypeId"],
             displayText: "请选择流程类型",
-            listWidth: isCopy && !isFromVersion?370:400,
+            listWidth: isCopy && !isFromVersion?368:400,
             showSearch: true,
             searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
             gridCfg: {
@@ -91,7 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }]
             },
             labelWidth: 85,
-            width: isCopy && !isFromVersion?160:190,
+            width: isCopy && !isFromVersion?159:190,
             readonly: (!isCopy && this.id)||(isCopy && isFromVersion) ? true : false,
             allowBlank: false,
             beforeSelect: function (data) {
@@ -140,7 +140,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "TextField",
             name: "id",
-            width: isCopy && !isFromVersion?100:110,
+            width: isCopy && !isFromVersion?99:110,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
             labelWidth: 85,
             allowBlank: false,
@@ -159,7 +159,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "TextField",
             displayText: "请输入流程名称",
             labelWidth: 85,
-            width: isCopy && !isFromVersion?160:240,
+            width: isCopy && !isFromVersion?159:235,
             allowBlank: false,
             name: "name"
         }, {
@@ -171,7 +171,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             name: "priority"
         },{
             xtype: "ComboBox",
-            width: 141,
+            width: 145,
             displayText: "是否允许为子流程",
             name: "subProcessName",
             reader: {name: 'name', field: ['value']},
