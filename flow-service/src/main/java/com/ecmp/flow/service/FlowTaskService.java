@@ -185,11 +185,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if(pvmTransition.getId().equals(defaultSequenId)){
                         continue;
                     }
+
                     for (String nodeId : manualSelectedNodeIds) {
                         ActivityImpl destinationActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
                         if(destinationActivity!=null && checkNextHas(pvmTransition.getDestination(),destinationActivity)){
                             oriPvmTransitionMap.put(pvmTransition,uelText);
-
                             String proName = destinationActivity.getId()+"_approveResult";
                             uelText = "${"+proName+" == true}";
                             uel = new UelExpressionCondition(uelText);
@@ -198,6 +198,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             variables.put(proName,true);
                         }
                     }
+
                 }
                 variables.put("approveResult",null);
                 //执行任务
@@ -213,13 +214,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }else {//针对人工网关的情况
-
-
+                ActivityImpl  currActivityTemp = (ActivityImpl)currActivity.getOutgoingTransitions().get(0).getDestination();
+                boolean gateWay = ifExclusiveGateway(currActivityTemp);
+                if(gateWay){
+                    currActivity = currActivityTemp;
+                }
                 Map<PvmTransition,String> oriPvmTransitionMap = new LinkedHashMap<PvmTransition,String>();
                 List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
                 for (PvmTransition pvmTransition : pvmTransitionList) {
                     UelExpressionCondition uel= (UelExpressionCondition)pvmTransition.getProperty("condition");
                     String uelText = (String) pvmTransition.getProperty("conditionText");
+                    boolean isSet = false;
                     for (String nodeId : manualSelectedNodeIds) {
                         ActivityImpl destinationActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
                         if(destinationActivity!=null && checkNextHas(pvmTransition.getDestination(),destinationActivity)){
@@ -230,8 +235,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
                             ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
                             variables.put(proName,true);
+                            isSet=true;
                             break;
                         }
+                    }
+                    if(gateWay && !isSet && (uel == null || StringUtils.isEmpty(uelText))){
+                        oriPvmTransitionMap.put(pvmTransition,uelText);
+                        uelText = "${0>1}";
+                        uel = new UelExpressionCondition(uelText);
+                        ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
+                        ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
                     }
                 }
                 //执行任务
@@ -241,9 +254,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     for(Map.Entry<PvmTransition,String> entry:oriPvmTransitionMap.entrySet()){
                         PvmTransition pvmTransition =  entry.getKey();
                         String uelText = entry.getValue();
-                        UelExpressionCondition uel = new UelExpressionCondition(uelText);
-                        ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
-                        ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
+                        if(StringUtils.isNotEmpty(uelText)){
+                            UelExpressionCondition uel = new UelExpressionCondition(uelText);
+                            ((ProcessElementImpl)pvmTransition).setProperty("condition",uel);
+                            ((ProcessElementImpl)pvmTransition).setProperty("conditionText",uelText);
+                        }else {
+                            ((ProcessElementImpl)pvmTransition).setProperty("condition",null);
+                            ((ProcessElementImpl)pvmTransition).setProperty("conditionText",null);
+                        }
+
                     }
                 }
 //                List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
@@ -1897,32 +1916,41 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关
                     uiType = "radiobox";
-                }
-                if (isSizeBigTwo) {
-                    for (int i = 1; i < nextNodes.size(); i++) {
-                        PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
-                        if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
-                            if (!includeNodeIds.contains(tempActivity.getId())) {
+                    if (isSizeBigTwo) {
+                        for (int i = 1; i < nextNodes.size(); i++) {
+                            PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
+                            if (includeNodeIds != null  && !includeNodeIds.isEmpty()) {
+                                if (!includeNodeIds.contains(tempActivity.getId())) {
+                                    continue;
+                                }
+                            }
+                            if (ifGageway(tempActivity)) {
+                                List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
+                                nodeInfoList.addAll(currentNodeInf);
                                 continue;
                             }
+                            NodeInfo tempNodeInfo = new NodeInfo();
+                            tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
+                            String gateWayName = firstActivity.getProperty("name") + "";
+                            // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
+                            tempNodeInfo.setGateWayName(gateWayName);
+                            tempNodeInfo.setUiType(uiType);
+                            tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
+                            nodeInfoList.add(tempNodeInfo);
                         }
-                        if (ifGageway(tempActivity)) {
-                            List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
-                            nodeInfoList.addAll(currentNodeInf);
-                            continue;
-                        }
-                        NodeInfo tempNodeInfo = new NodeInfo();
-                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, tempActivity);
-                        String gateWayName = firstActivity.getProperty("name") + "";
-                        // tempNodeInfo.setName(gateWayName +"->" + tempNodeInfo.getName());
-                        tempNodeInfo.setGateWayName(gateWayName);
-                        tempNodeInfo.setUiType(uiType);
-                        tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
-                        nodeInfoList.add(tempNodeInfo);
                     }
+                }else{
+                    List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, firstActivity, v, null);
+                    nodeInfoList.addAll(currentNodeInf);
                 }
+
             } else if ("inclusiveGateway".equalsIgnoreCase(nextActivtityType)) { // 包容网关,checkbox,至少选择一个
                 if (isSizeBigTwo) {
+                    if (includeNodeIds == null || includeNodeIds.isEmpty()) {
+                        List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, firstActivity, v, null);
+                        nodeInfoList.addAll(currentNodeInf);
+                        return nodeInfoList;
+                    }
                     for (int i = 1; i < nextNodes.size(); i++) {
                         PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[i];
                         if (includeNodeIds != null && !includeNodeIds.isEmpty()) {
@@ -1930,6 +1958,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 continue;
                             }
                         }
+
                         if (ifGageway(tempActivity)) {
                             List<NodeInfo> currentNodeInf = this.selectQualifiedNode(flowTask, tempActivity, v, null);
                             nodeInfoList.addAll(currentNodeInf);

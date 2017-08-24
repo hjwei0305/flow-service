@@ -56,7 +56,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.lastEditedDate desc";
+        hqlQuery+=" order by ft.createdDate desc";
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
