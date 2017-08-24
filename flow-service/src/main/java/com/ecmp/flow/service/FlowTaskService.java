@@ -594,7 +594,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             initTask(flowInstance, nextNodeId, flowHistory);
                         }
                     }
-                }else if("CallActivity".equalsIgnoreCase(nextActivity.getProperty("type") + "")){
+                }else if("CallActivity".equalsIgnoreCase(nextActivity.getProperty("type") + "") && counterSignLastTask){
                          flowDefinationService.initTask(flowInstance);
                 }else {
                     initTask(flowInstance, key, flowHistory);
