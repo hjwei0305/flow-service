@@ -2007,6 +2007,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
                         FlowStartVO flowStartVO = new FlowStartVO();
                         flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
+                        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+                        String startUserId = historicProcessInstance.getStartUserId();
+                        flowStartVO.setStartUserId(startUserId);
                         nodeInfoList = flowDefinationService.findXunFanNodesInfo(nodeInfoList, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode);
 
 //                    if(!result.isEmpty()){

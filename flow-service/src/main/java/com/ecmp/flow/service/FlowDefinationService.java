@@ -607,8 +607,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             List<Executor> employees = null;
             nodeInfo.setUiUserType(userType);
             if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
+                 String startUserId = flowStartVO.getStartUserId();
+                 if(StringUtils.isEmpty(startUserId)){
+                     startUserId =  ContextUtil.getSessionUser().getUserId();
+                 }
                 IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                String  startUserId =  ContextUtil.getSessionUser().getUserId();
                 employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
 
             } else {
