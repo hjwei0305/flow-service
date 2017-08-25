@@ -134,6 +134,10 @@ public class FlowInstanceController {
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
             List<String> flowInstanceIds = new ArrayList<String>();
             for(FlowInstance f:flowInstanceList){
+                FlowInstance parent = f.getParent();
+                if(parent!=null){
+                    continue;
+                }
                 flowInstanceIds.add(f.getId());
                 MyBillVO  myBillVO = new MyBillVO();
                 myBillVO.setBusinessCode(f.getBusinessCode());
