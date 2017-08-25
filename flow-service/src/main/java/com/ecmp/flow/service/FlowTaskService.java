@@ -435,6 +435,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 variables.put("approveResult",false);
             }
             this.completeActiviti(actTaskId, variables);
+            counterSignLastTask = true;
         }else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){
             String executionId = currTask.getExecutionId();
             Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
@@ -449,6 +450,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         else {
             this.completeActiviti(actTaskId, variables);
+            counterSignLastTask = true;
         }
 //        this.completeActiviti(actTaskId, variables);
 //        this.saveVariables(variables, flowTask);先不做保存
@@ -2150,10 +2152,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
                 net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(firstActivity.getId());
                 net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-                String callActivityDefKey = (String)normal.get("callActivityDefKey");
-                List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(callActivityDefKey);
-                if(flowDefVersionList!=null && !flowDefVersionList.isEmpty()){
-                    FlowDefVersion flowDefVersion = flowDefVersionList.get(0);
+                String currentVersionId = (String)normal.get("currentVersionId");
+                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
+                if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
                     String def = flowDefVersion.getDefJson();
                     JSONObject defObjSon = JSONObject.fromObject(def);
                     Definition definitionSon = (Definition) JSONObject.toBean(defObjSon, Definition.class);
