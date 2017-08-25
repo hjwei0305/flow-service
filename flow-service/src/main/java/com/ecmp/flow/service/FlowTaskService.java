@@ -597,7 +597,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                 }else if("CallActivity".equalsIgnoreCase(nextActivity.getProperty("type") + "") && counterSignLastTask){
-                         flowDefinationService.initTask(flowInstance);
+                         flowDefinationService.initTask(flowInstance,flowHistory);
                 }else {
                     initTask(flowInstance, key, flowHistory);
                 }
@@ -1533,6 +1533,36 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+    private List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,PvmActivity currTempActivity, List<NodeInfo> result){
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObjP = JSONObject.fromObject(defObjStr);
+        Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
+        net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currTempActivity.getId());
+        net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        String currentVersionId = (String)normal.get("currentVersionId");
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
+        if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
+            String def = flowDefVersion.getDefJson();
+            JSONObject defObjSon = JSONObject.fromObject(def);
+            Definition definitionSon = (Definition) JSONObject.toBean(defObjSon, Definition.class);
+            List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
+            if (startEventList != null && startEventList.size() == 1) {
+                StartEvent startEvent = startEventList.get(0);
+                net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
+                FlowStartVO flowStartVO = new FlowStartVO();
+                flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
+                try {
+                    result = flowDefinationService.findXunFanNodesInfo(result, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode);
+                }catch (Exception e){
+
+                }
+            }
+        }else {
+            throw new RuntimeException("找不到子流程");
+        }
+        return result;
+    }
+
     /**
      * 选择下一步执行的节点信息
      *
@@ -1608,6 +1638,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
+                                    }else  if("CallActivity".equalsIgnoreCase(type)){
+                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
                                     }else{
                                         NodeInfo tempNodeInfo = new NodeInfo();
                                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1629,6 +1661,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
+                                    }else  if("CallActivity".equalsIgnoreCase(type)){
+                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
                                     }else{
                                         NodeInfo tempNodeInfo = new NodeInfo();
                                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1667,6 +1701,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                     List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                     result.addAll(temp);
+                                }else  if("CallActivity".equalsIgnoreCase(type)){
+                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
                                 }else{
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1687,6 +1723,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
                                     List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                     result.addAll(temp);
+                                }else  if("CallActivity".equalsIgnoreCase(type)){
+                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
                                 }else{
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1993,37 +2031,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             }
             else   if("CallActivity".equalsIgnoreCase(nextActivtityType)){
-                JSONObject defObjP = JSONObject.fromObject(defObjStr);
-                Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
-                JSONObject currentNodeSon = definitionP.getProcess().getNodes().getJSONObject(firstActivity.getId());
-                net.sf.json.JSONObject normal = currentNodeSon.getJSONObject("nodeConfig").getJSONObject("normal");
-                String currentVersionId = (String)normal.get("currentVersionId");
-                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
-                if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
-                    String def = flowDefVersion.getDefJson();
-                    JSONObject defObjSon = JSONObject.fromObject(def);
-                    Definition definitionSon = (Definition) JSONObject.toBean(defObjSon, Definition.class);
-                    List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
-                    if (startEventList != null && startEventList.size() == 1) {
-                        StartEvent startEvent = startEventList.get(0);
-                        net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
-                        FlowStartVO flowStartVO = new FlowStartVO();
-                        flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
-                        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-                        String startUserId = historicProcessInstance.getStartUserId();
-                        flowStartVO.setStartUserId(startUserId);
-                        nodeInfoList = flowDefinationService.findXunFanNodesInfo(nodeInfoList, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode);
-
-//                    if(!result.isEmpty()){
-//                        for(NodeInfo nodeInfo:result){
-//                            nodeInfo.setCurrentTaskType(startEvent.getType());
-//                        }
-//                    }
-                    }
-                }else {
-                    throw new RuntimeException("找不到子流程,或子流程处于挂起状态");
-                }
-                return nodeInfoList;
+                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity,nodeInfoList);
             } else {
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 0; i < nextNodes.size(); i++) {
@@ -2147,38 +2155,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
             else   if("CallActivity".equalsIgnoreCase(nextActivtityType)){
-                String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-                JSONObject defObjP = JSONObject.fromObject(defObjStr);
-                Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
-                net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(firstActivity.getId());
-                net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-                String currentVersionId = (String)normal.get("currentVersionId");
-                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
-                if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
-                    String def = flowDefVersion.getDefJson();
-                    JSONObject defObjSon = JSONObject.fromObject(def);
-                    Definition definitionSon = (Definition) JSONObject.toBean(defObjSon, Definition.class);
-                    List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
-                    if (startEventList != null && startEventList.size() == 1) {
-                        StartEvent startEvent = startEventList.get(0);
-                        net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
-                        FlowStartVO flowStartVO = new FlowStartVO();
-                        flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
-                        try {
-                            nodeInfoList = flowDefinationService.findXunFanNodesInfo(nodeInfoList, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode);
-                        }catch (Exception e){
-
-                        }
-//                    if(!result.isEmpty()){
-//                        for(NodeInfo nodeInfo:result){
-//                            nodeInfo.setCurrentTaskType(startEvent.getType());
-//                        }
-//                    }
-                    }
-                }else {
-                    throw new RuntimeException("找不到子流程");
-                }
-                return nodeInfoList;
+                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity,nodeInfoList);
             }
             else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关

@@ -1221,13 +1221,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     public void initTask(FlowInstance flowInstance) {
+        initTask(flowInstance,null);
+    }
+    public void initTask(FlowInstance flowInstance,FlowHistory preParentTask) {
         if(flowInstance == null){
             return;
         }
         List<FlowInstance> flowInstanceSonList = flowInstanceDao.findByParentId(flowInstance.getId());
         if(flowInstanceSonList!=null && !flowInstanceSonList.isEmpty()){//初始化子流程的任务
             for(FlowInstance son:flowInstanceSonList){
-                initTask(son);
+                initTask(son,preParentTask);
             }
         }
         String actProcessInstanceId = flowInstance.getActInstanceId();
@@ -1295,7 +1298,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                            }else{
                                flowTask.setDepict(task.getDescription());
                            }
-
+                           if(preParentTask != null){
+                               flowTask.setPreId(preParentTask.getId());
+                           }
                            flowTask.setTaskStatus(TaskStatus.INIT.toString());
                            flowTask.setFlowInstance(flowInstance);
                            flowTaskDao.save(flowTask);
@@ -1330,7 +1335,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             }else{
                                 flowTask.setDepict(task.getDescription());
                             }
-
+                            if(preParentTask != null){
+                                flowTask.setPreId(preParentTask.getId());
+                            }
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
