@@ -1237,6 +1237,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
+                String taskActId = task.getId();
+                FlowTask flowTaskNow =  flowTaskDao.findByActTaskId(taskActId);
+                if(flowTaskNow != null){
+                    continue;
+                }
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
                 JSONObject defObj = JSONObject.fromObject(flowDefJson);
