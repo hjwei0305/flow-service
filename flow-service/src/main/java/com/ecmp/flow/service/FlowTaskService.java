@@ -1378,17 +1378,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         nodeInfo.setType("EndEvent");
                         continue;
                     }
-
-                    if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
-                    } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
-                    } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
-                    } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
-                        nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                    if(StringUtils.isEmpty(nodeInfo.getUserVarName())){
+                        if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+                        } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                        } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
+                        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                        }
                     }
-
+                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    if(executorSet!=null && !executorSet.isEmpty()){
+                        continue;
+                    }
                     if (executor != null && !executor.isEmpty()) {
                         String userType = (String) executor.get("userType");
                         String ids = (String) executor.get("ids");
