@@ -1009,7 +1009,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var nodeType = item.attr("nodetype");
             var name = item.find(".node-title").text();
             var nodeConfig = item.data();
-            if (type.indexOf("Task") != -1 ||nodeType == "CallActivity" && Object.isEmpty(nodeConfig) && type != 'ManualTask') {
+            if ((type.indexOf("Task") != -1 ||nodeType == "CallActivity") && Object.isEmpty(nodeConfig) && type != 'ManualTask') {
                 EUI.ProcessStatus({
                     success: false,
                     msg: "请将节点：" + name + "，配置完整"
