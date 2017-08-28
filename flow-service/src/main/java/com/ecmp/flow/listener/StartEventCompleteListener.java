@@ -75,8 +75,10 @@ public class StartEventCompleteListener implements ExecutionListener {
             parentProcessInstance = parent.getProcessInstance();
             Map<String,Object> variablesParent = runtimeService.getVariables(parent.getId());
             variables.putAll(variablesParent);
-
             delegateTask.setVariables(variables);
+            //设置子流程businessKey
+            String  parentBusinessKey = parentProcessInstance.getBusinessKey();
+            runtimeService.updateBusinessKey(processInstance.getId(),parentBusinessKey);
         }
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
         if(flowInstance==null){

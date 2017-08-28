@@ -211,7 +211,11 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             if(StringUtils.isNoneEmpty(process.getFlowDefVersionId())){
                 entity =  flowDefVersionDao.findOne(process.getFlowDefVersionId());
             }
+
             if(entity!=null){//版本不为空
+                if(!entity.getDefKey().equals(process.getId())){
+                    throw new RuntimeException("版本key与当前流程定义key不一致！");
+                }
                 if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
                     FlowDefVersion old = entity;
                     entity  = new FlowDefVersion();

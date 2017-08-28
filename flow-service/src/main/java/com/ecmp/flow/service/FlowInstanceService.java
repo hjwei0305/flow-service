@@ -495,6 +495,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if(receiveTaskActivityInstance != null ){
                     String executionId = receiveTaskActivityInstance.getExecutionId();
                     runtimeService.signal(executionId,v);
+//                    //清除接收任务待办项
+//                List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(receiveTaskActDefId,actInstanceId);
+//                if(flowTaskList!=null && !flowTaskList.isEmpty()){
+//                    flowTaskDao.delete(flowTaskList.get(0));
+//                }
             }else{
                     result =  OperateResult.operationFailure("10031");
             }

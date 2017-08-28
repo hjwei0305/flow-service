@@ -78,6 +78,12 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
+//            if(StringUtils.isEmpty(businessId)){
+//            ExecutionEntity parentExecutionEntity = ((ExecutionEntity) delegateTask).getSuperExecution();
+//            if(parentExecutionEntity != null){
+//                businessId =  parentExecutionEntity.getProcessInstance().getBusinessKey();
+//            }
+//            }
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);

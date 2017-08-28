@@ -1338,10 +1338,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String currentNodeType = flowTaskDefObj.get("nodeType") + "";
 
             for (NodeInfo nodeInfo : nodeInfoList) {
-               Set<Executor> executorSet = nodeInfo.getExecutorSet();
-               if(executorSet!=null && !executorSet.isEmpty()){
-                   continue;
-               }
+//               Set<Executor> executorSet = nodeInfo.getExecutorSet();
+//               if(executorSet==null || executorSet.isEmpty()){
+//                   continue;
+//               }
                 nodeInfo.setCurrentTaskType(currentNodeType);
                 if ("CounterSignNotEnd".equalsIgnoreCase(nodeInfo.getType())) {
                     continue;
@@ -1396,9 +1396,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         List<Executor> employees = null;
                         nodeInfo.setUiUserType(userType);
                         if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
-                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-                                    .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-                            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
+                            FlowInstance flowInstance = flowTask.getFlowInstance();
+                            while(flowInstance.getParent() != null){ //以父流程的启动人为准
+                                flowInstance = flowInstance.getParent();
+                            }
+//                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
+//                                    .processInstanceId(flowInstance.getActInstanceId()).singleResult();
+                            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowInstance.getActInstanceId()).singleResult();
                             String startUserId = historicProcessInstance.getStartUserId();
                             IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                             employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
@@ -1597,7 +1601,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String nodeType = defObj.get("nodeType") + "";
         List<NodeInfo> result = new ArrayList<NodeInfo>();
             if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务
-
                 int counterDecision=100;
                 try {
                     counterDecision = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
