@@ -1588,7 +1588,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 .getDeployedProcessDefinition(actProcessDefinitionId);
         PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
 
-        BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        FlowInstance flowInstanceReal = flowTask.getFlowInstance();
+        while (flowInstanceReal.getParent()!=null){
+            flowInstanceReal = flowInstanceReal.getParent();
+        }
+        BusinessModel businessModel = flowInstanceReal.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         String businessModelId = businessModel.getId();
         String appModuleId = businessModel.getAppModuleId();
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
