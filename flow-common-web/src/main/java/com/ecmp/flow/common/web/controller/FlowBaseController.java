@@ -446,7 +446,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 BeanUtils.copyProperties(parentBusinessModel, defaultBusinessModel);
                 String name = "temp_测试跨业务实体子流程_默认业务实体" + System.currentTimeMillis();
                 defaultBusinessModel.setName(name);
-                defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
+                defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
                 defaultBusinessModel.setWorkCaption(parentBusinessModel.getWorkCaption()+"||"+name);
                 defaultBusinessModel.setId(null);
                 defaultBusinessModel.setBusinessCode(null);
@@ -460,7 +460,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 BeanUtils.copyProperties(parentBusinessModel, defaultBusinessModel2Son);
                 String name = "temp_测试跨业务实体子流程_采购实体" + System.currentTimeMillis();
                 defaultBusinessModel2Son.setName(name);
-                defaultBusinessModel2Son.setFlowStatus(FlowStatus.INIT);
+                defaultBusinessModel2Son.setFlowStatus(FlowStatus.INPROCESS);
                 defaultBusinessModel2Son.setWorkCaption(parentBusinessModel.getWorkCaption()+"||"+name);
                 defaultBusinessModel2Son.setId(null);
                 defaultBusinessModel2Son.setBusinessCode(null);
@@ -474,7 +474,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
                 BeanUtils.copyProperties(parentBusinessModel, defaultBusinessModel3Son);
                 String name = "temp_测试跨业务实体子流程_销售实体" + System.currentTimeMillis();
                 defaultBusinessModel3Son.setName(name);
-                defaultBusinessModel3Son.setFlowStatus(FlowStatus.INIT);
+                defaultBusinessModel3Son.setFlowStatus(FlowStatus.INPROCESS);
                 defaultBusinessModel3Son.setWorkCaption(parentBusinessModel.getWorkCaption()+"||"+name);
                 defaultBusinessModel3Son.setId(null);
                 defaultBusinessModel3Son.setBusinessCode(null);
