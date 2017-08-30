@@ -520,17 +520,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
             //初始化新的任务
-            FlowInstance flowInstanceP = flowInstance.getParent();
+
             String actTaskDefKey = flowTask.getActTaskDefKey();
             String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
             ProcessDefinitionEntity definition = null;
             PvmActivity currentNode = null;
-            if(flowInstance.isEnded() && (flowInstanceP != null && !flowInstanceP.isEnded())){//子流程结束，主流程未结束
+            FlowInstance flowInstanceTemp = flowInstance;
+            FlowInstance flowInstanceP = flowInstanceTemp.getParent();
+            boolean sonEndButParnetNotEnd = false;
+            while(flowInstanceTemp.isEnded() && (flowInstanceP != null && !flowInstanceP.isEnded())){//子流程结束，主流程未结束
+                sonEndButParnetNotEnd =true;
                 actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
                 definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                         .getDeployedProcessDefinition(actProcessDefinitionId);
                 String superExecutionId = null;
-                superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(),flowInstance.getActInstanceId()+"_superExecutionId");
+                superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(),flowInstanceTemp.getActInstanceId()+"_superExecutionId");
                 HistoricActivityInstance historicActivityInstance = null;
                 HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                         .executionId(superExecutionId).activityType("callActivity");
@@ -539,21 +543,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
                     actTaskDefKey = he.getActivityId();
                     currentNode = this.getActivitNode(definition,actTaskDefKey);
-                    // 取得流程实例
-//                    instance = runtimeService
-//                            .createProcessInstanceQuery()
-//                            .processInstanceId(flowInstanceP.getActInstanceId())
-//                            .singleResult();
                     callInitTaskBack(currentNode, flowInstanceP, flowHistory,counterSignLastTask);
                 }
-            }else{
-                definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                        .getDeployedProcessDefinition(actProcessDefinitionId);
-                currentNode = this.getActivitNode(definition,actTaskDefKey);
-                if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
-                    callInitTaskBack(currentNode, flowInstance, flowHistory,counterSignLastTask);
-                }
+                flowInstanceTemp = flowInstanceP;
+                flowInstanceP = flowInstanceTemp.getParent();
             }
+            if(!sonEndButParnetNotEnd){
+                    definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                            .getDeployedProcessDefinition(actProcessDefinitionId);
+                    currentNode = this.getActivitNode(definition,actTaskDefKey);
+                    if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
+                        callInitTaskBack(currentNode, flowInstance, flowHistory,counterSignLastTask);
+                    }
+             }
 
         }
 
@@ -2610,8 +2612,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet( flowTask ,approved, includeNodeIds);
         result = nodeInfoList;
         FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) && parentFlowInstance != null){//针对子流程结束节点
+        while (parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
                 FlowTask flowTaskTemp = new FlowTask();
                 org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTemp);
                 flowTaskTemp.setFlowInstance(parentFlowInstance);
@@ -2625,13 +2626,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .createProcessInstanceQuery()
                         .processInstanceId(parentFlowInstance.getActInstanceId())
                         .singleResult();
-//                String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
-//                ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-//                        .getDeployedProcessDefinition(actProcessDefinitionId);
-//                ((ProcessDefinitionImpl) definition)
-//                        .
-//                PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
-
                 HistoricActivityInstance historicActivityInstance = null;
                 HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                         .executionId(superExecutionId).activityType("callActivity").unfinished();
@@ -2647,7 +2641,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     flowTaskTemp.setTaskJsonDef(currentNode.toString());
                     result = this.findNexNodesWithUserSet( flowTaskTemp ,approved, includeNodeIds);
                 }
-            }
+            parentFlowInstance=parentFlowInstance.getParent();
+            nodeInfoList=result;
         }
         return result;
     }
