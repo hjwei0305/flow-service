@@ -223,4 +223,16 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @ApiOperation(value = "验证UEL表达式是否正常",notes = "验证UEL表达式是否正常")
     public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId,@QueryParam("expression")String expression)  throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
             InvocationTargetException;
+
+    /**
+     * 通过key查找流程定义
+     * @param key 定义key
+     * @return 流程定义
+     */
+    @GET
+    @Path("findByKey/{key}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过key查找流程定义",notes = "通过key查找流程定义")
+    public FlowDefination findByKey(@PathParam("key") String key);
 }

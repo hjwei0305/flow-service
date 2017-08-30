@@ -8,27 +8,30 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IDefaultBusinessModel2Service;
-import com.ecmp.flow.api.IDefaultBusinessModel3Service;
-import com.ecmp.flow.api.IDefaultBusinessModelService;
-import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.*;
+import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.entity.DefaultBusinessModel;
-import com.ecmp.flow.entity.DefaultBusinessModel2;
-import com.ecmp.flow.entity.DefaultBusinessModel3;
-import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.*;
+import com.ecmp.flow.vo.FlowStartResultVO;
+import com.ecmp.flow.vo.FlowStartVO;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,9 +52,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/defaultBusinessModel2")
 @IgnoreCheckAuth
-public class DefaultBusinessModel2Controller extends FlowBaseController<IDefaultBusinessModel2Service,DefaultBusinessModel2> {
+public class DefaultBusinessModel2Controller extends FlowBaseController<IDefaultBusinessModel2Service, DefaultBusinessModel2> {
 
-    public DefaultBusinessModel2Controller(){
+    public DefaultBusinessModel2Controller() {
         super(IDefaultBusinessModel2Service.class);
     }
 
@@ -66,9 +69,8 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
     }
 
 
-
     @RequestMapping(value = "approve", method = RequestMethod.GET)
-    public String showApprove(){
+    public String showApprove() {
         return "approve/ApproveView2";
     }
 
@@ -119,84 +121,163 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
         IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         DefaultBusinessModel2 result = proxy.findOne(id);
-        OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
-        return JsonUtil.serialize(status,JsonUtil.DATE_TIME);
+        OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
+        return JsonUtil.serialize(status, JsonUtil.DATE_TIME);
     }
-//    @RequestMapping(value = "list")
-//    @ResponseBody
-//    public PageResult<DefaultBusinessModel2> list(ServletRequest request) {
-//        Search search = SearchUtil.genSearch(request);
-//        IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
-//        PageResult<DefaultBusinessModel2> defaultBusinessModel2PageResult = proxy.findByPage(search);
-//        return  defaultBusinessModel2PageResult;
-//    }
-//
-//    /**
-//     * 删除默认业务实体
-//     *
-//     * @param id
-//     * @return
-//     */
-//    @RequestMapping(value = "delete")
-//    @ResponseBody
-//    public String delete(String id) {
-//        IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
-//        OperateResult result = proxy.delete(id);
-//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-//        return JsonUtil.serialize(operateStatus);
-//    }
-//
-//    /**
-//     * 保存默认业务实体
-//     *
-//     * @param defaultBusinessModel2
-//     * @return
-//     */
-//    @RequestMapping(value = "save")
-//    @ResponseBody
-//    public String save(DefaultBusinessModel2 defaultBusinessModel2) {
-//        IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
-//        defaultBusinessModel2.setFlowStatus(FlowStatus.INIT);
-//        OperateResultWithData<DefaultBusinessModel2> result = proxy.save(defaultBusinessModel2);
-//        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
-//        return JsonUtil.serialize(operateStatus);
-//    }
-//
-//    /**
-//     * 通过流程定义key启动流程
-//     *
-//     * @param businessModelCode
-//     * @return 操作结果
-//     */
-//    @RequestMapping(value = "startFlow")
-//    @ResponseBody
-//    public String startFlow(String businessModelCode, String businessKey) {
-//        IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
-//        OperateStatus operateStatus = null;
-//        DefaultBusinessModel2 defaultBusinessModel2 = proxy.findOne(businessKey);
-//        if (defaultBusinessModel2 != null) {
-//            defaultBusinessModel2.setFlowStatus(FlowStatus.INPROCESS);
-//            String startUserId = "admin";
-//            String startUserIdContext = ContextUtil.getSessionUser().getUserId();
-//            if (!StringUtils.isEmpty(startUserIdContext)) {
-//                startUserId = startUserIdContext;
-//            }
-//            IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
-//            Map<String, Object> variables = new HashMap<String, Object>();//UserTask_1_Normal
-//            variables.put("UserTask_1_Normal", startUserId);
-//            FlowInstance result = proxy2.startByBusinessModelCode(businessModelCode, startUserId, businessKey, variables);
-//            if (result != null) {
-//                proxy.save(defaultBusinessModel2);
-//                operateStatus = new OperateStatus(true, "启动流程：" + result.getFlowName() + ",成功");
-//            } else {
-//                new OperateStatus(false, "启动流程失败");
-//            }
-//        } else {
-//            operateStatus = new OperateStatus(false, "业务对象不存在");
-//        }
-//        return JsonUtil.serialize(operateStatus);
-//    }
 
+
+    /**
+     * 通过流程定义key启动流程,
+     *
+     * @param businessModelCode
+     * @return 操作结果
+     */
+    @RequestMapping(value = "startFlow")
+    @ResponseBody
+    public String startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+        IBaseService baseService = ApiClient.createProxy(apiClass);
+        OperateStatus operateStatus = null;
+        DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        if (defaultBusinessModel2 != null) {
+            IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+            Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+            FlowStartVO flowStartVO = new FlowStartVO();
+            flowStartVO.setBusinessKey(businessKey);
+            flowStartVO.setBusinessModelCode(businessModelCode);
+            flowStartVO.setFlowTypeId(typeId);
+
+
+            //测试跨业务实体子流程,并发多级子流程测试
+            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+            if (StringUtils.isNotEmpty(taskList)) {
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+
+                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        String flowTaskType = f.getFlowTaskType();
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            userMap.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            userMap.put(f.getUserVarName(), idArray);
+                        }
+
+                        //测试跨业务实体子流程,并发多级子流程测试
+                        String callActivityPath = f.getCallActivityPath();
+                        if (StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath);
+                            Map<String, Object> variables = new HashMap<String, Object>();
+                            flowStartVO.setVariables(variables);
+                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel2);
+                        }
+                    }
+                }
+            }
+            flowStartVO.setUserMap(userMap);
+            FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
+            if (flowStartResultVO != null) {
+                if (flowStartResultVO.getFlowInstance() != null) {
+                    defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
+                    if (flowStartResultVO.getFlowInstance().isEnded()) {
+                        defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
+                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
+                    } else {
+                        defaultBusinessModel2.setFlowStatus(FlowStatus.INPROCESS);
+                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
+                    }
+                    baseService.save(defaultBusinessModel2);
+                }
+                operateStatus = new OperateStatus(true, "成功");
+                operateStatus.setData(flowStartResultVO);
+            } else {
+                new OperateStatus(false, "启动流程失败");
+            }
+        } else {
+            operateStatus = new OperateStatus(false, "业务对象不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+
+    /**
+     * 完成任务
+     *
+     * @param taskId
+     * @param businessId 业务表单ID
+     * @param opinion    审批意见
+     * @param taskList   任务完成传输对象
+     * @param
+     * @return 操作结果
+     */
+    @RequestMapping(value = "completeTask")
+    @ResponseBody
+    public String completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        if (StringUtils.isNotEmpty(taskList)) {
+            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+        }
+        IBaseService baseService = ApiClient.createProxy(apiClass);
+        OperateStatus operateStatus = null;
+        DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
+        if (defaultBusinessModel2 != null) {
+            FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+            flowTaskCompleteVO.setTaskId(taskId);
+            flowTaskCompleteVO.setOpinion(opinion);
+            List<String> selectedNodeIds = new ArrayList<String>();
+            Map<String, Object> v = new HashMap<String, Object>();
+
+            //测试跨业务实体子流程,并发多级子流程测试
+            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+
+            if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                    selectedNodeIds.add(f.getNodeId());
+                    String flowTaskType = f.getFlowTaskType();
+                    if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                        v.put(f.getUserVarName(), f.getUserIds());
+                    } else {
+                        String[] idArray = f.getUserIds().split(",");
+                        v.put(f.getUserVarName(), idArray);
+                    }
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    String callActivityPath = f.getCallActivityPath();
+                    if (StringUtils.isNotEmpty(callActivityPath)) {
+                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath);
+                        initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, v, defaultBusinessModel2);
+                    }
+                }
+            } else {
+                if (StringUtils.isNotEmpty(endEventId)) {
+                    selectedNodeIds.add(endEventId);
+                }
+            }
+            if (manualSelected) {
+                flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
+            }
+
+            //  Map<String,Object> v = new HashMap<String,Object>();
+            v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
+            flowTaskCompleteVO.setVariables(v);
+            IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+            OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
+            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+                defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
+                defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
+                baseService.save(defaultBusinessModel2);
+            }
+            operateStatus = new OperateStatus(true, operateResult.getMessage());
+        } else {
+            operateStatus = new OperateStatus(false, "业务对象不存在");
+        }
+        return JsonUtil.serialize(operateStatus);
+    }
 
 }
 

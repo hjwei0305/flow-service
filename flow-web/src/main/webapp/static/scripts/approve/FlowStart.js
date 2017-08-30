@@ -341,7 +341,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var node = {
                 nodeId: data.id,
                 userVarName: data.userVarName,
-                flowTaskType: data.flowTaskType
+                flowTaskType: data.flowTaskType,
+                callActivityPath:data.callActivityPath
             };
             var itemDoms = $(".select", nodeDom);
             var ids = "";

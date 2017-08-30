@@ -5,7 +5,9 @@ import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import net.sf.json.JSONObject;
@@ -71,14 +73,48 @@ public class StartEventCompleteListener implements ExecutionListener {
         ProcessInstance parentProcessInstance = null;
         ExecutionEntity son = taskEntity.getSubProcessInstance();
         ExecutionEntity parent = taskEntity.getSuperExecution();
+        String currentBusinessId = null;
         if(parent != null){
+            StringBuffer sonBusinessVNameBuff = new StringBuffer();
+            ExecutionEntity parentTemp = parent;
+            while (parentTemp!=null){
+                parentProcessInstance = parentTemp.getProcessInstance();
+                Map<String,Object> variablesParent = runtimeService.getVariables(parentTemp.getId());
+                variables.putAll(variablesParent);
+                delegateTask.setVariables(variables);
+                String parentDefinitionKey =  parentProcessInstance.getProcessDefinitionKey();
+                sonBusinessVNameBuff.insert(0,"/"+parentDefinitionKey+"/"+parentTemp.getActivityId());
+                parentTemp = ((ExecutionEntity)parentProcessInstance).getSuperExecution();
+            }
+
             parentProcessInstance = parent.getProcessInstance();
             Map<String,Object> variablesParent = runtimeService.getVariables(parent.getId());
             variables.putAll(variablesParent);
             delegateTask.setVariables(variables);
-            //设置子流程businessKey
-            String  parentBusinessKey = parentProcessInstance.getBusinessKey();
-            runtimeService.updateBusinessKey(processInstance.getId(),parentBusinessKey);
+            String parentDefinitionKey =  parentProcessInstance.getProcessDefinitionKey();
+            FlowDefination flowDefinationParent = flowDefinationDao.findByDefKey(parentDefinitionKey);
+            String definitionKey =  processInstance.getProcessDefinitionKey();
+            FlowDefination flowDefination = flowDefinationDao.findByDefKey(definitionKey);
+            String parentBusinessModelCode = flowDefinationParent.getFlowType().getBusinessModel().getClassName();
+            String sonBusinessModelCode = flowDefination.getFlowType().getBusinessModel().getClassName();
+//            //父流程业务实体代码+callActivtiy的key+子流程key+'_sonBusinessId'
+//            String sonBusinessVName = parentBusinessModelCode+"_"+parent.getActivityId()+"_"+definitionKey+"_sonBusinessId";
+            sonBusinessVNameBuff.append("/"+definitionKey);
+            currentBusinessId =(String )delegateTask.getVariable(sonBusinessVNameBuff.toString());
+
+            if(StringUtils.isEmpty(currentBusinessId)){
+                if(parentBusinessModelCode.equals(sonBusinessModelCode)){//非跨业务实体子流程
+                    //设置子流程businessKey
+                    String  parentBusinessKey = parentProcessInstance.getBusinessKey();
+                    runtimeService.updateBusinessKey(processInstance.getId(),parentBusinessKey);
+                    currentBusinessId = parentBusinessKey;
+                }else{//跨业务实体子流程,必须指定子流程关联单据id
+                        throw new RuntimeException("子流程关联的单据找不到！");
+                }
+            }else {
+                    runtimeService.updateBusinessKey(processInstance.getId(),currentBusinessId);
+            }
+
         }
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
         if(flowInstance==null){
@@ -108,7 +144,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 }
                 flowDefVersion = flowDefVersionList.get(0);
                 flowInstance.setFlowDefVersion(flowDefVersion);
-                flowInstance.setBusinessId(flowInstanceP.getBusinessId());
+                flowInstance.setBusinessId(currentBusinessId);
                 flowInstance.setParent(flowInstanceP);
             }
             flowInstanceDao.save(flowInstance);

@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
 
-    public  FlowInstance findByActInstanceId(String actInstanceId);
+    @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.actInstanceId = :actInstanceId")
+    public  FlowInstance findByActInstanceId(@Param("actInstanceId")String actInstanceId);
 
     public  FlowInstance findByBusinessId(String businessId);
 

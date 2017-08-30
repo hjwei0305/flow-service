@@ -370,7 +370,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
             variables.putAll(v);
         }
-        flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption") + "");
+        flowInstance.setBusinessModelRemark(v.get("workCaption") + "");
+//        flowInstanceDao.save(flowInstance);
+//        flowTaskDao.save(flowTask);
+
         String taskJsonDef = flowTask.getTaskJsonDef();
         JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
         String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
@@ -1370,6 +1373,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         nodeInfo.setExecutorSet(employeeSet);
                     }
                 }else {
+                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    if(executorSet!=null && !executorSet.isEmpty()){
+                        continue;
+                    }
                     net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
                     net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
 
@@ -1389,10 +1396,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
                         }
                     }
-                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                    if(executorSet!=null && !executorSet.isEmpty()){
-                        continue;
-                    }
+
                     if (executor != null && !executor.isEmpty()) {
                         String userType = (String) executor.get("userType");
                         String ids = (String) executor.get("ids");
@@ -1560,7 +1564,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 FlowStartVO flowStartVO = new FlowStartVO();
                 flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
                 try {
-                    result = flowDefinationService.findXunFanNodesInfo(result, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode);
+                    String callActivityDefKey = (String)normal.get("callActivityDefKey");
+                    String businessVName = "/"+definitionP.getProcess().getId()+"/"+ currentNode.get("id");
+                    result = flowDefinationService.findXunFanNodesInfo(result, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode,businessVName);
+                    if(!result.isEmpty()){
+                        for(NodeInfo nodeInfo:result){
+                            if(StringUtils.isEmpty(nodeInfo.getCallActivityPath())){
+                                businessVName+="/"+callActivityDefKey;
+                                nodeInfo.setCallActivityPath(businessVName);
+                            }
+                        }
+                    }
                 }catch (Exception e){
 
                 }
@@ -1589,9 +1603,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
 
         FlowInstance flowInstanceReal = flowTask.getFlowInstance();
-        while (flowInstanceReal.getParent()!=null){
-            flowInstanceReal = flowInstanceReal.getParent();
-        }
+//        while (flowInstanceReal.getParent()!=null){
+//            flowInstanceReal = flowInstanceReal.getParent();
+//        }
         BusinessModel businessModel = flowInstanceReal.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         String businessModelId = businessModel.getId();
         String appModuleId = businessModel.getAppModuleId();

@@ -40,6 +40,12 @@ public class FlowTaskCompleteWebVO implements Serializable{
     private String userVarName;
 
 
+    /**
+     * 调用子流程中的节点路径
+     */
+   private String callActivityPath;
+
+
     public String getNodeId() {
         return nodeId;
     }
@@ -72,4 +78,11 @@ public class FlowTaskCompleteWebVO implements Serializable{
         this.userVarName = userVarName;
     }
 
+    public String getCallActivityPath() {
+        return callActivityPath;
+    }
+
+    public void setCallActivityPath(String callActivityPath) {
+        this.callActivityPath = callActivityPath;
+    }
 }

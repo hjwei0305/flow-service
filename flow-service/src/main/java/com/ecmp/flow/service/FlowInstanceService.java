@@ -258,6 +258,26 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     /**
+     *  针对跨业务实体子流程情况，业务单据id不一样
+     * @param flowInstanceListReal 需要的真实实例对象列表
+     * @param businessId  父业务单据id
+     * @param flowInstance 当前实例
+     * @return 结果集
+     */
+    private List<FlowInstance> initSonFlowInstance(  List<FlowInstance> flowInstanceListReal,String businessId,FlowInstance flowInstance){
+        List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
+        if(children!=null && !children.isEmpty()){
+            for(FlowInstance son:children){
+                if(!businessId.equals(son.getBusinessId())){//跨业务实体子流程
+                    flowInstanceListReal.add(son);
+                }
+                initSonFlowInstance(flowInstanceListReal,businessId,son);
+            }
+        }
+        return flowInstanceListReal;
+    }
+
+    /**
      * 通过单据id，获取流程实例及关联待办及任务历史
      * @param businessId
      * @return
@@ -275,6 +295,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     flowInstanceListReal.remove(parent);
                     parent = parent.getParent();
                 }
+                initSonFlowInstance(flowInstanceListReal,businessId,flowInstance);
             }
         }
         Map<FlowInstance,ProcessTrackVO> resultMap = new LinkedHashMap<FlowInstance,ProcessTrackVO>();

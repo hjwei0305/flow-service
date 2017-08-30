@@ -600,7 +600,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             var node = {
                 nodeId: data.id,
                 userVarName: data.userVarName,
-                flowTaskType: data.flowTaskType
+                flowTaskType: data.flowTaskType,
+                callActivityPath:data.callActivityPath
             };
             var itemDoms = $(".select", nodeDom);
             var ids = "";
@@ -1284,7 +1285,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             var node = {
                 nodeId: data.id,
                 userVarName: data.userVarName,
-                flowTaskType: data.flowTaskType
+                flowTaskType: data.flowTaskType,
+                callActivityPath:data.callActivityPath
             };
             var itemDoms = $(".select", nodeDom);
             var ids = "";
@@ -1802,19 +1804,19 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 '							 <div class="clear"></div> ' +
                 '						</div>';
             flowInstance = data[0].flowInstance;
-            while(flowInstance){
-                ended = flowInstance.ended;
-                if (ended) {
-                    if (flowInstance.manuallyEnd == true) {
-                        g.isManuallyEnd = true;
-                        $(".flow-end").css("display", "block");
-                        $(".flow-endright").html(flowInstance.endDate);
-                    } else {
-                        $(".flow-end").css("display", "block");
-                        $(".flow-endright").html(flowInstance.endDate);
-                    }
-                }
+            while(flowInstance.parent){
                 flowInstance = flowInstance.parent;
+            }
+            ended = flowInstance.ended;
+            if (ended) {
+                if (flowInstance.manuallyEnd == true) {
+                    g.isManuallyEnd = true;
+                    $(".flow-end").css("display", "block");
+                    $(".flow-endright").html(flowInstance.endDate);
+                } else {
+                    $(".flow-end").css("display", "block");
+                    $(".flow-endright").html(flowInstance.endDate);
+                }
             }
         }
         $(".flow-historyprogress").append(html);

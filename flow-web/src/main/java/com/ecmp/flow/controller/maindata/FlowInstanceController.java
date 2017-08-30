@@ -136,6 +136,9 @@ public class FlowInstanceController {
             for(FlowInstance f:flowInstanceList){
                 FlowInstance parent = f.getParent();
                 if(parent!=null){
+                    flowInstancePageResult.setRecords( flowInstancePageResult.getRecords()-1);
+                    //flowInstancePageResult.setTotal( flowInstancePageResult.getRecords()-1);
+                    //flowInstancePageResult.setPage(flowInstancePageResult.getPage()-1);
                     continue;
                 }
                 flowInstanceIds.add(f.getId());

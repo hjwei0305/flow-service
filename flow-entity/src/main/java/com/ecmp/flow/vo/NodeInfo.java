@@ -35,6 +35,8 @@ public class NodeInfo implements Serializable{
     private String currentTaskType;//当前任务节点类型，自定义任务类型,common(普通),单签(singleSign),审批任务(approve),会签(CounterSign)
 	private Boolean counterSignLastTask;//是否是最后一个会签/并、串子任务执行人;
 
+	private String callActivityPath;//调用子流程中的节点路径
+
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
 
@@ -140,5 +142,13 @@ public class NodeInfo implements Serializable{
 
 	public void setCurrentTaskType(String currentTaskType) {
 		this.currentTaskType = currentTaskType;
+	}
+
+	public String getCallActivityPath() {
+		return callActivityPath;
+	}
+
+	public void setCallActivityPath(String callActivityPath) {
+		this.callActivityPath = callActivityPath;
 	}
 }
