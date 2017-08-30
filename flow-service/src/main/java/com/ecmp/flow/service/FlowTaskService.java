@@ -528,23 +528,25 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowInstance flowInstanceTemp = flowInstance;
             FlowInstance flowInstanceP = flowInstanceTemp.getParent();
             boolean sonEndButParnetNotEnd = false;
-            while(flowInstanceTemp.isEnded() && (flowInstanceP != null && !flowInstanceP.isEnded())){//子流程结束，主流程未结束
-                sonEndButParnetNotEnd =true;
-                actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
-                definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                        .getDeployedProcessDefinition(actProcessDefinitionId);
-                String superExecutionId = null;
-                superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(),flowInstanceTemp.getActInstanceId()+"_superExecutionId");
-                HistoricActivityInstance historicActivityInstance = null;
-                HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
-                        .executionId(superExecutionId).activityType("callActivity");
-                if (his != null) {
-                    historicActivityInstance = his.singleResult();
-                    HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
-                    actTaskDefKey = he.getActivityId();
-                    currentNode = this.getActivitNode(definition,actTaskDefKey);
-                    callInitTaskBack(currentNode, flowInstanceP, flowHistory,counterSignLastTask);
+            while(flowInstanceTemp.isEnded() && (flowInstanceP != null )){//子流程结束，主流程未结束
+                if(!flowInstanceP.isEnded()){
+                    actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
+                    definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                            .getDeployedProcessDefinition(actProcessDefinitionId);
+                    String superExecutionId = null;
+                    superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(),flowInstanceTemp.getActInstanceId()+"_superExecutionId");
+                    HistoricActivityInstance historicActivityInstance = null;
+                    HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                            .executionId(superExecutionId).activityType("callActivity");
+                    if (his != null) {
+                        historicActivityInstance = his.singleResult();
+                        HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                        actTaskDefKey = he.getActivityId();
+                        currentNode = this.getActivitNode(definition,actTaskDefKey);
+                        callInitTaskBack(currentNode, flowInstanceP, flowHistory,counterSignLastTask);
+                    }
                 }
+                sonEndButParnetNotEnd =true;
                 flowInstanceTemp = flowInstanceP;
                 flowInstanceP = flowInstanceTemp.getParent();
             }
