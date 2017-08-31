@@ -108,7 +108,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 g.businessModelId = busModelId;
                                 scope.setSubmitValue({
                                     flowTypeName: data.data.name,
-                                    flowTypeId: busModelId
+                                    flowTypeId: data.data.id
                                 });
                                 g.clear();
                                 msgBox.remove();
