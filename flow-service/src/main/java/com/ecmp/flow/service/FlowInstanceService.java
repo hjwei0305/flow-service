@@ -264,7 +264,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @param flowInstance 当前实例
      * @return 结果集
      */
-    private List<FlowInstance> initSonFlowInstance(  List<FlowInstance> flowInstanceListReal,String businessId,FlowInstance flowInstance){
+    private Set<FlowInstance> initSonFlowInstance(  Set<FlowInstance> flowInstanceListReal,String businessId,FlowInstance flowInstance){
         List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
         if(children!=null && !children.isEmpty()){
             for(FlowInstance son:children){
@@ -285,13 +285,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public List<ProcessTrackVO> getProcessTrackVO(String businessId){
         List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessIdOrder(businessId);
         List<ProcessTrackVO> result = new ArrayList<ProcessTrackVO>();
-        List<FlowInstance> flowInstanceListReal = new ArrayList<>();
+        Set<FlowInstance> flowInstanceListReal = new LinkedHashSet<>();
 
         if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
             flowInstanceListReal.addAll(flowInstanceList);
             for(FlowInstance flowInstance:flowInstanceList){
                 FlowInstance parent = flowInstance.getParent();
                 while(parent!=null){
+                   // flowInstanceListReal.add(parent);
+                    initSonFlowInstance(flowInstanceListReal,businessId,parent);//初始化兄弟节点相关任务
                     flowInstanceListReal.remove(parent);
                     parent = parent.getParent();
                 }
@@ -366,7 +368,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 pProcessTrackVO.getFlowTaskList().addAll(pv.getFlowTaskList());
             }
         }else {
-            resultMap.put(flowInstance,pv);
+            if(resultMap.get(flowInstance)==null){
+                resultMap.put(flowInstance,pv);
+            }
         }
     }
 
