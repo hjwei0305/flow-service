@@ -312,6 +312,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if(!result.isEmpty()){
             for(ProcessTrackVO processTrackVO:result){
                List<FlowHistory> flowHistoryList = processTrackVO.getFlowHistoryList();
+                //去重复
+               Set<FlowHistory> tempFlowHistorySet = new LinkedHashSet<>();
+               tempFlowHistorySet.addAll(flowHistoryList);
+                flowHistoryList.clear();
+                flowHistoryList.addAll(tempFlowHistorySet);
+
                if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
                    Collections.sort(flowHistoryList, new Comparator() {
                        @Override

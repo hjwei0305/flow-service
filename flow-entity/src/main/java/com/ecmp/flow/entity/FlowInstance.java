@@ -108,6 +108,12 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	@JoinColumn(name = "parent_id")
 	private FlowInstance parent;
 
+	/**
+	 * 实例调用路径，针对作为子流程被调用时
+	 */
+	@Column(name = "call_activity_path", length = 5000)
+	private String callActivityPath;
+
 
 	/**
 	 * 是否挂起
@@ -293,6 +299,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setManuallyEnd(Boolean manuallyEnd) {
 		this.manuallyEnd = manuallyEnd;
+	}
+
+	public String getCallActivityPath() {
+		return callActivityPath;
+	}
+
+	public void setCallActivityPath(String callActivityPath) {
+		this.callActivityPath = callActivityPath;
 	}
 
 	@Override

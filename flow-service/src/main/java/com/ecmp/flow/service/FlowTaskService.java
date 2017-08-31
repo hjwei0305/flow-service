@@ -1550,7 +1550,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     private List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,PvmActivity currTempActivity, List<NodeInfo> result){
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        FlowInstance flowInstance = flowTask.getFlowInstance();
+        String defObjStr = flowInstance.getFlowDefVersion().getDefJson();
         JSONObject defObjP = JSONObject.fromObject(defObjStr);
         Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
         net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currTempActivity.getId());
@@ -1566,10 +1567,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 StartEvent startEvent = startEventList.get(0);
                 net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
                 FlowStartVO flowStartVO = new FlowStartVO();
-                flowStartVO.setBusinessKey(flowTask.getFlowInstance().getBusinessId());
+                flowStartVO.setBusinessKey(flowInstance.getBusinessId());
                 try {
                     String callActivityDefKey = (String)normal.get("callActivityDefKey");
-                    String businessVName = "/"+definitionP.getProcess().getId()+"/"+ currentNode.get("id");
+                    String  businessVName = "/"+definitionP.getProcess().getId()+"/"+ currentNode.get("id");
+                   if( StringUtils.isNotEmpty(flowInstance.getCallActivityPath())){
+                       businessVName = flowInstance.getCallActivityPath()+businessVName;
+                   }
                     result = flowDefinationService.findXunFanNodesInfo(result, flowStartVO, flowDefVersion.getFlowDefination(), definitionSon, startEventNode,businessVName);
                     if(!result.isEmpty()){
                         for(NodeInfo nodeInfo:result){

@@ -11,10 +11,13 @@ import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import net.sf.json.JSONObject;
+import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
+import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
@@ -54,6 +57,9 @@ public class StartEventCompleteListener implements ExecutionListener {
     private RuntimeService runtimeService;
 
     @Autowired
+    private RepositoryService repositoryService;
+
+    @Autowired
     private FlowTaskDao flowTaskDao;
 
     @Autowired
@@ -74,6 +80,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         ExecutionEntity son = taskEntity.getSubProcessInstance();
         ExecutionEntity parent = taskEntity.getSuperExecution();
         String currentBusinessId = null;
+        String callActivityPath = null;
         if(parent != null){
             StringBuffer sonBusinessVNameBuff = new StringBuffer();
             ExecutionEntity parentTemp = parent;
@@ -83,10 +90,16 @@ public class StartEventCompleteListener implements ExecutionListener {
                 variables.putAll(variablesParent);
                 delegateTask.setVariables(variables);
                 String parentDefinitionKey =  parentProcessInstance.getProcessDefinitionKey();
+                if(StringUtils.isEmpty(parentDefinitionKey)){
+                    // 取得流程定义
+                    ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                            .getDeployedProcessDefinition( parentProcessInstance.getProcessDefinitionId());                   ;
+                    parentDefinitionKey = definition.getKey();
+                }
                 sonBusinessVNameBuff.insert(0,"/"+parentDefinitionKey+"/"+parentTemp.getActivityId());
                 parentTemp = ((ExecutionEntity)parentProcessInstance).getSuperExecution();
             }
-
+            callActivityPath = sonBusinessVNameBuff.toString();
             parentProcessInstance = parent.getProcessInstance();
             Map<String,Object> variablesParent = runtimeService.getVariables(parent.getId());
             variables.putAll(variablesParent);
@@ -145,6 +158,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 flowDefVersion = flowDefVersionList.get(0);
                 flowInstance.setFlowDefVersion(flowDefVersion);
                 flowInstance.setBusinessId(currentBusinessId);
+                flowInstance.setCallActivityPath(callActivityPath);
                 flowInstance.setParent(flowInstanceP);
             }
             flowInstanceDao.save(flowInstance);
