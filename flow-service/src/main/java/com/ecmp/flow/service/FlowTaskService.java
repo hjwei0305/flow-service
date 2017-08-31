@@ -1628,7 +1628,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //        if(ifMultiInstance(currActivity)){//如果是多实例任务
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
-            String nodeType = defObj.get("nodeType") + "";
+            String nodeType = (String) defObj.get("nodeType");
         List<NodeInfo> result = new ArrayList<NodeInfo>();
             if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务
                 int counterDecision=100;
@@ -2618,20 +2618,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet( flowTask ,approved, includeNodeIds);
         result = nodeInfoList;
         FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
+        FlowTask flowTaskTempSrc = new FlowTask();
+        org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTempSrc);
+
         while (parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
-                FlowTask flowTaskTemp = new FlowTask();
-                org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTemp);
+            FlowTask flowTaskTemp = new FlowTask();
+            org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc,flowTaskTemp);
+
+            ProcessInstance instanceSon = runtimeService
+                    .createProcessInstanceQuery()
+                    .processInstanceId(flowTaskTemp.getFlowInstance().getActInstanceId())
+                    .singleResult();
                 flowTaskTemp.setFlowInstance(parentFlowInstance);
                 // 取得流程实例
-                ProcessInstance instanceSon = runtimeService
-                        .createProcessInstanceQuery()
-                        .processInstanceId(flowTask.getFlowInstance().getActInstanceId())
-                        .singleResult();
                String superExecutionId = instanceSon.getSuperExecutionId();
-                ProcessInstance instanceParent = runtimeService
-                        .createProcessInstanceQuery()
-                        .processInstanceId(parentFlowInstance.getActInstanceId())
-                        .singleResult();
+//                ProcessInstance instanceParent = runtimeService
+//                        .createProcessInstanceQuery()
+//                        .processInstanceId(parentFlowInstance.getActInstanceId())
+//                        .singleResult();
                 HistoricActivityInstance historicActivityInstance = null;
                 HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                         .executionId(superExecutionId).activityType("callActivity").unfinished();
@@ -2646,6 +2650,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(he.getActivityId());
                     flowTaskTemp.setTaskJsonDef(currentNode.toString());
                     result = this.findNexNodesWithUserSet( flowTaskTemp ,approved, includeNodeIds);
+                    flowTaskTempSrc =flowTaskTemp;
                 }
             parentFlowInstance=parentFlowInstance.getParent();
             nodeInfoList=result;

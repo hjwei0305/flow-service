@@ -17,9 +17,13 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -67,6 +71,9 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
     @Autowired
     FlowHistoryDao  flowHistoryDao;
+
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -136,7 +143,50 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 //                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
-                    List<NodeInfo> results = flowTaskService.findNexNodesWithUserSet(flowTask);
+                    List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+                    List<NodeInfo> results = null;
+                    results = nodeInfoList;
+                    FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
+                    FlowTask flowTaskTempSrc = new FlowTask();
+                    org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTempSrc);
+                    //针对子流程结束，循环向上查找父任务下一步的节点执行人信息
+                    while (parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
+                        FlowTask flowTaskTemp = new FlowTask();
+                        org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc,flowTaskTemp);
+
+                        ProcessInstance instanceSon = runtimeService
+                                .createProcessInstanceQuery()
+                                .processInstanceId(flowTaskTemp.getFlowInstance().getActInstanceId())
+                                .singleResult();
+
+                        flowTaskTemp.setFlowInstance(parentFlowInstance);
+                        // 取得流程实例
+
+                        String superExecutionId = instanceSon.getSuperExecutionId();
+//                        ProcessInstance instanceParent = runtimeService
+//                                .createProcessInstanceQuery()
+//                                .processInstanceId(parentFlowInstance.getActInstanceId())
+//                                .singleResult();
+                        HistoricActivityInstance historicActivityInstance = null;
+                        HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                                .executionId(superExecutionId).activityType("callActivity").unfinished();
+                        if (his != null) {
+                            historicActivityInstance = his.singleResult();
+                            HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                            flowTaskTemp.setActTaskKey(he.getActivityId());
+                            flowTaskTemp.setActTaskDefKey(he.getActivityId());
+                            String flowDefJsonP = parentFlowInstance.getFlowDefVersion().getDefJson();
+                            JSONObject defObjP = JSONObject.fromObject(flowDefJsonP);
+                            Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
+                            net.sf.json.JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(he.getActivityId());
+                            flowTaskTemp.setTaskJsonDef(currentNodeP.toString());
+                            results = flowTaskService.findNexNodesWithUserSet( flowTaskTemp);
+                        }
+                        parentFlowInstance=parentFlowInstance.getParent();
+                        nodeInfoList=results;
+                        flowTaskTempSrc =flowTaskTemp;
+                    }
+
                     List<String> nextNodeIds = new ArrayList<String>();
                     if(results !=null &&  !results.isEmpty()){
                         for(NodeInfo nodeInfo:results){
