@@ -6,6 +6,7 @@ import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
@@ -17,6 +18,7 @@ import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
+import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
@@ -253,6 +255,15 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
+        return JsonUtil.serialize(operateStatus);
+    }
+
+    @RequestMapping(value = "testReciveTask")
+    @ResponseBody
+    public String testReciveTask(String businessId,String fReceiveTaskActDefId){
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        OperateResult operateResult = proxy.signalByBusinessId(businessId,fReceiveTaskActDefId,null);
+        OperateStatus   operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
         return JsonUtil.serialize(operateStatus);
     }
 }

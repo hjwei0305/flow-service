@@ -1234,7 +1234,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         initTask(flowInstance,null);
     }
     public void initTask(FlowInstance flowInstance,FlowHistory preParentTask) {
-        if(flowInstance == null){
+        if(flowInstance == null || flowInstance.isEnded()){
             return;
         }
         List<FlowInstance> flowInstanceSonList = flowInstanceDao.findByParentId(flowInstance.getId());
@@ -1250,9 +1250,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {
             for (Task task : taskList) {
-                String taskActId = task.getId();
-                FlowTask flowTaskNow =  flowTaskDao.findByActTaskId(taskActId);
-                if(flowTaskNow != null){
+                String taskActKey = task.getTaskDefinitionKey();
+                Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,actProcessInstanceId);
+                if(flowTaskNow != null && flowTaskNow>0){
                     continue;
                 }
                 String actTaskDefKey = task.getTaskDefinitionKey();

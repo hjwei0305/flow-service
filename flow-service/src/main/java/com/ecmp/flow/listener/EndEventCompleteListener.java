@@ -81,13 +81,12 @@ public class EndEventCompleteListener implements ExecutionListener {
 
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
-                if(flowInstanceP == null){
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                     String businessModelId = businessModel.getId();
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
                     flowCommonConditionService.resetState(businessModelId,flowInstance.getBusinessId(), FlowStatus.COMPLETED);
-                }else {
+                if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();
                     if(parent != null){
                         ProcessInstance   parentProcessInstance = parent.getProcessInstance();

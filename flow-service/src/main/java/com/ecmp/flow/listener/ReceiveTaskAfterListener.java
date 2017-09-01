@@ -9,6 +9,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.ServiceCallUtil;
@@ -22,6 +23,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
@@ -78,6 +80,9 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 
     @Autowired
     private FlowInstanceService flowInstanceService;
+
+    @Autowired
+    FlowDefinationService flowDefinationService;
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
@@ -153,14 +158,16 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
                     List<NodeInfo> results = flowTaskService.findNexNodesWithUserSet(flowTask);
-                    List<String> nextNodeIds = new ArrayList<String>();
+                    List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
                     if(results !=null &&  !results.isEmpty()){
                         for(NodeInfo nodeInfo:results){
                             if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                                 nodeInfo.setType("EndEvent");
                                 continue;
+                            }else if("ServiceTask".equalsIgnoreCase(nodeInfo.getType())){//服务任务也不做处理
+                                continue;
                             }
-                            nextNodeIds.add(nodeInfo.getId());
+                            nextNodes.add(nodeInfo);
                            String taskType = nodeInfo.getFlowTaskType();
                             String uiUserType = nodeInfo.getUiUserType();
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
@@ -190,21 +197,58 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                                 }
                             }
                         }
-                        runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds", nextNodeIds);
+
+                        runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds", nextNodes);
                     }
-                if(!nextNodeIds.isEmpty()){
-                    new Thread(new Runnable() {//异步
-                        @Override
-                        public void run() {
-                            initNextTask(actProcessInstanceId,nextNodeIds);
-                        }
-                    }).start();
+                if(!nextNodes.isEmpty()){
+                    ExecutionEntity parent = taskEntity.getSuperExecution();
+                    if(parent!=null){//针对作为子任务的情况
+                        ExecutionEntity parentTemp = parent;
+                        ProcessInstance parentProcessInstance = null;
+                        ExecutionEntity zhuzhongEntity = parentTemp;
+                         while (parentTemp!=null){
+                             parentProcessInstance = parentTemp.getProcessInstance();
+                             zhuzhongEntity =parentTemp;
+                             parentTemp = ((ExecutionEntity)parentProcessInstance).getSuperExecution();
+                         }
+                         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(zhuzhongEntity.getId());
+                        new Thread(new Runnable() {//异步
+                            @Override
+                            public void run() {
+                                initNextAllTask(flowInstance,flowHistory);//初始化相关联的所有待办任务
+                            }
+                        }).start();
+                    }else{
+                        new Thread(new Runnable() {//异步
+                            @Override
+                            public void run() {
+                                initNextTask(actProcessInstanceId,nextNodes);
+                            }
+                        }).start();
+                    }
                 }
             }
     }
+    private void initNextAllTask(FlowInstance flowInstance,FlowHistory flowHistory){
+        Calendar startTreadTime =  Calendar.getInstance();
+        ScheduledExecutorService service = Executors
+                .newSingleThreadScheduledExecutor();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                Calendar nowTime = Calendar.getInstance();
+                nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
+                if(nowTime.after(startTreadTime)){
+                    service.shutdown();
+                }
+                flowDefinationService.initTask(flowInstance,flowHistory);
+            }
+        };
 
+        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+        service.scheduleWithFixedDelay(runnable, 1, 10,TimeUnit.SECONDS);
+    }
     //因为当前节点是异步激活，所以需要进行异步生成任务的操作
-   private void initNextTask(String proceeInstanceId,List<String> nextNodeIds){//主要针对开始任务后紧接 接收任务的情况
+   private void initNextTask(String proceeInstanceId,List<NodeInfo> nextNodes){//主要针对开始任务后紧接 接收任务的情况
        Calendar startTreadTime =  Calendar.getInstance();
        ScheduledExecutorService service = Executors
                .newSingleThreadScheduledExecutor();
@@ -215,7 +259,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                if(nowTime.after(startTreadTime)){
                    service.shutdown();
                }
-              Boolean result = initTask(proceeInstanceId,nextNodeIds);
+              Boolean result = initTask(proceeInstanceId,nextNodes);
                if(result){
                    service.shutdown();
                }
@@ -225,23 +269,28 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
        service.scheduleWithFixedDelay(runnable, 1, 1,TimeUnit.SECONDS);
    }
-    private Boolean initTask(String proceeInstanceId,List<String> nextNodeIds){
+    private Boolean initTask(String proceeInstanceId,List<NodeInfo> nextNodes){
         Boolean result = false;
         int indexSuccess = 0;
-        for(String  nextNodeId:nextNodeIds){
-           Boolean tempResult = initTask(proceeInstanceId,nextNodeId);
+        for(NodeInfo  nextNode:nextNodes){
+           Boolean tempResult = initTask(proceeInstanceId,nextNode);
            if(tempResult){
                indexSuccess++;
            }
         }
-        if(indexSuccess == nextNodeIds.size()){
+        if(indexSuccess == nextNodes.size()){
             result = true;
         }
         return  result;
     }
 
-   private Boolean initTask(String proceeInstanceId,String actTaskDefKey){
+   private Boolean initTask(String proceeInstanceId,NodeInfo nextNode){
        Boolean result = false;
+       if("ServiceTask".equalsIgnoreCase(nextNode.getType())){//服务任务也不做处理
+           return true;
+       }
+       String actTaskDefKey = nextNode.getId();
+
        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(proceeInstanceId);
 
        Integer flowTaskCount =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(actTaskDefKey,proceeInstanceId);

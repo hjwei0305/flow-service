@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
@@ -38,6 +39,9 @@ import org.springframework.stereotype.Component;
 
 import javax.naming.Context;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * *************************************************************************************************
@@ -77,6 +81,9 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
+
+    @Autowired
+    FlowDefinationService flowDefinationService;
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
@@ -187,14 +194,16 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         flowTaskTempSrc =flowTaskTemp;
                     }
 
-                    List<String> nextNodeIds = new ArrayList<String>();
+                    List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
                     if(results !=null &&  !results.isEmpty()){
                         for(NodeInfo nodeInfo:results){
                             if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                                 nodeInfo.setType("EndEvent");
                                 continue;
+                            }else if("ServiceTask".equalsIgnoreCase(nodeInfo.getType())){//服务任务也不做处理
+                                continue;
                             }
-                            nextNodeIds.add(nodeInfo.getId());
+                            nextNodes.add(nodeInfo);
                            String taskType = nodeInfo.getFlowTaskType();
                             String uiUserType = nodeInfo.getUiUserType();
 //                            if ("Normal".equalsIgnoreCase(taskType)) {
@@ -232,12 +241,53 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                 }
                             }
                         }
-                        runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds", nextNodeIds);
+                        runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
+                    //    flowDefinationService.initTask();
+                    }
+
+                    if(!nextNodes.isEmpty()){
+                        ExecutionEntity parent = taskEntity.getSuperExecution();
+                        if(parent!=null){//针对作为子任务的情况
+                            ExecutionEntity parentTemp = parent;
+                            ProcessInstance parentProcessInstance = null;
+                            ExecutionEntity zhuzhongEntity = parentTemp;
+                            while (parentTemp!=null){
+                                parentProcessInstance = parentTemp.getProcessInstance();
+                                zhuzhongEntity =parentTemp;
+                                parentTemp = ((ExecutionEntity)parentProcessInstance).getSuperExecution();
+                            }
+                            FlowInstance flowInstanceZhu = flowInstanceDao.findByActInstanceId(zhuzhongEntity.getProcessInstanceId());
+                            new Thread(new Runnable() {//异步
+                                @Override
+                                public void run() {
+                                    initNextAllTask(flowInstanceZhu,flowHistory);//初始化相关联的所有待办任务
+                                }
+                            }).start();
+                        }else{
+                        }
                     }
                 }else{
                     throw new RuntimeException("服务地址不能为空！");
                 }
             }
 
+    }
+
+    private void initNextAllTask(FlowInstance flowInstance,FlowHistory flowHistory){
+        Calendar startTreadTime =  Calendar.getInstance();
+        ScheduledExecutorService service = Executors
+                .newSingleThreadScheduledExecutor();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                Calendar nowTime = Calendar.getInstance();
+                nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
+                if(nowTime.after(startTreadTime)){
+                    service.shutdown();
+                }
+                flowDefinationService.initTask(flowInstance,flowHistory);
+            }
+        };
+        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+        service.scheduleWithFixedDelay(runnable, 1, 10, TimeUnit.SECONDS);
     }
 }

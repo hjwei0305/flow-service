@@ -312,13 +312,40 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if(!result.isEmpty()){
             for(ProcessTrackVO processTrackVO:result){
                List<FlowHistory> flowHistoryList = processTrackVO.getFlowHistoryList();
+               List<FlowTask>  flowTaskList =  processTrackVO.getFlowTaskList();
                 //去重复
-               Set<FlowHistory> tempFlowHistorySet = new LinkedHashSet<>();
-               tempFlowHistorySet.addAll(flowHistoryList);
-                flowHistoryList.clear();
-                flowHistoryList.addAll(tempFlowHistorySet);
+                if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                    Set<FlowTask> tempflowTaskSet = new LinkedHashSet<>();
+                    tempflowTaskSet.addAll(flowTaskList);
+                    flowTaskList.clear();
+                    flowTaskList.addAll(tempflowTaskSet);
+                    Collections.sort(flowTaskList, new Comparator() {
+                        @Override
+                        public int compare(Object o1, Object o2) {
+                            FlowTask flowTask1 = (FlowTask)o1;
+                            FlowTask flowTask2 = (FlowTask)o2;
+                            Long time1= flowTask1.getCreatedDate().getTime();
+                            Long time2= flowTask2.getCreatedDate().getTime();
+                            int result = 0;
+                            if((time1-time2)>0){
+                                result = -1;
+                            }else if((time1-time2)==0){
+                                result = 0;
+                            }else {
+                                result = 1;
+                            }
+                            return  result;
+                        }
+                    });
+                }
+
 
                if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
+                   //去重复
+                   Set<FlowHistory> tempFlowHistorySet = new LinkedHashSet<>();
+                   tempFlowHistorySet.addAll(flowHistoryList);
+                   flowHistoryList.clear();
+                   flowHistoryList.addAll(tempFlowHistorySet);
                    Collections.sort(flowHistoryList, new Comparator() {
                        @Override
                        public int compare(Object o1, Object o2) {

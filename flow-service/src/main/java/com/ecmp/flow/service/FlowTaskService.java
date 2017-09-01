@@ -596,13 +596,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 if("serviceTask".equalsIgnoreCase(nextActivity.getProperty("type") + "")){
 //                    String executionId = currTask.getExecutionId();
-                    Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(flowInstance.getActInstanceId());
-                    List<String> nextNodeIds = (List<String>)runtimeService.getVariable(flowInstance.getActInstanceId(),key+"_nextNodeIds");
-                    if(nextNodeIds!=null && !nextNodeIds.isEmpty()){
-                        for(String nextNodeId:nextNodeIds){
-                            initTask(flowInstance, nextNodeId, flowHistory);
-                        }
-                    }
+//                    Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(flowInstance.getActInstanceId());
+//                    List<NodeInfo> nextNodesReal = (List<NodeInfo>)runtimeService.getVariable(flowInstance.getActInstanceId(),key+"_nextNodeIds");
+//                    if(nextNodesReal!=null && !nextNodesReal.isEmpty()){
+//                        for(NodeInfo nextNode:nextNodesReal){
+//                            initTask(flowInstance, nextNode.getId(), flowHistory);
+//                        }
+//                    }
                 }else if("CallActivity".equalsIgnoreCase(nextActivity.getProperty("type") + "") && counterSignLastTask){
                          flowDefinationService.initTask(flowInstance,flowHistory);
                 }else {
@@ -1128,6 +1128,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param actTaskDefKey
      */
     private void initTask(FlowInstance flowInstance, String actTaskDefKey, FlowHistory preTask) {
+        if(flowInstance == null || flowInstance.isEnded()){
+            return;
+        }
         List<Task> tasks = new ArrayList<Task>();
         // 根据当流程实例查询任务
         List<Task> taskList = taskService.createTaskQuery().processInstanceId(flowInstance.getActInstanceId()).taskDefinitionKey(actTaskDefKey).active().list();
@@ -1149,6 +1152,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
+                String taskActKey = task.getTaskDefinitionKey();
+                Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,flowInstance.getActInstanceId());
+                if(flowTaskNow != null && flowTaskNow>0){
+                    continue;
+                }
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                 if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
                     /** 获取流程变量 **/
