@@ -444,7 +444,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             if((time1-time2)>0){
                                 result = 1;
                             }else if((time1-time2)==0){
-                                result = 0;
+                                time1= flowHistory1.getActStartTime().getTime();
+                                time2= flowHistory2.getActStartTime().getTime();
+                                if((time1-time2)>0){
+                                    result = 1;
+                                }else if((time1-time2)==0){
+                                    result = 0;
+                                }else {
+                                    result = -1;
+                                }
                             }else {
                                 result = -1;
                             }
