@@ -1653,7 +1653,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             }
         }
         this.instanceData = instanceData;
-        if (!this.instanceId) {
+        if (!this.defaultData) {
             this.defaultData = instanceData[0];
             this.designInstanceId = instanceData[0].id;
             this.designFlowDefinationId = instanceData[0].data.flowInstance.flowDefVersion.flowDefination.id;
