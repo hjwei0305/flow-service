@@ -553,16 +553,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
-    /**
-     * 撤销流程实例
-     * 清除有关联的流程版本及对应的流程引擎数据
-     * @param id 待操作数据ID
-     */
-    @Transactional( propagation= Propagation.REQUIRED)
-    public OperateResult end(String id) {
-        OperateResult result =  OperateResult.operationSuccess("10010");
+    private boolean initTask(FlowInstance flowInstance){
         boolean canEnd = false;
-        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
             int taskCount = flowTaskList.size();
             int index=0;
@@ -574,55 +567,141 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             if(index == taskCount){
                 canEnd = true;
-            }
-        }
-        if(canEnd){
-            FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
-            for(FlowTask flowTask:flowTaskList){
-                try {
-                    FlowHistory flowHistory = new FlowHistory();
-                    String preFlowHistoryId = flowTask.getPreId();
-                    FlowHistory preFlowHistory = null;
-                    if(StringUtils.isNotEmpty(preFlowHistoryId)){
-                        preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
-                    }
-                    BeanUtils.copyProperties(flowHistory, flowTask);
-                    flowHistory.setId(null);
-                    flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                    flowHistory.setDepict("【被发起人终止流程】");
-                    flowHistory.setFlowTaskName(flowTask.getTaskName());
-                    Date now = new Date();
-                    if(preFlowHistory!=null){
-                        flowHistory.setActDurationInMillis(now.getTime()-preFlowHistory.getActEndTime().getTime());
-                    }else{
-                        flowHistory.setActDurationInMillis(now.getTime()-flowTask.getCreatedDate().getTime());
-                    }
-                    flowHistory.setActEndTime(now);
-
-                    flowHistoryDao.save(flowHistory);
-                }catch(Exception e){
-                    logger.error(e.getMessage());
+                if(flowInstance.getFlowTasks().isEmpty()){
+                    flowInstance.getFlowTasks().addAll(flowTaskList);
                 }
-                flowTaskDao.delete(flowTask);
             }
-            String actInstanceId = flowInstance.getActInstanceId();
-            this.deleteActiviti(actInstanceId);
-            flowInstance.setEndDate(new Date());
-            flowInstance.setEnded(true);
-            flowInstance.setManuallyEnd(true);
-            flowInstanceDao.save(flowInstance);
+        }else {
+            canEnd = true;
+        }
+        return  canEnd;
+    }
+    private Map<String,FlowInstance> initAllGulianInstance(Map<String,FlowInstance> flowInstanceMap ,FlowInstance flowInstance){
+        Map<String,FlowInstance> flowInstanceChildren=null;
+        while (flowInstance!=null){
+            if(!flowInstance.isEnded() && flowInstanceMap.get(flowInstance)==null){
+                flowInstanceChildren = initGulianSonInstance(flowInstanceMap,flowInstance);//子实例
+                if(flowInstanceChildren==null){
+                    return null;
+                }
+            }
+            flowInstance = flowInstance.getParent();
+        }
+        if(flowInstanceChildren!=null && !flowInstanceChildren.isEmpty()){
+            return flowInstanceMap;
+        }else {
+            return null;
+        }
+    }
+
+    private Map<String,FlowInstance> initGulianSonInstance(  Map<String,FlowInstance> flowInstanceMapReal,FlowInstance flowInstance){
+        List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
+        boolean canEnd = false;
+        canEnd = initTask(flowInstance);
+        if(canEnd){
+            if(flowInstanceMapReal.get(flowInstance.getId())==null){
+                flowInstanceMapReal.put(flowInstance.getId(),flowInstance);
+            }
+            if(children!=null && !children.isEmpty()){
+                for(FlowInstance son:children){
+                    Map<String,FlowInstance> flowInstanceChildren = initGulianSonInstance(flowInstanceMapReal,son);
+                        if(flowInstanceChildren == null){
+                            return null;
+                        }
+                }
+            }
+        }else {
+            return null;
+        }
+        return flowInstanceMapReal;
+    }
+    /**
+     * 撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     */
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult end(String id) {
+        OperateResult result =  OperateResult.operationSuccess("10010");
+        FlowInstance flowInstance = flowInstanceDao.findOne(id);
+        Map<String,FlowInstance> flowInstanceMap = new HashMap<String,FlowInstance>();
+        flowInstanceMap = initAllGulianInstance(flowInstanceMap,flowInstance);
+
+        if(flowInstanceMap!=null && !flowInstanceMap.isEmpty()){
+            List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
+            flowInstanceList.addAll(flowInstanceMap.values());//加入排序，按照创建时候倒序，保证子流程先终止
+            Collections.sort(flowInstanceList, new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    FlowInstance flowInstance1 = (FlowInstance)o1;
+                    FlowInstance flowInstance2 = (FlowInstance)o2;
+                    Long time1= flowInstance1.getCreatedDate().getTime();
+                    Long time2= flowInstance2.getCreatedDate().getTime();
+                    int result = 0;
+                    if((time1-time2)>0){
+                        result = -1;
+                    }else if((time1-time2)==0){
+                        result = 0;
+                    }else {
+                        result = 1;
+                    }
+                    return  result;
+                }
+            });
+            for(FlowInstance fTemp:flowInstanceList){
+                if(fTemp.isEnded()){
+                    continue;
+                }
+                Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
+                if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                    for(FlowTask flowTask:flowTaskList){
+                        try {
+                            FlowHistory flowHistory = new FlowHistory();
+                            String preFlowHistoryId = flowTask.getPreId();
+                            FlowHistory preFlowHistory = null;
+                            if(StringUtils.isNotEmpty(preFlowHistoryId)){
+                                preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
+                            }
+                            BeanUtils.copyProperties(flowHistory, flowTask);
+                            flowHistory.setId(null);
+                            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+                            flowHistory.setDepict("【被发起人终止流程】");
+                            flowHistory.setFlowTaskName(flowTask.getTaskName());
+                            Date now = new Date();
+                            if(preFlowHistory!=null){
+                                flowHistory.setActDurationInMillis(now.getTime()-preFlowHistory.getActEndTime().getTime());
+                            }else{
+                                flowHistory.setActDurationInMillis(now.getTime()-flowTask.getCreatedDate().getTime());
+                            }
+                            flowHistory.setActEndTime(now);
+
+                            flowHistoryDao.save(flowHistory);
+                        }catch(Exception e){
+                            logger.error(e.getMessage());
+                        }
+                        flowTaskDao.delete(flowTask);
+                    }
+                }
+
+                String actInstanceId = fTemp.getActInstanceId();
+                this.deleteActiviti(actInstanceId);
+                fTemp.setEndDate(new Date());
+                fTemp.setEnded(true);
+                fTemp.setManuallyEnd(true);
+                flowInstanceDao.save(fTemp);
 
 
-            //重置客户端表单流程状态
-            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-            com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
-            String businessId = flowInstance.getBusinessId();
-            FlowStatus status = FlowStatus.INIT;
-            ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+                //重置客户端表单流程状态
+                BusinessModel businessModel = fTemp.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                String businessModelId = businessModel.getId();
+                String appModuleId = businessModel.getAppModuleId();
+                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                String businessId = fTemp.getBusinessId();
+                FlowStatus status = FlowStatus.INIT;
+                ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+            }
         }else {
             result =  OperateResult.operationFailure("10011");//不能终止
         }
