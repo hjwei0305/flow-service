@@ -511,6 +511,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             String path = str.substring(0, endIndex);
             resultMap.put(path, key);
             j += 2;
+            break;//只生成一条测试数据
         }
         return resultMap;
     }
