@@ -223,7 +223,8 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
             Flow.FlowHistory({
-                businessId: data.businessId
+                businessId: data.businessId,
+                instanceId: data.flowInstanceId
             })
         });
     },

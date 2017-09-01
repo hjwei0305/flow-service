@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowHistoryInfoVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -147,9 +148,15 @@ public class FlowHistoryComponentController {
 //    }
     @RequestMapping(value = "getFlowHistoryInfo")
     @ResponseBody
-    public String getFlowHistoryInfo(String businessId) throws JsonProcessingException {
+    public String getFlowHistoryInfo(String businessId,String instanceId) throws JsonProcessingException {
+        List<ProcessTrackVO> result = null;
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-        List<ProcessTrackVO> result = proxy.getProcessTrackVO(businessId);
+        if(StringUtils.isNotEmpty(instanceId)){
+            result = proxy.getProcessTrackVOById(instanceId);
+        }else if(StringUtils.isNotEmpty(businessId)){
+            result = proxy.getProcessTrackVO(businessId);
+        }
+
         return JsonUtil.serialize(result, JsonUtil.DATE_TIME);
     }
 }

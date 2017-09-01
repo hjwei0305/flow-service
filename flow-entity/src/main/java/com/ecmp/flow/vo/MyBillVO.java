@@ -39,6 +39,8 @@ public class MyBillVO {
 
     private Boolean canManuallyEnd=false;//是否可以人工终止流程实例
 
+    private String flowInstanceId;//流程实例ID
+
 
 
 
@@ -136,5 +138,13 @@ public class MyBillVO {
 
     public void setCanManuallyEnd(Boolean canManuallyEnd) {
         this.canManuallyEnd = canManuallyEnd;
+    }
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
     }
 }

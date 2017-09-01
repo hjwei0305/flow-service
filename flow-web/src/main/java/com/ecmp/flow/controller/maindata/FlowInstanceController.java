@@ -154,6 +154,7 @@ public class FlowInstanceController {
                 myBillVO.setFlowName(f.getFlowName());
                 myBillVO.setLookUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl());
                 myBillVO.setEndDate(f.getEndDate());
+                myBillVO.setFlowInstanceId(f.getId());
 //                Boolean canEnd = proxy.checkCanEnd(f.getId());
 //                myBillVO.setCanManuallyEnd(canEnd);
                 data.add(myBillVO);

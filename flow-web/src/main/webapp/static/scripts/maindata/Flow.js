@@ -1617,7 +1617,8 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowHistoryInfo/getFlowHistoryInfo",
             params: {
-                businessId: g.businessId
+                businessId: g.businessId,
+                instanceId: g.instanceId
             },
             success: function (result) {
                 var flag = true;
