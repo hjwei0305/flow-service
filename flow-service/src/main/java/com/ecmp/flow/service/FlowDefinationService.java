@@ -420,9 +420,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         BusinessModel businessModel = flowType.getBusinessModel();
         String businessModelId = businessModel.getId();
         String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+        String clientApiBaseUrl =appModule.getApiBaseAddress();
         Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
 //        String orgId = v.get("orgId")+"";
 //        String orgCode = v.get("orgCode")+"";
@@ -504,9 +504,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String businessId = flowStartVO.getBusinessKey();
                 String businessModelId = businessModel.getId();
                 String appModuleId = businessModel.getAppModuleId();
-                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+            com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+            com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+            String clientApiBaseUrl =appModule.getApiBaseAddress();
                 Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
                 String orgCodePath = v.get("orgPath")+"";
                 orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|")+1);
@@ -625,9 +625,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                         String path = flowExecutorConfig.getUrl();
                         String appModuleId =  flowExecutorConfig.getBusinessModel().getAppModuleId();
-                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                          com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                          com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
                         String appModuleCode = appModule.getCode();
                         Map<String, String>  params = new HashMap<String,String>();;
                         String param = flowExecutorConfig.getParam();
@@ -700,9 +699,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                         String businessModelId = businessModel.getId();
                         String appModuleId = businessModel.getAppModuleId();
-                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        String clientApiBaseUrl =appModule.getApiBaseAddress();
                         Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
@@ -777,9 +776,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                         String businessModelId = businessModel.getId();
                         String appModuleId = businessModel.getAppModuleId();
-                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                        String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        String clientApiBaseUrl =appModule.getApiBaseAddress();
                         Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
@@ -1399,9 +1398,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String businessModelId = businessModel.getId();
                 String appModuleId = businessModel.getAppModuleId();
                 String clientClassName = businessModel.getConditonBean();
-                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl =appModule.getApiBaseAddress();
                 Boolean result = ExpressionUtil.validate(clientApiBaseUrl, clientClassName, conditonFinal);
                 if(result == null){
                     return  OperateResultWithData.operationFailure("10025");

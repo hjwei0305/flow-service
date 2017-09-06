@@ -8,26 +8,31 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * <p>
  * *************************************************************************************************
- * <p/>
+ * </p><p>
  * 可用Properties文件配置的Contants基类.
  * 本类既保持了Contants的static和final(静态与不可修改)特性,又拥有了可用Properties文件配置的特征,
- * 主要是应用了Java语言中静态初始化代码的特性. <p/> 子类可如下编写
- *
+ * 主要是应用了Java语言中静态初始化代码的特性. </p><p> 子类可如下编写
+ *</p><p>
  * <pre>
  *  public class Constants extends ConfigurableContants {
  *   static {
- *     init(&quot;framework.properties&quot;);
+ *     init("framework.properties");
  *  }
- *  &lt;p/&gt;
- *  public final static String ERROR_BUNDLE_KEY = getProperty(&quot;constant.error_bundle_key&quot;, &quot;errors&quot;); }
+ *
+ *  public final static String ERROR_BUNDLE_KEY = getProperty("constant.error_bundle_key", "errors"); }
  * </pre>
+ * </p>
  * <p>
  * ------------------------------------------------------------------------------------------------
+ * </p><p>
  * 版本          变更时间             变更人                     变更原因
+ * </p><p>
  * ------------------------------------------------------------------------------------------------
+ * </p><p>
  * 1.0.00      2017/04/06 22:39      谭军(tanjun)               新建
- * <p/>
+ * </p><p>
  * *************************************************************************************************
  */
 public class ConfigurableContants {

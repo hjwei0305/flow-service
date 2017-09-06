@@ -39,6 +39,27 @@ var common_lang = {
     searchDisplayText: "请输入代码或名称查询"
 };
 
+if (EUI.AppModuleView) {
+    EUI.apply(EUI.AppModuleView.prototype.lang, {
+        updateAppModuleText: "修改实体模型",
+        inputCodeMsgText: "请输入代码",
+        inputNameMsgText: "请输入名称",
+        inputDepictMsgText: "请输入描述",
+        addNewAppModuleText: "新增实体模型",
+        searchBoxText:"请输入名称或代码进行查询",
+        codeText: "代码",
+        nameText: "名称",
+        remarkText:"描述",
+        webBaseAddressText:"Web基地址",
+        apiBaseAddressText:"Api基地址",
+        unFilledText:"有必填项未输入，请确认！",
+        rankText:"排序",
+        maxLengthText:"最大长度为11位",
+        PositiveIntegerText:"排序必须为正整数",
+        needRankNumberText:"排序号请输入数字！",
+        needRankNumberGreaterThanOneText:"排序号不能小于1！请重新输入！"
+    }, common_lang);
+};
 if (EUI.BusinessModelView) {
     EUI.apply(EUI.BusinessModelView.prototype.lang, {
         modelText: "应用模块",
