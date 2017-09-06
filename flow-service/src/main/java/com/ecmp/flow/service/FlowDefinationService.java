@@ -1248,19 +1248,29 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         String flowName = null;
         if (taskList != null && taskList.size() > 0) {
+            String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            flowName = definition.getProcess().getName();
             for (Task task : taskList) {
-                String taskActKey = task.getTaskDefinitionKey();
-                Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,actProcessInstanceId);
-                if(flowTaskNow != null && flowTaskNow>0){
-                    continue;
-                }
                 String actTaskDefKey = task.getTaskDefinitionKey();
-                String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
-                JSONObject defObj = JSONObject.fromObject(flowDefJson);
-                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-                flowName = definition.getProcess().getName();
                 net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+
+                String nodeType = (String)currentNode.get("nodeType");
+                if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
+                   FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
+                   if(tempFlowTask!=null){
+                       continue;
+                   }
+                }else{
+                    String taskActKey = task.getTaskDefinitionKey();
+                    Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,actProcessInstanceId);
+                    if(flowTaskNow != null && flowTaskNow>0){
+                        continue;
+                    }
+                }
+
                 Integer executeTime = null;
                 Boolean canReject = null;
                 Boolean canSuspension = null;

@@ -1152,10 +1152,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
-                String taskActKey = task.getTaskDefinitionKey();
-                Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,flowInstance.getActInstanceId());
-                if(flowTaskNow != null && flowTaskNow>0){
-                    continue;
+                String nodeType = (String)currentNode.get("nodeType");
+                if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
+                    FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
+                    if(tempFlowTask!=null){
+                        continue;
+                    }
+                }else{
+                    String taskActKey = task.getTaskDefinitionKey();
+                    Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,flowInstance.getActInstanceId());
+                    if(flowTaskNow != null && flowTaskNow>0){
+                        continue;
+                    }
                 }
                 List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
                 if(identityLinks==null || identityLinks.isEmpty()){//多实例任务为null
