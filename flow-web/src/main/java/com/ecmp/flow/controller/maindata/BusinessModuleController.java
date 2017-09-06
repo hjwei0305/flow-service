@@ -7,10 +7,12 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
+import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
@@ -91,8 +93,8 @@ public class BusinessModuleController {
     @RequestMapping(value = "listAllAppModule")
     @ResponseBody
     public String listAllAppModule() {
-        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-        List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
+        IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
+        List<AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
         return JsonUtil.serialize(operateStatus);
     }

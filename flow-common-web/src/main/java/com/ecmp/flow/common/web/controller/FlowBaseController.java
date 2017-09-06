@@ -492,7 +492,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      * @param callActivityPath 路径值
      * @return 路径值为key，子流程id为value的MAP对象
      */
-    protected Map<String, String> initCallActivtiy(String callActivityPath) {
+    protected Map<String, String> initCallActivtiy(String callActivityPath,boolean ifStart) {
         Map<String, String> resultMap = new HashMap<String, String>();
         //  String str ="/caigouTestZhu/CallActivity_3/yewushengqing2";
         String str = callActivityPath;
@@ -511,7 +511,9 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             String path = str.substring(0, endIndex);
             resultMap.put(path, key);
             j += 2;
-            break;//只生成一条测试数据
+            if(!ifStart){
+                break;//只生成一条测试数据
+            }
         }
         return resultMap;
     }

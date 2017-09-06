@@ -695,9 +695,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 BusinessModel businessModel = fTemp.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 String businessModelId = businessModel.getId();
                 String appModuleId = businessModel.getAppModuleId();
-                com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
-                String clientApiBaseUrl = ContextUtil.getAppModule(appModule.getCode()).getApiBaseAddress();
+                com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                String clientApiBaseUrl =appModule.getApiBaseAddress();
                 String businessId = fTemp.getBusinessId();
                 FlowStatus status = FlowStatus.INIT;
                 ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);

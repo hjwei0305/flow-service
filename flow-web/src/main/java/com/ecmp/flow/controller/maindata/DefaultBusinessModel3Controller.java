@@ -165,7 +165,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
                         //测试跨业务实体子流程,并发多级子流程测试
                         String callActivityPath = f.getCallActivityPath();
                         if (StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath);
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
                             Map<String, Object> variables = new HashMap<String, Object>();
                             flowStartVO.setVariables(variables);
                             initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel3);
@@ -245,7 +245,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
                     //测试跨业务实体子流程,并发多级子流程测试
                     String callActivityPath = f.getCallActivityPath();
                     if (StringUtils.isNotEmpty(callActivityPath)) {
-                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath);
+                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,false);
                         initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, v, defaultBusinessModel3);
                     }
                 }

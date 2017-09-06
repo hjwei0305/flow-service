@@ -128,8 +128,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                         flowHistory.setFlowInstance(flowInstance);
                         String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
                         String appModuleId = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModuleId();
-                        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-                        com.ecmp.basic.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
                         if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
                             ownerName = appModule.getName();
                         }
