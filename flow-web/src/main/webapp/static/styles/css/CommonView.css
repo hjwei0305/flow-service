@@ -1,0 +1,37 @@
+.ecmp-common-edit {
+    cursor: pointer;
+}
+.ecmp-common-delete {
+    cursor: pointer;
+}
+.ecmp-common-set {
+    cursor: pointer;
+}
+.icon-space{
+    margin-right: 10px;
+}
+.arrow-right {
+    width: 25px;
+    height: 80px;
+    margin: 159px auto 0;
+}
+.arrow-left {
+    width: 25px;
+    height: 80px;
+    margin: 10px auto 0;
+}
+.ecmp-common-moveright {
+    cursor: pointer;
+}
+.ecmp-common-leftmove {
+    cursor: pointer;
+}
+.icon-short-space{
+    margin-right: 5px;
+}
+.ecmp-common-view {
+    cursor: pointer;
+}
+.ecmp-common-user-view{
+    cursor: pointer;
+}

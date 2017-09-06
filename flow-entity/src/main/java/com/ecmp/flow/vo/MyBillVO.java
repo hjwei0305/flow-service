@@ -1,5 +1,6 @@
 package com.ecmp.flow.vo;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Date;
  * <p/>
  * *************************************************************************************************
  */
-public class MyBillVO {
+public class MyBillVO implements Serializable{
     private String businessName;//业务单据名称
 
     private String creatorId;//流程发起人id
