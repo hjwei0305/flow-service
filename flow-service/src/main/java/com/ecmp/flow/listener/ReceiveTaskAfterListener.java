@@ -272,10 +272,11 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                             }
                         }).start();
                     }else{
+                        FlowInstance flowInstance =  flowTask.getFlowInstance();
                         new Thread(new Runnable() {//异步
                             @Override
                             public void run() {
-                                initNextTask(actProcessInstanceId,nextNodes);
+                                initNextAllTask(flowInstance,flowHistory);
                             }
                         }).start();
                     }
@@ -300,28 +301,28 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
         // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
         service.scheduleWithFixedDelay(runnable, 1, 10,TimeUnit.SECONDS);
     }
-    //因为当前节点是异步激活，所以需要进行异步生成任务的操作
-   private void initNextTask(String proceeInstanceId,List<NodeInfo> nextNodes){//主要针对开始任务后紧接 接收任务的情况
-       Calendar startTreadTime =  Calendar.getInstance();
-       ScheduledExecutorService service = Executors
-               .newSingleThreadScheduledExecutor();
-       Runnable runnable = new Runnable() {
-           public void run() {
-               Calendar nowTime = Calendar.getInstance();
-               nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
-               if(nowTime.after(startTreadTime)){
-                   service.shutdown();
-               }
-              Boolean result = initTask(proceeInstanceId,nextNodes);
-               if(result){
-                   service.shutdown();
-               }
-           }
-       };
-
-       // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-       service.scheduleWithFixedDelay(runnable, 1, 1,TimeUnit.SECONDS);
-   }
+//    //因为当前节点是异步激活，所以需要进行异步生成任务的操作
+//   private void initNextTask(String proceeInstanceId,List<NodeInfo> nextNodes){//主要针对开始任务后紧接 接收任务的情况
+//       Calendar startTreadTime =  Calendar.getInstance();
+//       ScheduledExecutorService service = Executors
+//               .newSingleThreadScheduledExecutor();
+//       Runnable runnable = new Runnable() {
+//           public void run() {
+//               Calendar nowTime = Calendar.getInstance();
+//               nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
+//               if(nowTime.after(startTreadTime)){
+//                   service.shutdown();
+//               }
+//              Boolean result = initTask(proceeInstanceId,nextNodes);
+//               if(result){
+//                   service.shutdown();
+//               }
+//           }
+//       };
+//
+//       // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+//       service.scheduleWithFixedDelay(runnable, 1, 1,TimeUnit.SECONDS);
+//   }
     private Boolean initTask(String proceeInstanceId,List<NodeInfo> nextNodes){
         Boolean result = false;
         int indexSuccess = 0;

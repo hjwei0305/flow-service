@@ -1432,10 +1432,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             while(flowInstance.getParent() != null){ //以父流程的启动人为准
                                 flowInstance = flowInstance.getParent();
                             }
-//                            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-//                                    .processInstanceId(flowInstance.getActInstanceId()).singleResult();
+                            String startUserId = null;
                             HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowInstance.getActInstanceId()).singleResult();
-                            String startUserId = historicProcessInstance.getStartUserId();
+                            if(historicProcessInstance==null){//当第一个任务为服务任务的时候存在为空的情况发生
+                                startUserId = ContextUtil.getUserId();
+                            }else{
+                                 startUserId = historicProcessInstance.getStartUserId();
+                            }
+
                             IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                             employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
                         } else {
