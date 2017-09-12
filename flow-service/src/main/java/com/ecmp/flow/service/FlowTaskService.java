@@ -1359,7 +1359,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String flowTaskDefJson = flowTask.getTaskJsonDef();
             JSONObject flowTaskDefObj = JSONObject.fromObject(flowTaskDefJson);
             String currentNodeType = flowTaskDefObj.get("nodeType") + "";
-
+            Map<NodeInfo,List<NodeInfo>> nodeInfoSonMap = new LinkedHashMap();
             for (NodeInfo nodeInfo : nodeInfoList) {
 //               Set<Executor> executorSet = nodeInfo.getExecutorSet();
 //               if(executorSet==null || executorSet.isEmpty()){
@@ -1392,6 +1392,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         employeeSet.addAll(employees);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
+                }else if("callActivity".equalsIgnoreCase(nodeInfo.getType())){
+                    List<NodeInfo> nodeInfoListSons = new ArrayList<NodeInfo>();
+                    nodeInfoListSons =  getCallActivityNodeInfo(flowTask,nodeInfo.getId(),nodeInfoListSons);
+                    nodeInfoSonMap.put(nodeInfo,nodeInfoListSons);
                 }else {
                     Set<Executor> executorSet = nodeInfo.getExecutorSet();
                     if(executorSet!=null && !executorSet.isEmpty()){
@@ -1473,7 +1477,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
+            if(nodeInfoSonMap!=null && !nodeInfoSonMap.isEmpty()){
+                  for(Map.Entry<NodeInfo,List<NodeInfo>> entry:nodeInfoSonMap.entrySet()){
+                      nodeInfoList.remove(entry.getKey());
+                      nodeInfoList.addAll(entry.getValue());
+                  }
+            }
         }
+
         return nodeInfoList;
     }
 
@@ -1564,12 +1575,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    private List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,PvmActivity currTempActivity, List<NodeInfo> result){
+    private List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,String currNodeId, List<NodeInfo> result){
         FlowInstance flowInstance = flowTask.getFlowInstance();
         String defObjStr = flowInstance.getFlowDefVersion().getDefJson();
         JSONObject defObjP = JSONObject.fromObject(defObjStr);
         Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
-        net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currTempActivity.getId());
+        net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
         net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
         String currentVersionId = (String)normal.get("currentVersionId");
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
@@ -1687,7 +1698,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
                                     }else  if("CallActivity".equalsIgnoreCase(type)){
-                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
+                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
                                     }else{
                                         NodeInfo tempNodeInfo = new NodeInfo();
                                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1710,7 +1721,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                         result.addAll(temp);
                                     }else  if("CallActivity".equalsIgnoreCase(type)){
-                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
+                                        result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
                                     }else{
                                         NodeInfo tempNodeInfo = new NodeInfo();
                                         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1750,7 +1761,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                     result.addAll(temp);
                                 }else  if("CallActivity".equalsIgnoreCase(type)){
-                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
+                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
                                 }else{
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -1772,7 +1783,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
                                     result.addAll(temp);
                                 }else  if("CallActivity".equalsIgnoreCase(type)){
-                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity,result);
+                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
                                 }else{
                                     NodeInfo tempNodeInfo = new NodeInfo();
                                     tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
@@ -2079,7 +2090,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             }
             else   if("CallActivity".equalsIgnoreCase(nextActivtityType)){
-                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity,nodeInfoList);
+                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity.getId(),nodeInfoList);
             } else {
                 if (isSizeBigTwo) {//当下步节点大于一个时，按照并行网关处理。checkbox,默认全部选中显示不能修改
                     for (int i = 0; i < nextNodes.size(); i++) {
@@ -2203,7 +2214,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
             else   if("CallActivity".equalsIgnoreCase(nextActivtityType)){
-                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity,nodeInfoList);
+                nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity.getId(),nodeInfoList);
             }
             else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关

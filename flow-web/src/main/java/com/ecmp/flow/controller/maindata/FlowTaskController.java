@@ -74,7 +74,6 @@ public class FlowTaskController {
     public String listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String modelId = request.getParameter("modelId");
-        String executorId = ContextUtil.getUserId();
 //        if("admin".equalsIgnoreCase(account)){
 //            account = "666666";
 //        }
