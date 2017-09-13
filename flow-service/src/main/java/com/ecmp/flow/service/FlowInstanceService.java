@@ -268,9 +268,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
         if(children!=null && !children.isEmpty()){
             for(FlowInstance son:children){
-                if(!businessId.equals(son.getBusinessId())){//跨业务实体子流程
+//                if(!businessId.equals(son.getBusinessId())){//跨业务实体子流程
                     flowInstanceListReal.add(son);
-                }
+//                }
                 initSonFlowInstance(flowInstanceListReal,businessId,son);
             }
         }

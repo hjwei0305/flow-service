@@ -689,6 +689,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     if("true".equalsIgnoreCase(isDefault)){
                         if(checkGateway(busType2)){
                             this.findXunFanNodesInfo(resultDefault,flowStartVO,flowDefination,definition , nextNode, businessVName);
+                        }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                            result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                         }else {
                             resultDefault = initNodesInfo(resultDefault, flowStartVO, definition , targetId);
                         }
@@ -709,6 +711,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
                                 if(checkGateway(busType2)){
                                     return   this.findXunFanNodesInfo(resultCurrent,flowStartVO,flowDefination,definition , nextNode,businessVName);
+                                }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                                    result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                                 }else {
                                     resultCurrent = initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                 }
@@ -721,6 +725,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 if (resultB == true) {
                                     if(checkGateway(busType2)){
                                         return this.findXunFanNodesInfo(resultCurrent,flowStartVO,flowDefination,definition , nextNode,businessVName);
+                                    }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                                        result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                                     }else {
                                         resultCurrent = initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                     }
@@ -745,6 +751,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String busType2 = nextNode.get("busType")+"";
                 if(checkGateway(busType2)){
                     this.findXunFanNodesInfo(resultCurrent,flowStartVO,flowDefination,definition , nextNode,businessVName);
+                }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                    result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                 }else {
                     resultCurrent = initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                 }
@@ -766,6 +774,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     if("true".equalsIgnoreCase(isDefault)){
                         if(checkGateway(busType2)){
                             this.findXunFanNodesInfo(resultDefault,flowStartVO,flowDefination,definition , nextNode,businessVName);
+                        }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                            result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                         }else {
                             resultDefault = initNodesInfo(resultDefault, flowStartVO, definition , targetId);
                         }
@@ -786,7 +796,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             if (ConditionUtil.groovyTest(conditonFinal, v)) {
                                 if(checkGateway(busType2)){
                                     this.findXunFanNodesInfo(resultCurrent,flowStartVO,flowDefination,definition , nextNode,businessVName);
-
+                                }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                                    result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                                 }else {
                                     initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                 }
@@ -799,6 +810,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 if (resultB == true) {
                                     if(checkGateway(busType2)){
                                         this.findXunFanNodesInfo(resultCurrent,flowStartVO,flowDefination,definition , nextNode,businessVName);
+                                    }else if("CallActivity".equalsIgnoreCase( (String) nextNode.get("nodeType"))){
+                                        result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, nextNode,  result, businessVName);
                                     }else {
                                         initNodesInfo(resultCurrent, flowStartVO, definition , targetId);
                                     }
@@ -817,18 +830,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         }else if("ManualExclusiveGateway".equalsIgnoreCase(busType)) {//如果是人工排他网关
             throw  new RuntimeException("开始节点不允许直接配置人工排他网关节点！");
-//            JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
-//            for(int j=0;j<targetNodes.size();j++){
-//                JSONObject jsonObject = targetNodes.getJSONObject(j);
-//                String targetId = jsonObject.getString("targetId");
-//                net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
-//                String busType2 = nextNode.get("busType")+"";
-//                if(checkGateway(busType2)){
-//                    this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition , nextNode);
-//                }else {
-//                    result = initNodesInfo(result, flowStartVO, definition , targetId);
-//                }
-//            }
         }else if("ServiceTask".equalsIgnoreCase(type)){//服务任务
             NodeInfo nodeInfo = new NodeInfo();
             nodeInfo.setId(nodeId);
@@ -877,39 +878,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definition ,jsonObjectReal,businessVName);
               }
         }else if("CallActivity".equalsIgnoreCase(type)){
-            net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject("nodeConfig").getJSONObject("normal");
-            String callActivityDefKey = (String)normal.get("callActivityDefKey");
-//            String businessVName =definition.getProcess().getId()+"/"+ nodeId+"_"+callActivityDefKey+"_sonBusinessId";
-            if(StringUtils.isEmpty(businessVName)){
-                businessVName ="/"+definition.getProcess().getId()+"/"+ nodeId;
-            }else {
-                businessVName+="/"+definition.getProcess().getId()+"/"+ nodeId;
-            }
-            String currentVersionId = (String)normal.get("currentVersionId");
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
-            if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
-                String def = flowDefVersion.getDefJson();
-                JSONObject defObj = JSONObject.fromObject(def);
-                Definition definitionSon = (Definition) JSONObject.toBean(defObj, Definition.class);
-                List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
-                if (startEventList != null && startEventList.size() == 1) {
-                    StartEvent startEvent = startEventList.get(0);
-                    net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
-                    result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definitionSon , startEventNode,businessVName);
-                    if(!result.isEmpty()){
-                        for(NodeInfo nodeInfo:result){
-                            nodeInfo.setCurrentTaskType(startEvent.getType());
-                            if(StringUtils.isEmpty(nodeInfo.getCallActivityPath())){
-                                businessVName+="/"+callActivityDefKey;
-                                nodeInfo.setCallActivityPath(businessVName);
-                            }
-                        }
-                    }
-                }
-            }else {
-                throw new RuntimeException("找不到子流程,或子流程处于挂起状态");
-            }
-
+            result = getCallActivityNodeInfo( flowStartVO, flowDefination, definition, jsonObjectNode,  result, businessVName);
         }else{
             result = initNodesInfo(result, flowStartVO, definition , nodeId);
         }
@@ -1428,4 +1397,41 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     public FlowDefination findByKey(String key){
         return  flowDefinationDao.findByDefKey(key);
     }
+
+    private List<NodeInfo> getCallActivityNodeInfo(FlowStartVO flowStartVO,FlowDefination flowDefination,Definition definition,JSONObject jsonObjectNode, List<NodeInfo> result,String businessVName)
+            throws NoSuchMethodException, SecurityException{
+        net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        String callActivityDefKey = (String)normal.get("callActivityDefKey");
+//            String businessVName =definition.getProcess().getId()+"/"+ nodeId+"_"+callActivityDefKey+"_sonBusinessId";
+        if(StringUtils.isEmpty(businessVName)){
+            businessVName ="/"+definition.getProcess().getId()+"/"+ jsonObjectNode.get("id");
+        }else {
+            businessVName+="/"+definition.getProcess().getId()+"/"+ jsonObjectNode.get("id");
+        }
+        String currentVersionId = (String)normal.get("currentVersionId");
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
+        if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
+            String def = flowDefVersion.getDefJson();
+            JSONObject defObj = JSONObject.fromObject(def);
+            Definition definitionSon = (Definition) JSONObject.toBean(defObj, Definition.class);
+            List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
+            if (startEventList != null && startEventList.size() == 1) {
+                StartEvent startEvent = startEventList.get(0);
+                net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
+                result = this.findXunFanNodesInfo(result,flowStartVO,flowDefination,definitionSon , startEventNode,businessVName);
+                if(!result.isEmpty()){
+                    for(NodeInfo nodeInfo:result){
+                        nodeInfo.setCurrentTaskType(startEvent.getType());
+                        if(StringUtils.isEmpty(nodeInfo.getCallActivityPath())){
+                            businessVName+="/"+callActivityDefKey;
+                            nodeInfo.setCallActivityPath(businessVName);
+                        }
+                    }
+                }
+            }
+        }else {
+            throw new RuntimeException("找不到子流程,或子流程处于挂起状态");
+        }
+        return result;
+      }
 }

@@ -125,7 +125,8 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
-
+            Map<String, Object> variables = new HashMap<String, Object>();
+            flowStartVO.setVariables(variables);
 
             //测试跨业务实体子流程,并发多级子流程测试
             List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -143,8 +144,8 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
                         String callActivityPath = f.getCallActivityPath();
                         if (StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
-                            Map<String, Object> variables = new HashMap<String, Object>();
-                            flowStartVO.setVariables(variables);
+
+
                             initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel);
                             List<String> userVarNameList = (List)userMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
                             if(userVarNameList!=null){

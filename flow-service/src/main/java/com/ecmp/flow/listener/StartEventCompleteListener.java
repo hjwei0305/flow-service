@@ -114,10 +114,10 @@ public class StartEventCompleteListener implements ExecutionListener {
 //            String sonBusinessVName = parentBusinessModelCode+"_"+parent.getActivityId()+"_"+definitionKey+"_sonBusinessId";
             sonBusinessVNameBuff.append("/"+definitionKey);
             currentBusinessId =(String )delegateTask.getVariable(sonBusinessVNameBuff.toString());
-            List<String> userVarNameList = (List)delegateTask.getVariable(callActivityPath+"_sonProcessSelectNodeUserV");
+            List<String> userVarNameList = (List)delegateTask.getVariable(sonBusinessVNameBuff+"_sonProcessSelectNodeUserV");
             if(userVarNameList!=null && !userVarNameList.isEmpty()){
                 for(String userVarName :userVarNameList){
-                    String value = (String) delegateTask.getVariable(callActivityPath+"/"+userVarName);
+                    String value = (String) delegateTask.getVariable(sonBusinessVNameBuff+"/"+userVarName);
                     delegateTask.setVariable(userVarName,value);
 //                    delegateTask.removeVariable(callActivityPath+"/"+userVarName);
                 }
