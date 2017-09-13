@@ -119,7 +119,10 @@ public class StartEventCompleteListener implements ExecutionListener {
                 for(String userVarName :userVarNameList){
                     String value = (String) delegateTask.getVariable(callActivityPath+"/"+userVarName);
                     delegateTask.setVariable(userVarName,value);
+//                    delegateTask.removeVariable(callActivityPath+"/"+userVarName);
                 }
+//                variablesParent.remove(callActivityPath+"_sonProcessSelectNodeUserV");
+//                delegateTask.removeVariable(callActivityPath+"_sonProcessSelectNodeUserV");
             }
             if(StringUtils.isEmpty(currentBusinessId)){
                 if(parentBusinessModelCode.equals(sonBusinessModelCode)){//非跨业务实体子流程

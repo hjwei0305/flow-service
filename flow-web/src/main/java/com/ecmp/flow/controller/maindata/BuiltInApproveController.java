@@ -237,7 +237,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
                     //测试跨业务实体子流程,并发多级子流程测试
                     String callActivityPath = f.getCallActivityPath();
                     if (StringUtils.isNotEmpty(callActivityPath)) {
-                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,false);
+                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
                         initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, v, defaultBusinessModel);
                         selectedNodesMap.put(callActivityPath,f.getNodeId());
 
