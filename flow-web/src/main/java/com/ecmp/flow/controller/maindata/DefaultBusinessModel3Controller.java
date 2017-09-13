@@ -155,12 +155,6 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
                 if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
-                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                            userMap.put(f.getUserVarName(), f.getUserIds());
-                        } else {
-                            String[] idArray = f.getUserIds().split(",");
-                            userMap.put(f.getUserVarName(), idArray);
-                        }
 
                         //测试跨业务实体子流程,并发多级子流程测试
                         String callActivityPath = f.getCallActivityPath();
@@ -169,6 +163,27 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
                             Map<String, Object> variables = new HashMap<String, Object>();
                             flowStartVO.setVariables(variables);
                             initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel3);
+                            List<String> userVarNameList = (List)userMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
+                            if(userVarNameList!=null){
+                                userVarNameList.add(f.getUserVarName());
+                            }else{
+                                userVarNameList = new ArrayList<>();
+                                userVarNameList.add(f.getUserVarName());
+                                userMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                            }
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(callActivityPath+"/"+f.getUserVarName(), f.getUserIds());
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                userMap.put(callActivityPath+"/"+f.getUserVarName(), idArray);
+                            }
+                        }else{
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(f.getUserVarName(), f.getUserIds());
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                userMap.put(f.getUserVarName(), idArray);
+                            }
                         }
                     }
                 }
@@ -224,7 +239,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
             flowTaskCompleteVO.setOpinion(opinion);
-            List<String> selectedNodeIds = new ArrayList<String>();
+            Map<String,String> selectedNodesMap = new HashMap<>();
             Map<String, Object> v = new HashMap<String, Object>();
 
             //测试跨业务实体子流程,并发多级子流程测试
@@ -234,28 +249,47 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
 
             if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                 for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                    selectedNodeIds.add(f.getNodeId());
                     String flowTaskType = f.getFlowTaskType();
-                    if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                        v.put(f.getUserVarName(), f.getUserIds());
-                    } else {
-                        String[] idArray = f.getUserIds().split(",");
-                        v.put(f.getUserVarName(), idArray);
-                    }
+
                     //测试跨业务实体子流程,并发多级子流程测试
                     String callActivityPath = f.getCallActivityPath();
                     if (StringUtils.isNotEmpty(callActivityPath)) {
                         Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,false);
                         initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, v, defaultBusinessModel3);
+                        selectedNodesMap.put(callActivityPath,f.getNodeId());
+
+                        List<String> userVarNameList = (List)v.get(callActivityPath+"_sonProcessSelectNodeUserV");
+                        if(userVarNameList!=null){
+                            userVarNameList.add(f.getUserVarName());
+                        }else{
+                            userVarNameList = new ArrayList<>();
+                            userVarNameList.add(f.getUserVarName());
+                            v.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                        }
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            v.put(callActivityPath+"/"+f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            v.put(callActivityPath+"/"+f.getUserVarName(), idArray);
+                        }
+                    }else {
+                        selectedNodesMap.put(f.getNodeId(),f.getNodeId());
+
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            v.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            v.put(f.getUserVarName(), idArray);
+                        }
                     }
                 }
             } else {
                 if (StringUtils.isNotEmpty(endEventId)) {
-                    selectedNodeIds.add(endEventId);
+                    selectedNodesMap.put(endEventId,endEventId);
                 }
             }
             if (manualSelected) {
-                flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
+                flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
             }
 
             //  Map<String,Object> v = new HashMap<String,Object>();

@@ -24,9 +24,11 @@ public class FlowTaskCompleteVO implements Serializable{
      */
     private String taskId;
     /**
-     * 手动选择出口分支节点的节点ID
+     * 手动选择出口分支节点的节点路径，id
+     * 如果没有子流程，key与value的值均设置为id
      */
-    private List<String> manualSelectedNodeIds ;
+    private Map<String,String> manualSelectedNode ;
+
 
     /**
      * 审批意见
@@ -47,13 +49,14 @@ public class FlowTaskCompleteVO implements Serializable{
         this.taskId = taskId;
     }
 
-    public List<String> getManualSelectedNodeIds() {
-        return manualSelectedNodeIds;
+    public Map<String, String> getManualSelectedNode() {
+        return manualSelectedNode;
     }
 
-    public void setManualSelectedNodeIds(List<String> manualSelectedNodeIds) {
-        this.manualSelectedNodeIds = manualSelectedNodeIds;
+    public void setManualSelectedNode(Map<String, String> manualSelectedNode) {
+        this.manualSelectedNode = manualSelectedNode;
     }
+
     public Map<String, Object> getVariables() {
         return variables;
     }

@@ -151,9 +151,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
-        List<String> manualSelectedNodeIds = flowTaskCompleteVO.getManualSelectedNodeIds();
+        Map<String,String> manualSelectedNodes = flowTaskCompleteVO.getManualSelectedNode();
         OperateResultWithData<FlowStatus> result = null;
-        if (manualSelectedNodeIds == null || manualSelectedNodeIds.isEmpty()) {//非人工选择任务的情况
+        if (manualSelectedNodes == null || manualSelectedNodes.isEmpty()) {//非人工选择任务的情况
             result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
         } else {//人工选择任务的情况
             FlowTask flowTask = flowTaskDao.findOne(taskId);
@@ -185,8 +185,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if(pvmTransition.getId().equals(defaultSequenId)){
                         continue;
                     }
-
-                    for (String nodeId : manualSelectedNodeIds) {
+                    for (Map.Entry<String,String> entry : manualSelectedNodes.entrySet()) {
+                        String nodeId = entry.getValue();
                         ActivityImpl destinationActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
                         if(destinationActivity!=null && checkNextHas(pvmTransition.getDestination(),destinationActivity)){
                             oriPvmTransitionMap.put(pvmTransition,uelText);
@@ -223,9 +223,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<PvmTransition> pvmTransitionList = currActivity.getOutgoingTransitions();
                 for (PvmTransition pvmTransition : pvmTransitionList) {
                     UelExpressionCondition uel= (UelExpressionCondition)pvmTransition.getProperty("condition");
+                    PvmActivity nextNode = pvmTransition.getDestination();
                     String uelText = (String) pvmTransition.getProperty("conditionText");
                     boolean isSet = false;
-                    for (String nodeId : manualSelectedNodeIds) {
+//                    if("callActivity".equalsIgnoreCase(nextNode.getProperty("type").toString())){
+//
+//                    }
+                    for (Map.Entry<String,String> entry : manualSelectedNodes.entrySet()) {
+                        String nodeId = entry.getValue();
+                        if(!nodeId.equals(entry.getKey())){//存在子流程的情况
+                            String path = entry.getKey();
+                            String[] resultArray = path.split("/");
+                            nodeId = resultArray[2];
+                        }
                         ActivityImpl destinationActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
                         if(destinationActivity!=null && checkNextHas(pvmTransition.getDestination(),destinationActivity)){
                             oriPvmTransitionMap.put(pvmTransition,uelText);

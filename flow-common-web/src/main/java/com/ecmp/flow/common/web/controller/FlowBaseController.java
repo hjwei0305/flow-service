@@ -190,69 +190,69 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         return JsonUtil.serialize(operateStatus);
     }
 
-    /**
-     * 完成任务
-     *
-     * @param taskId
-     * @param businessId 业务表单ID
-     * @param opinion    审批意见
-     * @param taskList   任务完成传输对象
-     * @param
-     * @return 操作结果
-     */
-    @RequestMapping(value = "completeTask")
-    @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected,String approved ) {
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-        if (StringUtils.isNotEmpty(taskList)) {
-            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
-        }
-        IBaseService baseService = ApiClient.createProxy(apiClass);
-        OperateStatus operateStatus = null;
-        V defaultBusinessModel = (V) baseService.findOne(businessId);
-        if (defaultBusinessModel != null) {
-            FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
-            flowTaskCompleteVO.setTaskId(taskId);
-            flowTaskCompleteVO.setOpinion(opinion);
-            List<String> selectedNodeIds = new ArrayList<String>();
-            Map<String, Object> v = new HashMap<String, Object>();
-            if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
-                for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                    selectedNodeIds.add(f.getNodeId());
-                    String flowTaskType = f.getFlowTaskType();
-                    if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
-                        v.put(f.getUserVarName(), f.getUserIds());
-                    } else {
-                        String[] idArray = f.getUserIds().split(",");
-                        v.put(f.getUserVarName(), idArray);
-                    }
-                }
-            }else{
-                if(StringUtils.isNotEmpty(endEventId)){
-                    selectedNodeIds.add(endEventId);
-                }
-            }
-            if(manualSelected){
-                flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
-            }
-
-            //  Map<String,Object> v = new HashMap<String,Object>();
-            v.put("approved",approved);//针对会签时同意、不同意、弃权等操作
-            flowTaskCompleteVO.setVariables(v);
-            IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-            OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-                defaultBusinessModel = (V) baseService.findOne(businessId);
-                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-                baseService.save(defaultBusinessModel);
-            }
-            operateStatus = new OperateStatus(true, operateResult.getMessage());
-        } else {
-            operateStatus = new OperateStatus(false, "业务对象不存在");
-        }
-        return JsonUtil.serialize(operateStatus);
-    }
+//    /**
+//     * 完成任务
+//     *
+//     * @param taskId
+//     * @param businessId 业务表单ID
+//     * @param opinion    审批意见
+//     * @param taskList   任务完成传输对象
+//     * @param
+//     * @return 操作结果
+//     */
+//    @RequestMapping(value = "completeTask")
+//    @ResponseBody
+//    public String completeTask(String taskId, String businessId, String opinion, String taskList,String endEventId,boolean manualSelected,String approved ) {
+//        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+//        if (StringUtils.isNotEmpty(taskList)) {
+//            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+//            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+//        }
+//        IBaseService baseService = ApiClient.createProxy(apiClass);
+//        OperateStatus operateStatus = null;
+//        V defaultBusinessModel = (V) baseService.findOne(businessId);
+//        if (defaultBusinessModel != null) {
+//            FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+//            flowTaskCompleteVO.setTaskId(taskId);
+//            flowTaskCompleteVO.setOpinion(opinion);
+//            List<String> selectedNodeIds = new ArrayList<String>();
+//            Map<String, Object> v = new HashMap<String, Object>();
+//            if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+//                for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+//                    selectedNodeIds.add(f.getNodeId());
+//                    String flowTaskType = f.getFlowTaskType();
+//                    if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
+//                        v.put(f.getUserVarName(), f.getUserIds());
+//                    } else {
+//                        String[] idArray = f.getUserIds().split(",");
+//                        v.put(f.getUserVarName(), idArray);
+//                    }
+//                }
+//            }else{
+//                if(StringUtils.isNotEmpty(endEventId)){
+//                    selectedNodeIds.add(endEventId);
+//                }
+//            }
+//            if(manualSelected){
+//                flowTaskCompleteVO.setManualSelectedNodeIds(selectedNodeIds);
+//            }
+//
+//            //  Map<String,Object> v = new HashMap<String,Object>();
+//            v.put("approved",approved);//针对会签时同意、不同意、弃权等操作
+//            flowTaskCompleteVO.setVariables(v);
+//            IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+//            OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
+//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+//                defaultBusinessModel = (V) baseService.findOne(businessId);
+//                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+//                baseService.save(defaultBusinessModel);
+//            }
+//            operateStatus = new OperateStatus(true, operateResult.getMessage());
+//        } else {
+//            operateStatus = new OperateStatus(false, "业务对象不存在");
+//        }
+//        return JsonUtil.serialize(operateStatus);
+//    }
 
     /**
      * 回退（撤销）任务
