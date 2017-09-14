@@ -105,7 +105,7 @@ public class FlowTaskController {
                 List<FlowTask> flowTaskListTemp = temp.getValue();
                 if(flowTaskListTemp!=null && !flowTaskListTemp.isEmpty()){
                     boolean canEnd = true;
-                    for(FlowTask flowTask:flowTaskList){
+                    for(FlowTask flowTask:flowTaskListTemp){
                         Boolean canCancel = flowTask.getCanSuspension();
                         if(canCancel==null || !canCancel){
                             canEnd = false;
@@ -113,7 +113,7 @@ public class FlowTaskController {
                         }
                     }
                     if(!canEnd){
-                        for(FlowTask flowTask:flowTaskList){
+                        for(FlowTask flowTask:flowTaskListTemp){
                             flowTask.setCanSuspension(false);
                         }
                     }
