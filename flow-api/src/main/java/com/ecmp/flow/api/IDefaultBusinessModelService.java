@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -68,7 +69,7 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public boolean changeCreateDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
+    public String changeCreateDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
 
     /**
      * 测试事后
@@ -81,7 +82,7 @@ public interface IDefaultBusinessModelService extends IBaseService<DefaultBusine
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public boolean changeCompletedDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
+    public String  changeCompletedDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
 
     /**
      * 测试自定义执行人选择

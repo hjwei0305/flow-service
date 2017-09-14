@@ -29,8 +29,8 @@ import java.util.*;
  * *************************************************************************************************
  */
 public class ServiceCallUtil {
-    public static boolean callService(String serviceUrlId,String businessId,String... args){
-        boolean result = false;
+    public static Object callService(String serviceUrlId,String businessId,String... args){
+        Object result = false;
         if(!StringUtils.isEmpty(serviceUrlId)){
             ApplicationContext applicationContext = ContextUtil.getApplicationContext();
             FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao)applicationContext.getBean("flowServiceUrlDao");
@@ -43,7 +43,7 @@ public class ServiceCallUtil {
               Map<String, String> params = new HashMap<String,String>();;
               params.put("id",businessId);
               params.put("paramJson",args[0]);
-              result = ApiClient.postViaProxyReturnResult(appModule.getCode(),  clientUrl,new GenericType<Boolean>() {}, params);
+              result = ApiClient.postViaProxyReturnResult(appModule.getCode(),  clientUrl,new GenericType<String>() {}, params);
             }else {
                 throw new RuntimeException("服务对象找不到");
             }

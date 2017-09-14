@@ -38,6 +38,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.naming.Context;
+import javax.ws.rs.core.GenericType;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -111,7 +112,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                 String flowTaskName = (String) normal.get("name");
                 if (!StringUtils.isEmpty(serviceTaskId)) {
                     Map<String,Object> tempV = delegateTask.getVariables();
-                    String param = JsonUtils.toJson(tempV);
+                    Map<String,Object> serviceVariables = new HashedMap();
 
                     FlowHistory flowHistory = new FlowHistory();
                     flowHistory.setTaskJsonDef(currentNode.toString());
@@ -133,17 +134,10 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowHistory.setExecutorName("系统自动");
                     flowHistory.setCandidateAccount("");
                     flowHistory.setActStartTime(new Date());
-                    ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    flowHistory.setActEndTime(new Date());
                     flowHistory.setActHistoryId(null);
                     flowHistory.setActTaskDefKey(actTaskDefKey);
                     flowHistory.setPreId(null);
-                    flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-                    if(flowHistory.getActDurationInMillis() == null){
-                        Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
-                        flowHistory.setActDurationInMillis(actDurationInMillis);
-                    }
-                    flowHistoryDao.save(flowHistory);
+
                     FlowTask flowTask = new FlowTask();
                     BeanUtils.copyProperties(flowHistory,flowTask);
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
@@ -151,6 +145,33 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
                     List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+                    List<String> paths = new ArrayList<String>();
+                    if(nodeInfoList!=null && !nodeInfoList.isEmpty()){
+                        for(NodeInfo nodeInfo :nodeInfoList){
+                            if(StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())){
+                                paths.add(nodeInfo.getCallActivityPath());
+                            }
+                        }
+                    }
+                    if(!paths.isEmpty()){
+                        tempV.put("callActivtiySonPaths",paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
+                    }
+                    String param = JsonUtils.toJson(tempV);
+
+                    String  serviceCallResultStr =(String)ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
+                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
+                        serviceVariables.putAll(serviceCallResult);
+                    }
+                    flowHistory.setActEndTime(new Date());
+                    flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
+                    if(flowHistory.getActDurationInMillis() == null){
+                        Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
+                        flowHistory.setActDurationInMillis(actDurationInMillis);
+                    }
+                    flowHistoryDao.save(flowHistory);
+
+
                     List<NodeInfo> results = null;
                     results = nodeInfoList;
                     FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
@@ -196,6 +217,8 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
                     List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
                     if(results !=null &&  !results.isEmpty()){
+                        Map<String,Object> userVarNameMap = new HashMap<>();
+                        List<String> userVarNameList = null;
                         for(NodeInfo nodeInfo:results){
                             if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                                 nodeInfo.setType("EndEvent");
@@ -206,12 +229,17 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                             nextNodes.add(nodeInfo);
                            String taskType = nodeInfo.getFlowTaskType();
                             String uiUserType = nodeInfo.getUiUserType();
-//                            if ("Normal".equalsIgnoreCase(taskType)) {
-//                                nodeInfo.setUserVarName(nodeInfo.getId() + "_Normal");
-//                            } else if ("SingleSign".equalsIgnoreCase(taskType)) {
-//                                nodeInfo.setUserVarName(nodeInfo.getId() + "_SingleSign");
-//                            } else if ("Approve".equalsIgnoreCase(taskType)) {
-//                                nodeInfo.setUserVarName(nodeInfo.getId() + "_Approve");
+                            String callActivityPath = nodeInfo.getCallActivityPath();
+                            String varUserName = nodeInfo.getUserVarName();
+
+                            if (StringUtils.isNotEmpty(callActivityPath)) {
+                                userVarNameList = (List<String>) userVarNameMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
+                                if(userVarNameList==null){
+                                    userVarNameList = new ArrayList<String>();
+                                    userVarNameMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                                }
+                                userVarNameList.add(varUserName);
+                            }
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
                                 IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                                 String currentUserId = ContextUtil.getUserId();
@@ -230,21 +258,32 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                         userIdArray.add(executor.getId());
                                     }
 //                                    nextUserMap.put(nodeInfo.getUserVarName(),userIdArray);
-                                    runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userIdArray);
+                                    if (StringUtils.isNotEmpty(callActivityPath)) {
+                                        userVarNameMap.put(callActivityPath+"/"+varUserName, userIdArray);
+                                    }else {
+                                        userVarNameMap.put(varUserName, userIdArray);
+                                    }
+                                    //runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userIdArray);
                                 }
                             }else {
                                 Set<Executor> executorSet = nodeInfo.getExecutorSet();
                                 if(executorSet != null && !executorSet.isEmpty()){
                                     String userId = ((Executor)executorSet.toArray()[0]).getId();
+                                    if (StringUtils.isNotEmpty(callActivityPath)) {
+                                        userVarNameMap.put(callActivityPath+"/"+varUserName, userId);
+                                    }else {
+                                        userVarNameMap.put(varUserName, userId);
+                                    }
 //                                    nextUserMap.put(nodeInfo.getUserVarName(),userId);
-                                    runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userId);
+                                    //runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userId);
                                 }
                             }
                         }
+                        serviceVariables.putAll(userVarNameMap);
                         runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
                     //    flowDefinationService.initTask();
                     }
-
+                    runtimeService.setVariables(delegateTask.getProcessInstanceId(),serviceVariables);
                     if(!nextNodes.isEmpty()){
                         ExecutionEntity parent = taskEntity.getSuperExecution();
                         if(parent!=null){//针对作为子任务的情况

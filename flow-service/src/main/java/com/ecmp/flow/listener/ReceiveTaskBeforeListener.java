@@ -90,11 +90,6 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                 if (!StringUtils.isEmpty(serviceTaskId)) {
                     Map<String,Object> tempV = delegateTask.getVariables();
                     tempV.put("receiveTaskActDefId",actTaskDefKey);
-                    String param = JsonUtils.toJson(tempV);
-                    boolean result = ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    if(!result){
-                        throw new RuntimeException("调用服务:'"+serviceTaskId+"'失败！");
-                    }
 
                     String flowTaskName = (String) normal.get("name");
                     FlowTask flowTask = new FlowTask();
@@ -125,7 +120,26 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     flowTask.setPreId(null);
                     flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
-                    flowTaskDao.save(flowTask);
+
+                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
+                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+                    FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
+                    List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+                    List<String> paths = new ArrayList<String>();
+                    if(nodeInfoList!=null && !nodeInfoList.isEmpty()){
+                         for(NodeInfo nodeInfo :nodeInfoList){
+                             if(StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())){
+                                 paths.add(nodeInfo.getCallActivityPath());
+                             }
+                         }
+                    }
+                    if(!paths.isEmpty()){
+                        tempV.put("callActivtiySonPaths",paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
+                    }
+
+                    String param = JsonUtils.toJson(tempV);
+                   ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                   flowTaskDao.save(flowTask);
 
                 }else{
                     throw new RuntimeException("服务地址不能为空！");

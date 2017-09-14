@@ -171,7 +171,6 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 FlowTask flowTaskTempSrc = new FlowTask();
                 org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTempSrc);
                 //针对子流程结束，循环向上查找父任务下一步的节点执行人信息
-                //针对子流程结束，循环向上查找父任务下一步的节点执行人信息
                 while (parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
                     FlowTask flowTaskTemp = new FlowTask();
                     org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc,flowTaskTemp);
@@ -180,15 +179,9 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                             .createProcessInstanceQuery()
                             .processInstanceId(flowTaskTemp.getFlowInstance().getActInstanceId())
                             .singleResult();
-
                     flowTaskTemp.setFlowInstance(parentFlowInstance);
                     // 取得流程实例
-
                     String superExecutionId = instanceSon.getSuperExecutionId();
-//                        ProcessInstance instanceParent = runtimeService
-//                                .createProcessInstanceQuery()
-//                                .processInstanceId(parentFlowInstance.getActInstanceId())
-//                                .singleResult();
                     HistoricActivityInstance historicActivityInstance = null;
                     HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
                             .executionId(superExecutionId).activityType("callActivity").unfinished();
@@ -213,6 +206,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 
                     List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
                     if(results !=null &&  !results.isEmpty()){
+                        Map<String,Object> userVarNameMap = new HashMap<>();
+                        List<String> userVarNameList = null;
                         for(NodeInfo nodeInfo:results){
                             if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                                 nodeInfo.setType("EndEvent");
@@ -223,6 +218,18 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                             nextNodes.add(nodeInfo);
                            String taskType = nodeInfo.getFlowTaskType();
                             String uiUserType = nodeInfo.getUiUserType();
+                            String callActivityPath = nodeInfo.getCallActivityPath();
+                            String varUserName = nodeInfo.getUserVarName();
+
+                            if (StringUtils.isNotEmpty(callActivityPath)) {
+                                userVarNameList = (List<String>) userVarNameMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
+                                if(userVarNameList==null){
+                                    userVarNameList = new ArrayList<String>();
+                                    userVarNameMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                                }
+                                userVarNameList.add(varUserName);
+
+                            }
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
                                 IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                                 String currentUserId = ContextUtil.getUserId();
@@ -240,17 +247,29 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                                     for(Executor executor:executorSet){
                                         userIdArray.add(executor.getId());
                                     }
-                                    runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userIdArray);
+                                    if (StringUtils.isNotEmpty(callActivityPath)) {
+                                        userVarNameMap.put(callActivityPath+"/"+varUserName, userIdArray);
+                                    }else {
+                                        userVarNameMap.put(varUserName, userIdArray);
+                                    }
+
+                                   // runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userIdArray);
                                 }
                             }else {
                                 Set<Executor> executorSet = nodeInfo.getExecutorSet();
                                 if(executorSet != null && !executorSet.isEmpty()){
                                     String userId = ((Executor)executorSet.toArray()[0]).getId();
-                                    runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userId);
+
+                                    if (StringUtils.isNotEmpty(callActivityPath)) {
+                                        userVarNameMap.put(callActivityPath+"/"+varUserName, userId);
+                                    }else {
+                                        userVarNameMap.put(varUserName, userId);
+                                    }
+                                   // runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userId);
                                 }
                             }
                         }
-
+                        runtimeService.setVariables(delegateTask.getProcessInstanceId(),userVarNameMap);
                         runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds", nextNodes);
                     }
                 if(!nextNodes.isEmpty()){
