@@ -105,6 +105,12 @@ public class StartEventCompleteListener implements ExecutionListener {
             variables.putAll(variablesParent);
             delegateTask.setVariables(variables);
             String parentDefinitionKey =  parentProcessInstance.getProcessDefinitionKey();
+            if(StringUtils.isEmpty(parentDefinitionKey)){
+                // 取得流程定义
+                ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                        .getDeployedProcessDefinition( parentProcessInstance.getProcessDefinitionId());                   ;
+                parentDefinitionKey = definition.getKey();
+            }
             FlowDefination flowDefinationParent = flowDefinationDao.findByDefKey(parentDefinitionKey);
             String definitionKey =  processInstance.getProcessDefinitionKey();
             FlowDefination flowDefination = flowDefinationDao.findByDefKey(definitionKey);
@@ -117,8 +123,8 @@ public class StartEventCompleteListener implements ExecutionListener {
             List<String> userVarNameList = (List)delegateTask.getVariable(sonBusinessVNameBuff+"_sonProcessSelectNodeUserV");
             if(userVarNameList!=null && !userVarNameList.isEmpty()){
                 for(String userVarName :userVarNameList){
-                    String value = (String) delegateTask.getVariable(sonBusinessVNameBuff+"/"+userVarName);
-                    delegateTask.setVariable(userVarName,value);
+                   Object userValue = delegateTask.getVariable(sonBusinessVNameBuff+"/"+userVarName);
+                    delegateTask.setVariable(userVarName,userValue);
 //                    delegateTask.removeVariable(callActivityPath+"/"+userVarName);
                 }
 //                variablesParent.remove(callActivityPath+"_sonProcessSelectNodeUserV");
