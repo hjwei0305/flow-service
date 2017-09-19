@@ -2,7 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -11,7 +10,6 @@ import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,11 +52,11 @@ public class WorkPageUrlController {
      */
     @RequestMapping(value = "listWorkPageUrl")
     @ResponseBody
-    public String listWorkPageUrl(ServletRequest request) throws ParseException {
+    public PageResult listWorkPageUrl(ServletRequest request) throws ParseException {
         Search searchConfig = SearchUtil.genSearch(request);
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         PageResult<WorkPageUrl> workPageUrlPage = proxy.findByPage(searchConfig);
-        return JsonUtil.serialize(workPageUrlPage);
+        return workPageUrlPage;
     }
 
     /**
@@ -68,11 +66,11 @@ public class WorkPageUrlController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -81,11 +79,11 @@ public class WorkPageUrlController {
      */
     @RequestMapping(value = "listAllAppModule")
     @ResponseBody
-    public String listAllAppModule(){
+    public OperateStatus listAllAppModule(){
         com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
         List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -95,11 +93,11 @@ public class WorkPageUrlController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String update(WorkPageUrl workPageUrl) {
+    public OperateStatus update(WorkPageUrl workPageUrl) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         OperateResultWithData<WorkPageUrl> result = proxy.save(workPageUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 }

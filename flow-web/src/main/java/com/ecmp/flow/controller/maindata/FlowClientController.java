@@ -3,30 +3,21 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.api.common.api.IBaseService;
-import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -51,12 +42,12 @@ public class FlowClientController {
      */
     @RequestMapping(value = "claimTask")
     @ResponseBody
-    public String claimTask(String taskId){
+    public OperateStatus claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -69,12 +60,12 @@ public class FlowClientController {
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public String rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
+    public OperateStatus rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -86,12 +77,12 @@ public class FlowClientController {
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public String rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -103,7 +94,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "nextNodesInfo")
     @ResponseBody
-    public String nextNodesInfo(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfo(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
@@ -113,7 +104,7 @@ public class FlowClientController {
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -124,7 +115,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
@@ -148,7 +139,7 @@ public class FlowClientController {
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -159,7 +150,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "nextNodesInfoWithUser")
     @ResponseBody
-    public String nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
@@ -169,7 +160,7 @@ public class FlowClientController {
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -180,7 +171,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "getApprovalHeaderInfo")
     @ResponseBody
-    public String getApprovalHeaderInfo(String taskId) {
+    public OperateStatus getApprovalHeaderInfo(String taskId) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
@@ -190,7 +181,7 @@ public class FlowClientController {
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -202,12 +193,12 @@ public class FlowClientController {
      */
     @RequestMapping(value = "validateExpression")
     @ResponseBody
-    public String validateExpression(String flowTypeId,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+    public OperateStatus validateExpression(String flowTypeId,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
             InvocationTargetException{
         OperateStatus operateStatus = null;
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         OperateResultWithData<FlowDefination> result= proxy.validateExpression(flowTypeId,expression);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }

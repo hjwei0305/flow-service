@@ -3,19 +3,22 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.*;
-import com.ecmp.flow.entity.*;
+import com.ecmp.flow.api.IFlowDefVersionService;
+import com.ecmp.flow.api.IFlowHistoryService;
+import com.ecmp.flow.api.IFlowInstanceService;
+import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.vo.OperateResult;
-import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,11 +63,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "listFlowInstance")
     @ResponseBody
-    public String listFlowInstance(ServletRequest request) throws JsonProcessingException, ParseException {
+    public PageResult<FlowInstance> listFlowInstance(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowInstancePageResult,JsonUtil.DATE_TIME);
+        return flowInstancePageResult;
     }
 
     /**
@@ -74,11 +77,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -90,11 +93,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "listFlowHistory")
     @ResponseBody
-    public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
+    public PageResult<FlowHistory> listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowHistoryPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowHistoryPageResult,JsonUtil.DATE_TIME);
+        return flowHistoryPageResult;
     }
 
     /**
@@ -103,11 +106,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "listAllFlowDefVersion")
     @ResponseBody
-    public String listAllFlowDefVersion() {
+    public OperateStatus listAllFlowDefVersion() {
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         List<FlowDefVersion> flowDefVersions = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowDefVersions);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -117,7 +120,7 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "getMyBills")
     @ResponseBody
-    public String getMyBills(ServletRequest request)  throws JsonProcessingException, ParseException{
+    public PageResult<MyBillVO> getMyBills(ServletRequest request)  throws JsonProcessingException, ParseException{
         String creatorId = ContextUtil.getUserId();
         Search search = SearchUtil.genSearch(request);
         SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
@@ -171,7 +174,7 @@ public class FlowInstanceController {
         results.setRecords(flowInstancePageResult.getRecords());
         results.setPage(flowInstancePageResult.getPage());
         results.setTotal(flowInstancePageResult.getTotal());
-        return JsonUtil.serialize(results,JsonUtil.DATE_TIME);
+        return results;
     }
 
     /**
@@ -181,11 +184,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "endFlowInstance")
     @ResponseBody
-    public String endFlowInstance(String id) {
+    public OperateStatus endFlowInstance(String id) {
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult result = proxy.end(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
     /**
      * 根据单据业务id终止流程实例，用于我的待办单据
@@ -194,11 +197,11 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "endFlowInstanceByBusinessId")
     @ResponseBody
-    public String endFlowInstanceByBusinessId(String businessId) {
+    public OperateStatus endFlowInstanceByBusinessId(String businessId) {
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult result = proxy.endByBusinessId(businessId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -210,10 +213,10 @@ public class FlowInstanceController {
      */
     @RequestMapping(value = "listFlowTypeByBusinessModelId")
     @ResponseBody
-    public String listFlowTypeByBusinessModelId(String businessModelId) throws JsonProcessingException, ParseException {
+    public OperateStatus listFlowTypeByBusinessModelId(String businessModelId) throws JsonProcessingException, ParseException {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         List<FlowType> flowTypeList = proxy.findByBusinessModelId(businessModelId);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, flowTypeList);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }

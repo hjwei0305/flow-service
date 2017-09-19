@@ -2,33 +2,16 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
-import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.api.IFlowInstanceService;
-import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.vo.FlowHandleHistoryVO;
-import com.ecmp.flow.vo.FlowHandleStatusVO;
-import com.ecmp.flow.vo.FlowHistoryInfoVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
-import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletRequest;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
 
 
 /**
@@ -148,7 +131,7 @@ public class FlowHistoryComponentController {
 //    }
     @RequestMapping(value = "getFlowHistoryInfo")
     @ResponseBody
-    public String getFlowHistoryInfo(String businessId,String instanceId) throws JsonProcessingException {
+    public List<ProcessTrackVO> getFlowHistoryInfo(String businessId,String instanceId) throws JsonProcessingException {
         List<ProcessTrackVO> result = null;
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         if(StringUtils.isNotEmpty(instanceId)){
@@ -157,6 +140,6 @@ public class FlowHistoryComponentController {
             result = proxy.getProcessTrackVO(businessId);
         }
 
-        return JsonUtil.serialize(result, JsonUtil.DATE_TIME);
+        return result;
     }
 }

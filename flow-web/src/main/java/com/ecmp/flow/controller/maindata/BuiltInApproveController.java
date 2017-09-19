@@ -2,7 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
@@ -113,7 +112,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
@@ -194,7 +193,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -210,7 +209,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -290,16 +289,16 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     @RequestMapping(value = "testReciveTask")
     @ResponseBody
-    public String testReciveTask(String businessId,String fReceiveTaskActDefId){
+    public OperateStatus testReciveTask(String businessId,String fReceiveTaskActDefId){
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         OperateResult operateResult = proxy.signalByBusinessId(businessId,fReceiveTaskActDefId,null);
         OperateStatus   operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }
 

@@ -2,11 +2,8 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowTaskService;
@@ -14,7 +11,6 @@ import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
-import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -71,7 +67,7 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
+    public PageResult<FlowTask> listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String modelId = request.getParameter("modelId");
 //        if("admin".equalsIgnoreCase(account)){
@@ -121,7 +117,7 @@ public class FlowTaskController {
             }
         }
 
-        return JsonUtil.serialize(flowTaskPageResult,JsonUtil.DATE_TIME);
+        return flowTaskPageResult;
     }
 
     /**
@@ -133,12 +129,12 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "listFlowTaskHeader")
     @ResponseBody
-    public String listFlowTaskHeader(ServletRequest request) throws JsonProcessingException, ParseException {
+    public OperateStatus listFlowTaskHeader(ServletRequest request) throws JsonProcessingException, ParseException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<TodoBusinessSummaryVO>  result = proxy.findTaskSumHeader();
         status.setData(result);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
 
@@ -149,7 +145,7 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String id)  {
+    public OperateStatus completeTask(String id)  {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("intput","2");
@@ -159,7 +155,7 @@ public class FlowTaskController {
         flowTaskCompleteVO.setVariables(variables);
         OperateResultWithData result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -169,7 +165,7 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public String rejectTask(String id)  {
+    public OperateStatus rejectTask(String id)  {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("reject",1);
@@ -179,6 +175,6 @@ public class FlowTaskController {
         flowTaskCompleteVO.setVariables(variables);
         OperateResultWithData result = proxy.complete(flowTaskCompleteVO);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
-        return JsonUtil.serialize(status);
+        return status;
     }
 }

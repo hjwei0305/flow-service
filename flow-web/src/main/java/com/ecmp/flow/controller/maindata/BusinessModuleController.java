@@ -2,7 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -62,11 +61,11 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "listBusinessModel")
     @ResponseBody
-    public String listBusinessModel(ServletRequest request) throws ParseException {
+    public PageResult<BusinessModel> listBusinessModel(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         PageResult<BusinessModel> businessModelPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(businessModelPageResult);
+        return businessModelPageResult;
     }
 
     /**
@@ -78,11 +77,11 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -92,11 +91,11 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "listAllAppModule")
     @ResponseBody
-    public String listAllAppModule() {
+    public OperateStatus listAllAppModule() {
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
         List<AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -107,11 +106,11 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(BusinessModel businessModel) {
+    public OperateStatus save(BusinessModel businessModel) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResultWithData<BusinessModel> result = proxy.save(businessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -154,11 +153,11 @@ public class BusinessModuleController {
 
     @RequestMapping(value = "saveSetWorkPage")
     @ResponseBody
-    public String saveSetWorkPage(String id, String selectWorkPageIds) {
+    public OperateStatus saveSetWorkPage(String id, String selectWorkPageIds) {
         IBusinessWorkPageUrlService proxy = ApiClient.createProxy(IBusinessWorkPageUrlService.class);
         proxy.saveBusinessWorkPageUrlByIds(id, selectWorkPageIds);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -169,10 +168,10 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "getPropertiesForConditionPojo")
     @ResponseBody
-    public String getPropertiesForConditionPojo(String conditonPojoClassName) throws  ClassNotFoundException {
+    public Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws  ClassNotFoundException {
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
-        return JsonUtil.serialize(result);
+        return result;
     }
 
     /**
@@ -183,11 +182,11 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "listBusinessModuleByAppModelId")
     @ResponseBody
-    public String listBusinessModuleByAppModelId(String appModuleId) throws  ClassNotFoundException {
+    public OperateStatus listBusinessModuleByAppModelId(String appModuleId) throws  ClassNotFoundException {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findByAppModuleId(appModuleId);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 }

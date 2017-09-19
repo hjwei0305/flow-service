@@ -2,24 +2,14 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
-import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
-import com.ecmp.vo.OperateResult;
-import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.ServletRequest;
-import java.text.ParseException;
 
 /**
  * *************************************************************************************************
@@ -59,12 +49,12 @@ public class LookApproveBillController {
 
     @RequestMapping(value = "getApproveBill")
     @ResponseBody
-    public String getApproveBill(String id) throws JsonProcessingException {
+    public OperateStatus getApproveBill(String id) throws JsonProcessingException {
        // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
         IDefaultBusinessModelService proxy = ApiClient.createProxy(IDefaultBusinessModelService.class);
         DefaultBusinessModel result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
-        return JsonUtil.serialize(status,JsonUtil.DATE_TIME);
+        return status;
     }
 }
 

@@ -2,33 +2,29 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.*;
+import com.ecmp.flow.api.IDefaultBusinessModel2Service;
+import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.entity.*;
+import com.ecmp.flow.entity.DefaultBusinessModel;
+import com.ecmp.flow.entity.DefaultBusinessModel2;
+import com.ecmp.flow.entity.DefaultBusinessModel3;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
-import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,12 +113,12 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
 
     @RequestMapping(value = "getApproveBill2")
     @ResponseBody
-    public String getApproveBill2(String id) throws JsonProcessingException {
+    public OperateStatus getApproveBill2(String id) throws JsonProcessingException {
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
         IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         DefaultBusinessModel2 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
-        return JsonUtil.serialize(status, JsonUtil.DATE_TIME);
+        return status;
     }
 
 
@@ -134,7 +130,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
@@ -214,7 +210,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -230,7 +226,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -310,7 +306,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 }

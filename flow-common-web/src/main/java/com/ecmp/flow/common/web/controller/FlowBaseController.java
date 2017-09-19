@@ -2,7 +2,6 @@ package com.ecmp.flow.common.web.controller;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -14,7 +13,6 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
-import io.swagger.annotations.OAuth2Definition;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -66,11 +64,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "list")
     @ResponseBody
-    public String list(ServletRequest request) {
+    public PageResult list(ServletRequest request) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         Search search = SearchUtil.genSearch(request);
         PageResult<V> defaultBusinessModelPageResult = baseService.findByPage(search);
-        return JsonUtil.serialize(defaultBusinessModelPageResult);
+        return defaultBusinessModelPageResult;
     }
 
     /**
@@ -81,11 +79,11 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateResult result = baseService.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -97,14 +95,14 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(V defaultBusinessModel) {
+    public OperateStatus save(V defaultBusinessModel) {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         if(defaultBusinessModel.getFlowStatus()==null){
             defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
         }
         OperateResultWithData<V> result = baseService.save(defaultBusinessModel);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -115,7 +113,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
+    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
@@ -171,7 +169,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -182,12 +180,12 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public String claimTask(String taskId){
+    public OperateStatus claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 //    /**
@@ -251,7 +249,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
 //        } else {
 //            operateStatus = new OperateStatus(false, "业务对象不存在");
 //        }
-//        return JsonUtil.serialize(operateStatus);
+//        return operateStatus;
 //    }
 
     /**
@@ -263,12 +261,12 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public String rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
+    public OperateStatus rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -280,12 +278,12 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public String rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -297,7 +295,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "nextNodesInfo")
     @ResponseBody
-    public String nextNodesInfo(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfo(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
@@ -307,7 +305,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -318,7 +316,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public String getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
@@ -342,7 +340,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -353,7 +351,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "nextNodesInfoWithUser")
     @ResponseBody
-    public String nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
@@ -363,7 +361,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -374,7 +372,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "getApprovalHeaderInfo")
     @ResponseBody
-    public String getApprovalHeaderInfo(String taskId) {
+    public OperateStatus getApprovalHeaderInfo(String taskId) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
@@ -384,7 +382,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
         } else {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 

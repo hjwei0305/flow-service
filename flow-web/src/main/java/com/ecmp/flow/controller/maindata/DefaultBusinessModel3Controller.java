@@ -2,9 +2,10 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.*;
+import com.ecmp.flow.api.IDefaultBusinessModel3Service;
+import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
@@ -113,12 +114,12 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
 
     @RequestMapping(value = "getApproveBill3")
     @ResponseBody
-    public String getApproveBill3(String id) throws JsonProcessingException {
+    public OperateStatus getApproveBill3(String id) throws JsonProcessingException {
         // id="0C0E00EA-3AC2-11E7-9AC5-3C970EA9E0F7";
         IDefaultBusinessModel3Service proxy = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
         DefaultBusinessModel3 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true,OperateStatus.COMMON_SUCCESS_MSG,result);
-        return JsonUtil.serialize(status,JsonUtil.DATE_TIME);
+        return status;
     }
 
 
@@ -130,7 +131,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public String startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel3 defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
@@ -210,7 +211,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
 
@@ -226,7 +227,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public String completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -306,7 +307,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }
 

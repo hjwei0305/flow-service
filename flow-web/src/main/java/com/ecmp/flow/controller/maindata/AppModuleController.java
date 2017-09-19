@@ -3,7 +3,6 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -62,13 +61,13 @@ public class AppModuleController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) throws JsonProcessingException {
+    public OperateStatus delete(String id) throws JsonProcessingException {
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
         OperateResult result = proxy.delete(id);
         boolean success = result.successful();
         String msg = result.getMessage();
         OperateStatus operateStatus = new OperateStatus(success, msg);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -80,11 +79,11 @@ public class AppModuleController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(AppModule appModule) throws JsonProcessingException {
+    public OperateStatus save(AppModule appModule) throws JsonProcessingException {
         IAppModuleService proxy = ApiClient.createProxy(IAppModuleService.class);
         OperateResultWithData<AppModule> result = proxy.save(appModule);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(), result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -94,11 +93,11 @@ public class AppModuleController {
      */
     @RequestMapping(value = "listAllForComboBox")
     @ResponseBody
-    public String listAllForComboBox() {
+    public OperateStatus listAllForComboBox() {
         IAppModuleService appModuleService = ApiClient.createProxy(IAppModuleService.class);
         List<AppModule> appModuleList = appModuleService.findAll();
         OperateStatus operateStatus = new OperateStatus(true, "操作成功", appModuleList);
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
 
     }
 }

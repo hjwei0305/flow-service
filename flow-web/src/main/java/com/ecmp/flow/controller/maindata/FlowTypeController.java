@@ -2,7 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -55,7 +54,7 @@ public class FlowTypeController {
      */
     @RequestMapping(value = "listFlowType")
     @ResponseBody
-    public String listFlowType(ServletRequest request) throws  ParseException {
+    public PageResult<FlowType> listFlowType(ServletRequest request) throws  ParseException {
         Search search = SearchUtil.genSearch(request);
         //根据代码、名称、模块名
         search.addQuickSearchProperty("code");
@@ -63,7 +62,7 @@ public class FlowTypeController {
         search.addQuickSearchProperty("businessModel.name");
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         PageResult<FlowType> flowTypePageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowTypePageResult);
+        return flowTypePageResult;
     }
 
     /**
@@ -73,11 +72,11 @@ public class FlowTypeController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -89,7 +88,7 @@ public class FlowTypeController {
     public List<BusinessModel> listAllBusinessModel() {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         List<BusinessModel> businessModelList = proxy.findAll();
-        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
+//        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, businessModelList);
         return businessModelList;
     }
 
@@ -100,10 +99,10 @@ public class FlowTypeController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(FlowType flowType) {
+    public OperateStatus save(FlowType flowType) {
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResultWithData<FlowType> result = proxy.save(flowType);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage(),result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }

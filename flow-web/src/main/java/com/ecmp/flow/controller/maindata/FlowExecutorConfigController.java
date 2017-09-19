@@ -2,7 +2,6 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
@@ -73,11 +72,11 @@ public class FlowExecutorConfigController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IFlowExecutorConfigService proxy = ApiClient.createProxy(IFlowExecutorConfigService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -87,10 +86,10 @@ public class FlowExecutorConfigController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(FlowExecutorConfig flowExecutorConfig) {
+    public OperateStatus save(FlowExecutorConfig flowExecutorConfig) {
         IFlowExecutorConfigService proxy = ApiClient.createProxy(IFlowExecutorConfigService.class);
         OperateResultWithData<FlowExecutorConfig> result = proxy.save(flowExecutorConfig);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage(),result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }

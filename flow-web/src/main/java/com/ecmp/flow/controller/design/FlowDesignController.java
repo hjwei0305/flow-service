@@ -7,7 +7,6 @@ import com.ecmp.basic.entity.Position;
 import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -24,10 +23,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
@@ -36,7 +33,6 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -74,7 +70,7 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    public String save(String def, boolean deploy) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException {
+    public OperateStatus save(String def, boolean deploy) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException {
         OperateStatus status = OperateStatus.defaultSuccess();
         JSONObject defObj = JSONObject.fromObject(def);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -82,7 +78,7 @@ public class FlowDesignController {
         String reg="^[a-zA-Z][A-Za-z0-9]{5,79}$";
         if(!id.matches(reg)){
             status=new OperateStatus(false, ContextUtil.getMessage("10001"));
-            return JsonUtil.serialize(status);
+            return status;
         }
         definition.setDefJson(def);
         if (!deploy) {
@@ -102,7 +98,7 @@ public class FlowDesignController {
             status.setMsg(result.getMessage());
             status.setData(result);
         }
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -114,12 +110,12 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "getProperties", method = RequestMethod.POST)
-    public String getProperties(String businessModelId) throws ClassNotFoundException {
+    public OperateStatus getProperties(String businessModelId) throws ClassNotFoundException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
         Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
         status.setData(result);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
 
@@ -131,12 +127,12 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listAllWorkPage", method = RequestMethod.POST)
-    public String listAllWorkPage(String businessModelId) {
+    public OperateStatus listAllWorkPage(String businessModelId) {
         OperateStatus status = OperateStatus.defaultSuccess();
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelId);
         status.setData(result);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -147,12 +143,12 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "getEntity", method = RequestMethod.POST)
-    public String getEntity(String id, int versionCode) {
+    public OperateStatus getEntity(String id, int versionCode) {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         FlowDefVersion data = proxy.getFlowDefVersion(id, versionCode);
         status.setData(data);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -163,12 +159,12 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "getEntityByVersionId", method = RequestMethod.POST)
-    public String getEntity(String flowDefVersionId) {
+    public OperateStatus getEntity(String flowDefVersionId) {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowDefVersionService proxy = ApiClient.createProxy(IFlowDefVersionService.class);
         FlowDefVersion data = proxy.findOne(flowDefVersionId);
         status.setData(data);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -208,12 +204,12 @@ public class FlowDesignController {
      */
     @RequestMapping(value = "listAllServiceUrl")
     @ResponseBody
-    public String listServiceUrl(String busModelId) throws ParseException {
+    public OperateStatus listServiceUrl(String busModelId) throws ParseException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         List<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByBusinessModelId(busModelId);
         status.setData(flowServiceUrlPageResult);
-        return JsonUtil.serialize(status);
+        return status;
     }
 
     /**
@@ -224,7 +220,7 @@ public class FlowDesignController {
      */
     @RequestMapping(value = "getLookInfo")
     @ResponseBody
-    public String getLookInfo(String id, String instanceId) {
+    public OperateStatus getLookInfo(String id, String instanceId) {
         OperateStatus status = OperateStatus.defaultSuccess();
         FlowDefVersion def = null;
         Map<String, Object> data = new HashedMap();
@@ -248,6 +244,6 @@ public class FlowDesignController {
             data.put("currentNodes", "[]");
         }
         status.setData(data);
-        return JsonUtil.serialize(status);
+        return status;
     }
 }

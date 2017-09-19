@@ -2,25 +2,21 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IFlowServiceUrlService;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
 import java.text.ParseException;
-import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -55,11 +51,11 @@ public class FlowServiceUrlController {
      */
     @RequestMapping(value = "listServiceUrl")
     @ResponseBody
-    public String listServiceUrl(ServletRequest request) throws ParseException {
+    public PageResult<FlowServiceUrl> listServiceUrl(ServletRequest request) throws ParseException {
         Search search = SearchUtil.genSearch(request);
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         PageResult<FlowServiceUrl> flowServiceUrlPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowServiceUrlPageResult);
+        return flowServiceUrlPageResult;
     }
 
     /**
@@ -69,11 +65,11 @@ public class FlowServiceUrlController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public String delete(String id) {
+    public OperateStatus delete(String id) {
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 
     /**
@@ -83,10 +79,10 @@ public class FlowServiceUrlController {
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public String save(FlowServiceUrl flowServiceUrl) {
+    public OperateStatus save(FlowServiceUrl flowServiceUrl) {
         IFlowServiceUrlService proxy = ApiClient.createProxy(IFlowServiceUrlService.class);
         OperateResultWithData<FlowServiceUrl> result = proxy.save(flowServiceUrl);
         OperateStatus operateStatus = new OperateStatus(result.successful(),result.getMessage(),result.getData());
-        return JsonUtil.serialize(operateStatus);
+        return operateStatus;
     }
 }

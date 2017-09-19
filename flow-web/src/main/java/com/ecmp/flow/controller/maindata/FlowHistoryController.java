@@ -3,18 +3,13 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.json.JsonUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.search.SearchUtil;
-import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowHistoryService;
-import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +54,7 @@ public class FlowHistoryController extends FlowBaseController{
      */
     @RequestMapping(value = "listFlowHistory")
     @ResponseBody
-    public String listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
+    public PageResult<FlowHistory> listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String executorId = ContextUtil.getUserId();
 //        if("admin".equalsIgnoreCase(account)){
@@ -74,7 +69,7 @@ public class FlowHistoryController extends FlowBaseController{
         search.addQuickSearchProperty("creatorName");
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
         PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
-        return JsonUtil.serialize(flowTaskPageResult, JsonUtil.DATE_TIME);
+        return flowTaskPageResult;
     }
 
 }
