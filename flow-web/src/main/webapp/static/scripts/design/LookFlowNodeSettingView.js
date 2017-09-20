@@ -216,7 +216,36 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }];
         }
-        if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"&&this.nodeType!="CallActivity") {
+        if (this.nodeType == "CounterSign") {
+            items = items.concat([{
+                xtype: "NumberField",
+                title: "会签决策",
+                labelWidth: 100,
+                unit: "%",
+                minValue: 1,
+                maxValue: 100.1,
+                minValueText: "最低通过比例为1%",
+                maxValueText: "最高通过比例为100%",
+                displayText: "请输入会签通过的百分比1%—100%",
+                allowNegative: false,
+                allowBlank: false,
+                name: "counterDecision"
+            }, {
+                xtype: "RadioBoxGroup",
+                name: "isSequential",
+                title: "执行策略",
+                labelWidth: 100,
+                items: [{
+                    title: "并行",
+                    name: false,
+                    checked: true
+                }, {
+                    title: "串行",
+                    name: true
+                }]
+            }]);
+        }
+        else if (this.nodeType != "CounterSign"&&this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"&&this.nodeType!="CallActivity") {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",

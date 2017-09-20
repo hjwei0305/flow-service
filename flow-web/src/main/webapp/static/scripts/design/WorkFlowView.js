@@ -909,11 +909,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
 
                     }
                     var type = $("#" + connection.sourceId).attr("type");
+                    var nodeType = $("#" + connection.sourceId).attr("nodetype");
                     var busType = $("#" + connection.targetId).attr("bustype");
-                    if (type == "StartEvent" && busType == "ManualExclusiveGateway") {
+                    var name=$("#" + connection.sourceId).children(".node-title").text();
+                    if ((type == "StartEvent"||nodeType=="CallActivity") && busType == "ManualExclusiveGateway") {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: "开始任务后禁止连接人工网关"
+                            msg: name + "任务后禁止连接人工网关"
                         });
                         jsPlumb.detach(connection);
                         delete g.uelInfo[connection.sourceId + "," + connection.targetId]
