@@ -66,7 +66,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<T> save(T entity);
+    OperateResultWithData<T> save(T entity) throws Exception;
 
 //    /**
 //     * 删除一个实体
@@ -101,7 +101,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID删除实体",notes = "测试 通过ID删除实体")
-    public OperateResult delete(ID id);
+    public OperateResult delete(ID id) throws Exception;
 
     /**
      * 通过ID集合批量删除实体
@@ -112,7 +112,7 @@ public interface IBaseService<T extends Persistable<? extends Serializable>, ID 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID集合删除实体集",notes = "测试 通过ID集合删除实体集")
-    public void delete(Collection<ID> ids);
+    public void delete(Collection<ID> ids) throws Exception;
 
     /**
      * 获取分页数据

@@ -79,7 +79,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public OperateStatus delete(String id) {
+    public OperateStatus delete(String id) throws Exception{
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateResult result = baseService.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
@@ -95,7 +95,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "save")
     @ResponseBody
-    public OperateStatus save(V defaultBusinessModel) {
+    public OperateStatus save(V defaultBusinessModel) throws Exception{
         IBaseService baseService = ApiClient.createProxy(apiClass);
         if(defaultBusinessModel.getFlowStatus()==null){
             defaultBusinessModel.setFlowStatus(FlowStatus.INIT);
@@ -113,7 +113,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
+    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws Exception{
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
@@ -180,7 +180,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
-    public OperateStatus claimTask(String taskId){
+    public OperateStatus claimTask(String taskId)throws Exception{
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
@@ -261,7 +261,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public OperateStatus rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
+    public OperateStatus rollBackTo(String preTaskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);
@@ -278,7 +278,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public OperateStatus rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
@@ -295,7 +295,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "nextNodesInfo")
     @ResponseBody
-    public OperateStatus nextNodesInfo(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfo(String taskId) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
@@ -316,7 +316,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
@@ -351,7 +351,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      */
     @RequestMapping(value = "nextNodesInfoWithUser")
     @ResponseBody
-    public OperateStatus nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfoWithUser(String taskId) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
@@ -394,7 +394,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      * @param defaultBusinessModel3List
      * @param flowStatus
      */
-    protected void initCallActivityBusinessStatus(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, FlowStatus flowStatus) {
+    protected void initCallActivityBusinessStatus(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, FlowStatus flowStatus) throws Exception{
         IDefaultBusinessModelService defaultBusinessModelService = ApiClient.createProxy(IDefaultBusinessModelService.class);
         IDefaultBusinessModel2Service defaultBusinessModel2Service = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         IDefaultBusinessModel3Service defaultBusinessModel3Service = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
@@ -427,7 +427,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
      * @param variables
      * @param parentBusinessModel
      */
-    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, Map<String, String> callActivityPathMap, Map<String, Object> variables, IBusinessFlowEntity parentBusinessModel) {
+    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, Map<String, String> callActivityPathMap, Map<String, Object> variables, IBusinessFlowEntity parentBusinessModel) throws Exception{
         IDefaultBusinessModelService defaultBusinessModelService = ApiClient.createProxy(IDefaultBusinessModelService.class);
         IDefaultBusinessModel2Service defaultBusinessModel2Service = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         IDefaultBusinessModel3Service defaultBusinessModel3Service = ApiClient.createProxy(IDefaultBusinessModel3Service.class);

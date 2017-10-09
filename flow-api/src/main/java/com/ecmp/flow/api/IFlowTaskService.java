@@ -49,7 +49,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "签收任务",notes = "测试")
-    public OperateResult claim(@PathParam("id") String id, @PathParam("userId")String userId);
+    public OperateResult claim(@PathParam("id") String id, @PathParam("userId")String userId) throws Exception;
 
 //    /**
 //     * 完成任务
@@ -74,7 +74,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO);
+    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
 
 
     /**
@@ -89,7 +89,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
-    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion) throws CloneNotSupportedException;
+    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion) throws Exception;
 
     /**
      * 驳回任务（动态驳回）
@@ -103,7 +103,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "驳回任务（动态驳回）",notes = "测试")
-    public OperateResult taskReject(@PathParam("id")String id,@PathParam("opinion")String opinion, Map<String, Object> variables);
+    public OperateResult taskReject(@PathParam("id")String id,@PathParam("opinion")String opinion, Map<String, Object> variables)throws Exception;
 
     /**
      * 获取分页数据
@@ -142,7 +142,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
-    public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
+    public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws Exception;
 
     /**
      * 根据流程实例ID查询待办
@@ -167,7 +167,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
-    public List<NodeInfo> findNextNodes(@PathParam("id")String id) throws NoSuchMethodException;
+    public List<NodeInfo> findNextNodes(@PathParam("id")String id) throws Exception;
 
 
 //    /**
@@ -196,7 +196,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id) throws NoSuchMethodException;
+    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id) throws Exception;
 
 
     /**
@@ -212,7 +212,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id,@PathParam("approved")String approved,List<String> includeNodeIds) throws NoSuchMethodException;
+    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id,@PathParam("approved")String approved,List<String> includeNodeIds) throws Exception;
 
     /**
      * 获取当前流程抬头信息

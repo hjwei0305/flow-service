@@ -52,7 +52,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<FlowDefination> save(FlowDefination flowDefination);
+    OperateResultWithData<FlowDefination> save(FlowDefination flowDefination) throws Exception;
 
     /**
      * 获取分页数据
@@ -103,7 +103,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体,附加启动ID",notes = "测试")
-    public FlowInstance startById(@PathParam("id") String id,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id") String id,@PathParam("businessKey")String businessKey, Map<String, Object> variables) throws Exception;
 
     /**
      * 通过ID启动流程实体
@@ -118,7 +118,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体",notes = "测试")
-    public FlowInstance startById(@PathParam("id")String id,@PathParam("startUserId")String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id")String id,@PathParam("startUserId")String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables) throws Exception;
 
     /**
      * 通过Key启动流程实体
@@ -132,7 +132,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体",notes = "测试")
-    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("businessKey")String businessKey, Map<String, Object> variables) throws Exception;
 
     /**
      * 通过Key启动流程实体
@@ -147,7 +147,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
-    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables) throws Exception;
 
 
 
@@ -188,7 +188,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过vo对象启动流程实体",notes = "测试")
-    public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException;
+    public FlowStartResultVO startByVO(FlowStartVO flowStartVO)  throws Exception;
 
     /**
      * 切换版本状态
@@ -201,7 +201,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
-    public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status);
+    public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status) throws Exception;
 
 
     /**
@@ -221,8 +221,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "验证UEL表达式是否正常",notes = "验证UEL表达式是否正常")
-    public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId,@QueryParam("expression")String expression)  throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
-            InvocationTargetException;
+    public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId,@QueryParam("expression")String expression) throws Exception;
 
     /**
      * 通过key查找流程定义

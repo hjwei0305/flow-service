@@ -9,10 +9,11 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-api')
+    compile project(':flow-service-client')
     compile(
             "com.ecmp:core-web:$core_version",
-            "com.ecmp:config-util-apiclient:$config_version",
-            "com.ecmp:basic-api:$basic_version"
+            "com.ecmp:config-util-apiclient:$config_version"
+//            "com.ecmp:basic-api:$basic_version"
 //            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
     /* 强制指定版本策略设置*/

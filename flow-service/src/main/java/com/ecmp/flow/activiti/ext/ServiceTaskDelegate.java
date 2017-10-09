@@ -1,10 +1,10 @@
 package com.ecmp.flow.activiti.ext;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Auth2ApiClient;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
@@ -241,11 +241,18 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                 userVarNameList.add(varUserName);
                             }
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
-                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+
+//                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                                 String currentUserId = ContextUtil.getUserId();
                                 List<String> usrIdList = new ArrayList<String>(1);
                                 usrIdList.add(currentUserId);
-                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
+                                Map<String,Object> params = new HashedMap();
+                                params.put("employeeIds",usrIdList);
+//                                List<Executor> employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                                }, params,null);
+                                 Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                                List<Executor> employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
+//                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
                                 Set<Executor> employeeSet = new HashSet<Executor>();
                                 employeeSet.addAll(employees);
                                 nodeInfo.setExecutorSet(employeeSet);
@@ -323,7 +330,12 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                 if(nowTime.after(startTreadTime)){
                     service.shutdown();
                 }
-                flowDefinationService.initTask(flowInstance,flowHistory);
+                try {
+                    flowDefinationService.initTask(flowInstance, flowHistory);
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+
             }
         };
         // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
