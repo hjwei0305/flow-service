@@ -1,8 +1,5 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
@@ -11,6 +8,9 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Auth2ApiClient;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
@@ -42,17 +42,14 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -148,7 +145,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
+    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) throws Exception{
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
         Map<String,String> manualSelectedNodes = flowTaskCompleteVO.getManualSelectedNode();
@@ -339,7 +336,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) {
+    private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception{
         FlowTask flowTask = flowTaskDao.findOne(id);
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
@@ -580,7 +577,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    private void callInitTaskBack(PvmActivity currentNode,  FlowInstance flowInstance, FlowHistory flowHistory,boolean counterSignLastTask) {
+    private void callInitTaskBack(PvmActivity currentNode,  FlowInstance flowInstance, FlowHistory flowHistory,boolean counterSignLastTask) throws Exception{
         if(!counterSignLastTask && ifMultiInstance(currentNode)){
            String sequential= currentNode.getProperty("multiInstance")+"";
            if("sequential".equalsIgnoreCase(sequential)){//会签当中串行任务,非最后一个任务
@@ -684,7 +681,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) {
+    public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) throws Exception{
         OperateResult result = OperateResult.operationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
@@ -712,7 +709,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) {
+    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception{
         OperateResult result = OperateResult.operationSuccess("10015");
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
@@ -1137,7 +1134,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param flowInstance
      * @param actTaskDefKey
      */
-    private void initTask(FlowInstance flowInstance, String actTaskDefKey, FlowHistory preTask) {
+    private void initTask(FlowInstance flowInstance, String actTaskDefKey, FlowHistory preTask) throws Exception{
         if(flowInstance == null || flowInstance.isEnded()){
             return;
         }
@@ -1182,8 +1179,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+                        Map<String,Object> params = new HashedMap();
+                        params.put("employeeIds",java.util.Arrays.asList(userId));
+//                        List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                        }, params,null);
+                        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                        List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                         if(employees!=null && !employees.isEmpty()){
                             Executor executor = employees.get(0);
                             FlowTask flowTask = new FlowTask();
@@ -1214,8 +1217,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }else{
                     for (IdentityLink identityLink : identityLinks) {
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                        Map<String,Object> params = new HashedMap();
+                        params.put("employeeIds",java.util.Arrays.asList(identityLink.getUserId()));
+//                        List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                        }, params,null);
+                        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                        List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                         if (employees != null && !employees.isEmpty()) {
                             Executor executor = employees.get(0);
                             FlowTask flowTask = new FlowTask();
@@ -1342,7 +1351,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws NoSuchMethodException
      */
-    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,String approved) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(String id, String businessId,String approved) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
             return null;
@@ -1358,7 +1367,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws NoSuchMethodException
      */
-    public List<NodeInfo> findNexNodesWithUserSet(FlowTask flowTask ,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(FlowTask flowTask ,String approved, List<String> includeNodeIds) throws Exception {
         List<NodeInfo> nodeInfoList = this.findNextNodesWithCondition( flowTask,approved, includeNodeIds);
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
@@ -1382,9 +1391,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("serviceTask");
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    String  startUserId =  ContextUtil.getSessionUser().getUserId();
+//                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+
+                    Map<String,Object> params = new HashedMap();
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//                    List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                    }, params,null);
+                    Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                    List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -1394,9 +1411,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("receiveTask");
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    String  startUserId =  ContextUtil.getSessionUser().getUserId();
+//                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    Map<String,Object> params = new HashedMap();
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//                    List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                    }, params,null);
+                    Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                    List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -1450,8 +1474,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                  startUserId = historicProcessInstance.getStartUserId();
                             }
 
-                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                            Map<String,Object> params = new HashedMap();
+                            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//                            employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                            }, params,null);
+                            Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                           employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                         } else {
                             String selfDefId = (String)executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
@@ -1473,11 +1503,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     List<String> idList = java.util.Arrays.asList(idsShuZhu);
                                     //StartUser、Position、PositionType、SelfDefinition、AnyOne
                                     if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                        employees = iPositionService.getExecutorsByPositionIds(idList);
+//                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+//                                        employees = iPositionService.getExecutorsByPositionIds(idList);
+                                        Map<String,Object> params = new HashedMap();
+                                        params.put("positionIds",idList);
+//                                        employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL, new GenericType< List<Executor>>() {
+//                                        }, params,null);
+                                        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL);
+                                       employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                                     } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                        employees = iPositionService.getExecutorsByPosCateIds(idList);
+//                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+//                                        employees = iPositionService.getExecutorsByPosCateIds(idList);
+                                        Map<String,Object> params = new HashedMap();
+                                        params.put("posCateIds",idList);
+//                                        employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL, new GenericType< List<Executor>>() {
+//                                        }, params,null);
+                                        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL);
+                                        employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
                                     }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
 
                                     }
@@ -2634,7 +2676,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(String id) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
             return null;
@@ -2642,14 +2684,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return this.findNexNodesWithUserSet(flowTask,null,null);
     }
 
-    public List<NodeInfo> findNexNodesWithUserSet(FlowTask flowTask) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(FlowTask flowTask) throws Exception {
         if (flowTask == null) {
             return null;
         }
         return this.findNexNodesWithUserSet(flowTask,null,null);
     }
 
-    public List<NodeInfo> findNexNodesWithUserSet(String id,String approved, List<String> includeNodeIds) throws NoSuchMethodException {
+    public List<NodeInfo> findNexNodesWithUserSet(String id,String approved, List<String> includeNodeIds) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
             return null;

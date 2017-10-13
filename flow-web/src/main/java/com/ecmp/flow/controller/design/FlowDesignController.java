@@ -1,10 +1,6 @@
 package com.ecmp.flow.controller.design;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
-import com.ecmp.basic.api.IPositionCategoryService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.Position;
-import com.ecmp.basic.entity.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
@@ -13,6 +9,9 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
+import com.ecmp.flow.common.util.Auth2ApiClient;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -28,9 +27,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -174,10 +175,14 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPosType")
-    public List<PositionCategory> listPositonType(String notInIds) {
-        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
-        List<PositionCategory> data = proxy.findAll();
-        return data;
+    public List<PositionCategory> listPositonType(String notInIds) throws Exception{
+//        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
+//        List<PositionCategory> data = proxy.findAll();
+//        List<com.ecmp.flow.basic.vo.PositionCategory> positionCategoryList  = (List<com.ecmp.flow.basic.vo.PositionCategory>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, com.ecmp.flow.common.util.Constants.BASIC_POSITIONCATEGORY_FINDALL_URL, new GenericType<List<com.ecmp.flow.basic.vo.PositionCategory>>() {
+//        }, null,null);
+        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, com.ecmp.flow.common.util.Constants.BASIC_POSITIONCATEGORY_FINDALL_URL);
+        List<PositionCategory> positionCategoryList  = auth2ApiClient.getEntityViaProxy(new GenericType<List<PositionCategory>>() {},null);
+        return positionCategoryList;
     }
 
     /**
@@ -187,13 +192,21 @@ public class FlowDesignController {
      */
     @ResponseBody
     @RequestMapping(value = "listPos")
-    public PageResult<Position> listPositon(ServletRequest request) {
+    public PageResult<Position> listPositon(ServletRequest request) throws Exception{
         Search search = SearchUtil.genSearch(request);
         search.addQuickSearchProperty("code");
         search.addQuickSearchProperty("name");
         search.addQuickSearchProperty("organization.name");
-        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        return proxy.findByPage(search);
+//        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
+//        return proxy.findByPage(search);
+
+//        Map<String,Object> params = new HashMap<String,Object>();
+//        params.put("body",search);
+//        PageResult<Position> positionCategoryList  = (PageResult<Position> ) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, com.ecmp.flow.common.util.Constants.BASIC_POSITION_FINDBYPAGE_URL, new GenericType< PageResult<Position>>() {
+//        }, params,null);
+        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, com.ecmp.flow.common.util.Constants.BASIC_POSITION_FINDBYPAGE_URL);
+        PageResult<Position> positionCategoryList   = auth2ApiClient.postViaProxyReturnResult(new GenericType<PageResult<Position>>() {},search);
+        return  positionCategoryList;
     }
 
     /**

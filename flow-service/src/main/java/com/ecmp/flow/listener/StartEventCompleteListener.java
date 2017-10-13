@@ -1,9 +1,13 @@
 package com.ecmp.flow.listener;
 
+import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
@@ -24,10 +28,12 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +78,7 @@ public class StartEventCompleteListener implements ExecutionListener {
     private FlowInstanceDao flowInstanceDao;
 
     @Transactional( propagation= Propagation.REQUIRED)
-    public void notify(DelegateExecution delegateTask) {
+    public void notify(DelegateExecution delegateTask) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException{
         ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
         Map<String,Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance  = taskEntity.getProcessInstance();
@@ -178,5 +184,11 @@ public class StartEventCompleteListener implements ExecutionListener {
             }
             flowInstanceDao.save(flowInstance);
         }
+
+        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        String businessModelId = businessModel.getId();
+        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+        IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
+        flowCommonConditionService.resetState(businessModelId,processInstance.getBusinessKey(), FlowStatus.COMPLETED);
     }
 }

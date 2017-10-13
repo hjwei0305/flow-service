@@ -1,14 +1,16 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.vo.Executor;
+
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.NumberGenerator;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.*;
+import com.ecmp.flow.basic.vo.Employee;
+import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Auth2ApiClient;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +72,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public String changeCreateDepict(String id,String changeText){
+    public String changeCreateDepict(String id,String changeText) throws Exception{
         Map<String,Object> variables = new HashMap<String,Object>();
 
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
@@ -106,7 +109,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public String changeCompletedDepict(String id,String changeText){
+    public String changeCompletedDepict(String id,String changeText) throws Exception{
         Map<String,Object> variables = new HashMap<String,Object>();
 
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
@@ -143,21 +146,30 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public List<Executor> getPersonToExecutorConfig(String businessId,String paramJson){
+    public List<Executor> getPersonToExecutorConfig(String businessId, String paramJson) throws Exception{
         List<Executor> result = new ArrayList<Executor>();
         if(StringUtils.isNotEmpty(businessId)){
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
             if(defaultBusinessModel!=null){
                 String orgid = defaultBusinessModel.getOrgId();
-                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
-                //获取市场部所有人员
-                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
+                Map<String,Object> params = new HashedMap();
+                params.put("organizationId",orgid);
+//                List<Employee> employeeList  = ( List<Employee>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL, new GenericType< List<Employee>>() {
+//                }, params,null);
+                Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL);
+                List<Employee> employeeList  = auth2ApiClient.getEntityViaProxy(new GenericType<List<Employee>>() {},params);
                 List<String> idList = new ArrayList<String>();
                 for(Employee e : employeeList){
                     idList.add(e.getId());
                 }
                 //获取执行人
-                result = proxy.getExecutorsByEmployeeIds(idList);
+//                result = proxy.getExecutorsByEmployeeIds(idList);
+                Map<String,Object> paramsV2 = new HashedMap();
+                paramsV2.put("employeeIds",idList);
+//                result = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
+//                }, paramsV2,null);
+                Auth2ApiClient auth2ApiClient2= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
+                result  = auth2ApiClient2.getEntityViaProxy(new GenericType<List<Executor>>() {},paramsV2);
             }
         }
         return result;
@@ -171,7 +183,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public boolean testReceiveCall(String id,String changeText){
+    public boolean testReceiveCall(String id,String changeText) throws Exception{
         boolean result = false;
       String receiveTaskActDefId = null;
       Map<String,Object> variables = new HashMap<String,Object>();
@@ -259,7 +271,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @param variables
      * @param parentBusinessModel
      */
-    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, Map<String, String> callActivityPathMap, Map<String, Object> variables, IBusinessFlowEntity parentBusinessModel) {
+    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, Map<String, String> callActivityPathMap, Map<String, Object> variables, IBusinessFlowEntity parentBusinessModel) throws Exception{
         IDefaultBusinessModelService defaultBusinessModelService = ApiClient.createProxy(IDefaultBusinessModelService.class);
         IDefaultBusinessModel2Service defaultBusinessModel2Service = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         IDefaultBusinessModel3Service defaultBusinessModel3Service = ApiClient.createProxy(IDefaultBusinessModel3Service.class);

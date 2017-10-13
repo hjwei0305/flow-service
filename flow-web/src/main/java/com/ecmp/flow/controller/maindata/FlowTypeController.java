@@ -72,7 +72,7 @@ public class FlowTypeController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public OperateStatus delete(String id) {
+    public OperateStatus delete(String id) throws Exception{
         IFlowTypeService proxy = ApiClient.createProxy(IFlowTypeService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());

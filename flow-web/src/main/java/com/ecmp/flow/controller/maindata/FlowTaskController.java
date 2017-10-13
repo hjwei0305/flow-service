@@ -145,7 +145,7 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public OperateStatus completeTask(String id)  {
+    public OperateStatus completeTask(String id)  throws Exception{
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("intput","2");
@@ -165,7 +165,7 @@ public class FlowTaskController {
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public OperateStatus rejectTask(String id)  {
+    public OperateStatus rejectTask(String id)  throws Exception{
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         Map<String,Object> variables = new HashMap<String,Object>();
         variables.put("reject",1);

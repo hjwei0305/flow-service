@@ -1,46 +1,19 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.vo.Executor;
-import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.flow.vo.bpmn.ExecutionListener;
-import com.ecmp.flow.vo.bpmn.UserTask;
-import com.ecmp.notify.api.INotifyService;
-import com.ecmp.notity.entity.EcmpMessage;
-import com.ecmp.notity.entity.NotifyType;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.DelegateTask;
-import org.activiti.engine.delegate.TaskListener;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
-import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.IdentityLink;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**

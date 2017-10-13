@@ -112,7 +112,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws Exception {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
@@ -209,7 +209,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) throws Exception{
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -280,11 +280,11 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-                defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
-                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-                baseService.save(defaultBusinessModel);
-            }
+//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+//                defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
+//                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+//                baseService.save(defaultBusinessModel);
+//            }
             operateStatus = new OperateStatus(true, operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");

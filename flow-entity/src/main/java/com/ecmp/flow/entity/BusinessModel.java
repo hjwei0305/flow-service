@@ -60,6 +60,30 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(length = 80, name = "dao_bean")
     private String daoBean;
 
+    /**
+     * 条件属性说明服务地址
+     */
+    @Column(length = 255, name = "conditon_properties")
+    private String conditonProperties;
+
+    /**
+     * 条件属性值服务地址
+     */
+    @Column(length = 255, name = "conditon_p_value")
+    private String conditonPValue;
+
+    /**
+     * 流程状态重置服务地址
+     */
+    @Column(length = 255, name = "conditon_status_rest")
+    private String conditonStatusRest;
+
+    /**
+     * 条件属性初始值服务地址
+     */
+    @Column(length = 255, name = "conditon_p_s_value")
+    private String conditonPSValue;
+
 
     /**
      * 描述
@@ -199,6 +223,39 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setAppModuleName(String appModuleName) {
         this.appModuleName = appModuleName;
+    }
+
+
+    public String getConditonProperties() {
+        return conditonProperties;
+    }
+
+    public void setConditonProperties(String conditonProperties) {
+        this.conditonProperties = conditonProperties;
+    }
+
+    public String getConditonPValue() {
+        return conditonPValue;
+    }
+
+    public void setConditonPValue(String conditonPValue) {
+        this.conditonPValue = conditonPValue;
+    }
+
+    public String getConditonStatusRest() {
+        return conditonStatusRest;
+    }
+
+    public void setConditonStatusRest(String conditonStatusRest) {
+        this.conditonStatusRest = conditonStatusRest;
+    }
+
+    public String getConditonPSValue() {
+        return conditonPSValue;
+    }
+
+    public void setConditonPSValue(String conditonPSValue) {
+        this.conditonPSValue = conditonPSValue;
     }
 
     public BusinessModel(Integer version, String name, String className, String conditonBean, String daoBean, String depict, String appModuleId, String appModuleCode, String appModuleName, String lookUrl, Set<FlowType> flowTypes) {

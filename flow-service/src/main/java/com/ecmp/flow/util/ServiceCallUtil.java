@@ -1,20 +1,16 @@
 package com.ecmp.flow.util;
 
-import com.ecmp.basic.entity.AppModule;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.config.util.ApiRestJsonProvider;
-import com.ecmp.config.util.SessionClientRequestFilter;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -38,7 +34,7 @@ public class ServiceCallUtil {
             if(flowServiceUrl != null){
               String  clientUrl = flowServiceUrl.getUrl();
               String appModuleId = flowServiceUrl.getBusinessModel().getAppModuleId();
-              com.ecmp.basic.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+              com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
               AppModule appModule = iAppModuleService.findOne(appModuleId);
               Map<String, String> params = new HashMap<String,String>();;
               params.put("id",businessId);

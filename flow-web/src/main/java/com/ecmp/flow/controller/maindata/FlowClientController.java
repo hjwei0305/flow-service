@@ -42,7 +42,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "claimTask")
     @ResponseBody
-    public OperateStatus claimTask(String taskId){
+    public OperateStatus claimTask(String taskId) throws Exception{
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         String userId = ContextUtil.getUserId();
         OperateResult result =  proxy.claim(taskId,userId);
@@ -60,7 +60,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
-    public OperateStatus rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
+    public OperateStatus rollBackTo(String preTaskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.rollBackTo(preTaskId,opinion);
@@ -77,7 +77,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public OperateStatus rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion)throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);
@@ -94,7 +94,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "nextNodesInfo")
     @ResponseBody
-    public OperateStatus nextNodesInfo(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfo(String taskId) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNextNodes(taskId);
@@ -115,7 +115,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
-    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<String> includeNodeIds = null;
@@ -150,7 +150,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "nextNodesInfoWithUser")
     @ResponseBody
-    public OperateStatus nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
+    public OperateStatus nextNodesInfoWithUser(String taskId) throws Exception {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
@@ -193,7 +193,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "validateExpression")
     @ResponseBody
-    public OperateStatus validateExpression(String flowTypeId,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+    public OperateStatus validateExpression(String flowTypeId,String expression) throws Exception,
             InvocationTargetException{
         OperateStatus operateStatus = null;
         IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);

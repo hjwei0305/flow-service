@@ -19,8 +19,7 @@ dependencies {
     compile project(':flow-common-web')
     compile project(':flow-api')
     compile(
-            "com.ecmp:core-web:$core_version",
-            "com.ecmp:basic-api:$basic_version"
+            "com.ecmp:core-web:$core_version"
     )
 
     /*testCompile(
