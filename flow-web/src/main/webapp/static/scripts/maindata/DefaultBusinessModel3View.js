@@ -470,6 +470,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    datatype: "local",
                     shrinkToFit: false,//固定宽度
                     // url: _ctxPath + "/builtInApprove/list",
                     postData: {

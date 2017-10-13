@@ -471,6 +471,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    datatype: "local",
                     // url: _ctxPath + "/builtInApprove/list",
                     postData: {
                         S_createdDate: "DESC"
