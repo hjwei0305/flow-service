@@ -114,6 +114,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             },
             gridCfg: {
                 loadonce: true,
+                datatype:"local",
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",

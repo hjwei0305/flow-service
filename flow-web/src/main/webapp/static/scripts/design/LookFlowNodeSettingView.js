@@ -237,11 +237,11 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 100,
                 items: [{
                     title: "并行",
-                    name: false,
+                    name: "false",
                     checked: true
                 }, {
                     title: "串行",
-                    name: true
+                    name: "true"
                 }]
             }]);
         }
@@ -252,7 +252,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "allowTerminate"
             }, {
                 xtype: "CheckBox",
-                title: "允许上步撤回",
+                title: "允许撤回",
                 name: "allowPreUndo"
             }, {
                 xtype: "CheckBox",
@@ -660,6 +660,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             id: "positionGrid",
             gridCfg: {
                 loadonce: true,
+                datatype:"local",
                 hasPager: false,
                 // url: _ctxPath + "",
                 colModel: this.positionGridColModel()
@@ -707,6 +708,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             id: "positionTypeGrid",
             gridCfg: {
                 loadonce: true,
+                datatype:"local",
                 hasPager: false,
                 // url: _ctxPath + "",
                 colModel: this.positionTypeGridColModel()
