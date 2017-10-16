@@ -1208,6 +1208,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 flowTask.setDepict(task.getDescription());
                             }
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            if (preTask != null) {
+                                if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
+                                    flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                                } else {
+                                    flowTask.setPreId(preTask.getId());
+                                }
+                                flowTask.setPreId(preTask.getId());
+                                flowTask.setDepict(preTask.getDepict());
+                            }
                             flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
                         }
@@ -1248,7 +1257,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 flowTask.setDepict(preTask.getDepict());
                             }
                             flowTask.setFlowInstance(flowInstance);
-
                             flowTaskDao.save(flowTask);
                         }
                     }
