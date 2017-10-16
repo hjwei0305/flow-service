@@ -2,6 +2,7 @@ package com.ecmp.flow.entity;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -509,5 +510,53 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 		// Object中的clone()识别出你要复制的是哪一个对象。
 		o = (FlowHistory) super.clone();
 		return o;
+	}
+
+	@Override
+	@JsonIgnore
+	public String getCreatorId() {
+		return super.getCreatorId();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getCreatorAccount() {
+		return super.getCreatorAccount();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getCreatorName() {
+		return super.getCreatorName();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public Date getCreatedDate() {
+		return super.getCreatedDate();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorId() {
+		return super.getLastEditorId();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorAccount() {
+		return super.getLastEditorAccount();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorName() {
+		return super.getLastEditorName();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public Date getLastEditedDate() {
+		return super.getLastEditedDate();
 	}
 }
