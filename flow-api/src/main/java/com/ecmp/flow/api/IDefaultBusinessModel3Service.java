@@ -1,7 +1,11 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
+import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -67,6 +71,6 @@ public interface IDefaultBusinessModel3Service extends IBaseService<DefaultBusin
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
-    public List<com.ecmp.flow.basic.vo.Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId, @QueryParam("paramJson")String paramJson) throws Exception;
+    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId, @QueryParam("paramJson")String paramJson);
 
 }

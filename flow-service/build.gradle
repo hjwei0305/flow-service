@@ -22,6 +22,8 @@ dependencies {
     compile project(':flow-service-client')
     compile(
             "com.ecmp:core-service:$core_version",
+            "com.ecmp:basic-api:$basic_version",
+
             "org.activiti:activiti-engine:$activiti_version",
             "org.activiti:activiti-bpmn-model:$activiti_version",
             "org.activiti:activiti-bpmn-converter:$activiti_version",

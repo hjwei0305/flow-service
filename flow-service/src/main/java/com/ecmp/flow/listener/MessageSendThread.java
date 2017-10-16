@@ -1,35 +1,42 @@
 package com.ecmp.flow.listener;
 
-
+import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.api.IPositionService;
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.common.util.Auth2ApiClient;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.BpmnUtil;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
 import com.ecmp.notity.entity.NotifyType;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.apache.commons.collections.map.HashedMap;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.GenericType;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -85,7 +92,7 @@ public class MessageSendThread implements Runnable {
     ;
 
     @Override
-    public void run(){
+    public void run() {
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
 
         String actTaskDefKey = taskEntity.getActivityId();
@@ -278,19 +285,8 @@ public class MessageSendThread implements Runnable {
                                           idList.add(positionId);
                                       }
                                   }
-//                                  IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-//                                  List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
-                                  Map<String,Object> params = new HashedMap();
-                                  params.put("positionIds",idList);
-                                  List<Executor> employees =null;
-                                  try {
-//                                      employees = (List<com.ecmp.flow.basic.vo.Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL, new GenericType<List<com.ecmp.flow.basic.vo.Executor>>() {
-//                                      }, params, null);
-                                      Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL);
-                                      employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
-                                  }catch (Exception e){
-
-                                  }
+                                  IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+                                  List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
                                   Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
                                   List<String> receiverIds = new ArrayList<String>();
                                   if(employees != null && !employees.isEmpty() ){

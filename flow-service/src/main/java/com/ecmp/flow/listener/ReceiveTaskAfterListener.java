@@ -1,10 +1,9 @@
 package com.ecmp.flow.listener;
 
+import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.entity.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.common.util.Auth2ApiClient;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
@@ -13,9 +12,11 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
@@ -25,10 +26,10 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.core.GenericType;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -231,17 +231,11 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 
                             }
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
-//                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                                 String currentUserId = ContextUtil.getUserId();
                                 List<String> usrIdList = new ArrayList<String>(1);
                                 usrIdList.add(currentUserId);
-//                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
-                                Map<String,Object> params = new HashedMap();
-                                params.put("employeeIds",java.util.Arrays.asList(usrIdList));
-//                                List<Executor>   employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
-//                                }, params,null);
-                                Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
-                                List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
+                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
                                 Set<Executor> employeeSet = new HashSet<Executor>();
                                 employeeSet.addAll(employees);
                                 nodeInfo.setExecutorSet(employeeSet);
@@ -319,11 +313,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 if(nowTime.after(startTreadTime)){
                     service.shutdown();
                 }
-                try {
-                    flowDefinationService.initTask(flowInstance, flowHistory);
-                }catch (Exception e){
-                    logger.error(e.getMessage());
-                }
+                flowDefinationService.initTask(flowInstance,flowHistory);
             }
         };
 
@@ -352,7 +342,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 //       // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
 //       service.scheduleWithFixedDelay(runnable, 1, 1,TimeUnit.SECONDS);
 //   }
-    private Boolean initTask(String proceeInstanceId,List<NodeInfo> nextNodes) throws Exception{
+    private Boolean initTask(String proceeInstanceId,List<NodeInfo> nextNodes){
         Boolean result = false;
         int indexSuccess = 0;
         for(NodeInfo  nextNode:nextNodes){
@@ -367,7 +357,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
         return  result;
     }
 
-   private Boolean initTask(String proceeInstanceId,NodeInfo nextNode) throws Exception{
+   private Boolean initTask(String proceeInstanceId,NodeInfo nextNode){
        Boolean result = false;
        if("ServiceTask".equalsIgnoreCase(nextNode.getType())){//服务任务也不做处理
            return true;
@@ -413,14 +403,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                    String variableName = "" + actTaskDefKey + "_CounterSign";
                    String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                    if(StringUtils.isNotEmpty(userId)){
-//                       IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                       List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
-                       Map<String,Object> params = new HashedMap();
-                       params.put("employeeIds",java.util.Arrays.asList(userId));
-//                       List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
-//                       }, params,null);
-                       Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
-                       List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
+                       IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                       List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
                        if(employees!=null && !employees.isEmpty()){
                            Executor executor = employees.get(0);
                            FlowTask flowTask = new FlowTask();
@@ -454,14 +438,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                    // runtimeService.getVariables(executionId);使用执行对象Id，获取所有的流程变量，返回Map集合
                }else {
                    for (IdentityLink identityLink : identityLinks) {
-//                       IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-//                       List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
-                       Map<String,Object> params = new HashedMap();
-                       params.put("employeeIds",java.util.Arrays.asList(identityLink.getUserId()));
-//                       List<Executor>  employees = ( List<Executor>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL, new GenericType< List<Executor>>() {
-//                       }, params,null);
-                       Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL);
-                       List<Executor>   employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Executor>>() {},params);
+                       IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+                       List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
                        if(employees!=null && !employees.isEmpty()){
                            Executor executor = employees.get(0);
                            FlowTask flowTask = new FlowTask();

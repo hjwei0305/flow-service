@@ -1,30 +1,25 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
+import com.ecmp.basic.api.IEmployeeService;
+import com.ecmp.basic.entity.Employee;
+import com.ecmp.basic.entity.vo.EmployeeQueryParam;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
-import com.ecmp.flow.basic.vo.Employee;
-import com.ecmp.flow.basic.vo.EmployeeQueryParam;
-import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.common.util.Auth2ApiClient;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.ws.rs.core.GenericType;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -72,21 +67,15 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listExecutor")
     @ResponseBody
-    public Object listExecutor(String  businessModuleId) throws Exception {
+    public Object listExecutor(String  businessModuleId) throws ParseException {
         IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
         List<BusinessSelfDefEmployee> businessSelfDefEmployees = proxy.findByBusinessModelId(businessModuleId);
         List<String> selectedExecutorIds = new ArrayList<>();
         for(int i=0;i<businessSelfDefEmployees.size();i++){
             selectedExecutorIds.add(businessSelfDefEmployees.get(i).getEmployeeId());
         }
-//        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
-//        List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
-        Map<String,Object> params = new HashedMap();
-        params.put("employeeIds",selectedExecutorIds);
-//        List<Employee> selectedExecutor = ( List<Employee>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYIDS_URL, new GenericType< List<Employee>>() {
-//        }, params,null);
-        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYIDS_URL);
-        List<Employee> selectedExecutor = auth2ApiClient.getEntityViaProxy(new GenericType<List<Employee>>() {},params);
+        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
+        List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
         if(selectedExecutor == null){
             List<String> list = new ArrayList<>();
             return list;
@@ -103,7 +92,7 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listAllExecutorNotSelected")
     @ResponseBody
-    public PageResult<Employee> listAllExecutorNotSelected(String businessModelId, @RequestParam(value = "page") int page) throws Exception {
+    public PageResult<Employee> listAllExecutorNotSelected(String businessModelId, @RequestParam(value = "page") int page) throws ParseException {
         IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
         List<BusinessSelfDefEmployee> businessSelfDefEmployees = proxy.findByBusinessModelId(businessModelId);
         List<String> selectedExecutorIds = new ArrayList<>();
@@ -114,14 +103,8 @@ public class CustomExecutorController {
         employeeQueryParam.setIds(selectedExecutorIds);
         employeeQueryParam.setPage(page);
         employeeQueryParam.setRows(15);
-//        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
-//        PageResult<Employee> notSelectedExecutor = proxy2.findByEmployeeParam(employeeQueryParam);
-//        Map<String,Object> params = new HashedMap();
-//        params.put("body",employeeQueryParam);
-//        PageResult<Employee> notSelectedExecutor = ( PageResult<Employee> ) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYPARAM_URL, new GenericType<PageResult<Employee> >() {
-//        }, params,null);
-        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYPARAM_URL);
-        PageResult<Employee> notSelectedExecutor = auth2ApiClient.postViaProxyReturnResult(new GenericType<PageResult<Employee>>() {},employeeQueryParam);
+        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
+        PageResult<Employee> notSelectedExecutor = proxy2.findByEmployeeParam(employeeQueryParam);
         return notSelectedExecutor;
     }
 
@@ -133,21 +116,15 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listAllExecutorSelected")
     @ResponseBody
-    public List<Employee> listAllExecutorSelected(String businessModelId) throws Exception {
+    public List<Employee> listAllExecutorSelected(String businessModelId) throws ParseException {
         IBusinessSelfDefEmployeeService proxy = ApiClient.createProxy(IBusinessSelfDefEmployeeService.class);
         List<BusinessSelfDefEmployee> businessSelfDefEmployees = proxy.findByBusinessModelId(businessModelId);
         List<String> selectedExecutorIds = new ArrayList<>();
         for(int i=0;i<businessSelfDefEmployees.size();i++){
             selectedExecutorIds.add(businessSelfDefEmployees.get(i).getEmployeeId());
         }
-//        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
-//        List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
-        Map<String,Object> params = new HashedMap();
-        params.put("employeeIds",selectedExecutorIds);
-//        List<Employee> selectedExecutor = ( List<Employee>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYIDS_URL, new GenericType< List<Employee>>() {
-//        }, params,null);
-        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYIDS_URL);
-        List<Employee> selectedExecutor = auth2ApiClient.getEntityViaProxy(new GenericType<List<Employee>>() {},params);
+        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
+        List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
         if(selectedExecutor == null){
             List<Employee> list = new ArrayList<>();
             return list;
@@ -180,16 +157,9 @@ public class CustomExecutorController {
      */
     @RequestMapping(value = "listAllUser")
     @ResponseBody
-    public List<Employee> listAllUser(String organizationId) throws Exception {
-//        IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
-//        List<Employee> employees = proxy.findByOrganizationIdWithoutFrozen(organizationId);
-
-        Map<String,Object> params = new HashedMap();
-        params.put("organizationId",organizationId);
-//        List<Employee> employees = ( List<Employee>) new Auth2ApiClient().call(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL, new GenericType< List<Employee>>() {
-//        }, params,null);
-        Auth2ApiClient auth2ApiClient= new Auth2ApiClient(com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL, Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL);
-        List<Employee> employees = auth2ApiClient.getEntityViaProxy(new GenericType<List<Employee>>() {},params);
+    public List<Employee> listAllUser(String organizationId) {
+        IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+        List<Employee> employees = proxy.findByOrganizationIdWithoutFrozen(organizationId);
         return employees;
     }
 }

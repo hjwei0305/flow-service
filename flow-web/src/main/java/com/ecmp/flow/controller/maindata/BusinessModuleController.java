@@ -77,7 +77,7 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "delete")
     @ResponseBody
-    public OperateStatus delete(String id) throws Exception{
+    public OperateStatus delete(String id) {
         IBusinessModelService proxy = ApiClient.createProxy(IBusinessModelService.class);
         OperateResult result = proxy.delete(id);
         OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());

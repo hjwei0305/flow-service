@@ -13,21 +13,7 @@ dependencies {
     compile(
             "com.ecmp:config-util-apiclient:$config_version",
             "com.ecmp:core-dao:$core_version",
-         //   "com.ecmp:basic-api:$basic_version",
-
-
-            "org.springframework:spring-web:$spring_version",
-            "org.apache.cxf:cxf-rt-frontend-jaxrs:$apache_cxf_version",
-//            "org.apache.cxf:cxf-rt-transports-http-jetty:$apache_cxf_version",
-            "org.apache.cxf:cxf-rt-rs-client:$apache_cxf_version",
-            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jackson_version",
-//            "org.springframework.security.oauth:spring-security-oauth2",
-//            "org.springframework.security:spring-security-jwt",
-//            "com.fasterxml.jackson.core:jackson-databind",
-            "commons-logging:commons-logging:1.2",
-            "org.bitbucket.b_c:jose4j:0.6.0",
-            "net.sf.json-lib:json-lib:2.4:jdk15",
-            "org.apache.httpcomponents:httpclient:4.5.3"
+            "com.ecmp:basic-api:$basic_version"
 //            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
     )
     /* 强制指定版本策略设置*/

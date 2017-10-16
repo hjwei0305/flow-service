@@ -21,7 +21,7 @@ dependencies {
 //    compile group:'org.hibernate.javax.persistence',name:'hibernate-jpa-2.1-api',version:'1.0.0.Final',force:true
     compile(
             "com.ecmp:core-entity:$core_version",
-//            "com.ecmp:basic-entity:$basic_version",
+            "com.ecmp:basic-entity:$basic_version",
 //            "mysql:mysql-connector-java:$mysql_version",
 //            "org.apache.commons:commons-lang3:$commonsLang3_version",
             "net.sf.json-lib:json-lib:$jsonlib_version:jdk15"

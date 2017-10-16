@@ -130,7 +130,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws Exception {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
@@ -191,17 +191,17 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
-//                if (flowStartResultVO.getFlowInstance() != null) {
-//                    defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
-//                    if (flowStartResultVO.getFlowInstance().isEnded()) {
-//                        defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
-//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
-//                    } else {
-//                        defaultBusinessModel2.setFlowStatus(FlowStatus.INPROCESS);
-//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
-//                    }
-//                    baseService.save(defaultBusinessModel2);
-//                }
+                if (flowStartResultVO.getFlowInstance() != null) {
+                    defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
+                    if (flowStartResultVO.getFlowInstance().isEnded()) {
+                        defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
+                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
+                    } else {
+                        defaultBusinessModel2.setFlowStatus(FlowStatus.INPROCESS);
+                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
+                    }
+                    baseService.save(defaultBusinessModel2);
+                }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {
@@ -226,7 +226,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved)throws Exception {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -297,11 +297,11 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-//                defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
-//                defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
-//                baseService.save(defaultBusinessModel2);
-//            }
+            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+                defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
+                defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
+                baseService.save(defaultBusinessModel2);
+            }
             operateStatus = new OperateStatus(true, operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
