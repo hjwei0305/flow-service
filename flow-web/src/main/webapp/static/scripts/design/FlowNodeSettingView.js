@@ -833,6 +833,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             id: "positionGrid",
             gridCfg: {
                 loadonce: true,
+                datatype: "local",
                 hasPager: false,
                 // url: _ctxPath + "",
                 colModel: colModel
@@ -898,6 +899,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             id: "positionTypeGrid",
             gridCfg: {
                 loadonce: true,
+                datatype: "local",
                 hasPager: false,
                 colModel: colModel
             }
