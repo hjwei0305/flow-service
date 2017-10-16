@@ -48,7 +48,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         });
     },
     addDefVersionWinEvents:function () {
-      var g=this;
+        var g=this;
         $("#defVersion>.ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("defViesonGridPanel").getSelectRow();
             g.updateFlowDefVersion(data);
@@ -152,13 +152,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("defViesonGridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("defViesonGridPanel").setPostParams({
                             Q_LK_name: value
                         }
@@ -392,18 +385,18 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 "background": "#fff"
             },
             onSelect: function (node) {
-                    g.selectedNodeId = node.id;
-                    g.selectedNodeName = node.name;
-                    g.selectedNodeOrgCode = node.code;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/flowDefination/listFlowDefination",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            Q_EQ_orgId: g.selectedNodeId,
-                            S_lastEditedDate:"DESC"
-                        }
-                    }, true)
+                g.selectedNodeId = node.id;
+                g.selectedNodeName = node.name;
+                g.selectedNodeOrgCode = node.code;
+                var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                    url: _ctxPath + "/flowDefination/listFlowDefination",
+                    loadonce: false,
+                    datatype: "json",
+                    postData: {
+                        Q_EQ_orgId: g.selectedNodeId,
+                        S_lastEditedDate:"DESC"
+                    }
+                }, true)
             },
             afterItemRender: function (nodeData) {
                 if (nodeData.frozen) {
@@ -473,13 +466,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     xtype: "SearchBox",
                     displayText: g.lang.searchByNameMsgText,
                     onSearch: function (value) {
-                        console.log(value);
-                        if (!value) {
-                            EUI.getCmp("gridPanel").setPostParams({
-                                    Q_LK_name: ""
-                                }
-                            ).trigger("reloadGrid");
-                        }
                         EUI.getCmp("gridPanel").setPostParams({
                                 Q_LK_name: value
                             }
@@ -496,6 +482,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    datatype:"local",
                     colModel: [{
                         label: g.lang.operateText,
                         name: "operate",

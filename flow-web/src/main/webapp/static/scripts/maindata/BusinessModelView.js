@@ -114,6 +114,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             gridCfg: {
                 shrinkToFit: false,//固定宽度
                 loadonce: true,
+                datatype: "local",
                 colModel: [{
                     label: this.lang.operateText,
                     name: "operate",
@@ -512,6 +513,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 },
                 gridCfg: {
                     loadonce: true,
+                    datatype: "local",
                     hasPager: false,
                     colModel: [{
                         name: "id",
