@@ -344,7 +344,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
 	@Override
-	@JsonIgnore
+	@JsonIgnore(false)
 	public String getCreatorId() {
 		return super.getCreatorId();
 	}
