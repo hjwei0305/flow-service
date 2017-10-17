@@ -3,8 +3,8 @@ if (!window.Flow) {
     EUI.ns("Flow.flow");
 }
 var common_lang = {
-    tiShiText: "提示",
-    ifDelMsgText: "确定删除吗？",
+    tiShiText: "温馨提示",
+    ifDelMsgText: "数据将丢失，确定要删除吗？",
     sureText: "确定",
     nowDelMsgText: "正在删除,请稍后....",
     nowSaveMsgText: "正在保存，请稍候...",
