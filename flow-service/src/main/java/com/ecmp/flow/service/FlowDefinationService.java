@@ -1287,10 +1287,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             } else {
                                 flowTask.setDepict(task.getDescription());
                             }
-                            if (preParentTask != null) {
-                                flowTask.setPreId(preParentTask.getId());
-                            }
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            if (preParentTask != null) {
+                                if (TaskStatus.REJECT.toString().equalsIgnoreCase(preParentTask.getTaskStatus())) {
+                                    flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                                } else {
+                                    flowTask.setPreId(preParentTask.getId());
+                                }
+                                flowTask.setPreId(preParentTask.getId());
+                                flowTask.setDepict(preParentTask.getDepict());
+                            }
                             flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
                         }
@@ -1324,10 +1330,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             } else {
                                 flowTask.setDepict(task.getDescription());
                             }
-                            if (preParentTask != null) {
-                                flowTask.setPreId(preParentTask.getId());
-                            }
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            if (preParentTask != null) {
+                                if (TaskStatus.REJECT.toString().equalsIgnoreCase(preParentTask.getTaskStatus())) {
+                                    flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                                } else {
+                                    flowTask.setPreId(preParentTask.getId());
+                                }
+                                flowTask.setPreId(preParentTask.getId());
+                                flowTask.setDepict(preParentTask.getDepict());
+                            }
                             flowTask.setFlowInstance(flowInstance);
                             flowTaskDao.save(flowTask);
                         }

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -339,5 +340,54 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setParent(FlowInstance parent) {
 		this.parent = parent;
+	}
+
+
+	@Override
+	@JsonIgnore(false)
+	public String getCreatorId() {
+		return super.getCreatorId();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getCreatorAccount() {
+		return super.getCreatorAccount();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getCreatorName() {
+		return super.getCreatorName();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public Date getCreatedDate() {
+		return super.getCreatedDate();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorId() {
+		return super.getLastEditorId();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorAccount() {
+		return super.getLastEditorAccount();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public String getLastEditorName() {
+		return super.getLastEditorName();
+	}
+
+	@Override
+	@JsonIgnore(false)
+	public Date getLastEditedDate() {
+		return super.getLastEditedDate();
 	}
 }

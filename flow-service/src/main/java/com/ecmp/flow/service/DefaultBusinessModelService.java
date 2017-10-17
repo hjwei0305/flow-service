@@ -77,7 +77,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 //            defaultBusinessModelDao.saveAndFlush(entity);
             if(StringUtils.isNotEmpty(changeText)){
                 JSONObject jsonObject = JSONObject.fromObject(changeText);
-                List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                List<String> callActivtiySonPaths = null;
+                try{
+                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
                 if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -114,7 +119,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 //            defaultBusinessModelDao.saveAndFlush(entity);
             if(StringUtils.isNotEmpty(changeText)){
                 JSONObject jsonObject = JSONObject.fromObject(changeText);
-                List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                List<String> callActivtiySonPaths = null;
+                try{
+                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
                 if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -182,7 +192,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 JSONObject jsonObject = JSONObject.fromObject(changeText);
                 //HashMap<String,Object> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
                 receiveTaskActDefId = jsonObject.get("receiveTaskActDefId")+"";
-                List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                List<String> callActivtiySonPaths = null;
+                try{
+                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
                 if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();

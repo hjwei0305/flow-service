@@ -447,7 +447,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var tab = {
                 title: data.taskName,
                 url: _ctxPath + workPageUrl + "?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
-                id: data.flowInstance.businessId
+                id: data.id
             };
             g.addTab(tab);
         });
