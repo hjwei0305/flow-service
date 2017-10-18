@@ -1,0 +1,10 @@
+# 应用模块映射配置
+AppModuleMapping:
+  - code: LOG
+    name: 系统日志
+    api:  http://127.0.0.1:8080/log/
+    web:  http://127.0.0.1:8081/log-web/
+  - code: BASIC
+    name: 基础应用
+    api:  http://10.4.68.46:9081/basic-service
+    web:  http://10.4.68.46:8081/basic-web

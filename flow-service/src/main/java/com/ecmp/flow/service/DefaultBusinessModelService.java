@@ -1,14 +1,14 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Employee;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.NumberGenerator;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.*;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,15 +160,23 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
             if(defaultBusinessModel!=null){
                 String orgid = defaultBusinessModel.getOrgId();
-                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
-                //获取市场部所有人员
-                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
+//                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+//                //获取市场部所有人员
+//                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
+                Map<String,Object> params = new HashMap();
+                params.put("organizationId",orgid);
+                String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
+                List<Employee> employeeList=ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
                 List<String> idList = new ArrayList<String>();
                 for(Employee e : employeeList){
                     idList.add(e.getId());
                 }
                 //获取执行人
-                result = proxy.getExecutorsByEmployeeIds(idList);
+//                result = proxy.getExecutorsByEmployeeIds(idList);
+                Map<String,Object> paramsV2 = new HashMap();
+                paramsV2.put("employeeIds",idList);
+                url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
             }
         }
         return result;

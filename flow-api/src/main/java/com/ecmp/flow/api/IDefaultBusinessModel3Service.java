@@ -1,6 +1,6 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;

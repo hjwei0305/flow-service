@@ -1,9 +1,7 @@
 package com.ecmp.flow.vo;
 
-import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.vo.Executor;
-import com.ecmp.flow.vo.bpmn.MultiInstanceConfig;
 
+import com.ecmp.flow.basic.vo.Executor;
 import java.io.Serializable;
 import java.util.Set;
 

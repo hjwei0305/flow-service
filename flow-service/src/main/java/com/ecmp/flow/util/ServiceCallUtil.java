@@ -1,6 +1,6 @@
 package com.ecmp.flow.util;
 
-import com.ecmp.basic.entity.AppModule;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
 import com.ecmp.config.util.SessionClientRequestFilter;
@@ -38,7 +38,7 @@ public class ServiceCallUtil {
             if(flowServiceUrl != null){
               String  clientUrl = flowServiceUrl.getUrl();
               String appModuleId = flowServiceUrl.getBusinessModel().getAppModuleId();
-              com.ecmp.basic.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
+              com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
               AppModule appModule = iAppModuleService.findOne(appModuleId);
               Map<String, String> params = new HashMap<String,String>();;
               params.put("id",businessId);

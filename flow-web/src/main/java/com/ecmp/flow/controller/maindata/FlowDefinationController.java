@@ -1,8 +1,7 @@
 package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
-import com.ecmp.basic.api.IOrganizationService;
-import com.ecmp.basic.entity.Organization;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
@@ -11,6 +10,7 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTypeService;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import java.text.ParseException;
 import java.util.List;
 
@@ -59,8 +60,10 @@ public class FlowDefinationController {
     @ResponseBody
     @RequestMapping("listAllOrgs")
     public OperateStatus listAllOrgs() {
-        IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
-        List<Organization> result = proxy.findOrgTreeWithoutFrozen();
+//        IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
+//        List<Organization> result = proxy.findOrgTreeWithoutFrozen();
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_ORG_LISTALLORGS_URL;
+        List<Organization> result = ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},null);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
         return operateStatus;
     }

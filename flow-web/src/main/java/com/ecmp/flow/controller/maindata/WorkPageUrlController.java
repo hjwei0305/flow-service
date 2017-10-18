@@ -80,8 +80,8 @@ public class WorkPageUrlController {
     @RequestMapping(value = "listAllAppModule")
     @ResponseBody
     public OperateStatus listAllAppModule(){
-        com.ecmp.basic.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.basic.api.IAppModuleService.class);
-        List<com.ecmp.basic.entity.AppModule> appModuleList = proxy.findAll();
+        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+        List<com.ecmp.flow.entity.AppModule> appModuleList = proxy.findAll();
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, appModuleList);
         return operateStatus;
     }

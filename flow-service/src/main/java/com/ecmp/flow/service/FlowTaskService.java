@@ -1,8 +1,6 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
@@ -11,6 +9,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
@@ -44,6 +43,7 @@ import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1182,8 +1182,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(userId));
+                        Map<String,Object> params = new HashMap();
+                        params.put("employeeIds",java.util.Arrays.asList(userId));
+                        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                        List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         if(employees!=null && !employees.isEmpty()){
                             Executor executor = employees.get(0);
                             FlowTask flowTask = new FlowTask();
@@ -1223,8 +1227,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }else{
                     for (IdentityLink identityLink : identityLinks) {
-                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+//                        IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                        List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(identityLink.getUserId()));
+                        Map<String,Object> params = new HashMap();
+                        params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(identityLink.getUserId())));
+                        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                        List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         if (employees != null && !employees.isEmpty()) {
                             Executor executor = employees.get(0);
                             FlowTask flowTask = new FlowTask();
@@ -1390,9 +1398,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("serviceTask");
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+//                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    Map<String,Object> params = new HashMap();
+                    params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(startUserId)));
+                    String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                    List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -1402,9 +1414,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("receiveTask");
-                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                    IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
-                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+//                    List<Executor> employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                    Map<String,Object> params = new HashMap();
+                    params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(startUserId)));
+                    String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                    List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -1458,8 +1474,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                  startUserId = historicProcessInstance.getStartUserId();
                             }
 
-                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
-                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+//                            IEmployeeService iEmployeeService = ApiClient.createProxy(IEmployeeService.class);
+//                            employees = iEmployeeService.getExecutorsByEmployeeIds(java.util.Arrays.asList(startUserId));
+                            Map<String,Object> params = new HashMap();
+                            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+                            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                            employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+
                         } else {
                             String selfDefId = (String)executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids)||StringUtils.isNotEmpty(selfDefId)) {
@@ -1481,13 +1502,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     List<String> idList = java.util.Arrays.asList(idsShuZhu);
                                     //StartUser、Position、PositionType、SelfDefinition、AnyOne
                                     if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                        employees = iPositionService.getExecutorsByPositionIds(idList);
-                                    } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                        employees = iPositionService.getExecutorsByPosCateIds(idList);
-                                    }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
+//                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+//                                        employees = iPositionService.getExecutorsByPositionIds(idList);
 
+                                        Map<String,Object> params = new HashMap();
+                                        params.put("positionIds",idList);
+                                        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+                                        employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                                    } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
+//                                        IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+//                                        employees = iPositionService.getExecutorsByPosCateIds(idList);
+                                        Map<String,Object> params = new HashMap();
+                                        params.put("posCateIds",idList);
+                                        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL;
+                                        employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                                    }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
                                     }
                                 }
                             }

@@ -1,10 +1,8 @@
 package com.ecmp.flow.controller.design;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
-import com.ecmp.basic.api.IPositionCategoryService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.Position;
-import com.ecmp.basic.entity.PositionCategory;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
@@ -13,6 +11,7 @@ import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -175,9 +175,11 @@ public class FlowDesignController {
     @ResponseBody
     @RequestMapping(value = "listPosType")
     public List<PositionCategory> listPositonType(String notInIds) {
-        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
-        List<PositionCategory> data = proxy.findAll();
-        return data;
+//        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
+//        List<PositionCategory> data = proxy.findAll();
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITIONCATEGORY_FINDALL_URL;
+        List<PositionCategory> positionCategoryList  = ApiClient.getEntityViaProxy(url,new GenericType<List<PositionCategory>>() {},null);
+        return positionCategoryList;
     }
 
     /**
@@ -192,8 +194,11 @@ public class FlowDesignController {
         search.addQuickSearchProperty("code");
         search.addQuickSearchProperty("name");
         search.addQuickSearchProperty("organization.name");
-        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        return proxy.findByPage(search);
+//        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
+//        return proxy.findByPage(search);
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_FINDBYPAGE_URL;
+        PageResult<Position> positionList   = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Position>>() {},search);
+        return  positionList;
     }
 
     /**

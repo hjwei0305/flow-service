@@ -1,6 +1,6 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import io.swagger.annotations.Api;

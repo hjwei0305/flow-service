@@ -1,21 +1,24 @@
 package com.ecmp.flow.controller.basic;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
-import com.ecmp.basic.api.IOrganizationService;
-import com.ecmp.basic.api.IPositionCategoryService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.Organization;
-import com.ecmp.basic.entity.Position;
-import com.ecmp.basic.entity.PositionCategory;
+
+import com.ecmp.flow.basic.vo.Organization;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
+import com.ecmp.flow.basic.vo.Organization;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
+import com.ecmp.flow.common.util.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import java.util.List;
 
 /**
@@ -46,8 +49,8 @@ public class BasicController {
     @ResponseBody
     @RequestMapping("findAllOrgs")
     public List<Organization> findAllOrgs(){
-        IOrganizationService proxy = ApiClient.createProxy(IOrganizationService.class);
-        List<Organization> allOrgsList = proxy.findAllOrgs();
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_ORG_LISTALLORGS_URL;
+        List<com.ecmp.flow.basic.vo.Organization> allOrgsList = ApiClient.getEntityViaProxy(url,new GenericType<List<Organization> >() {},null);
         return allOrgsList;
     }
 
@@ -58,8 +61,10 @@ public class BasicController {
     @ResponseBody
     @RequestMapping("findAllPositionCategory")
     public List<PositionCategory> findAllPositionCategory(){
-        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
-        List<PositionCategory> positionCategoryList = proxy.findAll();
+//        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
+//        List<PositionCategory> positionCategoryList = proxy.findAll();
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITIONCATEGORY_FINDALL_URL;
+        List<PositionCategory> positionCategoryList  = ApiClient.getEntityViaProxy(url,new GenericType<List<PositionCategory>>() {},null);
         return positionCategoryList;
     }
 
@@ -71,7 +76,9 @@ public class BasicController {
     @RequestMapping("findAllPosition")
     public PageResult<Position> findAllPosition(ServletRequest request){
         Search search = SearchUtil.genSearch(request);
-        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        return proxy.findByPage(search);
+//        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
+        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_FINDBYPAGE_URL;
+        PageResult<Position> positionCategoryList   = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Position>>() {},search);
+        return positionCategoryList;
     }
 }

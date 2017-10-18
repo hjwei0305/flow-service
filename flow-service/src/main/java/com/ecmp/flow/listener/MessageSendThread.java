@@ -1,10 +1,9 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.api.IPositionService;
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
@@ -37,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.GenericType;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -285,8 +285,13 @@ public class MessageSendThread implements Runnable {
                                           idList.add(positionId);
                                       }
                                   }
-                                  IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-                                  List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
+//                                  IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
+//                                  List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
+                                  Map<String,Object> params = new HashMap();
+                                  params.put("positionIds",idList);
+                                  String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+                                  List<Executor>  employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+
                                   Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
                                   List<String> receiverIds = new ArrayList<String>();
                                   if(employees != null && !employees.isEmpty() ){

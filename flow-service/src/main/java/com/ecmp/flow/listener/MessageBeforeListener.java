@@ -1,7 +1,6 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.dao.FlowDefVersionDao;

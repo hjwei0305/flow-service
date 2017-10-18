@@ -1,10 +1,10 @@
 package com.ecmp.flow.activiti.ext;
 
-import com.ecmp.basic.api.IEmployeeService;
-import com.ecmp.basic.entity.Employee;
-import com.ecmp.basic.entity.vo.Executor;
+import com.ecmp.flow.basic.vo.Employee;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowHistory;
@@ -241,11 +241,15 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                 userVarNameList.add(varUserName);
                             }
                             if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
-                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
+//                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                                 String currentUserId = ContextUtil.getUserId();
                                 List<String> usrIdList = new ArrayList<String>(1);
                                 usrIdList.add(currentUserId);
-                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
+//                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
+                                Map<String,Object> params = new HashMap();
+                                params.put("employeeIds",usrIdList);
+                                String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                                List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                                 Set<Executor> employeeSet = new HashSet<Executor>();
                                 employeeSet.addAll(employees);
                                 nodeInfo.setExecutorSet(employeeSet);
