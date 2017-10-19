@@ -37,7 +37,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     taskId: null,
     desionType: 0,//0表示单选、1多选，2不需要选择
     instanceId: null,
-    iframeHeight: 600,
+    iframeHeight: 800,
     pageUrl: null,
     submitUrl: null,
     manualSelected: false,//是否是人工选择的网关类型
@@ -130,7 +130,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '            <div class="close">' + this.lang.collectText + '</div>' +
             '        </div>';
-        html += '<iframe class="flow-iframe" height="600" src="' + this.pageUrl +  '"></iframe>';
+        html += '<iframe class="flow-iframe" height="700" src="' + this.pageUrl +  '"></iframe>';
     //    html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
         return html += "</div>";
     },
