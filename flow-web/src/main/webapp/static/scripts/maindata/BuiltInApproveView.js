@@ -275,7 +275,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         return ['->', {
                 xtype:"SearchBox",
                 width:200,
-                displayText:"请输入代码或名称查询",
+                displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
                     g.selectedNodeId = null;

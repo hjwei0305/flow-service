@@ -1136,7 +1136,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         xtype: "SearchBox",
                         id: "searchBox_positionTypeGrid",
                         width: 200,
-                        displayText: "请输入代码或名称查询",
+                        g.lang.searchDisplayText
                         onSearch: function (v) {
                             EUI.getCmp("allPositionTypeGrid").localSearch(v);
                         },

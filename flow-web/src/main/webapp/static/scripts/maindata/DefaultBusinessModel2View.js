@@ -274,7 +274,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
     },
     initTopBar: function () {
         var g = this;
-        return [{
+        return ['->', {
                 xtype: "SearchBox",
                 width: 200,
                 displayText: g.lang.searchDisplayText,

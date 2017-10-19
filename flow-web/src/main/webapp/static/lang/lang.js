@@ -36,7 +36,7 @@ var common_lang = {
     searchByNameMsgText: "请输入名称进行搜索",
     copyHintMessage: "请选择一条要参考的行项目!",
     searchByCodeOrNameText: "请输入代码或名称进行搜索",
-    searchDisplayText: "请输入代码或名称查询"
+    searchDisplayText: "请输入关键字查询"
 };
 
 if (EUI.AppModuleView) {
@@ -209,7 +209,6 @@ if (EUI.FlowDefinationView) {
         rootText: "根节点",
         queryMaskMessageText: "正在努力获取数据，请稍候...",
         closeText: "关闭",
-        searchDisplayText: "请输入代码或名称查询",
         processMaskMessageText: "正在处理，请稍候...",
         operateHintMessage: "请选择一条要操作的行项目!"
     }, common_lang);
