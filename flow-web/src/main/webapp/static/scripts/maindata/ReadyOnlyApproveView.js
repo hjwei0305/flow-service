@@ -15,7 +15,7 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
                 border: false,
                 padding: 0,
                 width: 650,
-                height: 530,
+                height: 560,
                 id: "lookApprove",
                 itemspace: 0,
                 style: {

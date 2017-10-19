@@ -130,6 +130,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '            <div class="close">' + this.lang.collectText + '</div>' +
             '        </div>';
+        //html += '<iframe class="flow-iframe" height="600" src="' + this.pageUrl +  '></iframe>';
         html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
         return html += "</div>";
     },
@@ -454,16 +455,14 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         title: g.lang.operationHintText,
                         msg: g.lang.stopFlowMsgText,
                         buttons: [{
-                            title: g.lang.sureText,
-                            iconCss: "ecmp-common-ok",
+                            title: g.lang.cancelText,
                             handler: function () {
-                                g.submit(true);
                                 msgbox.remove();
                             }
-                        }, {
-                            title: g.lang.cancelText,
-                            iconCss: "ecmp-common-delete",
+                        },{
+                            title: g.lang.sureText,
                             handler: function () {
+                                g.submit(true);
                                 msgbox.remove();
                             }
                         }]
@@ -708,8 +707,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             itemspace: 0,
             items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    g.chooseAnyOneWind.remove();
+                }
+            },{
                 title: g.lang.saveText,
-                iconCss: "ecmp-common-save",
                 selected: true,
                 hidden: saveBtnIsHidden,
                 handler: function () {
@@ -719,12 +722,6 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     }
                     g.addChooseUsersInContainer(selectRow, currentChooseDivIndex, currentChooseTaskType);
                     g.chooseAnyOneWind.close();
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    g.chooseAnyOneWind.remove();
                 }
             }]
         });
@@ -1009,24 +1006,22 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         }
         g.win = EUI.Window({
             title: title,
-            width: 700,
+            width: 600,
             height: 450,
             id: "flowStartWind",
             isOverFlow: false,
-            padding: 0,
+            padding: 10,
             items: item,
             buttons: [{
-                title: "提交",
-                iconCss: "ecmp-common-ok",
+                title: g.lang.cancelText,
+                handler: function () {
+                    g.win.remove();
+                }
+            },{
+                title: g.lang.submitText,
                 selected: true,
                 handler: function () {
                     g.submit();
-                }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    g.win.remove();
                 }
             }]
         });
@@ -1074,7 +1069,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             title: "选择流程类型",
             width: 600,
             layout: "border",
-            padding: 0,
+            padding: 10,
             items: [this.initWindTbar(flowTypeList), this.initWindContainer()]
         });
     },
@@ -1155,8 +1150,9 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             region: "center",
             id: "containerId",
             height: 400,
-            // isOverFlow:false,
+            width: 600,
             border: true,
+            padding:0,
             style: {
                 "border-radius": "3px"
             },
@@ -1379,8 +1375,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             itemspace: 0,
             items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
-                title: "保存",
-                iconCss: "ecmp-common-save",
+                title: g.lang.cancelText,
+                handler: function () {
+                    g.chooseAnyOneWind.remove();
+                }
+            },{
+                title: g.lang.saveText,
                 selected: true,
                 hidden: saveBtnIsHidden,
                 handler: function () {
@@ -1390,12 +1390,6 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     }
                     g.addChooseUsersInContainer(selectRow, currentChooseDivIndex, currentChooseTaskType);
                     g.chooseAnyOneWind.close();
-                }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    g.chooseAnyOneWind.remove();
                 }
             }]
         });
@@ -1666,25 +1660,17 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             title: g.lang.flowInfoText,
             width: 620,
             height: 523,
-            padding: 0,
-            xtype: "Container",
-            layout: "border",
-            border: false,
-            items: [this.initTop(), this.initCenter()]
+            padding: 5,
+            items: [this.initCenter()]
         });
         EUI.getCmp("flowInstanceId").loadData(this.defaultData);
         g.topEvent();
     },
-    initTop: function () {
+    initCenter: function () {
         var g = this;
         return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 50,
-            padding: 8,
-            isOverFlow: false,
-            border: false,
-            items: [{
+            xtype: "Container",
+            tbar: [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + g.lang.launchHistoryText + "</span>",
                 width: 365,
@@ -1716,14 +1702,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                     $(".toptop-right").addClass("flowselect");
                     g.showDesgin()
                 }
-            }]
-        };
-    },
-    initCenter: function () {
-        var g = this;
-        return {
-            xtype: "Container",
-            region: "center",
+            }],
             border: true,
             isOverFlow: false,
             html: g.getTopHtml() + g.getCenterHtml()

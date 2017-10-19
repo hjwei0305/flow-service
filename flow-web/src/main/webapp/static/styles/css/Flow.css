@@ -336,7 +336,7 @@
  */
 .flowstart-node-box {
     border: 1px solid #eaeaea;
-    margin: 20px;
+    margin: 5px;
     overflow-y:auto;
     max-height: 350px;
     position: relative;

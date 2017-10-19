@@ -368,6 +368,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();
@@ -461,6 +462,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();

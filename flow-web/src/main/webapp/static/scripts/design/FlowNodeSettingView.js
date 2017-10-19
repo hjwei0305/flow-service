@@ -148,8 +148,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     getButtons: function () {
         var g = this;
         return [{
+            title: "取消",
+            handler: function () {
+                g.remove();
+                g.window.close();
+            }
+        },{
             title: "保存配置",
-            iconCss: "ecmp-common-save",
             selected: true,
             handler: function () {
                 var normalForm = EUI.getCmp("normal");
@@ -181,13 +186,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     event: eventData,
                     notify: g.type == "CallActivity"?'':g.getNotifyData()
                 });
-                g.remove();
-                g.window.close();
-            }
-        }, {
-            title: "取消",
-            iconCss: "ecmp-common-delete",
-            handler: function () {
                 g.remove();
                 g.window.close();
             }
@@ -416,7 +414,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 defaultConfig: {
                     border: true,
                     height: 240,
-                    width: 520,
+                    width: 520
                 },
                 items: [{
                     xtype: "ToolBar",
@@ -949,12 +947,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: "选择岗位",
-            padding: 0,
-            width: 1000,
+            padding: 15,
+            width: 1020,
             height: 350,
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            },{
                 title: "确定",
-                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionGrid");
@@ -963,105 +965,78 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     cmp.setDataInGrid(selectRow, false);
                     win.close();
                 }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    win.close();
-                }
             }],
             items: [{
                 xtype: "Container",
-                layout: "auto",
+                layout: "border",
                 border: false,
                 padding: 0,
-                itemspace: 1,
+                itemspace: 0,
                 items: [{
-                    xtype: "Container",
+                    xtype: "GridPanel",
+                    border: true,
+                    title: "已选择",
+                    width: 470,
+                    id: "selPositionGrid",
                     region: "west",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    width: 470,
-                    itemspace: 0,
-                    isOverFlow: false,
-                    items: [this.initTitle("已选择"), {
-                        xtype: "GridPanel",
-                        id: "selPositionGrid",
-                        region: "center",
-                        gridCfg: {
-                            datatype: "local",
-                            loadonce: true,
-                            multiselect: true,
-                            sortname: 'code',
-                            colModel: this.positionGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var cmp = EUI.getCmp("selPositionGrid");
-                                var row = cmp.grid.jqGrid('getRowData', rowid);
-                                if (!row) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                g.deleteRowData([row], cmp);
+                    gridCfg: {
+                        datatype: "local",
+                        loadonce: true,
+                        multiselect: true,
+                        sortname: 'code',
+                        colModel: this.positionGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var cmp = EUI.getCmp("selPositionGrid");
+                            var row = cmp.grid.jqGrid('getRowData', rowid);
+                            if (!row) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
                             }
+                            g.deleteRowData([row], cmp);
                         }
-                    }]
+                    }
                 }, g.getCenterIcon("position"), {
-                    xtype: "Container",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    itemspace: 0,
+                    xtype: "GridPanel",
                     width: 470,
+                    id: "allPositionGrid",
                     region: "east",
-                    items: [{
-                        xtype: "ToolBar",
-                        region: "north",
-                        height: 35,
-                        padding: 2,
-                        border: false,
-                        isOverFlow: false,
-                        items: [this.initTitle("所有岗位"), "->", {
-                            xtype: "SearchBox",
-                            id: "searchBox_positionGrid",
-                            width: 200,
-                            //searchDisplayText:请输入代码、名称或组织机构查询
-                            displayText: "请输入代码、名称或组织机构查询",
-                            onSearch: function (v) {
-                                EUI.getCmp("allPositionGrid").setPostParams({
-                                    Quick_value: v,
-                                }, true);
-                            },
-                            afterClear: function () {
-                                EUI.getCmp("allPositionGrid").setPostParams({
-                                    Quick_value: null,
-                                }, true);
-                            }
-                        }]
-                    }, {
-                        xtype: "GridPanel",
-                        id: "allPositionGrid",
-                        region: "center",
-                        searchConfig: {
-                            searchCols: ["code", "name"]
+                    border: true,
+                    title: "所有岗位",
+                    tbar: ["->", {
+                        xtype: "SearchBox",
+                        id: "searchBox_positionGrid",
+                        width: 200,
+                        displayText: "请输入代码、名称或组织机构查询",
+                        onSearch: function (v) {
+                            EUI.getCmp("allPositionGrid").setPostParams({
+                                Quick_value: v
+                            }, true);
                         },
-                        gridCfg: {
-                            hasPager: true,
-                            multiselect: true,
-                            loadonce: false,
-                            sortname: 'code',
-                            url: _ctxPath + "/design/listPos",
-                            colModel: this.positionGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var selectRow = EUI.getCmp("allPositionGrid").grid.jqGrid('getRowData', rowid);
-                                if (!selectRow) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                EUI.getCmp("selPositionGrid").addRowData([selectRow], true);
-                            }
+                        afterClear: function () {
+                            EUI.getCmp("allPositionGrid").setPostParams({
+                                Quick_value: null
+                            }, true);
                         }
-                    }]
+                    }],
+                    searchConfig: {
+                        searchCols: ["code", "name"]
+                    },
+                    gridCfg: {
+                        hasPager: true,
+                        multiselect: true,
+                        loadonce: false,
+                        sortname: 'code',
+                        url: _ctxPath + "/design/listPos",
+                        colModel: this.positionGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var selectRow = EUI.getCmp("allPositionGrid").grid.jqGrid('getRowData', rowid);
+                            if (!selectRow) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
+                            }
+                            EUI.getCmp("selPositionGrid").addRowData([selectRow], true);
+                        }
+                    }
                 }]
             }]
         });
@@ -1102,12 +1077,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: "选择岗位类别",
-            padding: 0,
-            width: 1000,
+            padding: 15,
+            width: 1020,
             height: 350,
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            },{
                 title: "确定",
-                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var cmp = EUI.getCmp("positionTypeGrid");
@@ -1116,100 +1095,73 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     cmp.setDataInGrid(selectRow, false);
                     win.close();
                 }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    win.close();
-                }
             }],
             items: [{
                 xtype: "Container",
-                layout: "auto",
+                layout: "border",
                 border: false,
                 padding: 0,
-                itemspace: 1,
                 items: [{
-                    xtype: "Container",
+                    xtype: "GridPanel",
+                    border: true,
+                    title: "已选择",
+                    width: 470,
                     region: "west",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    width: 470,
-                    itemspace: 0,
-                    isOverFlow: false,
-                    items: [this.initTitle("已选择"), {
-                        xtype: "GridPanel",
-                        id: "selPositionTypeGrid",
-                        region: "center",
-                        gridCfg: {
-                            datatype: "local",
-                            loadonce: true,
-                            hasPager: false,
-                            multiselect: true,
-                            sortname: 'code',
-                            colModel: this.positionTypeGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var cmp = EUI.getCmp("selPositionTypeGrid");
-                                var row = cmp.grid.jqGrid('getRowData', rowid);
-                                if (!row) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                g.deleteRowData([row], cmp);
+                    id: "selPositionTypeGrid",
+                    gridCfg: {
+                        datatype: "local",
+                        loadonce: true,
+                        hasPager: false,
+                        multiselect: true,
+                        sortname: 'code',
+                        colModel: this.positionTypeGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var cmp = EUI.getCmp("selPositionTypeGrid");
+                            var row = cmp.grid.jqGrid('getRowData', rowid);
+                            if (!row) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
                             }
+                            g.deleteRowData([row], cmp);
                         }
-                    }]
-                }, this.getCenterIcon("positionType"), {
-                    xtype: "Container",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    itemspace: 0,
-                    width: 470,
+                    }
+
+                 }, this.getCenterIcon("positionType"), {
+                    xtype: "GridPanel",
+                    border: true,
                     region: "east",
-                    items: [{
-                        xtype: "ToolBar",
-                        region: "north",
-                        height: 35,
-                        padding: 2,
-                        border: false,
-                        isOverFlow: false,
-                        items: [this.initTitle("所有岗位类别"), "->", {
-                            xtype: "SearchBox",
-                            id: "searchBox_positionTypeGrid",
-                            width: 200,
-                            //searchDisplayText:请输入代码或名称查询
-                            displayText: "请输入代码或名称查询",
-                            onSearch: function (v) {
-                                EUI.getCmp("allPositionTypeGrid").localSearch(v);
-                            },
-                            afterClear: function () {
-                                EUI.getCmp("allPositionTypeGrid").restore();
-                            }
-                        }]
-                    }, {
-                        xtype: "GridPanel",
-                        region: "center",
-                        id: "allPositionTypeGrid",
-                        gridCfg: {
-                            multiselect: true,
-                            hasPager: false,
-                            sortname: 'code',
-                            datatype: "local",
-                            loadonce: true,
-                            url: _ctxPath + "/design/listPosType",
-                            colModel: this.positionTypeGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var selectRow = EUI.getCmp("allPositionTypeGrid").grid.jqGrid('getRowData', rowid);
-                                if (!selectRow) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                EUI.getCmp("selPositionTypeGrid").addRowData([selectRow], true);
-                            }
+                    width: 470,
+                    title: "所有岗位类别",
+                    tbar: [ "->", {
+                        xtype: "SearchBox",
+                        id: "searchBox_positionTypeGrid",
+                        width: 200,
+                        displayText: "请输入代码或名称查询",
+                        onSearch: function (v) {
+                            EUI.getCmp("allPositionTypeGrid").localSearch(v);
+                        },
+                        afterClear: function () {
+                            EUI.getCmp("allPositionTypeGrid").restore();
                         }
-                    }]
+                    }],
+                    id: "allPositionTypeGrid",
+                    gridCfg: {
+                        multiselect: true,
+                        hasPager: false,
+                        sortname: 'code',
+                        datatype: "local",
+                        loadonce: true,
+                        url: _ctxPath + "/design/listPosType",
+                        colModel: this.positionTypeGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var selectRow = EUI.getCmp("allPositionTypeGrid").grid.jqGrid('getRowData', rowid);
+                            if (!selectRow) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
+                            }
+                            EUI.getCmp("selPositionTypeGrid").addRowData([selectRow], true);
+                        }
+                    }
                 }]
             }]
         });
@@ -1223,7 +1175,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "Container",
             region: "center",
-            width: 60,
+            width: 40,
             border: false,
             isOverFlow: false,
             html: "<div class='ecmp-common-moveright arrow-right' id=" + id + "-right></div>" +
@@ -1345,7 +1297,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
     },
     loadNotifyDataAfter: function (tab, data) {
-        // EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
         EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
         EUI.getCmp(tab.items[1]).loadData(data.notifyPosition);
     },
@@ -1376,12 +1327,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var message = EUI.MessageBox({
             border: true,
-            title: "提示",
+            title: g.lang.tiShiText,
             showClose: true,
             msg: msg,
             buttons: [{
                 title: "确定",
-                iconCss: "ecmp-common-ok",
+                selected: true,
                 handler: function () {
                     message.remove();
                 }
@@ -1399,45 +1350,36 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var g = this;
         g.notifySelectPositionWin = EUI.Window({
             title: "选择岗位",
-            padding: 0,
-            width: 1000,
+            padding: 15,
+            width: 1020,
             height: 350,
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    g.notifySelectPositionWin.close();
+                }
+            },{
                 title: "确定",
-                iconCss: "ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     var selectRow = EUI.getCmp("notifyChoosePositionGrid").getGridData();
                     callback && callback.call(this, selectRow);
                 }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
-                    g.notifySelectPositionWin.close();
-                }
             }],
             items: [{
                 xtype: "Container",
-                layout: "auto",
+                layout: "border",
                 border: false,
                 padding: 0,
                 itemspace: 1,
                 items: [{
-                    xtype: "Container",
-                    region: "west",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    width: 470,
-                    itemspace: 0,
-                    isOverFlow: false,
-                    items: [this.initTitle("已选择"), {
                         xtype: "GridPanel",
+                        title: "已选择",
+                        border: true,
+                        width: 470,
                         id: "notifyChoosePositionGrid",
-                        region: "center",
+                        region: "west",
                         gridCfg: {
-
                             datatype: "local",
                             loadonce: true,
                             multiselect: true,
@@ -1453,27 +1395,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                                 g.deleteRowData([row], cmp);
                             }
                         }
-                    }]
-                }, g.getCenterIcon("notifyPosition"), {
-                    xtype: "Container",
-                    layout: "border",
-                    border: false,
-                    padding: 0,
-                    itemspace: 0,
-                    width: 470,
-                    region: "east",
-                    items: [{
-                        xtype: "ToolBar",
-                        region: "north",
-                        height: 35,
-                        padding: 2,
-                        border: false,
-                        isOverFlow: false,
-                        items: [this.initTitle("所有岗位"), "->", {
+                    }, g.getCenterIcon("notifyPosition"), {
+                        xtype: "GridPanel",
+                        border: true,
+                        tbar: [ "->", {
                             xtype: "SearchBox",
                             id: "searchBox_positionGrid",
                             width: 200,
-                            //searchDisplayText:请输入代码、名称或组织机构查询
                             displayText: "请输入代码、名称或组织机构查询",
                             onSearch: function (v) {
                                 EUI.getCmp("notifyAllPositionGrid").setPostParams({
@@ -1485,11 +1413,11 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                                     Quick_value: null
                                 }, true);
                             }
-                        }]
-                    }, {
-                        xtype: "GridPanel",
+                        }],
                         id: "notifyAllPositionGrid",
-                        region: "center",
+                        title: "所有岗位",
+                        width: 470,
+                        region: "east",
                         searchConfig: {
                             searchCols: ["code", "name"]
                         },
@@ -1511,7 +1439,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         }
                     }]
                 }]
-            }]
         });
         EUI.getCmp("notifyChoosePositionGrid").reset();
         if (!notifyChoosePositionGridData) {

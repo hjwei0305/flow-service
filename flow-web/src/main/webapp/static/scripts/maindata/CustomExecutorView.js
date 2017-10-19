@@ -149,7 +149,6 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
     operateBtnEvents: function () {
         $(".condetail_delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
             g.deleteExecuor(rowData);
         });
     },
@@ -159,8 +158,12 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
             title: g.lang.tiShiText,
             msg: g.lang.ifDelMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
                selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -185,12 +188,6 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
-                }
             }]
         })
     },
@@ -213,21 +210,10 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
         $(".arrow-left").live("click", function () {
             var rightGrid = EUI.getCmp("executorSelectedGrid");
             var rowDatas = rightGrid.getSelectRow();
-            // console.log(rowDatas);
-            // var changedDatas = [];
-            // for(var i=0; i<rowDatas.length;i++){
-            //     var object = new Object();
-            //     object.id = rowDatas[i].employeeId;
-            //     object.userName = rowDatas[i].employeeName;
-            //     changedDatas.push(object)
-            // }
-            // console.log(changedDatas)
             var gridPanel = EUI.getCmp("executorNotSelectedGrid");
             var selectData = gridPanel.getGridData();
-            //  console.log(selectData);
             for (var i = 0; i < rowDatas.length; i++) {
                 var item = rowDatas[i];
-               // console.log(item);
                 if (!g.isInArray(item, selectData)) {
                     gridPanel.grid.addRowData(item.id, item);
                     rightGrid.deleteRow(item.id);
@@ -258,17 +244,15 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                     this.getRightGrid()]
             }],
             buttons: [{
+                title: this.lang.cancelText,
+                handler: function () {
+                    g.excutorSetWind.remove();
+                }
+            },{
                 title: this.lang.sureText,
-                iconCss:"ecmp-common-ok",
                 selected: true,
                 handler: function () {
                     g.saveExecutorSet();
-                }
-            }, {
-                title: this.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    g.excutorSetWind.remove();
                 }
             }]
         })

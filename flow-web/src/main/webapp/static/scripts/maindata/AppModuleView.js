@@ -93,12 +93,16 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                 title: g.lang.deleteText,
                 msg: g.lang.deleteHintMessageText,
                 buttons: [{
+                    title: g.lang.cancelText,
+                    handler: function () {
+                        infoBox.remove();
+                    }
+                },{
                     title: g.lang.okText,
-                    iconCss:"ecmp-common-ok",
                     selected:true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
-                            msg: g.lang.deleteMaskMessageText,
+                            msg: g.lang.deleteMaskMessageText
                         });
                         EUI.Store({
                             url: _ctxPath + "/appModule/delete",
@@ -127,16 +131,10 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                                     showTime: 6
                                 };
                                 EUI.ProcessStatus(status);
-                            },
+                            }
 
                         });
 
-                    }
-                }, {
-                    title: g.lang.cancelText,
-                    iconCss:"ecmp-common-delete",
-                    handler: function () {
-                        infoBox.remove();
                     }
                 }]
             });
@@ -204,26 +202,24 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                 }]
             }],
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    g.addAndEditWin.remove();
+                }
+            },{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
                 selected:true,
                 handler: function () {
                     g.save();
                 }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    g.addAndEditWin.remove();
-                }
-            }],
+            }]
         });
         g.editFormCmp = EUI.getCmp("editForm");
     },
     save: function () {
         var g = this;
         if (!g.editFormCmp.isValid()) {
-            g.message(g.lang.unFilledText);
+            EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
             return;
         }
         var data = g.editFormCmp.getFormValue();
@@ -271,14 +267,11 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var message = EUI.MessageBox({
             border: true,
-            //hintText: "提示",
             title: g.lang.hintText,
             showClose: true,
             msg: msg,
             buttons: [{
-                //okText:"确定",
                 title: g.lang.okText,
-                iconCss:"ecmp-common-ok",
                 selected:true,
                 handler: function () {
                     message.remove();

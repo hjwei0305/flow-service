@@ -84,13 +84,13 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         EUI.FieldGroup({
             renderTo: "dateField",
             itemspace: 10,
-            width: 260,
+            width: 350,
             items: [{
                 xtype: "DateField",
                 name:"startDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 112,
+                width: 160,
                 allowBlank:false,
                 value:g.startTime,
                 beforeSelect:function (data) {
@@ -111,7 +111,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 name:"endDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 112,
+                width: 160,
                 allowBlank:false,
                 value:g.endTime,
                 beforeSelect:function (data) {

@@ -303,6 +303,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //计算时间几天前
     countDate: function (startTime) {
+        if(!startTime){
+            return ;
+        }
         var g = this;
         var date = new Date();
         var endTime = date.getTime();

@@ -99,11 +99,16 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var busModelId = data.data["businessModel.id"];
                 if (g.businessModelId && g.businessModelId != busModelId) {
                     var msgBox = EUI.MessageBox({
-                        title: "操作提示",
+                        title: g.lang.tiShiText,
                         msg: "切换流程类型将清空所有流程设计，请确定是否继续?",
                         buttons: [{
+                            title: "取消",
+                            handler: function () {
+                                msgBox.remove();
+                            }
+                        },{
                             title: "确定",
-                            iconCss: "ecmp-common-ok",
+                            selected: true,
                             handler: function () {
                                 g.businessModelId = busModelId;
                                 scope.setSubmitValue({
@@ -111,12 +116,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                     flowTypeId: data.data.id
                                 });
                                 g.clear();
-                                msgBox.remove();
-                            }
-                        }, {
-                            title: "取消",
-                            iconCss: "ecmp-common-delete",
-                            handler: function () {
                                 msgBox.remove();
                             }
                         }]
@@ -250,6 +249,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             selected: true,
             title: this.lang.deployText,
             iconCss: "ecmp-common-upload",
+            style: {"margin-right":"20px"},
             handler: function () {
                 g.save(true);
             }
@@ -257,6 +257,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: this.lang.saveText,
             iconCss: "ecmp-common-save",
+            style: {"margin-right":"20px"},
             handler: function () {
                 g.save(false);
             }
@@ -264,22 +265,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: this.lang.resetText,
             iconCss: "ecmp-common-clear",
+            style: {"margin-right":"20px"},
             handler: function () {
                 var msgBox = EUI.MessageBox({
                     title: "提示",
                     msg: "清空设计将不能恢复，确定要继续吗？",
                     buttons: [{
+                        title: "取消",
+                        handler: function () {
+                            msgBox.remove();
+                        }
+                    },{
                         title: "确定",
-                        iconCss: "ecmp-common-ok",
                         selected: true,
                         handler: function () {
                             g.clear();
-                            msgBox.remove();
-                        }
-                    }, {
-                        title: "取消",
-                        iconCss: "ecmp-common-delete",
-                        handler: function () {
                             msgBox.remove();
                         }
                     }]
@@ -1392,8 +1392,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 value: title
             }],
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    win.close();
+                }
+            },{
                 title: "保存配置",
-                iconCss: "ecmp-common-save",
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
@@ -1405,12 +1409,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         return;
                     }
                     callback && callback.call(this, name);
-                    win.close();
-                }
-            }, {
-                title: "取消",
-                iconCss: "ecmp-common-delete",
-                handler: function () {
                     win.close();
                 }
             }]

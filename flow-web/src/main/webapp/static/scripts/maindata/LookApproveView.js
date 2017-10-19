@@ -162,6 +162,7 @@ EUI.LookApproveView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("lookBill");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();

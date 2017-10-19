@@ -76,16 +76,9 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: this.lang.searchNameText,
                 onSearch: function (value) {
-                    if (!value) {
-                        g.gridCmp.setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     g.gridCmp.setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }];
     },

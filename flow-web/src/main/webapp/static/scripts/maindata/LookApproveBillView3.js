@@ -15,7 +15,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 border: false,
                 padding: 0,
                 width: 650,
-                height: 600,
+                height: 650,
                 id: "lookApprove",
                 itemspace: 0,
                 style: {
@@ -49,6 +49,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "FormPanel",
             id: "lookBill",
+            isOverFlow: false,
             border: false,
             region: "center",
             padding:0,
@@ -220,7 +221,6 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
         return {
             xtype: "Container",
             region: "south",
-            height: 55,
             id: "btn",
             border: false,
             padding: 0,
@@ -233,6 +233,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("lookBill");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();

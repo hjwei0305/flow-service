@@ -3,26 +3,18 @@
  */
 EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
     initComponent: function () {
-        EUI.Container({
+        this.gridCmp=EUI.GridPanel({
             renderTo: this.renderTo,
-            layout: "border",
-            border: false,
-            padding: 8,
-            itemspace: 0,
-            items: [this.initTbar(), this.initGrid()]
+            title: "流程实例管理",
+            border: true,
+            tbar: this.initTbar(),
+            gridCfg: this.initGrid()
         });
         this.addEvents();
     },
     initTbar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            padding: 0,
-            isOverFlow:false,
-            border: false,
-            items: [{
+        return   [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + "应用模块" + "</span>",
                 labelWidth: 70,
@@ -42,8 +34,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     var cobo = EUI.getCmp("appModuleComboBoxId");
                     cobo.setValue(data[0].name);
                     EUI.getCmp("businessModelComboBoxId").store.params.appModuleId = 	data[0].id;
-                    EUI.getCmp("gridPanel").grid[0].p.postData={};
-                    EUI.getCmp("gridPanel").setGridParams({
+                    g.gridCmp.grid[0].p.postData={};
+                    g.gridCmp.setGridParams({
                         url: _ctxPath + "/flowInstance/listFlowInstance",
                         loadonce: false,
                         datatype: "json",
@@ -57,8 +49,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp("businessModelComboBoxId").setValue("");
                     EUI.getCmp("flowTypeComboBoxId").setValue("");
                     EUI.getCmp("flowTypeComboBoxId").store.params.businessModelId =null;
-                    EUI.getCmp("gridPanel").grid[0].p.postData={};
-                    EUI.getCmp("gridPanel").setGridParams({
+                    g.gridCmp.grid[0].p.postData={};
+                    g.gridCmp.setGridParams({
                         url: _ctxPath + "/flowInstance/listFlowInstance",
                         loadonce: false,
                         datatype: "json",
@@ -90,8 +82,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 afterSelect: function (data) {
                     EUI.getCmp("flowTypeComboBoxId").store.params.businessModelId = data.data.id;
                     EUI.getCmp("flowTypeComboBoxId").setValue("");
-                    EUI.getCmp("gridPanel").grid[0].p.postData={};
-                    EUI.getCmp("gridPanel").setGridParams({
+                    g.gridCmp.grid[0].p.postData={};
+                    g.gridCmp.setGridParams({
                         url: _ctxPath + "/flowInstance/listFlowInstance",
                         loadonce: false,
                         datatype: "json",
@@ -121,8 +113,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     }
                 },
                 afterSelect: function (data) {
-                    EUI.getCmp("gridPanel").grid[0].p.postData={};
-                     EUI.getCmp("gridPanel").setGridParams({
+                    g.gridCmp.grid[0].p.postData={};
+                    g.gridCmp.setGridParams({
                         url: _ctxPath + "/flowInstance/listFlowInstance",
                         loadonce: false,
                         datatype: "json",
@@ -135,31 +127,15 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_flowName: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                    EUI.getCmp("gridPanel").setPostParams({
+                    g.gridCmp.setPostParams({
                             Q_LK_flowName: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
-            }]
-        };
+            }];
     },
     initGrid: function () {
         var g = this;
-        return {
-            xtype: "GridPanel",
-            region: "center",
-            id: "gridPanel",
-            style: {
-                "border": "1px solid #aaa",
-                "border-radius": "3px"
-            },
-            gridCfg: {
+        return{
                 loadonce: true,
                 datatype: "local",
                 colModel: [{
@@ -169,11 +145,6 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        // var strVar = "<div class='condetail_operate'>"
-                        //     + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
-                        //     + "<div class='deleteBtn'> "+g.lang.deleteText+"</div></div>";
-                        // return strVar;
-                        //  return '<i class="ecmp-common-delete icon-space fontcusor" title="'+g.lang.deleteText+'"></i>'+
                         return  '<i class="ecmp-common-view  fontcusor" title="'+g.lang.showDoneText+'"></i>';
                     }
                 }, {
@@ -186,12 +157,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "flowName",
                     width:170,
                     title: false
-                }/*, {
-                    label: "业务ID",
-                    name: "businessId",
-                    index: "businessId",
-                    title: false
-                }*/, {
+                } , {
                     label: g.lang.startTimeText,
                     name: "startDate",
                     index: "startDate",
@@ -212,12 +178,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width:170,
                     title: false,
                     hidden:true
-                }/*, {
-                    label: "引擎流程实例ID",
-                    name: "actInstanceId",
-                    index: "actInstanceId",
-                    title: false,
-                }*/, {
+                } , {
                     label: g.lang.whetherSuspendText,
                     name: "suspended",
                     index: "suspended",
@@ -253,19 +214,16 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     }
                 }],
                 shrinkToFit: false //固定宽度
-            }
         };
     },
     addEvents: function () {
         var g = this;
         $(".ecmp-common-view").live("click", function () {
-            var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data);
+            var data = g.gridCmp.getSelectRow();
             g.showTaskHistoryWind(data);
         });
         $(".ecmp-common-delete").live("click", function () {
-            var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
+            var rowData = g.gridCmp.getSelectRow();
             g.deleteFlowInstance(rowData);
         });
     },
@@ -292,7 +250,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                             myMask.hide();
                             EUI.ProcessStatus(result);
                             if (result.success) {
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                g.gridCmp.grid.trigger("reloadGrid");
                             }
                         },
                         failure: function (result) {
@@ -314,28 +272,19 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var win = EUI.Window({
             title: g.lang.taskDoneText,
-            layout: "border",
+            iconCss: "ecmp-eui-look",
             width: 1100,
             height: 500,
             padding: 8,
-            itemspace: 0,
-            items: [this.initWindTbar(), this.initWindGrid(data)]
+            items: [this.initWindGrid(data)]
         });
     },
     initWindTbar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            padding: 0,
-            isOverFlow:false,
-            border: false,
-            items: ['->', {
+        return  ['->', {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
-                    console.log(value);
                     if (!value) {
                         EUI.getCmp("flowHistoryGrid").setPostParams({
                                 Q_LK_flowTaskName: ""
@@ -347,48 +296,27 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         }
                     ).trigger("reloadGrid");
                 }
-            }]
-        }
+            }];
     },
     initWindGrid: function (data) {
         var g = this;
         return {
             xtype: "GridPanel",
-            region: "center",
+            border: true,
+            tbar: g.initWindTbar(),
             id:"flowHistoryGrid",
-            style: {
-                "border": "1px solid #aaa",
-                "border-radius": "3px"
-            },
             gridCfg: {
-                //   loadonce: true,
                 url: _ctxPath + "/flowInstance/listFlowHistory",
                 postData: {
                     "Q_EQ_flowInstance.id": data.id,
                     S_createdDate: "ASC"
                 },
-                colModel: [/*{
-                 label: this.lang.operateText,
-                 name: "operate",
-                 index: "operate",
-                 width: "100",
-                 align: "center",
-                 formatter: function (cellvalue, options, rowObject) {
-                 var strVar = "<div class='condetail_operate'>"
-                 + "<div class='flowHistoryBtn'>"+g.lang.showDoneText+"</div>"
-                 + "<div class='condetail_delete'></div></div>";
-                 return strVar;
-                 }
-                 },*/ {
+                colModel: [  {
                     label: "ID",
                     name: "id",
                     index: "id",
                     hidden: true
-                }, /*{
-                 label : g.lang.flowNameText,
-                 name : "flowName",
-                 index : "flowName"
-                 },*/{
+                },  {
                     label: g.lang.taskNameText,
                     name: "flowTaskName",
                     index: "flowTaskName"
@@ -420,15 +348,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     label: g.lang.agentStatusText,
                     name: "proxyStatus",
                     index: "proxyStatus"
-                }, /*{
-                 label : "流程实例ID" ,
-                 name : "flowInstanceId",
-                 index : "flowInstanceId"
-                 },{
-                 label : "流程定义ID" ,
-                 name : "flowDefinitionId",
-                 index : "flowDefinitionId"
-                 },*/{
+                },  {
                     label: g.lang.processorNameText,
                     name: "executorName",
                     index: "executorName"
@@ -480,19 +400,11 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "lastEditedDate",
                     align: "center"
                 },
-                    /*    ,{
-                     label : "候选人账号" ,
-                     name : "candidateAccount",
-                     index : "candidateAccount"
-                     },{
-                     label : "执行时间" ,
-                     name : "executeDate",
-                     index : "executeDate"
-                     },*/{
+                    {
                         label: g.lang.depictText,
                         name: "depict",
                         index: "depict"
-                    }],
+                    }]
             }
         }
     }

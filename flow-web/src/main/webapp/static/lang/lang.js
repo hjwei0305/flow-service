@@ -360,7 +360,7 @@ if (EUI.CustomExecutorView) {
 
 if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
-        flowDefinitionVersionText: "流程定义版本",
+        flowDefinitionVersionText: "流程定义版本管理",
         definitionIDText: "定义ID",
         definitionKEYText: "定义KEY",
         deployIDText: "部署ID",
@@ -534,9 +534,37 @@ if (EUI.DefaultBusinessModel3View) {
 }
 
 if (EUI.DefaultBusinessModel2View) {
-    EUI.DefaultBusinessModel2View.prototype.lang = EUI.applyIf( {}, common_lang);
+    EUI.DefaultBusinessModel2View.prototype.lang = EUI.applyIf( {
+        startFlowMsgText: "确定立即启动流程吗?",
+        orgText: "组织机构",
+        orgIDText: "组织机构ID",
+        orgCodeText: "组织机构code ",
+        orgTenantCodeText: "组织机构租户代码",
+        orgCodePathText: "组织机构codePath",
+        businessTypeText: "业务类型",
+        applyMarkText: "申请说明",
+        applyOutlineText: "申请概要",
+        applyDetailText: "申请详情",
+        remarkText: "备注说明",
+        amountText:"数量",
+        priceText: "单价"
+    }, common_lang);
 }
 
 if (EUI.BuiltInApproveView) {
-    EUI.BuiltInApproveView.prototype.lang = EUI.applyIf( {}, common_lang);
+    EUI.BuiltInApproveView.prototype.lang = EUI.applyIf( {
+        startFlowMsgText: "确定立即启动流程吗?",
+        orgText: "组织机构",
+        orgIDText: "组织机构ID",
+        orgCodeText: "组织机构code ",
+        orgTenantCodeText: "组织机构租户代码",
+        orgCodePathText: "组织机构codePath",
+        businessTypeText: "业务类型",
+        applyMarkText: "申请说明",
+        applyOutlineText: "申请概要",
+        applyDetailText: "申请详情",
+        remarkText: "备注说明",
+        amountText:"数量",
+        priceText: "单价"
+    }, common_lang);
 }

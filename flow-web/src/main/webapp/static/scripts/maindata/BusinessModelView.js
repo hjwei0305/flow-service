@@ -11,13 +11,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             renderTo: this.renderTo,
             title: "业务实体",
             border: true,
-            tbar: this.initToolbar(),
-            gridCfg: this.initCenter()
+            tbar: this.initTbar(),
+            gridCfg: this.initGrid()
         });
         this.addEvents();
     },
     //业务实体主页面-工具栏
-    initToolbar: function () {
+    initTbar: function () {
         var g = this;
         return  [{
                 xtype: "ComboBox",
@@ -66,8 +66,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     g.appModuleCode = data.data.code;
                     g.gridCmp.setPostParams({
                             Q_EQ_appModuleId: data.data.id
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }, {
                 xtype: "Button",
@@ -81,21 +80,14 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: this.lang.searchNameText,
                 onSearch: function (value) {
-                    if (!value) {
-                        g.gridCmp.setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     g.gridCmp.setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }];
     },
     //业务实体主页面-数据列表
-    initCenter: function () {
+    initGrid: function () {
         var g = this;
         return  {
                 shrinkToFit: false,//固定宽度
@@ -129,38 +121,38 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     label: this.lang.classPathText,
                     name: "className",
                     index: "className",
-                    width:120
+                    width:350
                 }, {
                     label: this.lang.conditonBeanText,
                     name: "conditonBean",
                     index: "conditonBean",
-                    width:120
+                    width:450
                 }, {
                     label: this.lang.applyModuleCodeText,
                     name: "appModuleCode",
                     index: "appModuleCode",
-                    width:140
+                    width:120
                 }, {
                     label: this.lang.dataAccessObjectText,
                     name: "daoBean",
                     index: "daoBean",
-                    width:140
+                    width:220
                 }, {
                     label: this.lang.formURLText,
                     name: "lookUrl",
                     index: "lookUrl",
-                    width:120
+                    width:400
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
                     index: "depict",
-                    width:140,
+                    width:400,
                     hidden:true
                 }, {
                     label: "所属应用模块",
                     name: "appModuleName",
                     index: "appModuleName",
-                    width:140,
+                    width:220,
                     hidden:true
                 }],
                 ondbClick: function () {
