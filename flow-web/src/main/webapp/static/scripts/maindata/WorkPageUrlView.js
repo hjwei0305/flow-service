@@ -260,7 +260,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: g.lang.addNewWorkPageUrlText,
-            iconCss: "ecmp-eui-edit",
+            iconCss: "ecmp-eui-add",
             height: 250,
             padding: 15,
             items: [{

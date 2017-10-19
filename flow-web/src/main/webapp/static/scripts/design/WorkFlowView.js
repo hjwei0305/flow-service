@@ -91,7 +91,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }]
             },
             labelWidth: 85,
-            width: isCopy && !isFromVersion ? 159 : 190,
+            width: isCopy && !isFromVersion ? 159 : 160,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
             allowBlank: false,
             beforeSelect: function (data) {
@@ -139,7 +139,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "TextField",
             name: "id",
-            width: isCopy && !isFromVersion ? 99 : 110,
+            width: isCopy && !isFromVersion ? 110 : 110,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
             labelWidth: 85,
             allowBlank: false,
@@ -165,13 +165,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "NumberField",
             displayText: "请输入优先级",
             labelWidth: isCopy && !isFromVersion ? 65 : 85,
-            width: isCopy && !isFromVersion ? 80 : 100,
+            width: isCopy && !isFromVersion ? 100 : 100,
             allowNegative: false,
             name: "priority"
         }, {
             xtype: "ComboBox",
-            width: 145,
-            displayText: "是否允许为子流程",
+            width: 140,
+            displayText: "允许为子流程",
             name: "subProcessName",
             reader: {name: 'name', field: ['value']},
             field: ["subProcess"],
@@ -208,7 +208,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return [{
             xtype: "FormPanel",
-            width: 816,
+            width: 850,
             isOverFlow: false,
             height: 40,
             padding: 0,
