@@ -77,7 +77,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText:  "请输入用户名称或编号进行搜索",
+                displayText:  g.lang.searchDisplayText,
                 onSearch: function (value) {
                     EUI.getCmp("gridPanel").localSearch(value);
                 },

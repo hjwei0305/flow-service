@@ -25,6 +25,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 labelWidth: 70,
                 id: "coboId",
                 async: false,
+                canClear: false,
                 colon: false,
                 name: "appModule.name",
                 store: {

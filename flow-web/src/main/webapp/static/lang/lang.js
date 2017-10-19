@@ -141,6 +141,7 @@ if (EUI.FlowTypeView) {
 
 if (EUI.FlowInstanceView) {
     EUI.apply(EUI.FlowInstanceView.prototype.lang, {
+        modelText: "应用模块",
         addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
         updateFlowTypeText: "编辑流程类型",

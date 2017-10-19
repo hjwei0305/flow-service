@@ -16,10 +16,11 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return   [{
                 xtype: "ComboBox",
-                title: "<span style='font-weight: bold'>" + "应用模块" + "</span>",
+                title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
                 labelWidth: 70,
                 id: "appModuleComboBoxId",
                 async: false,
+                canClear: false,
                 colon: false,
                 name: "appModule.name",
                 store: {

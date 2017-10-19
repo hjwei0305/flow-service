@@ -551,7 +551,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 border: false,
                 items: ['->', {
                     xtype: "SearchBox",
-                    displayText: "请输入用户名称或编号进行搜索",
+                    displayText: g.lang.searchDisplayText,
                     onSearch: function (value) {
                         EUI.getCmp("chooseUserGridPanel").localSearch(value);
                     },

@@ -706,7 +706,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
+            items: [this.initChooseUserWindTree(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
                 title: g.lang.cancelText,
                 handler: function () {
@@ -717,7 +717,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 hidden: saveBtnIsHidden,
                 handler: function () {
-                    var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                    var selectRow = EUI.getCmp("chooseUserGridPanel_approve").getSelectRow();
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
@@ -728,32 +728,12 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         });
     }
     ,
-    initChooseUserWindLeft: function () {
-        var g = this;
-        return {
-            xtype: "Container",
-            region: "west",
-            border: false,
-            width: 250,
-            itemspace: 0,
-            layout: "border",
-            items: [this.initChooseUserWindTopBar(), this.initChooseUserWindTree()]
-        }
-    }
-    ,
     initChooseUserWindTopBar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            border: false,
-            padding: 0,
-            isOverFlow: false,
-            items: ['->', {
+        return  ['->', {
                 xtype: "SearchBox",
-                width: 140,
-                displayText: g.lang.searchByNameText,
+                width: 200,
+                displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     EUI.getCmp("chooseAnyUserTree").search(v);
                     g.selectedOrgId = null;
@@ -763,13 +743,13 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     g.selectedOrgId = null;
                 }
             }]
-        };
-    }
-    ,
+    } ,
     initChooseUserWindTree: function () {
         var g = this;
         return {
             xtype: "TreePanel",
+            width: 250,
+        //    tbar: this.initChooseUserWindTopBar(),
             region: "center",
             id: "chooseAnyUserTree",
             url: _ctxPath + "/flowDefination/listAllOrgs",
@@ -781,8 +761,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             },
             onSelect: function (node) {
                 g.selectedOrgId = node.id;
-                //   EUI.getCmp("gridPanel").grid[0].p.postData={}
-                var chooseUserGridPanel = EUI.getCmp("chooseUserGridPanel").setGridParams({
+                EUI.getCmp("chooseUserGridPanel_approve").setGridParams({
                     url: _ctxPath + "/customExecutor/listAllUser",
                     loadonce: true,
                     datatype: "json",
@@ -805,9 +784,19 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             afterShowTree: function (data) {
                 this.setSelect(data[0].id);
             }
-        }
+        };
     }
     ,
+    initUserGridTbar : function(){
+        var g = this;
+        return ['->', {
+            xtype: "SearchBox",
+            displayText: g.lang.searchDisplayText,
+            onSearch: function (value) {
+                EUI.getCmp("chooseUserGridPanel_approve").localSearch(value);
+            }
+        }];
+    },
     InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
@@ -816,43 +805,18 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
         } else {
             isShowMultiselect = true;
         }
-        return {
-            xtype: "Container",
-            region: "center",
-            itemspace: 0,
-            layout: "border",
-            border: false,
-            items: [{
-                xtype: "ToolBar",
-                region: "north",
-                isOverFlow: false,
-                padding: 0,
-                height: 40,
-                border: false,
-                items: ['->', {
-                    xtype: "SearchBox",
-                    displayText: g.lang.seachByIdOrNameText,
-                    onSearch: function (value) {
-                        EUI.getCmp("chooseUserGridPanel").localSearch(value);
-                    },
-                    afterClear: function () {
-                        EUI.getCmp("chooseUserGridPanel").restore();
-                    }
-                }]
-            }, {
+        return  {
                 xtype: "GridPanel",
+             //   tbar: this.initUserGridTbar(),
                 region: "center",
-                id: "chooseUserGridPanel",
+                id: "chooseUserGridPanel_approve",
                 searchConfig: {
                     searchCols: ["code"]
                 },
                 style: {"border-radius": "3px"},
                 gridCfg: {
                     loadonce: true,
-                    //   url: _ctxPath + "/customExecutor/listAllUser",
-                    // postData:{
-                    //     organizationId: g.selectedOrgId
-                    // },
+                    datatype: "local",
                     multiselect: isShowMultiselect,
                     colModel: [{
                         label: g.lang.userIDText,
@@ -880,7 +844,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                     }],
                     ondblClickRow: function (rowid) {
                         var html = "";
-                        var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
+                        var rowData = EUI.getCmp("chooseUserGridPanel_approve").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' +
@@ -892,8 +856,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         g.chooseAnyOneWind.close();
                     }
                 }
-            }]
-        }
+        };
     }
     ,
     addChooseUsersInContainer: function (selectRow, currentChooseDivIndex, currentChooseTaskType) {
@@ -1001,9 +964,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         }
         var item = [];
         if (this.data.flowTypeList.length == 1) {
-            item = [this.initWindContainer()]
+            item = [this.initWindContainer()];
         } else {
-            item = [this.initWindTbar(g.data), this.initWindContainer()]
+            item = [ this.initWindContainer(g.data)];
+           // item = [this.initWindTbar(g.data), this.initWindContainer()]
         }
         g.win = EUI.Window({
             title: title,
@@ -1069,29 +1033,22 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         window = EUI.Window({
             title: "选择流程类型",
             width: 600,
-            layout: "border",
+           // layout: "border",
             padding: 10,
-            items: [this.initWindTbar(flowTypeList), this.initWindContainer()]
+            items: [this.initWindContainer(flowTypeList)]
         });
     },
     initWindTbar: function (data) {
         var g = this;
         g.typeId = data.flowTypeList[0].id;
         var flowTypeList = data.flowTypeList;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            padding: 8,
-            isOverFlow: false,
-            border: false,
-            items: [{
+        return  [{
                 xtype: "ComboBox",
                 field: ["id"],
                 width: 250,
                 labelWidth: 100,
                 name: "name",
-                id: "flowTypeId",
+            //    id: "flowTypeId",
                 title: "<span style='font-weight: bold'>" + "流程类型" + "</span>",
                 listWidth: 200,
                 reader: {
@@ -1141,14 +1098,13 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }]
-        };
+            }];
     },
-    initWindContainer: function () {
+    initWindContainer: function (flowTypeList) {
         var g = this;
-        return {
+        var con = {
             xtype: "Container",
-            region: "center",
+          //  region: "center",
             id: "containerId",
             height: 400,
             width: 600,
@@ -1159,6 +1115,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             },
             html: g.getContainerHtml()
         };
+        if(flowTypeList){
+            con.tbar = this.initWindTbar(flowTypeList);
+        }
+        return con;
     },
     getContainerHtml: function () {
         return '<div class="chooseExecutor"></div>';
@@ -1373,8 +1333,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             layout: "border",
             height: 500,
             padding: 8,
-            itemspace: 0,
-            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
+            items: [this.initChooseUserWindTree(), this.InitChooseUserGrid(currentChooseDivIndex, currentChooseTaskType)],
             buttons: [{
                 title: g.lang.cancelText,
                 handler: function () {
@@ -1385,7 +1344,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 hidden: saveBtnIsHidden,
                 handler: function () {
-                    var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                    var selectRow = EUI.getCmp("chooseUserGridPanel_start").getSelectRow();
                     if (typeof(selectRow) == "undefined") {
                         return;
                     }
@@ -1395,31 +1354,12 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    initChooseUserWindLeft: function () {
-        var g = this;
-        return {
-            xtype: "Container",
-            region: "west",
-            border: false,
-            width: 250,
-            itemspace: 0,
-            layout: "border",
-            items: [this.initChooseUserWindTopBar(), this.initChooseUserWindTree()]
-        }
-    },
     initChooseUserWindTopBar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            border: false,
-            padding: 0,
-            isOverFlow: false,
-            items: ['->', {
+        return   ['->', {
                 xtype: "SearchBox",
                 width: 200,
-                displayText: g.lang.searchByNameText,
+                displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     EUI.getCmp("chooseAnyUserTree").search(v);
                     g.selectedOrgId = null;
@@ -1428,14 +1368,15 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp("chooseAnyUserTree").reset();
                     g.selectedOrgId = null;
                 }
-            }]
-        };
+            }];
     },
     initChooseUserWindTree: function () {
         var g = this;
         return {
             xtype: "TreePanel",
-            region: "center",
+            width: 250,
+          //  tbar: this.initChooseUserWindTopBar(),
+            region: "west",
             id: "chooseAnyUserTree",
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
@@ -1447,7 +1388,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             onSelect: function (node) {
                 g.selectedOrgId = node.id;
                 //   EUI.getCmp("gridPanel").grid[0].p.postData={}
-                var chooseUserGridPanel = EUI.getCmp("chooseUserGridPanel").setGridParams({
+                EUI.getCmp("chooseUserGridPanel_start").setGridParams({
                     url: _ctxPath + "/customExecutor/listAllUser",
                     loadonce: true,
                     datatype: "json",
@@ -1472,6 +1413,19 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             }
         }
     },
+    initUserGridTbar: function(){
+        var g =this;
+        return  ['->', {
+                xtype: "SearchBox",
+                displayText: g.lang.searchDisplayText,
+                onSearch: function (value) {
+                    EUI.getCmp("chooseUserGridPanel_start").localSearch(value);
+                },
+                afterClear: function () {
+                    EUI.getCmp("chooseUserGridPanel_start").restore();
+                }
+            }];
+    },
     InitChooseUserGrid: function (currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
         var isShowMultiselect;
@@ -1480,39 +1434,18 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
         } else {
             isShowMultiselect = true;
         }
-        return {
-            xtype: "Container",
-            region: "center",
-            itemspace: 0,
-            layout: "border",
-            border: false,
-            items: [{
-                xtype: "ToolBar",
-                region: "north",
-                isOverFlow: false,
-                padding: 0,
-                height: 40,
-                border: false,
-                items: ['->', {
-                    xtype: "SearchBox",
-                    displayText: "请输入用户名称或编号进行搜索",
-                    onSearch: function (value) {
-                        EUI.getCmp("chooseUserGridPanel").localSearch(value);
-                    },
-                    afterClear: function () {
-                        EUI.getCmp("chooseUserGridPanel").restore();
-                    }
-                }]
-            }, {
+        return  {
                 xtype: "GridPanel",
+             //   tbar: this.initUserGridTbar(),
                 region: "center",
-                id: "chooseUserGridPanel",
+                id: "chooseUserGridPanel_start",
                 searchConfig: {
                     searchCols: ["user.userName", "code"]
                 },
                 style: {"border-radius": "3px"},
                 gridCfg: {
                     loadonce: true,
+                    datatype: "local",
                     multiselect: isShowMultiselect,
                     colModel: [{
                         label: "用户ID",
@@ -1540,7 +1473,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                     }],
                     ondblClickRow: function (rowid) {
                         var html = "";
-                        var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
+                        var rowData = EUI.getCmp("chooseUserGridPanel_start").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
                             '<div class="excutor-item-title">' +
@@ -1552,8 +1485,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         g.chooseAnyOneWind.close();
                     }
                 }
-            }]
-        }
+        };
     },
     addChooseUsersInContainer: function (selectRow, currentChooseDivIndex, currentChooseTaskType) {
         var g = this;
@@ -1662,12 +1594,12 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
             width: 620,
             height: 523,
             padding: 5,
-            items: [this.initCenter()]
+            items: [this.initContent()]
         });
         EUI.getCmp("flowInstanceId").loadData(this.defaultData);
         g.topEvent();
     },
-    initCenter: function () {
+    initContent: function () {
         var g = this;
         return {
             xtype: "Container",
@@ -1676,6 +1608,7 @@ Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
                 title: "<span style='font-weight: bold'>" + g.lang.launchHistoryText + "</span>",
                 width: 365,
                 field: ["id"],
+                canClear: false,
                 labelWidth: 80,
                 name: "name",
                 id: "flowInstanceId",
