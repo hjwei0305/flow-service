@@ -143,11 +143,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //待办的外层
     getTodoTaskHtml: function () {
-        // return '             <div class="content-skip">' +
-        // '		            <div class="check-box"><div class="check-all"></div><label>全选</label></div>' +
-        // '		            <div class="end-icon end-all"></div>' +
-        // '		            <div class="reject-icon"></div>' +
-        // '	             </div>' +
         return '            <div class="content-info">' +
             '                    <div class="info-left todo-info"></div>' +
             '               </div>' +
@@ -483,12 +478,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 businessId: data.flowInstance.businessId,
                 instanceId: data.flowInstance.id
             })
-            // var tab = {
-            //     title: "流程历史",
-            //     url: _ctxPath + "/flowInstance/show?id=" + data.flowInstance.id,
-            //     id: data.flowInstance.id
-            // };
-            // g.addTab(tab);
         });
     },
     //驳回
@@ -511,8 +500,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false
                 }],
                 buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        win.remove();
+                    }
+                },{
                     title: "确定",
-                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var opinion = EUI.getCmp("opinion").getValue();
@@ -550,12 +543,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             }
                         })
                     }
-                }, {
-                    title: "取消",
-                    iconCss: "ecmp-common-delete",
-                    handler: function () {
-                        win.remove();
-                    }
                 }]
             })
         });
@@ -568,12 +555,16 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var message = EUI.MessageBox({
                 border: true,
-                title: "提示",
+                title: "温馨提示",
                 showClose: true,
                 msg: "您确定要签收吗",
                 buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                },{
                     title: "确定",
-                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -595,12 +586,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                         });
                         message.remove();
                     }
-                }, {
-                    title: "取消",
-                    iconCss: "ecmp-common-delete",
-                    handler: function () {
-                        message.remove();
-                    }
                 }]
             });
         });
@@ -613,12 +598,16 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var message = EUI.MessageBox({
                 border: true,
-                title: "提示",
+                title: "温馨提示",
                 showClose: true,
                 msg: "您确定要终止吗",
                 buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                },{
                     title: "确定",
-                    iconCss: "ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -638,12 +627,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                                 EUI.ProcessStatus(status);
                             }
                         });
-                        message.remove();
-                    }
-                }, {
-                    title: "取消",
-                    iconCss: "ecmp-common-delete",
-                    handler: function () {
                         message.remove();
                     }
                 }]

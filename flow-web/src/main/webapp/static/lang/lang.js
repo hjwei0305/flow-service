@@ -11,7 +11,7 @@ var common_lang = {
     codeText: "代码",
     nameText: "名称",
     depictText: "描述",
-    searchNameText: "请输入名称进行搜索",
+    searchNameText: "请输入名称搜索",
     InputSearchNameText: "请输入搜索名称",
 
     addText: "新增",
@@ -33,10 +33,10 @@ var common_lang = {
     finishText: "完成",
     editText: "编辑",
     unFilledText: "存在必填项未输入，请确认！",
-    searchByNameMsgText: "请输入名称进行搜索",
     copyHintMessage: "请选择一条要参考的行项目!",
-    searchByCodeOrNameText: "请输入代码或名称查询",
-    searchDisplayText: "请输入关键字查询"
+    searchByNameMsgText: "请输入名称搜索",
+    searchByCodeOrNameText: "请输入代码或名称搜索",
+    searchDisplayText: "请输入关键字搜索"
 };
 
 if (EUI.AppModuleView) {
@@ -74,7 +74,6 @@ if (EUI.BusinessModelView) {
         inputConditonBeanText: "请输入转换对象",
         inputDepictMsgText: "请输入描述",
         inputWorkPageText: "请输入工作界面",
-        searchNameText: "请输入名称进行搜索",
         chooseBelongToAppModuleText: "请选择所属应用模块",
         addNewBusinessModelText: "新增业务模型",
         urlViewAddressText: "URL地址",
@@ -318,7 +317,7 @@ if (Flow.flow.FlowApprove) {
         previousStepText: "上一步",
         spreadText: "展开",
         chooseNextExecuteNodeText: "请选择下一步执行节点",
-        operationHintText: "操作提示",
+        operationHintText: "温馨提示",
         stopFlowMsgText: "当前操作流程将会结束，是否继续？",
         generalTaskText: "普通任务",
         singleSignTaskText: "单签任务",

@@ -37,7 +37,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
     taskId: null,
     desionType: 0,//0表示单选、1多选，2不需要选择
     instanceId: null,
-    iframeHeight: 800,
+    iframeHeight: 700,
     pageUrl: null,
     submitUrl: null,
     manualSelected: false,//是否是人工选择的网关类型
@@ -461,6 +461,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                             }
                         },{
                             title: g.lang.sureText,
+                            selected: true,
                             handler: function () {
                                 g.submit(true);
                                 msgbox.remove();
@@ -1417,8 +1418,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             isOverFlow: false,
             items: ['->', {
                 xtype: "SearchBox",
-                width: 140,
-                displayText: "根据名称搜索",
+                width: 200,
+                displayText: g.lang.searchByNameMsgText,
                 onSearch: function (v) {
                     EUI.getCmp("chooseAnyUserTree").search(v);
                     g.selectedOrgId = null;
