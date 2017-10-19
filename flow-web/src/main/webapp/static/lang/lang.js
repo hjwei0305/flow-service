@@ -41,7 +41,7 @@ var common_lang = {
 
 if (EUI.AppModuleView) {
     EUI.apply(EUI.AppModuleView.prototype.lang, {
-        updateAppModuleText: "修改实体模型",
+        updateAppModuleText: "编辑实体模型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -67,7 +67,7 @@ if (EUI.BusinessModelView) {
         classPathText: "类全路径",
         conditonBeanText: "转换对象",
         belongToAppModuleText: "所属应用模块",
-        updateBusinessModelText: "修改业务模型",
+        updateBusinessModelText: "编辑业务模型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
@@ -89,7 +89,7 @@ if (EUI.BusinessModelView) {
         serviceUrlText: "服务地址管理",
         addServiceUrlText: "新增服务地址",
         businessModelIdText: "业务实体ID",
-        updateServiceUrlText: "修改服务地址管理",
+        updateServiceUrlText: "编辑服务地址管理",
         addExecutorConfigText: "新增自定义执行人配置",
         paramText: "参数",
         businessModelText: "业务实体",
@@ -108,7 +108,7 @@ if (EUI.BusinessModelView) {
 if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         addResourceText: "新增",
-        updateFlowServiceUrlText: "修改服务地址管理",
+        updateFlowServiceUrlText: "编辑服务地址管理",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlMsgText: "请输入URL",
@@ -120,7 +120,7 @@ if (EUI.FlowServiceUrlView) {
 if (EUI.CustomExecutorView) {
     EUI.apply(EUI.CustomExecutorView.prototype.lang, {
         addResourceText: "新增",
-        updateFlowServiceUrlText: "修改服务地址管理",
+        updateFlowServiceUrlText: "编辑服务地址管理",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlMsgText: "请输入URL",
@@ -133,7 +133,7 @@ if (EUI.FlowTypeView) {
     EUI.apply(EUI.FlowTypeView.prototype.lang, {
         addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -147,7 +147,7 @@ if (EUI.FlowInstanceView) {
     EUI.apply(EUI.FlowInstanceView.prototype.lang, {
         addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -166,7 +166,7 @@ if (EUI.FlowDefinationView) {
         activateMaskMessageText: "正在激活，请稍候...",
         freezeMaskMessageText: "正在冻结，请稍候...",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -184,7 +184,7 @@ if (EUI.WorkPageUrlView) {
         addBtnText: "新增",
         urlViewAddressText: "URL地址",
         appModelIdText: "应用模块ID",
-        updateWorkPageUrlText: "修改工作页面",
+        updateWorkPageUrlText: "编辑工作页面",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlViewAddressMsgText: "请输入URL界面地址",
@@ -201,10 +201,10 @@ if (EUI.FlowDefinationView) {
         frozenText: '是否冻结',
         rankText: '排序',
         refreshTest: "刷新",
-        modifyRootText: "禁止修改根节点！",
+        modifyRootText: "禁止编辑根节点！",
         addHintMessageText: "请选择一个组织结构节点!",
         createNodeText: "创建节点",
-        updateRootText: "禁止修改根节点!",
+        updateRootText: "禁止编辑根节点!",
         moveHintMessageText: "请选择您要移动的节点！",
         rootText: "根节点",
         queryMaskMessageText: "正在努力获取数据，请稍候...",

@@ -45,7 +45,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     showBuiltInApproveWin: function (data) {
         var g = this;
         win = EUI.Window({
-            title: "销售申请",
+            title: "编辑销售申请",
             iconCss:"ecmp-eui-edit",
             height: 430,
             width:430,

@@ -45,7 +45,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
     showBuiltInApproveWin: function (data) {
         var g = this;
         win = EUI.Window({
-            title: "业务申请",
+            title: "编辑业务申请",
             iconCss: "ecmp-eui-edit",
             height: 430,
             width:430,

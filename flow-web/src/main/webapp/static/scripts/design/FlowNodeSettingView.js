@@ -154,7 +154,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 g.window.close();
             }
         },{
-            title: "保存配置",
+            title: "保存",
             selected: true,
             handler: function () {
                 var normalForm = EUI.getCmp("normal");

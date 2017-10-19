@@ -1397,7 +1397,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     win.close();
                 }
             },{
-                title: "保存配置",
+                title: "保存",
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();

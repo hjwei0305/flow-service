@@ -24,6 +24,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             height: height,
             padding: 10,
             title: this.title,
+            iconCss: "ecmp-eui-setting",
             buttons: this.getButtons(),
             layout: "border",
             items: items
@@ -90,7 +91,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 g.window.close();
             }
         },{
-            title: "保存配置",
+            title: "保存",
             selected: true,
             handler: function () {
                 var name, isDefault = false;
