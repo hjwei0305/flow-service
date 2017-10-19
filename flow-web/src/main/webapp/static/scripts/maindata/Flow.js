@@ -1106,7 +1106,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             xtype: "Container",
           //  region: "center",
             id: "containerId",
-            height: 400,
+            height: 450,
             width: 600,
             border: true,
             padding:0,
