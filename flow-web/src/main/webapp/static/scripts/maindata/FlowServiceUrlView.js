@@ -144,17 +144,9 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }]
         };

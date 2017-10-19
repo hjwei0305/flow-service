@@ -61,8 +61,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     g.appModuleName = data.data.name;
                     g.gridCmp.setPostParams({
                             Q_EQ_appModuleId: data.data.id
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }, {
                 xtype: "Button",

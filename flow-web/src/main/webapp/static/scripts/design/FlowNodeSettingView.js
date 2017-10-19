@@ -249,7 +249,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         Quick_value: data,
                         Q_EQ_subProcess__Boolean: true,
                         Q_EQ_flowDefinationStatus__int: 1,
-                        Q_NE_id__String: g.flowDefinitionId,
+                        Q_NE_id__String: g.flowDefinitionId
                     }, true);
                 },
                 gridCfg: {
@@ -1006,7 +1006,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         xtype: "SearchBox",
                         id: "searchBox_positionGrid",
                         width: 200,
-                        displayText: "请输入代码、名称或组织机构查询",
+                        displayText: g.lang.searchDisplayText,
                         onSearch: function (v) {
                             EUI.getCmp("allPositionGrid").setPostParams({
                                 Quick_value: v
@@ -1402,7 +1402,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                             xtype: "SearchBox",
                             id: "searchBox_positionGrid",
                             width: 200,
-                            displayText: "请输入代码、名称或组织机构查询",
+                            displayText: g.lang.searchDisplayText,
                             onSearch: function (v) {
                                 EUI.getCmp("notifyAllPositionGrid").setPostParams({
                                     Quick_value: v

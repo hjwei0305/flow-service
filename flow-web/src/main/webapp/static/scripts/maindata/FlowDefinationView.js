@@ -140,8 +140,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 onSearch: function (value) {
                     EUI.getCmp("defViesonGridPanel").setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }];
     },

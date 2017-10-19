@@ -285,16 +285,9 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: g.lang.searchByNameMsgText,
                 onSearch: function (value) {
-                    if (!value) {
-                        EUI.getCmp("flowHistoryGrid").setPostParams({
-                                Q_LK_flowTaskName: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("flowHistoryGrid").setPostParams({
                             Q_LK_flowTaskName: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }];
     },

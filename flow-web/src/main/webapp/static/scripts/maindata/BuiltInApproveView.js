@@ -363,7 +363,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         }, '->', {
             xtype: "SearchBox",
             width: 200,
-            displayText: "请输入名称进行搜索",
+            displayText: g.lang.searchByNameMsgText,
             onSearch: function (value) {
                 EUI.getCmp("gridPanel").setPostParams({
                         Q_LK_name: value

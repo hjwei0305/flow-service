@@ -26,19 +26,11 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
             border : false,
             items:['->',{
                 xtype: "SearchBox",
-                displayText: "请输入任务名进行搜索",
+                displayText: g.lang.searchNameText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_taskName: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_taskName: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }]
         };

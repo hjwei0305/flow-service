@@ -769,16 +769,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText:this.lang.searchNameText,
                 onSearch: function (value) {
-                    if (!value) {
-                        EUI.getCmp("serviceUrlGridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("serviceUrlGridPanel").setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }];
     },
