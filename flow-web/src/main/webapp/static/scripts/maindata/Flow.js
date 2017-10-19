@@ -130,8 +130,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             '            </div>' +
             '            <div class="close">' + this.lang.collectText + '</div>' +
             '        </div>';
-        //html += '<iframe class="flow-iframe" height="600" src="' + this.pageUrl +  '></iframe>';
-        html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
+        html += '<iframe class="flow-iframe" height="600" src="' + this.pageUrl +  '></iframe>';
+    //    html += '<iframe class="flow-iframe" src="' + this.pageUrl + '" style="height:' + this.iframeHeight + 'px"></iframe>';
         return html += "</div>";
     },
     initChooseUserHtml: function () {
