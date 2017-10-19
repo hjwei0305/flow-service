@@ -26,7 +26,7 @@ EUI.OrganizationView = EUI.extend(EUI.CustomUI, {
             border : false,
             items:['->',{
                 xtype: "SearchBox",
-                displayText: g.lang.searchNameText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_taskName: value

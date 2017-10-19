@@ -24,7 +24,7 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             border : false,
             items:['->',{
                 xtype: "SearchBox",
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_taskName: value

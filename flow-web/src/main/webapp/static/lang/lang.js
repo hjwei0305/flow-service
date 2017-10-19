@@ -11,9 +11,6 @@ var common_lang = {
     codeText: "代码",
     nameText: "名称",
     depictText: "描述",
-    searchNameText: "请输入名称搜索",
-    InputSearchNameText: "请输入搜索名称",
-
     addText: "新增",
     hintText: "提示",
     paramsText: "参数为空!",
@@ -34,7 +31,7 @@ var common_lang = {
     editText: "编辑",
     unFilledText: "存在必填项未输入，请确认！",
     copyHintMessage: "请选择一条要参考的行项目!",
-    searchByNameMsgText: "请输入名称搜索",
+    searchByNameText: "请输入名称搜索",
     searchByCodeOrNameText: "请输入代码或名称搜索",
     searchDisplayText: "请输入关键字搜索"
 };
@@ -329,7 +326,7 @@ if (Flow.flow.FlowApprove) {
         showUserInfoText: "名称：{0}，岗位：{1}，组织机构：{2}，编号：{3}",
         showUserInfo2Text: "名称：{0}，组织机构：{1}，编号：{2}",
         chooseExecutorMsgText: "请选择[{0}]的执行人",
-        seachByIdOrNameText: "请输入用户名称或编号进行搜索",
+        seachByIdOrNameText: "请输入名称或编号搜索",
         organization2Text: "组织机构",
         userNumberText: "员工编号",
         userNameText: "用户名称",
@@ -414,7 +411,7 @@ if (Flow.flow.FlowHistory) {
 
 if (EUI.FlowHistoryView) {
     EUI.FlowHistoryView.prototype.lang = EUI.applyIf({
-        searchByTaskNameText: "请输入任务名进行搜索",
+        searchByTaskNameText: "请输入任务名搜索",
         reverseText: "撤销",
         taskNameText: "任务名",
         flowInstanceText: "流程实例",
@@ -473,7 +470,6 @@ if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         businessEntityText: "业务实体",
         totalText: "全部",
-        searchByNameMsgText: "请输入名称进行搜索",
         businessEntityModelText: "所属业务实体模型"
 
     }, common_lang);
@@ -481,7 +477,7 @@ if (EUI.FlowServiceUrlView) {
 
 if (EUI.FlowTaskView) {
     EUI.apply(EUI.FlowTaskView.prototype.lang, {
-        searchByNameMsgText: "请输入任务名进行搜索",
+        searchByNameText: "请输入任务名搜索",
         passText: "通过",
         rejectText: "驳回",
         taskNameText: "任务名",

@@ -73,7 +73,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchNameText,
+                displayText: this.lang.searchByNameText,
                 onSearch: function (value) {
                     g.gridCmp.setPostParams({
                             Q_LK_name: value

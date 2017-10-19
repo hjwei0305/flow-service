@@ -142,7 +142,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_name: value

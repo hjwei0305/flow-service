@@ -669,7 +669,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             items: ['->', {
                 xtype: "SearchBox",
                 width: 140,
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (v) {
                     EUI.getCmp("chooseAnyUserTree").search(v);
                     g.selectedOrgId = null;

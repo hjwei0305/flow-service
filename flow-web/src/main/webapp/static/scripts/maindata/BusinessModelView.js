@@ -78,7 +78,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchNameText,
+                displayText: this.lang.searchByNameText,
                 onSearch: function (value) {
                     g.gridCmp.setPostParams({
                             Q_LK_name: value
@@ -767,7 +767,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText:this.lang.searchNameText,
+                displayText:this.lang.searchByNameText,
                 onSearch: function (value) {
                     EUI.getCmp("serviceUrlGridPanel").setPostParams({
                             Q_LK_name: value

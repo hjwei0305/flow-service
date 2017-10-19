@@ -125,7 +125,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }
             },'->', {
                 xtype: "SearchBox",
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
                     g.gridCmp.setPostParams({
                             Q_LK_flowName: value
@@ -283,7 +283,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var g = this;
         return  ['->', {
                 xtype: "SearchBox",
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
                     EUI.getCmp("flowHistoryGrid").setPostParams({
                             Q_LK_flowTaskName: value

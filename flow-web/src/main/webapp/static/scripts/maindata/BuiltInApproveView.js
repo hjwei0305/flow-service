@@ -363,7 +363,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
         }, '->', {
             xtype: "SearchBox",
             width: 200,
-            displayText: g.lang.searchByNameMsgText,
+            displayText: g.lang.searchByNameText,
             onSearch: function (value) {
                 EUI.getCmp("gridPanel").setPostParams({
                         Q_LK_name: value

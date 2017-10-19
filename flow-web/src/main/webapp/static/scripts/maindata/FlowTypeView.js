@@ -77,7 +77,7 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
             }
         }, '->', {
             xtype: "SearchBox",
-            displayText: g.lang.searchByNameMsgText,
+            displayText: g.lang.searchByNameText,
             onSearch: function (value) {
                 g.gridCmp.setPostParams({
                     Q_LK_name: value

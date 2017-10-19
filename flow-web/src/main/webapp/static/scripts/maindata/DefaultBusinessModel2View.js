@@ -362,7 +362,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
           }, '->', {
              xtype: "SearchBox",
              width: 200,
-             displayText: g.lang.searchNameText,
+             displayText: g.lang.searchByNameText,
              onSearch: function (value) {
                  EUI.getCmp("gridPanel").setPostParams({
                          Q_LK_name: value
