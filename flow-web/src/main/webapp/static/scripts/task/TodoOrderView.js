@@ -238,12 +238,16 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var message = EUI.MessageBox({
                 border: true,
-                title: "提示",
+                title: "温馨提示",
                 showClose: true,
                 msg: "您确定要终止吗",
                 buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                },{
                     title: "确定",
-                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var myMask = EUI.LoadMask({
@@ -263,12 +267,6 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                                 EUI.ProcessStatus(status);
                             }
                         });
-                        message.remove();
-                    }
-                }, {
-                    title: "取消",
-                    iconCss:"ecmp-common-delete",
-                    handler: function () {
                         message.remove();
                     }
                 }]

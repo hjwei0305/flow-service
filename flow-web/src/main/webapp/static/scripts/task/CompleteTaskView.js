@@ -263,8 +263,12 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false
                 }],
                 buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        win.remove();
+                    }
+                },{
                     title: "确定",
-                    iconCss:"ecmp-common-ok",
                     selected: true,
                     handler: function () {
                         var opinion = EUI.getCmp("opinion").getValue();
@@ -292,12 +296,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                                 EUI.ProcessStatus(result);
                             }
                         })
-                    }
-                }, {
-                    title: "取消",
-                    iconCss:"ecmp-common-delete",
-                    handler: function () {
-                        win.remove();
                     }
                 }]
             })

@@ -253,12 +253,11 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var message = EUI.MessageBox({
             border: true,
-            title: "提示",
+            title: "温馨提示",
             showClose: true,
             msg: msg,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
                 handler: function () {
                     message.remove();
                 }
