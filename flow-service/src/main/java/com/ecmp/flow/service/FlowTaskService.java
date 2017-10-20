@@ -1027,7 +1027,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             PvmActivity nextActivity = nextTransition.getDestination();
             Boolean ifGateWay = ifGageway(nextActivity);
             String type = nextActivity.getProperty("type")+"";
-            if("ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)){//服务任务/接收任务不允许撤回
+            if("callActivity".equalsIgnoreCase(type)|| "ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)){//服务任务/接收任务不允许撤回
                 return false;
             }
             if (ifGateWay|| "ManualTask".equalsIgnoreCase(type)) {
@@ -1109,6 +1109,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     private Boolean checkCanReject(PvmActivity currActivity, PvmActivity preActivity, ProcessInstance instance,
                                    ProcessDefinitionEntity definition) {
+        if(preActivity==null){
+            return false;
+        }
         Boolean result = ifMultiInstance(currActivity);
         if (result) {//多任务实例不允许驳回
             return false;
