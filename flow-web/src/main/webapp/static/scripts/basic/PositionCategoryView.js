@@ -28,17 +28,9 @@ EUI.PositionCategoryView = EUI.extend(EUI.CustomUI, {
                 xtype: "SearchBox",
                 displayText: "请输入任务名进行搜索",
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_taskName: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_taskName: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }]
         };

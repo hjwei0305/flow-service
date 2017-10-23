@@ -8,7 +8,6 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             layout: "border",
             border: false,
             padding: 8,
-            itemspace: 0,
             items: [this.initTbar(), this.initGrid()]
         });
         this.addEvents();
@@ -24,19 +23,11 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
             border: false,
             items: ['->', {
                 xtype: "SearchBox",
-                displayText: g.lang.searchByTaskNameText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_flowTaskName: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_flowTaskName: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }]
         };
@@ -51,7 +42,6 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                 "border-radius": "3px"
             },
             gridCfg: {
-                //     loadonce:true,
                 shrinkToFit: false,//固定宽度
                 url: _ctxPath + "/flowHistory/listFlowHistory",
                 postData: {
@@ -66,8 +56,6 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
                         if ('COMPLETED' == rowObject.taskStatus) {
-                            // strVar = "<div class='btn_operate'>"
-                            //     + "<div class='rollBackBtn' title='"+g.lang.reverseText+"'>"+g.lang.reverseText+"</div></div>";
                             strVar= "<div class='ecmp-common-return rollBackBtn' title='"+g.lang.reverseText+"'></div>";
                         }
                         return strVar;
@@ -77,11 +65,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     name: "id",
                     index: "id",
                     hidden: true
-                }, /*{
-                 label : "流程名称",
-                 name : "flowName",
-                 index : "flowName"
-                 },*/{
+                }, {
                     label: g.lang.taskNameText,
                     name: "flowTaskName",
                     index: "flowTaskName",
@@ -117,15 +101,7 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     name: "proxyStatus",
                     index: "proxyStatus",
                     width:110
-                }, /*{
-                 label : "流程实例ID" ,
-                 name : "flowInstanceId",
-                 index : "flowInstanceId"
-                 },{
-                 label : "流程定义ID" ,
-                 name : "flowDefinitionId",
-                 index : "flowDefinitionId"
-                 },*/{
+                },{
                     label: g.lang.processorNameText,
                     name: "executorName",
                     index: "executorName",
@@ -178,76 +154,12 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                     index: "lastModifiedDate",
                     width:150
                 },
-                    /*    ,{
-                     label : "候选人账号" ,
-                     name : "candidateAccount",
-                     index : "candidateAccount"
-                     },{
-                     label : "执行时间" ,
-                     name : "executeDate",
-                     index : "executeDate"
-                     },*/{
+                  {
                         label: g.lang.depictText,
                         name: "depict",
                         index: "depict",
                         width:150
-                    }/*{
-                     label : "创建人" ,
-                     name : "createdBy",
-                     index : "createdBy"
-                     },{
-                     label : "创建时间" ,
-                     name : "createdDate",
-                     index : "createdDate"
-                     },{
-                     label : "最后更新者" ,
-                     name : "lastModifiedBy",
-                     index : "lastModifiedBy"
-                     },{
-                     label : "最后更新时间" ,
-                     name : "lastModifiedDate",
-                     index : "lastModifiedDate"
-                     },{
-                     label : "引擎流程任务ID" ,
-                     name : "actTaskId",
-                     index : "actTaskId"
-                     },{
-                     label : "优先级" ,
-                     name : "priority",
-                     index : "priority"
-                     },{
-                     label : "所属人" ,
-                     name : "ownerAccount",
-                     index : "ownerAccount"
-                     },{
-                     label : "所属人名称" ,
-                     name : "ownerName",
-                     index : "ownerName"
-                     },{
-                     label : "实际任务类型" ,
-                     name : "actType",
-                     index : "actType"
-                     },{
-                     label : "签收时间" ,
-                     name : "actClaimTime",
-                     index : "actClaimTime"
-                     },{
-                     label : "实际触发时间" ,
-                     name : "actDueDate",
-                     index : "actDueDate"
-                     },{
-                     label : "实际任务定义KEY" ,
-                     name : "actTaskKey",
-                     index : "actTaskKey"
-                     },{
-                     label : "关联流程实例的ID(隐藏)" ,
-                     name : "flowInstance.id",
-                     index : "flowInstance.id"
-                     },{
-                     label : "关联流程实例" ,
-                     name : "flowInstance.name",
-                     index : "flowInstance.name"
-                     }*/],
+                    }],
                 ondbClick: function () {
                     var rowData = EUI.getCmp("gridPanel").getSelectRow();
                     g.getValues(rowData.id);
@@ -265,13 +177,16 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
     },
     showCompleteWin: function (rowData) {
         var g = this;
-        console.log(rowData);
         var infoBox = EUI.MessageBox({
             title: g.lang.tiShiText,
             msg: g.lang.reverseTaskMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
                selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -295,12 +210,6 @@ EUI.FlowHistoryView = EUI.extend(EUI.CustomUI, {
                             EUI.ProcessStatus(result);
                         }
                     });
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
                 }
             }]
         });

@@ -142,19 +142,11 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: g.lang.searchByNameMsgText,
+                displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
                     EUI.getCmp("gridPanel").setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }]
         };
@@ -368,6 +360,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("updateFlowServiceUrl");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();
@@ -461,6 +454,7 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     var form = EUI.getCmp("addFlowServiceUrl");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();

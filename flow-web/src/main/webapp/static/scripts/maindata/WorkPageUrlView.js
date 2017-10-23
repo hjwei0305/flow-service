@@ -5,36 +5,26 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
     appModuleName: "",
     appModuleId: "",
     initComponent: function () {
-        EUI.Container({
+        this.gridCmp=EUI.GridPanel({
             renderTo: this.renderTo,
-            layout: "border",
-            border: false,
-            padding: 8,
-            itemspace: 0,
-            items: [this.initTop(), this.initCenter()]
+            title: "工作界面配置",
+            border: true,
+            tbar: this.initTop(),
+            gridCfg: this.initCenter()
         });
         this.addEvents();
     },
     initTop: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            padding: 0,
-            isOverFlow: false,
-            border: false,
-            items: [{
+        return  [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
                 labelWidth: 70,
                 id: "coboId",
                 async: false,
+                canClear: false,
                 colon: false,
                 name: "appModule.name",
-                // submitValue:{
-                //     "appModule.id":"appModule.id"
-                // },
                 store: {
                     url: _ctxPath + "/workPageUrl/listAllAppModule"
                 },
@@ -51,7 +41,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     cobo.setValue(data[0].name);
                     g.appModuleId = data[0].id;
                     g.appModuleName = data[0].name;
-                    var gridPanel = EUI.getCmp("gridPanel").setGridParams({
+                    g.gridCmp.setGridParams({
                         url: _ctxPath + "/workPageUrl/listWorkPageUrl",
                         loadonce: false,
                         datatype: "json",
@@ -64,17 +54,15 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     if (!data) {
                         EUI.ProcessStatus({
                             success: false,
-                            msg: this.lang.inputModelText
+                            msg: g.lang.inputModelText
                         });
                         return;
                     }
-                    // console.log(data);
                     g.appModuleId = data.data.id;
                     g.appModuleName = data.data.name;
-                    EUI.getCmp("gridPanel").setPostParams({
+                    g.gridCmp.setPostParams({
                             Q_EQ_appModuleId: data.data.id
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
             }, {
                 xtype: "Button",
@@ -86,33 +74,17 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 }
             }, '->', {
                 xtype: "SearchBox",
-                displayText: this.lang.searchNameText,
+                displayText: this.lang.searchByNameText,
                 onSearch: function (value) {
-                    console.log(value);
-                    if (!value) {
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: ""
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                    EUI.getCmp("gridPanel").setPostParams({
+                    g.gridCmp.setPostParams({
                             Q_LK_name: value
-                        }
-                    ).trigger("reloadGrid");
+                        },true);
                 }
-            }]
-        }
+            }];
     },
     initCenter: function () {
         var g = this;
-        return {
-            xtype: "GridPanel",
-            region: "center",
-            id: "gridPanel",
-            style: {
-                "border-radius": "3px"
-            },
-            gridCfg: {
+        return  {
                 loadonce: true,
                 datatype:"local",
                 colModel: [{
@@ -122,10 +94,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     width: "30%",
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        // var strVar = "<div class='condetail-operate'>" +
-                        //     "<div class='condetail-update' title='"+g.lang.editText+"'></div>" +
-                        //     "<div class='condetail-delete' title='"+g.lang.deleteText+"'></div></div>";
-                        // return strVar;
                         return  '<i class="ecmp-common-edit icon-space fontcusor" title="'+g.lang.editText+'"></i>'+
                             '<i class="ecmp-common-delete fontcusor" title="'+g.lang.deleteText+'"></i>' ;
 
@@ -150,20 +118,20 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     index: "depict"
                 }],
                 ondbClick: function () {
-                    var rowData = EUI.getCmp("gridPanel").getSelectRow();
+                    var rowData = g.gridCmp.getSelectRow();
                     g.getValue(rowData.id);
                 }
-            }
-        };
+            };
+
     },
     addEvents: function () {
         var g = this;
         $(".ecmp-common-edit").live("click", function () {
-            var data = EUI.getCmp("gridPanel").getSelectRow();
+            var data = g.gridCmp.getSelectRow();
             g.updateWorkPageUrl(data);
         });
         $(".ecmp-common-delete").live("click", function () {
-            var rowData = EUI.getCmp("gridPanel").getSelectRow();
+            var rowData = g.gridCmp.getSelectRow();
             g.deleteWorkPageUrl(rowData);
         });
     },
@@ -173,9 +141,13 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
             title: g.lang.tiShiText,
             msg: g.lang.ifDelMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-                 selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -190,7 +162,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                             myMask.hide();
                             EUI.ProcessStatus(result);
                             if (result.success) {
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                                g.gridCmp.grid.trigger("reloadGrid");
                             }
                         },
                         failure: function (result) {
@@ -199,20 +171,14 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
-                }
             }]
         });
     },
     updateWorkPageUrl: function (data) {
         var g = this;
-        console.log(data);
         win = EUI.Window({
             title: g.lang.updateWorkPageUrlText,
+            iconCss: "ecmp-eui-edit",
             height: 250,
             width:400,
             padding: 15,
@@ -271,23 +237,21 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 }]
             }],
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    win.remove();
+                }
+            },{
                 title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
                 selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateWorkPageUrl");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();
-                    console.log(data);
                     g.saveWorkPageUrl(data);
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    win.remove();
                 }
             }]
         });
@@ -296,6 +260,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         var g = this;
         win = EUI.Window({
             title: g.lang.addNewWorkPageUrlText,
+            iconCss: "ecmp-eui-add",
             height: 250,
             padding: 15,
             items: [{
@@ -341,31 +306,29 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     width: 220
                 }]
             }],
-            buttons: [{
-                title: g.lang.saveText,
-                iconCss:"ecmp-common-save",
-                 selected: true,
-                handler: function () {
-                    var form = EUI.getCmp("addWorkPageUrl");
-                    if (!form.isValid()) {
-                        return;
+            buttons: [
+                {
+                    title: g.lang.cancelText,
+                    handler: function () {
+                        win.remove();
                     }
-                    var data = form.getFormValue();
-                    console.log(data);
-                    g.saveWorkPageUrl(data);
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    win.remove();
-                }
+                },{
+                    title: g.lang.saveText,
+                    selected: true,
+                    handler: function () {
+                        var form = EUI.getCmp("addWorkPageUrl");
+                        if (!form.isValid()) {
+                            EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
+                            return;
+                        }
+                        var data = form.getFormValue();
+                        g.saveWorkPageUrl(data);
+                    }
             }]
         });
     },
     saveWorkPageUrl: function (data) {
         var g = this;
-        console.log(data);
         var myMask = EUI.LoadMask({
             msg: g.lang.nowSaveMsgText
         });
@@ -376,7 +339,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                 myMask.hide();
                 EUI.ProcessStatus(result);
                 if (result.success) {
-                    EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
+                    g.gridCmp.grid.trigger("reloadGrid");
                     win.close();
                 }
             },

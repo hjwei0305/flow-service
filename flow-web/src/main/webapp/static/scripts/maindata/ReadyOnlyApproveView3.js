@@ -15,7 +15,7 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
                 border: false,
                 padding: 0,
                 width: 650,
-                height: 530,
+                height: 560,
                 id: "lookApprove",
                 itemspace: 0,
                 style: {
@@ -95,7 +95,6 @@ EUI.ReadyOnlyApproveView = EUI.extend(EUI.CustomUI, {
                     "border-top":"1px solid #b5b8c8",
                     "border-bottom":"1px solid #b5b8c8"
                 },
-                isOverFlow:false,
                 html: "<div class='approve-title'>申请详情</div>"
             }, {
                 xtype: "NumberField",

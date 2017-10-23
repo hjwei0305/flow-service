@@ -14,7 +14,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             layout: "border",
             border: false,
             padding: 0,
-            items: [this.initLeft(), this.initCenterContainer()]
+            items: [this.initTree(), this.initGrid()]
         });
         this.gridCmp = EUI.getCmp("gridPanel");
         this.treeCmp = EUI.getCmp("treePanel");
@@ -45,14 +45,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     showBuiltInApproveWin: function (data) {
         var g = this;
         win = EUI.Window({
-            title: "销售申请",
-            height: 450,
-            width:420,
+            title: "编辑销售申请",
+            iconCss:"ecmp-eui-edit",
+            height: 430,
+            width:430,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBuiltInApprove",
-                padding:0,
+                padding: 10,
                 items: [{
                     xtype: "TextField",
                     title: "ID",
@@ -60,7 +61,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "id",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     hidden:true
                 },{
                     xtype: "TextField",
@@ -69,7 +70,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgId",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     value:g.selectedNodeId,
                     hidden:true
                 },{
@@ -79,7 +80,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgName",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeName,
                     style:{"margin-left":30}
@@ -90,7 +91,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgCode",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeCode,
                     hidden:true
@@ -101,7 +102,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "tenantCode",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeTenantCode,
                     hidden:true
@@ -112,15 +113,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgPath",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeCodePath,
                     hidden:true
                 },{
-                    xtype: "Container",
+                    xtype: "Label",
                     height:25,
                     isOverFlow:false,
-                    html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
+                    content:  "<span style='font-weight: bold'>" + "申请概要" + "</span>"
                 },{
                     xtype: "TextField",
                     title: "业务类型",
@@ -128,7 +129,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "name",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
                     xtype: "TextField",
@@ -137,13 +138,13 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "applyCaption",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
-                    xtype: "Container",
+                    xtype: "Label",
                     height:25,
                     isOverFlow:false,
-                    html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
+                    content:  "<span style='font-weight: bold'>" + "申请详情" + "</span>"
                 },{
                     xtype: "NumberField",
                     title: "单价",
@@ -151,7 +152,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "unitPrice",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     precision:2,
                     style:{"margin-left":30}
                 },{
@@ -161,7 +162,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "count",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
                     xtype: "TextArea",
@@ -169,7 +170,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
-                    width: 270,
+                    width: 290,
                     height:130,
                     colon:false,
                     allowBlank:false,
@@ -177,22 +178,21 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 }]
             }],
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    win.remove();
+                }
+            },{
                 title: "保存",
-                iconCss:"ecmp-common-save",
                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("updateBuiltInApprove");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();
                     g.saveBuiltInApprove(data);
-                }
-            }, {
-                title: "取消",
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    win.remove();
                 }
             }]
         });
@@ -203,11 +203,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     startFlow: function (data) {
         var g = this;
         var infoBox = EUI.MessageBox({
-            title: "提示",
+            title: g.lang.tiShiText,
             msg: "确定立即启动流程吗？",
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
                selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -219,64 +223,6 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                             EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                         }
                     })
-                    // var myMask = EUI.LoadMask({
-                    //     msg: "正在启动，请稍后..."
-                    // });
-                    // EUI.Store({
-                    //     url: _ctxPath + "/defaultBusinessModel3/startFlow",
-                    //     params: {
-                    //         //  key:'test0607',
-                    //         //以后切换成业务实体或者流程类型
-                    //         //typeId:流程类型ID
-                    //         businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel3',//业务实体Code
-                    //         businessKey: data.id
-                    //     },
-                    //     success: function (result) {
-                    //         myMask.hide();
-                    //         // EUI.ProcessStatus(result);
-                    //         if(!result.data.flowTypeList && !result.data.flowInstance && !result.data.nodeInfoList){
-                    //             var status = {
-                    //                 msg:"找不到流程定义",
-                    //                 success: false,
-                    //                 showTime: 4
-                    //             };
-                    //             EUI.ProcessStatus(status);
-                    //             return;
-                    //         }
-                    //         if(result.data.flowTypeList && !result.data.nodeInfoList){
-                    //             var status = {
-                    //                 msg:"流程配置有误",
-                    //                 success: false,
-                    //                 showTime: 4
-                    //             };
-                    //             EUI.ProcessStatus(status);
-                    //             return;
-                    //         }
-                    //         if(result.data.nodeInfoList){
-                    //             var flowTypeList  = result.data.flowTypeList;
-                    //             Flow.FlowStart({
-                    //                 businessKey: data.id,
-                    //                 businessModelCode:'com.ecmp.flow.entity.DefaultBusinessModel3',
-                    //                 data:result.data,
-                    //                 model:"defaultBusinessModel3",
-                    //                 afterSubmit:function () {
-                    //
-                    //                 }
-                    //             })
-                    //         }
-                    //         //       EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                    //     },
-                    //     failure: function (result) {
-                    //         EUI.ProcessStatus(result);
-                    //         myMask.hide();
-                    //     }
-                    // });
-                }
-            }, {
-                title: "取消",
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
                 }
             }]
         });
@@ -285,11 +231,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     deleteBuiltInApproveWin: function (data) {
         var g = this;
         var infoBox = EUI.MessageBox({
-            title: "提示",
-            msg: "确定删除吗？",
+            title: g.lang.tiShiText,
+            msg: g.lang.ifDelMsgText,
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
                selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -304,9 +254,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         success: function (result) {
                             myMask.hide();
                             EUI.ProcessStatus(result);
-                            if (result.success) {
-                                EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
-                            }
+                            EUI.getCmp("gridPanel").grid.trigger("reloadGrid");
                         },
                         failure: function (result) {
                             EUI.ProcessStatus(result);
@@ -314,39 +262,14 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }, {
-                title: "取消",
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
-                }
             }]
         });
     },
-    initLeft: function () {
-        var g = this;
-        return {
-            xtype: "Container",
-            region: "west",
-            border: false,
-            width: 420,
-            itemspace: 0,
-            layout: "border",
-            items: [this.initTopBar(), this.initTree()]
-        }
-    },
     initTopBar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            border: false,
-            padding: 0,
-            isOverFlow: false,
-            items: [g.initTitle("组织机构"),'->', {
+        return  ['->', {
                 xtype:"SearchBox",
-                width:159,
+                width: 200,
                 displayText: g.lang.searchDisplayText,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
@@ -365,14 +288,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     g.selectedNodeCodePath = null;
                 }
 
-            }]
-        };
+            }];
     },
     initTree: function () {
         var g = this;
         return {
             xtype: "TreePanel",
-            region: "center",
+            title: "组织机构",
+            tbar: this.initTopBar(),
+            region: "west",
             url: _ctxPath + "/flowDefination/listAllOrgs",
             border: true,
             id: "treePanel",
@@ -412,57 +336,42 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
             }
         }
     },
-    initCenterContainer: function () {
+    initGridBar: function(){
         var g = this;
-        return {
-            xtype: "Container",
-            region: "center",
-            itemspace: 0,
-            layout: "border",
-            border: false,
-            items: [{
-                xtype: "ToolBar",
-                region: "north",
-                isOverFlow: false,
-                padding: 0,
-                height: 40,
-                border: false,
-                items: [{
-                    xtype: "Button",
-                    title: "新增",
-                    iconCss:"ecmp-common-add",
-                   selected: true,
-                    handler: function () {
-                        if(!g.selectedNodeId){
-                            var status = {
-                                msg:"请选择组织机构",
-                                success: false,
-                                showTime: 4
-                            };
-                            EUI.ProcessStatus(status);
-                            return;
-                        }
-                        g.addBuiltInApprove();
-                    }
-                }, '->', {
-                    xtype: "SearchBox",
-                    displayText: "请输入名称进行搜索",
-                    onSearch: function (value) {
-                        console.log(value);
-                        if (!value) {
-                            EUI.getCmp("gridPanel").setPostParams({
-                                    Q_LK_name: ""
-                                }
-                            ).trigger("reloadGrid");
-                        }
-                        EUI.getCmp("gridPanel").setPostParams({
-                                Q_LK_name: value
-                            }
-                        ).trigger("reloadGrid");
-                    }
-                }]
-            }, {
+        return [{
+            xtype: "Button",
+            title: "新增",
+            iconCss:"ecmp-common-add",
+            selected: true,
+            handler: function () {
+                if(!g.selectedNodeId){
+                    var status = {
+                        msg:"请选择组织机构",
+                        success: false,
+                        showTime: 4
+                    };
+                    EUI.ProcessStatus(status);
+                    return;
+                }
+                g.addBuiltInApprove();
+            }
+        }, '->', {
+            xtype: "SearchBox",
+            width: 200,
+            displayText: g.lang.searchByNameText,
+            onSearch: function (value) {
+                EUI.getCmp("gridPanel").setPostParams({
+                        Q_LK_name: value
+                    },true);
+            }
+        }];
+    },
+    initGrid: function () {
+        var g = this;
+        return  {
                 xtype: "GridPanel",
+                title: "销售单据管理",
+                tbar: this.initGridBar(),
                 region: "center",
                 id: "gridPanel",
                 style: {
@@ -472,7 +381,6 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     loadonce: true,
                     datatype: "local",
                     shrinkToFit: false,//固定宽度
-                    // url: _ctxPath + "/builtInApprove/list",
                     postData: {
                         S_createdDate: "DESC"
                     },
@@ -484,24 +392,12 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         align: "center",
                         formatter: function (cellvalue, options, rowObject) {
                             if(	"INIT" == rowObject.flowStatus){
-                               /* var strVar = "<div class='condetail-operate'>" +
-                                    "<div class='condetail-start'title='启动流程'></div>"
-                                    + "<div class='condetail-update' title='编辑'></div>"
-                                    + "<div class='condetail-delete'  title='删除'></div>" +
-                                    "</div>";*/
-                                var strVar=      "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
+                                return   "<i class='ecmp-common-edit condetail-update icon-space' title='编辑'></i>"+
                                     "<i class='ecmp-common-delete condetail-delete icon-space' title='删除'></i>"+
                                     "<i class='ecmp-flow-start condetail-start' title='启动流程'></i>";
+                            }else  if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
+                                return "<i class='ecmp-flow-history condetail-flowHistory' title='流程历史'></i>";
                             }
-                            if ("INPROCESS" == rowObject.flowStatus || "COMPLETED"  == rowObject.flowStatus) {
-                              //  var strVar = "<div class='condetail-operate'>"+
-                               //     "<div class='condetail-flowHistory'title='流程历史'></div>"
-                                    /*+ "<div class='condetail-update' title='编辑'></div>"
-                                    + "<div class='condetail-delete'  title='删除'></div>"+*/
-                               //     "</div>";
-                                var strVar = "<i class='ecmp-flow-history condetail-flowHistory' title='流程历史'></i>";
-                            }
-                            return strVar;
                         }
                     }, {
                         label: "ID",
@@ -596,20 +492,20 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                         g.getValues(rowData.id);
                     }
                 }
-            }]
-        }
+        };
     },
     addBuiltInApprove: function () {
         var g = this;
         win = EUI.Window({
             title: "新增销售申请",
-            height: 450,
-            width:420,
+            iconCss:"ecmp-eui-add",
+            height: 430,
+            width:430,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addBuiltInApprove",
-                padding: 0,
+                padding: 10,
                 items: [{
                     xtype: "TextField",
                     title: "组织机构ID",
@@ -617,7 +513,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgId",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     value:g.selectedNodeId,
                     hidden:true
                 },{
@@ -627,7 +523,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgName",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeName,
                     style:{
@@ -640,7 +536,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgCode",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeCode,
                     hidden:true
@@ -651,7 +547,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "tenantCode",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeTenantCode,
                     hidden:true
@@ -662,15 +558,15 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "orgPath",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     readonly:true,
                     value:g.selectedNodeCodePath,
                     hidden:true
                 },{
-                    xtype: "Container",
+                    xtype: "Label",
                     height:25,
                     isOverFlow:false,
-                    html:  "<span style='font-weight: bold'>" + "申请概要" + "</span>",
+                    content:  "<span style='font-weight: bold'>" + "申请概要" + "</span>"
                 },{
                     xtype: "TextField",
                     title: "业务类型",
@@ -678,7 +574,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "name",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
                     xtype: "TextField",
@@ -687,13 +583,13 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "applyCaption",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
-                    xtype: "Container",
+                    xtype: "Label",
                     height:25,
                     isOverFlow:false,
-                    html:  "<span style='font-weight: bold'>" + "申请详情" + "</span>",
+                    content:  "<span style='font-weight: bold'>" + "申请详情" + "</span>"
                 },{
                     xtype: "NumberField",
                     title: "单价",
@@ -701,7 +597,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "unitPrice",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     precision:2,
                     style:{"margin-left":30}
                 },{
@@ -711,7 +607,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "count",
                     colon:false,
-                    width: 270,
+                    width: 290,
                     style:{"margin-left":30}
                 },{
                     xtype: "TextArea",
@@ -719,7 +615,7 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                     labelWidth: 70,
                     name: "workCaption",
                     id:"caption",
-                    width: 270,
+                    width: 290,
                     height:130,
                     colon:false,
                     allowBlank:false,
@@ -727,23 +623,21 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
                 }]
             }],
             buttons: [{
+                title: "取消",
+                handler: function () {
+                    win.remove();
+                }
+            },{
                 title:"保存",
-                iconCss:"ecmp-common-save",
                selected: true,
                 handler: function () {
                     var form = EUI.getCmp("addBuiltInApprove");
                     if (!form.isValid()) {
+                        EUI.ProcessStatus({success: false,msg:g.lang.unFilledText});
                         return;
                     }
                     var data = form.getFormValue();
-                    console.log(data);
                     g.saveBuiltInApprove(data);
-                }
-            }, {
-                title: "取消",
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    win.remove();
                 }
             }]
         });
@@ -751,7 +645,6 @@ EUI.DefaultBusinessModel3View = EUI.extend(EUI.CustomUI, {
     //保存
     saveBuiltInApprove: function (data) {
         var g = this;
-        console.log(data);
         var myMask = EUI.LoadMask({
             msg: "正在保存，请稍候..."
         });

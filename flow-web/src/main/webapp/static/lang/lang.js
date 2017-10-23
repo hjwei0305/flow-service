@@ -3,17 +3,14 @@ if (!window.Flow) {
     EUI.ns("Flow.flow");
 }
 var common_lang = {
-    tiShiText: "提示",
-    ifDelMsgText: "确定删除吗？",
+    tiShiText: "温馨提示",
+    ifDelMsgText: "数据将丢失，确定要删除吗？",
     sureText: "确定",
     nowDelMsgText: "正在删除,请稍后....",
     nowSaveMsgText: "正在保存，请稍候...",
     codeText: "代码",
     nameText: "名称",
     depictText: "描述",
-    searchNameText: "请输入名称进行搜索",
-    InputSearchNameText: "请输入搜索名称",
-
     addText: "新增",
     hintText: "提示",
     paramsText: "参数为空!",
@@ -33,15 +30,15 @@ var common_lang = {
     finishText: "完成",
     editText: "编辑",
     unFilledText: "存在必填项未输入，请确认！",
-    searchByNameMsgText: "请输入名称进行搜索",
     copyHintMessage: "请选择一条要参考的行项目!",
-    searchByCodeOrNameText: "请输入代码或名称进行搜索",
-    searchDisplayText: "请输入代码或名称查询"
+    searchByNameText: "请输入名称搜索",
+    searchByCodeOrNameText: "请输入代码或名称搜索",
+    searchDisplayText: "请输入关键字搜索"
 };
 
 if (EUI.AppModuleView) {
     EUI.apply(EUI.AppModuleView.prototype.lang, {
-        updateAppModuleText: "修改实体模型",
+        updateAppModuleText: "编辑实体模型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -67,14 +64,13 @@ if (EUI.BusinessModelView) {
         classPathText: "类全路径",
         conditonBeanText: "转换对象",
         belongToAppModuleText: "所属应用模块",
-        updateBusinessModelText: "修改业务模型",
+        updateBusinessModelText: "编辑业务模型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
         inputConditonBeanText: "请输入转换对象",
         inputDepictMsgText: "请输入描述",
         inputWorkPageText: "请输入工作界面",
-        searchNameText: "请输入名称进行搜索",
         chooseBelongToAppModuleText: "请选择所属应用模块",
         addNewBusinessModelText: "新增业务模型",
         urlViewAddressText: "URL地址",
@@ -89,7 +85,7 @@ if (EUI.BusinessModelView) {
         serviceUrlText: "服务地址管理",
         addServiceUrlText: "新增服务地址",
         businessModelIdText: "业务实体ID",
-        updateServiceUrlText: "修改服务地址管理",
+        updateServiceUrlText: "编辑服务地址管理",
         addExecutorConfigText: "新增自定义执行人配置",
         paramText: "参数",
         businessModelText: "业务实体",
@@ -108,7 +104,7 @@ if (EUI.BusinessModelView) {
 if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         addResourceText: "新增",
-        updateFlowServiceUrlText: "修改服务地址管理",
+        updateFlowServiceUrlText: "编辑服务地址管理",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlMsgText: "请输入URL",
@@ -120,7 +116,7 @@ if (EUI.FlowServiceUrlView) {
 if (EUI.CustomExecutorView) {
     EUI.apply(EUI.CustomExecutorView.prototype.lang, {
         addResourceText: "新增",
-        updateFlowServiceUrlText: "修改服务地址管理",
+        updateFlowServiceUrlText: "编辑服务地址管理",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlMsgText: "请输入URL",
@@ -133,7 +129,7 @@ if (EUI.FlowTypeView) {
     EUI.apply(EUI.FlowTypeView.prototype.lang, {
         addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -145,9 +141,10 @@ if (EUI.FlowTypeView) {
 
 if (EUI.FlowInstanceView) {
     EUI.apply(EUI.FlowInstanceView.prototype.lang, {
+        modelText: "应用模块",
         addResourceText: "新增",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -166,7 +163,7 @@ if (EUI.FlowDefinationView) {
         activateMaskMessageText: "正在激活，请稍候...",
         freezeMaskMessageText: "正在冻结，请稍候...",
         belongToBusinessModelText: "所属业务实体模型",
-        updateFlowTypeText: "修改流程类型",
+        updateFlowTypeText: "编辑流程类型",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
@@ -184,7 +181,7 @@ if (EUI.WorkPageUrlView) {
         addBtnText: "新增",
         urlViewAddressText: "URL地址",
         appModelIdText: "应用模块ID",
-        updateWorkPageUrlText: "修改工作页面",
+        updateWorkPageUrlText: "编辑工作页面",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputUrlViewAddressMsgText: "请输入URL界面地址",
@@ -201,15 +198,14 @@ if (EUI.FlowDefinationView) {
         frozenText: '是否冻结',
         rankText: '排序',
         refreshTest: "刷新",
-        modifyRootText: "禁止修改根节点！",
+        modifyRootText: "禁止编辑根节点！",
         addHintMessageText: "请选择一个组织结构节点!",
         createNodeText: "创建节点",
-        updateRootText: "禁止修改根节点!",
+        updateRootText: "禁止编辑根节点!",
         moveHintMessageText: "请选择您要移动的节点！",
         rootText: "根节点",
         queryMaskMessageText: "正在努力获取数据，请稍候...",
         closeText: "关闭",
-        searchDisplayText: "请输入代码或名称查询",
         processMaskMessageText: "正在处理，请稍候...",
         operateHintMessage: "请选择一条要操作的行项目!"
     }, common_lang);
@@ -319,7 +315,7 @@ if (Flow.flow.FlowApprove) {
         previousStepText: "上一步",
         spreadText: "展开",
         chooseNextExecuteNodeText: "请选择下一步执行节点",
-        operationHintText: "操作提示",
+        operationHintText: "温馨提示",
         stopFlowMsgText: "当前操作流程将会结束，是否继续？",
         generalTaskText: "普通任务",
         singleSignTaskText: "单签任务",
@@ -331,7 +327,7 @@ if (Flow.flow.FlowApprove) {
         showUserInfoText: "名称：{0}，岗位：{1}，组织机构：{2}，编号：{3}",
         showUserInfo2Text: "名称：{0}，组织机构：{1}，编号：{2}",
         chooseExecutorMsgText: "请选择[{0}]的执行人",
-        seachByIdOrNameText: "请输入用户名称或编号进行搜索",
+        seachByIdOrNameText: "请输入名称或编号搜索",
         organization2Text: "组织机构",
         userNumberText: "员工编号",
         userNameText: "用户名称",
@@ -360,7 +356,7 @@ if (EUI.CustomExecutorView) {
 
 if (EUI.FlowDefinationView) {
     EUI.apply(EUI.FlowDefinationView.prototype.lang, {
-        flowDefinitionVersionText: "流程定义版本",
+        flowDefinitionVersionText: "流程定义版本管理",
         definitionIDText: "定义ID",
         definitionKEYText: "定义KEY",
         deployIDText: "部署ID",
@@ -416,7 +412,7 @@ if (Flow.flow.FlowHistory) {
 
 if (EUI.FlowHistoryView) {
     EUI.FlowHistoryView.prototype.lang = EUI.applyIf({
-        searchByTaskNameText: "请输入任务名进行搜索",
+        searchByTaskNameText: "请输入任务名搜索",
         reverseText: "撤销",
         taskNameText: "任务名",
         flowInstanceText: "流程实例",
@@ -475,7 +471,6 @@ if (EUI.FlowServiceUrlView) {
     EUI.apply(EUI.FlowServiceUrlView.prototype.lang, {
         businessEntityText: "业务实体",
         totalText: "全部",
-        searchByNameMsgText: "请输入名称进行搜索",
         businessEntityModelText: "所属业务实体模型"
 
     }, common_lang);
@@ -483,7 +478,7 @@ if (EUI.FlowServiceUrlView) {
 
 if (EUI.FlowTaskView) {
     EUI.apply(EUI.FlowTaskView.prototype.lang, {
-        searchByNameMsgText: "请输入任务名进行搜索",
+        searchByNameText: "请输入任务名搜索",
         passText: "通过",
         rejectText: "驳回",
         taskNameText: "任务名",
@@ -534,9 +529,37 @@ if (EUI.DefaultBusinessModel3View) {
 }
 
 if (EUI.DefaultBusinessModel2View) {
-    EUI.DefaultBusinessModel2View.prototype.lang = EUI.applyIf( {}, common_lang);
+    EUI.DefaultBusinessModel2View.prototype.lang = EUI.applyIf( {
+        startFlowMsgText: "确定立即启动流程吗?",
+        orgText: "组织机构",
+        orgIDText: "组织机构ID",
+        orgCodeText: "组织机构code ",
+        orgTenantCodeText: "组织机构租户代码",
+        orgCodePathText: "组织机构codePath",
+        businessTypeText: "业务类型",
+        applyMarkText: "申请说明",
+        applyOutlineText: "申请概要",
+        applyDetailText: "申请详情",
+        remarkText: "备注说明",
+        amountText:"数量",
+        priceText: "单价"
+    }, common_lang);
 }
 
 if (EUI.BuiltInApproveView) {
-    EUI.BuiltInApproveView.prototype.lang = EUI.applyIf( {}, common_lang);
+    EUI.BuiltInApproveView.prototype.lang = EUI.applyIf( {
+        startFlowMsgText: "确定立即启动流程吗?",
+        orgText: "组织机构",
+        orgIDText: "组织机构ID",
+        orgCodeText: "组织机构code ",
+        orgTenantCodeText: "组织机构租户代码",
+        orgCodePathText: "组织机构codePath",
+        businessTypeText: "业务类型",
+        applyMarkText: "申请说明",
+        applyOutlineText: "申请概要",
+        applyDetailText: "申请详情",
+        remarkText: "备注说明",
+        amountText:"数量",
+        priceText: "单价"
+    }, common_lang);
 }

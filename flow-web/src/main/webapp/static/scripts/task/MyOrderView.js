@@ -84,13 +84,13 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         EUI.FieldGroup({
             renderTo: "dateField",
             itemspace: 10,
-            width: 260,
+            width: 350,
             items: [{
                 xtype: "DateField",
                 name:"startDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 112,
+                width: 160,
                 allowBlank:false,
                 value:g.startTime,
                 beforeSelect:function (data) {
@@ -111,7 +111,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 name:"endDate",
                 format: "Y-m-d",
                 height: 14,
-                width: 112,
+                width: 160,
                 allowBlank:false,
                 value:g.endTime,
                 beforeSelect:function (data) {
@@ -253,12 +253,11 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var message = EUI.MessageBox({
             border: true,
-            title: "提示",
+            title: "温馨提示",
             showClose: true,
             msg: msg,
             buttons: [{
                 title: "确定",
-                iconCss:"ecmp-common-ok",
                 handler: function () {
                     message.remove();
                 }

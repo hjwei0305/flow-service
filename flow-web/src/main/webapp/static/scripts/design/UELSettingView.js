@@ -24,6 +24,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             height: height,
             padding: 10,
             title: this.title,
+            iconCss: "ecmp-eui-setting",
             buttons: this.getButtons(),
             layout: "border",
             items: items
@@ -85,8 +86,12 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     getButtons: function () {
         var g = this;
         return [{
-            title: "保存配置",
-            iconCss: "ecmp-common-save",
+            title: "取消",
+            handler: function () {
+                g.window.close();
+            }
+        },{
+            title: "保存",
             selected: true,
             handler: function () {
                 var name, isDefault = false;
@@ -102,7 +107,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
-                };
+                }
                 var logicUel=g.logicUelCmp.getValue();
                 if(!g.isDefault&&!logicUel&&g.showName){
                     EUI.ProcessStatus({
@@ -147,12 +152,6 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         EUI.ProcessStatus(result);
                     }
                 })
-            }
-        }, {
-            title: "取消",
-            iconCss: "ecmp-common-delete",
-            handler: function () {
-                g.window.close();
             }
         }];
     },
