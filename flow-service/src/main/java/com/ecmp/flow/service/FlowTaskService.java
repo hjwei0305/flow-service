@@ -1112,6 +1112,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if(preActivity==null){
             return false;
         }
+        String type = preActivity.getProperty("type")+"";
+        if("callActivity".equalsIgnoreCase(type)|| "ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)){//上一步如果是子任务、服务任务/接收任务不允许驳回
+            return false;
+        }
         Boolean result = ifMultiInstance(currActivity);
         if (result) {//多任务实例不允许驳回
             return false;
@@ -1455,6 +1459,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
                         } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                            nodeInfo.setUiType("checkbox");
                         }
                     }
 

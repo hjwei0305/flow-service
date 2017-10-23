@@ -307,6 +307,12 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                 }
                             }).start();
                         }else{
+                            new Thread(new Runnable() {//异步
+                                @Override
+                                public void run() {
+                                    initNextAllTask(flowInstance,flowHistory);
+                                }
+                            }).start();
                         }
                     }
                 }else{

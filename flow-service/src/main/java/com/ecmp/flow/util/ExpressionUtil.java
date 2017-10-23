@@ -1,14 +1,7 @@
 package com.ecmp.flow.util;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
-import com.ecmp.config.util.SessionClientRequestFilter;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.vo.ContextAppModule;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 
 import javax.ws.rs.core.MediaType;
@@ -47,7 +40,7 @@ public class ExpressionUtil {
         List<Object> providers = new ArrayList<>();
         providers.add(new ApiRestJsonProvider());
         //API会话检查的客户端过滤器
-        providers.add(new SessionClientRequestFilter());
+//        providers.add(new SessionClientRequestFilter());
 //        return JAXRSClientFactory.create(baseAddress, apiClass,providers);
 
         LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
@@ -70,7 +63,7 @@ public class ExpressionUtil {
         List<Object> providers = new ArrayList<>();
         providers.add(new ApiRestJsonProvider());
         //API会话检查的客户端过滤器
-        providers.add(new SessionClientRequestFilter());
+//        providers.add(new SessionClientRequestFilter());
 //
         Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
                 .path("condition/propertiesAndValues/{conditonPojoClassName}",clientClassName)
@@ -99,7 +92,7 @@ public class ExpressionUtil {
         List<Object> providers = new ArrayList<>();
         providers.add(new ApiRestJsonProvider());
         //API会话检查的客户端过滤器
-        providers.add(new SessionClientRequestFilter());
+//        providers.add(new SessionClientRequestFilter());
 
         LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
                 .path("condition/conditonPojoMapByBusinessModelId/{businessModelId}/{id}",businessModelId,businessId)
@@ -124,7 +117,7 @@ public class ExpressionUtil {
         List<Object> providers = new ArrayList<>();
         providers.add(new ApiRestJsonProvider());
         //API会话检查的客户端过滤器
-        providers.add(new SessionClientRequestFilter());
+//        providers.add(new SessionClientRequestFilter());
 
         result = WebClient.create(clientApiBaseUrl, providers)
                 .path("condition/resetState/{businessModelId}/{id}/{status}",businessModelId,businessId,status)

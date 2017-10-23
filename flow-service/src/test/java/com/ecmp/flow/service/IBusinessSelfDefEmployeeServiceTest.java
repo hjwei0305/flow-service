@@ -2,19 +2,16 @@ package com.ecmp.flow.service;
 
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.config.util.ApiRestJsonProvider;
-import com.ecmp.config.util.SessionClientRequestFilter;
 import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
 import com.ecmp.vo.OperateResultWithData;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
+
+//import com.ecmp.config.util.SessionClientRequestFilter;
 
 public class IBusinessSelfDefEmployeeServiceTest extends BasicContextTestCase {
 

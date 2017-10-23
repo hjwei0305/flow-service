@@ -1,20 +1,16 @@
 package com.ecmp.flow.util;
 
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.config.util.ApiRestJsonProvider;
-import com.ecmp.config.util.SessionClientRequestFilter;
 import com.ecmp.context.ContextUtil;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.WebClient;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
