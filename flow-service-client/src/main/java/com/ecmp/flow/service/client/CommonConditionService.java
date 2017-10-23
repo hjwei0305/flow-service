@@ -7,11 +7,13 @@ import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
 import com.ecmp.flow.clientapi.ICommonConditionService;
+import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.IBusinessFlowEntity;
 import com.ecmp.flow.entity.IConditionPojo;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,85 +37,102 @@ import java.util.Map;
 public class CommonConditionService implements ICommonConditionService {
 
     private IBusinessModelService businessModelService;
-    public CommonConditionService(){
+
+    public CommonConditionService() {
     }
 
-    @Override
-    public Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws ClassNotFoundException {
+    private Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws ClassNotFoundException {
         return ExpressionUtil.getProperties(conditonPojoClassName);
     }
 
-    @Override
-    public Map<String, Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException{
+
+    private Map<String, Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         return ExpressionUtil.getPropertiesAndValues(conditonPojoClassName);
     }
 
-    @Override
-    public Map<String,Object> getConditonPojoMap(String conditonPojoClassName, String daoBeanName,String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+
+    private Map<String, Object> getConditonPojoMap(String conditonPojoClassName, String daoBeanName, String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Class conditonPojoClass = Class.forName(conditonPojoClassName);
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-        BaseDao appModuleDao = (BaseDao)applicationContext.getBean(daoBeanName);
-        IConditionPojo conditionPojo = (IConditionPojo)conditonPojoClass.newInstance();
-        BaseEntity content = (BaseEntity)appModuleDao.findOne(id);
-        BeanUtils.copyProperties(conditionPojo,content);
-        if(conditionPojo != null){
+        BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
+        IConditionPojo conditionPojo = (IConditionPojo) conditonPojoClass.newInstance();
+        BaseEntity content = (BaseEntity) appModuleDao.findOne(id);
+        BeanUtils.copyProperties(conditionPojo, content);
+        if (conditionPojo != null) {
             return new ExpressionUtil<IConditionPojo>().getPropertiesAndValues(conditionPojo);
-        }else {
-            return  null;
+        } else {
+            return null;
         }
     }
 
 
     @Override
-    public Map<String, String> getPropertiesForConditionPojoByBusinessModelId(String businessModelId) throws ClassNotFoundException {
-       String conditonPojoClassName = null;
-       businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-       BusinessModel businessModel = businessModelService.findOne(businessModelId);
-       if(businessModel != null){
-           conditonPojoClassName = businessModel.getConditonBean();
-       }
+    public Map<String, String> properties(String businessModelCode) throws ClassNotFoundException {
+        String conditonPojoClassName = null;
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            conditonPojoClassName = getConditionBeanName(businessModelCode);
+        }
         return this.getPropertiesForConditionPojo(conditonPojoClassName);
     }
 
     @Override
-    public Map<String, Object> getPropertiesAndValuesByBusinessModelId(String businessModelId) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException{
+    public Map<String, Object> initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         String conditonPojoClassName = null;
         businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-        BusinessModel businessModel = businessModelService.findOne(businessModelId);
-        if(businessModel != null){
-            conditonPojoClassName = businessModel.getConditonBean();
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            conditonPojoClassName = getConditionBeanName(businessModelCode);
         }
         return this.getPropertiesAndValues(conditonPojoClassName);
     }
 
     @Override
-    public Map<String,Object> getConditonPojoMapByBusinessModelId(String businessModelId,String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public Map<String, Object> propertiesAndValues(String businessModelCode, String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
         String conditonPojoClassName = null;
         String daoBeanName = null;
         businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-        BusinessModel businessModel = businessModelService.findOne(businessModelId);
-        if(businessModel != null){
-            conditonPojoClassName = businessModel.getConditonBean();
-            daoBeanName = businessModel.getDaoBean();
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            conditonPojoClassName = getConditionBeanName(businessModelCode);
+            daoBeanName = getDaoBeanName(businessModelCode);
         }
-        return this.getConditonPojoMap( conditonPojoClassName,  daoBeanName, id);
+        return this.getConditonPojoMap(conditonPojoClassName, daoBeanName, id);
     }
 
 
-    @Transactional( propagation= Propagation.REQUIRED)
-    public Boolean resetState(String businessModelId,String id,FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Boolean resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-        BusinessModel businessModel = businessModelService.findOne(businessModelId);
-        String   daoBeanName = null;
-        if(businessModel != null){
-          daoBeanName = businessModel.getDaoBean();
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        String daoBeanName = null;
+        if (businessModel != null) {
+            daoBeanName = getDaoBeanName(businessModelCode);
         }
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-        BaseDao appModuleDao = (BaseDao)applicationContext.getBean(daoBeanName);
-        IBusinessFlowEntity content = (IBusinessFlowEntity)appModuleDao.findOne(id);
+        BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
+        IBusinessFlowEntity content = (IBusinessFlowEntity) appModuleDao.findOne(id);
         content.setFlowStatus(status);
         appModuleDao.save(content);
         return true;
+    }
+    private String getDaoBeanName(String className)throws ClassNotFoundException {
+        BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);
+         return   businessEntityAnnotaion.daoBean();
+    }
+    private String getConditionBeanName(String className)throws ClassNotFoundException {
+        BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);
+        return   businessEntityAnnotaion.conditionBean();
+    }
+    private BusinessEntityAnnotaion getBusinessEntityAnnotaion(String className)throws ClassNotFoundException {
+        if (StringUtils.isNotEmpty(className)) {
+            Class sourceClass = Class.forName(className);
+            BusinessEntityAnnotaion businessEntityAnnotaion = (BusinessEntityAnnotaion) sourceClass.getAnnotation(BusinessEntityAnnotaion.class);
+            return  businessEntityAnnotaion;
+        }else {
+            throw new RuntimeException("className is null!");
+        }
     }
 }

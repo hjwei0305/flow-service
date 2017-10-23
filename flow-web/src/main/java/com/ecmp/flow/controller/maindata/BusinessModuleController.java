@@ -162,15 +162,15 @@ public class BusinessModuleController {
 
     /**
      * 查询条件属性
-     * @param conditonPojoClassName
+     * @param businessModelCode  业务实体代码
      * @return
      * @throws ClassNotFoundException
      */
     @RequestMapping(value = "getPropertiesForConditionPojo")
     @ResponseBody
-    public Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws  ClassNotFoundException {
+    public Map<String, String> getPropertiesForConditionPojo(String businessModelCode) throws  ClassNotFoundException {
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.getPropertiesForConditionPojo(conditonPojoClassName);
+        Map<String, String> result = proxy.properties(businessModelCode);
         return result;
     }
 

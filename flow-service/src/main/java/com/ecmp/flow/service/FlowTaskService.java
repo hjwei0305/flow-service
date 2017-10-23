@@ -368,12 +368,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = flowInstance.getBusinessId();
         BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        String businessModelId = businessModel.getId();
-        String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-        String clientApiBaseUrl =appModule.getApiBaseAddress();
-        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel,businessId);
         if (v != null && !v.isEmpty()) {
             if (variables == null) {
                 variables = new HashMap<String, Object>();
@@ -1700,12 +1695,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //            flowInstanceReal = flowInstanceReal.getParent();
 //        }
         BusinessModel businessModel = flowInstanceReal.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        String businessModelId = businessModel.getId();
-        String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-        String clientApiBaseUrl =appModule.getApiBaseAddress();
-        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel, businessId);
 
 
       List<String> includeNodeIdsNew = initIncludeNodeIds(includeNodeIds,actTaskId,v);

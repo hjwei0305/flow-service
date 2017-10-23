@@ -401,9 +401,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     private FlowInstance startByTypeCode(FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) throws NoSuchMethodException, SecurityException {
-        // BusinessModel  businessModel = businessModelDao.findByProperty("className",businessModelCode);
-//        FlowType   flowType = flowTypeDao.findByProperty("code","")
-        //  typeCode="ecmp-flow-flowType2_1494902655299";
         variables.put("opinion", "流程启动");//所有流程启动描述暂时都设计为“流程启动”
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = businessKey;
@@ -412,14 +409,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             startUserId = ContextUtil.getUserId();
         }
         BusinessModel businessModel = flowType.getBusinessModel();
-        String businessModelId = businessModel.getId();
-        String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-        String clientApiBaseUrl = appModule.getApiBaseAddress();
-        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
-//        String orgId = v.get("orgId")+"";
-//        String orgCode = v.get("orgCode")+"";
+        Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, businessId);
         String orgCodePath = v.get("orgPath") + "";
 //        String workCaption = v.get("workCaption")+"";//工作说明
         String[] orgCodes = orgCodePath.split("\\|");
@@ -430,13 +420,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
             variables.putAll(v);
         }
-        //flowTask.getFlowInstance().setBusinessModelRemark(v.get("workCaption")+"");
         String key = finalFlowDefination.getDefKey();
-
-//        return startByKey(defKey, startUserId, businessKey, variables);
-
         FlowInstance flowInstance = null;
-
         FlowDefination flowDefination = flowDefinationDao.findByDefKey(key);
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
@@ -449,7 +434,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
-//                String proessDefId = flowDefVersion.getActDefId();
                 String actDefId = flowDefVersion.getActDefId();
                 variables.put("flowDefVersionId", flowDefVersion.getId());
                 ProcessInstance processInstance = null;
@@ -459,7 +443,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
 
-                Map<String, Object> vNew = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);//再获取一次，预防事件对单据进行了更新
+                Map<String, Object> vNew = ExpressionUtil.getPropertiesMap(businessModel, businessId);//再获取一次，预防事件对单据进行了更新
                 if (vNew != null && !vNew.isEmpty()) {
                     if (variables == null) {
                         variables = new HashMap<String, Object>();
@@ -496,12 +480,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowTypeList != null && !flowTypeList.isEmpty()) {
             //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
-            String businessModelId = businessModel.getId();
-            String appModuleId = businessModel.getAppModuleId();
-            com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-            com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-            String clientApiBaseUrl = appModule.getApiBaseAddress();
-            Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, businessId);
+            Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, businessId);
             String orgCodePath = v.get("orgPath") + "";
             orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|") + 1);
             flowStartResultVO.setFlowTypeList(flowTypeList);
@@ -710,12 +689,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        String businessModelId = businessModel.getId();
-                        String appModuleId = businessModel.getAppModuleId();
-                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-                        String clientApiBaseUrl = appModule.getApiBaseAddress();
-                        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
+                        Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, flowStartVO.getBusinessKey());
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
@@ -795,12 +769,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        String businessModelId = businessModel.getId();
-                        String appModuleId = businessModel.getAppModuleId();
-                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-                        String clientApiBaseUrl = appModule.getApiBaseAddress();
-                        Map<String, Object> v = ExpressionUtil.getConditonPojoValueMap(clientApiBaseUrl, businessModelId, flowStartVO.getBusinessKey());
+                        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel,  flowStartVO.getBusinessKey());
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
@@ -1422,7 +1391,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
                 com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
                 String clientApiBaseUrl = appModule.getApiBaseAddress();
-                Boolean result = ExpressionUtil.validate(clientApiBaseUrl, clientClassName, conditonFinal);
+                Boolean result = ExpressionUtil.validate(businessModel, conditonFinal);
                 if (result == null) {
                     return OperateResultWithData.operationFailure("10025");
                 } else {

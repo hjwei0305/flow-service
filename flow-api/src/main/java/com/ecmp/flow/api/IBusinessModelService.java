@@ -68,7 +68,19 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Path("findByAppModuleId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    @ApiOperation(value = "获取业务实体数据", notes = "测试 获取业务实体数据")
     List<BusinessModel> findByAppModuleId(@QueryParam("appModuleId") String appModuleId);
+
+    /**
+     * 根据应用模块id查询业务实体
+     * @param classNmae 业务模块代码
+     * @return 实体对象
+     */
+    @POST
+    @Path("findByClassName")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取业务实体数据", notes = "测试 获取业务实体数据")
+    public BusinessModel findByClassName(@QueryParam("classNmae") String classNmae);
 
 }

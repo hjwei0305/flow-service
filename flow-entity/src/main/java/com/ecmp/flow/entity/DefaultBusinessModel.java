@@ -1,6 +1,7 @@
 package com.ecmp.flow.entity;
 
 import com.ecmp.core.entity.BaseEntity;
+import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.ConditionAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
@@ -38,6 +39,7 @@ import java.lang.reflect.InvocationTargetException;
 @Entity(name = "default_business_model")
 @DynamicInsert
 @DynamicUpdate
+@BusinessEntityAnnotaion(conditionBean="com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition",daoBean="defaultBusinessModelDao")
 public class DefaultBusinessModel extends AbstractBusinessModel{
     /**
      * 单价

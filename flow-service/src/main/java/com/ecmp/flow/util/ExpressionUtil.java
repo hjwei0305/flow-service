@@ -1,15 +1,17 @@
 package com.ecmp.flow.util;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.entity.BusinessModel;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.cxf.jaxrs.client.WebClient;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -24,80 +26,63 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ExpressionUtil {
+
+     public static AppModule getAppModule(BusinessModel businessModel){
+        String appModuleId = businessModel.getAppModuleId();
+        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+        return appModule;
+    }
     /**
      * 获取条件表达式的属性值对
-     * @param clientApiBaseUrl
-     * @param businessModelId 业务模型ID
+     * @param businessModel 业务模型
      * @param  businessId 业务ID
      * @return
      */
-    public  static Map<String,Object>  getConditonPojoValueMap(String clientApiBaseUrl,String businessModelId,String businessId){
-        //获取API服务的应用模块
-//        ContextAppModule appModule = getAppModule(apiClass);
-        //获取服务基地址
-//        String baseAddress = appModule.getApiBaseAddress();
-        //平台API服务使用的JSON序列化提供类
-        List<Object> providers = new ArrayList<>();
-        providers.add(new ApiRestJsonProvider());
-        //API会话检查的客户端过滤器
-//        providers.add(new SessionClientRequestFilter());
-//        return JAXRSClientFactory.create(baseAddress, apiClass,providers);
-
-        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
-                .path("condition/conditonPojoMapByBusinessModelId/{businessModelId}/{id}",businessModelId,businessId)
-                .accept(MediaType.APPLICATION_JSON)
-                .get(LinkedHashMap.class);
+    public  static Map<String,Object>  getPropertiesMap(BusinessModel businessModel, String businessId){
+        String businessModelCode = businessModel.getClassName();
+        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
+        Map<String,Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",businessId);
+        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
         return pvs;
     }
 
     /**
      * 检证表达式语法是否合法
-     * @param clientApiBaseUrl 客户端baseUrl
-     * @param clientClassName 客户端条件类全路径
+     * @param  businessModel 业务实体
      * @param expression 表达式
      * @return
      */
-    public static Boolean validate(String clientApiBaseUrl,String clientClassName,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static Boolean validate(BusinessModel businessModel,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Boolean result = true;
-        //平台API服务使用的JSON序列化提供类
-        List<Object> providers = new ArrayList<>();
-        providers.add(new ApiRestJsonProvider());
-        //API会话检查的客户端过滤器
-//        providers.add(new SessionClientRequestFilter());
-//
-        Map<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
-                .path("condition/propertiesAndValues/{conditonPojoClassName}",clientClassName)
-//                .query("conditonPojoClassName",clientClassName)
-                .accept(MediaType.APPLICATION_JSON)
-                .get(Map.class);
-
-//        com.ecmp.flow.clientapi.ICommonConditionService proxy2 = ApiClient.createProxy(com.ecmp.flow.clientapi.ICommonConditionService.class);
-//        Map<String,Object> pvs = proxy2.getPropertiesAndValues(clientClassName);
-
-       result = ConditionUtil.groovyTest(expression,pvs);
+        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
+        Map<String,Object> params = new HashMap();
+        params.put("businessModelCode",businessModel.getClassName());
+        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+        result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
 
     /**
      * 直接获取表达式验证结果
-     * @param clientApiBaseUrl
-     * @param businessModelId  业务模型ID
+     * @param  businessModel 业务实体
      * @param expression
      * @param businessId  业务ID
      * @return
      */
-    public static boolean result(String clientApiBaseUrl,String businessModelId,String businessId,String expression){
+    public static boolean result(BusinessModel businessModel,String businessId,String expression){
         boolean result = true;
-        //平台API服务使用的JSON序列化提供类
-        List<Object> providers = new ArrayList<>();
-        providers.add(new ApiRestJsonProvider());
-        //API会话检查的客户端过滤器
-//        providers.add(new SessionClientRequestFilter());
-
-        LinkedHashMap<String,Object> pvs = WebClient.create(clientApiBaseUrl, providers)
-                .path("condition/conditonPojoMapByBusinessModelId/{businessModelId}/{id}",businessModelId,businessId)
-                .accept(MediaType.APPLICATION_JSON)
-                .get(LinkedHashMap.class);
+        String businessModelCode = businessModel.getClassName();
+        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
+        Map<String,Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",businessId);
+        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
@@ -105,24 +90,21 @@ public class ExpressionUtil {
 
     /**
      * 重置单据状态
-     * @param clientApiBaseUrl
-     * @param businessModelId  业务模型ID
+     * @param  businessModel 业务实体
      * @param status
      * @param businessId  业务ID
      * @return
      */
-    public static boolean resetState(String clientApiBaseUrl, String businessModelId, String businessId, FlowStatus status){
+    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status){
         boolean result = true;
-        //平台API服务使用的JSON序列化提供类
-        List<Object> providers = new ArrayList<>();
-        providers.add(new ApiRestJsonProvider());
-        //API会话检查的客户端过滤器
-//        providers.add(new SessionClientRequestFilter());
-
-        result = WebClient.create(clientApiBaseUrl, providers)
-                .path("condition/resetState/{businessModelId}/{id}/{status}",businessModelId,businessId,status)
-                .accept(MediaType.APPLICATION_JSON)
-                .get(Boolean.class);
+        String businessModelCode = businessModel.getClassName();
+        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
+        Map<String,Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",businessId);
+        params.put("status",status);
+        result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Boolean>() {},params);
         return result;
     }
 

@@ -30,74 +30,74 @@ import java.util.Map;
  */
 public interface ICommonConditionService {
 
+//    /**
+//     * 获取条件POJO属性说明
+//     * @param conditonPojoClassName 条件POJO类名
+//     * @return  POJO属性说明Map
+//     * @throws ClassNotFoundException 类找不到异常
+//     */
+//    @GET
+//    @Path("properties/{conditonPojoClassName}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "获取条件POJO属性说明",notes = "测试")
+//    public Map<String,String> getPropertiesForConditionPojo(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException;
+//
+//    /**
+//     * 获取条件POJO属性说明及初始化值
+//     * @param conditonPojoClassName 条件实体类名称
+//     * @return  获取条件POJO属性说明及初始化值Map
+//     * @throws ClassNotFoundException 类找不到异常
+//     * @throws InvocationTargetException 目标类解析异常
+//     * @throws InstantiationException 实例异常
+//     * @throws IllegalAccessException 访问异常
+//     * @throws NoSuchMethodException 没有方法异常
+//     */
+//    @GET
+//    @Path("propertiesAndValues/{conditonPojoClassName}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
+//    public Map<String,Object> getPropertiesAndValues(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+//
+//
+//    /**
+//     * 通过Id获取条件POJO的值
+//     * @param conditonPojoClassName 条件pojo类名
+//     * @param daoBeanName  对应的dao层BeanName
+//     * @param id  业务ID
+//     * @return POJO的值
+//     * @throws ClassNotFoundException 类找不到异常
+//     * @throws InvocationTargetException 目标类解析异常
+//     * @throws InstantiationException 实例异常
+//     * @throws IllegalAccessException 访问异常
+//     * @throws NoSuchMethodException 没有方法异常
+//     */
+//    @GET
+//    @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "通过业务ID获取条件POJO的值",notes = "测试")
+//    public Map<String,Object> getConditonPojoMap(@PathParam("conditonPojoClassName") String conditonPojoClassName,@PathParam("daoBeanName") String daoBeanName,@PathParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
+
     /**
      * 获取条件POJO属性说明
-     * @param conditonPojoClassName 条件POJO类名
+     * @param businessModelCode 业务实体代码
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
      */
     @GET
-    @Path("properties/{conditonPojoClassName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取条件POJO属性说明",notes = "测试")
-    public Map<String,String> getPropertiesForConditionPojo(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException;
-
-    /**
-     * 获取条件POJO属性说明及初始化值
-     * @param conditonPojoClassName 条件实体类名称
-     * @return  获取条件POJO属性说明及初始化值Map
-     * @throws ClassNotFoundException 类找不到异常
-     * @throws InvocationTargetException 目标类解析异常
-     * @throws InstantiationException 实例异常
-     * @throws IllegalAccessException 访问异常
-     * @throws NoSuchMethodException 没有方法异常
-     */
-    @GET
-    @Path("propertiesAndValues/{conditonPojoClassName}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
-    public Map<String,Object> getPropertiesAndValues(@PathParam("conditonPojoClassName") String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
-
-
-    /**
-     * 通过Id获取条件POJO的值
-     * @param conditonPojoClassName 条件pojo类名
-     * @param daoBeanName  对应的dao层BeanName
-     * @param id  业务ID
-     * @return POJO的值
-     * @throws ClassNotFoundException 类找不到异常
-     * @throws InvocationTargetException 目标类解析异常
-     * @throws InstantiationException 实例异常
-     * @throws IllegalAccessException 访问异常
-     * @throws NoSuchMethodException 没有方法异常
-     */
-    @GET
-    @Path("conditonPojoMap/{conditonPojoClassName}/{daoBeanName}/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务ID获取条件POJO的值",notes = "测试")
-    public Map<String,Object> getConditonPojoMap(@PathParam("conditonPojoClassName") String conditonPojoClassName,@PathParam("daoBeanName") String daoBeanName,@PathParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
-
-
-    /**
-     * 获取条件POJO属性说明
-     * @param businessModelId 业务实体ID
-     * @return  POJO属性说明Map
-     * @throws ClassNotFoundException 类找不到异常
-     */
-    @GET
-    @Path("propertiesByBusinessModelId/{businessModelId}")
+    @Path("properties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID获取条件POJO属性说明",notes = "测试")
-    public Map<String, String> getPropertiesForConditionPojoByBusinessModelId(@PathParam("businessModelId")String businessModelId) throws ClassNotFoundException;
+    public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 
     /**
      * 获取条件POJO属性说明
-     * @param businessModelId 业务实体ID
+     * @param businessModelCode 业务实体代码
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
      * @throws InvocationTargetException 目标类解析异常
@@ -106,16 +106,16 @@ public interface ICommonConditionService {
      * @throws NoSuchMethodException 没有方法异常
      */
     @GET
-    @Path("propertiesAndValuesByBusinessModelId/{businessModelId}")
+    @Path("initPropertiesAndValues")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID获取条件POJO属性及初始化值说明",notes = "测试")
-    public Map<String, Object> getPropertiesAndValuesByBusinessModelId(@PathParam("businessModelId")String businessModelId) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+    public Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
 
     /**
      * 获取条件POJO属性说明
-     * @param businessModelId 业务实体ID
+     * @param businessModelCode 业务实体代码
      * @param id 单据id
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
@@ -125,11 +125,11 @@ public interface ICommonConditionService {
      * @throws NoSuchMethodException 没有方法异常
      */
     @GET
-    @Path("conditonPojoMapByBusinessModelId/{businessModelId}/{id}")
+    @Path("propertiesAndValues")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO的值",notes = "测试")
-    public Map<String,Object> getConditonPojoMapByBusinessModelId(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
 
@@ -146,10 +146,10 @@ public interface ICommonConditionService {
      * @throws NoSuchMethodException 没有方法异常
      */
     @GET
-    @Path("resetState/{businessModelId}/{id}/{status}")
+    @Path("resetState")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
-    public Boolean resetState(@PathParam("businessModelId")String businessModelId,@PathParam("id")String id,
-                              @PathParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    public Boolean resetState(@QueryParam("businessModelId") String businessModelId,@QueryParam("id")String id,
+                              @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }

@@ -693,14 +693,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
                 //重置客户端表单流程状态
                 BusinessModel businessModel = fTemp.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                String businessModelId = businessModel.getId();
-                String appModuleId = businessModel.getAppModuleId();
-                com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-                String clientApiBaseUrl =appModule.getApiBaseAddress();
                 String businessId = fTemp.getBusinessId();
                 FlowStatus status = FlowStatus.INIT;
-                ExpressionUtil.resetState(clientApiBaseUrl, businessModelId,  businessId,  status);
+                ExpressionUtil.resetState(businessModel,  businessId,  status);
             }
         }else {
             result =  OperateResult.operationFailure("10011");//不能终止

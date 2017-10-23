@@ -44,6 +44,10 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         return businessModelDao.findByAppModuleId(appModuleId);
     }
 
+    @Override
+    public BusinessModel findByClassName(String className) {
+        return businessModelDao.findByClassName(className);
+    }
     /**
      * 主键删除
      *

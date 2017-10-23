@@ -123,22 +123,26 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "className",
                     index: "className",
                     width:350
-                }, {
-                    label: this.lang.conditonBeanText,
-                    name: "conditonBean",
-                    index: "conditonBean",
-                    width:450
-                }, {
+                },
+                //     {
+                //     label: this.lang.conditonBeanText,
+                //     name: "conditonBean",
+                //     index: "conditonBean",
+                //     width:450
+                // },
+                    {
                     label: this.lang.applyModuleCodeText,
                     name: "appModuleCode",
                     index: "appModuleCode",
                     width:120
-                }, {
-                    label: this.lang.dataAccessObjectText,
-                    name: "daoBean",
-                    index: "daoBean",
-                    width:220
-                }, {
+                },
+                //     {
+                //     label: this.lang.dataAccessObjectText,
+                //     name: "daoBean",
+                //     index: "daoBean",
+                //     width:220
+                // },
+                    {
                     label: this.lang.formURLText,
                     name: "lookUrl",
                     index: "lookUrl",
@@ -273,21 +277,37 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300,
                     value: data.className
                 }, {
-                    xtype: "TextField",
-                    title: g.lang.conditonBeanText,
+                    xtype: "TextArea",
+                    title: g.lang.conditonPropertiesText,
                     labelWidth: 115,
                     allowBlank: false,
-                    name: "conditonBean",
+                    name: "conditonProperties",
                     width: 300,
-                    value: data.conditonBean
+                    value: data.conditonProperties
                 },{
-                    xtype: "TextField",
-                    title: this.lang.dataAccessObjectText,
+                    xtype: "TextArea",
+                    title: this.lang.conditonPValueText,
                     labelWidth: 115,
                     allowBlank: false,
-                    name: "daoBean",
+                    name: "conditonPValue",
                     width: 300,
-                    value: data.daoBean
+                    value: data.conditonPValue
+                },{
+                    xtype: "TextArea",
+                    title: this.lang.conditonPSValueText,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "conditonPSValue",
+                    width: 300,
+                    value: data.conditonPSValue
+                },{
+                    xtype: "TextArea",
+                    title: this.lang.conditonStatusRestText,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "conditonStatusRest",
+                    width: 300,
+                    value: data.conditonStatusRest
                 }, {
                     xtype: "TextArea",
                     title: this.lang.formURLText,

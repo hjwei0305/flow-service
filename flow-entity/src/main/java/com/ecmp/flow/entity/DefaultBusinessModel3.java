@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -24,6 +25,7 @@ import javax.persistence.Entity;
 @Entity(name = "default_business_model3")
 @DynamicInsert
 @DynamicUpdate
+@BusinessEntityAnnotaion(conditionBean="com.ecmp.flow.vo.conditon.DefaultBusinessModel3Condition",daoBean="defaultBusinessModel3Dao")
 public class DefaultBusinessModel3 extends AbstractBusinessModel{
     /**
      * 单价

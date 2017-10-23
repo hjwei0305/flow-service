@@ -102,18 +102,18 @@ public class FlowDesignController {
     }
 
     /**
-     * 通过业务实体ID获取条件POJO属性说明
+     * 通过业务实体代码获取条件POJO属性说明
      *
-     * @param businessModelId
+     * @param businessModelCode
      * @return
      * @throws ClassNotFoundException
      */
     @ResponseBody
     @RequestMapping(value = "getProperties", method = RequestMethod.POST)
-    public OperateStatus getProperties(String businessModelId) throws ClassNotFoundException {
+    public OperateStatus getProperties(String businessModelCode) throws ClassNotFoundException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.getPropertiesForConditionPojoByBusinessModelId(businessModelId);
+        Map<String, String> result = proxy.properties(businessModelCode);
         status.setData(result);
         return status;
     }
@@ -122,15 +122,15 @@ public class FlowDesignController {
     /**
      * 获取工作界面
      *
-     * @param businessModelId
+     * @param businessModelCode
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "listAllWorkPage", method = RequestMethod.POST)
-    public OperateStatus listAllWorkPage(String businessModelId) {
+    public OperateStatus listAllWorkPage(String businessModelCode) {
         OperateStatus status = OperateStatus.defaultSuccess();
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelId);
+        List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelCode);
         status.setData(result);
         return status;
     }
