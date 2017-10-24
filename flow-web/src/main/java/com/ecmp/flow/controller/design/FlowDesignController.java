@@ -102,7 +102,7 @@ public class FlowDesignController {
     }
 
     /**
-     * 通过业务实体代码获取条件POJO属性说明
+     * 通过业务实体ID获取条件POJO属性说明
      *
      * @param businessModelCode
      * @return
@@ -122,15 +122,15 @@ public class FlowDesignController {
     /**
      * 获取工作界面
      *
-     * @param businessModelCode
+     * @param businessModelId
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "listAllWorkPage", method = RequestMethod.POST)
-    public OperateStatus listAllWorkPage(String businessModelCode) {
+    public OperateStatus listAllWorkPage(String businessModelId) {
         OperateStatus status = OperateStatus.defaultSuccess();
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelCode);
+        List<WorkPageUrl> result = proxy.findSelectEdByBusinessModelId(businessModelId);
         status.setData(result);
         return status;
     }

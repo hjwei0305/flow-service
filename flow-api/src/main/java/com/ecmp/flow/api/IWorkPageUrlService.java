@@ -118,9 +118,9 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
      * @return 已选中的工作界面
      */
     @GET
-    @Path("findSelectEdByBusinessModelId/{businessModelId}")
+    @Path("findSelectEdByBusinessModelId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID查看业务实体已选中的工作界面",notes = "测试")
-    public List<WorkPageUrl> findSelectEdByBusinessModelId(@PathParam("businessModelId")String businessModelId);
+    public List<WorkPageUrl> findSelectEdByBusinessModelId(@QueryParam("businessModelId")String businessModelId);
 }
