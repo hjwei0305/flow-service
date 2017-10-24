@@ -123,6 +123,7 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("appModuleId", this.appModuleId)
                 .append("url", this.url)
                 .append("depict",this.depict)
+                 .append("mustCommit",this.mustCommit)
                 .toString();
     }
 
