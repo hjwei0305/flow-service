@@ -112,6 +112,20 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     name: "url",
                     index: "url",
                     width: '150%'
+                },{
+                    label: this.lang.mustCommitText,
+                    name: "mustCommit",
+                    index: "mustCommit",
+                    width: '50%',
+                    formatter : function(cellvalue, options, rowObject) {
+                        var strVar = '';
+                        if(rowObject.mustCommit){
+                            strVar = g.lang.yesText;
+                        }else{
+                            strVar = g.lang.noText;
+                        }
+                        return strVar;
+                    }
                 }, {
                     label: this.lang.depictText,
                     name: "depict",
@@ -179,7 +193,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateWorkPageUrlText,
             iconCss: "ecmp-eui-edit",
-            height: 250,
+            height: 280,
             width:400,
             padding: 15,
             items: [{
@@ -218,7 +232,19 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                     width: 270,
                     value: data.name
-                }, {
+                },{
+                    xtype: "ComboBox",
+                    width: 270,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    title: g.lang.mustCommitText,
+                    displayText: "是否需要提交",
+                    name: "mustCommit",
+                    value: data.mustCommit,
+                    reader: {name: 'name', field: ['value']},
+                    field: ["mustCommit"],
+                    data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
+                },{
                     xtype: "TextArea",
                     title: g.lang.urlViewAddressText,
                     labelWidth: 90,
@@ -261,7 +287,8 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.addNewWorkPageUrlText,
             iconCss: "ecmp-eui-add",
-            height: 250,
+            height: 280,
+            width:400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -272,7 +299,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.appModelIdText,
                     labelWidth: 90,
                     name: "appModuleId",
-                    width: 220,
+                    width: 270,
                     value: g.appModuleId,
                     hidden: true
                 }, {
@@ -281,7 +308,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     readonly: true,
                     labelWidth: 90,
                     name: "appModuleName",
-                    width: 220,
+                    width: 270,
                     value: g.appModuleName
                 }, {
                     xtype: "TextField",
@@ -289,21 +316,32 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 90,
                     allowBlank: false,
                     name: "name",
-                    width: 220
+                    width: 270
                 }, {
-                    xtype: "TextField",
+                    xtype: "ComboBox",
+                    width: 270,
+                    labelWidth: 90,
+                    allowBlank: false,
+                    title: g.lang.mustCommitText,
+                    displayText: "是否需要提交",
+                    name: "mustCommit",
+                    reader: {name: 'name', field: ['value']},
+                    field: ["mustCommit"],
+                    data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
+                },{
+                    xtype: "TextArea",
                     title: g.lang.urlViewAddressText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "url",
-                    width: 220
-                }, {
+                    width: 270
+                },  {
                     xtype: "TextArea",
                     title: g.lang.depictText,
                     labelWidth: 90,
                     allowBlank: false,
                     name: "depict",
-                    width: 220
+                    width: 270
                 }]
             }],
             buttons: [

@@ -33,7 +33,9 @@ var common_lang = {
     copyHintMessage: "请选择一条要参考的行项目!",
     searchByNameText: "请输入名称搜索",
     searchByCodeOrNameText: "请输入代码或名称搜索",
-    searchDisplayText: "请输入关键字搜索"
+    searchDisplayText: "请输入关键字搜索",
+    noText: "否",
+    yesText: "是"
 };
 
 if (EUI.AppModuleView) {
@@ -190,7 +192,8 @@ if (EUI.WorkPageUrlView) {
         inputNameMsgText: "请输入名称",
         inputUrlViewAddressMsgText: "请输入URL界面地址",
         inputDepictMsgText: "请输入描述",
-        addNewWorkPageUrlText: "新增工作页面"
+        addNewWorkPageUrlText: "新增工作页面",
+        mustCommitText:'必须提交'
     }, common_lang);
 }
 

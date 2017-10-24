@@ -61,6 +61,13 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     private String appModuleId;
 
 
+    /**
+     * 是否必须提交
+     */
+    @Column(name = "must_commit")
+    private Boolean mustCommit;
+
+
 
     public String getName() {
         return name;
@@ -122,5 +129,13 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public Boolean getMustCommit() {
+        return mustCommit;
+    }
+
+    public void setMustCommit(Boolean mustCommit) {
+        this.mustCommit = mustCommit;
     }
 }

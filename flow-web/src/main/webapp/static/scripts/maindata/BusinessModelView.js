@@ -136,6 +136,26 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     index: "appModuleCode",
                     width:120
                 },
+                    {
+                        name: "conditonProperties",
+                        index: "conditonProperties",
+                        hidden: true
+                    },
+                    {
+                        name: "conditonPValue",
+                        index: "conditonPValue",
+                        hidden: true
+                    },
+                    {
+                        name: "conditonPSValue",
+                        index: "conditonPSValue",
+                        hidden: true
+                    },
+                    {
+                        name: "conditonStatusRest",
+                        index: "conditonStatusRest",
+                        hidden: true
+                    },
                 //     {
                 //     label: this.lang.dataAccessObjectText,
                 //     name: "daoBean",
@@ -216,7 +236,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
             iconCss:"ecmp-eui-edit",
-            height: 400,
+            height: 450,
             width:430,
             padding: 15,
             items: [{
@@ -277,7 +297,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300,
                     value: data.className
                 }, {
-                    xtype: "TextArea",
+                    xtype: "TextField",
                     title: g.lang.conditonPropertiesText,
                     labelWidth: 115,
                     allowBlank: false,
@@ -285,7 +305,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300,
                     value: data.conditonProperties
                 },{
-                    xtype: "TextArea",
+                    xtype: "TextField",
                     title: this.lang.conditonPValueText,
                     labelWidth: 115,
                     allowBlank: false,
@@ -293,7 +313,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300,
                     value: data.conditonPValue
                 },{
-                    xtype: "TextArea",
+                    xtype: "TextField",
                     title: this.lang.conditonPSValueText,
                     labelWidth: 115,
                     allowBlank: false,
@@ -301,7 +321,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300,
                     value: data.conditonPSValue
                 },{
-                    xtype: "TextArea",
+                    xtype: "TextField",
                     title: this.lang.conditonStatusRestText,
                     labelWidth: 115,
                     allowBlank: false,
@@ -350,7 +370,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.addNewBusinessModelText,
             iconCss:"ecmp-eui-add",
-            height: 400,
+            height: 450,
             width:430,
             padding: 15,
             items: [{
@@ -401,17 +421,31 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     width: 300
                 }, {
                     xtype: "TextField",
-                    title: g.lang.conditonBeanText,
+                    title: g.lang.conditonPropertiesText,
                     labelWidth: 115,
                     allowBlank: false,
-                    name: "conditonBean",
+                    name: "conditonProperties",
                     width: 300
-                }, {
+                },{
                     xtype: "TextField",
-                    title: this.lang.dataAccessObjectText,
+                    title: this.lang.conditonPValueText,
                     labelWidth: 115,
                     allowBlank: false,
-                    name: "daoBean",
+                    name: "conditonPValue",
+                    width: 300
+                },{
+                    xtype: "TextField",
+                    title: this.lang.conditonPSValueText,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "conditonPSValue",
+                    width: 300
+                },{
+                    xtype: "TextField",
+                    title: this.lang.conditonStatusRestText,
+                    labelWidth: 115,
+                    allowBlank: false,
+                    name: "conditonStatusRest",
                     width: 300
                 }, {
                     xtype: "TextArea",
