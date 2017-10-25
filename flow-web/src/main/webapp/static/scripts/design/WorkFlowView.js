@@ -190,6 +190,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 canClear: false,
                 width: 130,
                 treeCfg: {
+                    showSearch:true,
                     autoLoad: true,
                     async: false,
                     url: _ctxPath + "/flowDefination/listAllOrgs",
@@ -268,7 +269,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             style: {"margin-right":"20px"},
             handler: function () {
                 var msgBox = EUI.MessageBox({
-                    title: "提示",
+                    title: "温馨提示",
                     msg: "清空设计将不能恢复，确定要继续吗？",
                     buttons: [{
                         title: "取消",

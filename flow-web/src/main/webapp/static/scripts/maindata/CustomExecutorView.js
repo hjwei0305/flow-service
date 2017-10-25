@@ -164,7 +164,7 @@ EUI.CustomExecutorView = EUI.extend(EUI.CustomUI, {
                 }
             },{
                 title: g.lang.sureText,
-               selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({

@@ -224,7 +224,7 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
         }
         var data = g.editFormCmp.getFormValue();
         if (isNaN(Number(data.rank))) {
-            g.message(g.lang.needRankNumberText);
+            EUI.ProcessStatus({msg:g.lang.needRankNumberText,success: false});
             return;
         }
         if (!g.isEdit) {
@@ -262,22 +262,6 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
             }
         );
 
-    },
-    message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            title: g.lang.hintText,
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                title: g.lang.okText,
-                selected:true,
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
     }
 })
 ;

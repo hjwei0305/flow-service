@@ -81,24 +81,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                 gridCfg: {
                     url: _ctxPath + "/flowType/listAllBusinessModel",
                     loadonce:true,
-                    // loadComplete: function (data) {
-                    //     console.log(data.rows[0]);
-                    //     if (typeof(data.rows[0]) == "undefined") {
-                    //         return;
-                    //     }
-                    //     var cobo = EUI.getCmp("coboId");
-                    //     cobo.setValue(data.rows[0].name);
-                    //     g.businessModel = data.rows[0].id;
-                    //     g.businessModelName = data.rows[0].name;
-                    //     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                    //         url: _ctxPath + "/flowType/listFlowType",
-                    //         loadonce: false,
-                    //         datatype: "json",
-                    //         postData: {
-                    //             "Q_EQ_businessModel.id": data.rows[0].id
-                    //         }
-                    //     }, true)
-                    // },
                     colModel: [{
                         name: "id",
                         index: "id",
@@ -118,7 +100,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                     filed: ["id"]
                 },
                 afterSelect: function (data) {
-                    console.log(data);
                     g.businessModel = data.data.id;
                     g.businessModelName = data.data.name;
                     EUI.getCmp("gridPanel").setPostParams({
@@ -224,12 +205,10 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".ecmp-common-edit").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(data);
             g.updateFlowServiceUrl(data);
         });
         $(".ecmp-common-delete").live("click", function () {
             var rowData = EUI.getCmp("gridPanel").getSelectRow();
-            console.log(rowData);
             g.deleteFlowServiceUrl(rowData)
         });
     },
@@ -239,8 +218,12 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
             title: g.lang.tiShiText,
             msg: g.lang.ifDelMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
                  selected: true,
                 handler: function () {
                     infoBox.remove();
@@ -265,18 +248,11 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
-                }
             }]
         });
     },
     updateFlowServiceUrl: function (data) {
         var g = this;
-        console.log(data);
         win = EUI.Window({
             title: g.lang.updateFlowServiceUrlText,
             height: 250,
@@ -364,7 +340,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                         return;
                     }
                     var data = form.getFormValue();
-                    console.log(data);
                     g.saveFlowServiceUrl(data);
                 }
             }, {
@@ -458,7 +433,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
                         return;
                     }
                     var data = form.getFormValue();
-                    console.log(data);
                     g.saveFlowServiceUrl(data);
                 }
             }, {
@@ -472,7 +446,6 @@ EUI.FlowServiceUrlView = EUI.extend(EUI.CustomUI, {
     },
     saveFlowServiceUrl: function (data) {
         var g = this;
-        console.log(data);
         var myMask = EUI.LoadMask({
             msg: g.lang.nowSaveMsgText
         });

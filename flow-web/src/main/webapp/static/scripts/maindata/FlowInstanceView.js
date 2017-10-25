@@ -234,9 +234,13 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             title: g.lang.tiShiText,
             msg: g.lang.ifDelMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-               selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -259,12 +263,6 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                             EUI.ProcessStatus(result);
                         }
                     });
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
                 }
             }]
         });

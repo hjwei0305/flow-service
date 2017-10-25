@@ -1149,7 +1149,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         multiselect: true,
                         hasPager: false,
                         sortname: 'code',
-                        datatype: "local",
                         loadonce: true,
                         url: _ctxPath + "/design/listPosType",
                         colModel: this.positionTypeGridColModel(),
@@ -1324,20 +1323,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
     },
     message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            title: g.lang.tiShiText,
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                title: "确定",
-                selected: true,
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
+        EUI.ProcessStatus({msg: msg,success: false});
     },
     remove: function () {
         EUI.getCmp("notify-before")&&EUI.getCmp("notify-before").remove();
