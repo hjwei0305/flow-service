@@ -341,7 +341,7 @@ if (Flow.flow.FlowApprove) {
         userIDText: "用户ID",
         freezeText: "(已冻结)",
         arbitraryExecutorText: "任意执行人",
-        chooseText: "选择",
+        chooseText: "添加执行人",
         chooseArbitraryExecutorText: "选择任意执行人",
         chooseArbitraryExecutorMsgText: "选择任意执行人【请双击进行选择】"
 

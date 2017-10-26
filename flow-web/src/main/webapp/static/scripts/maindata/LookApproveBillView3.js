@@ -70,6 +70,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "name",
                 width: 413,
                 id: "name",
+                allowBlank: false,
                 labelWidth: 100,
                 // readonly:true,
                 colon: false,
@@ -82,6 +83,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "applyCaption",
                 width: 413,
                 id: "applyCaption",
+                allowBlank: false,
                 // readonly:true,
                 colon: false,
                 labelWidth: 100,
@@ -104,6 +106,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "unitPrice",
                 width: 413,
                 id: "unitPrice",
+                allowBlank: false,
                 // readonly:true,
                 colon: false,
                 allowNegative : false,//不允许输入负数
@@ -118,6 +121,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "count",
                 width: 413,
                 id: "count",
+                allowBlank: false,
                 colon: false,
                 allowNegative : false,//不允许输入负数
                 allowChar : "0123456789",// 允许输入的数字
@@ -132,6 +136,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 name: "sum",
                 width: 413,
                 id: "sum",
+                allowBlank: false,
                 allowNegative : false,//不允许输入负数
                 allowChar : "0123456789",// 允许输入的数字
                 // readonly:true,
@@ -205,6 +210,7 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                 title: "<span class='name'>备注说明</span>",
                 id: "workCaption",
                 name: "workCaption",
+                allowBlank: false,
                 // readonly:true,
                 width: 413,
                 labelWidth: 100,
@@ -237,7 +243,6 @@ EUI.LookApproveBillView = EUI.extend(EUI.CustomUI, {
                         return;
                     }
                     var data = form.getFormValue();
-                    console.log(data);
                     g.saveLookApprove(data);
                 }
             }]

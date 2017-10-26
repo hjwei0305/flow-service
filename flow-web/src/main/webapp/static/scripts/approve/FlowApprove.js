@@ -394,16 +394,15 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         title: g.lang.operationHintText,
                         msg: g.lang.stopFlowMsgText,
                         buttons: [{
-                            title: g.lang.sureText,
-                            iconCss: "ecmp-common-ok",
+                            title: g.lang.cancelText,
                             handler: function () {
-                                g.submit(true);
                                 msgbox.remove();
                             }
-                        }, {
-                            title: g.lang.cancelText,
-                            iconCss: "ecmp-common-delete",
+                        },{
+                            title: g.lang.sureText,
+                            selected: true,
                             handler: function () {
+                                g.submit(true);
                                 msgbox.remove();
                             }
                         }]

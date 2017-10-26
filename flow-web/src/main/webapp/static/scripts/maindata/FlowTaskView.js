@@ -228,9 +228,13 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             title: g.lang.hintText,
             msg:  g.lang.passCurrentTaskMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-               selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -254,12 +258,6 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                         }
                     });
                 }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
-                }
             }]
         });
     },
@@ -270,9 +268,13 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
             title: g.lang.hintText,
             msg:  g.lang.rejectCurrentTaskMsgText,
             buttons: [{
+                title: g.lang.cancelText,
+                handler: function () {
+                    infoBox.remove();
+                }
+            },{
                 title: g.lang.sureText,
-                iconCss:"ecmp-common-ok",
-               selected: true,
+                selected: true,
                 handler: function () {
                     infoBox.remove();
                     var myMask = EUI.LoadMask({
@@ -295,12 +297,6 @@ EUI.FlowTaskView = EUI.extend(EUI.CustomUI, {
                             EUI.ProcessStatus(result);
                         }
                     });
-                }
-            }, {
-                title: g.lang.cancelText,
-                iconCss:"ecmp-common-delete",
-                handler: function () {
-                    infoBox.remove();
                 }
             }]
         });

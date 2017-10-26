@@ -250,19 +250,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
         return true;
     },
     message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            title: "温馨提示",
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                title: "确定",
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
+        EUI.ProcessStatus({msg: msg, success: false});
     },
     quickSearch:function () {
         var g=this;

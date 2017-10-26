@@ -131,7 +131,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         rowData.orgCode=rowData["flowDefination.orgCode"];
                         g.copyFlowDefination(rowData,true);
                     } else {
-                        g.message(g.lang.copyHintMessage);
+                        EUI.ProcessStatus({msg:g.lang.copyHintMessage,success: false});
                     }
                 }
             },'->', {
@@ -410,7 +410,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     rowData.orgName=EUI.getCmp("treePanel").getNodeData(rowData.orgId).name;
                     g.copyFlowDefination(rowData,false);
                 } else {
-                    g.message(g.lang.copyHintMessage);
+                    EUI.ProcessStatus({msg:g.lang.copyHintMessage,success: false});
                 }
 
             }
@@ -596,21 +596,5 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         $("#defVersion>.ecmp-common-view").die();
         $("#defVersion>.ecmp-common-suspend").die();
         $("#defVersion>.ecmp-common-activate").die();
-    },
-    message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            title: g.lang.tiShiText,
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                title: g.lang.okText,
-                selected:true,
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
     }
 });
