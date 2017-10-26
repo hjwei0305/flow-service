@@ -10,6 +10,7 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskPageResultVO;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -59,6 +60,29 @@ public class FlowTaskController {
 
 
     /**
+     * 查询流程任务列表,带用户所有待办总数
+     * @param request
+     * @return 流程任务列表清单
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "listFlowTaskWithAllCount")
+    @ResponseBody
+    public FlowTaskPageResultVO<FlowTask> listFlowTaskWithAllCount(ServletRequest request) throws JsonProcessingException, ParseException {
+        Search search = SearchUtil.genSearch(request);
+        String modelId = request.getParameter("modelId");
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        FlowTaskPageResultVO<FlowTask> flowTaskPageResult = proxy.findByBusinessModelIdWithAllCount(modelId,search);
+        return flowTaskPageResult;
+    }
+
+
+    /**
      * 查询流程任务列表
      * @param request
      * @return 流程任务列表清单
@@ -70,11 +94,6 @@ public class FlowTaskController {
     public PageResult<FlowTask> listFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String modelId = request.getParameter("modelId");
-//        if("admin".equalsIgnoreCase(account)){
-//            account = "666666";
-//        }
-       // search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
-        //setQuickSearchValue
         search.addQuickSearchProperty("flowName");
         search.addQuickSearchProperty("taskName");
         search.addQuickSearchProperty("flowInstance.businessCode");
@@ -82,43 +101,33 @@ public class FlowTaskController {
         search.addQuickSearchProperty("creatorName");
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         PageResult<FlowTask> flowTaskPageResult = proxy.findByBusinessModelId(modelId,search);
-
-        //检查是否允许对流程实例进行终止,针对并行网关，包容网关的情况下
-        List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
-        Map<FlowInstance,List<FlowTask>> flowInstanceListMap = new HashMap<FlowInstance, List<FlowTask>>();
-        if(flowTaskList!=null && !flowTaskList.isEmpty()){
-            for(FlowTask flowTask:flowTaskList){
-                List<FlowTask> flowTaskListTemp =  flowInstanceListMap.get(flowTask.getFlowInstance());
-                if(flowTaskListTemp==null){
-                    flowTaskListTemp = new ArrayList<FlowTask>();
-                }
-                flowTaskListTemp.add(flowTask);
-                flowInstanceListMap.put(flowTask.getFlowInstance(),flowTaskListTemp);
-            }
-        }
-        if(!flowInstanceListMap.isEmpty()){
-            for(Map.Entry<FlowInstance,List<FlowTask>> temp:flowInstanceListMap.entrySet()){
-                List<FlowTask> flowTaskListTemp = temp.getValue();
-                if(flowTaskListTemp!=null && !flowTaskListTemp.isEmpty()){
-                    boolean canEnd = true;
-                    for(FlowTask flowTask:flowTaskListTemp){
-                        Boolean canCancel = flowTask.getCanSuspension();
-                        if(canCancel==null || !canCancel){
-                            canEnd = false;
-                            break;
-                        }
-                    }
-                    if(!canEnd){
-                        for(FlowTask flowTask:flowTaskListTemp){
-                            flowTask.setCanSuspension(false);
-                        }
-                    }
-                }
-            }
-        }
-
         return flowTaskPageResult;
     }
+
+
+
+    /**
+     * 查询可以批量审批任务列表
+     * @param request
+     * @return 可以批量审批任务列表
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "listCanBatchApprovalFlowTask")
+    @ResponseBody
+    public PageResult<FlowTask> listCanBatchApprovalFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
+        Search search = SearchUtil.genSearch(request);
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        PageResult<FlowTask> flowTaskPageResult = proxy.findByPageCanBatchApproval(search);
+        return flowTaskPageResult;
+    }
+
+
 
     /**
      * 查询流程待办和任务汇总列表

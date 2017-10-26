@@ -251,10 +251,62 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public PageResult<FlowTask> findByBusinessModelId(@PathParam("businessModelId") String businessModelId, Search searchConfig);
 
 
+    /**
+     * 获取可批量审批待办信息
+     * @param searchConfig 查询条件
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByPageCanBatchApproval")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
+    public PageResult<FlowTask> findByPageCanBatchApproval(Search searchConfig);
+
+
+    /**
+     * 获取可批量审批待办信息
+     * @param searchConfig 查询条件
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByBusinessModelIdWithAllCount/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@PathParam("businessModelId") String businessModelId, Search searchConfig);
+
+
 //    @POST
 //    @Path("findByModelEntity")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
 //    public PageResult<FlowTask> findByBusinessModelId(FlowTaskQueryParam flowTaskQueryParam);
+
+
+    /**
+     * 获取批量审批明细信息
+     * @param taskIdArray 任务id列表
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByBusinessModelIdWithAllCount/{businessModelId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
+    public List<BatchApprovalFlowTaskGroupVO> getBatchApprovalFlowTasks(List<String> taskIdArray) throws NoSuchMethodException;
+
+
+    /**
+     * 批量完成任务
+     * @param flowTaskCompleteVOList 任务传输对象列表
+     * @return 操作结果
+     */
+    @POST
+    @Path("completeBatchApproval")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "完成任务",notes = "测试")
+    public OperateResultWithData<FlowStatus> completeBatchApproval(List<FlowTaskCompleteVO> flowTaskCompleteVOList);
 }

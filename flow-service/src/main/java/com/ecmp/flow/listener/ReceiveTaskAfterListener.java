@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.NodeInfo;
@@ -61,6 +62,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
 
     private final Logger logger = LoggerFactory.getLogger(ReceiveTaskAfterListener.class);
 
+    @Autowired
+    private FlowTaskTool flowTaskTool;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -172,39 +175,29 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 FlowTask flowTaskTempSrc = new FlowTask();
                 org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTempSrc);
                 //针对子流程结束，循环向上查找父任务下一步的节点执行人信息
-                while (parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
+                ProcessInstance instanceSon = ((ExecutionEntity) delegateTask).getProcessInstance();
+                while (instanceSon!=null && parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
                     FlowTask flowTaskTemp = new FlowTask();
                     org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc,flowTaskTemp);
-
-                    ProcessInstance instanceSon = runtimeService
-                            .createProcessInstanceQuery()
-                            .processInstanceId(flowTaskTemp.getFlowInstance().getActInstanceId())
-                            .singleResult();
                     flowTaskTemp.setFlowInstance(parentFlowInstance);
-                    // 取得流程实例
-                    String superExecutionId = instanceSon.getSuperExecutionId();
-                    HistoricActivityInstance historicActivityInstance = null;
-                    HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
-                            .executionId(superExecutionId).activityType("callActivity").unfinished();
-                    if (his != null) {
-                        historicActivityInstance = his.singleResult();
-                        HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
-                        flowTaskTemp.setActTaskKey(he.getActivityId());
-                        flowTaskTemp.setActTaskDefKey(he.getActivityId());
+                    // 取得父流程实例
+                    ExecutionEntity superExecution =instanceSon.getSuperExecution();
+                    if (superExecution != null) {
+                        String activityId = superExecution.getActivityId();
+                        flowTaskTemp.setActTaskKey(activityId);
+                        flowTaskTemp.setActTaskDefKey(activityId);
                         String flowDefJsonP = parentFlowInstance.getFlowDefVersion().getDefJson();
                         JSONObject defObjP = JSONObject.fromObject(flowDefJsonP);
                         Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
-                        net.sf.json.JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(he.getActivityId());
+                        net.sf.json.JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(activityId);
                         flowTaskTemp.setTaskJsonDef(currentNodeP.toString());
                         results = flowTaskService.findNexNodesWithUserSet( flowTaskTemp);
                     }
                     parentFlowInstance=parentFlowInstance.getParent();
                     nodeInfoList=results;
                     flowTaskTempSrc =flowTaskTemp;
+                    instanceSon=superExecution.getProcessInstance();
                 }
-
-
-
                     List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
                     if(results !=null &&  !results.isEmpty()){
                         Map<String,Object> userVarNameMap = new HashMap<>();
@@ -318,7 +311,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 if(nowTime.after(startTreadTime)){
                     service.shutdown();
                 }
-                flowDefinationService.initTask(flowInstance,flowHistory);
+                flowTaskTool.initTask(flowInstance,flowHistory,null);
             }
         };
 

@@ -4,7 +4,7 @@
 EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     title: null,
     data: null,
-    flowDefinitionId:null,
+    flowDefinitionId: null,
     nowNotifyTab: null,
     nodeType: null,
     afterConfirm: null,
@@ -12,9 +12,9 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     flowTypeId: null,
     notifyBeforePositionData: null,
     notifyAfterPositionData: null,
-    type:null,
+    type: null,
     initComponent: function () {
-        if(this.type == "CallActivity"){
+        if (this.type == "CallActivity") {
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -26,7 +26,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TabPanel",
                     isOverFlow: false,
-                    showTabMenu:false,
+                    showTabMenu: false,
                     defaultConfig: {
                         iframe: false,
                         closable: false
@@ -34,7 +34,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     items: [this.getNormalTab()]
                 }]
             });
-        }else if(this.type == "ServiceTask"|| this.type == "ReceiveTask"){
+        } else if (this.type == "ServiceTask" || this.type == "ReceiveTask") {
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -46,7 +46,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TabPanel",
                     isOverFlow: false,
-                    showTabMenu:false,
+                    showTabMenu: false,
                     defaultConfig: {
                         iframe: false,
                         closable: false
@@ -56,7 +56,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             });
             this.initNotify(true);
-        }else {
+        } else {
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -68,7 +68,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "TabPanel",
                     isOverFlow: false,
-                    showTabMenu:false,
+                    showTabMenu: false,
                     defaultConfig: {
                         iframe: false,
                         closable: false
@@ -124,7 +124,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("select").siblings().removeClass("select");
             EUI.getCmp(g.nowNotifyTab.items[0]).hide();
             EUI.getCmp(g.nowNotifyTab.items[1]).hide();
-            if(g.nowNotifyTab.items[2]){
+            if (g.nowNotifyTab.items[2]) {
                 EUI.getCmp(g.nowNotifyTab.items[2]).hide();
             }
             var index = $(this).index();
@@ -136,7 +136,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     EUI.getCmp(g.nowNotifyTab.items[1]).show();
                     break;
                 case 2:
-                    if(g.nowNotifyTab.items[2]){
+                    if (g.nowNotifyTab.items[2]) {
                         EUI.getCmp(g.nowNotifyTab.items[2]).show();
                     }
                     break;
@@ -153,7 +153,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 g.remove();
                 g.window.close();
             }
-        },{
+        }, {
             title: "保存",
             selected: true,
             handler: function () {
@@ -165,7 +165,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if ((g.type!='ServiceTask'&& g.type!='ReceiveTask'&& g.type!='CallActivity' ) && !g.checkExcutor()) {
+                if ((g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity' ) && !g.checkExcutor()) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请将执行人项配置完整"
@@ -175,16 +175,16 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var executorForm = EUI.getCmp("excutor");
                 var eventForm = EUI.getCmp("event");
                 var normalData = normalForm.getFormValue();
-                var eventData = eventForm?eventForm.getFormValue():'';
+                var eventData = eventForm ? eventForm.getFormValue() : '';
                 var executor = '';
-                if(g.type!='ServiceTask'&& g.type!='ReceiveTask'&&g.type!='CallActivity'){
+                if (g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity') {
                     executor = g.getExcutorData()
                 }
                 g.afterConfirm && g.afterConfirm.call(this, {
                     normal: normalData,
                     executor: executor,
                     event: eventData,
-                    notify: g.type == "CallActivity"?'':g.getNotifyData()
+                    notify: g.type == "CallActivity" ? '' : g.getNotifyData()
                 });
                 g.remove();
                 g.window.close();
@@ -198,7 +198,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             allowBlank: false,
             name: "name",
-            maxlength:80,
+            maxlength: 80,
             value: this.title
         }, {
             xtype: "NumberField",
@@ -206,6 +206,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowNegative: false,
             name: "executeTime",
             labelWidth: 100,
+            value: 0,
             unit: "分钟"
         }, {
             xtype: "ComboBox",
@@ -226,24 +227,24 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 field: ["url"]
             }
         }];
-        if(this.nodeType=="CallActivity"){
+        if (this.nodeType == "CallActivity") {
             items = [{
                 title: "节点名称",
                 labelWidth: 100,
                 allowBlank: false,
                 name: "name",
-                maxlength:80,
+                maxlength: 80,
                 value: this.title
-            },{
+            }, {
                 xtype: "ComboGrid",
                 title: "子流程",
                 displayText: "请选择子流程",
                 name: "callActivityDefName",
                 allowBlank: false,
-                field: ["callActivityDefKey","currentVersionId"],
+                field: ["callActivityDefKey", "currentVersionId"],
                 listWidth: 400,
                 labelWidth: 100,
-                showSearch:true,
+                showSearch: true,
                 onSearch: function (data) {
                     this.grid.setPostParams({
                         Quick_value: data,
@@ -259,12 +260,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         Q_EQ_flowDefinationStatus__int: 1,
                         Q_NE_id__String: g.flowDefinitionId,
                     },
-                    loadonce:false,
+                    loadonce: false,
                     colModel: [{
                         name: "id",
                         index: "id",
                         hidden: true
-                    },{
+                    }, {
                         name: "lastDeloyVersionId",
                         hidden: true
                     }, {
@@ -279,7 +280,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 },
                 reader: {
                     name: "name",
-                    field: ["defKey","lastDeloyVersionId"]
+                    field: ["defKey", "lastDeloyVersionId"]
                 }
             }];
         }
@@ -312,7 +313,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }]);
         }
-        else if(this.nodeType != "ParallelTask"&&this.nodeType != "SerialTask"&&this.type != "ServiceTask"&&this.type != "ReceiveTask"&&this.type!='CallActivity'){
+        else if (this.nodeType != "ParallelTask" && this.nodeType != "SerialTask" && this.type != "ServiceTask" && this.type != "ReceiveTask" && this.type != 'CallActivity') {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -350,7 +351,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             allowBlank: false,
             name: "name",
-            maxlength:80,
+            maxlength: 80,
             value: this.title
         }, {
             xtype: "ComboBox",
@@ -359,7 +360,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowBlank: false,
             name: "serviceTask",
             field: ["serviceTaskId"],
-            canClear:true,
+            canClear: true,
             store: {
                 url: _ctxPath + "/design/listAllServiceUrl",
                 params: {
@@ -535,7 +536,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 title: "任务执行前",
                 colon: false,
                 labelWidth: 100,
-                canClear:true,
+                canClear: true,
                 width: 220,
                 store: {
                     url: _ctxPath + "/design/listAllServiceUrl",
@@ -552,7 +553,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 name: "afterExcuteService",
                 field: ["afterExcuteServiceId"],
                 title: "任务执行后",
-                canClear:true,
+                canClear: true,
                 colon: false,
                 labelWidth: 100,
                 width: 220,
@@ -569,20 +570,20 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             }]
         };
     },
-    getNotifyTab: function (noExcutor){
+    getNotifyTab: function (noExcutor) {
         var html = '<div class="notify-west">' +
             '<div class="west-navbar select-navbar">任务达到时</div>' +
             '<div class="west-navbar">任务执行后</div>' +
             '</div>' +
             '<div class="notify-center">' +
             '<div class="notify-user">';
-            if(!noExcutor){
-                html+= '<div class="notify-user-item select">通知执行人</div>';
-                html+='<div class="notify-user-item">通知发起人</div>';
-            }else {
-                html+='<div class="notify-user-item select">通知发起人</div>';
-            }
-         html+= '<div class="notify-user-item">通知岗位</div>' +
+        if (!noExcutor) {
+            html += '<div class="notify-user-item select">通知执行人</div>';
+            html += '<div class="notify-user-item">通知发起人</div>';
+        } else {
+            html += '<div class="notify-user-item select">通知发起人</div>';
+        }
+        html += '<div class="notify-user-item">通知岗位</div>' +
             '</div>' +
             '<div id="notify-before"></div>' +
             '</div>' +
@@ -610,15 +611,15 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     initNotify: function (noExcutor) {
         var items = null;
-        if(noExcutor){
+        if (noExcutor) {
             items = [{
                 items: this.getNotifyItem()
-            },{
+            }, {
                 hidden: true,
                 //  items: this.getNotifyItem()
                 items: this.getNotifyChoosePositionItem("notifyBefore")
             }];
-        }else {
+        } else {
             items = [{
                 items: this.getNotifyItem()
             }, {
@@ -644,7 +645,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 itemspace: 10
             },
-            items:items
+            items: items
         });
         var nextTab = EUI.Container({
             width: 445,
@@ -776,19 +777,19 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         var data = {};
         var notifyTab1 = EUI.getCmp("notify-before");
         var notifyTab2 = EUI.getCmp("notify-after");
-        var beforePosition = EUI.getCmp(notifyTab1.items[notifyTab1.items.length-1]).getFormValue();
-        var afterPosition = EUI.getCmp(notifyTab2.items[notifyTab2.items.length-1]).getFormValue();
+        var beforePosition = EUI.getCmp(notifyTab1.items[notifyTab1.items.length - 1]).getFormValue();
+        var afterPosition = EUI.getCmp(notifyTab2.items[notifyTab2.items.length - 1]).getFormValue();
         beforePosition.positionData = this.notifyBeforePositionData || [];
         beforePosition.positionIds = this.getNotifyChoosePositionIds(this.notifyBeforePositionData);
         afterPosition.positionData = this.notifyAfterPositionData || [];
         afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
         var g = this;
-        if(g.type == "ServiceTask" || g.type == "ReceiveTask"){
+        if (g.type == "ServiceTask" || g.type == "ReceiveTask") {
             data.before = {
                 notifyStarter: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
                 notifyPosition: beforePosition
             };
-        }else {
+        } else {
             data.before = {
                 notifyExecutor: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
                 notifyStarter: EUI.getCmp(notifyTab1.items[1]).getFormValue(),
@@ -955,7 +956,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     win.close();
                 }
-            },{
+            }, {
                 title: "确定",
                 selected: true,
                 handler: function () {
@@ -1085,7 +1086,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     win.close();
                 }
-            },{
+            }, {
                 title: "确定",
                 selected: true,
                 handler: function () {
@@ -1126,13 +1127,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         }
                     }
 
-                 }, this.getCenterIcon("positionType"), {
+                }, this.getCenterIcon("positionType"), {
                     xtype: "GridPanel",
                     border: true,
                     region: "east",
                     width: 470,
                     title: "所有岗位类别",
-                    tbar: [ "->", {
+                    tbar: ["->", {
                         xtype: "SearchBox",
                         id: "searchBox_positionTypeGrid",
                         width: 200,
@@ -1149,7 +1150,6 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         multiselect: true,
                         hasPager: false,
                         sortname: 'code',
-                        datatype: "local",
                         loadonce: true,
                         url: _ctxPath + "/design/listPosType",
                         colModel: this.positionTypeGridColModel(),
@@ -1260,13 +1260,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        if(g.type!='ServiceTask' &&　g.type!='ReceiveTask' && g.type!='CallActivity'){
+        if (g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity') {
             var userType = this.data.executor.userType;
             var userTypeCmp = EUI.getCmp("userType");
             userTypeCmp.setValue(userType);
             this.showChooseUserGrid(userType, this.data.executor);
         }
-        if(g.type=='CallActivity') {
+        if (g.type == 'CallActivity') {
             return;
         }
         //加载事件配置
@@ -1287,13 +1287,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     loadNotifyData: function (tab, data) {
         var g = this;
-        if(g.type == "ServiceTask" || g.type == "ReceiveTask"){
+        if (g.type == "ServiceTask" || g.type == "ReceiveTask") {
             EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
-            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
-        }else {
+            EUI.getCmp(tab.items[tab.items.length - 1]).loadData(data.notifyPosition);
+        } else {
             EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
             EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
-            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
+            EUI.getCmp(tab.items[tab.items.length - 1]).loadData(data.notifyPosition);
         }
     },
     loadNotifyDataAfter: function (tab, data) {
@@ -1324,24 +1324,11 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }
     },
     message: function (msg) {
-        var g = this;
-        var message = EUI.MessageBox({
-            border: true,
-            title: g.lang.tiShiText,
-            showClose: true,
-            msg: msg,
-            buttons: [{
-                title: "确定",
-                selected: true,
-                handler: function () {
-                    message.remove();
-                }
-            }]
-        });
+        EUI.ProcessStatus({msg: msg, success: false});
     },
     remove: function () {
-        EUI.getCmp("notify-before")&&EUI.getCmp("notify-before").remove();
-        EUI.getCmp("notify-after")&&EUI.getCmp("notify-after").remove();
+        EUI.getCmp("notify-before") && EUI.getCmp("notify-before").remove();
+        EUI.getCmp("notify-after") && EUI.getCmp("notify-after").remove();
         $(".condetail-delete").die();
         $(".west-navbar").die();
         $(".notify-user-item").die();
@@ -1358,7 +1345,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     g.notifySelectPositionWin.close();
                 }
-            },{
+            }, {
                 title: "确定",
                 selected: true,
                 handler: function () {
@@ -1373,72 +1360,72 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 itemspace: 1,
                 items: [{
-                        xtype: "GridPanel",
-                        title: "已选择",
-                        border: true,
-                        width: 470,
-                        id: "notifyChoosePositionGrid",
-                        region: "west",
-                        gridCfg: {
-                            datatype: "local",
-                            loadonce: true,
-                            multiselect: true,
-                            sortname: 'code',
-                            colModel: this.positionGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var cmp = EUI.getCmp("notifyChoosePositionGrid");
-                                var row = cmp.grid.jqGrid('getRowData', rowid);
-                                if (!row) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                g.deleteRowData([row], cmp);
+                    xtype: "GridPanel",
+                    title: "已选择",
+                    border: true,
+                    width: 470,
+                    id: "notifyChoosePositionGrid",
+                    region: "west",
+                    gridCfg: {
+                        datatype: "local",
+                        loadonce: true,
+                        multiselect: true,
+                        sortname: 'code',
+                        colModel: this.positionGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var cmp = EUI.getCmp("notifyChoosePositionGrid");
+                            var row = cmp.grid.jqGrid('getRowData', rowid);
+                            if (!row) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
                             }
+                            g.deleteRowData([row], cmp);
                         }
-                    }, g.getCenterIcon("notifyPosition"), {
-                        xtype: "GridPanel",
-                        border: true,
-                        tbar: [ "->", {
-                            xtype: "SearchBox",
-                            id: "searchBox_positionGrid",
-                            width: 200,
-                            displayText: g.lang.searchDisplayText,
-                            onSearch: function (v) {
-                                EUI.getCmp("notifyAllPositionGrid").setPostParams({
-                                    Quick_value: v
-                                }, true);
-                            },
-                            afterClear: function () {
-                                EUI.getCmp("notifyAllPositionGrid").setPostParams({
-                                    Quick_value: null
-                                }, true);
-                            }
-                        }],
-                        id: "notifyAllPositionGrid",
-                        title: "所有岗位",
-                        width: 470,
-                        region: "east",
-                        searchConfig: {
-                            searchCols: ["code", "name"]
+                    }
+                }, g.getCenterIcon("notifyPosition"), {
+                    xtype: "GridPanel",
+                    border: true,
+                    tbar: ["->", {
+                        xtype: "SearchBox",
+                        id: "searchBox_positionGrid",
+                        width: 200,
+                        displayText: g.lang.searchDisplayText,
+                        onSearch: function (v) {
+                            EUI.getCmp("notifyAllPositionGrid").setPostParams({
+                                Quick_value: v
+                            }, true);
                         },
-                        gridCfg: {
-                            hasPager: true,
-                            multiselect: true,
-                            loadonce: false,
-                            sortname: 'code',
-                            url: _ctxPath + "/design/listPos",
-                            colModel: this.positionGridColModel(),
-                            ondblClickRow: function (rowid) {
-                                var selectRow = EUI.getCmp("notifyAllPositionGrid").grid.jqGrid('getRowData', rowid);
-                                if (!selectRow) {
-                                    g.message("请选择一条要操作的行项目!");
-                                    return false;
-                                }
-                                EUI.getCmp("notifyChoosePositionGrid").addRowData([selectRow], true);
-                            }
+                        afterClear: function () {
+                            EUI.getCmp("notifyAllPositionGrid").setPostParams({
+                                Quick_value: null
+                            }, true);
                         }
-                    }]
+                    }],
+                    id: "notifyAllPositionGrid",
+                    title: "所有岗位",
+                    width: 470,
+                    region: "east",
+                    searchConfig: {
+                        searchCols: ["code", "name"]
+                    },
+                    gridCfg: {
+                        hasPager: true,
+                        multiselect: true,
+                        loadonce: false,
+                        sortname: 'code',
+                        url: _ctxPath + "/design/listPos",
+                        colModel: this.positionGridColModel(),
+                        ondblClickRow: function (rowid) {
+                            var selectRow = EUI.getCmp("notifyAllPositionGrid").grid.jqGrid('getRowData', rowid);
+                            if (!selectRow) {
+                                g.message("请选择一条要操作的行项目!");
+                                return false;
+                            }
+                            EUI.getCmp("notifyChoosePositionGrid").addRowData([selectRow], true);
+                        }
+                    }
                 }]
+            }]
         });
         EUI.getCmp("notifyChoosePositionGrid").reset();
         if (!notifyChoosePositionGridData) {
