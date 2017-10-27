@@ -235,6 +235,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Column(name = "owner_id")
 	private String ownerId;
 
+
+	/**
+	 * 能否批量审批
+	 */
+	@Column(name = "can_batch_approval")
+	private Boolean canBatchApproval;
+
 	public FlowTask() {
 	}
 
@@ -603,5 +610,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 	@JsonIgnore(false)
 	public Date getLastEditedDate() {
 		return super.getLastEditedDate();
+	}
+
+	public Boolean getCanBatchApproval() {
+		return canBatchApproval;
+	}
+
+	public void setCanBatchApproval(Boolean canBatchApproval) {
+		this.canBatchApproval = canBatchApproval;
 	}
 }

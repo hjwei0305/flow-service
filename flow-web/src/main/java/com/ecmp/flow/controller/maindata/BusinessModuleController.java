@@ -170,7 +170,7 @@ public class BusinessModuleController {
     @ResponseBody
     public Map<String, String> getPropertiesForConditionPojo(String businessModelCode) throws  ClassNotFoundException {
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.properties(businessModelCode);
+        Map<String, String> result = proxy.properties(businessModelCode,false);
         return result;
     }
 

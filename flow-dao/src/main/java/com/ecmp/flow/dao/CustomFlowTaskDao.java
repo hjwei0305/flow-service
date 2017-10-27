@@ -26,4 +26,13 @@ public interface CustomFlowTaskDao {
     @Transactional(readOnly = true)
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig);
 
+    @Transactional(readOnly = true)
+    public PageResult<FlowTask> findByPage(String executorId, Search searchConfig);
+
+    @Transactional(readOnly = true)
+    public PageResult<FlowTask> findByPageCanBatchApproval(String executorId, Search searchConfig);
+
+    @Transactional(readOnly = true)
+    public Long findCountByExecutorId(String executorId, Search searchConfig);
+
 }

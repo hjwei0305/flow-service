@@ -92,7 +92,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID获取条件POJO属性说明",notes = "测试")
-    public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+    public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("all") Boolean all) throws ClassNotFoundException;
 
 
     /**
@@ -129,7 +129,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO的值",notes = "测试")
-    public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id,@QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
 

@@ -34,18 +34,38 @@ public class ExpressionUtil {
         return appModule;
     }
     /**
-     * 获取条件表达式的属性值对
+     * 获取条件表达式的属性描述
      * @param businessModel 业务模型
      * @param  businessId 业务ID
      * @return
      */
-    public  static Map<String,Object>  getPropertiesMap(BusinessModel businessModel, String businessId){
+    public  static Map<String,Object>  getPropertiesDecMap(BusinessModel businessModel, String businessId){
         String businessModelCode = businessModel.getClassName();
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String,Object> params = new HashMap();
         params.put("businessModelCode",businessModelCode);
         params.put("id",businessId);
+        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
+        return pvs;
+    }
+
+
+
+    /**
+     * 获取条件表达式的属性值对
+     * @param businessModel 业务模型
+     * @param  businessId 业务ID
+     * @return
+     */
+    public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all){
+        String businessModelCode = businessModel.getClassName();
+        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
+        Map<String,Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",businessId);
+        params.put("all",all);
         LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
         return pvs;
     }
