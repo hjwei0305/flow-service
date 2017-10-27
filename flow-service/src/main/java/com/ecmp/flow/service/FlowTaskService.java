@@ -52,7 +52,7 @@ import java.util.*;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：
+ * 实现功能：流程任务管理
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -186,12 +186,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             variables.put(proName,true);
                         }
                     }
-
                 }
                 variables.put("approveResult",null);
                 //执行任务
                 result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-
                 if(!oriPvmTransitionMap.isEmpty()){
                     for(Map.Entry<PvmTransition,String> entry:oriPvmTransitionMap.entrySet()){
                         PvmTransition pvmTransition =  entry.getKey();
@@ -244,7 +242,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 //执行任务
                 result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-
                 if(!oriPvmTransitionMap.isEmpty()){
                     for(Map.Entry<PvmTransition,String> entry:oriPvmTransitionMap.entrySet()){
                         PvmTransition pvmTransition =  entry.getKey();
@@ -257,7 +254,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             ((ProcessElementImpl)pvmTransition).setProperty("condition",null);
                             ((ProcessElementImpl)pvmTransition).setProperty("conditionText",null);
                         }
-
                     }
                 }
             }
