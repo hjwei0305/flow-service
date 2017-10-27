@@ -1582,7 +1582,7 @@ public class FlowTaskTool {
         PvmActivity currActivity = this.getActivitNode(definition,actTaskDefKey);
         FlowInstance flowInstanceReal = flowTask.getFlowInstance();
         BusinessModel businessModel = flowInstanceReal.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel, businessId);
+        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap( businessModel, businessId,false);
 
         List<String> includeNodeIdsNew = initIncludeNodeIds(includeNodeIds,actTaskId,v);
 

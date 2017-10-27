@@ -302,7 +302,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = flowInstance.getBusinessId();
         BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel,businessId);
+        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap( businessModel,businessId,true);
         if (v != null && !v.isEmpty()) {
             if (variables == null) {
                 variables = new HashMap<String, Object>();

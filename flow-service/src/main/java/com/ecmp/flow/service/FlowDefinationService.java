@@ -382,7 +382,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             startUserId = ContextUtil.getUserId();
         }
         BusinessModel businessModel = flowType.getBusinessModel();
-        Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, businessId);
+        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
         String orgCodePath = v.get("orgPath") + "";
 //        String workCaption = v.get("workCaption")+"";//工作说明
         String[] orgCodes = orgCodePath.split("\\|");
@@ -416,7 +416,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
 
-                Map<String, Object> vNew = ExpressionUtil.getPropertiesMap(businessModel, businessId);//再获取一次，预防事件对单据进行了更新
+                Map<String, Object> vNew = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);//再获取一次，预防事件对单据进行了更新
                 if (vNew != null && !vNew.isEmpty()) {
                     if (variables == null) {
                         variables = new HashMap<String, Object>();
@@ -453,7 +453,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowTypeList != null && !flowTypeList.isEmpty()) {
             //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
-            Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, businessId);
+            Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
             String orgCodePath = v.get("orgPath") + "";
             orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|") + 1);
             flowStartResultVO.setFlowTypeList(flowTypeList);
@@ -635,7 +635,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        Map<String, Object> v = ExpressionUtil.getPropertiesMap(businessModel, flowStartVO.getBusinessKey());
+                        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(),false);
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
@@ -715,7 +715,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
                         BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        Map<String, Object> v = ExpressionUtil.getPropertiesMap( businessModel,  flowStartVO.getBusinessKey());
+                        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap( businessModel,  flowStartVO.getBusinessKey(),false);
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));

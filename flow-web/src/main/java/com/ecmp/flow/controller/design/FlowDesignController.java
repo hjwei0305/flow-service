@@ -113,7 +113,7 @@ public class FlowDesignController {
     public OperateStatus getProperties(String businessModelCode) throws ClassNotFoundException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.properties(businessModelCode);
+        Map<String, String> result = proxy.properties(businessModelCode,false);
         status.setData(result);
         return status;
     }

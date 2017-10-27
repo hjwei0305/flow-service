@@ -64,13 +64,13 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @return 结果
 	 * @throws ClassNotFoundException 类找不到异常
 	 */
-	public LinkedHashMap<String, String> getProperties(T object, String[] excludeProperties)
+	public LinkedHashMap<String, String> getProperties(T object, String[] excludeProperties,Boolean all)
 			throws ClassNotFoundException {
 		LinkedHashMap<String, String> result = null;
 		if (object != null) {
 			Class sourceClass = object.getClass();
 			String className = sourceClass.getName();
-			result = getProperties(className, excludeProperties);
+			result = getProperties(className, excludeProperties, all);
 		}
 		return result;
 	}
@@ -86,7 +86,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws ClassNotFoundException
 	 *             异常信息
 	 */
-	public static LinkedHashMap<String, String> getProperties(String className, String[] excludeProperties)
+	public static LinkedHashMap<String, String> getProperties(String className, String[] excludeProperties,Boolean all)
 			throws ClassNotFoundException {
 		LinkedHashMap<String, String> result = null;
 		Map<String, Object[]> tempMap = new HashMap<String, Object[]>();
@@ -99,7 +99,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 			for (Method sourceMethod : sourceMethods) {
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
 				String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
-				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName) || conditionAnnatation.canSee()==false) {
+				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName) || (all?false:conditionAnnatation.canSee()==false)) {
 					continue;
 				}
 				String annationName = conditionAnnatation.name();
@@ -134,8 +134,8 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @return pojo属性、属性说明Map
 	 * @throws ClassNotFoundException 异常信息
 	 */
-	public static LinkedHashMap<String, String> getProperties(String className) throws ClassNotFoundException {
-		return getProperties(className, null);
+	public static LinkedHashMap<String, String> getProperties(String className,Boolean all) throws ClassNotFoundException {
+		return getProperties(className, null,all);
 
 	}
 	
@@ -151,8 +151,8 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws   InvocationTargetException 目标异常
 	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
-	public  Map<String, Object> getPropertiesAndValues(T conditionPojo) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
-		return this.getPropertiesAndValues(conditionPojo, null);
+	public  Map<String, Object> getPropertiesAndValues(T conditionPojo,Boolean all) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
+		return this.getPropertiesAndValues(conditionPojo, null,all);
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws   InvocationTargetException 目标异常
 	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
-	public  Map<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties)
+	public  Map<String, Object> getPropertiesAndValues(T conditionPojo, String[] excludeProperties,Boolean all)
 			throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException ,NoSuchMethodException{
 		Map<String, Object> result = null;
 		// String[] excludeProperties = { "class", "pk", "equalFlag" };//
@@ -182,8 +182,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 
 			Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
 			result = new HashMap<String, Object>();
-			for (Method sourceMethod : sourceMethods) {		
-				
+			for (Method sourceMethod : sourceMethods) {
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
 				String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
 				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
@@ -214,8 +213,8 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws InstantiationException 实例化异常
 	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
-	public  static Map<String, Object> getPropertiesAndValues(String className)     throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
-		return getPropertiesAndValues(className, null);
+	public  static Map<String, Object> getPropertiesAndValues(String className,Boolean all)     throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
+		return getPropertiesAndValues(className, null,all);
 	}
 	
 
@@ -234,7 +233,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	 * @throws InstantiationException 实例化异常
 	 * @throws   NoSuchMethodException 方法找不到异常
 	 */
-	public  static Map<String, Object> getPropertiesAndValues(String className, String[] excludeProperties)
+	public  static Map<String, Object> getPropertiesAndValues(String className, String[] excludeProperties,Boolean all)
             throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException {
 		Map<String, Object> result = null;
 		// String[] excludeProperties = { "class", "pk", "equalFlag" };//
@@ -249,7 +248,7 @@ public class ExpressionUtil<T extends IConditionPojo> {
 			for (Method sourceMethod : sourceMethods) {						
 				ConditionAnnotaion conditionAnnatation = sourceMethod.getAnnotation(ConditionAnnotaion.class);
 				String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
-				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
+				if (conditionAnnatation == null || sourceFieldName == null || "".equals(sourceFieldName)||(all?false:conditionAnnatation.canSee()==false)) {
 					continue;
 				}
 				 Object v = sourceMethod.invoke(conditionPojo);

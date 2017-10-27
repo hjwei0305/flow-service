@@ -41,17 +41,17 @@ public class CommonConditionService implements ICommonConditionService {
     public CommonConditionService() {
     }
 
-    private Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName) throws ClassNotFoundException {
-        return ExpressionUtil.getProperties(conditonPojoClassName);
+    private Map<String, String> getPropertiesForConditionPojo(String conditonPojoClassName,Boolean all) throws ClassNotFoundException {
+        return ExpressionUtil.getProperties(conditonPojoClassName,all);
     }
 
 
-    private Map<String, Object> getPropertiesAndValues(String conditonPojoClassName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        return ExpressionUtil.getPropertiesAndValues(conditonPojoClassName);
+    private Map<String, Object> getPropertiesAndValues(String conditonPojoClassName,Boolean all) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        return ExpressionUtil.getPropertiesAndValues(conditonPojoClassName,all);
     }
 
 
-    private Map<String, Object> getConditonPojoMap(String conditonPojoClassName, String daoBeanName, String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    private Map<String, Object> getConditonPojoMap(String conditonPojoClassName, String daoBeanName, String id,Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Class conditonPojoClass = Class.forName(conditonPojoClassName);
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
@@ -59,7 +59,7 @@ public class CommonConditionService implements ICommonConditionService {
         BaseEntity content = (BaseEntity) appModuleDao.findOne(id);
         BeanUtils.copyProperties(conditionPojo, content);
         if (conditionPojo != null) {
-            return new ExpressionUtil<IConditionPojo>().getPropertiesAndValues(conditionPojo);
+            return new ExpressionUtil<IConditionPojo>().getPropertiesAndValues(conditionPojo,all);
         } else {
             return null;
         }
@@ -67,14 +67,23 @@ public class CommonConditionService implements ICommonConditionService {
 
 
     @Override
-    public Map<String, String> properties(String businessModelCode) throws ClassNotFoundException {
+    public Map<String, String> properties(String businessModelCode,Boolean all) throws ClassNotFoundException {
         String conditonPojoClassName = null;
         businessModelService = ApiClient.createProxy(IBusinessModelService.class);
         BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
         if (businessModel != null) {
             conditonPojoClassName = getConditionBeanName(businessModelCode);
         }
-        return this.getPropertiesForConditionPojo(conditonPojoClassName);
+        return this.getPropertiesForConditionPojo(conditonPojoClassName,all);
+    }
+    public Map<String, String> propertiesAll(String businessModelCode) throws ClassNotFoundException {
+        String conditonPojoClassName = null;
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            conditonPojoClassName = getConditionBeanName(businessModelCode);
+        }
+        return this.getPropertiesForConditionPojo(conditonPojoClassName,true);
     }
 
     @Override
@@ -85,11 +94,11 @@ public class CommonConditionService implements ICommonConditionService {
         if (businessModel != null) {
             conditonPojoClassName = getConditionBeanName(businessModelCode);
         }
-        return this.getPropertiesAndValues(conditonPojoClassName);
+        return this.getPropertiesAndValues(conditonPojoClassName,true);
     }
 
     @Override
-    public Map<String, Object> propertiesAndValues(String businessModelCode, String id) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public Map<String, Object> propertiesAndValues(String businessModelCode, String id,Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
         String conditonPojoClassName = null;
         String daoBeanName = null;
@@ -99,7 +108,7 @@ public class CommonConditionService implements ICommonConditionService {
             conditonPojoClassName = getConditionBeanName(businessModelCode);
             daoBeanName = getDaoBeanName(businessModelCode);
         }
-        return this.getConditonPojoMap(conditonPojoClassName, daoBeanName, id);
+        return this.getConditonPojoMap(conditonPojoClassName, daoBeanName, id,all);
     }
 
 
