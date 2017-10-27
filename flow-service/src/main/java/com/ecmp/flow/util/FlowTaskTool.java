@@ -1315,7 +1315,8 @@ public class FlowTaskTool {
                 }else{
                     for (IdentityLink identityLink : identityLinks) {
                         Map<String,Object> params = new HashMap();
-                        params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(identityLink.getUserId())));
+                        params.put("employeeIds",
+                                java.util.Arrays.asList(identityLink.getUserId()));
                         String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
                         List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         if (employees != null && !employees.isEmpty()) {

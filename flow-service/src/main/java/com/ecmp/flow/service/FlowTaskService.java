@@ -711,7 +711,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setFlowTaskType("serviceTask");
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     Map<String,Object> params = new HashMap();
-                    params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(startUserId)));
+                    params.put("employeeIds",java.util.Arrays.asList(startUserId));
                     String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
                     List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
@@ -725,7 +725,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setFlowTaskType("receiveTask");
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     Map<String,Object> params = new HashMap();
-                    params.put("employeeIds",java.util.Arrays.asList(java.util.Arrays.asList(startUserId)));
+                    params.put("employeeIds",java.util.Arrays.asList(startUserId));
                     String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
                     List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
