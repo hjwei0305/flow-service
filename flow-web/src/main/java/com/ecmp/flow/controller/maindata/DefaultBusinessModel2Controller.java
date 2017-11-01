@@ -297,11 +297,11 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-                defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
-                defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
-                baseService.save(defaultBusinessModel2);
-            }
+//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+//                defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
+//                defaultBusinessModel2.setFlowStatus(FlowStatus.COMPLETED);
+//                baseService.save(defaultBusinessModel2);
+//            }
             operateStatus = new OperateStatus(true, operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");

@@ -280,11 +280,11 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-                defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
-                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-                baseService.save(defaultBusinessModel);
-            }
+//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
+//                defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
+//                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+//                baseService.save(defaultBusinessModel);
+//            }
             operateStatus = new OperateStatus(true, operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
