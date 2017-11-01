@@ -58,7 +58,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 业务单号
 	 */
-	@Column(name = "business_code", nullable = false, length = 20)
+	@Column(name = "business_code", nullable = false, length = 2000)
 	private String businessCode;
 
 	/**
