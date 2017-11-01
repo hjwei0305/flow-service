@@ -101,7 +101,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     /**
      * 业务单号
      */
-    @Column(name = "business_code",length = 20,nullable = false)
+    @Column(name = "business_code",length = 2000,nullable = false)
     private  String businessCode;
 
 
