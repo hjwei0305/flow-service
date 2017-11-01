@@ -619,6 +619,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if ((variablesTask != null) && (!variablesTask.isEmpty())) {
             variables.putAll(variablesTask);
         }
+
         // 取得流程定义
         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                 .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
@@ -630,6 +631,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition)
                 .findActivity(currentTask.getActTaskDefKey());
         // 取得驳回目标节点的活动
+        while("cancel".equalsIgnoreCase(preFlowTask.getTaskStatus())||"reject".equalsIgnoreCase(preFlowTask.getTaskStatus())||preFlowTask.getActTaskDefKey().equals(currentTask.getActTaskDefKey())){//如果前一任务为撤回或者驳回任务，则依次向上迭代
+            String preFlowTaskId = preFlowTask.getPreId();
+            if(StringUtils.isNotEmpty(preFlowTaskId)){
+                preFlowTask =  flowHistoryDao.findOne(preFlowTaskId);
+            }
+        }
         ActivityImpl preActivity = ((ProcessDefinitionImpl) definition)
                 .findActivity(preFlowTask.getActTaskDefKey());
         if (FlowTaskTool.checkCanReject(currentActivity, preActivity, instance,
