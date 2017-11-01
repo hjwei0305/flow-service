@@ -135,7 +135,7 @@ public interface ICommonConditionService {
 
     /**
      * 重置单据状态
-     * @param businessModelId   业务实体id
+     * @param businessModelCode   业务实体代码
      * @param id   单据id
      * @param status   状态
      * @return 返回结果
@@ -150,6 +150,6 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
-    public Boolean resetState(@QueryParam("businessModelId") String businessModelId,@QueryParam("id")String id,
+    public Boolean resetState(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id")String id,
                               @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 }

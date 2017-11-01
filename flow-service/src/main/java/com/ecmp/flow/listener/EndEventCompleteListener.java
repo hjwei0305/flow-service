@@ -85,7 +85,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                     String businessModelId = businessModel.getId();
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                     IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
-                    flowCommonConditionService.resetState(businessModelId,flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+                    flowCommonConditionService.resetState(businessModel.getClassName(),flowInstance.getBusinessId(), FlowStatus.COMPLETED);
                 if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();
                     if(parent != null){
