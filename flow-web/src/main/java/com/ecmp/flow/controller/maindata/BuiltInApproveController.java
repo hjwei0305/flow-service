@@ -174,17 +174,17 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
-                if (flowStartResultVO.getFlowInstance() != null) {
-                    defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
-                    if (flowStartResultVO.getFlowInstance().isEnded()) {
-                        defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
-                    } else {
-                        defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
-                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
-                    }
-                    baseService.save(defaultBusinessModel);
-                }
+//                if (flowStartResultVO.getFlowInstance() != null) {
+//                    defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
+//                    if (flowStartResultVO.getFlowInstance().isEnded()) {
+//                        defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
+//                    } else {
+//                        defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
+//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
+//                    }
+//                    baseService.save(defaultBusinessModel);
+//                }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {

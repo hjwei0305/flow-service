@@ -192,17 +192,17 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
-                if (flowStartResultVO.getFlowInstance() != null) {
-                    defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
-                    if (flowStartResultVO.getFlowInstance().isEnded()) {
-                        defaultBusinessModel3.setFlowStatus(FlowStatus.COMPLETED);
-                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
-                    } else {
-                        defaultBusinessModel3.setFlowStatus(FlowStatus.INPROCESS);
-                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
-                    }
-                    baseService.save(defaultBusinessModel3);
-                }
+//                if (flowStartResultVO.getFlowInstance() != null) {
+//                    defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
+//                    if (flowStartResultVO.getFlowInstance().isEnded()) {
+//                        defaultBusinessModel3.setFlowStatus(FlowStatus.COMPLETED);
+//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
+//                    } else {
+//                        defaultBusinessModel3.setFlowStatus(FlowStatus.INPROCESS);
+//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
+//                    }
+//                    baseService.save(defaultBusinessModel3);
+//                }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {

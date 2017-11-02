@@ -55,6 +55,7 @@ public class DefaultBusinessModel2Service extends BaseEntityService<DefaultBusin
      * 数据保存操作
      */
     @SuppressWarnings("unchecked")
+    @Transactional( propagation= Propagation.REQUIRED)
     public OperateResultWithData<DefaultBusinessModel2> save(DefaultBusinessModel2 entity) {
         Validation.notNull(entity, "持久化对象不能为空");
         String businessCode = NumberGenerator.getNumber(DefaultBusinessModel2.class);

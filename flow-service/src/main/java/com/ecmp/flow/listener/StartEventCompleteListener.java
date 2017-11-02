@@ -1,12 +1,12 @@
 package com.ecmp.flow.listener;
 
+import com.ecmp.config.util.ApiClient;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowDefination;
-import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -28,7 +28,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.GenericType;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -177,6 +179,19 @@ public class StartEventCompleteListener implements ExecutionListener {
                 flowInstance.setParent(flowInstanceP);
             }
             flowInstanceDao.save(flowInstance);
+        }
+        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        String appModuleId = businessModel.getAppModuleId();
+        com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+        AppModule appModule = iAppModuleService.findOne(appModuleId);
+        Map<String, Object> params = new HashMap<String,Object>();;
+        params.put("businessModelCode",businessModel.getClassName());
+        params.put("id",flowInstance.getBusinessId());
+        params.put("status", FlowStatus.INPROCESS);
+        String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+        Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+        if(!result){
+            throw new RuntimeException("调用重置表单进入流程中状态失败");
         }
     }
 }

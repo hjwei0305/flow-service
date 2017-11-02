@@ -1,5 +1,6 @@
 package com.ecmp.flow.listener;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
@@ -8,6 +9,7 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
@@ -24,8 +26,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.GenericType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -82,10 +86,22 @@ public class EndEventCompleteListener implements ExecutionListener {
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                    String businessModelId = businessModel.getId();
-                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-                    IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
-                    flowCommonConditionService.resetState(businessModel.getClassName(),flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+//                    String businessModelId = businessModel.getId();
+//                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+//                    IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
+//                    flowCommonConditionService.resetState(businessModel.getClassName(),flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+                String appModuleId = businessModel.getAppModuleId();
+                com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+                AppModule appModule = iAppModuleService.findOne(appModuleId);
+                Map<String, Object> params = new HashMap<String,Object>();;
+                params.put("businessModelCode",businessModel.getClassName());
+                params.put("id",flowInstance.getBusinessId());
+                params.put("status",FlowStatus.COMPLETED);
+                String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+                Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                if(!result){
+                    throw new RuntimeException("调用重置表单流程结束状态失败");
+                }
                 if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();
                     if(parent != null){
