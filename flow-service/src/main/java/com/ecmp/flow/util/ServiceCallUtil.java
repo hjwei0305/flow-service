@@ -36,7 +36,7 @@ public class ServiceCallUtil {
               String appModuleId = flowServiceUrl.getBusinessModel().getAppModuleId();
               com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
               AppModule appModule = iAppModuleService.findOne(appModuleId);
-                Map<String, Object> params = new HashMap<String,Object>();;
+              Map<String, Object> params = new HashMap<String,Object>();;
               params.put("id",businessId);
               params.put("paramJson",args[0]);
               String url = appModule.getApiBaseAddress()+"/"+clientUrl;
