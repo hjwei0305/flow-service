@@ -435,11 +435,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
-        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        com.ecmp.flow.entity.AppModule appModule = proxy.findOne("7B8BCB69-36E1-11E7-8427-5E6C1619CBC3");
-        appModule.setApiBaseAddress("http://10.4.68.46:9082/flow-service");
-        appModule.setWebBaseAddress("http://10.4.68.46:8082/flow-web");
-        proxy.save(appModule);
         FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
