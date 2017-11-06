@@ -437,8 +437,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
         com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
         com.ecmp.flow.entity.AppModule appModule = proxy.findOne("7B8BCB69-36E1-11E7-8427-5E6C1619CBC3");
-        appModule.setApiBaseAddress("http://127.0.0.1:9082/flow-service");
-        appModule.setWebBaseAddress("http://127.0.0.1:8082/flow-web");
+        appModule.setApiBaseAddress("http://10.4.68.46:9082/flow-service");
+        appModule.setWebBaseAddress("http://10.4.68.46:8082/flow-web");
         proxy.save(appModule);
         FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
         Map<String, Object> userMap = flowStartVO.getUserMap();
