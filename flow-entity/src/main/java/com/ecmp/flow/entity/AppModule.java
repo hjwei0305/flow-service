@@ -35,7 +35,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "app_module")
 @DynamicInsert
 @DynamicUpdate
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AppModule extends BaseAuditableEntity
         implements ICodeUnique, IRank {
 
