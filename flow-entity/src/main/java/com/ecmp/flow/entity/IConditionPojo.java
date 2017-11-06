@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * 条件Pojo接口
- * 注：条件属性需要提供默认值，以供表达式验证
+ * 注：条件属性需要提供默认值，以供表达式验证,主要针对同构平台
  * @author tanjun
  *
  */
