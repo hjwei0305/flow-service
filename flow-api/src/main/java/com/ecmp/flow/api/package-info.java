@@ -11,7 +11,7 @@
  * </p>
  * **************************** *********************************************************************
  */
-@AppModule("FLOW")
+@AppModule("FLOW_API")
 package com.ecmp.flow.api;
 
 import com.ecmp.annotation.AppModule;
