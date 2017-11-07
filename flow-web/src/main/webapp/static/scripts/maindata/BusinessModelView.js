@@ -545,7 +545,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/businessModel/getPropertiesForConditionPojo",
             params: {
-                conditonPojoClassName: data.conditonBean
+                businessModelCode: data.className
             },
             success: function (status) {
                 g.handleProperty(status);
@@ -1025,7 +1025,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         var win = EUI.Window({
             title: this.lang.updatExecutorConfigText,
             iconCss:"ecmp-eui-edit",
-            width: 380,
+            width:380,
             height: 380,
             padding: 15,
             isOverFlow: false,
