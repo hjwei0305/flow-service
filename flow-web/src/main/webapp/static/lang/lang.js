@@ -40,11 +40,11 @@ var common_lang = {
 
 if (EUI.AppModuleView) {
     EUI.apply(EUI.AppModuleView.prototype.lang, {
-        updateAppModuleText: "编辑实体模型",
+        updateAppModuleText: "编辑应用模块",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputDepictMsgText: "请输入描述",
-        addNewAppModuleText: "新增实体模型",
+        addNewAppModuleText: "新增应用模块",
         searchBoxText:"请输入名称或代码进行查询",
         codeText: "代码",
         nameText: "名称",
@@ -70,7 +70,9 @@ if (EUI.BusinessModelView) {
         conditonPSValueText:"条件属性初始值服务地址",
         conditonStatusRestText:"流程状态重置服务地址",
         belongToAppModuleText: "所属应用模块",
-        updateBusinessModelText: "编辑业务模型",
+        copyText: "参考创建",
+        copyBusinessModelText: "参考创建业务实体",
+        updateBusinessModelText: "编辑业务实体",
         inputCodeMsgText: "请输入代码",
         inputNameMsgText: "请输入名称",
         inputClassPathMsgText: "请输入类全路径",
@@ -78,7 +80,7 @@ if (EUI.BusinessModelView) {
         inputDepictMsgText: "请输入描述",
         inputWorkPageText: "请输入工作界面",
         chooseBelongToAppModuleText: "请选择所属应用模块",
-        addNewBusinessModelText: "新增业务模型",
+        addNewBusinessModelText: "新增业务实体",
         urlViewAddressText: "URL地址",
         conditionPropertyText: "条件属性",
         propertyText: "属性",

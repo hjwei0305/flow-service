@@ -77,7 +77,22 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     g.addBusinessModel();
                 }
-            }, '->', {
+            },{
+            xtype: "Button",
+            title: g.lang.copyText,
+            iconCss:"ecmp-common-copy",
+            handler: function() {
+                var rowData =g.gridCmp.getSelectRow();
+                if (rowData && rowData.id) {
+                    rowData.id=null;
+                    rowData.name=rowData.name+"_COPY";
+                    rowData.className=rowData.className+"_COPY";
+                    g.addBusinessModel(rowData,true);
+                } else {
+                    EUI.ProcessStatus({msg:g.lang.copyHintMessage,success: false});
+                }
+            }
+        }, '->', {
                 xtype: "SearchBox",
                 displayText: this.lang.searchByNameText,
                 onSearch: function (value) {
@@ -237,111 +252,115 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             title: g.lang.updateBusinessModelText,
             iconCss:"ecmp-eui-edit",
             height: 450,
-            width:430,
+            width:560,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "updateBusinessModel",
                 padding: 0,
+                defaultConfig:{
+                  labelWidth: 180,
+                  width: 380
+                },
                 items: [{
                     xtype: "TextField",
                     title: "ID",
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "id",
-                    width: 300,
+                    // width: 300,
                     value: data.id,
                     hidden: true
                 }, {
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleId",
-                    width: 300,
+                    // width: 300,
                     value: g.appModule,
                     hidden: true
                 },{
                     xtype: "TextField",
                     title: g.lang.modelText,
                     readonly: true,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleName",
-                    width: 300,
+                    // width: 300,
                     value: g.appModuleName +"--"+data.appModuleCode
                 }, {
                     xtype: "TextField",
                     title: this.lang.applyModuleCodeText,
                     readonly: true,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleCode",
-                    width: 300,
+                    // width: 300,
                     value: data.appModuleCode,
                     hidden:true
                 },  {
                     xtype: "TextField",
                     title: g.lang.nameText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "name",
-                    width: 300,
+                    // width: 300,
                     value: data.name
                 }, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "className",
-                    width: 300,
+                    // width: 300,
                     value: data.className
                 }, {
                     xtype: "TextField",
                     title: g.lang.conditonPropertiesText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonProperties",
-                    width: 300,
+                    // width: 300,
                     value: data.conditonProperties
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonPValueText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonPValue",
-                    width: 300,
+                    // width: 300,
                     value: data.conditonPValue
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonPSValueText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonPSValue",
-                    width: 300,
+                    // width: 300,
                     value: data.conditonPSValue
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonStatusRestText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonStatusRest",
-                    width: 300,
+                    // width: 300,
                     value: data.conditonStatusRest
                 }, {
                     xtype: "TextArea",
                     title: this.lang.formURLText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "lookUrl",
-                    width: 300,
+                    // width: 300,
                     value: data.lookUrl
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     name: "depict",
-                    width: 300,
+                    // width: 300,
                     value: data.depict
                 }]
             }],
@@ -365,101 +384,106 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    addBusinessModel: function () {
+    addBusinessModel: function (data,isCopy) {
         var g = this;
         win = EUI.Window({
-            title: g.lang.addNewBusinessModelText,
+            title: isCopy?g.lang.copyBusinessModelText: g.lang.addNewBusinessModelText,
+            iconCss:isCopy?"ecmp-common-copy":"ecmp-eui-add",
             iconCss:"ecmp-eui-add",
             height: 450,
-            width:430,
+            width:560,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "addBusinessModel",
                 padding: 0,
+                defaultConfig:{
+                    labelWidth: 180,
+                    width: 380
+                },
                 items: [{
                     xtype: "TextField",
                     title: g.lang.appModelIdText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleId",
-                    width: 300,
+                    // width: 300,
                     value: g.appModule,
                     hidden: true
                 }, {
                     xtype: "TextField",
                     title: g.lang.modelText,
                     readonly: true,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleName",
-                    width: 300,
+                    // width: 300,
                     value: g.appModuleName +"--"+g.appModuleCode
                 },{
                     xtype: "TextField",
                     title: this.lang.applyModuleCodeText,
                     readonly: true,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "appModuleCode",
-                    width: 300,
+                    // width: 300,
                     value: g.appModuleCode,
                     hidden:true
                 }, {
                     title: g.lang.nameText,
                     xtype: "TextField",
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "name",
-                    width: 300
+                    // width: 300
                 }, {
                     xtype: "TextField",
                     title: g.lang.classPathText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "className",
-                    width: 300
+                    // width: 300
                 }, {
                     xtype: "TextField",
                     title: g.lang.conditonPropertiesText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonProperties",
-                    width: 300
+                    // width: 300
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonPValueText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonPValue",
-                    width: 300
+                    // width: 300
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonPSValueText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonPSValue",
-                    width: 300
+                    // width: 300
                 },{
                     xtype: "TextField",
                     title: this.lang.conditonStatusRestText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonStatusRest",
-                    width: 300
+                    // width: 300
                 }, {
                     xtype: "TextArea",
                     title: this.lang.formURLText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     allowBlank: false,
                     name: "lookUrl",
-                    width: 300
+                    // width: 300
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    labelWidth: 115,
+                    // labelWidth: 115,
                     name: "depict",
-                    width: 300
+                    // width: 300
                 }]
             }],
             buttons: [ {
@@ -481,6 +505,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+        if(isCopy){
+            EUI.getCmp("addBusinessModel").loadData(data);
+        }
     },
     saveBusinessModel: function (data) {
         var g = this;
@@ -493,13 +520,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             success: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (result.success) {
-                    g.gridCmp.grid.trigger("reloadGrid");
-                    win.close();
-                }
+                g.gridCmp.grid.trigger("reloadGrid");
+                win.close();
             },
-            failure: function () {
+            failure: function (result) {
                 myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
     },
