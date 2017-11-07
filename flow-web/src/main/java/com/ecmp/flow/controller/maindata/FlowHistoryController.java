@@ -40,10 +40,10 @@ import java.text.ParseException;
 @IgnoreCheckAuth
 public class FlowHistoryController extends FlowBaseController{
 
-    @RequestMapping(value = "show", method = RequestMethod.GET)
-    public String show() {
-        return "maindata/FlowHistoryView";
-    }
+//    @RequestMapping(value = "show", method = RequestMethod.GET)
+//    public String show() {
+//        return "maindata/FlowHistoryView";
+//    }
 
     /**
      * 查询流程任务列表

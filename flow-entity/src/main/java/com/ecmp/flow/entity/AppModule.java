@@ -74,7 +74,6 @@ public class AppModule extends BaseAuditableEntity
      * 排序号
      */
     @Column(name = "rank", nullable = false)
-
     private Integer rank;
 
     public String getName() {

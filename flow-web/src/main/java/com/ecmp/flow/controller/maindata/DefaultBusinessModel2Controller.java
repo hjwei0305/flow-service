@@ -54,10 +54,10 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         super(IDefaultBusinessModel2Service.class);
     }
 
-    @RequestMapping(value = "show", method = RequestMethod.GET)
-    public String show() {
-        return "maindata/DefaultBusinessModel2View";
-    }
+//    @RequestMapping(value = "show", method = RequestMethod.GET)
+//    public String show() {
+//        return "maindata/DefaultBusinessModel2View";
+//    }
 
     @RequestMapping(value = "showBill", method = RequestMethod.GET)
     public String showBill() {

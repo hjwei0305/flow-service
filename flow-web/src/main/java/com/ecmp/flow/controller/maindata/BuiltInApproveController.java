@@ -58,10 +58,10 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         super(IDefaultBusinessModelService.class);
     }
 
-    @RequestMapping(value = "show", method = RequestMethod.GET)
-    public String show() {
-        return "maindata/BuiltInApproveView";
-    }
+//    @RequestMapping(value = "show", method = RequestMethod.GET)
+//    public String show() {
+//        return "maindata/BuiltInApproveView";
+//    }
 
     /**
      * 业务申请审批界面(查看)
@@ -257,7 +257,6 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
                         }
                     }else {
                         selectedNodesMap.put(f.getNodeId(),f.getNodeId());
-
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             v.put(f.getUserVarName(), f.getUserIds());
                         } else {
@@ -275,16 +274,10 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
                 flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
             }
 
-            //  Map<String,Object> v = new HashMap<String,Object>();
             v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-//            if (FlowStatus.COMPLETED.toString().equalsIgnoreCase(operateResult.getData() + "")) {
-//                defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
-//                defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-//                baseService.save(defaultBusinessModel);
-//            }
             operateStatus = new OperateStatus(true, operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
