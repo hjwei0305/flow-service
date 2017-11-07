@@ -5,32 +5,31 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     isEdit: false,
     initComponent: function () {
-        EUI.Container({
+     /*   EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
             border: false,
             padding: 8,
             itemspace: 0,
             items: [this.initTbar(), this.initGrid()]
+        });*/
+        this.gridCmp=EUI.GridPanel({
+            renderTo: this.renderTo,
+            title: "应用模块配置",
+            border: true,
+            tbar: this.initTbar(),
+            gridCfg: this.initGrid()
         });
-        this.gridCmp = EUI.getCmp("gridPanel");
+     //   this.gridCmp = EUI.getCmp("gridPanel");
         this.addEvents();
     },
     initTbar: function () {
         var g = this;
-        return {
-            xtype: "ToolBar",
-            region: "north",
-            height: 40,
-            padding: 0,
-            isOverFlow:false,
-            border: false,
-            items: [{
+        return  [{
                 xtype: "Button",
                 //addText: "新增",
                 title: this.lang.addText,
                 iconCss:"ecmp-common-add",
-                selected:true,
                 CHECK_AUTH:"",
                 handler: function () {
                     g.isEdit = false;
@@ -45,16 +44,11 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                 afterClear: function () {
                     g.gridCmp.localSearch("");
                 }
-            }]
-        };
+            }];
     },
     initGrid: function () {
         var g = this;
-        return {
-            xtype: "GridPanel",
-            region: "center",
-            id: "gridPanel",
-            gridCfg: {
+        return  {
                 url: _ctxPath + "/appModule/listAll",
                 loadonce: true,
                 searchConfig: {
@@ -72,12 +66,11 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
                 { label: g.lang.webBaseAddressText, name: "webBaseAddress", index: "webBaseAddress", width: 350 },
                 { label: g.lang.apiBaseAddressText, name: "apiBaseAddress", index: "apiBaseAddress", width: 380},
                     //rankText: '排序',
-                { name: "rank",index: "rank", label: g.lang.rankText, sortable: true, width: 80, align: "right" },],
+                { name: "rank",index: "rank", label: g.lang.rankText, sortable: true, width: 80, align: "right" }],
                 rowNum: 15,
                 sortname: "rank",
                 shrinkToFit: false
-            }
-        };
+            };
     },
     addEvents: function () {
         var g = this;
@@ -88,10 +81,10 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
             g.editFormCmp.loadData(data);
         });
         $(".ecmp-common-delete").live("click", function () {
-            var rowData = EUI.getCmp("gridPanel").getSelectRow();
+            var rowData = g.gridCmp.getSelectRow();
             var infoBox = EUI.MessageBox({
-                title: g.lang.deleteText,
-                msg: g.lang.deleteHintMessageText,
+                title: g.lang.tiShiText,
+                msg: g.lang.ifDelMsgText,
                 buttons: [{
                     title: g.lang.cancelText,
                     handler: function () {
@@ -144,13 +137,14 @@ EUI.AppModuleView = EUI.extend(EUI.CustomUI, {
         var g = this;
         g.addAndEditWin = EUI.Window({
             title: g.isEdit ? g.lang.updateAppModuleText : g.lang.addNewAppModuleText,
+            iconCss:g.isEdit ? "ecmp-eui-edit" : "ecmp-eui-add",
             height: 250,
             width: 530,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
                 id: "editForm",
-                padding: 0,
+                padding: 5,
                 defaultConfig: {
                     xtype: "TextField",
                     labelWidth: 120,
