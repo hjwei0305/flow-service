@@ -10,7 +10,6 @@ import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.IBusinessWorkPageUrlService;
 import com.ecmp.flow.api.IWorkPageUrlService;
-import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.WorkPageUrl;
@@ -23,9 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ecmp.flow.api.client.util.ExpressionUtil.getAppModule;
 
 /**
  * *************************************************************************************************
@@ -169,8 +172,17 @@ public class BusinessModuleController {
     @RequestMapping(value = "getPropertiesForConditionPojo")
     @ResponseBody
     public Map<String, String> getPropertiesForConditionPojo(String businessModelCode) throws  ClassNotFoundException {
-        IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.properties(businessModelCode,false);
+        Map<String, String> result=null;
+        IBusinessModelService  businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+            String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
+            Map<String,Object> params = new HashMap();
+            params.put("businessModelCode",businessModelCode);
+            params.put("all",false);
+            result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
+        }
         return result;
     }
 
