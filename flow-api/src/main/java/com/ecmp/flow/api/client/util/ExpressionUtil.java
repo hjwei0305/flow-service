@@ -1,6 +1,9 @@
 package com.ecmp.flow.api.client.util;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.constant.ConditionAnnotaion;
+import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.IConditionPojo;
 
 import java.lang.reflect.InvocationTargetException;
@@ -293,6 +296,13 @@ public class ExpressionUtil<T extends IConditionPojo> {
 		}
 
 		return fieldName;
+	}
+
+	public static AppModule getAppModule(BusinessModel businessModel){
+		String appModuleId = businessModel.getAppModuleId();
+		com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
+		com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+		return appModule;
 	}
 
 //	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
