@@ -31,7 +31,7 @@ public class Constants extends ConfigurableContants {
 		BASIC_SERVICE_URL = map.get("ECMP_BASIC");
 		if(StringUtils.isEmpty(BASIC_SERVICE_URL)){
 			BASIC_SERVICE_URL =getProperty(
-					"basic.service.url", "http://10.4.68.46:9081/basic-service");
+					"basic.service.url", "http://10.4.68.77:9081/basic-service");
 		}
 	}
 
