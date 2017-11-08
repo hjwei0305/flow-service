@@ -242,7 +242,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     name: "mustCommit",
                     value: data.mustCommit,
                     reader: {name: 'name', field: ['value']},
-                    field: ["mustCommitValue"],
+                    field: ["mustCommit"],
                     data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
                 },{
                     xtype: "TextArea",
@@ -277,7 +277,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                         return;
                     }
                     var data = form.getFormValue();
-                    data.mustCommit=data.mustCommitValue;
                     g.saveWorkPageUrl(data);
                 }
             }]
@@ -327,7 +326,7 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                     displayText: "是否需要提交",
                     name: "mustCommit",
                     reader: {name: 'name', field: ['value']},
-                    field: ["mustCommitValue"],
+                    field: ["mustCommit"],
                     data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
                 },{
                     xtype: "TextArea",
@@ -361,7 +360,6 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
                             return;
                         }
                         var data = form.getFormValue();
-                        data.mustCommit=data.mustCommitValue;
                         g.saveWorkPageUrl(data);
                     }
             }]
@@ -372,6 +370,11 @@ EUI.WorkPageUrlView = EUI.extend(EUI.CustomUI, {
         var myMask = EUI.LoadMask({
             msg: g.lang.nowSaveMsgText
         });
+        if(data.mustCommit=="否"){
+            data.mustCommit=false;
+        }else{
+            data.mustCommit=true;
+        }
         EUI.Store({
             url: _ctxPath + "/workPageUrl/save",
             params: data,
