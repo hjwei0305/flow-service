@@ -58,11 +58,6 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         super(IDefaultBusinessModelService.class);
     }
 
-//    @RequestMapping(value = "show", method = RequestMethod.GET)
-//    public String show() {
-//        return "maindata/BuiltInApproveView";
-//    }
-
     /**
      * 业务申请审批界面(查看)
      *
