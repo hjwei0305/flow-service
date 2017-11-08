@@ -2,10 +2,11 @@ package com.ecmp.flow.common.web.controller;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.controller.BaseEntityController;
+import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
-import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.*;
@@ -38,7 +39,7 @@ import java.util.Map;
  * <br>
  * *************************************************************************************************<br>
  */
-public abstract class FlowBaseController<T extends IBaseService, V extends AbstractBusinessModel> extends BaseEntityController<V> {
+public abstract class FlowBaseController<T extends IBaseEntityService, V extends BaseEntity> extends BaseEntityController<V> {
 
     protected Class<T> apiClass;
 
@@ -62,7 +63,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -92,12 +93,12 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
                if( flowStartResultVO.getFlowInstance()!=null){
-                   defaultBusinessModel = (V) baseService.findOne(businessKey);
-                   if(flowStartResultVO.getFlowInstance().isEnded()){
-                       defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-                   }else {
-                       defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
-                   }
+//                   defaultBusinessModel = (V) baseService.findOne(businessKey);
+//                   if(flowStartResultVO.getFlowInstance().isEnded()){
+//                       defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
+//                   }else {
+//                       defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
+//                   }
                    baseService.save(defaultBusinessModel);
                }
                 operateStatus = new OperateStatus(true, "成功");
@@ -145,7 +146,7 @@ public abstract class FlowBaseController<T extends IBaseService, V extends Abstr
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         V defaultBusinessModel = (V) baseService.findOne(businessId);
         if (defaultBusinessModel != null) {

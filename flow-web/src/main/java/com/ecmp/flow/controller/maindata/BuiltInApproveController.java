@@ -2,12 +2,12 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
@@ -113,7 +113,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -215,7 +215,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
         if (defaultBusinessModel != null) {

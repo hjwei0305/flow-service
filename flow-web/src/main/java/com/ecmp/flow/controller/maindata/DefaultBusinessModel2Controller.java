@@ -2,11 +2,11 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModel2Service;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
-import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
@@ -54,10 +54,6 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
         super(IDefaultBusinessModel2Service.class);
     }
 
-//    @RequestMapping(value = "show", method = RequestMethod.GET)
-//    public String show() {
-//        return "maindata/DefaultBusinessModel2View";
-//    }
 
     @RequestMapping(value = "showBill", method = RequestMethod.GET)
     public String showBill() {
@@ -131,7 +127,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -232,7 +228,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
         if (defaultBusinessModel2 != null) {

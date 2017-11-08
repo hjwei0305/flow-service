@@ -1,11 +1,8 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
-import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -34,7 +31,7 @@ import java.util.List;
  */
 @Path("defaultBusinessModel3")
 @Api(value = "IDefaultBusinessModel3Service 销售业务表单服务API接口")
-public interface IDefaultBusinessModel3Service extends IBaseService<DefaultBusinessModel3, String> {
+public interface IDefaultBusinessModel3Service extends IBaseEntityService<DefaultBusinessModel3> {
 
 //    /**
 //     * 保存一个实体

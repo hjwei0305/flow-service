@@ -1,7 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -32,31 +31,8 @@ import java.util.Map;
  */
 @Path("defaultBusinessModel")
 @Api(value = "IDefaultBusinessModelService 默认业务表单服务API接口")
-public interface IDefaultBusinessModelService extends IBaseService<DefaultBusinessModel, String> {
+public interface IDefaultBusinessModelService extends IBaseEntityService<DefaultBusinessModel> {
 
-//    /**
-//     * 保存一个实体
-//     * @param defaultBusinessModel 实体
-//     * @return 保存后的实体
-//     */
-//    @POST
-//    @Path("save")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-//    OperateResultWithData<DefaultBusinessModel> save(DefaultBusinessModel defaultBusinessModel);
-//
-//    /**
-//     * 获取分页数据
-//     *
-//     * @return 实体清单
-//     */
-//    @POST
-//    @Path("findByPage")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
-//    PageResult<DefaultBusinessModel> findByPage(Search searchConfig);
 
    /**
      * 测试事前
