@@ -94,7 +94,7 @@ public interface ICommonConditionService {
      * @throws IllegalAccessException 访问异常
      * @throws NoSuchMethodException 没有方法异常
      */
-    @GET
+    @POST
     @Path("resetState")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
