@@ -316,7 +316,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                     g.selectedNodeTenantCode = node.tenantCode;
                     g.selectedNodeCodePath = node.codePath;
                     var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                        url: _ctxPath + "/defaultBusinessModel2/list",
+                        url: _ctxPath + "/defaultBusinessModel2/listByPage",
                         loadonce: false,
                         datatype: "json",
                         postData: {

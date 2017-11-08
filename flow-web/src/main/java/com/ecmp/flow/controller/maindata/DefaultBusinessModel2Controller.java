@@ -3,8 +3,12 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.api.IBaseEntityService;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModel2Service;
+import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +81,21 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
     public String look() {
         return "approve/ApproveView2";
     }
+
+//    /**
+//     * 查询默认业务实体
+//     *
+//     * @param request
+//     * @return
+//     */
+//    @RequestMapping(value = "list")
+//    @ResponseBody
+//    public PageResult list(ServletRequest request) {
+//        IDefaultBusinessModel2Service baseService = ApiClient.createProxy(apiClass);
+//        Search search = SearchUtil.genSearch(request);
+//        PageResult<DefaultBusinessModel2> defaultBusinessModelPageResult = baseService.findByPage(search);
+//        return defaultBusinessModelPageResult;
+//    }
 
     /**
      * 采购申请表单查看
