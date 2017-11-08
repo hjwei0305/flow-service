@@ -1,8 +1,6 @@
 package com.ecmp.flow.controller.design;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
-import com.ecmp.flow.basic.vo.Position;
-import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
@@ -10,12 +8,10 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.*;
-import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.flow.common.util.Constants;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowServiceUrl;
-import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
@@ -31,8 +27,11 @@ import javax.ws.rs.core.GenericType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ecmp.flow.api.client.util.ExpressionUtil.getAppModule;
 
 /**
  * *************************************************************************************************
@@ -112,8 +111,17 @@ public class FlowDesignController {
     @RequestMapping(value = "getProperties", method = RequestMethod.POST)
     public OperateStatus getProperties(String businessModelCode) throws ClassNotFoundException {
         OperateStatus status = OperateStatus.defaultSuccess();
-        IFlowCommonConditionService proxy = ApiClient.createProxy(IFlowCommonConditionService.class);
-        Map<String, String> result = proxy.properties(businessModelCode,false);
+        Map<String, String> result=null;
+        IBusinessModelService  businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+            String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
+            Map<String,Object> params = new HashMap();
+            params.put("businessModelCode",businessModelCode);
+            params.put("all",false);
+            result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
+        }
         status.setData(result);
         return status;
     }
