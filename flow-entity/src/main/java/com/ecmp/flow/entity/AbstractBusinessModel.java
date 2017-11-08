@@ -53,7 +53,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
      * 当前流程状态
      */
     @Column(name = "flowStatus",length = 10,nullable = false)
-    private FlowStatus flowStatus;
+    private FlowStatus flowStatus=FlowStatus.INIT;
 
     /**
      * 租户代码
