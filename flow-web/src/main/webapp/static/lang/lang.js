@@ -25,7 +25,7 @@ var common_lang = {
     deleteText: "删除",
     deleteHintMessageText: "您确定要删除吗？",
     deleteMaskMessageText: "正在删除，请稍候...",
-    queryMaskMessageText: "正在努力获取数据，请稍候...",
+    queryMaskMessageText: "正在加载数据，请稍候...",
     submitText: "提交",
     finishText: "完成",
     editText: "编辑",
