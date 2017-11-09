@@ -146,7 +146,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        return  '<i class="ecmp-common-view  fontcusor" title="'+g.lang.showDoneText+'"></i>';
+                        return  '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i><i class="ecmp-flow-delete fontcusor" title="'+g.lang.endFlowText+'"></i>';
                     }
                 }, {
                     name: "id",
@@ -223,6 +223,9 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             var data = g.gridCmp.getSelectRow();
             g.showTaskHistoryWind(data);
         });
+        $(".ecmp-flow-delete").live("click", function () {
+            g.endFlow();
+        });
         $(".ecmp-common-delete").live("click", function () {
             var rowData = g.gridCmp.getSelectRow();
             g.deleteFlowInstance(rowData);
@@ -276,6 +279,44 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             height: 500,
             padding: 8,
             items: [this.initWindGrid(data)]
+        });
+    },
+    endFlow:function () {
+        var g=this;
+        var data = g.gridCmp.getSelectRow();
+        var message = EUI.MessageBox({
+            border: true,
+            title: g.lang.tiShiText,
+            showClose: true,
+            msg: g.lang.endFlowMsgText,
+            buttons: [{
+                title:g.lang.cancelText,
+                handler: function () {
+                    message.remove();
+                }
+            },{
+                title:g.lang.okText,
+                selected: true,
+                handler: function () {
+                    var myMask = EUI.LoadMask({
+                        msg: g.lang.endMask
+                    });
+                    EUI.Store({
+                        url: _ctxPath+"/flowInstance/endFlowInstance/",
+                        params: {id: data.id},
+                        success: function (status) {
+                            myMask.remove();
+                            EUI.ProcessStatus(status);
+                            g.gridCmp.grid.trigger("reloadGrid");
+                        },
+                        failure: function (status) {
+                            myMask.hide();
+                            EUI.ProcessStatus(status);
+                        }
+                    });
+                    message.remove();
+                }
+            }]
         });
     },
     initWindTbar: function () {
