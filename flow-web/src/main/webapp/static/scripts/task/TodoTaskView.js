@@ -10,9 +10,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     records: null,
     firstTime: true,
     searchName: null,
-    nowPage:null,
-    totalPage:null,
-    mainViewBarClick:false,
+    nowPage: null,
+    totalPage: null,
+    mainViewBarClick: false,
     initComponent: function () {
         this.getModelList();
         // this.getTestNavData(_data);
@@ -25,17 +25,17 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //导航部分的外层容器
     getNavbarHtml: function (data) {
-            var g = this;
-            var html = '<div class="content-navbar">';
-            if (data.length < 7) {
-             html += '<div class="navbar"></div>';
-             } else {
+        var g = this;
+        var html = '<div class="content-navbar">';
+        if (data.length < 7) {
+            html += '<div class="navbar"></div>';
+        } else {
             html += '      <i class="ecmp-common-prepage page-btn arrow-left pre"></i>' +
                 '         <div class="navbar"></div>' +
                 '         <i class="ecmp-common-nextpage page-btn arrow-right next"></i>';
-            }
-            html += '</div>';
-            return html;
+        }
+        html += '</div>';
+        return html;
     },
 
 
@@ -50,14 +50,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
 
     },*/
     upPageBtn: function () {
-        if (this.nowPage==1){
+        if (this.nowPage == 1) {
             $(".pre").removeClass("page-gray").addClass("page-btn")
-        }else {
+        } else {
             $(".pre").removeClass("page-btn").addClass("page-gray")
         }
-        if (this.totalPage == this.nowPage){
+        if (this.totalPage == this.nowPage) {
             $(".next").removeClass("page-gray").addClass("page-btn")
-        }else {
+        } else {
             $(".next").removeClass("page-btn").addClass("page-gray")
         }
     },
@@ -86,12 +86,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.initHtml(status.data);
                 g.getNavHtml(status.data);
                 //默认显示第一个模块的列表
-                if(modelId){
+                if (modelId) {
                     g.modelId = modelId;
-                    if($(".navber-count[data-id='" + modelId + "']").length<=0){
+                    if ($(".navber-count[data-id='" + modelId + "']").length <= 0) {
                         g.modelId = status.data[0].businessModeId;
                     }
-                }else{
+                } else {
                     g.modelId = status.data[0].businessModeId;
                 }
                 if (g.modelId) {
@@ -173,7 +173,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 S_createdDate: "DESC",
                 page: this.pageInfo.page,
                 rows: this.pageInfo.rows,
-                Quick_value:this.searchName
+                Quick_value: this.searchName
             },
             success: function (result) {
                 if (g.firstTime) {
@@ -188,7 +188,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     if (g.records > 0) {
                         $(".nav-select>.navbar-circle").text(g.records);
                     } else {
-                        if(!isSearch){
+                        if (!isSearch) {
                             $(".nav-select").css("display", "none");
                         }
                         if (!$(".navber-count").hasClass("nav-select")) {
@@ -298,13 +298,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
     //计算时间几天前
     countDate: function (startTime) {
-        if(!startTime){
-            return ;
+        if (!startTime) {
+            return;
         }
         var g = this;
         var date = new Date();
         var endTime = date.getTime();
-        startTime = startTime.replace(new RegExp("-","gm"),"/");
+        startTime = startTime.replace(new RegExp("-", "gm"), "/");
         startTime = new Date(startTime).getTime();
         var time = endTime - startTime;
         if (time <= 60000) {//如果结束时间小于开始时间
@@ -397,17 +397,17 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             $(this).addClass("nav-select").siblings().removeClass("nav-select");
             var id = $(this).attr("data-id");
             g.modelId = id;
-            if(!g.mainViewBarClick){
+            if (!g.mainViewBarClick) {
                 EUI.getCmp("searchBox").reset();
-                g.searchName=null;
-                g.mainViewBarClick=false;
+                g.searchName = null;
+                g.mainViewBarClick = false;
             }
             g.resetPageBar();
             //重新获取数据
             g.getTodoData();
         });
         $(".arrow-left").live("click", function () {
-            if(!$(this).hasClass("page-btn")){
+            if (!$(this).hasClass("page-btn")) {
                 g.nowPage--;
                 $(".navber-count", ".navbar").hide("fast");
                 $(".navber-count[page='" + g.nowPage + "']", ".navbar").show("fast");
@@ -415,7 +415,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             }
         });
         $(".arrow-right").live("click", function () {
-            if(!$(this).hasClass("page-btn")){
+            if (!$(this).hasClass("page-btn")) {
                 g.nowPage++;
                 $(".navber-count", ".navbar").hide(300);
                 $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
@@ -442,9 +442,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var taskConfig = JSON.parse(data.taskJsonDef);
             var workPageUrl = taskConfig.nodeConfig.normal.workPageUrl;
+            var joinStr = data.webBaseAddress.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: data.taskName,
-                url: _ctxPath + workPageUrl + "?id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: data.webBaseAddress + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.id
             };
             g.addTab(tab);
@@ -504,7 +505,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         win.remove();
                     }
-                },{
+                }, {
                     title: "确定",
                     selected: true,
                     handler: function () {
@@ -563,7 +564,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         message.remove();
                     }
-                },{
+                }, {
                     title: "确定",
                     selected: true,
                     handler: function () {
@@ -606,7 +607,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                     handler: function () {
                         message.remove();
                     }
-                },{
+                }, {
                     title: "确定",
                     selected: true,
                     handler: function () {
@@ -614,7 +615,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "正在终止，请稍候..."
                         });
                         EUI.Store({
-                            url: _ctxPath+"/flowInstance/endFlowInstance/",
+                            url: _ctxPath + "/flowInstance/endFlowInstance/",
                             params: {id: data.flowInstance.id},
                             success: function (status) {
                                 myMask.remove();
