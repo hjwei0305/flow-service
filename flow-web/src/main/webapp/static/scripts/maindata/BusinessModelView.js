@@ -568,13 +568,22 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
     //属性界面的数据调用
     getProperty: function (data) {
         var g = this;
+        var myMask = EUI.LoadMask({
+            msg: g.lang.queryMaskMessageText,
+            target: EUI.getCmp("innerWindow")
+        });
         EUI.Store({
             url: _ctxPath + "/businessModel/getPropertiesForConditionPojo",
             params: {
                 businessModelCode: data.className
             },
             success: function (status) {
+                myMask.hide();
                 g.handleProperty(status);
+            },
+            failure: function (result) {
+                myMask.hide();
+                EUI.ProcessStatus(result);
             }
         });
     },
