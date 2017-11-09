@@ -123,8 +123,18 @@ public class CommonConditionService implements ICommonConditionService {
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
         IBusinessFlowEntity content = (IBusinessFlowEntity) appModuleDao.findOne(id);
-        content.setFlowStatus(status);
-        appModuleDao.save(content);
+        if(status==FlowStatus.INIT){
+            if(content!=null){
+                content.setFlowStatus(status);
+                appModuleDao.save(content);
+            }
+        }else{
+          if(content==null){
+             throw new RuntimeException("单据不存在,不能启动或完成流程!");
+           }
+            content.setFlowStatus(status);
+            appModuleDao.save(content);
+        }
         return true;
     }
     private String getDaoBeanName(String className)throws ClassNotFoundException {
