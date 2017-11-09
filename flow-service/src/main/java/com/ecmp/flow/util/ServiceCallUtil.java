@@ -5,11 +5,15 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.flow.vo.FlowInvokeParams;
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,11 +38,35 @@ public class ServiceCallUtil {
             if(flowServiceUrl != null){
               String  clientUrl = flowServiceUrl.getUrl();
               AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
-              Map<String, Object> params = new HashMap<String,Object>();;
-              params.put("id",businessId);
-              params.put("paramJson",args[0]);
-              String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-              result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+
+              if(appModule.getCode().equalsIgnoreCase("FLOW")){
+                 Map<String, Object> params = new HashMap<String,Object>();;
+                 params.put("id",businessId);
+                 params.put("paramJson",args[0]);
+                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
+                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+              }else{
+                  JSONObject jsonObject = JSONObject.fromObject(args[0]);
+                  //HashMap<String,Object> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
+                  String receiveTaskActDefId = jsonObject.get("receiveTaskActDefId")+"";
+//                  List<String> callActivtiySonPaths = null;
+//                  try{
+//                      callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+//                  }catch (Exception e){
+//                  }
+                  Map<String,String> paramMap = null;
+                  if(StringUtils.isNotEmpty(receiveTaskActDefId)){
+                      if(paramMap==null){
+                          paramMap = new HashMap<>();
+                      }
+                      paramMap.put("receiveTaskActDefId",receiveTaskActDefId);
+                  }
+                  FlowInvokeParams params = new FlowInvokeParams();
+                  params.setId(businessId);
+                  params.setParams(paramMap);
+                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
+                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+              }
             }else {
                 throw new RuntimeException("服务对象找不到");
             }
