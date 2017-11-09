@@ -69,6 +69,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     name: "id",
                     index: "id",
                     hidden: true
+                },{
+                    name: "businessModel.className",
+                    index: "businessModel.className",
+                    hidden: true
                 }, {
                     name: "businessModel.id",
                     index: "businessModel.id",
@@ -112,6 +116,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             selected: true,
                             handler: function () {
                                 g.businessModelId = busModelId;
+                                g.businessModelCode = data.data["businessModel.className"];
                                 scope.setSubmitValue({
                                     flowTypeName: data.data.name,
                                     flowTypeId: data.data.id
@@ -127,6 +132,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             afterSelect: function (data) {
                 var busModelId = data.data["businessModel.id"];
                 g.businessModelId = busModelId;
+                g.businessModelCode = data.data["businessModel.className"];
             },
             reader: {
                 name: "name",
@@ -619,6 +625,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     new EUI.FlowNodeSettingView({
                         title: input.text(),
                         businessModelId: g.businessModelId,
+                        businessModelCode: g.businessModelCode,
                         flowDefinitionId: g.id,
                         data: dom.data(),
                         nodeType: nodeType,
