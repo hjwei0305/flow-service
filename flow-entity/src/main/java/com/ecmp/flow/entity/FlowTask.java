@@ -26,6 +26,19 @@ import java.util.Date;
 @Table(name = "flow_task", catalog = "ecmp_flow")
 public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
+
+	/**
+	 * web基地址
+	 */
+	@Transient
+	private String webBaseAddress;
+
+	/**
+	 * api基地址
+	 */
+	@Transient
+	private String apiBaseAddress;
+
 	/**
 	 * 乐观锁- 版本
 	 */
@@ -618,5 +631,22 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	public void setCanBatchApproval(Boolean canBatchApproval) {
 		this.canBatchApproval = canBatchApproval;
+	}
+
+
+	public String getWebBaseAddress() {
+		return webBaseAddress;
+	}
+
+	public void setWebBaseAddress(String webBaseAddress) {
+		this.webBaseAddress = webBaseAddress;
+	}
+
+	public String getApiBaseAddress() {
+		return apiBaseAddress;
+	}
+
+	public void setApiBaseAddress(String apiBaseAddress) {
+		this.apiBaseAddress = apiBaseAddress;
 	}
 }

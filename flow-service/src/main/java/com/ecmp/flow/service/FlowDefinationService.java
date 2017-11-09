@@ -585,9 +585,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
                         FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                         String path = flowExecutorConfig.getUrl();
-                        String appModuleId = flowExecutorConfig.getBusinessModel().getAppModuleId();
-                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
                         String appModuleCode = appModule.getCode();
                         Map<String, String> params = new HashMap<String, String>();
                         String param = flowExecutorConfig.getParam();

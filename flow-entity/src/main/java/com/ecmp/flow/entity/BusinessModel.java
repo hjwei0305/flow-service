@@ -91,18 +91,18 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(length = 250)
     private String depict;
 
-//    /**
-//     * 所属应用模块
-//     */
-//    @ManyToOne()
-//    @JoinColumn(name = "app_module_id")
-//    private AppModule appModule;
-
     /**
-     * 关联的应用模块ID
+     * 所属应用模块
      */
-    @Column(length = 36,name = "app_module_id")
-    private String appModuleId;
+    @ManyToOne()
+    @JoinColumn(name = "app_module_id")
+    private AppModule appModule;
+
+//    /**
+//     * 关联的应用模块ID
+//     */
+//    @Column(length = 36,name = "app_module_id")
+//    private String appModuleId;
 
     /**
      * 关联的应用模块Code
@@ -155,13 +155,6 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.depict = depict;
     }
 
-    public String getAppModuleId() {
-        return appModuleId;
-    }
-
-    public void setAppModuleId(String appModuleId) {
-        this.appModuleId = appModuleId;
-    }
 
     public Set<FlowType> getFlowTypes() {
         return flowTypes;
@@ -258,14 +251,29 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.conditonPSValue = conditonPSValue;
     }
 
-    public BusinessModel(Integer version, String name, String className, String conditonBean, String daoBean, String depict, String appModuleId, String appModuleCode, String appModuleName, String lookUrl, Set<FlowType> flowTypes) {
+//    public String getAppModuleId() {
+//        return appModuleId;
+//    }
+//
+//    public void setAppModuleId(String appModuleId) {
+//        this.appModuleId = appModuleId;
+//    }
+
+    public AppModule getAppModule() {
+        return appModule;
+    }
+
+    public void setAppModule(AppModule appModule) {
+        this.appModule = appModule;
+    }
+
+    public BusinessModel(Integer version, String name, String className, String conditonBean, String daoBean, String depict, String appModuleCode, String appModuleName, String lookUrl, Set<FlowType> flowTypes) {
         this.version = version;
         this.name = name;
         this.className = className;
         this.conditonBean = conditonBean;
         this.daoBean = daoBean;
         this.depict = depict;
-        this.appModuleId = appModuleId;
         this.appModuleCode = appModuleCode;
         this.appModuleName = appModuleName;
         this.lookUrl = lookUrl;
@@ -285,7 +293,6 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("conditonBean", conditonBean)
                 .append("daoBean", daoBean)
                 .append("depict", depict)
-                .append("appModuleId", appModuleId)
                 .append("appModuleCode", appModuleCode)
                 .append("flowTypes", flowTypes)
                 .append("lookUrl", lookUrl)

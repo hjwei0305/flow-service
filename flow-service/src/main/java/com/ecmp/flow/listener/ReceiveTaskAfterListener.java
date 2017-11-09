@@ -5,10 +5,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.*;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
@@ -131,9 +128,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                         flowHistory.setFlowInstance(flowInstance);
                         String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
-                        String appModuleId = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModuleId();
-                        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+                        AppModule appModule= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
                         if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
                             ownerName = appModule.getName();
                         }

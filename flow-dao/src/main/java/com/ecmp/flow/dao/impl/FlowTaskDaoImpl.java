@@ -68,7 +68,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowTask>  result = query.getResultList();
-
+        initFlowTaskAppModule(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -78,6 +78,15 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         return pageResult;
     }
 
+    private List<FlowTask> initFlowTaskAppModule(List<FlowTask>  result ){
+        if(result!=null && !result.isEmpty()){
+               for(FlowTask flowTask:result){
+                   flowTask.setApiBaseAddress(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress());
+                   flowTask.setWebBaseAddress(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress());
+               }
+       }
+       return result;
+    }
 
     public PageResult<FlowTask> findByPage(String executorId, Search searchConfig){
         PageInfo pageInfo = searchConfig.getPageInfo();
@@ -110,6 +119,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowTask>  result = query.getResultList();
+        initFlowTaskAppModule(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -149,7 +159,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowTask>  result = query.getResultList();
-
+        initFlowTaskAppModule(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);

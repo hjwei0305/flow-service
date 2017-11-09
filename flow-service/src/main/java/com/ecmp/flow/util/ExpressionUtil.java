@@ -28,9 +28,7 @@ import java.util.*;
 public class ExpressionUtil {
 
      public static AppModule getAppModule(BusinessModel businessModel){
-        String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
+         AppModule appModule = businessModel.getAppModule();
         return appModule;
     }
     /**

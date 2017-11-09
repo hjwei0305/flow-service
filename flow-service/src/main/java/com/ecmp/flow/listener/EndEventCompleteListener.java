@@ -86,13 +86,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-//                    String businessModelId = businessModel.getId();
-//                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-//                    IFlowCommonConditionService flowCommonConditionService = (IFlowCommonConditionService)applicationContext.getBean("flowCommonConditionService");
-//                    flowCommonConditionService.resetState(businessModel.getClassName(),flowInstance.getBusinessId(), FlowStatus.COMPLETED);
-                String appModuleId = businessModel.getAppModuleId();
-                com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-                AppModule appModule = iAppModuleService.findOne(appModuleId);
+
+                AppModule appModule = businessModel.getAppModule();
                 Map<String, Object> params = new HashMap<String,Object>();;
                 params.put("businessModelCode",businessModel.getClassName());
                 params.put("id",flowInstance.getBusinessId());

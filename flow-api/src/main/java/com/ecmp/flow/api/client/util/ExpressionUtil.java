@@ -299,10 +299,8 @@ public class ExpressionUtil<T extends IConditionPojo> {
 	}
 
 	public static AppModule getAppModule(BusinessModel businessModel){
-		String appModuleId = businessModel.getAppModuleId();
-		com.ecmp.flow.api.IAppModuleService proxy = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-		com.ecmp.flow.entity.AppModule appModule = proxy.findOne(appModuleId);
-		return appModule;
+
+		return businessModel.getAppModule();
 	}
 
 //	public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {

@@ -181,9 +181,7 @@ public class StartEventCompleteListener implements ExecutionListener {
             flowInstanceDao.save(flowInstance);
         }
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        String appModuleId = businessModel.getAppModuleId();
-        com.ecmp.flow.api.IAppModuleService iAppModuleService = ApiClient.createProxy(com.ecmp.flow.api.IAppModuleService.class);
-        AppModule appModule = iAppModuleService.findOne(appModuleId);
+        AppModule appModule = businessModel.getAppModule();
         Map<String, Object> params = new HashMap<String,Object>();;
         params.put("businessModelCode",businessModel.getClassName());
         params.put("id",flowInstance.getBusinessId());
