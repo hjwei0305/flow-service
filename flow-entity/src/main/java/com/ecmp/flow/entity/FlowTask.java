@@ -351,14 +351,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.proxyStatus = proxyStatus;
     }
 
-//	public String getFlowInstanceId() {
-//		return this.flowInstanceId;
-//	}
-//
-//	public void setFlowInstanceId(String flowInstanceId) {
-//		this.flowInstanceId = flowInstanceId;
-//	}
-
     public String getFlowDefinitionId() {
         return this.flowDefinitionId;
     }
