@@ -41,7 +41,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         loadonce: false,
                         datatype: "json",
                         postData: {
-                            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModuleId": data[0].id
+                            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModule.id": data[0].id
                         }
                     }, true)
                 },
