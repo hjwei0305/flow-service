@@ -122,7 +122,7 @@ public class ExpressionUtil {
         params.put("businessModelCode",businessModelCode);
         params.put("id",businessId);
         params.put("status",status);
-        result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Boolean>() {},params);
+        result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
         return result;
     }
 
