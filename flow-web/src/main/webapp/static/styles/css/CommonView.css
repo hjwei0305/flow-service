@@ -32,6 +32,9 @@
 .ecmp-common-view {
     cursor: pointer;
 }
+.ecmp-flow-end{
+    cursor: pointer;
+}
 .ecmp-common-user-view{
     cursor: pointer;
 }

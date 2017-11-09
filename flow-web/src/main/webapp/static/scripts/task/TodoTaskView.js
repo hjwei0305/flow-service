@@ -614,7 +614,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "正在终止，请稍候..."
                         });
                         EUI.Store({
-                            url: "../flowInstance/endFlowInstance/",
+                            url: _ctxPath+"/flowInstance/endFlowInstance/",
                             params: {id: data.flowInstance.id},
                             success: function (status) {
                                 myMask.remove();
