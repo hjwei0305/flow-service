@@ -152,7 +152,7 @@ public class StartEventCompleteListener implements ExecutionListener {
             flowInstance.setBusinessId(processInstance.getBusinessKey());
             String workCaption = variables.get("workCaption")+"";//工作说明
             flowInstance.setBusinessModelRemark(workCaption);
-            String businessCode = variables.get("businessCode")+"";//工作说明
+            String businessCode = variables.get("businessCode")+"";
             flowInstance.setBusinessCode(businessCode);
             String businessName = variables.get("name")+"";//业务单据名称
             flowInstance.setBusinessName(businessName);
