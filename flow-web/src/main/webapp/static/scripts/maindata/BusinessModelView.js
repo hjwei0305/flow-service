@@ -50,7 +50,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         loadonce: false,
                         datatype: "json",
                         postData: {
-                            Q_EQ_appModuleId: data[0].id
+                            "Q_EQ_appModule.id": data[0].id
                         }
                     }, true)
                 },
@@ -66,7 +66,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     g.appModuleName = data.data.name;
                     g.appModuleCode = data.data.code;
                     g.gridCmp.setPostParams({
-                            Q_EQ_appModuleId: data.data.id
+                        "Q_EQ_appModule.id": data.data.id
                         },true);
                 }
             }, {
