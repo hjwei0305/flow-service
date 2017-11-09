@@ -258,4 +258,18 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
     public OperateResult signalByBusinessId(@QueryParam("businessId")String businessId,@QueryParam("receiveTaskActDefId")String receiveTaskActDefId,Map<String,Object> v);
+
+
+    /**
+     * 强制中止流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     * @return 操作结果
+     */
+    @POST
+    @Path("endForce/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "终止流程实例", notes = "终止")
+    public OperateResult endForce(String id);
 }

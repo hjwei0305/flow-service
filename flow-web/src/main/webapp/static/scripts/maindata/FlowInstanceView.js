@@ -302,7 +302,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         msg: g.lang.endMask
                     });
                     EUI.Store({
-                        url: _ctxPath+"/flowInstance/endFlowInstance/",
+                        url: _ctxPath+"/flowInstance/endForceFlowInstance/",
                         params: {id: data.id},
                         success: function (status) {
                             myMask.remove();

@@ -191,6 +191,19 @@ public class FlowInstanceController {
         return operateStatus;
     }
     /**
+     * 根据id强制终止流程实例,用于待办任务上直接终止流程实例
+     * @param id
+     * @return 操作结果
+     */
+    @RequestMapping(value = "endForceFlowInstance")
+    @ResponseBody
+    public OperateStatus endForceFlowInstance(String id) {
+        IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+        OperateResult result = proxy.endForce(id);
+        OperateStatus operateStatus = new OperateStatus(result.successful(), result.getMessage());
+        return operateStatus;
+    }
+    /**
      * 根据单据业务id终止流程实例，用于我的待办单据
      * @param businessId
      * @return 操作结果

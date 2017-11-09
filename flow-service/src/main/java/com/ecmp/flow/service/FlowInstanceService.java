@@ -576,11 +576,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         return  canEnd;
     }
-    private Map<String,FlowInstance> initAllGulianInstance(Map<String,FlowInstance> flowInstanceMap ,FlowInstance flowInstance){
+    private Map<String,FlowInstance> initAllGulianInstance(Map<String,FlowInstance> flowInstanceMap ,FlowInstance flowInstance,boolean force){
         Map<String,FlowInstance> flowInstanceChildren=null;
         while (flowInstance!=null){
             if(!flowInstance.isEnded() && flowInstanceMap.get(flowInstance)==null){
-                flowInstanceChildren = initGulianSonInstance(flowInstanceMap,flowInstance);//子实例
+                flowInstanceChildren = initGulianSonInstance(flowInstanceMap,flowInstance, force);//子实例
                 if(flowInstanceChildren==null){
                     return null;
                 }
@@ -594,17 +594,21 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
-    private Map<String,FlowInstance> initGulianSonInstance(  Map<String,FlowInstance> flowInstanceMapReal,FlowInstance flowInstance){
+    private Map<String,FlowInstance> initGulianSonInstance(  Map<String,FlowInstance> flowInstanceMapReal,FlowInstance flowInstance,boolean force){
         List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
         boolean canEnd = false;
-        canEnd = initTask(flowInstance);
+        if(force){
+            canEnd=true;
+        }else{
+            canEnd = initTask(flowInstance);
+        }
         if(canEnd){
             if(flowInstanceMapReal.get(flowInstance.getId())==null){
                 flowInstanceMapReal.put(flowInstance.getId(),flowInstance);
             }
             if(children!=null && !children.isEmpty()){
                 for(FlowInstance son:children){
-                    Map<String,FlowInstance> flowInstanceChildren = initGulianSonInstance(flowInstanceMapReal,son);
+                    Map<String,FlowInstance> flowInstanceChildren = initGulianSonInstance(flowInstanceMapReal,son,force);
                         if(flowInstanceChildren == null){
                             return null;
                         }
@@ -615,6 +619,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         return flowInstanceMapReal;
     }
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
@@ -622,10 +627,59 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult end(String id) {
+      return this.endCommon(id,false);
+    }
+
+    /**
+     * 强制撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     */
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult endForce(String id) {
+        return this.endCommon(id,true);
+    }
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult endByBusinessId(String businessId){
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        return  this.end(flowInstance.getId());
+    }
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult signalByBusinessId(String businessId,String receiveTaskActDefId,Map<String,Object> v){
+        if(StringUtils.isEmpty(receiveTaskActDefId)){
+            return OperateResult.operationFailure("10032");
+        }
+        OperateResult result =  OperateResult.operationSuccess("10029");
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricActivityInstance receiveTaskActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(actInstanceId).activityId(receiveTaskActDefId).unfinished().singleResult();
+            if(receiveTaskActivityInstance != null ){
+                    String executionId = receiveTaskActivityInstance.getExecutionId();
+                    runtimeService.signal(executionId,v);
+            }else{
+                    result =  OperateResult.operationFailure("10031");
+            }
+        }else{
+            result =  OperateResult.operationFailure("10030");
+        }
+           return result;
+    }
+
+
+    /**
+     * 撤销流程实例
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     */
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResult endCommon(String id,boolean force) {
         OperateResult result =  OperateResult.operationSuccess("10010");
         FlowInstance flowInstance = flowInstanceDao.findOne(id);
         Map<String,FlowInstance> flowInstanceMap = new HashMap<String,FlowInstance>();
-        flowInstanceMap = initAllGulianInstance(flowInstanceMap,flowInstance);
+        flowInstanceMap = initAllGulianInstance(flowInstanceMap,flowInstance,force);
 
         if(flowInstanceMap!=null && !flowInstanceMap.isEmpty()){
             List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
@@ -702,39 +756,5 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         return result;
     }
-
-    @Transactional( propagation= Propagation.REQUIRED)
-    public OperateResult endByBusinessId(String businessId){
-        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
-        return  this.end(flowInstance.getId());
-    }
-
-    @Transactional( propagation= Propagation.REQUIRED)
-    public OperateResult signalByBusinessId(String businessId,String receiveTaskActDefId,Map<String,Object> v){
-        if(StringUtils.isEmpty(receiveTaskActDefId)){
-            return OperateResult.operationFailure("10032");
-        }
-        OperateResult result =  OperateResult.operationSuccess("10029");
-        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
-        if(flowInstance != null && !flowInstance.isEnded()){
-            String actInstanceId = flowInstance.getActInstanceId();
-            HistoricActivityInstance receiveTaskActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(actInstanceId).activityId(receiveTaskActDefId).unfinished().singleResult();
-            if(receiveTaskActivityInstance != null ){
-                    String executionId = receiveTaskActivityInstance.getExecutionId();
-                    runtimeService.signal(executionId,v);
-//                    //清除接收任务待办项
-//                List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(receiveTaskActDefId,actInstanceId);
-//                if(flowTaskList!=null && !flowTaskList.isEmpty()){
-//                    flowTaskDao.delete(flowTaskList.get(0));
-//                }
-            }else{
-                    result =  OperateResult.operationFailure("10031");
-            }
-        }else{
-            result =  OperateResult.operationFailure("10030");
-        }
-           return result;
-    }
-
 
 }
