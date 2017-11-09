@@ -97,15 +97,6 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
             if (flowStartResultVO != null) {
-               if( flowStartResultVO.getFlowInstance()!=null){
-//                   defaultBusinessModel = (V) baseService.findOne(businessKey);
-//                   if(flowStartResultVO.getFlowInstance().isEnded()){
-//                       defaultBusinessModel.setFlowStatus(FlowStatus.COMPLETED);
-//                   }else {
-//                       defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
-//                   }
-                   baseService.save(defaultBusinessModel);
-               }
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {
