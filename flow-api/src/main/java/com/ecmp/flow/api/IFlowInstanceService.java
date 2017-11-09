@@ -271,5 +271,5 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "终止流程实例", notes = "终止")
-    public OperateResult endForce(String id);
+    public OperateResult endForce(@PathParam("id")String id);
 }

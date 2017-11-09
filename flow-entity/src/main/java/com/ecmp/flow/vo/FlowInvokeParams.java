@@ -15,7 +15,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-public class FlowInvoke implements Serializable{
+public class FlowInvokeParams implements Serializable{
     private String id;
     private Map<String,String> params;
 
