@@ -55,6 +55,12 @@ public interface IBusinessFlowEntity extends  IAuditable {
    String getTenantCode();
    void setTenantCode(String tenantCode);
 
+    //业务单据号
+   void setBusinessCode(String businessCode);
+    String getBusinessCode();
+
+
+
     // 获取条件实体
     IConditionPojo getConditionPojo() throws InvocationTargetException, IllegalAccessException;
 
