@@ -3,17 +3,17 @@ package com.ecmp.flow.entity;
 import com.ecmp.flow.constant.ConditionAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Lob;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.lang.reflect.InvocationTargetException;
 
 
