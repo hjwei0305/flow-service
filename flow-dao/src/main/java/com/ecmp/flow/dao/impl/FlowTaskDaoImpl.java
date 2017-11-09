@@ -81,8 +81,14 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     private List<FlowTask> initFlowTaskAppModule(List<FlowTask>  result ){
         if(result!=null && !result.isEmpty()){
                for(FlowTask flowTask:result){
-                   flowTask.setApiBaseAddress(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress());
-                   flowTask.setWebBaseAddress(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress());
+                   String apiBaseAddress = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                   apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
+                   apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                   String webBaseAddress = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                   webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                   webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                   flowTask.setApiBaseAddress(webBaseAddress);
+                   flowTask.setWebBaseAddress(apiBaseAddress);
                }
        }
        return result;
