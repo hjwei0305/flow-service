@@ -20,7 +20,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 height: 420,
                 padding: 15,
                 afterRender: function () {
-                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                    // this.dom.find(".ux-window-content").css("border-radius", "6px");
                 },
                 afterClose: function () {
                     g.remove();
@@ -43,7 +43,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 height: 420,
                 padding: 15,
                 afterRender: function () {
-                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                    // this.dom.find(".ux-window-content").css("border-radius", "6px");
                 },
                 afterClose: function () {
                     g.remove();
@@ -68,7 +68,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 height: 420,
                 padding: 15,
                 afterRender: function () {
-                    this.dom.find(".ux-window-content").css("border-radius", "6px");
+                    // this.dom.find(".ux-window-content").css("border-radius", "6px");
                 },
                 afterClose: function () {
                     g.remove();

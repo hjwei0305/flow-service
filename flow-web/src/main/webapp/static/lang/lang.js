@@ -452,7 +452,7 @@ if (EUI.FlowInstanceView) {
         flowDefinitionVersionText: "流程定义版本",
         showDoneText: "查看已办",
         endFlowText: "终止流程",
-        endFlowMsgText:"您确定要终止吗？",
+        endFlowMsgText:"您确定要强行终止流程实例吗？",
         endMask:"正在终止，请稍候...",
         flowNameText: "流程名称",
         startTimeText: "开始时间",
