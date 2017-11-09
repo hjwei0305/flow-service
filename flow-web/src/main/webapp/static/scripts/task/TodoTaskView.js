@@ -445,7 +445,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var joinStr = data.webBaseAddress.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: data.taskName,
-                url: data.webBaseAddress + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: data.webBaseAddress + workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.id
             };
             g.addTab(tab);
