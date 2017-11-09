@@ -158,7 +158,15 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "flowName",
                     width:170,
                     title: false
-                } , {
+                } ,{label: g.lang.businessCodeText,
+                    name: "businessCode",
+                    index: "businessCode",
+                    width:170,
+                    title: false},{label: g.lang.businessModelRemarkText,
+                    name: "businessModelRemark",
+                    index: "businessModelRemark",
+                    width:170,
+                    title: false}, {
                     label: g.lang.startTimeText,
                     name: "startDate",
                     index: "startDate",

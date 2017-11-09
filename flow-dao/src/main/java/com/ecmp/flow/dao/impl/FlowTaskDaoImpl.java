@@ -87,8 +87,8 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                    String webBaseAddress = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                    webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                    webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                   flowTask.setApiBaseAddress(webBaseAddress);
-                   flowTask.setWebBaseAddress(apiBaseAddress);
+                   flowTask.setApiBaseAddress(apiBaseAddress);
+                   flowTask.setWebBaseAddress(webBaseAddress);
                }
        }
        return result;

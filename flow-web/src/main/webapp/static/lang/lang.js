@@ -158,7 +158,9 @@ if (EUI.FlowInstanceView) {
         inputDepictMsgText: "请输入描述",
         chooseBelongToBusinessModelText: "请选择所属业务实体模型",
         belongToBusinessText: "所属业务实体",
-        addNewFlowTypeText: "新增流程类型"
+        addNewFlowTypeText: "新增流程类型",
+        businessCodeText:"业务编号",
+        businessModelRemarkText:"工作说明"
     }, common_lang);
 }
 
