@@ -6,6 +6,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
     showName: true,
     afterConfirm: null,
     businessModelId: null,
+    businessModelCode: null,
     properties: null,
     isDefault: false,
     flowTypeId:null,
@@ -246,7 +247,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/design/getProperties",
             params: {
-                businessModelId: this.businessModelId
+                businessModelCode: this.businessModelCode
             },
             success: function (result) {
                 g.properties = result.data;

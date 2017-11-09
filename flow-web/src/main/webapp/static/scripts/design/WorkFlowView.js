@@ -15,6 +15,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     isCopy: false,//参考创建
     isFromVersion: false,//流程定义版本参考创建（true）
     businessModelId: null,//业务实体ID
+    businessModelCode: null,//业务实体ID
 
     initComponent: function () {
         var g = this;
@@ -239,6 +240,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     data: g.startUEL,
                     showName: false,
                     businessModelId: g.businessModelId,
+                    businessModelCode: g.businessModelCode,
                     flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
                     afterConfirm: function (data) {
                         g.startUEL = data;
@@ -786,6 +788,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 title: "表达式配置",
                 data: ueldata,
                 businessModelId: g.businessModelId,
+                businessModelCode: g.businessModelCode,
                 flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
                 afterConfirm: function (data) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = data;

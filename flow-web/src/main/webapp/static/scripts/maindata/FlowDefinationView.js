@@ -186,6 +186,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     index: "flowDefination.flowType.businessModel.id",
                     hidden: true
                 },{
+                    name: "flowDefination.flowType.businessModel.className",
+                    index: "flowDefination.flowType.businessModel.className",
+                    hidden: true
+                },{
                     name: "flowDefinationStatus",
                     index: "flowDefinationStatus",
                     hidden: true
@@ -272,7 +276,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: g.lang.editFlowDefinitionText+data.name,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"],
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+ data.id+"&businessModelId="+data["flowType.businessModel.id"]+"&businessModelCode="+data["flowType.businessModel.className"],
             id:data.id
         };
         g.addTab(tab);
@@ -289,9 +293,10 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var id= isFromVersion?data["flowDefination.id"]:data.id;
         var businessModelId=isFromVersion?data["flowDefination.flowType.businessModel.id"]:data["flowType.businessModel.id"];
-        var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&orgName="+encodeURIComponent(encodeURIComponent(data.orgName))+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion;
+        var businessModelCode=isFromVersion?data["flowDefination.flowType.businessModel.className"]:data["flowType.businessModel.className"];
+        var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&orgName="+encodeURIComponent(encodeURIComponent(data.orgName))+"&id="+id+"&businessModelId="+businessModelId+"&businessModelCode="+businessModelCode+"&isCopy="+true+"&isFromVersion="+isFromVersion;
         if(isFromVersion){
-            var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&isCopy="+true+"&isFromVersion="+isFromVersion;
+            var url=_ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data.orgCode+"&id="+id+"&businessModelId="+businessModelId+"&businessModelCode="+businessModelCode+"&isCopy="+true+"&isFromVersion="+isFromVersion;
         }
         var tab = {
             title: g.lang.copyFlowDefinitionText,
@@ -303,7 +308,7 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
         var g = this;
         var tab = {
             title: g.lang.copyFlowDefinitionText,
-            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data["flowDefination.orgCode"]+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowDefination.flowType.businessModel.id"],
+            url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data["flowDefination.orgCode"]+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowDefination.flowType.businessModel.id"]+"&businessModelCode="+data["flowDefination.flowType.businessModel.className"],
         };
         g.addTab(tab);
     },
@@ -493,6 +498,11 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                         label: g.lang.businessEntityIDText,
                         name: "flowType.businessModel.id",
                         index: "flowType.businessModel.id",
+                        hidden: true
+                    }, {
+                        label: g.lang.businessEntityIDText,
+                        name: "flowType.businessModel.className",
+                        index: "flowType.businessModel.className",
                         hidden: true
                     },{
                         label: g.lang.launchConditionUELText,

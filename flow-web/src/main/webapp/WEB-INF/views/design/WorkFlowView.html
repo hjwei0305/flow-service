@@ -27,6 +27,7 @@
         var orgCode = EUI.util.getUrlParam("orgCode");
         var versionCode = EUI.util.getUrlParam("versionCode");
         var businessModelId = EUI.util.getUrlParam("businessModelId");
+        var businessModelCode = EUI.util.getUrlParam("businessModelCode");
         var isCopy = EUI.util.getUrlParam("isCopy") == "true";
         var isFromVersion = EUI.util.getUrlParam("isFromVersion") == "true";
         if(isCopy&&!isFromVersion) {
@@ -39,6 +40,7 @@
                 orgCode: orgCode,
                 orgName: orgName,
                 businessModelId: businessModelId,
+                businessModelCode: businessModelCode,
                 versionCode: versionCode || -1,
                 isCopy: isCopy,
                 isFromVersion: isFromVersion,
