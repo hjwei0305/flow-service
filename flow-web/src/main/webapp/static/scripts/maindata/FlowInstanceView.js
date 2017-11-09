@@ -146,7 +146,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        return  '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i><i class="ecmp-flow-end fontcusor" title="'+g.lang.endFlowText+'"></i>';
+                        return  '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i><i class="ecmp-flow-delete fontcusor" title="'+g.lang.endFlowText+'"></i>';
                     }
                 }, {
                     name: "id",
@@ -223,7 +223,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             var data = g.gridCmp.getSelectRow();
             g.showTaskHistoryWind(data);
         });
-        $(".ecmp-flow-end").live("click", function () {
+        $(".ecmp-flow-delete").live("click", function () {
             g.endFlow();
         });
         $(".ecmp-common-delete").live("click", function () {
