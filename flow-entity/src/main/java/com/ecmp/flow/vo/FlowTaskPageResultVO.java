@@ -16,7 +16,7 @@ import java.io.Serializable;
  * <p/>
  * *************************************************************************************************
  */
-public class FlowTaskPageResultVO<T extends Serializable> extends PageResult{
+public class FlowTaskPageResultVO<T extends Serializable> extends PageResult<T>{
     private Long allTotal;//所有待办的总数
 
     public Long getAllTotal() {
