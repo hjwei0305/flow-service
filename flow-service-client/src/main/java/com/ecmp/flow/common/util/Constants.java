@@ -51,6 +51,13 @@ public class Constants extends ConfigurableContants {
 			"basic.org.findOne", "/organization/findOne");
 
 	/**
+	 * 获取指定id的组织机构
+	 */
+	public final static String BASIC_ORG_FINDPARENTNODES_URL=getProperty(
+			"basic.org.findParentNodes", "/organization/getParentNodes");
+
+
+	/**
 	 * 获取岗位列表
 	 */
 	public final static String BASIC_POSITION_FINDBYPAGE_URL=getProperty(

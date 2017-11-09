@@ -7,6 +7,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.*;
@@ -316,13 +317,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      *
      * @param businessModelMap 业务单据数据Map
      * @param flowType         流程定义
-     * @param orgCodes         代码路径数组
+     * @param orgParentCodeList         代码路径数组
      * @param level            遍历层次
      * @return
      */
-    private FlowDefination flowDefLuYou(Map<String, Object> businessModelMap, FlowType flowType, String[] orgCodes, int level) throws NoSuchMethodException, SecurityException {
+    private FlowDefination flowDefLuYou(Map<String, Object> businessModelMap, FlowType flowType, List<String> orgParentCodeList, int level) throws NoSuchMethodException, SecurityException {
         FlowDefination finalFlowDefination = null;
-        String orgCode = orgCodes[orgCodes.length - level];
+        String orgCode =orgParentCodeList.get(level);
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(), orgCode);
         Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
         if (flowDefinationList != null && flowDefinationList.size() > 0) {
@@ -365,10 +366,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         if (finalFlowDefination == null) {//同级组织机构找不到符合条件流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;
-            if (level > orgCodes.length) {
+            if (level >= orgParentCodeList.size()) {
                 return null;
             }
-            return this.flowDefLuYou(businessModelMap, flowType, orgCodes, level);
+            return this.flowDefLuYou(businessModelMap, flowType, orgParentCodeList, level);
         }
         return finalFlowDefination;
     }
@@ -383,10 +384,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         BusinessModel businessModel = flowType.getBusinessModel();
         Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-        String orgCodePath = v.get("orgPath") + "";
-//        String workCaption = v.get("workCaption")+"";//工作说明
-        String[] orgCodes = orgCodePath.split("\\|");
-        finalFlowDefination = this.flowDefLuYou(v, flowType, orgCodes, 1);
+        String orgId = v.get("orgId") + "";
+        List<String> orgParentCodeList = getParentOrgCodes(orgId);
+        finalFlowDefination = this.flowDefLuYou(v, flowType, orgParentCodeList, 0);
         if (v != null && !v.isEmpty()) {
             if (variables == null) {
                 variables = new HashMap<String, Object>();
@@ -433,6 +433,23 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowInstance;
     }
 
+    private List<String> getParentOrgCodes(String orgId){
+        if(StringUtils.isEmpty(orgId)){
+            throw new RuntimeException("orgId is null!");
+        }
+        Map<String,Object> params = new HashMap();
+        params.put("nodeId",orgId);
+        params.put("includeSelf",true);
+        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_ORG_FINDPARENTNODES_URL;
+        List<Organization> organizationsList=ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},params);
+        List<String> orgCodesList = new ArrayList<>();
+        if(organizationsList!=null && !organizationsList.isEmpty()){
+            for(Organization organization:organizationsList ){
+                orgCodesList.add(organization.getCode());
+            }
+        }
+        return orgCodesList;
+    }
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
         FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
@@ -454,16 +471,14 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
             Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-            String orgCodePath = v.get("orgPath") + "";
-            orgCodePath = orgCodePath.substring(orgCodePath.indexOf("|") + 1);
+            String orgId = v.get("orgId") + "";
+            List<String> orgParentCodeList = getParentOrgCodes(orgId);
             flowStartResultVO.setFlowTypeList(flowTypeList);
             for (FlowType flowTypeTemp : flowTypeList) {
-                String[] orgCodes = orgCodePath.split("\\|");
-                finalFlowDefination = this.flowDefLuYou(v, flowTypeTemp, orgCodes, 1);
+                finalFlowDefination = this.flowDefLuYou(v, flowTypeTemp, orgParentCodeList, 0);
                 if (finalFlowDefination != null) {
                     FlowDefination finalFlowDefinationTemp = new FlowDefination();
                     BeanUtils.copyProperties(finalFlowDefination, finalFlowDefinationTemp);
-//                            finalFlowDefinationTemp.setFlowType(null);
                     flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
                 }
             }
