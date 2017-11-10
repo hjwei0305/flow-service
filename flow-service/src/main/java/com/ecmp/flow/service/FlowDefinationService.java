@@ -10,6 +10,7 @@ import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ConditionUtil;
@@ -415,8 +416,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 } else {
                     processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
-
-                Map<String, Object> vNew = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);//再获取一次，预防事件对单据进行了更新
+                try{
+                   Map<String, Object> vNew = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);//再获取一次，预防事件对单据进行了更新
                 if (vNew != null && !vNew.isEmpty()) {
                     if (variables == null) {
                         variables = new HashMap<String, Object>();
@@ -428,8 +429,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 } else {
                     initTask(flowInstance);
                 }
+                }catch(Exception e){
+                    logger.error(e.getMessage());
+                    AppModule appModule = businessModel.getAppModule();
+                    Map<String, Object> params = new HashMap<String,Object>();;
+                    params.put("businessModelCode",businessModel.getClassName());
+                    params.put("id",flowInstance.getBusinessId());
+                    params.put("status", FlowStatus.INIT);
+                    String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+                    Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                    throw  new RuntimeException(e.getMessage());
+                }
             }
         }
+
         return flowInstance;
     }
 

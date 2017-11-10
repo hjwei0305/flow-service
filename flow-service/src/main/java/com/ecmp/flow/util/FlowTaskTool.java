@@ -1221,14 +1221,14 @@ public class FlowTaskTool {
                 String mustCommitStr = null;
                 try{
                     mustCommitStr =(String) normalInfo.get("mustCommit");
+                    if(StringUtils.isNotEmpty(mustCommitStr)){
+                        mustCommit = Boolean.parseBoolean(mustCommitStr);
+                    }
+                    if(!mustCommit){
+                        flowTask.setCanBatchApproval(true);
+                    }
                 }catch(Exception e){
                     logger.error(e.getMessage());
-                }
-                if(StringUtils.isNotEmpty(mustCommitStr)){
-                    mustCommit = Boolean.parseBoolean(mustCommitStr);
-                }
-                if(!mustCommit){
-                    flowTask.setCanBatchApproval(true);
                 }
             }
         }
