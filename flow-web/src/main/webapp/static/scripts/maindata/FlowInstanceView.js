@@ -10,6 +10,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             tbar: this.initTbar(),
             gridCfg: this.initGrid()
         });
+        this.inFlow=true;
         this.addEvents();
     },
     initTbar: function () {
@@ -17,12 +18,13 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         return   [{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
-                labelWidth: 70,
+                labelWidth: 60,
+                width:170,
                 id: "appModuleComboBoxId",
                 async: false,
                 canClear: false,
                 colon: false,
-                name: "appModule.name",
+                name: "appModuleName",
                 store: {
                     url: _ctxPath + "/businessModel/listAllAppModule"
                 },
@@ -33,42 +35,31 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 },
                 afterLoad: function (data) {
                     var cobo = EUI.getCmp("appModuleComboBoxId");
-                    cobo.setValue(data[0].name);
+                    // cobo.setValue(data[0].name);
+                    cobo.setSubmitValue({
+                        appModuleId:data[0].id,
+                        appModuleName:data[0].name,
+                    });
                     EUI.getCmp("businessModelComboBoxId").store.params.appModuleId = 	data[0].id;
-                    g.gridCmp.grid[0].p.postData={};
-                    g.gridCmp.setGridParams({
-                        url: _ctxPath + "/flowInstance/listFlowInstance",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModule.id": data[0].id
-                        }
-                    }, true)
+                    g.getFlowInstance();
                 },
                 afterSelect: function (data) {
                     EUI.getCmp("businessModelComboBoxId").store.params.appModuleId = 	data.data.id;
                     EUI.getCmp("businessModelComboBoxId").setValue("");
                     EUI.getCmp("flowTypeComboBoxId").setValue("");
                     EUI.getCmp("flowTypeComboBoxId").store.params.businessModelId =null;
-                    g.gridCmp.grid[0].p.postData={};
-                    g.gridCmp.setGridParams({
-                        url: _ctxPath + "/flowInstance/listFlowInstance",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModuleId": data.data.id
-                        }
-                    }, true)
+                    g.getFlowInstance();
                 }
             },{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + "业务实体" + "</span>",
-                labelWidth: 70,
+                labelWidth: 60,
+                width:170,
                 id: "businessModelComboBoxId",
                   async: true,
                 colon: false,
-                name: "name",
-                field: ["id"],
+                name: "businessModelName",
+                field: ["businessModelId"],
                 reader: {
                     name: "name",
                     field: ["id"]
@@ -83,25 +74,18 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 afterSelect: function (data) {
                     EUI.getCmp("flowTypeComboBoxId").store.params.businessModelId = data.data.id;
                     EUI.getCmp("flowTypeComboBoxId").setValue("");
-                    g.gridCmp.grid[0].p.postData={};
-                    g.gridCmp.setGridParams({
-                        url: _ctxPath + "/flowInstance/listFlowInstance",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.id":  data.data.id
-                        }
-                    }, true)
+                    g.getFlowInstance();
                 }
             },{
                 xtype: "ComboBox",
                 title: "<span style='font-weight: bold'>" + "流程类型" + "</span>",
-                labelWidth: 70,
+                labelWidth: 60,
+                width:170,
                 id: "flowTypeComboBoxId",
                 async: true,
                 colon: false,
-                name: "name",
-                field: ["id"],
+                name: "flowTypeName",
+                field: ["flowTypeId"],
                 reader: {
                     name: "name",
                     field: ["id"]
@@ -114,23 +98,27 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     }
                 },
                 afterSelect: function (data) {
-                    g.gridCmp.grid[0].p.postData={};
-                    g.gridCmp.setGridParams({
-                        url: _ctxPath + "/flowInstance/listFlowInstance",
-                        loadonce: false,
-                        datatype: "json",
-                        postData: {
-                            "Q_EQ_flowDefVersion.flowDefination.flowType.id":  data.data.id
-                        }
-                    }, true)
+                    g.getFlowInstance();
                 }
-            },'->', {
+            },{
+            xtype: "CheckBox",
+            labelWidth: 80,
+            width:170,
+            title: g.lang.inFlowText,
+            checked:true,
+            name: "inFlow",
+            id:"inFlowBox",
+            onChecked:function (value) {
+                g.inFlow=value;
+                g.getFlowInstance();
+            }
+        },'->', {
                 xtype: "SearchBox",
+                width:180,
+                id:"searchBox",
                 displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
-                    g.gridCmp.setPostParams({
-                            Q_LK_flowName: value
-                        },true);
+                    g.getFlowInstance();
                 }
             }];
     },
@@ -146,11 +134,20 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     width: 80,
                     align: "center",
                     formatter: function (cellvalue, options, rowObject) {
-                        return  '<i class="ecmp-common-view icon-space fontcusor" title="'+g.lang.showDoneText+'"></i><i class="ecmp-flow-delete fontcusor" title="'+g.lang.endFlowText+'"></i>';
+                        var endFlowClass="end ecmp-flow-delete fontcusor";
+                        if(!rowObject.manuallyEnd && !rowObject.ended){
+                            var endFlowClass="processing ecmp-flow-delete fontcusor";
+                        }
+                        var lookUrl=rowObject.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+                        return  '<i class="ecmp-common-view icon-space fontcusor" targetUrl="'+ lookUrl +'" title="'+g.lang.viewOrderText+'"></i><i class="ecmp-flow-history condetail-flowHistory icon-space fontcusor" title="'+g.lang.showHistoryText+'"></i><i class="'+endFlowClass +'" title="'+g.lang.endFlowText+'"></i>';
                     }
                 }, {
                     name: "id",
                     index: "id",
+                    hidden: true
+                },{
+                    name: "businessId",
+                    index: "businessId",
                     hidden: true
                 }, {
                     label: g.lang.flowNameText,
@@ -193,6 +190,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     index: "suspended",
                     align: "center",
                     title: false,
+                    hidden:true,
                     width:110,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
@@ -205,7 +203,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                         return strVar;
                     }
                 }, {
-                    label: g.lang.whetherDoneText,
+                    label: g.lang.flowStatusText,
                     name: "ended",
                     index: "ended",
                     align: "center",
@@ -213,11 +211,13 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     title: false,
                     formatter: function (cellvalue, options, rowObject) {
                         var strVar = '';
-                        if ('0' == rowObject.ended) {
-                            strVar = g.lang.noText;
+                        if (rowObject.manuallyEnd) {
+                            strVar = g.lang.forceEndText;
                         }
-                        else if ('1' == rowObject.ended) {
-                            strVar = g.lang.yesText;
+                        else if (rowObject.ended) {
+                            strVar = g.lang.endEventText;
+                        }else{
+                            strVar = g.lang.processingText;
                         }
                         return strVar;
                     }
@@ -229,15 +229,39 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".ecmp-common-view").live("click", function () {
             var data = g.gridCmp.getSelectRow();
-            g.showTaskHistoryWind(data);
+            var lookUrl=$(this).attr("targetUrl");
+            if(!lookUrl||lookUrl==""){
+                return ;
+            }
+            var tab = {
+                title: g.lang.viewOrderText,
+                url: _basePath + "/brm-act-service/"+lookUrl + "?id=" + data.businessId,
+                id: data.businessId
+            };
+            g.addTab(tab);
         });
-        $(".ecmp-flow-delete").live("click", function () {
+        $(".ecmp-flow-history").live("click", function () {
+            var data = g.gridCmp.getSelectRow();
+            Flow.FlowHistory({
+                businessId: data.businessId,
+                instanceId: data.id
+            })
+        });
+        $(".processing.ecmp-flow-delete").live("click", function () {
             g.endFlow();
         });
         $(".ecmp-common-delete").live("click", function () {
             var rowData = g.gridCmp.getSelectRow();
             g.deleteFlowInstance(rowData);
         });
+    },
+    //在新的窗口打开（模拟新页签的打开方式）
+    addTab: function (tab) {
+        if (parent.homeView) {
+            parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
+        } else {
+            window.open(tab.url);
+        }
     },
     deleteFlowInstance:function (rowData) {
         var g = this;
@@ -326,6 +350,26 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 }
             }]
         });
+    },
+    getFlowInstance:function () {
+      var g=this;
+        g.gridCmp.grid[0].p.postData={};
+        var postData={
+            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModule.id":EUI.getCmp("appModuleComboBoxId").getSubmitValue().appModuleId,
+            "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.id": EUI.getCmp("businessModelComboBoxId").getSubmitValue().businessModelId,
+            "Q_EQ_flowDefVersion.flowDefination.flowType.id":  EUI.getCmp("flowTypeComboBoxId").getSubmitValue().flowTypeId,
+            "Q_LK_flowName": EUI.getCmp("searchBox").getValue()
+        };
+        if(g.inFlow){
+            postData["Q_EQ_manuallyEnd__Boolean"]=false;
+            postData["Q_EQ_ended__Boolean"]=false;
+        }
+        g.gridCmp.setGridParams({
+            url: _ctxPath + "/flowInstance/listFlowInstance",
+            loadonce: false,
+            datatype: "json",
+            postData:postData
+        }, true)
     },
     initWindTbar: function () {
         var g = this;
