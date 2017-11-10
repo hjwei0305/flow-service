@@ -324,6 +324,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     private FlowDefination flowDefLuYou(Map<String, Object> businessModelMap, FlowType flowType, List<String> orgParentCodeList, int level) throws NoSuchMethodException, SecurityException {
         FlowDefination finalFlowDefination = null;
+        if(orgParentCodeList.isEmpty()){
+            return null;
+        }
         String orgCode =orgParentCodeList.get(level);
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(), orgCode);
         Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
