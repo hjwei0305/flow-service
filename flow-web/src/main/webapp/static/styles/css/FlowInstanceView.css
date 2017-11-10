@@ -52,3 +52,12 @@
 .fontcusor{
     cursor: pointer;
 }
+
+.end.ecmp-flow-delete {
+    color: rgba(205, 29, 63, 0.3);
+    cursor: auto;
+}
+
+.ecmp-flow-history.condetail-flowHistory{
+    /*font-size: 17px;*/
+}
