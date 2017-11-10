@@ -752,7 +752,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 ExpressionUtil.resetState(businessModel,  businessId,  status);
             }
         }else {
-            result =  OperateResult.operationFailure("10011");//不能终止
+            if(force){
+                result =  OperateResult.operationFailure("10002");//不能终止
+            }else{
+                result =  OperateResult.operationFailure("10011");//不能终止
+            }
         }
         return result;
     }

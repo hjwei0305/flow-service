@@ -123,7 +123,7 @@ public class CommonConditionService implements ICommonConditionService {
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
         IBusinessFlowEntity content = (IBusinessFlowEntity) appModuleDao.findOne(id);
-        if(status==FlowStatus.INIT){
+        if(status==FlowStatus.INIT){//针对流程强制终止时，表单已经被删除的情况
             if(content!=null){
                 content.setFlowStatus(status);
                 appModuleDao.save(content);
