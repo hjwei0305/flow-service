@@ -1218,7 +1218,12 @@ public class FlowTaskTool {
             if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
             {
                 Boolean mustCommit = false;
-                String mustCommitStr = (String) normalInfo.get("mustCommit");
+                String mustCommitStr = null;
+                try{
+                    mustCommitStr =(String) normalInfo.get("mustCommit");
+                }catch(Exception e){
+                    logger.error(e.getMessage());
+                }
                 if(StringUtils.isNotEmpty(mustCommitStr)){
                     mustCommit = Boolean.parseBoolean(mustCommitStr);
                 }

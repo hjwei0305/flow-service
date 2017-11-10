@@ -44,7 +44,7 @@ public class ExpressionUtil {
         Map<String,Object> params = new HashMap();
         params.put("businessModelCode",businessModelCode);
         params.put("id",businessId);
-        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
+        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         return pvs;
     }
 
@@ -64,7 +64,7 @@ public class ExpressionUtil {
         params.put("businessModelCode",businessModelCode);
         params.put("id",businessId);
         params.put("all",all);
-        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
+        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         return pvs;
     }
 
@@ -100,7 +100,7 @@ public class ExpressionUtil {
         Map<String,Object> params = new HashMap();
         params.put("businessModelCode",businessModelCode);
         params.put("id",businessId);
-        LinkedHashMap<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<LinkedHashMap<String,Object> >() {},params);
+        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
