@@ -1028,8 +1028,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }else{
             pageResult = flowTaskDao.findByPage(userId, searchConfig);
         }
-        resultVO.setRows(new ArrayList<FlowTask>());
-        org.springframework.beans.BeanUtils.copyProperties(resultVO,pageResult);
+        resultVO.setRows(pageResult.getRows());
+        resultVO.setRecords(pageResult.getRecords());
+        resultVO.setPage(pageResult.getPage());
+        resultVO.setTotal(pageResult.getTotal());
         resultVO.setAllTotal(allCount);
         return resultVO;
     }

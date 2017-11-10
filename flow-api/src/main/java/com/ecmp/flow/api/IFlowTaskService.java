@@ -244,11 +244,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 待办汇总信息
      */
     @POST
-    @Path("findByBusinessModelId/{businessModelId}")
+    @Path("findByBusinessModelId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
-    public PageResult<FlowTask> findByBusinessModelId(@PathParam("businessModelId") String businessModelId, Search searchConfig);
+    public PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
     /**
@@ -270,11 +270,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 可批量审批待办信息
      */
     @POST
-    @Path("findByBusinessModelIdWithAllCount/{businessModelId}")
+    @Path("findByBusinessModelIdWithAllCount")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
-    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@PathParam("businessModelId") String businessModelId, Search searchConfig);
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
 //    @POST
@@ -291,7 +291,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 可批量审批待办信息
      */
     @POST
-    @Path("findByBusinessModelIdWithAllCount/{businessModelId}")
+    @Path("findByBusinessModelIdWithAllCount")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
