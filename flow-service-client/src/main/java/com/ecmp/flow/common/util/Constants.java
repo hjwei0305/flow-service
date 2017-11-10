@@ -123,7 +123,7 @@ public class Constants extends ConfigurableContants {
 	 * 根据组织机构的id获取员工
 	 */
 	public final static String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL=getProperty(
-			"basic.employee.findByOrganizationId", "/employee/findByOrganizationId");
+			"basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
 
 	/**
 	 * 根据组织机构的id列表获取员工列表
