@@ -15,16 +15,19 @@ import java.io.Serializable;
  * *************************************************************************************************
  */
 public class FlowOpreateResult implements Serializable{
-    private boolean result;
+    private boolean success;
     private String message;
 
-    public boolean isResult() {
-        return result;
+    public FlowOpreateResult(){
+        this.success=true;
+        this.message="操作成功";
     }
 
-    public void setResult(boolean result) {
-        this.result = result;
+    public FlowOpreateResult(boolean success,String message){
+        this.success=success;
+        this.message=message;
     }
+
 
     public String getMessage() {
         return message;
@@ -32,5 +35,13 @@ public class FlowOpreateResult implements Serializable{
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }

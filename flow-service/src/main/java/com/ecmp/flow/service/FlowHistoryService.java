@@ -1,7 +1,10 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
@@ -37,5 +40,11 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     @Override
     public List<FlowHistory> findByInstanceId(String instanceId) {
         return flowHistoryDao.findByInstanceId(instanceId);
+    }
+
+    @Override
+    public PageResult<FlowHistory> findByPageAndUser(Search searchConfig){
+        String userId = ContextUtil.getUserId();
+        return flowHistoryDao.findByPageByBusinessModelId(userId,searchConfig);
     }
 }

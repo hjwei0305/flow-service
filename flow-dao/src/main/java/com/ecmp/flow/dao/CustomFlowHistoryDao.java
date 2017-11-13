@@ -26,6 +26,13 @@ public interface CustomFlowHistoryDao {
     @Transactional(readOnly = true)
     public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorAccount, Search searchConfig);
 
+
+    /**
+     * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
+     */
+    @Transactional(readOnly = true)
+    public PageResult<FlowHistory> findByPageByBusinessModelId(String executorAccount, Search searchConfig);
+
     /**
      * 根据业务实体类型id，业务单据id，获取最新流程实体执行的待办，不包括撤销之前的历史任务
 //     * @param businessModelId

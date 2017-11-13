@@ -6,6 +6,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
+import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
@@ -80,8 +81,15 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                 if (!StringUtils.isEmpty(afterExcuteServiceId)) {
                     Map<String,Object> tempV = delegateTask.getVariables();
                     String param = JsonUtils.toJson(tempV);
-//                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, "after");
-                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
+                    Object result = ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
+                    try {
+                        FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                        if(true!=flowOpreateResult.isSuccess()){
+                            throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                        }
+                    }catch (Exception e){
+                        logger.error(e.getMessage());
+                    }
                 }
             }
         }catch (Exception e){

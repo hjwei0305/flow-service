@@ -73,4 +73,17 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询流程历史", notes = "查询流程历史")
     List<FlowHistory> findByInstanceId(String instanceId);
+
+    /**
+     * 获取分页数据
+     *
+     * @return 实体清单
+     */
+    @POST
+    @Path("findByPageAndUser")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
+    PageResult<FlowHistory> findByPageAndUser(Search searchConfig);
+
 }

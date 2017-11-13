@@ -64,7 +64,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "将流程实例暂停",notes = "测试")
-    public OperateResult suspend(String id);
+    public OperateResult suspend(@QueryParam("id") String id);
 
     /**
      * 获取分页数据
@@ -101,7 +101,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据生命周期所有任务历史记录", notes = "测试")
-    public List<FlowHistory> findAllByBusinessId(String businessId);
+    public List<FlowHistory> findAllByBusinessId(@QueryParam("businessId") String businessId);
 
     /**
      * 通过业务单据id获取单据最近一次流程实例流程历史记录

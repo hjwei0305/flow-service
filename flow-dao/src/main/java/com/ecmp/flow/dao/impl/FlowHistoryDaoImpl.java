@@ -67,5 +67,27 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         return flowHistoryList;
     }
 
+    public PageResult<FlowHistory> findByPageByBusinessModelId(String executorAccount, Search searchConfig){
+        PageInfo pageInfo = searchConfig.getPageInfo();
+
+        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount  ", Integer.class);
+        queryTotal.setParameter("executorAccount",executorAccount);
+        Integer total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowHistory> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount order by ft.lastEditedDate desc", FlowHistory.class);
+        query.setParameter("executorAccount",executorAccount);
+        query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
+        query.setMaxResults( pageInfo.getRows() );
+        List<FlowHistory>  result = query.getResultList();
+
+        PageResult<FlowHistory> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(result.size());
+        pageResult.setTotal(total);
+
+        return pageResult;
+    }
+
 
 }
