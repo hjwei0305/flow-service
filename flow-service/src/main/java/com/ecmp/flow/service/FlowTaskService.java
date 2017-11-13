@@ -1057,7 +1057,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         return result;
-
     }
     public OperateResultWithData<FlowStatus> completeBatchApproval(List<FlowTaskCompleteVO> flowTaskCompleteVOList){
         for(FlowTaskCompleteVO flowTaskCompleteVO:flowTaskCompleteVOList){

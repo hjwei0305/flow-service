@@ -9,6 +9,7 @@ import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -22,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 
 /**
@@ -75,7 +78,10 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             if (event != null) {
                 String afterExcuteServiceId = (String) event.get("afterExcuteServiceId");
                 if (!StringUtils.isEmpty(afterExcuteServiceId)) {
-                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, "after");
+                    Map<String,Object> tempV = delegateTask.getVariables();
+                    String param = JsonUtils.toJson(tempV);
+//                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, "after");
+                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
                 }
             }
         }catch (Exception e){

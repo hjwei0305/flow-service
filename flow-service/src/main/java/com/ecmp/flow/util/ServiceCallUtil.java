@@ -47,20 +47,26 @@ public class ServiceCallUtil {
                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
               }else{
                   Map<String,String> paramMap = null;
+                  FlowInvokeParams params = new FlowInvokeParams();
                   if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
                       try {
                           JSONObject jsonObject = JSONObject.fromObject(args[0]);
+                          String approved = jsonObject.get("approved") + "";
+                          if (StringUtils.isNotEmpty(approved)) {
+                              params.setAgree(Boolean.parseBoolean(approved));
+                          }
+                          String approveResult = jsonObject.get("approveResult") + "";
+                          if (StringUtils.isNotEmpty(approveResult)) {
+                              params.setFinalAgree(Boolean.parseBoolean(approveResult));
+                          }
                           String receiveTaskActDefId = jsonObject.get("receiveTaskActDefId") + "";
                           if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
-                              if (paramMap == null) {
-                                  paramMap = new HashMap<>();
-                              }
-                              paramMap.put("receiveTaskActDefId", receiveTaskActDefId);
+                              params.setReceiveTaskActDefId(receiveTaskActDefId);
                           }
                       }catch (Exception e){
                       }
                   }
-                  FlowInvokeParams params = new FlowInvokeParams();
+
                   params.setId(businessId);
                   params.setParams(paramMap);
                   String url = appModule.getApiBaseAddress()+"/"+clientUrl;

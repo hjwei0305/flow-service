@@ -78,24 +78,25 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         if(entity != null){
 //            defaultBusinessModelDao.saveAndFlush(entity);
             if(StringUtils.isNotEmpty(changeText)){
-                JSONObject jsonObject = JSONObject.fromObject(changeText);
-                List<String> callActivtiySonPaths = null;
+
                 try{
+                    JSONObject jsonObject = JSONObject.fromObject(changeText);
+                    List<String> callActivtiySonPaths = null;
                     callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                }catch (Exception e){
-                    logger.error(e.getMessage());
-                }
-                if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
-                    for(String callActivityPath:callActivtiySonPaths){
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                    if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
+                        //测试跨业务实体子流程,并发多级子流程测试
+                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                        for(String callActivityPath:callActivtiySonPaths){
+                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
+                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            }
                         }
                     }
+                }catch (Exception e){
+                    logger.error(e.getMessage());
                 }
             }
             changeText="before";
@@ -120,25 +121,27 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         if(entity != null){
 //            defaultBusinessModelDao.saveAndFlush(entity);
             if(StringUtils.isNotEmpty(changeText)){
-                JSONObject jsonObject = JSONObject.fromObject(changeText);
-                List<String> callActivtiySonPaths = null;
+
                 try{
+                    JSONObject jsonObject = JSONObject.fromObject(changeText);
+                    List<String> callActivtiySonPaths = null;
                     callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                    if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
+                        //测试跨业务实体子流程,并发多级子流程测试
+                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                        for(String callActivityPath:callActivtiySonPaths){
+                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
+                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            }
+                        }
+                    }
                 }catch (Exception e){
                     logger.error(e.getMessage());
                 }
-                if(callActivtiySonPaths!=null && !callActivtiySonPaths.isEmpty()){
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
-                    for(String callActivityPath:callActivtiySonPaths){
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
-                        }
-                    }
-                }
+
             }
             changeText="after";
             entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
