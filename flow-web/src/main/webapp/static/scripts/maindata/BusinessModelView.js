@@ -31,7 +31,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 store: {
                     url: _ctxPath + "/businessModel/listAllAppModule"
                 },
-                field: ["appModuleId"],
+                field: ["id"],
                 reader: {
                     name: "name",
                     field: ["id"]
@@ -42,7 +42,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     }
                     var cobo = EUI.getCmp("coboId");
                     cobo.setValue(data[0].name);
-                    g.appModule = data[0].id;
+                    g.appModule = data[0];
                     g.appModuleName = data[0].name;
                     g.appModuleCode = data[0].code;
                     g.gridCmp.setGridParams({
@@ -62,7 +62,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
-                    g.appModule = data.data.id;
+                    g.appModule = data.data;
                     g.appModuleName = data.data.name;
                     g.appModuleCode = data.data.code;
                     g.gridCmp.setPostParams({
@@ -150,7 +150,11 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "appModuleCode",
                     index: "appModuleCode",
                     width:120
-                },
+                }, {
+                        name: "appModule.id",
+                        index: "appModule.id",
+                        hidden: true
+                    },
                     {
                         name: "conditonProperties",
                         index: "conditonProperties",
@@ -276,9 +280,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.appModelIdText,
                     // labelWidth: 115,
                     allowBlank: false,
-                    name: "appModuleId",
+                    name: "appModule.id",
                     // width: 300,
-                    value: g.appModule,
+                    value: g.appModule.id,
                     hidden: true
                 },{
                     xtype: "TextField",
@@ -406,9 +410,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     title: g.lang.appModelIdText,
                     // labelWidth: 115,
                     allowBlank: false,
-                    name: "appModuleId",
+                    name: "appModule.id",
                     // width: 300,
-                    value: g.appModule,
+                    value: g.appModule.id,
                     hidden: true
                 }, {
                     xtype: "TextField",
@@ -934,7 +938,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             gridCfg: {
                 url: _ctxPath + "/businessModel/listAllNotSelectEdByAppModuleId",
                 postData: {
-                    appModuleId: g.appModule,
+                    'appModule.id': g.appModule.id,
                     businessModelId: data.id
                 },
                 hasPager: false,
@@ -986,7 +990,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 loadonce: true,
                 url: _ctxPath + "/businessModel/listAllSelectEdByAppModuleId",
                 postData: {
-                    appModuleId: g.appModule,
+                    'appModule.id': g.appModule.id,
                     businessModelId: data.id
                 },
                 hasPager: false,
