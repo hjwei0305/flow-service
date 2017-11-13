@@ -85,6 +85,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             }
         }catch(Exception e){
             logger.error(e.getMessage());
+            throw e;
         }
     }
 }

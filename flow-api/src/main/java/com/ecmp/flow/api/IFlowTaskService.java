@@ -267,13 +267,14 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 获取可批量审批待办信息
      * @param searchConfig 查询条件
+     * @param businessModelId 为空查询全部
      * @return 可批量审批待办信息
      */
     @POST
     @Path("findByBusinessModelIdWithAllCount")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
+    @ApiOperation(value = "获取待办信息",notes = "测试")
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 

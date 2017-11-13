@@ -80,6 +80,7 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             }
         }catch (Exception e){
             logger.error(e.getMessage());
+            throw e;
         }
     }
 }
