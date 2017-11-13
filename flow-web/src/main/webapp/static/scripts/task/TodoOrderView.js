@@ -254,7 +254,7 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
                             msg: "正在终止，请稍候..."
                         });
                         EUI.Store({
-                            url: "../flowInstance/endFlowInstanceByBusinessId/",
+                            url: _ctxPath+"/flowInstance/endFlowInstanceByBusinessId/",
                             params: {businessId: data.businessId},
                             success: function (status) {
                                 myMask.remove();

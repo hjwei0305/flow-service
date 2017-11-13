@@ -79,7 +79,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "Button",
             title: "启动条件",
-            selected: true,
+            // selected: true,
             iconCss: "ecmp-common-configuration",
             id: "setStartUel",
             hidden: true,

@@ -307,7 +307,8 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
     updateFlowDefVersion: function (data) {
         var g = this;
         var tab = {
-            title: g.lang.copyFlowDefinitionText,
+            //versionEditText:"流程编辑",
+            title: g.lang.versionEditText,
             url: _ctxPath + "/design/show?orgId=" + g.selectedNodeId +"&orgCode="+data["flowDefination.orgCode"]+"&id="+data["flowDefination.id"]+"&businessModelId="+data["flowDefination.flowType.businessModel.id"]+"&businessModelCode="+data["flowDefination.flowType.businessModel.className"],
         };
         g.addTab(tab);
