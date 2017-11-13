@@ -46,20 +46,19 @@ public class ServiceCallUtil {
                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
               }else{
-                  JSONObject jsonObject = JSONObject.fromObject(args[0]);
-                  //HashMap<String,Object> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
-                  String receiveTaskActDefId = jsonObject.get("receiveTaskActDefId")+"";
-//                  List<String> callActivtiySonPaths = null;
-//                  try{
-//                      callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-//                  }catch (Exception e){
-//                  }
                   Map<String,String> paramMap = null;
-                  if(StringUtils.isNotEmpty(receiveTaskActDefId)){
-                      if(paramMap==null){
-                          paramMap = new HashMap<>();
+                  if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
+                      try {
+                          JSONObject jsonObject = JSONObject.fromObject(args[0]);
+                          String receiveTaskActDefId = jsonObject.get("receiveTaskActDefId") + "";
+                          if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
+                              if (paramMap == null) {
+                                  paramMap = new HashMap<>();
+                              }
+                              paramMap.put("receiveTaskActDefId", receiveTaskActDefId);
+                          }
+                      }catch (Exception e){
                       }
-                      paramMap.put("receiveTaskActDefId",receiveTaskActDefId);
                   }
                   FlowInvokeParams params = new FlowInvokeParams();
                   params.setId(businessId);

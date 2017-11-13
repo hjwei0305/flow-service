@@ -77,7 +77,6 @@ public class EndEventCompleteListener implements ExecutionListener {
         if(flowInstance==null){
              throw new RuntimeException("流程实例不存在！");
         }else {
-
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
