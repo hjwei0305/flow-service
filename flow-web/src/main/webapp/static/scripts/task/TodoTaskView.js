@@ -572,7 +572,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "正在签收，请稍候..."
                         });
                         EUI.Store({
-                            url: "../flowClient/claimTask/",
+                            url:  _ctxPath +"/flowClient/claimTask",
                             params: {taskId: data.id},
                             success: function (status) {
                                 myMask.remove();
