@@ -375,6 +375,7 @@ if (EUI.FlowDefinationView) {
         priorityText: "优先级",
         editFlowDefinitionText: "编辑流程定义:",
         addFlowDefinitionText: "新增流程定义",
+        versionEditText:"流程编辑",
         copyFlowDefinitionText: "参考创建流程定义",
         FreezeText: "(已冻结)",
         chooseOrganizationMsgText: "请选择组织机构",
