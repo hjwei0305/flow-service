@@ -762,6 +762,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
                         } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                            nodeInfo.setUiType("checkbox");
                         } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
                         } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType())||"SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
