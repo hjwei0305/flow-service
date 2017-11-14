@@ -64,11 +64,11 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
 
     public void notify(DelegateExecution delegateTask) {
         try {
-            String eventName = delegateTask.getEventName();
-            String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
-            if("end".equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)){
-                return;
-            }
+//            String eventName = delegateTask.getEventName();
+//            String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
+//            if("end".equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)){
+//                return;
+//            }
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
