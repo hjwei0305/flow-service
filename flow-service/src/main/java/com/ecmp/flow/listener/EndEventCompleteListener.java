@@ -18,6 +18,7 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +109,30 @@ public class EndEventCompleteListener implements ExecutionListener {
                     }
                 }
 //                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
+                try {
+                    String businessId = delegateTask.getProcessBusinessKey();
+                    this.callEndService(businessId, flowInstance.getFlowDefVersion());
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    private void callEndService( String businessKey,FlowDefVersion flowDefVersion){
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+            String endCallServiceUrl = flowDefVersion.getEndCallServiceUrl();
+            if(StringUtils.isNotEmpty(endCallServiceUrl)){
+                String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                String endCallServiceUrlPath = baseUrl+endCallServiceUrl;
+                Map<String, Object> params = new HashMap<>();
+                params.put("id",businessKey);
+                new Thread(new Runnable() {//模拟异步
+                    @Override
+                    public void run() {
+                        ApiClient.getEntityViaProxy(endCallServiceUrlPath,new GenericType<Boolean>() {},params);
+                    }
+                }).start();
             }
         }
     }

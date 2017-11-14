@@ -29,6 +29,8 @@ public class FlowStartResultVO implements Serializable{
     private List<FlowType> flowTypeList;//流程类型选择（一个流程实体存在多个流程类型的情况下）
     private List<NodeInfo> nodeInfoList;//启动时节点信息
 
+    private Boolean checkStartResult=true;
+
     /**
      * 额外参数
      */
@@ -65,5 +67,13 @@ public class FlowStartResultVO implements Serializable{
 
     public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
+    }
+
+    public Boolean getCheckStartResult() {
+        return checkStartResult;
+    }
+
+    public void setCheckStartResult(Boolean checkStartResult) {
+        this.checkStartResult = checkStartResult;
     }
 }

@@ -1069,7 +1069,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public OperateResultWithData getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
-        OperateResultWithData operateResultWithData = OperateResultWithData.operationSuccess();
+        OperateResultWithData operateResultWithData = null;
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
@@ -1093,6 +1093,5 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return operateResultWithData;
     }
-
 
 }

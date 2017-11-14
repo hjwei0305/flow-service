@@ -246,6 +246,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
+    public boolean checkStartFlow(String id){
+        return false;
+    }
+
+    public void endCall(String id){
+        System.out.println("id="+id);
+    }
+
     /**
      * 解析子流程绝对路径
      * @param callActivityPath 路径值

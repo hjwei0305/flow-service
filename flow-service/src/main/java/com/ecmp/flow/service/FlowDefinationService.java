@@ -378,7 +378,24 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return finalFlowDefination;
     }
 
-    private FlowInstance startByTypeCode(FlowType flowType, String startUserId, String businessKey, Map<String, Object> variables) throws NoSuchMethodException, SecurityException {
+    private boolean checkStart( String businessKey,FlowDefVersion flowDefVersion){
+        boolean result = false;
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+          String checkUrl = flowDefVersion.getStartCheckServiceUrl();
+          if(StringUtils.isNotEmpty(checkUrl)){
+             String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+             String checkUrlPath = baseUrl+checkUrl;
+              Map<String, Object> params = new HashMap<>();
+              params.put("id",businessKey);
+              result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+          }
+        }
+        return result;
+    }
+
+    private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, SecurityException {
+        String startUserId = flowStartVO.getStartUserId();
+        String businessKey = flowStartVO.getBusinessKey();
         variables.put("opinion", "流程启动");//所有流程启动描述暂时都设计为“流程启动”
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = businessKey;
@@ -411,6 +428,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
+                if(checkStart( businessKey, flowDefVersion)!=true){
+                    flowStartResultVO.setCheckStartResult(false);
+                    return null;
+                }
                 String actDefId = flowDefVersion.getActDefId();
                 variables.put("flowDefVersionId", flowDefVersion.getId());
                 ProcessInstance processInstance = null;
@@ -519,7 +540,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 v.putAll(flowStartVO.getVariables());
             }
 
-            FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO.getStartUserId(), flowStartVO.getBusinessKey(), v);
+            FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO,flowStartResultVO, v);
             flowStartResultVO.setFlowInstance(flowInstance);
         } else {
             if (flowType != null && flowType.getFlowDefinations() != null && !flowType.getFlowDefinations().isEmpty()) {

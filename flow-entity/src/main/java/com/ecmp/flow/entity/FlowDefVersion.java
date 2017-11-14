@@ -136,6 +136,19 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
 
     /**
+     * 启动时调用检查服务，同步
+     */
+    @Column(name="start_check_service_url",length = 2000)
+    private String startCheckServiceUrl;
+
+
+    /**
+     * 流程结束时，调用服务
+     */
+    @Column(name="end_call_service_url",length = 2000)
+    private String endCallServiceUrl;
+
+    /**
      * default constructor
      */
     public FlowDefVersion() {
@@ -300,6 +313,23 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.subProcess = subProcess;
     }
 
+
+    public String getStartCheckServiceUrl() {
+        return startCheckServiceUrl;
+    }
+
+    public void setStartCheckServiceUrl(String startCheckServiceUrl) {
+        this.startCheckServiceUrl = startCheckServiceUrl;
+    }
+
+    public String getEndCallServiceUrl() {
+        return endCallServiceUrl;
+    }
+
+    public void setEndCallServiceUrl(String endCallServiceUrl) {
+        this.endCallServiceUrl = endCallServiceUrl;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
@@ -318,6 +348,8 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("versionCode", versionCode)
                 .append("priority", priority)
                 .append("defJson", defJson)
+                .append("startCheckServiceUrl", startCheckServiceUrl)
+                .append("endCallServiceUrl", endCallServiceUrl)
 //                .append("defBpmn", defBpmn)
                 .append("defXml", defXml)
                 .append("depict", depict)

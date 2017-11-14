@@ -106,4 +106,18 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 // @ApiOperation(value = "分页查询业务实体", notes = "分页查询业务实体")
 //public PageResult<DefaultBusinessModel> findByPage(Search search);
 
+
+ @GET
+ @Path("checkStartFlow")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试checkStartFlow",notes = "测试checkStartFlow")
+public boolean checkStartFlow(@QueryParam("id") String id);
+
+ @POST
+ @Path("endCall")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试endCall",notes = "endCall")
+ public void endCall(@QueryParam("id") String id);
 }
