@@ -78,6 +78,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             });
             this.initNotify();
+            this.showChooseUserGrid('Position');//岗位默认选中
         }
         if (this.data && !Object.isEmpty(this.data)) {
             this.loadData();
@@ -454,13 +455,13 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: [{
                 title: "流程发起人",
                 name: "StartUser",
-                checked: true,
                 onChecked: function (value) {
                     g.showChooseUserGrid(this.name);
                 }
             }, {
                 title: "指定岗位",
                 name: "Position",
+                checked: true,
                 onChecked: function (value) {
                     g.showChooseUserGrid(this.name);
                 }
