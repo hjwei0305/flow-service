@@ -36,7 +36,7 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      * @param businessModelId  业务实体ID
      * @return 已选中的工作界面
      */
-    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModule.id  = :appModuleId and w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
+    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
     List<com.ecmp.flow.entity.WorkPageUrl> findSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
 
 
@@ -46,7 +46,7 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      * @param businessModelId  业务实体ID
      * @return 未选中的工作界面
      */
-    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModule.id  = :appModuleId and w.id not in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
+    @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id not in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
     List<com.ecmp.flow.entity.WorkPageUrl> findNotSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
 
 
