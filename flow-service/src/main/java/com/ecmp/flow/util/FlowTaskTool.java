@@ -1226,6 +1226,7 @@ public class FlowTaskTool {
                     }
                     if(!mustCommit){
                         flowTask.setCanBatchApproval(true);
+                        flowTask.setCanMobile(true);
                     }
                 }catch(Exception e){
                     logger.error(e.getMessage());
