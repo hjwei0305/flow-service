@@ -23,6 +23,7 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +81,8 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
     @Override
     public void notify(DelegateExecution execution) throws Exception{
         try {
-//            ExecutorService pool = Executors.newSingleThreadExecutor();
-            String eventName = execution.getEventName();
-            if("end".equalsIgnoreCase(eventName)){
+            String deleteReason = ((ExecutionEntity) execution).getDeleteReason();
+            if(StringUtils.isNotEmpty(deleteReason)){
                 return;
             }
             String eventType = "after";
