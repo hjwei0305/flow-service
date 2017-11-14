@@ -776,8 +776,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         hidden: true
                     }, {
                         label: g.lang.userNameText,
-                        name: "user.userName",
-                        index: "user.userName",
+                        name: "userName",
+                        index: "userName",
                         width: 150,
                         align: "center"
                     }, {
@@ -798,7 +798,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
                         html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                             '<div class="choose-icon choose-delete"></div>' +
-                            '<div class="excutor-item-title">' + g.lang.nameText + rowData["user.userName"] +
+                            '<div class="excutor-item-title">' + g.lang.nameText + rowData["userName"] +
                             g.lang.organizationText + rowData["organization.name"] + g.lang.number2Text + rowData.code + '</div>' +
                             '</div>';
                         $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
@@ -821,7 +821,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
             if (!g.itemIdIsInArray(item.id, selectedUser)) {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">' + g.lang.nameText + item["user.userName"] +
+                    '<div class="excutor-item-title">' + g.lang.nameText + item["userName"] +
                     g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code + '</div>' +
                     '</div>';
             }

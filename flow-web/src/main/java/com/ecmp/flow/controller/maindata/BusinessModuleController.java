@@ -125,7 +125,7 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "listAllSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> listAllSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
+    public List<WorkPageUrl> listAllSelectEdByAppModuleId(@RequestParam(value = "appModule.id") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;
@@ -140,7 +140,7 @@ public class BusinessModuleController {
      */
     @RequestMapping(value = "listAllNotSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> listAllNotSelectEdByAppModuleId(@RequestParam(value = "appModuleId") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
+    public List<WorkPageUrl> listAllNotSelectEdByAppModuleId(@RequestParam(value = "appModule.id") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
         List<WorkPageUrl> workPageUrlList = proxy.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
         return workPageUrlList;

@@ -822,8 +822,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                         hidden: true
                     }, {
                         label: g.lang.userNameText,
-                        name: "user.userName",
-                        index: "user.userName",
+                        name: "userName",
+                        index: "userName",
                         width: 150,
                         align: "center"
                     }, {
@@ -854,7 +854,7 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                             html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                                 '<div class="choose-icon choose-delete"></div>' +
                                 '<div class="excutor-item-title">' +
-                                String.format(g.lang.showUserInfo2Text, rowData["user.userName"], rowData["organization.name"], rowData.code) +
+                                String.format(g.lang.showUserInfo2Text, rowData["userName"], rowData["organization.name"], rowData.code) +
                                 '</div>' +
                                 '</div>';
                             $(".flow-excutor-content2", "div[index=" + currentChooseDivIndex + "]").html(html);
@@ -879,8 +879,8 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">' +
-                    //  g.lang.nameText + item["user.userName"] +g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code +
-                    String.format(this.lang.showUserInfo2Text, item["user.userName"], item["organization.name"], item.code) +
+                    //  g.lang.nameText + item["userName"] +g.lang.organizationText + item["organization.name"] + g.lang.number2Text + item.code +
+                    String.format(this.lang.showUserInfo2Text, item["userName"], item["organization.name"], item.code) +
                     '</div>' +
                     '</div>';
             }
@@ -1447,7 +1447,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 region: "center",
                 id: "chooseUserGridPanel_start",
                 searchConfig: {
-                    searchCols: ["user.userName", "code"]
+                    searchCols: ["userName", "code"]
                 },
                 style: {"border-radius": "3px"},
                 gridCfg: {
@@ -1461,8 +1461,8 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                         hidden: true
                     }, {
                         label: "用户名称",
-                        name: "user.userName",
-                        index: "user.userName",
+                        name: "userName",
+                        index: "userName",
                         width: 150,
                         align: "center"
                     }, {
@@ -1493,7 +1493,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                             html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
                                 '<div class="choose-icon choose-delete"></div>' +
                                 '<div class="excutor-item-title">' +
-                                String.format(g.lang.showUserInfo2Text, rowData["user.userName"], rowData["organization.name"], rowData.code) +
+                                String.format(g.lang.showUserInfo2Text, rowData["userName"], rowData["organization.name"], rowData.code) +
                                 '</div>' +
                                 '</div>';
                             $content2.html(html);
@@ -1517,7 +1517,7 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
                 html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
                     '<div class="choose-icon choose-delete"></div>' +
                     '<div class="excutor-item-title">' +
-                    String.format(g.lang.showUserInfo2Text, item["user.userName"], item["organization.name"], item.code) +
+                    String.format(g.lang.showUserInfo2Text, item["userName"], item["organization.name"], item.code) +
                     '</div>' +
                     '</div>';
             }

@@ -59,7 +59,7 @@ public class ServiceCallUtil {
                           if (StringUtils.isNotEmpty(approveResult)) {
                               params.setFinalAgree(Boolean.parseBoolean(approveResult));
                           }
-                          String receiveTaskActDefId = jsonObject.get("receiveTaskActDefId") + "";
+                          String receiveTaskActDefId = (String) jsonObject.get("receiveTaskActDefId") ;
                           if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
                               params.setReceiveTaskActDefId(receiveTaskActDefId);
                           }

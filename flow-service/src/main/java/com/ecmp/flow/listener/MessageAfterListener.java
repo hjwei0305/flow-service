@@ -81,6 +81,10 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
     public void notify(DelegateExecution execution) throws Exception{
         try {
 //            ExecutorService pool = Executors.newSingleThreadExecutor();
+            String eventName = execution.getEventName();
+            if("end".equalsIgnoreCase(eventName)){
+                return;
+            }
             String eventType = "after";
             String contentTemplateCode = "EMAIL_TEMPLATE_AFTER_DOWORK";
             MessageSendThread messageSendThread = new MessageSendThread(eventType,execution,contentTemplateCode);

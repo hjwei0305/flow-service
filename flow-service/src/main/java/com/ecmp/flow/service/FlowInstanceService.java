@@ -92,7 +92,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public OperateResult delete(String id) {
         FlowInstance entity = flowInstanceDao.findOne(id);
         String actInstanceId = entity.getActInstanceId();
-        this.deleteActiviti(actInstanceId);
+        this.deleteActiviti(actInstanceId,null);
         flowInstanceDao.delete(entity);
         OperateResult result =  OperateResult.operationSuccess("core_00003");
         return result;
@@ -253,8 +253,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 删除流程引擎实例相关数据
      * @param processInstanceId
      */
-    private  void  deleteActiviti(String processInstanceId){
-        runtimeService.deleteProcessInstance(processInstanceId,null);
+    private  void  deleteActiviti(String processInstanceId,String deleteReason){
+        runtimeService.deleteProcessInstance(processInstanceId, deleteReason);
     }
 
     /**
@@ -719,7 +719,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             BeanUtils.copyProperties(flowHistory, flowTask);
                             flowHistory.setId(null);
                             flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                            flowHistory.setDepict("【被发起人终止流程】");
+                            if(force){
+                                flowHistory.setDepict("【被发起人终止流程】");
+                            }else {
+                                flowHistory.setDepict("【被管理员强制终止流程】");
+                            }
+
                             flowHistory.setFlowTaskName(flowTask.getTaskName());
                             Date now = new Date();
                             if(preFlowHistory!=null){
@@ -738,12 +743,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 }
 
                 String actInstanceId = fTemp.getActInstanceId();
-                this.deleteActiviti(actInstanceId);
+                String deleteReason=null;
+                if(force){
+                    deleteReason="被管理员强制终止流程";
+                }else {
+                    deleteReason = "被发起人终止流程";
+                }
+                this.deleteActiviti(actInstanceId,deleteReason);
                 fTemp.setEndDate(new Date());
                 fTemp.setEnded(true);
                 fTemp.setManuallyEnd(true);
                 flowInstanceDao.save(fTemp);
-
 
                 //重置客户端表单流程状态
                 BusinessModel businessModel = fTemp.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();

@@ -64,6 +64,10 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
 
     public void notify(DelegateExecution delegateTask) {
         try {
+            String eventName = delegateTask.getEventName();
+            if("end".equalsIgnoreCase(eventName)){
+                return;
+            }
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
