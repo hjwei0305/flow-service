@@ -255,6 +255,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(name = "can_batch_approval")
     private Boolean canBatchApproval;
 
+    /**
+     * 移动端能否
+     */
+    @Column(name = "can_mobile")
+    private Boolean canMobile;
+
     public FlowTask() {
     }
 
@@ -547,6 +553,8 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("id", this.getId())
                 .append("webBaseAddress", this.getWebBaseAddress())
                 .append("apiBaseAddress", this.getApiBaseAddress())
+                .append("canMobile", canMobile)
+                .append("canBatchApproval", canBatchApproval)
                 .append("flowInstance", flowInstance)
                 .append("flowName", flowName)
                 .append("taskName", taskName)
@@ -640,5 +648,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setApiBaseAddress(String apiBaseAddress) {
         this.apiBaseAddress = apiBaseAddress;
+    }
+
+    public Boolean getCanMobile() {
+        return canMobile;
+    }
+
+    public void setCanMobile(Boolean canMobile) {
+        this.canMobile = canMobile;
     }
 }
