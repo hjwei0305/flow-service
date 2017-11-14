@@ -1,43 +1,32 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.BpmnUtil;
-import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
 import com.ecmp.notity.entity.NotifyType;
-import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import net.sf.json.util.JSONUtils;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.IdentityLinkEntity;
-import org.activiti.engine.impl.persistence.entity.VariableInstance;
-import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -94,25 +83,25 @@ public class MessageSendThread implements Runnable {
     @Override
     public void run() {
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
-
+        boolean canToSender =true;
         String actTaskDefKey = taskEntity.getActivityId();
         String actProcessDefinitionId = execution.getProcessDefinitionId();
         ProcessInstance instance = taskEntity.getProcessInstance();
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(instance.getId()).singleResult();
         String startUserId = null;
-        Date startTime = null;
-        String startTimeStr = null;
+//        Date startTime = null;
+//        String startTimeStr = null;
         if (historicProcessInstance != null) {
             startUserId = historicProcessInstance.getStartUserId();
-            startTime = historicProcessInstance.getStartTime();
-            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
+//            startTime = historicProcessInstance.getStartTime();
+//            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
         } else {
             startUserId = ContextUtil.getUserId();
-            startTime = new Date();
-            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
+//            startTime = new Date();
+//            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
         }
 
-        String businessId = instance.getBusinessKey();
+//        String businessId = instance.getBusinessKey();
         FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
         String flowDefJson = flowDefVersion.getDefJson();
         JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -163,6 +152,10 @@ public class MessageSendThread implements Runnable {
                                     preOpinion = execution.getVariable("opinion") + "";
                                 } else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
                                     opinion = execution.getVariable("opinion") + "";
+                                    String eventName = execution.getEventName();
+                                    if("end".equalsIgnoreCase(eventName)){
+                                        opinion=((ExecutionEntity) execution).getDeleteReason();
+                                    }
                                 }
 
                                 contentTemplateParams.put("businessName", businessName);//业务单据名称
@@ -183,7 +176,7 @@ public class MessageSendThread implements Runnable {
                                 notifyTypes.add(NotifyType.Email);
                                 message.setNotifyTypes(notifyTypes);
 //                            System.out.println(JsonUtils.toJson(message));
-                                message.setCanToSender(false);
+                                message.setCanToSender(canToSender);
 //                            iNotifyService.send(message);
                                 new Thread(new Runnable() {
                                     @Override
@@ -232,6 +225,10 @@ public class MessageSendThread implements Runnable {
                                   preOpinion =  execution.getVariable("opinion")+"";
                               }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
                                   opinion =  execution.getVariable("opinion")+"";
+                                  String eventName = execution.getEventName();
+                                  if("end".equalsIgnoreCase(eventName)){
+                                      opinion=((ExecutionEntity) execution).getDeleteReason();
+                                  }
                               }
 
                               contentTemplateParams.put("businessName", businessName);//业务单据名称
@@ -252,7 +249,7 @@ public class MessageSendThread implements Runnable {
                               List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                               notifyTypes.add(NotifyType.Email);
                               message.setNotifyTypes(notifyTypes);
-                              message.setCanToSender(false);
+                              message.setCanToSender(canToSender);
 //                            iNotifyService.send(message);
                               new Thread(new Runnable() {
                                   @Override
@@ -323,6 +320,10 @@ public class MessageSendThread implements Runnable {
                                       preOpinion =  execution.getVariable("opinion")+"";
                                   }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
                                       opinion =  execution.getVariable("opinion")+"";
+                                      String eventName = execution.getEventName();
+                                      if("end".equalsIgnoreCase(eventName)){
+                                          opinion=((ExecutionEntity) execution).getDeleteReason();
+                                      }
                                   }
 
                                   contentTemplateParams.put("businessName", businessName);//业务单据名称
@@ -343,7 +344,7 @@ public class MessageSendThread implements Runnable {
                                   List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
                                   notifyTypes.add(NotifyType.Email);
                                   message.setNotifyTypes(notifyTypes);
-                                  message.setCanToSender(false);
+                                  message.setCanToSender(canToSender);
 //                            iNotifyService.send(message);
                                   new Thread(new Runnable() {
                                       @Override
@@ -351,9 +352,7 @@ public class MessageSendThread implements Runnable {
                                           iNotifyService.send(message);
                                       }
                                   }).start();
-
                               }
-
 
                           } else if ("SMS".equalsIgnoreCase(type.toString())) {
                           } else if ("APP".equalsIgnoreCase(type.toString())) {

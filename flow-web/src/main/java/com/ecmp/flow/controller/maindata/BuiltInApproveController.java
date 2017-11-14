@@ -3,9 +3,6 @@ package com.ecmp.flow.controller.maindata;
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.api.IBaseEntityService;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IDefaultBusinessModelService;
 import com.ecmp.flow.api.IFlowDefinationService;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.ServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -307,5 +303,120 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
         OperateStatus   operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
         return operateStatus;
     }
+
+    /**
+     * 通过流程定义key启动流程,
+     *
+     * @param businessModelCode
+     * @return 操作结果
+     */
+    @RequestMapping(value = "startFlowTest")
+    @ResponseBody
+    public OperateStatus startFlowTest(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+
+        OperateStatus operateStatus = new OperateStatus(true, "成功");
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+        FlowStartVO flowStartVO = new FlowStartVO();
+        flowStartVO.setBusinessKey(businessKey);
+        flowStartVO.setBusinessModelCode(businessModelCode);
+        flowStartVO.setFlowTypeId(typeId);
+        proxy.startByVO(flowStartVO);
+
+
+        return operateStatus;
+    }
+
+    /**
+     * 通过流程定义key启动流程,
+     *
+     * @return 操作结果
+     */
+    @RequestMapping(value = "startTest")
+    @ResponseBody
+    public OperateStatus startTest() throws NoSuchMethodException, SecurityException {
+        String businessModelCode="com.ecmp.brm.act.entity.BusinessRequest";
+        String businessKey="109B9C6A-BE1A-11E7-9296-00FF36C681BD";
+        String opinion=null;
+        String typeId=null;
+        String taskList="[{\"nodeId\":\"UserTask_4\",\"userVarName\":\"UserTask_4_Approve\",\"flowTaskType\":\"approve\",\"callActivityPath\":null,\"userIds\":\"1C67DAA0-3530-11E7-9C56-ACE010C46AFD\"}]";
+        OperateStatus operateStatus = this.startFlowTTT( businessModelCode,  businessKey,  opinion,  typeId,  taskList);
+
+
+        return operateStatus;
+    }
+
+    public OperateStatus startFlowTTT(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        OperateStatus operateStatus = null;
+
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        if (true) {
+            IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+            Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+            FlowStartVO flowStartVO = new FlowStartVO();
+            flowStartVO.setBusinessKey(businessKey);
+            flowStartVO.setBusinessModelCode(businessModelCode);
+            flowStartVO.setFlowTypeId(typeId);
+            Map<String, Object> variables = new HashMap<String, Object>();
+            flowStartVO.setVariables(variables);
+
+            //测试跨业务实体子流程,并发多级子流程测试
+            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+            if (StringUtils.isNotEmpty(taskList)) {
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+
+                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        String flowTaskType = f.getFlowTaskType();
+
+                        //测试跨业务实体子流程,并发多级子流程测试
+                        String callActivityPath = f.getCallActivityPath();
+                        if (StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
+
+
+//                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel);
+                            List<String> userVarNameList = (List)userMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
+                            if(userVarNameList!=null){
+                                userVarNameList.add(f.getUserVarName());
+                            }else{
+                                userVarNameList = new ArrayList<>();
+                                userVarNameList.add(f.getUserVarName());
+                                userMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                            }
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(callActivityPath+"/"+f.getUserVarName(), f.getUserIds());
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                userMap.put(callActivityPath+"/"+f.getUserVarName(), idArray);
+                            }
+                        }else{
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(f.getUserVarName(), f.getUserIds());
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                userMap.put(f.getUserVarName(), idArray);
+                            }
+                        }
+                    }
+                }
+            }
+            flowStartVO.setUserMap(userMap);
+            FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
+            if (flowStartResultVO != null) {
+                operateStatus = new OperateStatus(true, "成功");
+                operateStatus.setData(flowStartResultVO);
+            } else {
+                new OperateStatus(false, "启动流程失败");
+            }
+        } else {
+            operateStatus = new OperateStatus(false, "业务对象不存在");
+        }
+        return operateStatus;
+    }
+
 }
 

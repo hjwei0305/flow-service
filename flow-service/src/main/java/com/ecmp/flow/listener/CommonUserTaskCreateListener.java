@@ -6,6 +6,7 @@ import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.ServiceCallUtil;
+import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.util.JsonUtils;
@@ -79,8 +80,17 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             if (event != null) {
                 String beforeExcuteServiceId = (String) event.get("beforeExcuteServiceId");
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
-
-                    ServiceCallUtil.callService(beforeExcuteServiceId, businessId, "before");
+                    Map<String,Object> tempV = delegateTask.getVariables();
+                    String param = JsonUtils.toJson(tempV);
+                    Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                    try {
+                                FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                                if(true!=flowOpreateResult.isSuccess()){
+                                    throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                                }
+                            }catch (Exception e){
+                                logger.error(e.getMessage());
+                            }
                 }
             }
         }catch(Exception e){
