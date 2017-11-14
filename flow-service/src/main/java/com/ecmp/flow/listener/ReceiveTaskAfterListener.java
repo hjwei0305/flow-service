@@ -95,7 +95,8 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
         String eventName = delegateTask.getEventName();
-        if("end".equalsIgnoreCase(eventName)){
+        String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
+        if("end".equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)){
             return;
         }
             String actProcessInstanceId = delegateTask.getProcessInstanceId();

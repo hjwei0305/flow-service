@@ -65,7 +65,8 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
     public void notify(DelegateExecution delegateTask) {
         try {
             String eventName = delegateTask.getEventName();
-            if("end".equalsIgnoreCase(eventName)){
+            String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
+            if("end".equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)){
                 return;
             }
             String actTaskDefKey = delegateTask.getCurrentActivityId();
