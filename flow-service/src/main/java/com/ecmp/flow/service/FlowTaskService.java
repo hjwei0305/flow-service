@@ -1068,4 +1068,32 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
        return OperateResultWithData.operationSuccess("10017");
     }
 
+    public OperateResultWithData getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+        OperateResultWithData operateResultWithData = OperateResultWithData.operationSuccess();
+
+        List<String> includeNodeIds = null;
+        if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
+            String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
+            includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
+        }
+        if(StringUtils.isEmpty(approved)){
+            approved="APPROVED";
+        }
+        List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            operateResultWithData = OperateResultWithData.operationSuccess();
+            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
+                operateResultWithData.setData("EndEvent");
+            }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
+                operateResultWithData.setData("CounterSignNotEnd");
+            }else {
+                operateResultWithData.setData(nodeInfoList);
+            }
+        } else {
+            operateResultWithData =OperateResultWithData.operationFailure("任务不存在，可能已经被处理");
+        }
+        return operateResultWithData;
+    }
+
+
 }
