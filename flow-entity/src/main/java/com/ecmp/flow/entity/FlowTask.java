@@ -40,6 +40,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Transient
     private String apiBaseAddress;
 
+
+    /**
+     * api基地址
+     */
+    @Transient
+    private String completeTaskServiceUrl;
+
     /**
      * 乐观锁- 版本
      */
@@ -568,6 +575,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
+                .append("completeTaskServiceUrl",completeTaskServiceUrl)
                 .toString();
     }
 
@@ -656,5 +664,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setCanMobile(Boolean canMobile) {
         this.canMobile = canMobile;
+    }
+
+    public String getCompleteTaskServiceUrl() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+    }
+
+    public void setCompleteTaskServiceUrl(String completeTaskServiceUrl) {
+        this.completeTaskServiceUrl = completeTaskServiceUrl;
     }
 }
