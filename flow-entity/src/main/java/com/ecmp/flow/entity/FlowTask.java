@@ -575,7 +575,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
-                .append("completeTaskServiceUrl",completeTaskServiceUrl)
+                .append("completeTaskServiceUrl",this.getCompleteTaskServiceUrl())
                 .toString();
     }
 
