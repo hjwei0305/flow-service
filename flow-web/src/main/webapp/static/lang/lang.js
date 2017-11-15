@@ -69,6 +69,7 @@ if (EUI.BusinessModelView) {
         conditonPValueText:"条件属性值服务地址",
         conditonPSValueText:"条件属性初始值服务地址",
         conditonStatusRestText:"流程状态重置服务地址",
+        completeTaskServiceUrlText:"提交任务地址",
         belongToAppModuleText: "所属应用模块",
         copyText: "参考创建",
         copyBusinessModelText: "参考创建业务实体",
