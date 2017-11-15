@@ -379,7 +379,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     private boolean checkStart( String businessKey,FlowDefVersion flowDefVersion){
-        boolean result = false;
+        boolean result = true;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
           String checkUrl = flowDefVersion.getStartCheckServiceUrl();
           if(StringUtils.isNotEmpty(checkUrl)){
