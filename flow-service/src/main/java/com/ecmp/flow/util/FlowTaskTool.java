@@ -1194,14 +1194,13 @@ public class FlowTaskTool {
         Boolean canReject = null;
         Boolean canSuspension = null;
         if(normalInfo!=null && !normalInfo.isEmpty() ){
-//                executeTime = normalInfo.get("executeTime")!=null?(Integer)normalInfo.get("executeTime"):null;
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
         }
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);
 
-        if (preTask != null) {
+        if (preTask != null) {//初始化上一步的执行历史信息
             if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
                 flowTask.setTaskStatus(TaskStatus.REJECT.toString());
             } else {
