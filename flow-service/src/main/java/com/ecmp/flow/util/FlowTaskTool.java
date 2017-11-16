@@ -1212,11 +1212,7 @@ public class FlowTaskTool {
         }
 
         String nodeType = (String)currentNode.get("nodeType");
-        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){
-            net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-            String userType = (String) executor.get("userType");
-            if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
-            {
+        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)||"Normal".equalsIgnoreCase(nodeType)){//能否由移动端审批
                 Boolean mustCommit = false;
                 String mustCommitStr = null;
                 try{
@@ -1225,14 +1221,24 @@ public class FlowTaskTool {
                         mustCommit = Boolean.parseBoolean(mustCommitStr);
                     }
                     if(!mustCommit){
-                        flowTask.setCanBatchApproval(true);
                         flowTask.setCanMobile(true);
                     }
                 }catch(Exception e){
                     logger.error(e.getMessage());
                 }
+
+            if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){//能否批量审批
+                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                String userType = (String) executor.get("userType");
+                if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
+                {
+                        if(!mustCommit){
+                            flowTask.setCanBatchApproval(true);
+                        }
+                }
             }
         }
+
     }
 
     /**
