@@ -34,11 +34,24 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Transient
     private String webBaseAddress;
 
+
+    /**
+     * web基地址绝对路径
+     */
+    @Transient
+    private String webBaseAddressAbsolute;
+
     /**
      * api基地址
      */
     @Transient
     private String apiBaseAddress;
+
+    /**
+     * api基地址
+     */
+    @Transient
+    private String apiBaseAddressAbsolute;
 
 
     /**
@@ -666,11 +679,16 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.canMobile = canMobile;
     }
 
+    public String getWebBaseAddressAbsolute() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+    }
+
+    public String getApiBaseAddressAbsolute() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+    }
+
     public String getCompleteTaskServiceUrl() {
         return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
     }
 
-    public void setCompleteTaskServiceUrl(String completeTaskServiceUrl) {
-        this.completeTaskServiceUrl = completeTaskServiceUrl;
-    }
 }
