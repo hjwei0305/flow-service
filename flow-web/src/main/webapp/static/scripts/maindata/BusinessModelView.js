@@ -960,6 +960,42 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             title:"未分配",
             id: "workPageSet",
             region: "east",
+            tbar:[{
+                xtype: "ComboBox",
+                title: "<span style='font-weight: bold'>" + this.lang.modelText + "</span>",
+                labelWidth: 70,
+                id: "tbarAppModule",
+                async: false,
+                canClear: false,
+                colon: false,
+                name: "appModuleName",
+                field:["appModuleId"],
+                store: {
+                    url: _ctxPath + "/businessModel/listAllAppModule"
+                },
+                reader:{
+                    name: "name",
+                    field:["id"]
+                },
+                afterRender:function () {
+                    this.loadData({
+                        "appModuleName": g.appModule.name,
+                        "appModuleId": g.appModule.id
+                    });
+                },
+                afterSelect: function (data) {
+                    if (!data) {
+                        EUI.ProcessStatus({
+                            success: false,
+                            msg: this.lang.chooseAppModelText
+                        });
+                        return;
+                    }
+                    EUI.getCmp("workPageSet").setPostParams({
+                        "appModule.id": data.data.id
+                    },true);
+                }
+            }],
             gridCfg: {
                 url: _ctxPath + "/businessModel/listAllNotSelectEdByAppModuleId",
                 postData: {
@@ -1015,7 +1051,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 loadonce: true,
                 url: _ctxPath + "/businessModel/listAllSelectEdByAppModuleId",
                 postData: {
-                    'appModule.id': g.appModule.id,
+                    // 'appModule.id': g.appModule.id,
                     businessModelId: data.id
                 },
                 hasPager: false,
@@ -1024,6 +1060,10 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 colModel: [{
                     name: "id",
                     index: "id",
+                    hidden: true
+                },{
+                    name: "appModuleId",
+                    index: "appModuleId",
                     hidden: true
                 }, {
                     label: g.lang.nameText,
@@ -1036,6 +1076,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "url",
                     index: "url"
                 }]
+
             }
         }
     },
@@ -1229,7 +1270,9 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             for (var i = 0; i < rowDatas.length; i++) {
                 var item = rowDatas[i];
                 if (!g.isInArray(item, selectData)) {
-                    gridPanel.grid.addRowData(item.id, item);
+                    if(item.appModuleId == EUI.getCmp("tbarAppModule").getSubmitValue().appModuleId){
+                        gridPanel.grid.addRowData(item.id, item);
+                    }
                     rightGrid.deleteRow(item.id);
                 }
             }

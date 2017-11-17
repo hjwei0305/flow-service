@@ -118,16 +118,15 @@ public class BusinessModuleController {
 
     /**
      * 查看对应业务实体已选中的工作界面
-     * @param appModuleId
      * @param businessModelId
      * @return
      * @throws
      */
     @RequestMapping(value = "listAllSelectEdByAppModuleId")
     @ResponseBody
-    public List<WorkPageUrl> listAllSelectEdByAppModuleId(@RequestParam(value = "appModule.id") String appModuleId, @RequestParam(value = "businessModelId") String businessModelId) {
+    public List<WorkPageUrl> listAllSelectEdByAppModuleId(@RequestParam(value = "businessModelId") String businessModelId) {
         IWorkPageUrlService proxy = ApiClient.createProxy(IWorkPageUrlService.class);
-        List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByAppModuleId(appModuleId, businessModelId);
+        List<WorkPageUrl> workPageUrlList = proxy.findSelectEdByBusinessModelId(businessModelId);
         return workPageUrlList;
     }
 
