@@ -1194,14 +1194,13 @@ public class FlowTaskTool {
         Boolean canReject = null;
         Boolean canSuspension = null;
         if(normalInfo!=null && !normalInfo.isEmpty() ){
-//                executeTime = normalInfo.get("executeTime")!=null?(Integer)normalInfo.get("executeTime"):null;
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
         }
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);
 
-        if (preTask != null) {
+        if (preTask != null) {//初始化上一步的执行历史信息
             if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
                 flowTask.setTaskStatus(TaskStatus.REJECT.toString());
             } else {
@@ -1212,11 +1211,7 @@ public class FlowTaskTool {
         }
 
         String nodeType = (String)currentNode.get("nodeType");
-        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){
-            net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-            String userType = (String) executor.get("userType");
-            if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
-            {
+        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)||"Normal".equalsIgnoreCase(nodeType)){//能否由移动端审批
                 Boolean mustCommit = false;
                 String mustCommitStr = null;
                 try{
@@ -1225,14 +1220,24 @@ public class FlowTaskTool {
                         mustCommit = Boolean.parseBoolean(mustCommitStr);
                     }
                     if(!mustCommit){
-                        flowTask.setCanBatchApproval(true);
                         flowTask.setCanMobile(true);
                     }
                 }catch(Exception e){
                     logger.error(e.getMessage());
                 }
+
+            if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){//能否批量审批
+                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                String userType = (String) executor.get("userType");
+                if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
+                {
+                        if(!mustCommit){
+                            flowTask.setCanBatchApproval(true);
+                        }
+                }
             }
         }
+
     }
 
     /**

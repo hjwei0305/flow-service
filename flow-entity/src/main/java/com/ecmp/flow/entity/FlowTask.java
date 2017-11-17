@@ -34,11 +34,31 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Transient
     private String webBaseAddress;
 
+
+    /**
+     * web基地址绝对路径
+     */
+    @Transient
+    private String webBaseAddressAbsolute;
+
     /**
      * api基地址
      */
     @Transient
     private String apiBaseAddress;
+
+    /**
+     * api基地址
+     */
+    @Transient
+    private String apiBaseAddressAbsolute;
+
+
+    /**
+     * api基地址
+     */
+    @Transient
+    private String completeTaskServiceUrl;
 
     /**
      * 乐观锁- 版本
@@ -568,6 +588,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
+                .append("completeTaskServiceUrl",this.getCompleteTaskServiceUrl())
                 .toString();
     }
 
@@ -657,4 +678,17 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     public void setCanMobile(Boolean canMobile) {
         this.canMobile = canMobile;
     }
+
+    public String getWebBaseAddressAbsolute() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+    }
+
+    public String getApiBaseAddressAbsolute() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+    }
+
+    public String getCompleteTaskServiceUrl() {
+        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+    }
+
 }

@@ -1162,7 +1162,9 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
             if (flowTaskType === "singlesign") {
                 nodeType = this.lang.singleSignTaskText;
             //    iconCss = "choose-checkbox";
-            } else if (flowTaskType === "countersign") {
+            }else if(flowTaskType === "approve"){
+                nodeType = this.lang.approveTaskText;
+            }else if (flowTaskType === "countersign") {
                 nodeType = this.lang.counterSignTaskText;
             //    iconCss = "choose-checkbox";
             } else if (flowTaskType === "paralleltask") {

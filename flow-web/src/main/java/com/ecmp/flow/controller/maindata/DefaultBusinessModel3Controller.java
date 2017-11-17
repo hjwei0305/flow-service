@@ -211,22 +211,15 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
             }
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
-            if (flowStartResultVO != null) {
-//                if (flowStartResultVO.getFlowInstance() != null) {
-//                    defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
-//                    if (flowStartResultVO.getFlowInstance().isEnded()) {
-//                        defaultBusinessModel3.setFlowStatus(FlowStatus.COMPLETED);
-//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.COMPLETED);
-//                    } else {
-//                        defaultBusinessModel3.setFlowStatus(FlowStatus.INPROCESS);
-//                        initCallActivityBusinessStatus(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, FlowStatus.INPROCESS);
-//                    }
-//                    baseService.save(defaultBusinessModel3);
-//                }
+            if (flowStartResultVO != null && flowStartResultVO.getCheckStartResult()) {
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {
-                new OperateStatus(false, "启动流程失败");
+                if(flowStartResultVO.getCheckStartResult()){
+                    operateStatus=  new OperateStatus(false, "启动流程失败");
+                }else {
+                    operateStatus=  new OperateStatus(false, "启动流程失败,启动检查服务返回false!");
+                }
             }
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");

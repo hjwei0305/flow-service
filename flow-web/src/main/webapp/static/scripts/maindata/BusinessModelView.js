@@ -175,6 +175,16 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                         index: "conditonStatusRest",
                         hidden: true
                     },
+                    {
+                        name: "conditonStatusRest",
+                        index: "conditonStatusRest",
+                        hidden: true
+                    },
+                    {
+                        name: "completeTaskServiceUrl",
+                        index: "completeTaskServiceUrl",
+                        hidden: true
+                    },
                 //     {
                 //     label: this.lang.dataAccessObjectText,
                 //     name: "daoBean",
@@ -255,7 +265,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
             iconCss:"ecmp-eui-edit",
-            height: 450,
+            height: 480,
             width:560,
             padding: 15,
             items: [{
@@ -351,7 +361,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     name: "conditonStatusRest",
                     // width: 300,
                     value: data.conditonStatusRest
-                }, {
+                },{
+                    xtype: "TextField",
+                    title: this.lang.completeTaskServiceUrlText,
+                    // labelWidth: 115,
+                    allowBlank: false,
+                    name: "completeTaskServiceUrl",
+                    // width: 300,
+                    value: data.completeTaskServiceUrl
+                },{
                     xtype: "TextArea",
                     title: this.lang.formURLText,
                     // labelWidth: 115,
@@ -394,7 +412,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
             title: isCopy?g.lang.copyBusinessModelText: g.lang.addNewBusinessModelText,
             iconCss:isCopy?"ecmp-common-copy":"ecmp-eui-add",
             iconCss:"ecmp-eui-add",
-            height: 450,
+            height: 480,
             width:560,
             padding: 15,
             items: [{
@@ -474,6 +492,13 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     // labelWidth: 115,
                     allowBlank: false,
                     name: "conditonStatusRest",
+                    // width: 300
+                }, {
+                    xtype: "TextField",
+                    title: this.lang.completeTaskServiceUrlText,
+                    // labelWidth: 115,
+                    allowBlank: false,
+                    name: "completeTaskServiceUrl",
                     // width: 300
                 }, {
                     xtype: "TextArea",

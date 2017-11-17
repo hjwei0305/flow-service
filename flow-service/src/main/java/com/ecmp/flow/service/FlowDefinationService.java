@@ -54,7 +54,7 @@ import java.util.*;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：
+ * 实现功能：流程定义相关服务
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -379,7 +379,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     private boolean checkStart( String businessKey,FlowDefVersion flowDefVersion){
-        boolean result = false;
+        boolean result = true;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
           String checkUrl = flowDefVersion.getStartCheckServiceUrl();
           if(StringUtils.isNotEmpty(checkUrl)){

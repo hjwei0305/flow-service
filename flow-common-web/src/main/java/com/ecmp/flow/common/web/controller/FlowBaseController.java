@@ -96,11 +96,15 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
             }
             flowStartVO.setUserMap(userMap);
             FlowStartResultVO flowStartResultVO = proxy.startByVO(flowStartVO);
-            if (flowStartResultVO != null) {
+            if (flowStartResultVO != null && flowStartResultVO.getCheckStartResult()) {
                 operateStatus = new OperateStatus(true, "成功");
                 operateStatus.setData(flowStartResultVO);
             } else {
-                new OperateStatus(false, "启动流程失败");
+                if(flowStartResultVO.getCheckStartResult()){
+                    operateStatus=  new OperateStatus(false, "启动流程失败");
+                }else {
+                    operateStatus=  new OperateStatus(false, "启动流程失败,启动检查服务返回false!");
+                }
             }
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");

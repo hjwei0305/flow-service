@@ -247,7 +247,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     public boolean checkStartFlow(String id){
-        return false;
+        return true;
     }
 
     public void endCall(String id){

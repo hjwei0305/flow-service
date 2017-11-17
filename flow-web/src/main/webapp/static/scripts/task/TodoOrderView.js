@@ -204,16 +204,18 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         g.flowInstanceWindow();
         g.endFlowEvent();
     },
-    //点击打开查看表单界面的新页签
+//点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
-            var itemdom = $(this).parents(".info-items");
+            var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
+            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var joinStr = url.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + data.lookUrl + "?id=" + data.businessId,
-                id: data.businessId
+                url: data.webBaseAddress + url + joinStr + "id=" + data.flowInstance.businessId,
+                id: data.flowInstance.businessId
             };
             g.addTab(tab);
         });

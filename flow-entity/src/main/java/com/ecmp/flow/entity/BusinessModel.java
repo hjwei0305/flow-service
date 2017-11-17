@@ -86,6 +86,13 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
     /**
+     * 完成任务时调用的web地址
+     */
+    @Column(length = 255, name = "complete_task_service_url")
+    private String completeTaskServiceUrl;
+
+
+    /**
      * 描述
      */
     @Column(length = 250)
@@ -251,7 +258,15 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.conditonPSValue = conditonPSValue;
     }
 
-//    public String getAppModuleId() {
+    public String getCompleteTaskServiceUrl() {
+        return completeTaskServiceUrl;
+    }
+
+    public void setCompleteTaskServiceUrl(String completeTaskServiceUrl) {
+        this.completeTaskServiceUrl = completeTaskServiceUrl;
+    }
+
+    //    public String getAppModuleId() {
 //        return appModuleId;
 //    }
 //
@@ -296,6 +311,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("appModuleCode", appModuleCode)
                 .append("flowTypes", flowTypes)
                 .append("lookUrl", lookUrl)
+                .append("completeTaskServiceUrl",completeTaskServiceUrl)
                 .toString();
     }
 
