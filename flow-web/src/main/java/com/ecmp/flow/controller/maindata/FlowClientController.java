@@ -201,4 +201,25 @@ public class FlowClientController {
         operateStatus = new OperateStatus(result.successful(), result.getMessage());
         return operateStatus;
     }
+
+
+    /**
+     * 获取下一步的节点信息任务
+     *
+     * @param taskIds
+     * @return 操作结果
+     */
+    @RequestMapping(value = "getSelectedCanBatchNodesInfo")
+    @ResponseBody
+    public OperateStatus getSelectedCanBatchNodesInfo(String taskIds) throws NoSuchMethodException {
+        OperateStatus operateStatus = null;
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSetCanBatch(taskIds);
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+             operateStatus.setData(nodeInfoList);
+        } else {
+            operateStatus = new OperateStatus(false, "选取的任务不存在，可能已经被处理");
+        }
+        return operateStatus;
+    }
 }

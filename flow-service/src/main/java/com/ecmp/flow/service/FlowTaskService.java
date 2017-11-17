@@ -1094,4 +1094,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return operateResultWithData;
     }
 
+
+    public List<NodeInfo> findNexNodesWithUserSetCanBatch(String taskIds)  throws NoSuchMethodException{
+        List<NodeInfo> all = new ArrayList<>();
+        List<String> taskIdList = null;
+        if (StringUtils.isNotEmpty(taskIds)) {
+            String[] includeNodeIdsStringArray = taskIds.split(",");
+            taskIdList = java.util.Arrays.asList(includeNodeIdsStringArray);
+        }
+        if(taskIdList != null && !taskIdList.isEmpty()){
+            String approved="APPROVED";
+            for(String taskId:taskIdList){
+                List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, null);
+                if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+                    all.addAll(nodeInfoList);
+                }
+            }
+        }
+        return all;
+    }
+
 }
