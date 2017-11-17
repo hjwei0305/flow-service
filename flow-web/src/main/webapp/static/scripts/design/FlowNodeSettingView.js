@@ -214,7 +214,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             labelWidth: 100,
             allowBlank: false,
             name: "workPageName",
-            field: ["workPageUrl", "mustCommit"],
+            field: ["id", "mustCommit"],
             async: false,
             store: {
                 url: _ctxPath + "/design/listAllWorkPage",
@@ -224,7 +224,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             },
             reader: {
                 name: "name",
-                field: ["url", "mustCommit"]
+                field: ["id", "mustCommit"]
             }
         }];
         if (this.nodeType == "CallActivity") {
