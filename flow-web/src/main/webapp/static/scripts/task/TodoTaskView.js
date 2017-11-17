@@ -463,7 +463,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + url + "?id=" + data.flowInstance.businessId,
+                url: data.webBaseAddress + url + "?id=" + data.flowInstance.businessId,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);

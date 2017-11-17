@@ -139,7 +139,6 @@ public class FlowHistoryComponentController {
         }else if(StringUtils.isNotEmpty(businessId)){
             result = proxy.getProcessTrackVO(businessId);
         }
-
         return result;
     }
 }
