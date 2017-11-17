@@ -440,12 +440,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         $(".approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
-            var taskConfig = JSON.parse(data.taskJsonDef);
-            var workPageUrl = taskConfig.nodeConfig.normal.workPageUrl;
+          //  var taskConfig = JSON.parse(data.taskJsonDef);
+            var workPageUrl = data.taskFormUrlXiangDui;
             var joinStr = data.webBaseAddress.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: data.taskName,
-                url: data.webBaseAddress + workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.id
             };
             g.addTab(tab);

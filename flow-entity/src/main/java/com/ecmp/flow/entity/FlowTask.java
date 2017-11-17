@@ -4,6 +4,7 @@ package com.ecmp.flow.entity;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,6 +28,11 @@ import java.util.Date;
 @Table(name = "flow_task", catalog = "ecmp_flow")
 public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
+    /**
+     * 表单相对路径
+     */
+    @Transient
+    private String taskFormUrlXiangDui;
 
     /**
      * web基地址
@@ -689,6 +695,17 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public String getCompleteTaskServiceUrl() {
         return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+    }
+
+    public String getTaskFormUrlXiangDui() {
+       String taskFormUrl = this.getTaskFormUrl();
+       if(StringUtils.isNotEmpty(taskFormUrl)){
+           taskFormUrlXiangDui =  taskFormUrl.substring(taskFormUrl.lastIndexOf(":"));
+           taskFormUrlXiangDui = taskFormUrlXiangDui.substring(taskFormUrlXiangDui.indexOf("/"));
+       }else {
+           taskFormUrlXiangDui =  null;
+       }
+        return taskFormUrlXiangDui;
     }
 
 }

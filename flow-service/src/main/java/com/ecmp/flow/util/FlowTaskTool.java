@@ -103,6 +103,12 @@ public class FlowTaskTool {
     @Autowired
     private FlowDefinationService flowDefinationService;
 
+    @Autowired
+    private AppModuleDao appModuleDao;
+
+    @Autowired
+    private WorkPageUrlDao workPageUrlDao;
+
     private final Logger logger = LoggerFactory.getLogger(FlowTaskTool.class);
 
     public FlowTaskTool(){
@@ -1193,13 +1199,19 @@ public class FlowTaskTool {
         net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
         Boolean canReject = null;
         Boolean canSuspension = null;
+        WorkPageUrl workPageUrl =null;
         if(normalInfo!=null && !normalInfo.isEmpty() ){
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
+            String workPageUrlId = (String)normalInfo.get("id");
+            workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+            String appModuleId = workPageUrl.getAppModuleId();
+            AppModule appModule = appModuleDao.findOne(appModuleId);
+            String taskFormUrl = appModule.getWebBaseAddress()+workPageUrl.getUrl();
+            flowTask.setTaskFormUrl(taskFormUrl);
         }
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);
-
         if (preTask != null) {//初始化上一步的执行历史信息
             if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
                 flowTask.setTaskStatus(TaskStatus.REJECT.toString());
@@ -1209,31 +1221,20 @@ public class FlowTaskTool {
             flowTask.setPreId(preTask.getId());
             flowTask.setDepict(preTask.getDepict());
         }
-
         String nodeType = (String)currentNode.get("nodeType");
         if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)||"Normal".equalsIgnoreCase(nodeType)){//能否由移动端审批
-                Boolean mustCommit = false;
-                String mustCommitStr = null;
-                try{
-                    mustCommitStr =(String) normalInfo.get("mustCommit");
-                    if(StringUtils.isNotEmpty(mustCommitStr)){
-                        mustCommit = Boolean.parseBoolean(mustCommitStr);
-                    }
-                    if(!mustCommit){
-                        flowTask.setCanMobile(true);
-                    }
-                }catch(Exception e){
-                    logger.error(e.getMessage());
-                }
-
+            Boolean mustCommit = workPageUrl.getMustCommit();
+            if(mustCommit==null || !mustCommit){
+                flowTask.setCanMobile(true);
+            }
             if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){//能否批量审批
                 net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
                 String userType = (String) executor.get("userType");
                 if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
                 {
-                        if(!mustCommit){
-                            flowTask.setCanBatchApproval(true);
-                        }
+                    if(mustCommit==null || !mustCommit){
+                       flowTask.setCanBatchApproval(true);
+                     }
                 }
             }
         }
