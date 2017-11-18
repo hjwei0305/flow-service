@@ -442,7 +442,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
           //  var taskConfig = JSON.parse(data.taskJsonDef);
             var workPageUrl = data.taskFormUrlXiangDui;
-            var joinStr = data.webBaseAddress.indexOf("?") != -1 ? "&" : "?";
+            var joinStr = workPageUrl.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: data.taskName,
                 url: workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
