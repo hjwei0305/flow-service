@@ -1222,7 +1222,8 @@ public class FlowTaskTool {
             flowTask.setDepict(preTask.getDepict());
         }
         String nodeType = (String)currentNode.get("nodeType");
-        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)||"Normal".equalsIgnoreCase(nodeType)){//能否由移动端审批
+        if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)||"Normal".equalsIgnoreCase(nodeType)||"SingleSign".equalsIgnoreCase(nodeType)
+        ||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)){//能否由移动端审批
             Boolean mustCommit = workPageUrl.getMustCommit();
             if(mustCommit==null || !mustCommit){
                 flowTask.setCanMobile(true);
@@ -1233,7 +1234,10 @@ public class FlowTaskTool {
                 if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
                 {
                     if(mustCommit==null || !mustCommit){
-                       flowTask.setCanBatchApproval(true);
+                        //判断下一步如果为人工网关，不允许批量审批
+                        if(!checkManualExclusiveGateway(flowTask)) {
+                            flowTask.setCanBatchApproval(true);
+                        }
                      }
                 }
             }
