@@ -2,6 +2,7 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -131,7 +132,7 @@ public class FlowHistoryComponentController {
 //    }
     @RequestMapping(value = "getFlowHistoryInfo")
     @ResponseBody
-    public List<ProcessTrackVO> getFlowHistoryInfo(String businessId,String instanceId) throws JsonProcessingException {
+    public OperateStatus getFlowHistoryInfo(String businessId, String instanceId) throws JsonProcessingException {
         List<ProcessTrackVO> result = null;
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         if(StringUtils.isNotEmpty(instanceId)){
@@ -139,6 +140,13 @@ public class FlowHistoryComponentController {
         }else if(StringUtils.isNotEmpty(businessId)){
             result = proxy.getProcessTrackVO(businessId);
         }
-        return result;
+        OperateStatus operateStatus = null;
+        if(result==null || result.isEmpty()){
+            operateStatus =  new OperateStatus(false, "历史记录为空！");
+        }else{
+            operateStatus =  new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG);
+            operateStatus.setData(result);
+        }
+        return operateStatus;
     }
 }

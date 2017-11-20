@@ -119,6 +119,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     private String proxyStatus;
 
     /**
+     * 工作页面id
+     */
+    @Column(name = "work_page_id", length = 36)
+    private String workPageId;
+
+    /**
      * 流程实例ID
      */
 //	@Column(name = "flow_instanceId", nullable = false, length = 36)
@@ -695,6 +701,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public String getCompleteTaskServiceUrl() {
         return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+    }
+
+    public String getWorkPageId() {
+        return workPageId;
+    }
+
+    public void setWorkPageId(String workPageId) {
+        this.workPageId = workPageId;
     }
 
     public String getTaskFormUrlXiangDui() {

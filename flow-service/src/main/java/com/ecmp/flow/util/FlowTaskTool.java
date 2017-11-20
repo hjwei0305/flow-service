@@ -633,6 +633,8 @@ public class FlowTaskTool {
      * @return
      */
     public   NodeInfo convertNodes(FlowTask flowTask, NodeInfo tempNodeInfo, PvmActivity tempActivity) {
+        tempNodeInfo.setFlowDefVersionId(flowTask.getFlowInstance().getFlowDefVersion().getId());
+        tempNodeInfo.setFlowTaskId(flowTask.getId());
         if ("CounterSignNotEnd".equalsIgnoreCase(tempNodeInfo.getType())) {
             tempNodeInfo.setName(tempActivity.getProperty("name").toString());
             tempNodeInfo.setId(tempActivity.getId());
@@ -1204,11 +1206,12 @@ public class FlowTaskTool {
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
             String workPageUrlId = (String)normalInfo.get("id");
-            workPageUrl = workPageUrlDao.findOne(workPageUrlId);
-            String appModuleId = workPageUrl.getAppModuleId();
-            AppModule appModule = appModuleDao.findOne(appModuleId);
-            String taskFormUrl = appModule.getWebBaseAddress()+workPageUrl.getUrl();
-            flowTask.setTaskFormUrl(taskFormUrl);
+            flowTask.setWorkPageId(workPageUrlId);
+//            workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+//            String appModuleId = workPageUrl.getAppModuleId();
+//            AppModule appModule = appModuleDao.findOne(appModuleId);
+//            String taskFormUrl = appModule.getWebBaseAddress()+workPageUrl.getUrl();
+//            flowTask.setTaskFormUrl(taskFormUrl);
         }
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);

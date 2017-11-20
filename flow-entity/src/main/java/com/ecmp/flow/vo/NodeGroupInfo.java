@@ -2,7 +2,10 @@ package com.ecmp.flow.vo;
 
 
 import com.ecmp.flow.basic.vo.Executor;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,9 +20,9 @@ import java.util.Set;
  * <p/>
  * *************************************************************************************************
  */
-public class NodeInfo implements Serializable{
+public class NodeGroupInfo implements Serializable{
 
-    private String id;
+    private List<String> ids = new ArrayList<>();
     private String name;
     private String gateWayName;//网关线名称
 	private String preLineName;//入口线名称
@@ -34,18 +37,15 @@ public class NodeInfo implements Serializable{
 
 	private String callActivityPath;//调用子流程中的节点路径
 
-	private String flowDefVersionId;//流程定义版本id
-	private String flowTaskId;//任务id
-
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
+	public List<String> getIds() {
+		return ids;
+	}
+	public void setIds(List<String> ids) {
+		this.ids = ids;
+	}
 
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
 	public String getName() {
 		return name;
 	}
@@ -150,21 +150,5 @@ public class NodeInfo implements Serializable{
 
 	public void setCallActivityPath(String callActivityPath) {
 		this.callActivityPath = callActivityPath;
-	}
-
-	public String getFlowDefVersionId() {
-		return flowDefVersionId;
-	}
-
-	public void setFlowDefVersionId(String flowDefVersionId) {
-		this.flowDefVersionId = flowDefVersionId;
-	}
-
-	public String getFlowTaskId() {
-		return flowTaskId;
-	}
-
-	public void setFlowTaskId(String flowTaskId) {
-		this.flowTaskId = flowTaskId;
 	}
 }

@@ -41,6 +41,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -1113,5 +1114,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return all;
     }
+    public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(String taskIds)  throws NoSuchMethodException{
+        List<NodeGroupInfo> all = new ArrayList<NodeGroupInfo>();
+        List<String> taskIdList = null;
+        if (StringUtils.isNotEmpty(taskIds)) {
+            String[] includeNodeIdsStringArray = taskIds.split(",");
+            taskIdList = java.util.Arrays.asList(includeNodeIdsStringArray);
+        }
+        if(taskIdList != null && !taskIdList.isEmpty()){
+            String approved="APPROVED";
+            Map<String,NodeGroupInfo> tempNodeGroupInfoMap = new HashMap<>();
+            for(String taskId:taskIdList){
+                List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, null);
+                if(nodeInfoList != null && !nodeInfoList.isEmpty()){
+                    for(NodeInfo nodeInfo:nodeInfoList){
+                        String flowDefVersionId = nodeInfo.getFlowDefVersionId();
+                        NodeGroupInfo tempNodeGroupInfo = tempNodeGroupInfoMap.get(flowDefVersionId+nodeInfo.getId());
+                        if(tempNodeGroupInfo==null){
+                            tempNodeGroupInfo = new NodeGroupInfo();
+                            BeanUtils.copyProperties(nodeInfo,tempNodeGroupInfo);
+                        }else {
+                            tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
+                        }
+                    }
+                }
+            }
+            all.addAll(tempNodeGroupInfoMap.values());
+        }
 
+        return all;
+    }
 }

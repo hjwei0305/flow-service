@@ -222,7 +222,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 下一步执行的节点信息(带用户信息)
      * @throws NoSuchMethodException 找不到方法异常
      */
-    @POST
+    @GET
     @Path("findNexNodesWithUserSetCanBatch")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -340,4 +340,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
     public OperateResultWithData getSelectedNodesInfo(@QueryParam("taskId") String taskId,@QueryParam("approved") String approved, @QueryParam("includeNodeIdsStr") String includeNodeIdsStr) throws NoSuchMethodException;
+
+
+    /**
+     * 通过任务IDs选择下一步带用户信息的执行的节点信息
+     * @param taskIds 任务IDs
+
+     * @return 下一步执行的节点信息(带用户信息),带分组
+     * @throws NoSuchMethodException 找不到方法异常
+     */
+    @GET
+    @Path("findNexNodesGroupWithUserSetCanBatch")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息)",notes = "测试")
+    public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(@QueryParam("taskIds")String taskIds)  throws NoSuchMethodException;
 }

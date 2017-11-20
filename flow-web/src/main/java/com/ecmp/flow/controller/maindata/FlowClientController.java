@@ -8,6 +8,7 @@ import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.vo.ApprovalHeaderVO;
+import com.ecmp.flow.vo.NodeGroupInfo;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -214,7 +215,7 @@ public class FlowClientController {
     public OperateStatus getSelectedCanBatchNodesInfo(String taskIds) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSetCanBatch(taskIds);
+        List<NodeGroupInfo> nodeInfoList = proxy.findNexNodesGroupWithUserSetCanBatch(taskIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
              operateStatus.setData(nodeInfoList);
         } else {
