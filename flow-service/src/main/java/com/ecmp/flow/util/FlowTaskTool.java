@@ -160,9 +160,13 @@ public class FlowTaskTool {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
             net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
-            if ("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
-                result = true;
-                break;
+            try{
+                  if ("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
+                       result = true;
+                       break;
+                  }
+            }catch(Exception e){
+                logger.error(e.getMessage());
             }
         }
         return result;

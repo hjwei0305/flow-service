@@ -368,18 +368,18 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.actTaskDefKey = actTaskDefKey;
     }
 
-    public String getTaskFormUrl() {
-        String taskFormUrl =null;
-        WorkPageUrl workPageUrl = this.getWorkPageUrl();
-        if(workPageUrl!=null){
-             taskFormUrl = workPageUrl.getUrl();
-        }
-        return taskFormUrl;
-    }
+//    public String getTaskFormUrl() {
+//        String taskFormUrl =null;
+//        WorkPageUrl workPageUrl = this.getWorkPageUrl();
+//        if(workPageUrl!=null){
+//             taskFormUrl = workPageUrl.getUrl();
+//        }
+//        return taskFormUrl;
+//    }
 
-    public void setTaskFormUrl(String taskFormUrl) {
-        this.taskFormUrl = taskFormUrl;
-    }
+//    public void setTaskFormUrl(String taskFormUrl) {
+//        this.taskFormUrl = taskFormUrl;
+//    }
 
     public String getTaskStatus() {
         return this.taskStatus;
@@ -593,13 +593,16 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("id", this.getId())
                 .append("webBaseAddress", this.getWebBaseAddress())
                 .append("apiBaseAddress", this.getApiBaseAddress())
+                .append("webBaseAddressAbsolute",this.getWebBaseAddressAbsolute())
+                .append("apiBaseAddressAbsolute",this.getApiBaseAddressAbsolute())
+                .append("completeTaskServiceUrl",this.getCompleteTaskServiceUrl())
+                .append("taskFormUrl", this.getTaskFormUrl())
                 .append("canMobile", canMobile)
                 .append("canBatchApproval", canBatchApproval)
                 .append("flowInstance", flowInstance)
                 .append("flowName", flowName)
                 .append("taskName", taskName)
                 .append("taskDefKey", actTaskDefKey)
-                .append("taskFormUrl", taskFormUrl)
                 .append("taskStatus", taskStatus)
                 .append("proxyStatus", proxyStatus)
                 .append("flowDefinitionId", flowDefinitionId)
@@ -608,7 +611,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
-                .append("completeTaskServiceUrl",this.getCompleteTaskServiceUrl())
                 .toString();
     }
 
@@ -699,17 +701,18 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.canMobile = canMobile;
     }
 
-    public String getWebBaseAddressAbsolute() {
-        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-    }
-
-    public String getApiBaseAddressAbsolute() {
-        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-    }
-
-    public String getCompleteTaskServiceUrl() {
-        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
-    }
+//    public String getWebBaseAddressAbsolute() {
+//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+//    }
+//
+//    public String getApiBaseAddressAbsolute() {
+//        FlowInstance flowInstance = this.getFlowInstance();
+//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+//    }
+//
+//    public String getCompleteTaskServiceUrl() {
+//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+//    }
 
     public WorkPageUrl getWorkPageUrl() {
         return workPageUrl;
@@ -719,15 +722,45 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.workPageUrl = workPageUrl;
     }
 
+
     public String getTaskFormUrlXiangDui() {
-       String taskFormUrl = this.getTaskFormUrl();
-       if(StringUtils.isNotEmpty(taskFormUrl)){
-           taskFormUrlXiangDui =  taskFormUrl.substring(taskFormUrl.lastIndexOf(":"));
-           taskFormUrlXiangDui = taskFormUrlXiangDui.substring(taskFormUrlXiangDui.indexOf("/"));
-       }else {
-           taskFormUrlXiangDui =  null;
-       }
         return taskFormUrlXiangDui;
     }
 
+
+    public void setTaskFormUrlXiangDui(String taskFormUrlXiangDui) {
+        this.taskFormUrlXiangDui = taskFormUrlXiangDui;
+    }
+
+    public String getWebBaseAddressAbsolute() {
+        return webBaseAddressAbsolute;
+    }
+
+    public void setWebBaseAddressAbsolute(String webBaseAddressAbsolute) {
+        this.webBaseAddressAbsolute = webBaseAddressAbsolute;
+    }
+
+    public String getApiBaseAddressAbsolute() {
+        return apiBaseAddressAbsolute;
+    }
+
+    public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
+        this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
+    }
+
+    public String getCompleteTaskServiceUrl() {
+        return completeTaskServiceUrl;
+    }
+
+    public void setCompleteTaskServiceUrl(String completeTaskServiceUrl) {
+        this.completeTaskServiceUrl = completeTaskServiceUrl;
+    }
+
+    public String getTaskFormUrl() {
+        return taskFormUrl;
+    }
+
+    public void setTaskFormUrl(String taskFormUrl) {
+        this.taskFormUrl = taskFormUrl;
+    }
 }

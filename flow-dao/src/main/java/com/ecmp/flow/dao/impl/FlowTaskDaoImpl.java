@@ -7,6 +7,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -82,13 +83,21 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         if(result!=null && !result.isEmpty()){
                for(FlowTask flowTask:result){
                    String apiBaseAddress = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                   flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
                    apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                    apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
                    String webBaseAddress = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                   flowTask.setWebBaseAddressAbsolute(webBaseAddress);
                    webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                    webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
                    flowTask.setApiBaseAddress(apiBaseAddress);
                    flowTask.setWebBaseAddress(webBaseAddress);
+                   WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
+                   flowTask.setCompleteTaskServiceUrl(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl());
+                   if(workPageUrl!=null){
+                       flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
+                       flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+                   }
                }
        }
        return result;
