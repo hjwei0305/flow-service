@@ -1206,8 +1206,8 @@ public class FlowTaskTool {
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
             String workPageUrlId = (String)normalInfo.get("id");
-            flowTask.setWorkPageId(workPageUrlId);
-//            workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+            workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+            flowTask.setWorkPageUrl(workPageUrl);
 //            String appModuleId = workPageUrl.getAppModuleId();
 //            AppModule appModule = appModuleDao.findOne(appModuleId);
 //            String taskFormUrl = appModule.getWebBaseAddress()+workPageUrl.getUrl();

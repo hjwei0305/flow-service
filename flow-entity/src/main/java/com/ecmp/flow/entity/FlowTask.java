@@ -101,9 +101,10 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     /**
      * 任务表单URL
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "task_form_url", length = 65535)
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+//    @Column(name = "task_form_url", length = 65535)
+    @Transient
     private String taskFormUrl;
 
     /**
@@ -118,11 +119,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(name = "proxy_status", length = 80)
     private String proxyStatus;
 
+
     /**
-     * 工作页面id
+     * 所属流程实例
      */
-    @Column(name = "work_page_id", length = 36)
-    private String workPageId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "work_page_url_id")
+    private WorkPageUrl workPageUrl;
 
     /**
      * 流程实例ID
@@ -366,7 +369,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     }
 
     public String getTaskFormUrl() {
-        return this.taskFormUrl;
+        String taskFormUrl =null;
+        WorkPageUrl workPageUrl = this.getWorkPageUrl();
+        if(workPageUrl!=null){
+             taskFormUrl = workPageUrl.getUrl();
+        }
+        return taskFormUrl;
     }
 
     public void setTaskFormUrl(String taskFormUrl) {
@@ -703,12 +711,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
     }
 
-    public String getWorkPageId() {
-        return workPageId;
+    public WorkPageUrl getWorkPageUrl() {
+        return workPageUrl;
     }
 
-    public void setWorkPageId(String workPageId) {
-        this.workPageId = workPageId;
+    public void setWorkPageUrl(WorkPageUrl workPageUrl) {
+        this.workPageUrl = workPageUrl;
     }
 
     public String getTaskFormUrlXiangDui() {
