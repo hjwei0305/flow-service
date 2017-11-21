@@ -1,156 +1,109 @@
 // 待办部分
 EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
-    params: {
+    modelId: null,
+    pageInfo: {
         page: 1,
         rows: 10,
-        modelId: null,
-        S_createdDate: "DESC",
-        Quick_value: null
+        total: 1
     },
+    records: null,
+    firstTime: true,
+    searchName: null,
+    nowPage: null,
+    totalPage: null,
+    mainViewBarClick: false,
     initComponent: function () {
-        var g = this;
-        this.boxCmp = EUI.Container({
-            renderTo: this.renderTo,
-            layout: "border",
-            title: "我的工作 > 待办任务",
-            items: [{
-                xtype: "ToolBar",
-                height: 33,
-                region: "north",
-                padding: 0,
-                border: false,
-                afterRender: function () {
-                    EUI.container.Container.superclass.afterRender.call(this);
-                    this.content.css("paddingTop", 12);
-                },
-                items: this.initToolBar()
-            }, {
-                xtype: "Container",
-                region: "center",
-                padding: 0,
-                html: '<div class="info-left todo-info"></div><div class="load-more"><span>获取更多</span></div>'
-                + '<div class="empty-data"><div class="not-data-msg">------------您当前没有待办事项------------</div></div>'
-            }]
-        });
-        this.dataDom = $(".todo-info", "#" + this.renderTo);
-        this.emptyDom = $(".empty-data", "#" + this.renderTo);
-        this.loadMoreDom = $(".load-more", "#" + this.renderTo);
+        this.initHtml();
         this.getTodoData();
         this.addEvents();
     },
-    initToolBar: function () {
-        var g = this;
-        return [{
-            xtype: "Label",
-            content: "<span>全部</span><span class='todo-count'>25</span>",
-            customCss: "module-all",
-            onClick: function () {
-                if (!g.params.modelId) {
-                    return;
-                }
-                g.params.modelId = null;
-                g.refresh();
-            }
-        }, {
-            xtype: "ComboBox",
-            name: "businessModelName",
-            field: ["businessModeId"],
-            displayText: "筛选",
-            async: false,
-            store: {
-                url: _ctxPath + "/flowTask/listFlowTaskHeader"
-            },
-            afterSelect: function (data) {
-                g.params.modelId = data.data.businessModeId;
-                g.refresh();
-            }
-        }, {
-            xtype: "SearchBox",
-            name: "Quick_value",
-            onSearch: function (value) {
-                g.params.page = 1;
-                g.params.Quick_value = value;
-                g.getTodoData();
-            }
-        }, {
-            xtype: "Button",
-            title: "批量审批",
-            handler: function () {
-                g.hide();
-                new EUI.BatchApproveListView({
-                    returnBack: function () {
-                        g.show();
-                    }
-                });
-            }
-        }, "->", {
-            xtype: "Label",
-            style: {
-                cursor: "pointer"
-            },
-            content: "<i class='ecmp-eui-leaf' style='vertical-align: middle;color:#3671cf;'></i><span>已办工作</span>",
-            onClick: function () {
-                $("body").trigger("completetask");
-            }
-        }, {
-            xtype: "Label",
-            style: {
-                cursor: "pointer"
-            },
-            content: "<i class='ecmp-sys-syslog' style='vertical-align: middle;color:#3671cf;'></i><span>我的单据</span>",
-            onClick: function () {
-                $("body").trigger("myorder");
-            }
-        }];
+    initHtml: function (data) {
+        $("#" + this.renderTo).empty();
+        var html = this.getTodoTaskHtml();
+        $("#" + this.renderTo).append(html);
     },
 
+    upPageBtn: function () {
+        if (this.nowPage == 1) {
+            $(".pre").removeClass("page-gray").addClass("page-btn")
+        } else {
+            $(".pre").removeClass("page-btn").addClass("page-gray")
+        }
+        if (this.totalPage == this.nowPage) {
+            $(".next").removeClass("page-gray").addClass("page-btn")
+        } else {
+            $(".next").removeClass("page-btn").addClass("page-gray")
+        }
+    },
+
+    //当页面没有数据时的显示内容
+    showEmptyWorkInfo: function () {
+        $("#" + this.renderTo).empty();
+        var html = '<div class="empty-data">' +
+            '<div class="not-data-msg">------------您当前没有需要处理的工作------------</div></div>';
+        $("#" + this.renderTo).append(html)
+            .css("height", "100%");
+    },
+    //待办的外层
+    getTodoTaskHtml: function () {
+        return '<div class="info-left todo-info"></div>' +
+            '<div class="content-page">' +
+            '</div>';
+    },
     //待办内容部分的数据调用
     getTodoData: function () {
         var g = this;
-        var myMask = EUI.LoadMask({
-            msg: "正在加载,请稍候..."
-        });
+        var myMask;
+        if (g.firstTime) {
+            myMask = EUI.LoadMask({
+                msg: "正在加载,请稍候..."
+            });
+        }
         EUI.Store({
             url: _ctxPath + "/flowTask/listFlowTaskWithAllCount",
             params: this.params,
             success: function (result) {
-                if (result.allTotal > 0) {
-                    $(".todo-count").text(result.allTotal).show();
-                } else {
-                    $(".todo-count").text(0).hide();
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
                 }
-                if (result.records == 0) {
-                    g.params.page = 1;
-                    g.showEmptyWorkInfo();
-                } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
-                    g.showTodoData(result.rows);
-                } else {
-                    if (g.params.page > 0) {
-                        g.params.page--;
+                $(".todo-count").text(result.allTotal);
+                if (result.rows) {
+                    g.pageInfo.page = result.page;
+                    g.pageInfo.total = result.total;
+                    g.records = result.records;
+                    if (g.records > 0) {
+                        g.getTodoHtml(result.rows);
+                    } else {
+                        g.showEmptyWorkInfo();
                     }
-                    EUI.ProcessStatus({
-                        success: true,
-                        msg: "没有更多数据"
-                    });
                 }
-                myMask.hide();
             },
             failure: function (result) {
-                myMask.hide();
-                EUI.ProcessStatus(result);
-                if (g.params.page > 0) {
-                    g.params.page--;
+                if (g.firstTime) {
+                    myMask.hide();
+                    g.firstTime = false;
                 }
+                EUI.ProcessStatus(result);
             }
         });
     },
+    //待办分页的判断
+    pageJudge: function () {
+    },
     //待办里面内容部分的循环
-    showTodoData: function (items) {
+    getTodoHtml: function (items) {
         var g = this;
-        this.showContent();
+        var box = $(".todo-info", '#' + this.renderTo);
         for (var j = 0; j < items.length; j++) {
+            /* var status = items[j].taskStatus;
+             var statusStr = "待办";
+             if (status == "INPROCESS") {
+             statusStr = "处理中";
+             } else if (status == "COMPLETE") {
+             statusStr = "结束";
+             }*/
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="ecmp-common-return reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
             var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="ecmp-common-claim claim-icon" title="签收"></i><span>签收</span></div>' : '';
@@ -158,6 +111,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon icon-size" title="终止"></i><span>终止</span></div>' : '';
             var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
+                // '                  <div class="checkbox"></div>' +
                 '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
                 '                 <div class="item flow-digest">' +
@@ -178,11 +132,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                 </div>' +
                 '</div>');
             itemdom.data(items[j]);
-            this.dataDom.append(itemdom);
+            box.append(itemdom);
         }
-        EUI.resize(this.boxCmp);
-    }
-    ,
+    },
     //计算时间几天前
     countDate: function (startTime) {
         if (!startTime) {
@@ -217,47 +169,110 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var minutes = Math.floor(leave2 / (60 * 1000));
             return minutes + '分钟前';
         }
-    }
-    ,
-    show: function () {
-        this.boxCmp.show();
-    }
-    ,
-    hide: function () {
-        this.boxCmp.hide();
-    }
-    ,
-    showContent: function () {
-        this.dataDom.show();
-        this.loadMoreDom.show();
-        this.emptyDom.hide();
     },
-    //当页面没有数据时的显示内容
-    showEmptyWorkInfo: function () {
-        this.emptyDom.show();
-        this.dataDom.hide();
-        this.loadMoreDom.hide();
-        EUI.resize(this.boxCmp);
-    }
-    ,
+    //底部翻页部分
+    showPage: function (records) {
+        $(".record-total", "#" + this.renderTo).text("共" + records + "条记录");
+    },
+    //底部翻页绑定事件
+    pagingEvent: function () {
+        var g = this;
+        //首页
+
+        $(".first-page", "#" + this.renderTo).live("click", function () {
+            if (g.pageInfo.page == 1) {
+                return;
+            }
+            g.pageInfo.page = 1;
+            g.getTodoData();
+        });
+        //上一页
+        $(".prev-page", "#" + this.renderTo).live("click", function () {
+            if (g.pageInfo.page == 1) {
+                return;
+            }
+            g.pageInfo.page--;
+            g.getTodoData();
+        });
+        //下一页
+        $(".next-page", "#" + this.renderTo).live("click", function () {
+            if (g.pageInfo.page == g.pageInfo.total) {
+                return;
+            }
+            g.pageInfo.page++;
+            g.getTodoData();
+        });
+        //尾页
+        $(".end-page", "#" + this.renderTo).live("click", function () {//点击尾页时
+            if (g.pageInfo.page == g.pageInfo.total) {//如果page=total
+                return; //就直接return
+            }
+            g.pageInfo.page = g.pageInfo.total;//page=total
+            g.getTodoData();//请求page=total时的数据
+        });
+    },
+    show: function () {
+        $("#" + this.renderTo).css("display", "block");
+    },
+    hide: function () {
+        $("#" + this.renderTo).css("display", "none");
+    },
     addEvents: function () {
         var g = this;
-        this.emptyDom.bind("click", function () {
-            g.params.page = 1;
-            g.getTodoData();
-        });
-        this.loadMoreDom.click(function () {
-            g.params.page += 1;
-            g.getTodoData();
-        });
         g.approveViewWindow();
         g.lookApproveViewWindow();
         g.flowInstanceWindow();
         g.showRejectWindow();
         g.claimEvent();
         g.endFlowEvent();
-    }
-    ,
+        // g.checkBoxEvents();
+        g.pagingEvent();
+        g.navbarEvent();
+    },
+    //导航的点击事件
+    navbarEvent: function () {
+        var g = this;
+        $(".navber-count").live("click", function () {
+            $(this).addClass("nav-select").siblings().removeClass("nav-select");
+            var id = $(this).attr("data-id");
+            g.modelId = id;
+            if (!g.mainViewBarClick) {
+                EUI.getCmp("searchBox").reset();
+                g.searchName = null;
+                g.mainViewBarClick = false;
+            }
+            g.resetPageBar();
+            //重新获取数据
+            g.getTodoData();
+        });
+        $(".arrow-left").live("click", function () {
+            if (!$(this).hasClass("page-btn")) {
+                g.nowPage--;
+                $(".navber-count", ".navbar").hide("fast");
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show("fast");
+                g.upPageBtn();
+            }
+        });
+        $(".arrow-right").live("click", function () {
+            if (!$(this).hasClass("page-btn")) {
+                g.nowPage++;
+                $(".navber-count", ".navbar").hide(300);
+                $(".navber-count[page='" + g.nowPage + "']", ".navbar").show(300);
+                g.upPageBtn();
+            }
+        });
+    },
+    resetPageBar: function () {
+        this.pageInfo.page = 1;
+        this.pageInfo.rows = 10;
+        this.pageInfo.total = 1;
+
+        $(".first-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".prev-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".next-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".end-page", "#" + this.renderTo).addClass("pageDisable");
+        $(".one", "#" + this.renderTo).val(1);
+    },
     //点击打开审批界面的新页签
     approveViewWindow: function () {
         var g = this;
@@ -265,22 +280,20 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var taskConfig = JSON.parse(data.taskJsonDef);
-            var workPageUrl = data.taskFormUrlXiangDui;
-            var joinStr = workPageUrl.indexOf("?") != -1 ? "&" : "?";
+            var workPageUrl = taskConfig.nodeConfig.normal.workPageUrl;
+            var joinStr = data.webBaseAddress.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: data.taskName,
-                url: workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+                url: data.webBaseAddress + workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
                 id: data.id
             };
             g.addTab(tab);
         });
-    }
-    ,
+    },
     refresh: function (modelId) {
-        this.params.page = 1;
-        this.getTodoData();
-    }
-    ,
+
+        this.getTodoData(modelId);
+    },
     //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
@@ -288,16 +301,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
             var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
-            var joinStr = url.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: "查看表单",
-                url: data.webBaseAddress + url + joinStr + "id=" + data.flowInstance.businessId,
+                url: _ctxPath + url + "?id=" + data.flowInstance.businessId,
                 id: data.flowInstance.businessId
             };
             g.addTab(tab);
         });
-    }
-    ,
+    },
     //点击打开流程历史的新页签
     flowInstanceWindow: function () {
         var g = this;
@@ -309,8 +320,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 instanceId: data.flowInstance.id
             })
         });
-    }
-    ,
+    },
     //驳回
     showRejectWindow: function () {
         var g = this;
@@ -377,8 +387,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }]
             })
         });
-    }
-    ,
+    },
     //签收事件
     claimEvent: function () {
         var g = this;
@@ -403,7 +412,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             msg: "正在签收，请稍候..."
                         });
                         EUI.Store({
-                            url: _ctxPath + "/flowClient/claimTask",
+                            url:  _ctxPath +"/flowClient/claimTask",
                             params: {taskId: data.id},
                             success: function (status) {
                                 myMask.remove();
@@ -421,8 +430,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }]
             });
         });
-    }
-    ,
+    },
     //终止事件
     endFlowEvent: function () {
         var g = this;
@@ -465,8 +473,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }]
             });
         });
-    }
-    ,
+    },
     //在新的窗口打开（模拟新页签的打开方式）
     addTab: function (tab) {
         if (parent.homeView) {
@@ -475,5 +482,29 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             window.open(tab.url);
         }
     }
+    /*//选项框的点击事件
+     checkBoxEvents: function () {
+     var g = this;
+     //点击单个选项框
+     $(".checkbox").live("click", function () {
+     if (!$(this).hasClass("checked")) {
+     $(this).addClass("checked");
+
+     } else {
+     $(this).removeClass("checked");
+     }
+     });
+
+     //点击全选框
+     $(".check-all").click(function () {
+     if (!$(this).hasClass("checked")) {
+     $(this).addClass("checked");
+     $(".checkbox").addClass("checked");
+     } else {
+     $(this).removeClass("checked");
+     $(".checkbox").removeClass("checked");
+     }
+     })
+     }*/
 })
 ;

@@ -1,5 +1,5 @@
-//处理完成单据
-EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
+// 处理中单据
+EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     params: {
         page: 1,
@@ -26,7 +26,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         this.getData();
         this.addEvents();
     },
-//已办单据的数据调用
+    //待办内容部分的数据调用
     getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
@@ -60,15 +60,15 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                 }
             }
         })
-    }
-    ,
-//已办单据界面内容部分的循环
+    },
+    //待办单据界面内容部分的循环
     showData: function (datas) {
-        var html = "";
         this.showContent();
+        var html = "";
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
+                var endFlowHtml = item.canManuallyEnd ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
                 html = $('<div class="info-items">' +
                     ' <div class="item">' +
                     '     <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
@@ -78,19 +78,19 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                     '     </div>' +
                     ' </div>' +
                     ' <div class="item">' +
-                    '    <div class="end">' +
+                    '    <div class="end">'
+                    + endFlowHtml +
                     '         <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                     '         <div class="todo-btn todo-end-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
                     '    </div>' +
-                    '     <span class="item-right general" title="流程结束时间">' + item.endDate + '</span>' +
+                    '     <span class="item-right general" title="流程发起时间">' + item.createdDate + '</span>' +
                     ' </div>' +
                     '</div>');
                 html.data(item);
                 this.dataDom.append(html);
             }
         }
-    }
-    ,
+    },
     show: function () {
         this.boxCmp.show();
     }
@@ -115,12 +115,12 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         this.params.page = 1;
         EUI.apply(this.params, params);
         this.getData();
-    }
-    ,
+    },
     addEvents: function () {
         var g = this;
-        this.lookApproveViewWindow();
-        this.flowInstanceWindow();
+        g.lookApproveViewWindow();
+        g.flowInstanceWindow();
+        g.endFlowEvent();
         this.emptyDom.bind("click", function () {
             g.params.page = 1;
             g.getData();
@@ -129,9 +129,8 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             g.params.page += 1;
             g.getData();
         });
-    }
-    ,
-//点击打开查看表单界面的新页签
+    },
+    //点击打开查看表单界面的新页签
     lookApproveViewWindow: function () {
         var g = this;
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
@@ -139,14 +138,13 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + data.lookUrl + "?id=" + data.businessId,
+                url: _ctxPath + "/" + data.lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);
         });
-    }
-    ,
-//点击打开流程历史的新页签
+    },
+    //点击打开流程历史的新页签
     flowInstanceWindow: function () {
         var g = this;
         $(".flowInstance-btn", "#" + this.renderTo).live("click", function () {
@@ -157,9 +155,51 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                 instanceId: data.flowInstanceId
             })
         });
-    }
-    ,
-//在新的窗口打开（模拟新页签的打开方式）
+    },
+    //终止事件
+    endFlowEvent: function () {
+        var g = this;
+        $(".endFlow-btn", "#" + this.renderTo).live("click", function () {
+            var itemdom = $(this).parents(".info-items");
+            var data = itemdom.data();
+            var message = EUI.MessageBox({
+                border: true,
+                title: "温馨提示",
+                showClose: true,
+                msg: "您确定要终止吗",
+                buttons: [{
+                    title: "取消",
+                    handler: function () {
+                        message.remove();
+                    }
+                }, {
+                    title: "确定",
+                    selected: true,
+                    handler: function () {
+                        var myMask = EUI.LoadMask({
+                            msg: "正在终止，请稍候..."
+                        });
+                        EUI.Store({
+                            url: _ctxPath + "/flowInstance/endFlowInstanceByBusinessId/",
+                            params: {businessId: data.businessId},
+                            success: function (status) {
+                                myMask.remove();
+                                EUI.ProcessStatus(status);
+                                //重新获取数据
+                                g.getData();
+                            },
+                            failure: function (status) {
+                                myMask.hide();
+                                EUI.ProcessStatus(status);
+                            }
+                        });
+                        message.remove();
+                    }
+                }]
+            });
+        });
+    },
+    //在新的窗口打开（模拟新页签的打开方式）
     addTab: function (tab) {
         if (parent.homeView) {
             parent.homeView.addTab(tab);//获取到父窗口homeview，在其中新增页签
@@ -167,5 +207,4 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             window.open(tab.url);
         }
     }
-})
-;
+});

@@ -242,7 +242,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
         });
         $(".ecmp-flow-history").live("click", function () {
             var data = g.gridCmp.getSelectRow();
-            Flow.FlowHistory({
+            EUI.FlowHistory({
                 businessId: data.businessId,
                 instanceId: data.id
             })

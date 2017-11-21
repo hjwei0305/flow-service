@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css"
           data-th-href="@{/static/styles/css/MainPageView.css}">
     <link rel="stylesheet" type="text/css"
-          data-th-href="@{/static/styles/css/Flow.css}">
+          data-th-href="@{/static/styles/css/BatchApprove.css}">
     <script type="text/javascript"
             data-th-src="@{/static/scripts/task/MainPageData.js}"></script>
     <script type="text/javascript"
@@ -16,28 +16,29 @@
     <script type="text/javascript"
             data-th-src="@{/static/scripts/task/CompleteTaskView.js}"></script>
     <script type="text/javascript"
-            data-th-src="@{/static/scripts/task/TodoOrderView.js}"></script>
+            data-th-src="@{/static/scripts/task/ProcessingOrderView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/scripts/task/MyOrderView.js}"></script>
     <script type="text/javascript"
-            data-th-src="@{/static/scripts/maindata/Flow.js}"></script>
-    <script type="text/javascript"
             data-th-src="@{/static/scripts/task/CompleteOrderView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/BatchApproveListView.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/task/BatchApproveUserView.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <title>任务界面</title>
     <script type="text/javascript">
         var mainPageView;
         EUI.onReady(function () {
-            mainPageView = new EUI.MainPageView({
-                renderTo: "content",
-                data: _data,
-                menu: _menu
-            });
+            mainPageView = new EUI.MainPageView();
         });
     </script>
 </head>
 <body style="padding: 6px;min-width: 1000px;">
-<div id="content"></div>
+<div id="todotask"></div>
+<div id="completetask"></div>
+<div id="myorder"></div>
+<div id="batchlist"></div>
 </body>
 </html>

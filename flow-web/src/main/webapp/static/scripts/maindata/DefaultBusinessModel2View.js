@@ -24,7 +24,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".condetail-flowHistory").live("click", function () {
             var data = EUI.getCmp("gridPanel").getSelectRow();
-            Flow.FlowHistory({
+            EUI.FlowHistory({
                 businessId: data.id
             })
         });
@@ -220,7 +220,7 @@ EUI.DefaultBusinessModel2View = EUI.extend(EUI.CustomUI, {
                  selected: true,
                 handler: function () {
                     infoBox.remove();
-                    Flow.FlowStart({
+                    EUI.FlowStart({
                         businessId: data.id,
                         businessModelCode: 'com.ecmp.flow.entity.DefaultBusinessModel2',
                         url: _ctxPath + "/defaultBusinessModel2/startFlow",
