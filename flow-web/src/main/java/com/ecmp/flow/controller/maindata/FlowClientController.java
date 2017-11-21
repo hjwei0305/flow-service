@@ -236,9 +236,25 @@ public class FlowClientController {
     @ResponseBody
     public OperateStatus completeTaskBatch(String flowTaskBatchCompleteWebVoStrs) {
         OperateStatus operateStatus=null;
+        List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = null;
         if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
             JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
-            List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
+            if(jsonArray !=null && !jsonArray.isEmpty()){
+                flowTaskBatchCompleteWebVOList = new ArrayList<FlowTaskBatchCompleteWebVO>();
+                for(int i=0;i<jsonArray.size();i++){
+                    FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO = new FlowTaskBatchCompleteWebVO();
+                   JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                   JSONArray taskIdListJsonArray = (JSONArray)jsonObject.get("taskIdList");
+                    JSONArray flowTaskCompleteListJsonArray = (JSONArray)jsonObject.get("flowTaskCompleteList");
+                   List<FlowTaskCompleteWebVO> flowTaskCompleteWebVOList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(flowTaskCompleteListJsonArray, FlowTaskCompleteWebVO.class);
+                    flowTaskBatchCompleteWebVO.setFlowTaskCompleteList(flowTaskCompleteWebVOList);
+                    List<String> taskIdList = ( List<String>) JSONArray.toCollection(taskIdListJsonArray, String.class);
+                    flowTaskBatchCompleteWebVO.setTaskIdList(taskIdList);
+                    flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO);
+                }
+
+            }
+//            List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
             String opinion = "同意";
             if(flowTaskBatchCompleteWebVOList!=null && !flowTaskBatchCompleteWebVOList.isEmpty()){
                 for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO:flowTaskBatchCompleteWebVOList){
