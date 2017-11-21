@@ -273,7 +273,9 @@ public class FlowClientController {
                                     v.put(f.getUserVarName(), f.getUserIds());
                                 } else {
                                     String[] idArray = f.getUserIds().split(",");
-                                    v.put(f.getUserVarName(), idArray);
+                                    if(StringUtils.isNotEmpty(f.getUserVarName())){
+                                        v.put(f.getUserVarName(), idArray);
+                                    }
                                 }
                         }
                     }

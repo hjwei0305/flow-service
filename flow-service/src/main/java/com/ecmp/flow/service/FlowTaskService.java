@@ -1123,7 +1123,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             taskIdList = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
         if(taskIdList != null && !taskIdList.isEmpty()){
-            String approved="APPROVED";
+            String approved="true";
             Map<String,NodeGroupInfo> tempNodeGroupInfoMap = new HashMap<>();
             for(String taskId:taskIdList){
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, null);
