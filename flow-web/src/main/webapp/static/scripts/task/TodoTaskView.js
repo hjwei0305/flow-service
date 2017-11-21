@@ -13,7 +13,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.boxCmp = EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
-            title: "我的工作 > 待办任务",
+            title: "我的工作 > 待办工作",
             items: [{
                 xtype: "ToolBar",
                 height: 33,
@@ -245,6 +245,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.emptyDom.show();
         this.dataDom.hide();
         this.loadMoreDom.hide();
+        this.dataDom.empty();
         EUI.resize(this.boxCmp);
     }
     ,

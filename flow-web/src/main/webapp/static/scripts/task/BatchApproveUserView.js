@@ -6,7 +6,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
     taskIds: null,
     userData: null,//缓存后端返回的选人数据
     afterSubmit: null,
-    returnBack:null,
+    returnBack: null,
 
     initComponent: function () {
         this.boxCmp = EUI.Container({
@@ -22,7 +22,6 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                 xtype: "Container",
                 height: "auto",
                 padding: 0,
-                border: true,
                 style: {
                     "border-radius": "2px"
                 },
@@ -44,7 +43,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: "返回",
             handler: function () {
-                g.boxCmp.remove();
+                g.remove();
                 g.returnBack && g.returnBack.call(g);
             }
         }, {
@@ -87,7 +86,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             html += '<div class="process_box">' +
                 '<div class="task_type_title">' + itemdata.name + '</div>' +
                 this.getTaskHtml(itemdata.nodeGroupInfos)
-            '</div>';
+                + '</div>';
         }
         $(".todo-info", '#' + this.renderTo).append(html);
         EUI.resize(this.boxCmp);
@@ -105,11 +104,10 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                 html += '<div class="task_info_operator">' +
                     '<div class="operator_title">执行人：</div>' +
                     '<div class="operator_info">' +
-                    this.getUserHtml(data[i].executorSet)
-                '</div></div></div>';
-            } else {
-                html += '</div>';
+                    this.getUserHtml(data[i].executorSet) +
+                    '</div></div>';
             }
+            html += '</div>';
         }
         return html;
     },
@@ -118,7 +116,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
         for (var i = 0; i < data.length; i++) {
             html += '<div class="user-item" id="' + data[i].id + '">' +
                 '<div class="info_radio ecmp-eui-radio"></div>' +
-                '<div>' + data[i].name + ' ' + data[i].organizationName + (data[i].positionName || '') + '</div>' +
+                '<div>' + data[i].name + ' ' + data[i].organizationName + ' ' + (data[i].positionName || '') + '</div>' +
                 '</div>';
         }
         return html;
@@ -166,10 +164,11 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
         EUI.Store({
             url: _ctxPath + "/flowClient/completeTaskBatch",
             params: {
-                flowTaskBatchCompleteWebVoStrs:JSON.stringify(data)
+                flowTaskBatchCompleteWebVoStrs: JSON.stringify(data)
             },
             success: function (result) {
                 myMask.hide();
+                g.remove();
                 g.afterSubmit && g.afterSubmit.call(g);
             },
             failure: function (result) {
@@ -189,5 +188,8 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                 $(".info_radio", dom).addClass("ecmp-eui-radioselect");
             }
         });
+    },
+    remove: function () {
+        this.boxCmp.remove();
     }
 });

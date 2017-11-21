@@ -73,11 +73,12 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                     renderTo: "batchuser",
                     taskIds: taskIds.join(","),
                     afterSubmit: function () {
-                        $(".work_table_box", '#' + g.renderTo).remove();
+                        g.show();
                         g.params.page = 1;
                         g.loadData();
                     },
                     returnBack: function () {
+                        this.remove();
                         g.show();
                     }
                 });
@@ -184,6 +185,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         this.emptyDom.show();
         this.dataDom.hide();
         this.loadMoreDom.hide();
+        this.dataDom.empty();
     }
     ,
     showData: function (data) {

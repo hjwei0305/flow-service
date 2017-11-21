@@ -63,6 +63,7 @@
 .process_box {
     border: 1px solid #cccccc;
     box-shadow: #ddd 0 0 5px;
+    margin-bottom: 20px;
 }
 
 .task_info {

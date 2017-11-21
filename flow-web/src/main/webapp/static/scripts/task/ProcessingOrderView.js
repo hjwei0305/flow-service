@@ -112,6 +112,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
         this.emptyDom.show();
         this.dataDom.hide();
         this.loadMoreDom.hide();
+        this.dataDom.empty();
     }
     ,
     refresh: function (params) {
