@@ -23,7 +23,7 @@ import java.util.Set;
 public class NodeGroupByFlowVersionInfo implements Serializable{
 
     private String id;//流程版本id
-    private String name;
+    private String name;//流程版本名称
     private List<NodeGroupInfo> nodeGroupInfos = new ArrayList<>();
 
 	public String getId() {
