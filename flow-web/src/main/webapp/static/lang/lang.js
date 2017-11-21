@@ -289,8 +289,8 @@ if (EUI.LookWorkFlowView) {
     }, common_lang);
 }
 
-if (Flow.flow.FlowStart) {
-    Flow.flow.FlowStart.prototype.lang = EUI.applyIf({
+if (EUI.FlowStart) {
+    EUI.FlowStart.prototype.lang = EUI.applyIf({
         launchMaskMsgText: "正在启动，请稍候",
         notFoundFlowDefinitionText: "找不到流程定义",
         notFoundFlowTypeText: "找不到流程类型",
@@ -312,8 +312,8 @@ if (Flow.flow.FlowStart) {
     }, common_lang);
 }
 
-if (Flow.flow.FlowApprove) {
-    Flow.flow.FlowApprove.prototype.lang = EUI.applyIf({
+if (EUI.FlowApprove) {
+    EUI.FlowApprove.prototype.lang = EUI.applyIf({
         businessUnitText: "业务单号：",
         docMarkerText: "制单人：",
         preExecutorText: "上一步执行人：",
@@ -394,8 +394,8 @@ if (EUI.FlowDefinationView) {
     }, common_lang);
 }
 
-if (Flow.flow.FlowHistory) {
-    Flow.flow.FlowHistory.prototype.lang = EUI.applyIf({
+if (EUI.FlowHistory) {
+    EUI.FlowHistory.prototype.lang = EUI.applyIf({
         queryMaskMessageText: "正在加载，请稍候...",
         startText: "发起",
         flowInfoText: "流程信息",

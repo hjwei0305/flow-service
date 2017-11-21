@@ -4,10 +4,6 @@
     <th:block th:include="base/base::base_head"></th:block>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title></title>
-    <link rel="stylesheet" type="text/css"
-          data-th-href="@{/static/styles/css/Flow.css}">
-    <script type="text/javascript"
-            data-th-src="@{/static/scripts/maindata/Flow.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
@@ -16,7 +12,7 @@
         var taskId = EUI.util.getUrlParam("taskId");
         var submitUrl = EUI.util.getUrlParam("submitUrl");
         EUI.onReady(function () {
-            flowView = Flow.FlowApprove({
+            flowView = EUI.FlowApprove({
                 busId: id,
                 taskId: taskId,
                 iframeHeight: 550,

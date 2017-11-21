@@ -18,7 +18,7 @@ EUI.ns("Flow.flow");
 /*
  * 审批组件
  * */
-Flow.FlowApprove = function (options) {
+EUI.FlowApprove = function (options) {
     options.busId = EUI.util.getUrlParam("id");
     options.taskId = EUI.util.getUrlParam("taskId");
     $("body").css({
@@ -29,9 +29,9 @@ Flow.FlowApprove = function (options) {
         "overflow": "auto"
     });
 
-    return new Flow.flow.FlowApprove(options);
+    return new Flow.EUI.FlowApprove(options);
 };
-Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
+Flow.EUI.FlowApprove = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     busId: null,
     taskId: null,
@@ -900,10 +900,10 @@ Flow.flow.FlowApprove = EUI.extend(EUI.CustomUI, {
 /*
  * 流程启动组件
  * */
-Flow.FlowStart = function (options) {
-    return new Flow.flow.FlowStart(options);
+EUI.FlowStart = function (options) {
+    return new Flow.EUI.FlowStart(options);
 };
-Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
+Flow.EUI.FlowStart = EUI.extend(EUI.CustomUI, {
     data: null,
     businessId: null,
     businessModelCode: null,
@@ -1538,10 +1538,10 @@ Flow.flow.FlowStart = EUI.extend(EUI.CustomUI, {
 /*
  * 流程历史组件
  * */
-Flow.FlowHistory = function (options) {
-    return new Flow.flow.FlowHistory(options);
+EUI.FlowHistory = function (options) {
+    return new Flow.EUI.FlowHistory(options);
 };
-Flow.flow.FlowHistory = EUI.extend(EUI.CustomUI, {
+Flow.EUI.FlowHistory = EUI.extend(EUI.CustomUI, {
     instanceId: null,
     businessId: null,
     defaultData: null,

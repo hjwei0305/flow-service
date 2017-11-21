@@ -6,15 +6,12 @@
     <title></title>
     <link rel="stylesheet" type="text/css"
           data-th-href="@{/static/styles/css/FlowHistoryComponentView.css}">
-    <!--<script type="text/javascript" data-th-src="@{/static/EUI/jquery-1.8.min.js}"></script>-->
-    <script type="text/javascript"
-            data-th-src="@{/static/scripts/maindata/FlowHistory.js}"></script>
     <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
         var flowHistoryComponentView;
         EUI.onReady(function () {
-            flowHistoryComponentView = Flow.FlowHistory({
+            flowHistoryComponentView = EUI.FlowHistory({
                 businessId: null,
                 instanceId:null
             });
