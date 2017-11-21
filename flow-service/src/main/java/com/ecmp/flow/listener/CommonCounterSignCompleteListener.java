@@ -80,6 +80,6 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         }
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_agree"+delegateTask.getTaskDefinitionKey(), counterSignAgree);
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_opposition"+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
-         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
     }
 }
