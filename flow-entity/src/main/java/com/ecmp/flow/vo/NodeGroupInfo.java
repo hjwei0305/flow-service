@@ -23,6 +23,7 @@ import java.util.Set;
 public class NodeGroupInfo implements Serializable{
 
     private List<String> ids = new ArrayList<>();
+	private String nodeId;//结点ID
     private String name;
     private String gateWayName;//网关线名称
 	private String preLineName;//入口线名称
@@ -169,5 +170,13 @@ public class NodeGroupInfo implements Serializable{
 
 	public void setFlowDefVersionName(String flowDefVersionName) {
 		this.flowDefVersionName = flowDefVersionName;
+	}
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
 	}
 }
