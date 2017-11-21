@@ -18,7 +18,7 @@
 }
 
 /*.work_checkBox > input {*/
-    /*margin-right: 10px;*/
+/*margin-right: 10px;*/
 /*}*/
 
 .work_info_left {
@@ -135,8 +135,12 @@
     line-height: 40px;
 }
 
-.user-item{
+.user-item {
     cursor: pointer;
+}
+
+.choose-icon {
+    margin: 12px 5px 0 9px;
 }
 
 

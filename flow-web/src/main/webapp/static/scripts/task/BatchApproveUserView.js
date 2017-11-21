@@ -114,8 +114,12 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
     getUserHtml: function (data) {
         var html = "";
         for (var i = 0; i < data.length; i++) {
-            html += '<div class="user-item" id="' + data[i].id + '">' +
-                '<div class="info_radio ecmp-eui-radio"></div>' +
+            var iconCss = "choose-radio";
+            if (data[i].uiType === "checkbox") {
+                iconCss = "choose-checkbox";
+            }
+            html += '<div class="user-item" id="' + data[i].id + '" uitype="' + data[i].uiType + '">' +
+                '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div>' + data[i].name + ' ' + data[i].organizationName + ' ' + (data[i].positionName || '') + '</div>' +
                 '</div>';
         }
@@ -129,7 +133,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             var doms = $(".task_info", $(flowDoms[k]));
             for (var i = 0; i < doms.length; i++) {
                 var taskdata = data.nodeGroupInfos[i];
-                var selectDoms = $(".user-item", $(doms[i]));
+                var selectDoms = $(".user-item.select", $(doms[i]));
                 if (taskdata.type != "EndEvent" && selectDoms.length == 0) {
                     EUI.ProcessStatus({success: false, msg: data.name + "--" + taskdata.name + "，未选择执行人"});
                     return;
@@ -180,12 +184,15 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         $(".user-item", "#" + this.renderTo).live("click", function () {
             var dom = $(this);
-            if (dom.hasClass("selected")) {
-                dom.removeClass("selected");
-                $(".info_radio", dom).removeClass("ecmp-eui-radioselect");
-            } else {
-                dom.addClass("selected");
-                $(".info_radio", dom).addClass("ecmp-eui-radioselect");
+            var uiType = $(this).attr("uitype");
+            if (uiType === "checkbox") {
+                if (dom.hasClass("select")) {
+                    dom.removeClass("select");
+                }else{
+                    dom.addClass("select");
+                }
+            }else {
+                dom.addClass("select").siblings().removeClass("select");
             }
         });
     },
