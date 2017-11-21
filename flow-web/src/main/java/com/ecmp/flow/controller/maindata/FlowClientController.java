@@ -7,11 +7,11 @@ import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowDefination;
-import com.ecmp.flow.vo.ApprovalHeaderVO;
-import com.ecmp.flow.vo.NodeGroupInfo;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -217,10 +217,23 @@ public class FlowClientController {
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         List<NodeGroupInfo> nodeInfoList = proxy.findNexNodesGroupWithUserSetCanBatch(taskIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            operateStatus = new OperateStatus(true, "成功");
              operateStatus.setData(nodeInfoList);
         } else {
             operateStatus = new OperateStatus(false, "选取的任务不存在，可能已经被处理");
         }
+        return operateStatus;
+    }
+
+    @RequestMapping(value = "completeTaskBatch")
+    @ResponseBody
+    public OperateStatus completeTaskBatch(String flowTaskBatchCompleteWebVoStrs) {
+        if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
+            JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
+            List<FlowTaskBatchCompleteWebVO> flowTaskCompleteList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
+            String opinion = "同意";
+        }
+        OperateStatus operateStatus = new OperateStatus(false, "选取的任务不存在，可能已经被处理");
         return operateStatus;
     }
 }
