@@ -317,7 +317,7 @@ EUI.BuiltInApproveView = EUI.extend(EUI.CustomUI, {
                 g.selectedNodeTenantCode = node.tenantCode;
                 g.selectedNodeCodePath = node.codePath;
                 var gridPanel = EUI.getCmp("gridPanel").setGridParams({
-                    url: _ctxPath + "/builtInApprove/list",
+                    url: _ctxPath + "/builtInApprove/listByPage",
                     loadonce: false,
                     datatype: "json",
                     postData: {
