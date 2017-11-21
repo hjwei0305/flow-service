@@ -207,6 +207,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowNegative: false,
             name: "executeTime",
             labelWidth: 100,
+            value:0,
             unit: "分钟"
         }, {
             xtype: "ComboBox",
