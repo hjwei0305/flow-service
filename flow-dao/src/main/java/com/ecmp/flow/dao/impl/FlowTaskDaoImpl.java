@@ -4,15 +4,16 @@ import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
+import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     public FlowTaskDaoImpl(EntityManager entityManager) {
         super(FlowTask.class, entityManager);
     }
+    @Autowired
+    private AppModuleDao appModuleDao;
 
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
@@ -97,6 +100,15 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                    if(workPageUrl!=null){
                        flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
                        flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+                       String appModuleId = workPageUrl.getAppModuleId();
+                       AppModule appModule = appModuleDao.findOne(appModuleId);
+                       if(appModule!=flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()){
+                           webBaseAddress = appModule.getWebBaseAddress();
+                           flowTask.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
+                           webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                           webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                           flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+                       }
                    }
                }
        }
