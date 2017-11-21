@@ -70,9 +70,9 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
     public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
         IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
-        V defaultBusinessModel = (V) baseService.findOne(businessKey);
+//        V defaultBusinessModel = (V) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-        if (defaultBusinessModel != null) {
+        if (true) {
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
             FlowStartVO flowStartVO = new FlowStartVO();
@@ -148,8 +148,8 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
         }
         IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
-        V defaultBusinessModel = (V) baseService.findOne(businessId);
-        if (defaultBusinessModel != null) {
+//        V defaultBusinessModel = (V) baseService.findOne(businessId);
+        if (true) {
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
             flowTaskCompleteVO.setOpinion(opinion);
