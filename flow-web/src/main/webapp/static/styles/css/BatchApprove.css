@@ -105,6 +105,7 @@
 
 .info_right {
     margin-left: 5px;
+    line-height: 40px;
 }
 
 .task_info_operator, .task_info_opinion {
@@ -117,6 +118,7 @@
 
 .info_radio {
     vertical-align: middle;
+    margin-right: 5px;
 }
 
 .operator_info > div {
@@ -130,6 +132,10 @@
 
 .operator_info > div > div:last-child {
     line-height: 40px;
+}
+
+.user-item{
+    cursor: pointer;
 }
 
 

@@ -29,9 +29,16 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 region: "center",
                 padding: 0,
                 html: '<div class="info-left todo-info"></div><div class="load-more"><span>获取更多</span></div>'
-            }]
-        });
+                + '<div class="empty-data"><div class="not-data-msg">------------您当前没有已完成的单据------------</div></div>'
+            }
+            ]
+        })
+        ;
+        this.dataDom = $(".todo-info", "#" + this.renderTo);
+        this.emptyDom = $(".empty-data", "#" + this.renderTo);
+        this.loadMoreDom = $(".load-more", "#" + this.renderTo);
         this.loadData();
+        this.addEvents();
     },
     initToolBar: function () {
         var g = this;
@@ -60,8 +67,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 for (var i = 0; i < checkedItems.length; i++) {
                     taskIds.push($(checkedItems[i]).parent().parent().attr("id"));
                 }
-                console.log(taskIds);
-                g.boxCmp.hide();
+                g.hide();
                 $("body").append('<div id="batchuser"></div>');
                 new EUI.BatchApproveUserView({
                     renderTo: "batchuser",
@@ -70,6 +76,9 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                         $(".work_table_box", '#' + g.renderTo).remove();
                         g.params.page = 1;
                         g.loadData();
+                    },
+                    returnBack: function () {
+                        g.show();
                     }
                 });
             }
@@ -85,6 +94,11 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             afterSelect: function (data) {
                 g.params.modelId = data.data.id;
                 g.params.page = 1;
+                g.loadData();
+            },
+            afterClear:function () {
+                g.params.page = 1;
+                g.params.modelId = null;
                 g.loadData();
             }
         }, {
@@ -157,17 +171,24 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             }
         });
     },
+    showContent: function () {
+        this.dataDom.show();
+        this.loadMoreDom.show();
+        this.emptyDom.hide();
+        if(this.params.page == 1){
+            this.dataDom.empty();
+        }
+    },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
-        var content = $(".todo-info", "#" + this.renderTo).empty();
-        var html = '<div class="empty-data">' +
-            '<div class="not-data-msg">------------您当前没有可以批量处理的工作------------</div></div>';
-        content.append(html).css("height", "100%");
-        $(".load-more").hide();
-    },
+        this.emptyDom.show();
+        this.dataDom.hide();
+        this.loadMoreDom.hide();
+    }
+    ,
     showData: function (data) {
         var html = "";
-        $(".load-more", "#" + this.renderTo).show();
+        this.showContent();
         for (var i = 0; i < data.length; i++) {
             var itemdata = data[i];
             html += '<div class="work_table_box" id="' + itemdata.id + '">' +
@@ -187,7 +208,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 '    </div>' +
                 '</div>';
         }
-        $(".todo-info", '#' + this.renderTo).append(html);
+        this.dataDom.append(html);
         EUI.resize(this.boxCmp);
     },
     //计算时间几天前
@@ -224,6 +245,29 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             var minutes = Math.floor(leave2 / (60 * 1000));
             return minutes + '分钟前';
         }
+    },
+    show: function () {
+        this.boxCmp.show();
     }
-
+    ,
+    hide: function () {
+        this.boxCmp.hide();
+    },
+    refresh: function (params) {
+        this.params.page = 1;
+        EUI.apply(this.params, params);
+        this.getData();
+    }
+    ,
+    addEvents: function () {
+        var g = this;
+        $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
+            g.params.page = 1;
+            g.loadData();
+        });
+        this.loadMoreDom.click(function () {
+            g.params.page += 1;
+            g.loadData();
+        });
+    }
 });

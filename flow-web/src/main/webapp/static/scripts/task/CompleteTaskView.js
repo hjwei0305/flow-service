@@ -48,6 +48,11 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             afterSelect: function (data) {
                 g.params.modelId = data.data.businessModeId;
                 g.refresh();
+            },
+            afterClear:function () {
+                g.params.page = 1;
+                g.params.modelId = null;
+                g.getCompleteData();
             }
         }, {
             xtype: "SearchBox",
@@ -153,6 +158,9 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         this.dataDom.show();
         this.loadMoreDom.show();
         this.emptyDom.hide();
+        if(this.params.page == 1){
+            this.dataDom.empty();
+        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -163,7 +171,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     ,
     addEvents: function () {
         var g = this;
-        this.emptyDom.bind("click", function () {
+        $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
             g.params.page = 1;
             g.getData();
         });
