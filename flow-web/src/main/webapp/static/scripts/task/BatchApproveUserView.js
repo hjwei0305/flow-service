@@ -104,21 +104,27 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                 html += '<div class="task_info_operator">' +
                     '<div class="operator_title">执行人：</div>' +
                     '<div class="operator_info">' +
-                    this.getUserHtml(data[i].executorSet) +
+                    this.getUserHtml(data[i].executorSet, data[i].uiType) +
                     '</div></div>';
             }
             html += '</div>';
         }
         return html;
     },
-    getUserHtml: function (data) {
+    getUserHtml: function (data, uiType) {
         var html = "";
+        var itemCss = "user-item";
+        var iconCss = "choose-radio";
+        if (uiType === "checkbox") {
+            iconCss = "choose-checkbox";
+            itemCss += " select";
+        }
         for (var i = 0; i < data.length; i++) {
-            var iconCss = "choose-radio";
-            if (data[i].uiType === "checkbox") {
-                iconCss = "choose-checkbox";
+            var userCss = itemCss;
+            if (uiType != "checkbox" && i == 0) {
+                userCss = itemCss + " select";
             }
-            html += '<div class="user-item" id="' + data[i].id + '" uitype="' + data[i].uiType + '">' +
+            html += '<div class="' + userCss + '" id="' + data[i].id + '" uitype="' + data[i].uiType + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div>' + data[i].name + ' ' + data[i].organizationName + ' ' + (data[i].positionName || '') + '</div>' +
                 '</div>';
@@ -188,10 +194,10 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             if (uiType === "checkbox") {
                 if (dom.hasClass("select")) {
                     dom.removeClass("select");
-                }else{
+                } else {
                     dom.addClass("select");
                 }
-            }else {
+            } else {
                 dom.addClass("select").siblings().removeClass("select");
             }
         });
