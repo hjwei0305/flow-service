@@ -39,6 +39,9 @@ public class NodeGroupInfo implements Serializable{
 
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
+	private String flowDefVersionId;//流程定义版本id
+	private String flowDefVersionName;//流程定义版本name
+
 	public List<String> getIds() {
 		return ids;
 	}
@@ -150,5 +153,21 @@ public class NodeGroupInfo implements Serializable{
 
 	public void setCallActivityPath(String callActivityPath) {
 		this.callActivityPath = callActivityPath;
+	}
+
+	public String getFlowDefVersionId() {
+		return flowDefVersionId;
+	}
+
+	public void setFlowDefVersionId(String flowDefVersionId) {
+		this.flowDefVersionId = flowDefVersionId;
+	}
+
+	public String getFlowDefVersionName() {
+		return flowDefVersionName;
+	}
+
+	public void setFlowDefVersionName(String flowDefVersionName) {
+		this.flowDefVersionName = flowDefVersionName;
 	}
 }

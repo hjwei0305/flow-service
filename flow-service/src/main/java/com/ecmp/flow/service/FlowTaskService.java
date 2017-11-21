@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 
@@ -1132,6 +1133,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         NodeGroupInfo tempNodeGroupInfo = tempNodeGroupInfoMap.get(flowDefVersionId+nodeInfo.getId());
                         if(tempNodeGroupInfo==null){
                             tempNodeGroupInfo = new NodeGroupInfo();
+                            tempNodeGroupInfo.setFlowDefVersionId(flowDefVersionId);
+                            tempNodeGroupInfo.setFlowDefVersionName(nodeInfo.getFlowDefVersionName());
                             BeanUtils.copyProperties(nodeInfo,tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
                             tempNodeGroupInfoMap.put(flowDefVersionId+nodeInfo.getId(),tempNodeGroupInfo);
@@ -1143,7 +1146,57 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
             all.addAll(tempNodeGroupInfoMap.values());
         }
-
         return all;
+    }
+
+    public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds)  throws NoSuchMethodException{
+        List<NodeGroupByFlowVersionInfo> all = new ArrayList<NodeGroupByFlowVersionInfo>();
+        List<NodeGroupInfo> nodeGroupInfoList = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
+        Map<String,NodeGroupByFlowVersionInfo> nodeGroupByFlowVersionInfoMap = new HashMap<String,NodeGroupByFlowVersionInfo>();
+        if(nodeGroupInfoList!=null && !nodeGroupInfoList.isEmpty()){
+            for(NodeGroupInfo nodeGroupInfo:nodeGroupInfoList){
+               String flowDefVersionId = nodeGroupInfo.getFlowDefVersionId();
+                NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = nodeGroupByFlowVersionInfoMap.get(flowDefVersionId);
+                if(nodeGroupByFlowVersionInfo==null){
+                    nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
+                    nodeGroupByFlowVersionInfo.setId(flowDefVersionId);
+                    nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getName());
+                    nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
+                    nodeGroupByFlowVersionInfoMap.put(flowDefVersionId,nodeGroupByFlowVersionInfo);
+                }else {
+                    nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
+                }
+            }
+            all.addAll(nodeGroupByFlowVersionInfoMap.values());
+        }
+        return all;
+    }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResultWithData<Integer>  completeBatch(FlowTaskBatchCompleteVO flowTaskBatchCompleteVO){
+       List<String> taskIdList =  flowTaskBatchCompleteVO.getTaskIdList();
+       int total = 0;
+        OperateResultWithData result =  null;
+       if(taskIdList!=null && !taskIdList.isEmpty()){
+           for (String taskId:taskIdList){
+               FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+               BeanUtils.copyProperties(flowTaskBatchCompleteVO,flowTaskCompleteVO);
+               flowTaskCompleteVO.setTaskId(taskId);
+               try {
+                   this.complete(flowTaskCompleteVO);
+                   total++;
+               }catch (Exception e){
+                   logger.error(e.getMessage());
+               }
+           }
+           if(total>0){
+               result =  OperateResultWithData.operationSuccess();
+               result.setData(total);
+           }else {
+               result =  OperateResultWithData.operationFailure("10034");
+           }
+       }else {
+           result =  OperateResultWithData.operationFailure("10034");
+       }
+       return result;
     }
 }

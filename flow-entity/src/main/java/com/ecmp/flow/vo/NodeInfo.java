@@ -35,6 +35,7 @@ public class NodeInfo implements Serializable{
 	private String callActivityPath;//调用子流程中的节点路径
 
 	private String flowDefVersionId;//流程定义版本id
+	private String flowDefVersionName;//流程定义版本name
 	private String flowTaskId;//任务id
 
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
@@ -166,5 +167,13 @@ public class NodeInfo implements Serializable{
 
 	public void setFlowTaskId(String flowTaskId) {
 		this.flowTaskId = flowTaskId;
+	}
+
+	public String getFlowDefVersionName() {
+		return flowDefVersionName;
+	}
+
+	public void setFlowDefVersionName(String flowDefVersionName) {
+		this.flowDefVersionName = flowDefVersionName;
 	}
 }

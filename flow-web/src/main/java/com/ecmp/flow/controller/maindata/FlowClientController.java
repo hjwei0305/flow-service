@@ -6,6 +6,10 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.vo.OperateStatus;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.DefaultBusinessModel;
+import com.ecmp.flow.entity.DefaultBusinessModel2;
+import com.ecmp.flow.entity.DefaultBusinessModel3;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
@@ -18,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -215,7 +222,7 @@ public class FlowClientController {
     public OperateStatus getSelectedCanBatchNodesInfo(String taskIds) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        List<NodeGroupInfo> nodeInfoList = proxy.findNexNodesGroupWithUserSetCanBatch(taskIds);
+        List<NodeGroupByFlowVersionInfo> nodeInfoList = proxy.findNexNodesGroupByVersionWithUserSetCanBatch(taskIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateStatus = new OperateStatus(true, "成功");
              operateStatus.setData(nodeInfoList);
@@ -228,12 +235,46 @@ public class FlowClientController {
     @RequestMapping(value = "completeTaskBatch")
     @ResponseBody
     public OperateStatus completeTaskBatch(String flowTaskBatchCompleteWebVoStrs) {
+        OperateStatus operateStatus=null;
         if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
             JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
-            List<FlowTaskBatchCompleteWebVO> flowTaskCompleteList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
+            List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
             String opinion = "同意";
+            if(flowTaskBatchCompleteWebVOList!=null && !flowTaskBatchCompleteWebVOList.isEmpty()){
+                for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO:flowTaskBatchCompleteWebVOList){
+                    FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
+                    flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
+                    flowTaskBatchCompleteVO.setOpinion(opinion);
+                    Map<String,String> selectedNodesMap = new HashMap<>();
+                    Map<String, Object> v = new HashMap<String, Object>();
+                    List<FlowTaskCompleteWebVO>   flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
+
+                    if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                        for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                            String flowTaskType = f.getFlowTaskType();
+                                selectedNodesMap.put(f.getNodeId(),f.getNodeId());
+                                if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                    v.put(f.getUserVarName(), f.getUserIds());
+                                } else {
+                                    String[] idArray = f.getUserIds().split(",");
+                                    v.put(f.getUserVarName(), idArray);
+                                }
+                        }
+                    }
+                    v.put("approved", true);//针对会签时同意、不同意、弃权等操作
+                    flowTaskBatchCompleteVO.setVariables(v);
+                    IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+                    OperateResultWithData<Integer> operateResult = proxy.completeBatch(flowTaskBatchCompleteVO);
+                    if(operateResult.successful()){
+                        operateStatus = new OperateStatus(true, "成功处理任务"+operateResult.getData()+"条");
+                    }else {
+                        operateStatus = new OperateStatus(false, operateResult.getMessage());
+                    }
+                }
+            }
+        }else {
+            operateStatus = new OperateStatus(false, "参数值错误！");
         }
-        OperateStatus operateStatus = new OperateStatus(false, "选取的任务不存在，可能已经被处理");
         return operateStatus;
     }
 }

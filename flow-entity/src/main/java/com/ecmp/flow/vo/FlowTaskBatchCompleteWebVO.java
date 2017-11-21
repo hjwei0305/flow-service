@@ -20,16 +20,16 @@ public class FlowTaskBatchCompleteWebVO implements Serializable{
     /**
      * 任务id
      */
-    private String taskIds;
+    private List<String> taskIdList;
 
     private List<FlowTaskCompleteWebVO> flowTaskCompleteList;
 
-    public String getTaskIds() {
-        return taskIds;
+    public List<String> getTaskIdList() {
+        return taskIdList;
     }
 
-    public void setTaskIds(String taskIds) {
-        this.taskIds = taskIds;
+    public void setTaskIdList(List<String> taskIdList) {
+        this.taskIdList = taskIdList;
     }
 
     public List<FlowTaskCompleteWebVO> getFlowTaskCompleteList() {

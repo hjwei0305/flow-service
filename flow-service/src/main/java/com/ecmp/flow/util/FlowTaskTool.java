@@ -638,6 +638,7 @@ public class FlowTaskTool {
      */
     public   NodeInfo convertNodes(FlowTask flowTask, NodeInfo tempNodeInfo, PvmActivity tempActivity) {
         tempNodeInfo.setFlowDefVersionId(flowTask.getFlowInstance().getFlowDefVersion().getId());
+        tempNodeInfo.setFlowDefVersionName(flowTask.getFlowInstance().getFlowDefVersion().getName());
         tempNodeInfo.setFlowTaskId(flowTask.getId());
         if ("CounterSignNotEnd".equalsIgnoreCase(tempNodeInfo.getType())) {
             tempNodeInfo.setName(tempActivity.getProperty("name").toString());
