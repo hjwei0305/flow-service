@@ -75,24 +75,29 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-//        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-            //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
             net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
-//        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
             if (event != null) {
                 String afterExcuteServiceId = (String) event.get("afterExcuteServiceId");
+                boolean async = false;//默认为同步
+                String afterAsyncStr = event.get("afterAsync")+"";
+                if("true".equalsIgnoreCase(afterAsyncStr)){
+                    async=true;
+                }
                 if (!StringUtils.isEmpty(afterExcuteServiceId)) {
-                    Map<String,Object> tempV = delegateTask.getVariables();
-                    String param = JsonUtils.toJson(tempV);
-                    Object result = ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
                     try {
+                        Map<String,Object> tempV = delegateTask.getVariables();
+                        String param = JsonUtils.toJson(tempV);
+                        Object result = ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
                         FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
                         if(true!=flowOpreateResult.isSuccess()){
                             throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
                         }
                     }catch (Exception e){
                         logger.error(e.getMessage());
+                        if(!async){
+                            throw e;
+                        }
                     }
                 }
             }

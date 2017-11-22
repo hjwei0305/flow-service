@@ -65,7 +65,6 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
     @Transactional( propagation= Propagation.REQUIRED)
     public void notify(DelegateExecution delegateTask) {
         try {
-          //  ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
@@ -73,24 +72,30 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-//        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-            //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
             net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
             if (event != null) {
                 String beforeExcuteServiceId = (String) event.get("beforeExcuteServiceId");
+                boolean async = true;//默认为异步
+                String beforeAsyncStr = event.get("beforeAsync")+"";
+                if("false".equalsIgnoreCase(beforeAsyncStr)){
+                    async=false;
+                }
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
-                    Map<String,Object> tempV = delegateTask.getVariables();
-                    String param = JsonUtils.toJson(tempV);
-                    Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
                     try {
-                                FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
-                                if(true!=flowOpreateResult.isSuccess()){
-                                    throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
-                                }
-                            }catch (Exception e){
-                                logger.error(e.getMessage());
-                            }
+                        Map<String,Object> tempV = delegateTask.getVariables();
+                        String param = JsonUtils.toJson(tempV);
+                        Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                        FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                        if(true!=flowOpreateResult.isSuccess()){
+                            throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                        }
+                    }catch (Exception e){
+                        logger.error(e.getMessage());
+                        if(!async){
+                            throw e;
+                        }
+                    }
                 }
             }
         }catch(Exception e){

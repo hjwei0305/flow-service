@@ -69,7 +69,7 @@ public class CommonCounterSignCompleteListener implements TaskListener{
             counterSignOpposition = (Integer) processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
-        String approved = (String) delegateTask.getVariable("approved");
+        String approved = delegateTask.getVariable("approved")+"";
 
         if("true".equalsIgnoreCase(approved)){
             counterSignAgree++;

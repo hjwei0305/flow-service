@@ -1365,6 +1365,8 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
+                        }else{
+                            throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
                         }
                     }
                 }

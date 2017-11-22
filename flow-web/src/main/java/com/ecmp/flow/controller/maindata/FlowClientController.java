@@ -271,7 +271,8 @@ public class FlowClientController {
                             String flowTaskType = f.getFlowTaskType();
                                 selectedNodesMap.put(f.getNodeId(),f.getNodeId());
                                 if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                                    v.put(f.getUserVarName(), f.getUserIds());
+                                    String userId = f.getUserIds().replaceAll(",","");
+                                    v.put(f.getUserVarName(),userId);
                                 } else {
                                     String[] idArray = f.getUserIds().split(",");
                                     if(StringUtils.isNotEmpty(f.getUserVarName())){
@@ -280,7 +281,7 @@ public class FlowClientController {
                                 }
                         }
                     }
-                    v.put("approved", "true");//针对会签时同意、不同意、弃权等操作
+                    v.put("approved", true);//针对会签时同意、不同意、弃权等操作
                     flowTaskBatchCompleteVO.setVariables(v);
                     IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
                     OperateResultWithData<Integer> operateResult = proxy.completeBatch(flowTaskBatchCompleteVO);
