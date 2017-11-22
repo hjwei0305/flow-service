@@ -230,6 +230,8 @@ if (EUI.WorkFlowView) {
         taskTitleText: "任务",
         gatewayTitleText: "网关",
         noConnectLineText: "{0}节点没有进行连线",
+        noConnectLineRuText: "{0}节点没有入口连线",
+        noConnectLineChuText: "{0}节点没有出口连线",
         startEventText: "开始",
         endEventText: "结束",
         terminateEndEventText: "终止结束",

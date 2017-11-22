@@ -1037,12 +1037,44 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }
             var flag = false;
-            for (var key in this.connectInfo) {
-                if (key.indexOf(id) != -1) {
-                    flag = true;
-                    break;
+            if(type=="StartEvent"||type=="EndEvent"||type=="TerminateEndEvent"){
+                for (var key in this.connectInfo) {
+                    if (key.indexOf(id) != -1) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }else {
+                var ruIndex=false;
+                var chuIndex=false;
+                for (var key in this.connectInfo) {
+                    var keyVar = key.split(",");
+                    if(keyVar[0] == id){
+                        chuIndex = true;
+                    }else if(keyVar[1] == id){
+                        ruIndex = true;
+                    }
+                    if (ruIndex && chuIndex) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!ruIndex){
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: String.format(this.lang.noConnectLineRuText, name)
+                    });
+                    return false;
+                }
+                if(!chuIndex){
+                    EUI.ProcessStatus({
+                        success: false,
+                        msg: String.format(this.lang.noConnectLineChuText, name)
+                    });
+                    return false;
                 }
             }
+
             if (!flag) {
                 EUI.ProcessStatus({
                     success: false,
