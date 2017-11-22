@@ -68,11 +68,9 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+//        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
         OperateStatus operateStatus = null;
-//        V defaultBusinessModel = (V) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-        if (true) {
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
             FlowStartVO flowStartVO = new FlowStartVO();
@@ -106,9 +104,6 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
                     operateStatus=  new OperateStatus(false, "启动流程失败,启动检查服务返回false!");
                 }
             }
-        } else {
-            operateStatus = new OperateStatus(false, "业务对象不存在");
-        }
         return operateStatus;
     }
 
@@ -146,10 +141,6 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
-        OperateStatus operateStatus = null;
-//        V defaultBusinessModel = (V) baseService.findOne(businessId);
-        if (true) {
             FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
             flowTaskCompleteVO.setTaskId(taskId);
             flowTaskCompleteVO.setOpinion(opinion);
@@ -198,10 +189,8 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            operateStatus = new OperateStatus(true, operateResult.getMessage());
-        } else {
-            operateStatus = new OperateStatus(false, "业务对象不存在");
-        }
+            OperateStatus operateStatus = new OperateStatus(true, operateResult.getMessage());
+
         return operateStatus;
     }
     /**

@@ -8,7 +8,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         Quick_value: null,
         Q_GE_startDate__Date: null,
         Q_LE_endDate__Date: null,
-        Q_EQ_ended__Boolean: false
+        Q_EQ_ended__Boolean: true
     },
     initComponent: function () {
         this.params.Q_GE_startDate__Date = this.startDate;
