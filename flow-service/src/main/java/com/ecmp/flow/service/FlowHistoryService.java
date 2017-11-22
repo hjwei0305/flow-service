@@ -47,4 +47,31 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         String userId = ContextUtil.getUserId();
         return flowHistoryDao.findByPageByBusinessModelId(userId,searchConfig);
     }
+
+    @Override
+   public PageResult<FlowHistory> findByPage(Search searchConfig){
+        PageResult<FlowHistory> result = super.findByPage(searchConfig);
+        if(result!=null){
+            List<FlowHistory>  flowHistoryList = result.getRows();
+            this.initUrl(flowHistoryList);
+        }
+        return result;
+    }
+    private List<FlowHistory> initUrl(List<FlowHistory>  result ){
+        if(result!=null && !result.isEmpty()){
+            for(FlowHistory flowHistory:result){
+                String apiBaseAddress = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
+                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
+                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                String webBaseAddress = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
+                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                flowHistory.setApiBaseAddress(apiBaseAddress);
+                flowHistory.setWebBaseAddress(webBaseAddress);
+            }
+        }
+        return result;
+    }
 }
