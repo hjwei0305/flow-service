@@ -218,6 +218,31 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 	private String ownerId;
 
 
+	/**
+	 * web基地址
+	 */
+	@Transient
+	private String webBaseAddress;
+
+
+	/**
+	 * web基地址绝对路径
+	 */
+	@Transient
+	private String webBaseAddressAbsolute;
+
+	/**
+	 * api基地址
+	 */
+	@Transient
+	private String apiBaseAddress;
+
+	/**
+	 * api基地址
+	 */
+	@Transient
+	private String apiBaseAddressAbsolute;
+
 
 	public FlowHistory() {
 	}
@@ -494,6 +519,10 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 				.append("flowTaskName", flowTaskName)
 				.append("flowRunId", flowRunId)
 //				.append("flowInstanceId", flowInstanceId)
+				.append("webBaseAddress", this.getWebBaseAddress())
+				.append("apiBaseAddress", this.getApiBaseAddress())
+				.append("webBaseAddressAbsolute",this.getWebBaseAddressAbsolute())
+				.append("apiBaseAddressAbsolute",this.getApiBaseAddressAbsolute())
 				.append("flowDefId", flowDefId)
 				.append("depict", depict)
 				.toString();
@@ -558,5 +587,38 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 	@JsonIgnore(false)
 	public Date getLastEditedDate() {
 		return super.getLastEditedDate();
+	}
+
+
+	public String getWebBaseAddress() {
+		return webBaseAddress;
+	}
+
+	public void setWebBaseAddress(String webBaseAddress) {
+		this.webBaseAddress = webBaseAddress;
+	}
+
+	public String getWebBaseAddressAbsolute() {
+		return webBaseAddressAbsolute;
+	}
+
+	public void setWebBaseAddressAbsolute(String webBaseAddressAbsolute) {
+		this.webBaseAddressAbsolute = webBaseAddressAbsolute;
+	}
+
+	public String getApiBaseAddress() {
+		return apiBaseAddress;
+	}
+
+	public void setApiBaseAddress(String apiBaseAddress) {
+		this.apiBaseAddress = apiBaseAddress;
+	}
+
+	public String getApiBaseAddressAbsolute() {
+		return apiBaseAddressAbsolute;
+	}
+
+	public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
+		this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
 	}
 }
