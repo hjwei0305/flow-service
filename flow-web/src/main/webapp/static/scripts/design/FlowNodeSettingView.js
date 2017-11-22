@@ -531,43 +531,82 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             id: "event",
             padding: 20,
             items: [{
-                xtype: "ComboBox",
-                name: "beforeExcuteService",
-                field: ["beforeExcuteServiceId"],
-                title: "任务到达时",
-                colon: false,
-                labelWidth: 100,
-                canClear: true,
-                width: 220,
-                store: {
-                    url: _ctxPath + "/design/listAllServiceUrl",
-                    params: {
-                        "busModelId": this.businessModelId
+                xtype: "FieldGroup",
+                // itemspace: 10,
+                width: 530,
+                items: [{
+                    xtype: "ComboBox",
+                    name: "beforeExcuteService",
+                    field: ["beforeExcuteServiceId"],
+                    title: "任务到达时",
+                    colon: false,
+                    labelWidth: 100,
+                    canClear: true,
+                    width: 220,
+                    store: {
+                        url: _ctxPath + "/design/listAllServiceUrl",
+                        params: {
+                            "busModelId": this.businessModelId
+                        }
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
                     }
-                },
-                reader: {
-                    name: "name",
-                    field: ["id"]
-                }
+                },{
+                    xtype: "RadioBoxGroup",
+                    name: "beforeAsync",
+                    // title: "执行策略",
+                    labelWidth: 100,
+                    items: [{
+                        title: "同步",
+                        labelWidth: 30,
+                        name: false
+                    }, {
+                        title: "异步",
+                        name: true,
+                        labelWidth: 30,
+                        checked: true
+                    }]
+                }]
             }, {
-                xtype: "ComboBox",
-                name: "afterExcuteService",
-                field: ["afterExcuteServiceId"],
-                title: "任务执行后",
-                canClear: true,
-                colon: false,
-                labelWidth: 100,
-                width: 220,
-                store: {
-                    url: _ctxPath + "/design/listAllServiceUrl",
-                    params: {
-                        "busModelId": this.businessModelId
+                xtype: "FieldGroup",
+                width: 530,
+                items: [{
+                    xtype: "ComboBox",
+                    name: "afterExcuteService",
+                    field: ["afterExcuteServiceId"],
+                    title: "任务执行后",
+                    canClear: true,
+                    colon: false,
+                    labelWidth: 100,
+                    width: 220,
+                    store: {
+                        url: _ctxPath + "/design/listAllServiceUrl",
+                        params: {
+                            "busModelId": this.businessModelId
+                        }
+                    },
+                    reader: {
+                        name: "name",
+                        field: ["id"]
                     }
-                },
-                reader: {
-                    name: "name",
-                    field: ["id"]
-                }
+                },{
+                    xtype: "RadioBoxGroup",
+                    name: "afterAsync",
+                    // title: "执行策略",
+                    labelWidth: 100,
+                    items: [{
+                        title: "同步",
+                        name: false,
+                        labelWidth: 30,
+                        checked: true
+                    }, {
+                        title: "异步",
+                        labelWidth: 30,
+                        name: true
+                    }]
+                }]
             }]
         };
     },
