@@ -119,6 +119,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Autowired
     private FlowInstanceService flowInstanceService;
 
+    @Autowired
+    private FlowServiceUrlDao flowServiceUrlDao;
+
     /**
      * 新增修改操作
      *
@@ -381,13 +384,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private boolean checkStart( String businessKey,FlowDefVersion flowDefVersion){
         boolean result = true;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
-          String checkUrl = flowDefVersion.getStartCheckServiceUrl();
-          if(StringUtils.isNotEmpty(checkUrl)){
-             String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-             String checkUrlPath = baseUrl+checkUrl;
-              Map<String, Object> params = new HashMap<>();
-              params.put("id",businessKey);
-              result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+          String startCheckServiceUrlId = flowDefVersion.getStartCheckServiceUrlId();
+          if(StringUtils.isNotEmpty(startCheckServiceUrlId)){
+              FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
+              String checkUrl = flowServiceUrl.getUrl();
+              if(StringUtils.isNotEmpty(checkUrl)){
+                  String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                  String checkUrlPath = baseUrl+checkUrl;
+                  Map<String, Object> params = new HashMap<>();
+                  params.put("id",businessKey);
+                  result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+              }
           }
         }
         return result;

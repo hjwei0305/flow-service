@@ -5,14 +5,8 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.FlowDefVersionDao;
-import com.ecmp.flow.dao.FlowDefinationDao;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.dao.*;
+import com.ecmp.flow.entity.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -69,6 +63,9 @@ public class EndEventCompleteListener implements ExecutionListener {
     @Autowired
     private FlowInstanceDao flowInstanceDao;
 
+    @Autowired
+    private FlowServiceUrlDao flowServiceUrlDao;
+
     @Transactional( propagation= Propagation.REQUIRED)
     public void notify(DelegateExecution delegateTask) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException{
         ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
@@ -121,10 +118,13 @@ public class EndEventCompleteListener implements ExecutionListener {
 
     private void callEndService( String businessKey,FlowDefVersion flowDefVersion){
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
-            String endCallServiceUrl = flowDefVersion.getEndCallServiceUrl();
-            if(StringUtils.isNotEmpty(endCallServiceUrl)){
+            String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
+            if(StringUtils.isNotEmpty(endCallServiceUrlId)){
+                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
+                String checkUrl = flowServiceUrl.getUrl();
+                if(StringUtils.isNotEmpty(checkUrl)){
                 String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String endCallServiceUrlPath = baseUrl+endCallServiceUrl;
+                String endCallServiceUrlPath = baseUrl+checkUrl;
                 Map<String, Object> params = new HashMap<>();
                 params.put("id",businessKey);
                 new Thread(new Runnable() {//模拟异步
@@ -134,6 +134,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                     }
                 }).start();
             }
+         }
         }
     }
 }

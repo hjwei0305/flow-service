@@ -88,10 +88,19 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                     try {
                         Map<String,Object> tempV = delegateTask.getVariables();
                         String param = JsonUtils.toJson(tempV);
-                        Object result = ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
-                        FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
-                        if(true!=flowOpreateResult.isSuccess()){
-                            throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                        if(async){
+                            new Thread(new Runnable() {//模拟异步
+                                @Override
+                                public void run() {
+                                    ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
+                                }
+                            }).start();
+                        }else {
+                            Object result = ServiceCallUtil.callService(afterExcuteServiceId, businessId, param);
+                            FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                            if(true!=flowOpreateResult.isSuccess()){
+                                throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                            }
                         }
                     }catch (Exception e){
                         logger.error(e.getMessage());
