@@ -47,7 +47,6 @@ public class ServiceCallUtil {
                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
                   FlowOpreateResult flowOpreateResult = new FlowOpreateResult();
-                  flowOpreateResult.setSuccess((boolean)result);
                   result = flowOpreateResult;
               }else{
                   Map<String,String> paramMap = null;
