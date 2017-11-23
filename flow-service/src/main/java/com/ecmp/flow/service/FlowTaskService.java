@@ -47,7 +47,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 
@@ -1078,7 +1077,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
         if(StringUtils.isEmpty(approved)){
-            approved="APPROVED";
+            approved="true";
         }
         List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
@@ -1105,7 +1104,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             taskIdList = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
         if(taskIdList != null && !taskIdList.isEmpty()){
-            String approved="APPROVED";
+            String approved="true";
             for(String taskId:taskIdList){
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId,approved, null);
                 if(nodeInfoList != null && !nodeInfoList.isEmpty()){

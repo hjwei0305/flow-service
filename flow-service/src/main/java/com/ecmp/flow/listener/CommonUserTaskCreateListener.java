@@ -4,21 +4,16 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.ExecutionListener;
-import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +77,14 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                     async=false;
                 }
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
+                    String multiInstance =  (String)((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
+                    Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
+                    if(isMmultiInstance){//控制会签任务、串行任务、并行任务只达到节点时只触发一次到达事件
+                        TransitionImpl transiton =  ((ExecutionEntity) delegateTask).getTransition();
+                        if(transiton==null){
+                            return;
+                        }
+                    }
                     try {
                         Map<String,Object> tempV = delegateTask.getVariables();
                         String param = JsonUtils.toJson(tempV);

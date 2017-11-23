@@ -132,7 +132,7 @@ public class FlowClientController {
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
         if(StringUtils.isEmpty(approved)){
-            approved="APPROVED";
+            approved="true";
         }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
