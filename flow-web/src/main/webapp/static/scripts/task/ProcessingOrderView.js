@@ -4,7 +4,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
-        records:0,
+        records: 0,
         S_createdDate: "DESC",
         Quick_value: null,
         Q_GE_startDate__Date: null,
@@ -19,7 +19,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             padding: 0,
             html: '<div class="info-left invoice-info"></div>'
             + '<div class="load-more"><span>获取更多</span></div>'
-            + '<div class="empty-data"><div class="not-data-msg">------------您当前没有已完成的单据------------</div></div>'
+            + '<div class="empty-data"><div class="not-data-msg">------------您当前没有处理中的单据------------</div></div>'
         });
         this.dataDom = $(".invoice-info", "#" + this.renderTo);
         this.emptyDom = $(".empty-data", "#" + this.renderTo);
@@ -109,7 +109,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if(this.params.page == 1){
+        if (this.params.page == 1) {
             this.dataDom.empty();
         }
     },

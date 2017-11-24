@@ -3,6 +3,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
     todoTaskView: null,
     completeTaskView: null,
     orderView: null,
+    nowView: null,//当前显示的页面
 
     initComponent: function () {
         this.showTotoTask();
@@ -18,7 +19,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "todotask"
             });
         }
-
+        this.nowView = this.todoTaskView;
     },
     hideTodoTask: function () {
         this.todoTaskView && this.todoTaskView.hide();
@@ -32,6 +33,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "completetask"
             });
         }
+        this.nowView = this.completeTaskView;
     },
     hideCompleteTask: function () {
         this.completeTaskView && this.completeTaskView.hide();
@@ -45,6 +47,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "myorder"
             });
         }
+        this.nowView = this.orderView;
     },
     hideMyOrder: function () {
         this.orderView && this.orderView.hide();
@@ -67,6 +70,10 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 g.hideCompleteTask();
                 g.showMyOrder();
             }
+        });
+        window.top.homeView && window.top.homeView.addTabListener("FLOW_PTSY", function (id, win) {
+            console.log(win.mainPageView.nowView);
+            // win.mainPageView.nowView.refresh();
         });
     }
 });

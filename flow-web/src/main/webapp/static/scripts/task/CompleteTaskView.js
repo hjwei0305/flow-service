@@ -38,23 +38,25 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     },
     initToolBar: function () {
         var g = this;
-        return [{
-            xtype: "ComboBox",
-            name: "businessModelName",
-            displayText: "全部业务模块",
-            store: {
-                url: _ctxPath + "/flowTask/listFlowTaskHeader"
-            },
-            afterSelect: function (data) {
-                g.params.modelId = data.data.businessModeId;
-                g.refresh();
-            },
-            afterClear: function () {
-                g.params.page = 1;
-                g.params.modelId = null;
-                g.getData();
-            }
-        }, {
+        return [
+        //     {
+        //     xtype: "ComboBox",
+        //     name: "businessModelName",
+        //     displayText: "全部业务模块",
+        //     store: {
+        //         url: _ctxPath + "/flowTask/listFlowTaskHeader"
+        //     },
+        //     afterSelect: function (data) {
+        //         g.params.modelId = data.data.businessModeId;
+        //         g.refresh();
+        //     },
+        //     afterClear: function () {
+        //         g.params.page = 1;
+        //         g.params.modelId = null;
+        //         g.getData();
+        //     }
+        // },
+            {
             xtype: "SearchBox",
             name: "Quick_value",
             onSearch: function (value) {

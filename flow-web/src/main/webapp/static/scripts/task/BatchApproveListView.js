@@ -141,10 +141,10 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         var btn = EUI.getCmp("batchBtn");
         var title = btn.title;
         if (title == "全选") {
-            $(".work_checkBox input", "#" + g.renderTo).attr("checked", true);
+            $(".work_checkBox input", "#" + this.renderTo).attr("checked", true);
             btn.setTitle("取消");
         } else {
-            $(".work_checkBox input", "#" + g.renderTo).removeAttr("checked");
+            $(".work_checkBox input", "#" + this.renderTo).removeAttr("checked");
             btn.setTitle("全选");
         }
     },
