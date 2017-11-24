@@ -8,10 +8,7 @@ import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -85,5 +82,18 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowHistory> findByPageAndUser(Search searchConfig);
+
+    /**
+     * 获取待办汇总信息
+     * @param businessModelId 业务实体id
+     * @param searchConfig 查询条件
+     * @return 待办汇总信息
+     */
+    @POST
+    @Path("findByBusinessModelId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    public PageResult<FlowHistory> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 }

@@ -10,6 +10,7 @@ import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +74,14 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             }
         }
         return result;
+    }
+
+    public PageResult<FlowHistory> findByBusinessModelId(String businessModelId, Search searchConfig) {
+        String userId = ContextUtil.getUserId();
+        if(StringUtils.isNotEmpty(businessModelId)){
+            return flowHistoryDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
+        }else{
+            return flowHistoryDao.findByPage(userId, searchConfig);
+        }
     }
 }

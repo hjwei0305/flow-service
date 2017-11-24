@@ -57,9 +57,7 @@ public class FlowHistoryController extends FlowBaseController{
     public PageResult<FlowHistory> listFlowHistory(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
         String executorId = ContextUtil.getUserId();
-//        if("admin".equalsIgnoreCase(account)){
-//            account = "666666";
-//        }
+        String modelId = request.getParameter("modelId");
          search.addFilter(new SearchFilter("executorId", executorId, SearchFilter.Operator.EQ));
         //根据业务单据名称、业务单据号、业务工作说明快速查询
         search.addQuickSearchProperty("flowName");
@@ -68,8 +66,10 @@ public class FlowHistoryController extends FlowBaseController{
         search.addQuickSearchProperty("flowInstance.businessModelRemark");
         search.addQuickSearchProperty("creatorName");
         IFlowHistoryService proxy = ApiClient.createProxy(IFlowHistoryService.class);
-        PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
+//        PageResult<FlowHistory> flowTaskPageResult = proxy.findByPage(search);
+        PageResult<FlowHistory> flowTaskPageResult = proxy.findByBusinessModelId(modelId,search);
         return flowTaskPageResult;
+
     }
 
 }

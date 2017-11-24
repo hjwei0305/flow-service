@@ -987,9 +987,7 @@ public class FlowTaskTool {
             return result;
         } catch (Exception e) {
             e.printStackTrace();
-            e.printStackTrace();
             logger.error(e.getMessage());
-
             return OperateResult.operationFailure("10004");//流程取回失败，未知错误
         }
     }
