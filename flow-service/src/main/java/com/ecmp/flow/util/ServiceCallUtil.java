@@ -6,6 +6,7 @@ import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.vo.FlowInvokeParams;
+import com.ecmp.flow.vo.FlowOpreateResult;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,8 @@ public class ServiceCallUtil {
                  params.put("paramJson",args[0]);
                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+                  FlowOpreateResult flowOpreateResult = new FlowOpreateResult();
+                  result = flowOpreateResult;
               }else{
                   Map<String,String> paramMap = null;
                   FlowInvokeParams params = new FlowInvokeParams();

@@ -15,6 +15,7 @@ import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
@@ -96,19 +97,12 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
-//            if(StringUtils.isEmpty(businessId)){
-//            ExecutionEntity parentExecutionEntity = ((ExecutionEntity) delegateTask).getSuperExecution();
-//            if(parentExecutionEntity != null){
-//                businessId =  parentExecutionEntity.getProcessInstance().getBusinessKey();
-//            }
-//            }
+
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-//        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-            //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
             net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
             if (normal != null) {
                 String serviceTaskId = (String) normal.get("serviceTaskId");
@@ -121,7 +115,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowHistory.setTaskJsonDef(currentNode.toString());
                     flowHistory.setFlowName(definition.getProcess().getName());
                     flowHistory.setDepict("服务任务【自动执行】");
-//                    flowHistory.setActClaimTime(flowTask.getActClaimTime());
                     flowHistory.setFlowTaskName(flowTaskName);
                     flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
@@ -160,12 +153,17 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         tempV.put("callActivtiySonPaths",paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-
-                    String  serviceCallResultStr =(String)ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
-                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
-                        serviceVariables.putAll(serviceCallResult);
+                    FlowOpreateResult  serviceCallResult =(FlowOpreateResult)ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    if(!serviceCallResult.isSuccess()){
+                        String message = serviceCallResult.getMessage();
+                        message="serviceTaskId="+serviceTaskId+",businessId"+businessId+";调用返回失败！"+message;
+                        logger.error(message);
+                        throw new RuntimeException(message);
                     }
+//                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
+//                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
+//                        serviceVariables.putAll(serviceCallResult);
+//                    }
                     flowHistory.setActEndTime(new Date());
                     flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
                     if(flowHistory.getActDurationInMillis() == null){
@@ -173,8 +171,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         flowHistory.setActDurationInMillis(actDurationInMillis);
                     }
                     flowHistoryDao.save(flowHistory);
-
-
                     List<NodeInfo> results = null;
                     results = nodeInfoList;
                     FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
@@ -250,13 +246,11 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                     for(Executor executor:executorSet){
                                         userIdArray.add(executor.getId());
                                     }
-//                                    nextUserMap.put(nodeInfo.getUserVarName(),userIdArray);
                                     if (StringUtils.isNotEmpty(callActivityPath)) {
                                         userVarNameMap.put(callActivityPath+"/"+varUserName, userIdArray);
                                     }else {
                                         userVarNameMap.put(varUserName, userIdArray);
                                     }
-                                    //runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userIdArray);
                                 }
                             }else {
                                 Set<Executor> executorSet = nodeInfo.getExecutorSet();
@@ -267,14 +261,11 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                     }else {
                                         userVarNameMap.put(varUserName, userId);
                                     }
-//                                    nextUserMap.put(nodeInfo.getUserVarName(),userId);
-                                    //runtimeService.setVariable(delegateTask.getProcessInstanceId(),nodeInfo.getUserVarName(), userId);
                                 }
                             }
                         }
                         serviceVariables.putAll(userVarNameMap);
                         runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
-                    //    flowDefinationService.initTask();
                     }
                     runtimeService.setVariables(delegateTask.getProcessInstanceId(),serviceVariables);
                     if(!nextNodes.isEmpty()){
@@ -308,7 +299,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     throw new RuntimeException("服务地址不能为空！");
                 }
             }
-
     }
 
     private void initNextAllTask(FlowInstance flowInstance,FlowHistory flowHistory){

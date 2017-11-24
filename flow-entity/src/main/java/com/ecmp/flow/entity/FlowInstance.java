@@ -149,6 +149,35 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	private Set<FlowTask> flowTasks = new HashSet<FlowTask>(0);
 
 
+
+
+	/**
+	 * web基地址
+	 */
+	@Transient
+	private String webBaseAddress;
+
+
+	/**
+	 * web基地址绝对路径
+	 */
+	@Transient
+	private String webBaseAddressAbsolute;
+
+	/**
+	 * api基地址
+	 */
+	@Transient
+	private String apiBaseAddress;
+
+	/**
+	 * api基地址
+	 */
+	@Transient
+	private String apiBaseAddressAbsolute;
+
+
+
 	public FlowInstance() {
 	}
 
@@ -326,6 +355,10 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 				.append("endDate", endDate)
 				.append("flowHistories", flowHistories)
 				.append("flowTasks", flowTasks)
+				.append("webBaseAddress", this.getWebBaseAddress())
+				.append("apiBaseAddress", this.getApiBaseAddress())
+				.append("webBaseAddressAbsolute",this.getWebBaseAddressAbsolute())
+				.append("apiBaseAddressAbsolute",this.getApiBaseAddressAbsolute())
 				.toString();
 	}
 
@@ -342,6 +375,38 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.parent = parent;
 	}
 
+
+	public String getWebBaseAddress() {
+		return webBaseAddress;
+	}
+
+	public void setWebBaseAddress(String webBaseAddress) {
+		this.webBaseAddress = webBaseAddress;
+	}
+
+	public String getWebBaseAddressAbsolute() {
+		return webBaseAddressAbsolute;
+	}
+
+	public void setWebBaseAddressAbsolute(String webBaseAddressAbsolute) {
+		this.webBaseAddressAbsolute = webBaseAddressAbsolute;
+	}
+
+	public String getApiBaseAddress() {
+		return apiBaseAddress;
+	}
+
+	public void setApiBaseAddress(String apiBaseAddress) {
+		this.apiBaseAddress = apiBaseAddress;
+	}
+
+	public String getApiBaseAddressAbsolute() {
+		return apiBaseAddressAbsolute;
+	}
+
+	public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
+		this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
+	}
 
 	@Override
 	@JsonIgnore(false)
@@ -390,4 +455,6 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	public Date getLastEditedDate() {
 		return super.getLastEditedDate();
 	}
+
+
 }

@@ -132,7 +132,7 @@ public class FlowClientController {
             includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
         }
         if(StringUtils.isEmpty(approved)){
-            approved="APPROVED";
+            approved="true";
         }
         List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId,approved, includeNodeIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
@@ -254,9 +254,10 @@ public class FlowClientController {
                 }
 
             }
-//            List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = (List<FlowTaskBatchCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskBatchCompleteWebVO.class);
             String opinion = "同意";
             if(flowTaskBatchCompleteWebVOList!=null && !flowTaskBatchCompleteWebVOList.isEmpty()){
+                 int total=0;//记录处理任务总数
+                 StringBuffer failMessage = new StringBuffer();
                 for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO:flowTaskBatchCompleteWebVOList){
                     FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
                     flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
@@ -270,7 +271,8 @@ public class FlowClientController {
                             String flowTaskType = f.getFlowTaskType();
                                 selectedNodesMap.put(f.getNodeId(),f.getNodeId());
                                 if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                                    v.put(f.getUserVarName(), f.getUserIds());
+                                    String userId = f.getUserIds().replaceAll(",","");
+                                    v.put(f.getUserVarName(),userId);
                                 } else {
                                     String[] idArray = f.getUserIds().split(",");
                                     if(StringUtils.isNotEmpty(f.getUserVarName())){
@@ -283,12 +285,17 @@ public class FlowClientController {
                     flowTaskBatchCompleteVO.setVariables(v);
                     IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
                     OperateResultWithData<Integer> operateResult = proxy.completeBatch(flowTaskBatchCompleteVO);
+                    total+=operateResult.getData();
                     if(operateResult.successful()){
-                        operateStatus = new OperateStatus(true, "成功处理任务"+operateResult.getData()+"条");
                     }else {
-                        operateStatus = new OperateStatus(false, operateResult.getMessage());
+                        failMessage.append(operateResult.getMessage()+";");
                     }
                 }
+                if(total>0){
+                          operateStatus = new OperateStatus(true, "成功处理任务"+total+"条");
+                 }else{
+                          operateStatus = new OperateStatus(false, failMessage.toString());
+                 }
             }
         }else {
             operateStatus = new OperateStatus(false, "参数值错误！");

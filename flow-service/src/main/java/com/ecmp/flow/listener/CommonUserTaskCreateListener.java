@@ -4,21 +4,16 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.ExecutionListener;
-import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +60,6 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
     @Transactional( propagation= Propagation.REQUIRED)
     public void notify(DelegateExecution delegateTask) {
         try {
-          //  ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId =delegateTask.getProcessBusinessKey();
@@ -73,24 +67,47 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-//        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentTaskId);
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-            //        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
             net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
             if (event != null) {
                 String beforeExcuteServiceId = (String) event.get("beforeExcuteServiceId");
+                boolean async = true;//默认为异步
+                String beforeAsyncStr = event.get("beforeAsync")+"";
+                if("false".equalsIgnoreCase(beforeAsyncStr)){
+                    async=false;
+                }
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
-                    Map<String,Object> tempV = delegateTask.getVariables();
-                    String param = JsonUtils.toJson(tempV);
-                    Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                    String multiInstance =  (String)((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
+                    Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
+                    if(isMmultiInstance){//控制会签任务、串行任务、并行任务只达到节点时只触发一次到达事件
+                        TransitionImpl transiton =  ((ExecutionEntity) delegateTask).getTransition();
+                        if(transiton==null){
+                            return;
+                        }
+                    }
                     try {
-                                FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
-                                if(true!=flowOpreateResult.isSuccess()){
-                                    throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                        Map<String,Object> tempV = delegateTask.getVariables();
+                        String param = JsonUtils.toJson(tempV);
+                        if(async){
+                            new Thread(new Runnable() {//模拟异步
+                                @Override
+                                public void run() {
+                                    ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
                                 }
-                            }catch (Exception e){
-                                logger.error(e.getMessage());
+                            }).start();
+                        }else {
+                            Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                            FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                            if(true!=flowOpreateResult.isSuccess()){
+                                throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
                             }
+                        }
+                    }catch (Exception e){
+                        logger.error(e.getMessage());
+                        if(!async){
+                            throw e;
+                        }
+                    }
                 }
             }
         }catch(Exception e){

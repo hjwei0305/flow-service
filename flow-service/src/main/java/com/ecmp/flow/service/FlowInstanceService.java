@@ -4,6 +4,8 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowInstanceService;
@@ -766,6 +768,35 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 result =  OperateResult.operationFailure("10002");//不能终止
             }else{
                 result =  OperateResult.operationFailure("10011");//不能终止
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public PageResult<FlowInstance> findByPage(Search searchConfig){
+        PageResult<FlowInstance>  result=  super.findByPage(searchConfig);
+        if(result!=null){
+            List<FlowInstance>  flowInstanceList = result.getRows();
+            this.initUrl(flowInstanceList);
+        }
+       return result;
+    }
+
+
+    private List<FlowInstance> initUrl(List<FlowInstance>  result ){
+        if(result!=null && !result.isEmpty()){
+            for(FlowInstance flowInstance:result){
+                String apiBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
+                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
+                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                String webBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
+                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                flowInstance.setApiBaseAddress(apiBaseAddress);
+                flowInstance.setWebBaseAddress(webBaseAddress);
             }
         }
         return result;

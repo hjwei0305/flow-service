@@ -42,7 +42,13 @@ public class MyBillVO implements Serializable{
 
     private String flowInstanceId;//流程实例ID
 
+    private String webBaseAddress;
 
+    private String webBaseAddressAbsolute;
+
+    private String apiBaseAddress;
+
+    private String apiBaseAddressAbsolute;
 
 
     public String getBusinessName() {
@@ -147,5 +153,37 @@ public class MyBillVO implements Serializable{
 
     public void setFlowInstanceId(String flowInstanceId) {
         this.flowInstanceId = flowInstanceId;
+    }
+
+    public String getWebBaseAddress() {
+        return webBaseAddress;
+    }
+
+    public void setWebBaseAddress(String webBaseAddress) {
+        this.webBaseAddress = webBaseAddress;
+    }
+
+    public String getWebBaseAddressAbsolute() {
+        return webBaseAddressAbsolute;
+    }
+
+    public void setWebBaseAddressAbsolute(String webBaseAddressAbsolute) {
+        this.webBaseAddressAbsolute = webBaseAddressAbsolute;
+    }
+
+    public String getApiBaseAddress() {
+        return apiBaseAddress;
+    }
+
+    public void setApiBaseAddress(String apiBaseAddress) {
+        this.apiBaseAddress = apiBaseAddress;
+    }
+
+    public String getApiBaseAddressAbsolute() {
+        return apiBaseAddressAbsolute;
+    }
+
+    public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
+        this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
     }
 }

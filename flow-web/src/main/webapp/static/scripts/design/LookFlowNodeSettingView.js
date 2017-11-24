@@ -426,27 +426,66 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             title: "事件",
             id: "event",
             padding: 20,
-            defaultConfig: {
-                readonly: true,
-                xtype: "TextField"
-            },
             items: [{
-                name: "beforeExcuteService",
-                title: "任务执行前",
-                colon: false,
-                labelWidth: 100,
-                width: 220
+                xtype: "FieldGroup",
+                width: 530,
+                defaultConfig: {
+                    readonly: true,
+                    xtype: "TextField"
+                },
+                items: [{
+                    name: "beforeExcuteService",
+                    title: "任务执行前",
+                    colon: false,
+                    labelWidth: 100,
+                    width: 220
+                }, {
+                    xtype: "RadioBoxGroup",
+                    name: "beforeAsync",
+                    // title: "执行策略",
+                    labelWidth: 100,
+                    items: [{
+                        title: "同步",
+                        labelWidth: 30,
+                        name: false
+                    }, {
+                        title: "异步",
+                        name: true,
+                        labelWidth: 30,
+                    }]
+                }]
             }, {
-                name: "afterExcuteService",
-                field: ["afterExcuteServiceId"],
-                title: "任务执行后",
-                colon: false,
-                labelWidth: 100,
-                width: 220
+                xtype: "FieldGroup",
+                width: 530,
+                defaultConfig: {
+                    readonly: true,
+                    xtype: "TextField"
+                },
+                items: [{
+                    name: "afterExcuteService",
+                    field: ["afterExcuteServiceId"],
+                    title: "任务执行后",
+                    colon: false,
+                    labelWidth: 100,
+                    width: 220
+                }, {
+                    xtype: "RadioBoxGroup",
+                    name: "afterAsync",
+                    // title: "执行策略",
+                    labelWidth: 100,
+                    items: [{
+                        title: "同步",
+                        name: false,
+                        labelWidth: 30
+                    }, {
+                        title: "异步",
+                        labelWidth: 30,
+                        name: true
+                    }]
+                }]
             }]
         };
-    }
-    ,
+    },
     getNotifyTab: function (noExcutor) {
         var html = '<div class="notify-west">' +
             '<div class="west-navbar select-navbar">任务达到时</div>' +

@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * *************************************************************************************************
  * <br>
- * 实现功能：
+ * 实现功能：流程实例管理
  * <br>
  * ------------------------------------------------------------------------------------------------
  * <br>
@@ -158,6 +158,10 @@ public class FlowInstanceController {
                 myBillVO.setLookUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl());
                 myBillVO.setEndDate(f.getEndDate());
                 myBillVO.setFlowInstanceId(f.getId());
+                myBillVO.setWebBaseAddress(f.getWebBaseAddress());
+                myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
+                myBillVO.setApiBaseAddress(f.getApiBaseAddress());
+                myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
 //                Boolean canEnd = proxy.checkCanEnd(f.getId());
 //                myBillVO.setCanManuallyEnd(canEnd);
                 data.add(myBillVO);

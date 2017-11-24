@@ -56,8 +56,6 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
                         return;
                     }
                 }
-               // System.out.println(conditon);
-            //    System.out.println(conditionText);
             }
         }
 

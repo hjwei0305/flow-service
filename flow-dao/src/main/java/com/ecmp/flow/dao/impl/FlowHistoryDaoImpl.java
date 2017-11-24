@@ -6,8 +6,10 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.WorkPageUrl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -47,7 +49,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
-
+        initFlowTaskAppModule(result);
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -64,6 +66,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         TypedQuery<FlowHistory> flowHistoryQuery = entityManager.createQuery("select ft.id from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.id = :instanceId  order by ft.lastEditedDate desc", FlowHistory.class);
         flowHistoryQuery.setParameter("instanceId",flowInstance.getId());
         List<FlowHistory> flowHistoryList = flowHistoryQuery.getResultList();
+        initFlowTaskAppModule(flowHistoryList);
         return flowHistoryList;
     }
 
@@ -79,7 +82,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
-
+        initFlowTaskAppModule(result);
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -89,5 +92,38 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         return pageResult;
     }
 
+
+    private List<FlowHistory> initFlowTaskAppModule(List<FlowHistory>  result ){
+        if(result!=null && !result.isEmpty()){
+            for(FlowHistory flowHistory:result){
+                String apiBaseAddress = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
+                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
+                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                String webBaseAddress = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
+                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                flowHistory.setApiBaseAddress(apiBaseAddress);
+                flowHistory.setWebBaseAddress(webBaseAddress);
+//                WorkPageUrl workPageUrl = flowHistory.getWorkPageUrl();
+//                flowHistory.setCompleteTaskServiceUrl(flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl());
+//                if(workPageUrl!=null){
+//                    flowHistory.setTaskFormUrl(flowHistory.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
+//                    flowHistory.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+//                    String appModuleId = workPageUrl.getAppModuleId();
+//                    AppModule appModule = appModuleDao.findOne(appModuleId);
+//                    if(appModule!=flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()){
+//                        webBaseAddress = appModule.getWebBaseAddress();
+//                        flowHistory.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
+//                        webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+//                        webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+//                        flowHistory.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+//                    }
+//                }
+            }
+        }
+        return result;
+    }
 
 }

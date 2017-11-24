@@ -138,15 +138,15 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 启动时调用检查服务，同步
      */
-    @Column(name="start_check_service_url",length = 2000)
-    private String startCheckServiceUrl;
+    @Column(name="start_check_service_url",length = 36)
+    private String startCheckServiceUrlId;
 
 
     /**
-     * 流程结束时，调用服务
+     * 流程结束时，调用服务，异步
      */
-    @Column(name="end_call_service_url",length = 2000)
-    private String endCallServiceUrl;
+    @Column(name="end_call_service_url",length = 36)
+    private String endCallServiceUrlId;
 
     /**
      * default constructor
@@ -313,21 +313,20 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.subProcess = subProcess;
     }
 
-
-    public String getStartCheckServiceUrl() {
-        return startCheckServiceUrl;
+    public String getStartCheckServiceUrlId() {
+        return startCheckServiceUrlId;
     }
 
-    public void setStartCheckServiceUrl(String startCheckServiceUrl) {
-        this.startCheckServiceUrl = startCheckServiceUrl;
+    public void setStartCheckServiceUrlId(String startCheckServiceUrlId) {
+        this.startCheckServiceUrlId = startCheckServiceUrlId;
     }
 
-    public String getEndCallServiceUrl() {
-        return endCallServiceUrl;
+    public String getEndCallServiceUrlId() {
+        return endCallServiceUrlId;
     }
 
-    public void setEndCallServiceUrl(String endCallServiceUrl) {
-        this.endCallServiceUrl = endCallServiceUrl;
+    public void setEndCallServiceUrlId(String endCallServiceUrlId) {
+        this.endCallServiceUrlId = endCallServiceUrlId;
     }
 
     @Override
@@ -348,8 +347,8 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("versionCode", versionCode)
                 .append("priority", priority)
                 .append("defJson", defJson)
-                .append("startCheckServiceUrl", startCheckServiceUrl)
-                .append("endCallServiceUrl", endCallServiceUrl)
+                .append("startCheckServiceUrl", startCheckServiceUrlId)
+                .append("endCallServiceUrl", endCallServiceUrlId)
 //                .append("defBpmn", defBpmn)
                 .append("defXml", defXml)
                 .append("depict", depict)

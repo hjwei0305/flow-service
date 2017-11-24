@@ -1337,7 +1337,14 @@ public class FlowTaskTool {
                         }
                     }
                 }else{
+                    List<String> checkChongfu = new ArrayList<>();
                     for (IdentityLink identityLink : identityLinks) {
+                        String key=identityLink.getTaskId()+identityLink.getUserId();
+                        if(checkChongfu.contains(key)){
+                            continue;
+                        }else{
+                            checkChongfu.add(key);
+                        }
                         Map<String,Object> params = new HashMap();
                         params.put("employeeIds",
                                 java.util.Arrays.asList(identityLink.getUserId()));
@@ -1365,6 +1372,8 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
+                        }else{
+                            throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
                         }
                     }
                 }

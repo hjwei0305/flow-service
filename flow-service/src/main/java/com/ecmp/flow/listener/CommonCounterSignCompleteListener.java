@@ -69,7 +69,7 @@ public class CommonCounterSignCompleteListener implements TaskListener{
             counterSignOpposition = (Integer) processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
-        String approved = (String) delegateTask.getVariable("approved");
+        String approved = delegateTask.getVariable("approved")+"";
 
         if("true".equalsIgnoreCase(approved)){
             counterSignAgree++;
@@ -80,6 +80,6 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         }
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_agree"+delegateTask.getTaskDefinitionKey(), counterSignAgree);
         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_opposition"+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
-         runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
     }
 }
