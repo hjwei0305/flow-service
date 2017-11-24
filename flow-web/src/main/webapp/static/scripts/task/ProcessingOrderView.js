@@ -4,6 +4,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
+        records:0,
         S_createdDate: "DESC",
         Quick_value: null,
         Q_GE_startDate__Date: null,
@@ -36,6 +37,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowInstance/getMyBills",
             params: this.params,
             success: function (result) {
+                g.params.records = result.records;
                 if (result.records == 0) {
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
@@ -101,7 +103,11 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     ,
     showContent: function () {
         this.dataDom.show();
-        this.loadMoreDom.show();
+        if (this.params.records > 10) {
+            this.loadMoreDom.show();
+        } else {
+            this.loadMoreDom.hide();
+        }
         this.emptyDom.hide();
         if(this.params.page == 1){
             this.dataDom.empty();

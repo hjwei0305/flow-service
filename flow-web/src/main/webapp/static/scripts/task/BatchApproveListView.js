@@ -6,6 +6,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 15,
+        records:0,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -29,7 +30,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 region: "center",
                 padding: 0,
                 html: '<div class="info-left todo-info"></div><div class="load-more"><span>获取更多</span></div>'
-                + '<div class="empty-data"><div class="not-data-msg">------------您当前没有已完成的单据------------</div></div>'
+                + '<div class="empty-data"><div class="not-data-msg">------------您当前没有可批量处理的单据------------</div></div>'
             }
             ]
         })
@@ -37,7 +38,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         this.dataDom = $(".todo-info", "#" + this.renderTo);
         this.emptyDom = $(".empty-data", "#" + this.renderTo);
         this.loadMoreDom = $(".load-more", "#" + this.renderTo);
-        this.loadData();
+        this.getData();
         this.addEvents();
     },
     initToolBar: function () {
@@ -45,14 +46,9 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         return [{
             xtype: "Button",
             title: "全选",
+            id: "batchBtn",
             handler: function () {
-                if (this.title == "全选") {
-                    $(".work_checkBox input", "#" + g.renderTo).attr("checked", true);
-                    this.setTitle("取消");
-                } else {
-                    $(".work_checkBox input", "#" + g.renderTo).removeAttr("checked");
-                    this.setTitle("全选");
-                }
+                g.setBatchSelect();
             }
         }, {
             xtype: "Button",
@@ -75,7 +71,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                     afterSubmit: function () {
                         g.show();
                         g.params.page = 1;
-                        g.loadData();
+                        g.getData();
                     },
                     returnBack: function () {
                         this.remove();
@@ -86,29 +82,31 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "ComboBox",
             name: "businessModelName",
-            field: ["businessModeId"],
             displayText: "筛选",
             async: false,
             store: {
                 url: _ctxPath + "/flowTask/listFlowTaskHeader"
             },
             afterSelect: function (data) {
-                g.params.modelId = data.data.id;
+                g.setBatchSelect();
+                g.params.modelId = data.data.businessModeId;
                 g.params.page = 1;
-                g.loadData();
+                g.getData();
             },
-            afterClear:function () {
+            afterClear: function () {
+                g.setBatchSelect();
                 g.params.page = 1;
                 g.params.modelId = null;
-                g.loadData();
+                g.getData();
             }
         }, {
             xtype: "SearchBox",
             name: "Quick_value",
             onSearch: function (value) {
+                g.setBatchSelect();
                 g.params.page = 1;
                 g.params.Quick_value = value;
-                g.loadData();
+                g.getData();
             }
         }, {
             xtype: "Button",
@@ -139,7 +137,18 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             }
         }];
     },
-    loadData: function () {
+    setBatchSelect: function () {
+        var btn = EUI.getCmp("batchBtn");
+        var title = btn.title;
+        if (title == "全选") {
+            $(".work_checkBox input", "#" + g.renderTo).attr("checked", true);
+            btn.setTitle("取消");
+        } else {
+            $(".work_checkBox input", "#" + g.renderTo).removeAttr("checked");
+            btn.setTitle("全选");
+        }
+    },
+    getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
             msg: "正在加载,请稍候..."
@@ -148,6 +157,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listCanBatchApprovalFlowTask",
             params: this.params,
             success: function (result) {
+                g.params.records = result.records;
                 if (result.records == 0) {
                     g.params.page = 1;
                     g.showEmptyWorkInfo();
@@ -176,9 +186,13 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     },
     showContent: function () {
         this.dataDom.show();
-        this.loadMoreDom.show();
+        if (this.params.records > 10) {
+            this.loadMoreDom.show();
+        } else {
+            this.loadMoreDom.hide();
+        }
         this.emptyDom.hide();
-        if(this.params.page == 1){
+        if (this.params.page == 1) {
             this.dataDom.empty();
         }
     },
@@ -267,11 +281,11 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
             g.params.page = 1;
-            g.loadData();
+            g.getData();
         });
         this.loadMoreDom.click(function () {
             g.params.page += 1;
-            g.loadData();
+            g.getData();
         });
     }
 });

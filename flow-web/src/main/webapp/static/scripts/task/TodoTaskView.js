@@ -4,6 +4,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
+        records:0,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -36,7 +37,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.dataDom = $(".todo-info", "#" + this.renderTo);
         this.emptyDom = $(".empty-data", "#" + this.renderTo);
         this.loadMoreDom = $(".load-more", "#" + this.renderTo);
-        this.getTodoData();
+        this.getData();
         this.addEvents();
     },
     initToolBar: function () {
@@ -55,7 +56,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "ComboBox",
             name: "businessModelName",
-            field: ["businessModeId"],
             displayText: "筛选",
             async: false,
             store: {
@@ -65,10 +65,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 g.params.modelId = data.data.businessModeId;
                 g.refresh();
             },
-            afterClear:function () {
+            afterClear: function () {
                 g.params.page = 1;
                 g.params.modelId = null;
-                g.getTodoData();
+                g.getData();
             }
         }, {
             xtype: "SearchBox",
@@ -76,13 +76,14 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             onSearch: function (value) {
                 g.params.page = 1;
                 g.params.Quick_value = value;
-                g.getTodoData();
+                g.getData();
             }
         }, {
             xtype: "Button",
             title: "批量审批",
             handler: function () {
                 g.hide();
+                $("body").append('<div id="batchlist"></div>');
                 new EUI.BatchApproveListView({
                     returnBack: function () {
                         g.show();
@@ -111,7 +112,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     },
 
     //待办内容部分的数据调用
-    getTodoData: function () {
+    getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
             msg: "正在加载,请稍候..."
@@ -125,6 +126,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 } else {
                     $(".todo-count").text(0).hide();
                 }
+                g.params.records = result.records;
                 if (result.records == 0) {
                     g.params.page = 1;
                     g.showEmptyWorkInfo();
@@ -234,9 +236,13 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     ,
     showContent: function () {
         this.dataDom.show();
-        this.loadMoreDom.show();
+        if (this.params.records > 10) {
+            this.loadMoreDom.show();
+        } else {
+            this.loadMoreDom.hide();
+        }
         this.emptyDom.hide();
-        if(this.params.page == 1){
+        if (this.params.page == 1) {
             this.dataDom.empty();
         }
     },
@@ -253,11 +259,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         var g = this;
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
             g.params.page = 1;
-            g.getTodoData();
+            g.getData();
         });
         this.loadMoreDom.click(function () {
             g.params.page += 1;
-            g.getTodoData();
+            g.getData();
         });
         g.approveViewWindow();
         g.lookApproveViewWindow();
@@ -287,7 +293,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     ,
     refresh: function (modelId) {
         this.params.page = 1;
-        this.getTodoData();
+        this.getData();
     }
     ,
     //点击打开查看表单界面的新页签
@@ -418,7 +424,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
                                 //重新获取数据
-                                g.getTodoData();
+                                g.getData();
                             },
                             failure: function (status) {
                                 myMask.hide();
@@ -462,7 +468,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
                                 //重新获取数据
-                                g.getTodoData();
+                                g.getData();
                             },
                             failure: function (status) {
                                 myMask.hide();
