@@ -295,6 +295,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 获取可批量审批待办信息
      * @param searchConfig 查询条件
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByPageCanBatchApprovalByBusinessModelId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
+    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(@QueryParam("businessModelId")String businessModelId,Search searchConfig);
+
+
+    /**
+     * 获取可批量审批待办信息
+     * @param searchConfig 查询条件
      * @param businessModelId 为空查询全部
      * @return 可批量审批待办信息
      */

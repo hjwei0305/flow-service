@@ -1019,6 +1019,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskPageResult;
     }
 
+    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId,Search searchConfig){
+        String userId = ContextUtil.getUserId();
+        PageResult<FlowTask> flowTaskPageResult = null;
+        if(StringUtils.isNotEmpty(businessModelId)){
+            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalByBusinessModelId(businessModelId, userId, searchConfig);
+        }else{
+            flowTaskPageResult = flowTaskDao.findByPageCanBatchApproval(userId, searchConfig);
+        }
+        FlowTaskTool.changeTaskStatue(flowTaskPageResult);
+        return flowTaskPageResult;
+    }
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         Long allCount = flowTaskDao.findCountByExecutorId(userId, searchConfig);

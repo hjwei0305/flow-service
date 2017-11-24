@@ -117,13 +117,14 @@ public class FlowTaskController {
     @ResponseBody
     public PageResult<FlowTask> listCanBatchApprovalFlowTask(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
+        String modelId = request.getParameter("modelId");
         search.addQuickSearchProperty("flowName");
         search.addQuickSearchProperty("taskName");
         search.addQuickSearchProperty("flowInstance.businessCode");
         search.addQuickSearchProperty("flowInstance.businessModelRemark");
         search.addQuickSearchProperty("creatorName");
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        PageResult<FlowTask> flowTaskPageResult = proxy.findByPageCanBatchApproval(search);
+        PageResult<FlowTask> flowTaskPageResult = proxy.findByPageCanBatchApprovalByBusinessModelId(modelId,search);
         return flowTaskPageResult;
     }
 
