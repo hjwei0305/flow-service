@@ -15,6 +15,7 @@ import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.FlowOpreateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
@@ -152,11 +153,17 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         tempV.put("callActivtiySonPaths",paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                    String  serviceCallResultStr =(String)ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
-                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
-                        serviceVariables.putAll(serviceCallResult);
+                    FlowOpreateResult  serviceCallResult =(FlowOpreateResult)ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    if(!serviceCallResult.isSuccess()){
+                        String message = serviceCallResult.getMessage();
+                        message="serviceTaskId="+serviceTaskId+",businessId"+businessId+";调用返回失败！"+message;
+                        logger.error(message);
+                        throw new RuntimeException(message);
                     }
+//                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
+//                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
+//                        serviceVariables.putAll(serviceCallResult);
+//                    }
                     flowHistory.setActEndTime(new Date());
                     flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
                     if(flowHistory.getActDurationInMillis() == null){
