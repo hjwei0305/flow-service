@@ -124,7 +124,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             if (uiType != "checkbox" && i == 0) {
                 userCss = itemCss + " select";
             }
-            html += '<div class="' + userCss + '" id="' + data[i].id + '" uitype="' + data[i].uiType + '">' +
+            html += '<div class="' + userCss + '" id="' + data[i].id + '" uitype="' + uiType + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div>' + data[i].name + ' ' + data[i].organizationName + ' ' + (data[i].positionName || '') + '</div>' +
                 '</div>';
