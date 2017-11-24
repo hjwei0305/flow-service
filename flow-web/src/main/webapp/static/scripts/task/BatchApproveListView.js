@@ -124,7 +124,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             },
             content: "<i class='ecmp-eui-leaf' style='vertical-align: middle;color:#3671cf;'></i><span>已办工作</span>",
             onClick: function () {
-                $("body").trigger("completedtask");
+                $("body").trigger("completetask");
             }
         }, {
             xtype: "Label",
