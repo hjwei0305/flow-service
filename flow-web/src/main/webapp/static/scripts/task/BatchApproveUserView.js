@@ -124,7 +124,7 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             if (uiType != "checkbox" && i == 0) {
                 userCss = itemCss + " select";
             }
-            html += '<div class="' + userCss + '" id="' + data[i].id + '" uitype="' + data[i].uiType + '">' +
+            html += '<div class="' + userCss + '" id="' + data[i].id + '" uitype="' + uiType + '">' +
                 '<div class="choose-icon ' + iconCss + '"></div>' +
                 '<div>' + data[i].name + ' ' + data[i].organizationName + ' ' + (data[i].positionName || '') + '</div>' +
                 '</div>';
@@ -144,15 +144,15 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                     EUI.ProcessStatus({success: false, msg: data.name + "--" + taskdata.name + "，未选择执行人"});
                     return;
                 }
-                var userIds = "";
+                var userIds = [];
                 selectDoms.each(function () {
-                    userIds += $(this).attr("id") + ",";
+                    userIds.push($(this).attr("id"));
                 });
                 submitData.push({
                     taskIdList: taskdata.ids,
                     flowTaskCompleteList: [{
                         nodeId: taskdata.nodeId,
-                        userIds: userIds,
+                        userIds: userIds.join(","),
                         flowTaskType: taskdata.flowTaskType,
                         userVarName: taskdata.userVarName,
                         callActivityPath: taskdata.callActivityPath

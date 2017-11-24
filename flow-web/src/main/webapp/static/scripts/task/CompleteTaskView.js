@@ -4,6 +4,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
+        records:0,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -32,7 +33,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         this.dataDom = $(".todo-info", "#" + this.renderTo);
         this.emptyDom = $(".empty-data", "#" + this.renderTo);
         this.loadMoreDom = $(".load-more", "#" + this.renderTo);
-        this.getCompleteData();
+        this.getData();
         this.addEvents();
     },
     initToolBar: function () {
@@ -40,7 +41,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         return [{
             xtype: "ComboBox",
             name: "businessModelName",
-            field: ["businessModeId"],
             displayText: "全部业务模块",
             store: {
                 url: _ctxPath + "/flowTask/listFlowTaskHeader"
@@ -49,10 +49,10 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                 g.params.modelId = data.data.businessModeId;
                 g.refresh();
             },
-            afterClear:function () {
+            afterClear: function () {
                 g.params.page = 1;
                 g.params.modelId = null;
-                g.getCompleteData();
+                g.getData();
             }
         }, {
             xtype: "SearchBox",
@@ -60,7 +60,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             onSearch: function (value) {
                 g.params.page = 1;
                 g.params.Quick_value = value;
-                g.getCompleteData();
+                g.getData();
             }
         }, "->", {
             xtype: "Label",
@@ -83,7 +83,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         }];
     },
     //已办内容部分的数据调用
-    getCompleteData: function () {
+    getData: function () {
         var g = this;
         var myMask = EUI.LoadMask({
             msg: "正在加载,请稍候..."
@@ -92,6 +92,7 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowHistory/listFlowHistory",
             params: this.params,
             success: function (result) {
+                g.params.records = result.records;
                 if (result.records == 0) {
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
@@ -156,9 +157,13 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     },
     showContent: function () {
         this.dataDom.show();
-        this.loadMoreDom.show();
+        if (this.params.records > 10) {
+            this.loadMoreDom.show();
+        } else {
+            this.loadMoreDom.hide();
+        }
         this.emptyDom.hide();
-        if(this.params.page == 1){
+        if (this.params.page == 1) {
             this.dataDom.empty();
         }
     },
@@ -283,6 +288,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     refresh: function () {
         this.params.page = 1;
         $(".todo-info", '#' + this.renderTo).empty();
-        this.getCompleteData();
+        this.getData();
     }
 });
