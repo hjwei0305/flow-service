@@ -124,6 +124,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             },
             content: "<i class='ecmp-eui-leaf' style='vertical-align: middle;color:#3671cf;'></i><span>已办工作</span>",
             onClick: function () {
+                g.hide();
                 $("body").trigger("completetask");
             }
         }, {
@@ -133,6 +134,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             },
             content: "<i class='ecmp-sys-syslog' style='vertical-align: middle;color:#3671cf;'></i><span>我的单据</span>",
             onClick: function () {
+                g.hide();
                 $("body").trigger("myorder");
             }
         }];
