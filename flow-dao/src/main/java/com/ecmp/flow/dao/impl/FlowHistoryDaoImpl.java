@@ -10,9 +10,11 @@ import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.WorkPageUrl;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -124,6 +126,46 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             }
         }
         return result;
+    }
+
+    public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig){
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
+        String  quickSearchValue = searchConfig.getQuickSearchValue();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
+        if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for(String s:quickSearchProperties){
+                if(first){
+                    extraHql.append("  ft."+s+" like '%"+quickSearchValue+"%'");
+                    first = false;
+                }else {
+                    extraHql.append(" or  ft."+s+" like '%"+quickSearchValue+"%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount+=extraHql.toString();
+            hqlQuery+=extraHql.toString();
+        }
+        hqlQuery+=" order by ft.createdDate desc";
+        TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
+        queryTotal.setParameter("executorId",executorId);
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowHistory> query = entityManager.createQuery(hqlQuery, FlowHistory.class);
+        query.setParameter("executorId",executorId);
+        query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
+        query.setMaxResults( pageInfo.getRows() );
+        List<FlowHistory>  result = query.getResultList();
+        initFlowTaskAppModule(result);
+        PageResult<FlowHistory> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue()+pageInfo.getRows()-1)/pageInfo.getRows());
+        return pageResult;
     }
 
 }
