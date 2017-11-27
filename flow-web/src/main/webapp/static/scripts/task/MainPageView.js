@@ -19,7 +19,6 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "todotask"
             });
         }
-        this.nowView = this.todoTaskView;
     },
     hideTodoTask: function () {
         this.todoTaskView && this.todoTaskView.hide();
@@ -33,7 +32,6 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "completetask"
             });
         }
-        this.nowView = this.completeTaskView;
     },
     hideCompleteTask: function () {
         this.completeTaskView && this.completeTaskView.hide();
@@ -47,10 +45,12 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "myorder"
             });
         }
-        this.nowView = this.orderView;
     },
     hideMyOrder: function () {
         this.orderView && this.orderView.hide();
+    },
+    refresh: function () {
+        this.nowView && this.nowView.refresh();
     },
     addEvents: function () {
         var g = this;
@@ -69,11 +69,14 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 g.hideTodoTask();
                 g.hideCompleteTask();
                 g.showMyOrder();
+            },
+            "updatenowview": function (event, view) {
+                console.log(this);
+                g.nowView = view;
             }
         });
         window.top.homeView && window.top.homeView.addTabListener("FLOW_PTSY", function (id, win) {
-            console.log(win.mainPageView.nowView);
-            // win.mainPageView.nowView.refresh();
+            win.mainPageView.refresh();
         });
     }
 });

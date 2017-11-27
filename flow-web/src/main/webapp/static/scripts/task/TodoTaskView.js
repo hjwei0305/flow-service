@@ -3,8 +3,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
     params: {
         page: 1,
-        rows: 10,
-        records:0,
+        rows: 5,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -14,18 +13,25 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         this.boxCmp = EUI.Container({
             renderTo: this.renderTo,
             layout: "border",
-            title: "我的工作 > 待办工作",
             items: [{
-                xtype: "ToolBar",
-                height: 33,
+                xtype: "Container",
+                height: 70,
                 region: "north",
                 padding: 0,
+                itemspace: 0,
                 border: false,
-                afterRender: function () {
-                    EUI.container.Container.superclass.afterRender.call(this);
-                    this.content.css("paddingTop", 12);
-                },
-                items: this.initToolBar()
+                items: [{
+                    xtype: "Label",
+                    content: "我的工作 > 待办工作"
+                }, {
+                    xtype: "ToolBar",
+                    height: 36,
+                    items: this.initToolBar(),
+                    afterRender: function () {
+                        EUI.container.Container.superclass.afterRender.call(this);
+                        this.content.css("paddingTop", 12);
+                    }
+                }]
             }, {
                 xtype: "Container",
                 region: "center",
@@ -62,6 +68,10 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 url: _ctxPath + "/flowTask/listFlowTaskHeader"
             },
             afterSelect: function (data) {
+                if (g.params.modelId == data.data.businessModeId) {
+                    return;
+                }
+                g.params.page = 1;
                 g.params.modelId = data.data.businessModeId;
                 g.refresh();
             },
@@ -74,6 +84,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             xtype: "SearchBox",
             name: "Quick_value",
             onSearch: function (value) {
+                if (g.params.Quick_value == value) {
+                    return;
+                }
                 g.params.page = 1;
                 g.params.Quick_value = value;
                 g.getData();
@@ -126,37 +139,32 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 } else {
                     $(".todo-count").text(0).hide();
                 }
-                g.params.records = result.records;
                 if (result.records == 0) {
                     g.params.page = 1;
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
-                    g.showTodoData(result.rows);
+                    g.showContent(result);
+                    g.showData(result.rows);
                 } else {
-                    if (g.params.page > 0) {
-                        g.params.page--;
-                    }
                     EUI.ProcessStatus({
                         success: true,
                         msg: "没有更多数据"
                     });
+                }
+                if (result.rows.length == this.params.rows) {
+                    g.params.page++;
                 }
                 myMask.hide();
             },
             failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (g.params.page > 0) {
-                    g.params.page--;
-                }
             }
         });
     },
     //待办里面内容部分的循环
-    showTodoData: function (items) {
+    showData: function (items) {
         var g = this;
-        this.showContent();
         for (var j = 0; j < items.length; j++) {
             var rejectHtml = items[j].canReject ? '<div class="todo-btn reject-btn"><i class="ecmp-common-return reject-icon" title="驳回"></i><span>驳回</span></div>' : '';
             var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
@@ -228,23 +236,28 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     ,
     show: function () {
         this.boxCmp.show();
+        $("body").trigger("updatenowview", [this]);
     }
     ,
     hide: function () {
         this.boxCmp.hide();
     }
     ,
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".info-item:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if (this.params.page == 1) {
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -258,11 +271,9 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
-            g.params.page = 1;
             g.getData();
         });
         this.loadMoreDom.click(function () {
-            g.params.page += 1;
             g.getData();
         });
         g.approveViewWindow();

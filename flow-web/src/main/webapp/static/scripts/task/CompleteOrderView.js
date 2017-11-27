@@ -37,29 +37,26 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowInstance/getMyBills",
             params: this.params,
             success: function (result) {
-                g.params.records = result.records;
                 if (result.records == 0) {
+                    g.params.page = 1;
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
+                    g.showContent(result);
                     g.showData(result.rows);
                 } else {
-                    if (g.params.page > 0) {
-                        g.params.page--;
-                    }
                     EUI.ProcessStatus({
                         success: true,
                         msg: "没有更多数据"
                     });
+                }
+                if (result.rows.length == this.params.rows) {
+                    g.params.page++;
                 }
                 myMask.hide();
             },
             failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (g.params.page > 0) {
-                    g.params.page--;
-                }
             }
         })
     }
@@ -95,6 +92,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     ,
     show: function () {
         this.boxCmp.show();
+        $("body").trigger("updatenowview",[this]);
     }
     ,
     hide: function () {
@@ -103,15 +101,19 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     ,
     showContent: function () {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".info-item:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if(this.params.page == 1){
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -132,11 +134,9 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         this.lookApproveViewWindow();
         this.flowInstanceWindow();
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
-            g.params.page = 1;
             g.getData();
         });
         this.loadMoreDom.click(function () {
-            g.params.page += 1;
             g.getData();
         });
     }
@@ -149,7 +149,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + data.lookUrl + "?id=" + data.businessId,
+                url: data.webBaseAddress + data.lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);

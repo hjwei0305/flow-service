@@ -76,9 +76,6 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    showBatchUserPage: function () {
-
-    },
     showData: function (data) {
         var html = "";
         for (var j = 0; j < data.length; j++) {
