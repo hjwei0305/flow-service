@@ -247,13 +247,13 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
                     title: "确定",
                     selected: true,
                     handler: function () {
-                        g.doRevoke(data);
+                        g.doRevoke(data,win);
                     }
                 }]
             })
         });
     },
-    doRevoke: function (data) {
+    doRevoke: function (data,win) {
         var opinion = EUI.getCmp("opinion").getValue();
         var myMask = EUI.LoadMask({
             msg: "处理中，请稍后.."
