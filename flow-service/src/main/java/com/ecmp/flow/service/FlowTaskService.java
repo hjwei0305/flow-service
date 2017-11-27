@@ -636,6 +636,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String preFlowTaskId = preFlowTask.getPreId();
             if(StringUtils.isNotEmpty(preFlowTaskId)){
                 preFlowTask =  flowHistoryDao.findOne(preFlowTaskId);
+            }else {
+                return   OperateResult.operationFailure("10016");
             }
         }
         ActivityImpl preActivity = ((ProcessDefinitionImpl) definition)
@@ -668,6 +670,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             for (PvmTransition pvmTransition : oriPvmTransitionList) {
                 pvmTransitionList.add(pvmTransition);
             }
+          //  variablesProcess.put("reject", 0);//将状态重置
+            runtimeService.removeVariable(instance.getProcessInstanceId(),"reject");//将状态重置
         } else {
             result = OperateResult.operationFailure("10016");
         }
@@ -1148,6 +1152,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             tempNodeGroupInfo.setFlowDefVersionName(nodeInfo.getFlowDefVersionName());
                             BeanUtils.copyProperties(nodeInfo,tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
+                            tempNodeGroupInfo.setExecutorSet(nodeInfo.getExecutorSet());
                             tempNodeGroupInfoMap.put(flowDefVersionId+nodeInfo.getId(),tempNodeGroupInfo);
                         }else {
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
