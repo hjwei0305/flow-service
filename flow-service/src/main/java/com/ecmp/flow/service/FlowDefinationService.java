@@ -574,7 +574,14 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         NodeInfo nodeInfo = new NodeInfo();
         nodeInfo.setId(nodeId);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
-        net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+        net.sf.json.JSONObject executor=null;
+        if(currentNode.getJSONObject("nodeConfig").has("executor")){
+            try {
+                executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+            }catch (Exception e){
+
+            }
+        }
         UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
         nodeInfo.setName(userTaskTemp.getName());
         nodeInfo.setType(userTaskTemp.getType());
@@ -602,7 +609,41 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
             nodeInfo.setUiType("checkbox");
             nodeInfo.setFlowTaskType(userTaskTemp.getNodeType());
-        } else {
+        } else if ("ServiceTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {//服务任务
+            ServiceTask serviceTaskTemp = (ServiceTask) JSONObject.toBean(currentNode, ServiceTask.class);
+            nodeInfo.setName(serviceTaskTemp.getName());
+            nodeInfo.setType(serviceTaskTemp.getType());
+            nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
+            nodeInfo.setUiType("radiobox");
+            nodeInfo.setFlowTaskType("serviceTask");
+            String startUserId = ContextUtil.getSessionUser().getUserId();
+            Map<String,Object> params = new HashMap();
+            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                Set<Executor> employeeSet = new HashSet<Executor>();
+                employeeSet.addAll(employees);
+                nodeInfo.setExecutorSet(employeeSet);
+            }
+        } else if ("ReceiveTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {//接收任务
+            ReceiveTask receiveTaskTemp = (ReceiveTask) JSONObject.toBean(currentNode, ReceiveTask.class);
+            nodeInfo.setName(receiveTaskTemp.getName());
+            nodeInfo.setType(receiveTaskTemp.getType());
+            nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
+            nodeInfo.setUiType("radiobox");
+            nodeInfo.setFlowTaskType("receiveTask");
+            String startUserId = ContextUtil.getSessionUser().getUserId();
+            Map<String,Object> params = new HashMap();
+            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                Set<Executor> employeeSet = new HashSet<Executor>();
+                employeeSet.addAll(employees);
+                nodeInfo.setExecutorSet(employeeSet);
+            }
+        }else {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
         }
 

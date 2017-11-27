@@ -16,8 +16,8 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class FlowInvokeParams implements Serializable{
-    private String id;
-    private Map<String,String> params;
+    private String id;//业务单据id
+    private Map<String,String> params;//其他参数
     private Boolean isAgree;  //是否同意
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String receiveTaskActDefId;//针对接收任务，传递接收任务key
