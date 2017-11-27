@@ -333,7 +333,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 可批量审批待办信息
      */
     @POST
-    @Path("findByBusinessModelIdWithAllCount")
+    @Path("getBatchApprovalFlowTasks")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")

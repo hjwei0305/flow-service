@@ -40,36 +40,48 @@ public class ServiceCallUtil {
               String  clientUrl = flowServiceUrl.getUrl();
               AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
 
+                Map<String,String> paramMap = new HashMap<>();
+                FlowInvokeParams params = new FlowInvokeParams();
+                if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
+                    try {
+                        JSONObject jsonObject = JSONObject.fromObject(args[0]);
+                        if(jsonObject.has("approved")){
+                            String approved = jsonObject.get("approved") + "";
+                            if (StringUtils.isNotEmpty(approved) && !"null".equalsIgnoreCase(approved)) {
+                                params.setAgree(Boolean.parseBoolean(approved));
+                            }
+                        }
+                        if(jsonObject.has("approveResult")){
+                            String approveResult = jsonObject.get("approveResult") + "";
+                            if (StringUtils.isNotEmpty(approveResult)) {
+                                params.setFinalAgree(Boolean.parseBoolean(approveResult));
+                            }
+                        }
+                        if(jsonObject.has("receiveTaskActDefId")){
+                            String receiveTaskActDefId = (String) jsonObject.get("receiveTaskActDefId") ;
+                            if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
+                                params.setReceiveTaskActDefId(receiveTaskActDefId);
+                            }
+                        }
+                        if(jsonObject.has("reject")){
+                            int reject = jsonObject.getInt("reject");
+                            if(reject==1){
+                                paramMap.put("reject","true");//是否被驳回
+                            }
+                        }
+                    }catch (Exception e){
+                    }
+                }
+
               if(appModule.getCode().equalsIgnoreCase("FLOW")){
-                 Map<String, Object> params = new HashMap<String,Object>();;
-                 params.put("id",businessId);
-                 params.put("paramJson",args[0]);
+                 Map<String, Object> paramsFlow = new HashMap<String,Object>();;
+                  paramsFlow.put("id",businessId);
+                  paramsFlow.put("paramJson",args[0]);
                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, paramsFlow);
                   FlowOpreateResult flowOpreateResult = new FlowOpreateResult();
                   result = flowOpreateResult;
               }else{
-                  Map<String,String> paramMap = null;
-                  FlowInvokeParams params = new FlowInvokeParams();
-                  if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
-                      try {
-                          JSONObject jsonObject = JSONObject.fromObject(args[0]);
-                          String approved = jsonObject.get("approved") + "";
-                          if (StringUtils.isNotEmpty(approved)) {
-                              params.setAgree(Boolean.parseBoolean(approved));
-                          }
-                          String approveResult = jsonObject.get("approveResult") + "";
-                          if (StringUtils.isNotEmpty(approveResult)) {
-                              params.setFinalAgree(Boolean.parseBoolean(approveResult));
-                          }
-                          String receiveTaskActDefId = (String) jsonObject.get("receiveTaskActDefId") ;
-                          if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
-                              params.setReceiveTaskActDefId(receiveTaskActDefId);
-                          }
-                      }catch (Exception e){
-                      }
-                  }
-
                   params.setId(businessId);
                   params.setParams(paramMap);
                   String url = appModule.getApiBaseAddress()+"/"+clientUrl;
