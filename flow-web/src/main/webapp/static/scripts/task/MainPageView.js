@@ -7,6 +7,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
 
     initComponent: function () {
         this.showTotoTask();
+        this.nowView = this.todoTaskView;
         this.addEvents();
 
     },
@@ -19,6 +20,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "todotask"
             });
         }
+        $("body").trigger("updatenowview",[this.todoTaskView]);
     },
     hideTodoTask: function () {
         this.todoTaskView && this.todoTaskView.hide();
@@ -32,6 +34,7 @@ EUI.MainPageView = EUI.extend(EUI.CustomUI, {
                 renderTo: "completetask"
             });
         }
+        $("body").trigger("updatenowview",[this.completeTaskView]);
     },
     hideCompleteTask: function () {
         this.completeTaskView && this.completeTaskView.hide();

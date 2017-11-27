@@ -119,7 +119,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     //已办内容部分的循环
     showData: function (items) {
         var g = this;
-        this.showContent();
         for (var j = 0; j < items.length; j++) {
             var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
                 ? '<div class="todo-btn flow-backout-btn"><i class="ecmp-flow-backout backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
@@ -149,12 +148,11 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     },
     show: function () {
         this.boxCmp.show();
-        $("body").trigger("updatenowview",[this]);
     },
     hide: function () {
         this.boxCmp.hide();
     },
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
         if (this.params.page == 1) {
             this.dataDom.empty();

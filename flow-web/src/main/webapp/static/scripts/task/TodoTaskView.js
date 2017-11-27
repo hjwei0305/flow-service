@@ -97,11 +97,12 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             handler: function () {
                 g.hide();
                 $("body").append('<div id="batchlist"></div>');
-                new EUI.BatchApproveListView({
+                var listview = new EUI.BatchApproveListView({
                     returnBack: function () {
                         g.show();
                     }
                 });
+                $("body").trigger("updatenowview",[listview]);
             }
         }, "->", {
             xtype: "Label",

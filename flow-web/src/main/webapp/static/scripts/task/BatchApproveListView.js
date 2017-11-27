@@ -192,7 +192,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             this.dataDom.empty();
         } else {
             var index = (this.params.page - 1) * this.params.rows - 1;
-            $(".info-item:gt(" + index + ")", this.dataDom).remove();
+            $(".work_table_box:gt(" + index + ")", this.dataDom).remove();
         }
         var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
         if (result.records > loaded) {
@@ -212,7 +212,6 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     ,
     showData: function (data) {
         var html = "";
-        this.showContent();
         for (var i = 0; i < data.length; i++) {
             var itemdata = data[i];
             html += '<div class="work_table_box" id="' + itemdata.id + '">' +

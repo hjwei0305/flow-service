@@ -64,7 +64,6 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
 //已办单据界面内容部分的循环
     showData: function (datas) {
         var html = "";
-        this.showContent();
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
@@ -92,20 +91,19 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
     ,
     show: function () {
         this.boxCmp.show();
-        $("body").trigger("updatenowview",[this]);
     }
     ,
     hide: function () {
         this.boxCmp.hide();
     }
     ,
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
         if (this.params.page == 1) {
             this.dataDom.empty();
         } else {
             var index = (this.params.page - 1) * this.params.rows - 1;
-            $(".info-item:gt(" + index + ")", this.dataDom).remove();
+            $(".info-items:gt(" + index + ")", this.dataDom).remove();
         }
         var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
         if (result.records > loaded) {

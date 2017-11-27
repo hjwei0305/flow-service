@@ -181,6 +181,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 startDate: this.startDate,
                 endDate: this.endDate
             });
+            $("body").trigger("updatenowview",[this.completeOrderView]);
             this.nowOrderCmp = this.completeOrderView;
         } else if (this.completeOrderView) {
             this.completeOrderView.hide();
@@ -200,6 +201,7 @@ EUI.MyOrderView = EUI.extend(EUI.CustomUI, {
                 startDate: this.startDate,
                 endDate: this.endDate
             });
+            $("body").trigger("updatenowview",[this.processingOrderView]);
             this.nowOrderCmp = this.processingOrderView;
         } else if (this.processingOrderView) {
             this.processingOrderView.hide();

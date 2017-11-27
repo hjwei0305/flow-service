@@ -61,7 +61,6 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     },
     //待办单据界面内容部分的循环
     showData: function (datas) {
-        this.showContent();
         var html = "";
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
@@ -98,17 +97,21 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
         this.boxCmp.hide();
     }
     ,
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".info-items:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if (this.params.page == 1) {
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
