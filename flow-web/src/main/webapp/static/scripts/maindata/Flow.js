@@ -1003,7 +1003,7 @@ Flow.EUI.FlowStart = EUI.extend(EUI.CustomUI, {
         //执行人选择
         $(".flow-user-item").die().live("click", function () {
             var type = $(this).attr("type").toLowerCase();
-            if (type === "common"||type === "approve"||type==="servicetask" ) {
+            if (type === "common"||type === "approve"||type==="servicetask" || type === "receivetask") {
                 if ($(this).parent().children("div").length === 1) {
                     if ($(this).hasClass("select")) {
                         $(this).removeClass("select");

@@ -4,7 +4,6 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
-        records: 0,
         S_createdDate: "DESC",
         Quick_value: null,
         Q_GE_startDate__Date: null,
@@ -37,35 +36,31 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowInstance/getMyBills",
             params: this.params,
             success: function (result) {
-                g.params.records = result.records;
                 if (result.records == 0) {
+                    g.params.page = 1;
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
+                    g.showContent(result);
                     g.showData(result.rows);
                 } else {
-                    if (g.params.page > 0) {
-                        g.params.page--;
-                    }
                     EUI.ProcessStatus({
                         success: true,
                         msg: "没有更多数据"
                     });
+                }
+                if (result.rows.length == this.params.rows) {
+                    g.params.page++;
                 }
                 myMask.hide();
             },
             failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (g.params.page > 0) {
-                    g.params.page--;
-                }
             }
         })
     },
     //待办单据界面内容部分的循环
     showData: function (datas) {
-        this.showContent();
         var html = "";
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
@@ -95,23 +90,28 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
     },
     show: function () {
         this.boxCmp.show();
+        $("body").trigger("updatenowview", [this]);
     }
     ,
     hide: function () {
         this.boxCmp.hide();
     }
     ,
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".info-items:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if (this.params.page == 1) {
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -132,11 +132,9 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
         g.flowInstanceWindow();
         g.endFlowEvent();
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
-            g.params.page = 1;
             g.getData();
         });
         this.loadMoreDom.click(function () {
-            g.params.page += 1;
             g.getData();
         });
     },
@@ -148,7 +146,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             var data = itemdom.data();
             var tab = {
                 title: "查看表单",
-                url: _ctxPath + "/" + data.lookUrl + "?id=" + data.businessId,
+                url: data.webBaseAddress + data.lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);

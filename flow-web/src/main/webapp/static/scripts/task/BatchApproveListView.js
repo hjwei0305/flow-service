@@ -6,7 +6,6 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 15,
-        records:0,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -78,6 +77,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                         g.show();
                     }
                 });
+                $("body").trigger("updatenowview");
             }
         }, {
             xtype: "ComboBox",
@@ -157,12 +157,11 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listCanBatchApprovalFlowTask",
             params: this.params,
             success: function (result) {
-                g.params.records = result.records;
                 if (result.records == 0) {
                     g.params.page = 1;
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
+                    g.showContent(result);
                     g.showData(result.rows);
                 } else {
                     if (g.params.page > 0) {
@@ -172,6 +171,9 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                         success: true,
                         msg: "没有更多数据"
                     });
+                }
+                if (result.rows.length == this.params.rows) {
+                    g.params.page++;
                 }
                 myMask.hide();
             },
@@ -186,15 +188,19 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     },
     showContent: function () {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".work_table_box:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if (this.params.page == 1) {
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -206,7 +212,6 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     ,
     showData: function (data) {
         var html = "";
-        this.showContent();
         for (var i = 0; i < data.length; i++) {
             var itemdata = data[i];
             html += '<div class="work_table_box" id="' + itemdata.id + '">' +
@@ -266,6 +271,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     },
     show: function () {
         this.boxCmp.show();
+        $("body").trigger("updatenowview", [this]);
     }
     ,
     hide: function () {
@@ -280,11 +286,9 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
-            g.params.page = 1;
             g.getData();
         });
         this.loadMoreDom.click(function () {
-            g.params.page += 1;
             g.getData();
         });
     }

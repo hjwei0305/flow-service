@@ -4,7 +4,6 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     params: {
         page: 1,
         rows: 10,
-        records:0,
         modelId: null,
         S_createdDate: "DESC",
         Quick_value: null
@@ -94,36 +93,32 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowHistory/listFlowHistory",
             params: this.params,
             success: function (result) {
-                g.params.records = result.records;
                 if (result.records == 0) {
+                    g.params.page = 1;
                     g.showEmptyWorkInfo();
                 } else if (result.rows.length > 0) {
-                    g.params.page = result.page;
+                    g.showContent(result);
                     g.showData(result.rows);
                 } else {
-                    if (g.params.page > 0) {
-                        g.params.page--;
-                    }
                     EUI.ProcessStatus({
                         success: true,
                         msg: "没有更多数据"
                     });
+                }
+                if (result.rows.length == this.params.rows) {
+                    g.params.page++;
                 }
                 myMask.hide();
             },
             failure: function (result) {
                 myMask.hide();
                 EUI.ProcessStatus(result);
-                if (g.params.page > 0) {
-                    g.params.page--;
-                }
             }
         })
     },
     //已办内容部分的循环
     showData: function (items) {
         var g = this;
-        this.showContent();
         for (var j = 0; j < items.length; j++) {
             var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
                 ? '<div class="todo-btn flow-backout-btn"><i class="ecmp-flow-backout backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
@@ -157,17 +152,21 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     hide: function () {
         this.boxCmp.hide();
     },
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
-        if (this.params.records > 10) {
+        if (this.params.page == 1) {
+            this.dataDom.empty();
+        } else {
+            var index = (this.params.page - 1) * this.params.rows - 1;
+            $(".info-item:gt(" + index + ")", this.dataDom).remove();
+        }
+        var loaded = result.rows.length + (this.params.page - 1) * this.params.rows;
+        if (result.records > loaded) {
             this.loadMoreDom.show();
         } else {
             this.loadMoreDom.hide();
         }
         this.emptyDom.hide();
-        if (this.params.page == 1) {
-            this.dataDom.empty();
-        }
     },
     //当页面没有数据时的显示内容
     showEmptyWorkInfo: function () {
@@ -180,11 +179,9 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
     addEvents: function () {
         var g = this;
         $(".not-data-msg", "#" + this.renderTo).bind("click", function () {
-            g.params.page = 1;
             g.getData();
         });
         this.loadMoreDom.click(function () {
-            g.params.page += 1;
             g.getData();
         });
         g.lookApproveViewWindow();
