@@ -56,6 +56,18 @@ public class Process extends BaseNode implements Serializable {
     @XmlTransient
     private JSONObject nodes;
 
+    @XmlTransient
+    private String beforeStartServiceId;//启动时调用服务id
+
+    @XmlTransient
+    private String beforeStartServiceName;//启动时调用服务名称
+
+    @XmlTransient
+    private String afterEndServiceId;//结束时调用服务名称
+
+    @XmlTransient
+    private String afterEndServiceName;//结束时调用服务名称
+
     private List<StartEvent> startEvent;
     private List<EndEvent> endEvent;
     private List<UserTask> userTask;
@@ -622,5 +634,37 @@ public class Process extends BaseNode implements Serializable {
 
     public void setReceiveTask(List<ReceiveTask> receiveTask) {
         this.receiveTask = receiveTask;
+    }
+
+    public String getBeforeStartServiceId() {
+        return beforeStartServiceId;
+    }
+
+    public void setBeforeStartServiceId(String beforeStartServiceId) {
+        this.beforeStartServiceId = beforeStartServiceId;
+    }
+
+    public String getBeforeStartServiceName() {
+        return beforeStartServiceName;
+    }
+
+    public void setBeforeStartServiceName(String beforeStartServiceName) {
+        this.beforeStartServiceName = beforeStartServiceName;
+    }
+
+    public String getAfterEndServiceId() {
+        return afterEndServiceId;
+    }
+
+    public void setAfterEndServiceId(String afterEndServiceId) {
+        this.afterEndServiceId = afterEndServiceId;
+    }
+
+    public String getAfterEndServiceName() {
+        return afterEndServiceName;
+    }
+
+    public void setAfterEndServiceName(String afterEndServiceName) {
+        this.afterEndServiceName = afterEndServiceName;
     }
 }
