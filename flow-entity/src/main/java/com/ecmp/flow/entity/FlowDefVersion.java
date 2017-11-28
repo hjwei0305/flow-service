@@ -147,6 +147,25 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Column(name="start_check_service_name",length = 255)
     private String startCheckServiceUrlName;
 
+
+    /**
+     * 启动完成时调用服务id，同步
+     */
+    @Column(name="start_after_service_id",length = 36)
+    private String afterStartServiceId;
+
+    /**
+     * 启动完成时调用服务名称
+     */
+    @Column(name="start_after_service_name",length = 255)
+    private String afterStartServiceName;
+
+    /**
+     * 启动完成时调用服务是否异步
+     */
+    @Column(name="start_after_service_aync")
+    private Boolean afterStartServiceAync;
+
     /**
      * 流程结束时，调用服务，异步
      */
@@ -353,6 +372,9 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("endCallServiceUrl", endCallServiceUrlId)
                 .append("startCheckServiceUrlName", startCheckServiceUrlName)
                 .append("endCallServiceUrlName", endCallServiceUrlName)
+                .append("afterStartServiceId", afterStartServiceId)
+                .append("afterStartServiceName", afterStartServiceName)
+                .append("afterStartServiceAync", afterStartServiceAync)
                 .append("defXml", defXml)
                 .append("depict", depict)
                 .append("flowInstances", flowInstances)
@@ -386,5 +408,29 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setEndCallServiceUrlName(String endCallServiceUrlName) {
         this.endCallServiceUrlName = endCallServiceUrlName;
+    }
+
+    public String getAfterStartServiceId() {
+        return afterStartServiceId;
+    }
+
+    public void setAfterStartServiceId(String afterStartServiceId) {
+        this.afterStartServiceId = afterStartServiceId;
+    }
+
+    public String getAfterStartServiceName() {
+        return afterStartServiceName;
+    }
+
+    public void setAfterStartServiceName(String afterStartServiceName) {
+        this.afterStartServiceName = afterStartServiceName;
+    }
+
+    public Boolean getAfterStartServiceAync() {
+        return afterStartServiceAync;
+    }
+
+    public void setAfterStartServiceAync(Boolean afterStartServiceAync) {
+        this.afterStartServiceAync = afterStartServiceAync;
     }
 }

@@ -1241,9 +1241,14 @@ public class FlowTaskTool {
                 {
                     if(mustCommit==null || !mustCommit){
                         //判断下一步如果为人工网关，不允许批量审批
+                        boolean canBatchApproval = false;
                         if(!checkManualExclusiveGateway(flowTask)) {
                             flowTask.setCanBatchApproval(true);
                         }
+                        //判断下一步有子流程
+
+                        //判断下一步包含任务是否只包含岗位、岗位类别、启动人
+
                      }
                 }
             }
@@ -1850,6 +1855,10 @@ public class FlowTaskTool {
         }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
         return employees;
+    }
+
+    private boolean checkNextNodes(){
+        return false;
     }
 
 }

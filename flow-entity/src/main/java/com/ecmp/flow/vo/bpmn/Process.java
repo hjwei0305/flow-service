@@ -63,6 +63,15 @@ public class Process extends BaseNode implements Serializable {
     private String beforeStartServiceName;//启动时调用服务名称
 
     @XmlTransient
+    private String afterStartServiceId;//启动完成时调用服务id
+
+    @XmlTransient
+    private String afterStartServiceName;//启动完成时调用服务名称
+
+    @XmlTransient
+    private Boolean afterStartServiceAync;//启动完成时调用服务是否异步
+
+    @XmlTransient
     private String afterEndServiceId;//结束时调用服务id
 
     @XmlTransient
@@ -666,5 +675,29 @@ public class Process extends BaseNode implements Serializable {
 
     public void setAfterEndServiceName(String afterEndServiceName) {
         this.afterEndServiceName = afterEndServiceName;
+    }
+
+    public String getAfterStartServiceId() {
+        return afterStartServiceId;
+    }
+
+    public void setAfterStartServiceId(String afterStartServiceId) {
+        this.afterStartServiceId = afterStartServiceId;
+    }
+
+    public String getAfterStartServiceName() {
+        return afterStartServiceName;
+    }
+
+    public void setAfterStartServiceName(String afterStartServiceName) {
+        this.afterStartServiceName = afterStartServiceName;
+    }
+
+    public Boolean getAfterStartServiceAync() {
+        return afterStartServiceAync;
+    }
+
+    public void setAfterStartServiceAync(Boolean afterStartServiceAync) {
+        this.afterStartServiceAync = afterStartServiceAync;
     }
 }
