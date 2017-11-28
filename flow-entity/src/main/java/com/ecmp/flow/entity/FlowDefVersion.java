@@ -178,6 +178,20 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Column(name="end_call_service_name",length = 255)
     private String endCallServiceUrlName;
 
+
+    /**
+     * 流程结束前检查，调用服务ID，同步
+     */
+    @Column(name="end_before_call_service_url",length = 36)
+    private String endBeforeCallServiceUrlId;
+
+    /**
+     * 流程结束时，调用服务名称，同步
+     */
+    @Column(name="end_before_call_service_name",length = 255)
+    private String endBeforeCallServiceUrlName;
+
+
     /**
      * default constructor
      */
@@ -375,6 +389,9 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("afterStartServiceId", afterStartServiceId)
                 .append("afterStartServiceName", afterStartServiceName)
                 .append("afterStartServiceAync", afterStartServiceAync)
+
+                .append("endBeforeCallServiceUrlId", endBeforeCallServiceUrlId)
+                .append("endBeforeCallServiceUrlName", endBeforeCallServiceUrlName)
                 .append("defXml", defXml)
                 .append("depict", depict)
                 .append("flowInstances", flowInstances)
@@ -432,5 +449,21 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setAfterStartServiceAync(Boolean afterStartServiceAync) {
         this.afterStartServiceAync = afterStartServiceAync;
+    }
+
+    public String getEndBeforeCallServiceUrlId() {
+        return endBeforeCallServiceUrlId;
+    }
+
+    public void setEndBeforeCallServiceUrlId(String endBeforeCallServiceUrlId) {
+        this.endBeforeCallServiceUrlId = endBeforeCallServiceUrlId;
+    }
+
+    public String getEndBeforeCallServiceUrlName() {
+        return endBeforeCallServiceUrlName;
+    }
+
+    public void setEndBeforeCallServiceUrlName(String endBeforeCallServiceUrlName) {
+        this.endBeforeCallServiceUrlName = endBeforeCallServiceUrlName;
     }
 }

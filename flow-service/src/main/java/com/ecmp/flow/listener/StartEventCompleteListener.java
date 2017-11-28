@@ -2,10 +2,7 @@ package com.ecmp.flow.listener;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.FlowDefVersionDao;
-import com.ecmp.flow.dao.FlowDefinationDao;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.util.ServiceCallUtil;
@@ -72,6 +69,9 @@ public class StartEventCompleteListener implements ExecutionListener {
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
+
+    @Autowired
+    private FlowServiceUrlDao flowServiceUrlDao;
 
     @Transactional( propagation= Propagation.REQUIRED)
     public void notify(DelegateExecution delegateTask) {
@@ -191,5 +191,35 @@ public class StartEventCompleteListener implements ExecutionListener {
         if(!result){
             throw new RuntimeException("调用重置表单进入流程中状态失败");
         }
+    }
+
+    private boolean callAfterStart( String businessKey,FlowDefVersion flowDefVersion){
+        boolean result = true;
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+            String afterStartServiceId = flowDefVersion.getAfterStartServiceId();
+            Boolean afterStartServiceAync = flowDefVersion.getAfterStartServiceAync();
+
+            if(StringUtils.isNotEmpty(afterStartServiceId)){
+                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(afterStartServiceId);
+                String checkUrl = flowServiceUrl.getUrl();
+                if(StringUtils.isNotEmpty(checkUrl)){
+                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String checkUrlPath = baseUrl+checkUrl;
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("id",businessKey);
+                    if(afterStartServiceAync == true){
+                        new Thread(new Runnable() {//模拟异步
+                            @Override
+                            public void run() {
+                                 ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+                            }
+                        }).start();
+                    }else {
+                        result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
