@@ -141,12 +141,23 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Column(name="start_check_service_url",length = 36)
     private String startCheckServiceUrlId;
 
+    /**
+     * 启动时调用检查服务名称，同步
+     */
+    @Column(name="start_check_service_name",length = 255)
+    private String startCheckServiceUrlName;
 
     /**
      * 流程结束时，调用服务，异步
      */
     @Column(name="end_call_service_url",length = 36)
     private String endCallServiceUrlId;
+
+    /**
+     * 流程结束时，调用服务名称，异步
+     */
+    @Column(name="end_call_service_name",length = 255)
+    private String endCallServiceUrlName;
 
     /**
      * default constructor
@@ -178,7 +189,6 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.versionCode = versionCode;
         this.priority = priority;
         this.defJson = defJson;
-//        this.defBpmn = defBpmn;
         this.defXml = defXml;
         this.depict = depict;
         this.flowInstances = flowInstances;
@@ -256,14 +266,6 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     public void setDefJson(String defJson) {
         this.defJson = defJson;
     }
-
-//    public String getDefBpmn() {
-//        return this.defBpmn;
-//    }
-//
-//    public void setDefBpmn(String defBpmn) {
-//        this.defBpmn = defBpmn;
-//    }
 
     public String getDefXml() {
         return this.defXml;
@@ -349,7 +351,8 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("defJson", defJson)
                 .append("startCheckServiceUrl", startCheckServiceUrlId)
                 .append("endCallServiceUrl", endCallServiceUrlId)
-//                .append("defBpmn", defBpmn)
+                .append("startCheckServiceUrlName", startCheckServiceUrlName)
+                .append("endCallServiceUrlName", endCallServiceUrlName)
                 .append("defXml", defXml)
                 .append("depict", depict)
                 .append("flowInstances", flowInstances)
@@ -367,5 +370,21 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         // Object中的clone()识别出你要复制的是哪一个对象。
         o = (FlowDefVersion) super.clone();
         return o;
+    }
+
+    public String getStartCheckServiceUrlName() {
+        return startCheckServiceUrlName;
+    }
+
+    public void setStartCheckServiceUrlName(String startCheckServiceUrlName) {
+        this.startCheckServiceUrlName = startCheckServiceUrlName;
+    }
+
+    public String getEndCallServiceUrlName() {
+        return endCallServiceUrlName;
+    }
+
+    public void setEndCallServiceUrlName(String endCallServiceUrlName) {
+        this.endCallServiceUrlName = endCallServiceUrlName;
     }
 }

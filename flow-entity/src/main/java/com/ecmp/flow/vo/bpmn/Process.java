@@ -63,7 +63,7 @@ public class Process extends BaseNode implements Serializable {
     private String beforeStartServiceName;//启动时调用服务名称
 
     @XmlTransient
-    private String afterEndServiceId;//结束时调用服务名称
+    private String afterEndServiceId;//结束时调用服务id
 
     @XmlTransient
     private String afterEndServiceName;//结束时调用服务名称
