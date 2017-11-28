@@ -1240,14 +1240,17 @@ public class FlowTaskTool {
                 if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
                 {
                     if(mustCommit==null || !mustCommit){
-                        //判断下一步如果为人工网关，不允许批量审批
-                        boolean canBatchApproval = false;
-                        if(!checkManualExclusiveGateway(flowTask)) {
+                        if(checkNextNodesCanAprool(flowTask,null)){
                             flowTask.setCanBatchApproval(true);
                         }
-                        //判断下一步有子流程
-
-                        //判断下一步包含任务是否只包含岗位、岗位类别、启动人
+//                        //判断下一步如果为人工网关，不允许批量审批
+//                        boolean canBatchApproval = false;
+//                        if(!checkManualExclusiveGateway(flowTask)) {
+//                            flowTask.setCanBatchApproval(true);
+//                        }
+//                        //判断下一步有子流程
+//
+//                        //判断下一步包含任务是否只包含岗位、岗位类别、启动人
 
                      }
                 }
@@ -1857,8 +1860,66 @@ public class FlowTaskTool {
         return employees;
     }
 
-    private boolean checkNextNodes(){
-        return false;
+    private boolean checkNextNodesCanAprool(FlowTask flowTask,net.sf.json.JSONObject currentNode ){
+        boolean result = true;
+        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        if(currentNode==null){
+            currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        }
+        JSONArray targetNodes = currentNode.getJSONArray("target");
+        String nodeType = currentNode.get("nodeType") + "";
+//        if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
+//
+//        } else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)) {
+//        }
+//        else if ("Normal".equalsIgnoreCase(nodeType)) {//普通任务
+//
+//        } else if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务
+//
+//        } else if ("Approve".equalsIgnoreCase(nodeType)) {//审批任务
+//        } else
+        if("ServiceTask".equals(nodeType)){//服务任务不允许批量审批
+            return false;
+        }else if("ReceiveTask".equals(nodeType)){//接收任务不允许批量审批
+            return false;
+        }else  if("CallActivity".equalsIgnoreCase(nodeType)){//子流程不允许批量审批
+            return false;
+        }
+        for (int i = 0; i < targetNodes.size(); i++) {
+            JSONObject jsonObject = targetNodes.getJSONObject(i);
+            String targetId = jsonObject.getString("targetId");
+            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            try{
+                if(nextNode.has("busType")){
+                    String busType = nextNode.getString("busType");
+                    if ("ManualExclusiveGateway".equalsIgnoreCase(busType)) {
+                       return false;
+                    }else if ("exclusiveGateway".equalsIgnoreCase(busType) ||  //排他网关
+                            "inclusiveGateway".equalsIgnoreCase(busType)  //包容网关
+                            || "parallelGateWay".equalsIgnoreCase(busType)) { //并行网关
+                        result=checkNextNodesCanAprool(flowTask,nextNode);
+                        if(result==false) {
+                            return false;
+                        }
+                    }
+                }
+
+                net.sf.json.JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                String userType = (String) executor.get("userType");
+                if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
+                {
+                }else {
+                    return false;
+                }
+
+            }catch(Exception e){
+                logger.error(e.getMessage());
+                result = false;
+            }
+        }
+        return result;
     }
 
 }
