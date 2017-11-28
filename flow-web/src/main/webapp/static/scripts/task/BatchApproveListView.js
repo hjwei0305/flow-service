@@ -186,7 +186,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             }
         });
     },
-    showContent: function () {
+    showContent: function (result) {
         this.dataDom.show();
         if (this.params.page == 1) {
             this.dataDom.empty();
