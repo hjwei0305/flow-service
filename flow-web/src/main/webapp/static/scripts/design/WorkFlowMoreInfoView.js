@@ -32,9 +32,10 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "NumberField",
                     title: "优先级",
-                    labelWidth: 100,
+                    labelWidth: 90,
                     allowNegative: false,
                     width: 181,
+                    value:0,
                     name: "priority"
                 }, {
                     xtype: "CheckBox",
@@ -50,8 +51,9 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     id: "beforeStart",
                     name: "beforeStartServiceName",
                     field: ["beforeStartServiceId"],
-                    labelWidth: 100,
+                    labelWidth: 90,
                     width: 322,
+                    loadonce:false,
                     store: {
                         url: _ctxPath + "/design/listAllServiceUrl",
                         params: {
@@ -68,9 +70,10 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     xtype: "ComboBox",
                     title: "启动后事件",
                     id: "afterStart",
+                    loadonce:false,
                     name: "afterStartServiceName",
                     field: ["afterStartServiceId"],
-                    labelWidth: 100,
+                    labelWidth: 90,
                     width: 322,
                     store: {
                         url: _ctxPath + "/design/listAllServiceUrl",
@@ -93,9 +96,10 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     xtype: "ComboBox",
                     title: "结束前事件",
                     id: "beforeEnd",
+                    loadonce:false,
                     name: "beforeEndServiceName",
                     field: ["beforeEndServiceId"],
-                    labelWidth: 100,
+                    labelWidth: 90,
                     width: 322,
                     store: {
                         url: _ctxPath + "/design/listAllServiceUrl",
@@ -113,9 +117,10 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     xtype: "ComboBox",
                     title: "结束后事件",
                     id: "afterEnd",
+                    loadonce:false,
                     name: "afterEndServiceName",
                     field: ["afterEndServiceId"],
-                    labelWidth: 100,
+                    labelWidth: 90,
                     width: 322,
                     store: {
                         url: _ctxPath + "/design/listAllServiceUrl",
@@ -133,7 +138,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     xtype: "TextField",
                     readonly: true,
                     title: "启动条件",
-                    labelWidth: 100,
+                    labelWidth: 90,
                     width: 322,
                     submitName: false,
                     id: "startUEL",
@@ -227,7 +232,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp("afterStart").store.params.busModelId = businessModelId;
         EUI.getCmp("beforeEnd").store.params.busModelId = businessModelId;
         EUI.getCmp("afterEnd").store.params.busModelId = businessModelId;
-
+        this.reset();
     }
 })
 ;

@@ -60,7 +60,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var item = [{
             xtype: "ComboGrid",
             title: "流程类型",
-            labelWidth: 100,
+            labelWidth: 90,
             id: "flowType",
             name: "flowTypeName",
             field: ["flowTypeId"],
@@ -127,7 +127,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 });
                                 g.clear();
                                 msgBox.remove();
-                                g.moreInfoView && g.moreInfoView.reset();
+                                g.moreInfoView.updateParams(g.businessModelId, g.businessModelCode);
                             }
                         }]
                     });
@@ -229,7 +229,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                EUI.getCmp("flowType").setReadOnly(true);
                 g.moreInfoView.show();
             }
         }, "->", {
@@ -278,13 +277,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             businessModelCode: this.businessModelCode,
             isCopy: isCopy,//参考创建
             isFromVersion: isFromVersion,//流程定义版本参考创建（true）
-            data: data,
-            afterConfirm: function (data) {
-                EUI.getCmp("flowType").setReadOnly(false);
-            },
-            afterCancel: function () {
-                EUI.getCmp("flowType").setReadOnly(false);
-            }
+            data: data
         });
     },
     getLeftHtml: function () {
