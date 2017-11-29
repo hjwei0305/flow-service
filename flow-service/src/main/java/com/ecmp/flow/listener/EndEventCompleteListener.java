@@ -5,6 +5,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.FlowException;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -133,12 +134,12 @@ public class EndEventCompleteListener implements ExecutionListener {
                 if(StringUtils.isNotEmpty(checkUrl)){
                 String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String endCallServiceUrlPath = baseUrl+checkUrl;
-                Map<String, Object> params = new HashMap<>();
-                params.put("id",businessKey);
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(businessKey);
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        ApiClient.getEntityViaProxy(endCallServiceUrlPath,new GenericType<Boolean>() {},params);
+                        ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<Boolean>() {},flowInvokeParams);
                     }
                 }).start();
             }
@@ -163,9 +164,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                 if(StringUtils.isNotEmpty(checkUrl)){
                     String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String checkUrlPath = baseUrl+checkUrl;
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("id",businessKey);
-                    result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(businessKey);
+                    result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                 }
             }
         }

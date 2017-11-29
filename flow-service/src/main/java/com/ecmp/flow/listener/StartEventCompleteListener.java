@@ -5,6 +5,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.FlowException;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -222,18 +223,20 @@ public class StartEventCompleteListener implements ExecutionListener {
                 if(StringUtils.isNotEmpty(checkUrl)){
                     String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String checkUrlPath = baseUrl+checkUrl;
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("id",businessKey);
+//                    Map<String, Object> params = new HashMap<>();
+//                    params.put("id",businessKey);
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(businessKey);
                     if(afterStartServiceAync == true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                FlowOperateResult resultAync =  ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                                FlowOperateResult resultAync =  ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                                 logger.info(resultAync.toString());
                             }
                         }).start();
                     }else {
-                        result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                        result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                         logger.info(result.toString());
                     }
                 }
