@@ -87,7 +87,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     }
                 }, {
                     xtype: "CheckBox",
-                    title: "同步调用",
+                    title: "异步调用",
                     labelFirst: false,
                     name: "afterStartServiceAync"
                 }]

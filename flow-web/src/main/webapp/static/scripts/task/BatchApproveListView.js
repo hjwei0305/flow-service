@@ -47,7 +47,8 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             title: "全选",
             id: "batchBtn",
             handler: function () {
-                g.setBatchSelect();
+                var select = this.title != "全选";
+                g.setBatchSelect(select);
             }
         }, {
             xtype: "Button",
@@ -88,13 +89,13 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 url: _ctxPath + "/flowTask/listFlowTaskHeader"
             },
             afterSelect: function (data) {
-                g.setBatchSelect();
+                g.setBatchSelect(true);
                 g.params.modelId = data.data.businessModeId;
                 g.params.page = 1;
                 g.getData();
             },
             afterClear: function () {
-                g.setBatchSelect();
+                g.setBatchSelect(true);
                 g.params.page = 1;
                 g.params.modelId = null;
                 g.getData();
@@ -103,7 +104,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             xtype: "SearchBox",
             name: "Quick_value",
             onSearch: function (value) {
-                g.setBatchSelect();
+                g.setBatchSelect(true);
                 g.params.page = 1;
                 g.params.Quick_value = value;
                 g.getData();
@@ -137,10 +138,10 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             }
         }];
     },
-    setBatchSelect: function () {
+    setBatchSelect: function (select) {
         var btn = EUI.getCmp("batchBtn");
         var title = btn.title;
-        if (title == "全选") {
+        if (select) {
             $(".work_checkBox input", "#" + this.renderTo).attr("checked", true);
             btn.setTitle("取消");
         } else {

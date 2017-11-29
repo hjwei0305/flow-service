@@ -193,8 +193,7 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
                             success: function (status) {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
-                                //重新获取数据
-                                g.getData();
+                                g.refresh();
                             },
                             failure: function (status) {
                                 myMask.hide();

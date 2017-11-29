@@ -102,7 +102,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                         g.show();
                     }
                 });
-                $("body").trigger("updatenowview",[listview]);
+                $("body").trigger("updatenowview", [listview]);
             }
         }, "->", {
             xtype: "Label",
@@ -386,14 +386,8 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             },
                             success: function (result) {
                                 myMask.hide();
-                                if (result.success) {
-                                    win.close();
-                                    //TODO:刷新当前页+
-                                    window.location.reload();
-
-                                } else {
-                                    EUI.ProcessStatus(result);
-                                }
+                                win.close();
+                                g.refresh();
                             },
                             failure: function (result) {
                                 myMask.hide();
@@ -435,8 +429,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             success: function (status) {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
-                                //重新获取数据
-                                g.getData();
+                                g.refresh();
                             },
                             failure: function (status) {
                                 myMask.hide();
@@ -479,8 +472,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                             success: function (status) {
                                 myMask.remove();
                                 EUI.ProcessStatus(status);
-                                //重新获取数据
-                                g.getData();
+                                g.refresh();
                             },
                             failure: function (status) {
                                 myMask.hide();
