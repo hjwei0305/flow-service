@@ -215,7 +215,9 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
     },
     loadData: function (data) {
         this.startUEL = data.startUEL;
-        data.logicUel = data.startUEL.logicUel;
+        if(data.startUEL) {
+            data.logicUel = data.startUEL.logicUel;
+        }
         this.form.loadData(data);
     },
     updateParams: function (businessModelId, businessModelCode) {
