@@ -2,10 +2,10 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.api.IFindByPageService;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.entity.DefaultBusinessModel;
+import com.ecmp.flow.vo.FlowInvokeParams;
+import com.ecmp.flow.vo.FlowOperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -120,4 +120,11 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "测试endCall",notes = "endCall")
  public void endCall(@QueryParam("id") String id);
+
+ @POST
+ @Path("newServiceCall")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试endCall",notes = "endCall")
+ public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
 }

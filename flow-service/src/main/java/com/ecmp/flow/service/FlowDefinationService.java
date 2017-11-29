@@ -17,7 +17,7 @@ import com.ecmp.flow.util.ConditionUtil;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.TaskStatus;
-import com.ecmp.flow.vo.FlowOpreateResult;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.NodeInfo;
@@ -394,7 +394,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                   String checkUrlPath = baseUrl+checkUrl;
                   Map<String, Object> params = new HashMap<>();
                   params.put("id",businessKey);
-                  FlowOpreateResult  flowOpreateResult = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOpreateResult>() {},params);
+                  FlowOperateResult flowOpreateResult = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
                   result = flowOpreateResult.isSuccess();
               }
           }
