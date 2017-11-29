@@ -148,6 +148,7 @@ public class Process extends BaseNode implements Serializable {
             sequenceFlow = new ArrayList<SequenceFlow>();
             lineCount = 0;
             Iterator iterator = nodes.keys();
+            int indexCount=0;//计数器
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();
                 JSONObject node = nodes.getJSONObject(key);
@@ -268,7 +269,7 @@ public class Process extends BaseNode implements Serializable {
                         if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             exclusiveGatewayIn = new ExclusiveGateway();
                             exclusiveGateway.add(exclusiveGatewayIn);
-                            exclusiveGatewayInId = "ExclusiveGateway_In_"+System.currentTimeMillis();
+                            exclusiveGatewayInId = (indexCount++)+"ExclusiveGateway_In_"+System.currentTimeMillis();
                             exclusiveGatewayIn.setId(exclusiveGatewayInId);
                             String id = "flow" + (++lineCount);
                             SequenceFlow sf = new SequenceFlow(id, userTaskTemp.getId(), exclusiveGatewayInId, null);

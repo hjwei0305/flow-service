@@ -82,7 +82,7 @@ public class ServiceCallUtil {
                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
             }else {
-                throw new RuntimeException("服务对象找不到");
+                throw new FlowException("服务对象找不到");
             }
         }
          return result;

@@ -387,12 +387,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               if(StringUtils.isNotEmpty(checkUrl)){
                   String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String checkUrlPath = baseUrl+checkUrl;
-//                  Map<String, Object> params = new HashMap<>();
-//                  params.put("id",businessKey);
                   FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                   flowInvokeParams.setId(businessKey);
-                   flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-
+                  flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
               }
           }
         }
