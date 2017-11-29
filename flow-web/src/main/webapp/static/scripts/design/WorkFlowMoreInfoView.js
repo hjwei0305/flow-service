@@ -149,8 +149,8 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                             title: "流程启动条件",
                             data: g.startUEL,
                             showName: false,
-                            businessModelId: g.params.businessModelId,
-                            businessModelCode: g.params.businessModelCode,
+                            businessModelId: g.businessModelId,
+                            businessModelCode: g.businessModelCode,
                             flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
                             afterConfirm: function (data) {
                                 EUI.getCmp("startUEL").setValue(data.logicUel);
