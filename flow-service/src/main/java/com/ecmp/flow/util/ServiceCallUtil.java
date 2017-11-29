@@ -29,8 +29,8 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ServiceCallUtil {
-    public static Object callService(String serviceUrlId,String businessId,String... args){
-        Object result = false;
+    public static FlowOperateResult callService(String serviceUrlId,String businessId,String... args){
+        FlowOperateResult result = null;
         if(!StringUtils.isEmpty(serviceUrlId)){
             ApplicationContext applicationContext = ContextUtil.getApplicationContext();
             FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao)applicationContext.getBean("flowServiceUrlDao");
@@ -73,14 +73,13 @@ public class ServiceCallUtil {
                             List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
                             params.setCallActivtiySonPaths(callActivtiySonPaths);
                         }
-
                     }catch (Exception e){
                     }
                 }
                 params.setId(businessId);
                 params.setParams(paramMap);
                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-                result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
+                result = ApiClient.postViaProxyReturnResult(url,new GenericType<FlowOperateResult>() {}, params);
             }else {
                 throw new FlowException("服务对象找不到");
             }
