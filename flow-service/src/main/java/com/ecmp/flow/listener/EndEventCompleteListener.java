@@ -139,7 +139,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<Boolean>() {},flowInvokeParams);
+                        FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                        logger.info(flowOperateResult.toString());
                     }
                 }).start();
             }
