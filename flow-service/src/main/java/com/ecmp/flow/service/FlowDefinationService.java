@@ -14,10 +14,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
-import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.flow.vo.FlowStartResultVO;
-import com.ecmp.flow.vo.FlowStartVO;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -390,9 +387,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               if(StringUtils.isNotEmpty(checkUrl)){
                   String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String checkUrlPath = baseUrl+checkUrl;
-                  Map<String, Object> params = new HashMap<>();
-                  params.put("id",businessKey);
-                  FlowOperateResult flowOpreateResult = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+//                  Map<String, Object> params = new HashMap<>();
+//                  params.put("id",businessKey);
+                  FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                  flowInvokeParams.setId(businessKey);
+                  FlowOperateResult flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                   result = flowOpreateResult.isSuccess();
               }
           }
