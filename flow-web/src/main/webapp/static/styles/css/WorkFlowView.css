@@ -1,8 +1,9 @@
-.flow-content{
+.flow-content {
     width: 100%;
     height: 100%;
     position: relative;
 }
+
 .flow-content * {
     font-size: 12px;
 }
@@ -289,18 +290,19 @@
     width: 24px;
 }
 
-.flow-task .callActivity  {
+.flow-task .callActivity {
     /*background: url("../images/flow_task_script.png") no-repeat;*/
     /*display: inline-block;*/
     /*height: 20px;*/
     /*width: 20px;*/
     margin-top: 10px;
 }
-.flow-task[type="CallActivity"]{
+
+.flow-task[type="CallActivity"] {
     border-width: 4px;
 }
 
-.flow-task[type="CallActivity"]>.flow-task-delete{
+.flow-task[type="CallActivity"] > .flow-task-delete {
     margin-top: -34px;
 }
 
@@ -501,13 +503,16 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .node-choosed .node-title {
     max-width: 89px;
     min-width: 72px;
 }
-.node-choosed .gateway-title{
+
+.node-choosed .gateway-title {
     max-width: 75px;
 }
+
 .flow-gateway-iconbox {
     display: inline-block;
     height: 55px;
@@ -629,7 +634,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border-right: none;
 }
 
-.notify-user-item:nth-child(2):last-child{
+.notify-user-item:nth-child(2):last-child {
     border: 1px solid #bed5f3;
     border-left: none;
 }
@@ -640,6 +645,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     box-shadow: 0 0 8px lightgreen;
     color: white;
 }
+
 .flow-content .currentNode[type='CallActivity'] {
     border-width: 4px;
 }
@@ -658,17 +664,19 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     margin-top: 15px;
 }
 
-.flow-event-delete{
+.flow-event-delete {
     margin-top: -71px;
 }
 
-.flow-task-delete{
+.flow-task-delete {
     margin-top: -50px;
 }
-.flow-gateway-delete{
+
+.flow-gateway-delete {
     margin-top: -73px;
 }
-.delete-node{
+
+.delete-node {
     float: right;
 }
 
@@ -681,7 +689,6 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     text-align: left;
 }
 
-
 .tipbox h3 {
     color: #333333;
     font-size: 13px;
@@ -689,4 +696,14 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     height: 25px;
     padding: 3px;
     line-height: 25px;
+}
+
+#moreinfo {
+    left: -1px;
+    position: absolute;
+    top: 39px;
+    background-color: white;
+    border: 1px solid #c4cfd5;
+    border-top: none;
+    display: none;
 }

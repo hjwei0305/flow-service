@@ -15,7 +15,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     isCopy: false,//参考创建
     isFromVersion: false,//流程定义版本参考创建（true）
     businessModelId: null,//业务实体ID
-    businessModelCode: null,//业务实体ID
+    businessModelCode: null,//业务实体Code
 
     initComponent: function () {
         var g = this;
@@ -51,15 +51,19 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.initJSPlumb();
         if (this.id) {
             this.loadData();
+        } else {
+            this.initMoreInfo();
         }
     },
     getTopItems: function () {
         var g = this;
         var item = [{
             xtype: "ComboGrid",
+            title: "流程类型",
+            labelWidth: 100,
+            id: "flowType",
             name: "flowTypeName",
             field: ["flowTypeId"],
-            displayText: "请选择流程类型",
             listWidth: isCopy && !isFromVersion ? 368 : 400,
             showSearch: true,
             searchConfig: {searchCols: ["code", "name", "businessModel.name"]},
@@ -69,7 +73,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     name: "id",
                     index: "id",
                     hidden: true
-                },{
+                }, {
                     name: "businessModel.className",
                     index: "businessModel.className",
                     hidden: true
@@ -95,7 +99,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     sortable: true
                 }]
             },
-            labelWidth: 85,
+            canClear: false,
             width: isCopy && !isFromVersion ? 159 : 160,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
             allowBlank: false,
@@ -111,7 +115,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             handler: function () {
                                 msgBox.remove();
                             }
-                        },{
+                        }, {
                             title: "确定",
                             selected: true,
                             handler: function () {
@@ -123,6 +127,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 });
                                 g.clear();
                                 msgBox.remove();
+                                g.moreInfoView && g.moreInfoView.reset();
                             }
                         }]
                     });
@@ -133,6 +138,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 var busModelId = data.data["businessModel.id"];
                 g.businessModelId = busModelId;
                 g.businessModelCode = data.data["businessModel.className"];
+                g.moreInfoView.updateParams(g.businessModelId, g.businessModelCode);
             },
             reader: {
                 name: "name",
@@ -145,6 +151,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             xtype: "TextField",
+            title: "流程代码",
             name: "id",
             width: isCopy && !isFromVersion ? 110 : 110,
             readonly: (!isCopy && this.id) || (isCopy && isFromVersion) ? true : false,
@@ -152,7 +159,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             allowBlank: false,
             maxlength: 80,
             minlength: 6,
-            displayText: "请输入流程代码",
             validateText: "以字母开头，包含数字或字母，且长度在6-80之间",
             validater: function (data) {
                 var reg = /^[A-Za-z][0-9a-zA-Z]*$/g;
@@ -163,28 +169,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         }, {
             xtype: "TextField",
-            displayText: "请输入流程名称",
+            title: "流程名称",
             labelWidth: 85,
             width: isCopy && !isFromVersion ? 159 : 235,
             allowBlank: false,
             name: "name"
-        }, {
-            xtype: "NumberField",
-            displayText: "请输入优先级",
-            labelWidth: isCopy && !isFromVersion ? 65 : 85,
-            width: isCopy && !isFromVersion ? 100 : 100,
-            allowNegative: false,
-            name: "priority"
-        }, {
-            xtype: "ComboBox",
-            width: 140,
-            displayText: "允许为子流程",
-            name: "subProcessName",
-            reader: {name: 'name', field: ['value']},
-            field: ["subProcess"],
-            data: [{'value': true, 'name': '是'}, {'value': false, 'name': '否'}]
-        }
-        ];
+        }];
         if (isCopy && !isFromVersion) {//流程定义参考创建
             item = [{
                 xtype: "ComboTree",
@@ -197,7 +187,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 canClear: false,
                 width: 130,
                 treeCfg: {
-                    showSearch:true,
+                    showSearch: true,
                     autoLoad: true,
                     async: false,
                     url: _ctxPath + "/flowDefination/listAllOrgs",
@@ -216,7 +206,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return [{
             xtype: "FormPanel",
-            width: 850,
+            width: 800,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -230,9 +220,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             items: item
         }, {
             xtype: "Button",
-            title: "启动条件",
-            iconCss: "ecmp-common-configuration",
-            id: "setStartUel",
+            title: "更多配置",
             handler: function () {
                 if (!g.businessModelId) {
                     EUI.ProcessStatus({
@@ -241,24 +229,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                new EUI.UELSettingView({
-                    title: "流程启动条件",
-                    data: g.startUEL,
-                    showName: false,
-                    businessModelId: g.businessModelId,
-                    businessModelCode: g.businessModelCode,
-                    flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
-                    afterConfirm: function (data) {
-                        g.startUEL = data;
-                    }
-                });
+                EUI.getCmp("flowType").setReadOnly(true);
+                g.moreInfoView.show();
             }
         }, "->", {
             xtype: "Button",
             selected: true,
             title: this.lang.deployText,
             iconCss: "ecmp-common-upload",
-            style: {"margin-right":"20px"},
             handler: function () {
                 g.save(true);
             }
@@ -266,7 +244,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: this.lang.saveText,
             iconCss: "ecmp-common-save",
-            style: {"margin-right":"20px"},
             handler: function () {
                 g.save(false);
             }
@@ -274,7 +251,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             xtype: "Button",
             title: this.lang.resetText,
             iconCss: "ecmp-common-clear",
-            style: {"margin-right":"20px"},
             handler: function () {
                 var msgBox = EUI.MessageBox({
                     title: "温馨提示",
@@ -284,7 +260,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         handler: function () {
                             msgBox.remove();
                         }
-                    },{
+                    }, {
                         title: "确定",
                         selected: true,
                         handler: function () {
@@ -295,6 +271,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 });
             }
         }];
+    },
+    initMoreInfo: function (data) {
+        this.moreInfoView = new EUI.WorkFlowMoreInfoView({
+            businessModelId: this.businessModelId,
+            businessModelCode: this.businessModelCode,
+            isCopy: isCopy,//参考创建
+            isFromVersion: isFromVersion,//流程定义版本参考创建（true）
+            data: data,
+            afterConfirm: function (data) {
+                EUI.getCmp("flowType").setReadOnly(false);
+            },
+            afterCancel: function () {
+                EUI.getCmp("flowType").setReadOnly(false);
+            }
+        });
     },
     getLeftHtml: function () {
         var html = "";
@@ -922,8 +913,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     var type = $("#" + connection.sourceId).attr("type");
                     var nodeType = $("#" + connection.sourceId).attr("nodetype");
                     var busType = $("#" + connection.targetId).attr("bustype");
-                    var name=$("#" + connection.sourceId).children(".node-title").text();
-                    if ((type == "StartEvent"||nodeType=="CallActivity") && busType == "ManualExclusiveGateway") {
+                    var name = $("#" + connection.sourceId).children(".node-title").text();
+                    if ((type == "StartEvent" || nodeType == "CallActivity") && busType == "ManualExclusiveGateway") {
                         EUI.ProcessStatus({
                             success: false,
                             msg: name + "任务后禁止连接人工网关"
@@ -1022,7 +1013,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var nodeType = item.attr("nodetype");
             var name = item.find(".node-title").text();
             var nodeConfig = item.data();
-            if ((type.indexOf("Task") != -1 ||nodeType == "CallActivity") && Object.isEmpty(nodeConfig) && type != 'ManualTask') {
+            if ((type.indexOf("Task") != -1 || nodeType == "CallActivity") && Object.isEmpty(nodeConfig) && type != 'ManualTask') {
                 EUI.ProcessStatus({
                     success: false,
                     msg: "请将节点：" + name + "，配置完整"
@@ -1037,21 +1028,21 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
             }
             var flag = false;
-            if(type=="StartEvent"||type=="EndEvent"||type=="TerminateEndEvent"){
+            if (type == "StartEvent" || type == "EndEvent" || type == "TerminateEndEvent") {
                 for (var key in this.connectInfo) {
                     if (key.indexOf(id) != -1) {
                         flag = true;
                         break;
                     }
                 }
-            }else {
-                var ruIndex=false;
-                var chuIndex=false;
+            } else {
+                var ruIndex = false;
+                var chuIndex = false;
                 for (var key in this.connectInfo) {
                     var keyVar = key.split(",");
-                    if(keyVar[0] == id){
+                    if (keyVar[0] == id) {
                         chuIndex = true;
-                    }else if(keyVar[1] == id){
+                    } else if (keyVar[1] == id) {
                         ruIndex = true;
                     }
                     if (ruIndex && chuIndex) {
@@ -1059,14 +1050,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         break;
                     }
                 }
-                if(!ruIndex){
+                if (!ruIndex) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: String.format(this.lang.noConnectLineRuText, name)
                     });
                     return false;
                 }
-                if(!chuIndex){
+                if (!chuIndex) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: String.format(this.lang.noConnectLineChuText, name)
@@ -1117,14 +1108,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         var baseInfo = headForm.getFormValue();
         var nodes = $(".node-choosed");
         var baseDoms = $(".flow-info-text");
+        var moreInfo = this.moreInfoView.getData();
         var process = {
             name: baseInfo.name,
             id: $.trim(baseInfo.id),
             flowDefVersionId: this.flowDefVersionId || "",
             isExecutable: true,
-            startUEL: this.startUEL,
             nodes: {}
         };
+        EUI.apply(process, moreInfo);
+        delete process.subProcess;
+        delete process.priority;
         var parentPos = $(".flow-content").position();
         for (var i = 0; i < nodes.length; i++) {
             var item = $(nodes[i]);
@@ -1176,9 +1170,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             orgCode: this.orgCode,
             id: this.id,
             versionCode: this.versionCode,
-            priority: baseInfo.priority,
+            priority: moreInfo.priority,
             businessModelId: this.businessModelId,
-            subProcess: baseInfo.subProcess,
+            subProcess: moreInfo.subProcess,
             process: process
         };
     }
@@ -1265,23 +1259,17 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
     },
     loadHead: function (data) {
-        if (data.subProcess) {
-            data.subProcessName = "是";
-        } else {
-            data.subProcessName = "否";
-        }
-        var headData = {
+        EUI.getCmp("formPanel").loadData({
             name: data.process.name,
             id: data.process.id,
             flowTypeId: data.flowTypeId,
-            flowTypeName: data.flowTypeName,
-            baseInfo: data.baseInfo,
-            priority: data.priority,
+            flowTypeName: data.flowTypeName
+        });
+        var moreInfo = EUI.apply({
             subProcess: data.subProcess,
-            subProcessName: data.subProcessName
-        };
-        this.startUEL = data.process.startUEL;
-        EUI.getCmp("formPanel").loadData(headData);
+            priority: data.priority
+        }, data.process);
+        this.initMoreInfo(moreInfo);
     },
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
@@ -1439,7 +1427,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 handler: function () {
                     win.close();
                 }
-            },{
+            }, {
                 title: "保存",
                 selected: true,
                 handler: function () {

@@ -19,9 +19,11 @@
     <script type="text/javascript"
             data-th-src="@{/static/scripts/design/UELSettingView.js}"></script>
     <script type="text/javascript"
+            data-th-src="@{/static/scripts/design/WorkFlowMoreInfoView.js}"></script>
+    <script type="text/javascript"
             data-th-src="@{/static/lang/lang.js}"></script>
     <script type="text/javascript">
-        var flowView,orgName;
+        var flowView, orgName;
         var id = EUI.util.getUrlParam("id");
         var orgId = EUI.util.getUrlParam("orgId");
         var orgCode = EUI.util.getUrlParam("orgCode");
@@ -30,8 +32,8 @@
         var businessModelCode = EUI.util.getUrlParam("businessModelCode");
         var isCopy = EUI.util.getUrlParam("isCopy") == "true";
         var isFromVersion = EUI.util.getUrlParam("isFromVersion") == "true";
-        if(isCopy&&!isFromVersion) {
-            orgName= decodeURIComponent(EUI.util.getUrlParam("orgName"));
+        if (isCopy && !isFromVersion) {
+            orgName = decodeURIComponent(EUI.util.getUrlParam("orgName"));
         }
         EUI.onReady(function () {
             flowView = new EUI.WorkFlowView({
@@ -51,6 +53,7 @@
 </head>
 <body style="background: white;min-width: 1300px;">
 <div id="content"></div>
+<div id="moreinfo"></div>
 </body>
 </html>
 
