@@ -127,4 +127,26 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "测试endCall",notes = "endCall")
  public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
+
+ @POST
+ @Path("changeCreateDepictNew")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试changeCreateDepictNew",notes = "changeCreateDepictNew")
+ public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
+
+ @POST
+ @Path("changeCompletedDepictNew")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试changeCompletedDepictNew",notes = "changeCompletedDepictNew")
+ public FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+
+
+ @POST
+ @Path("testReceiveCallNew")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试testReceiveCallNew",notes = "testReceiveCallNew")
+ public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 }

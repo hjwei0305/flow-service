@@ -377,8 +377,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return finalFlowDefination;
     }
 
-    private boolean checkStart( String businessKey,FlowDefVersion flowDefVersion){
-        boolean result = true;
+    private FlowOperateResult checkStart( String businessKey,FlowDefVersion flowDefVersion){
+        FlowOperateResult flowOpreateResult = null;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
           String startCheckServiceUrlId = flowDefVersion.getStartCheckServiceUrlId();
           if(StringUtils.isNotEmpty(startCheckServiceUrlId)){
@@ -391,12 +391,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //                  params.put("id",businessKey);
                   FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                   flowInvokeParams.setId(businessKey);
-                  FlowOperateResult flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                  result = flowOpreateResult.isSuccess();
+                   flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+
               }
           }
         }
-        return result;
+        return flowOpreateResult;
     }
 
     private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
@@ -434,9 +434,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
-                if(checkStart( businessKey, flowDefVersion)!=true){
+                FlowOperateResult flowOperateResult = checkStart( businessKey, flowDefVersion);
+                if(flowOperateResult!=null && !flowOperateResult.isSuccess()){
                     flowStartResultVO.setCheckStartResult(false);
-                    return null;
+                    throw new FlowException(flowOperateResult.getMessage());
                 }
                 String actDefId = flowDefVersion.getActDefId();
                 variables.put("flowDefVersionId", flowDefVersion.getId());
