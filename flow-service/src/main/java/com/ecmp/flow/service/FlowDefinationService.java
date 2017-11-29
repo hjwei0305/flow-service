@@ -13,17 +13,12 @@ import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.ConditionUtil;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowTaskTool;
-import com.ecmp.flow.util.TaskStatus;
-import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.flow.vo.FlowStartResultVO;
-import com.ecmp.flow.vo.FlowStartVO;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.util.*;
+import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import io.swagger.annotations.OAuth2Definition;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -392,9 +387,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               if(StringUtils.isNotEmpty(checkUrl)){
                   String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String checkUrlPath = baseUrl+checkUrl;
-                  Map<String, Object> params = new HashMap<>();
-                  params.put("id",businessKey);
-                  FlowOperateResult flowOpreateResult = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+//                  Map<String, Object> params = new HashMap<>();
+//                  params.put("id",businessKey);
+                  FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                  flowInvokeParams.setId(businessKey);
+                  FlowOperateResult flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                   result = flowOpreateResult.isSuccess();
               }
           }
@@ -402,7 +399,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return result;
     }
 
-    private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, SecurityException {
+    private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
         variables.put("opinion", "流程启动");//所有流程启动描述暂时都设计为“流程启动”
@@ -471,7 +468,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     params.put("status", FlowStatus.INIT);
                     String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
                     Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-                    throw  new RuntimeException(e.getMessage());
+                    throw  new FlowException(e.getMessage());
                 }
             }
         }
@@ -497,8 +494,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return orgCodesList;
     }
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowStartResultVO startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
-        FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
+    public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
+        OperateResultWithData resultWithData = OperateResultWithData.operationSuccess();
+        try{
+            FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
+            resultWithData.setData(flowStartResultVO);
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
         FlowType flowType = null;
@@ -568,8 +568,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             }
+        }}catch (FlowException e){
+            resultWithData = OperateResultWithData.operationFailure(e.getMessage());
         }
-        return flowStartResultVO;
+        return resultWithData;
     }
 
     private List<NodeInfo> initNodesInfo(List<NodeInfo> result, FlowStartVO flowStartVO, Definition definition, String nodeId) {
@@ -1293,7 +1295,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
         } else {
-            throw new RuntimeException("找不到子流程,或子流程处于挂起状态");
+            throw new FlowException("找不到子流程,或子流程处于挂起状态");
         }
         return result;
     }

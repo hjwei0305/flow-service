@@ -16,6 +16,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.StartEvent;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -985,7 +986,9 @@ public class FlowTaskTool {
             //初始化回退后的新任务
             initTask(flowHistory.getFlowInstance(), flowHistory,currTask.getTaskDefinitionKey());
             return result;
-        } catch (Exception e) {
+        } catch(FlowException flowE){
+            return OperateResult.operationFailure(flowE.getMessage());
+        }catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
             return OperateResult.operationFailure("10004");//流程取回失败，未知错误
