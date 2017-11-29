@@ -1,9 +1,8 @@
 package com.ecmp.flow.activiti.ext;
 
-import com.ecmp.flow.basic.vo.Employee;
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
@@ -15,7 +14,7 @@ import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
-import com.ecmp.flow.vo.FlowOpreateResult;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
@@ -23,13 +22,9 @@ import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.history.HistoricActivityInstance;
-import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.naming.Context;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -153,7 +147,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         tempV.put("callActivtiySonPaths",paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                    FlowOpreateResult  serviceCallResult =(FlowOpreateResult)ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    FlowOperateResult serviceCallResult =(FlowOperateResult)ServiceCallUtil.callService(serviceTaskId, businessId, param);
                     if(!serviceCallResult.isSuccess()){
                         String message = serviceCallResult.getMessage();
                         message="serviceTaskId="+serviceTaskId+",businessId"+businessId+";调用返回失败！"+message;

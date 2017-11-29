@@ -4,10 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.service.FlowDefinationService;
-import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.vo.bpmn.Definition;
-import net.sf.json.JSONObject;
+import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -15,7 +12,6 @@ import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -180,8 +176,22 @@ public class StartEventCompleteListener implements ExecutionListener {
             }
             flowInstanceDao.save(flowInstance);
         }
+
+
+
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
+
+        FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(),flowInstance.getFlowDefVersion());
+        if(callAfterStartResult!=null && callAfterStartResult.isSuccess()!=true){
+            String message = "单据id="+flowInstance.getBusinessId()
+                    +",流程版本id="+flowInstance.getFlowDefVersion()
+                    +",业务对象="+appModule.getCode()
+                    +",流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
+            logger.info(message);
+            throw new RuntimeException(message);
+        }
+
         Map<String, Object> params = new HashMap<String,Object>();;
         params.put("businessModelCode",businessModel.getClassName());
         params.put("id",flowInstance.getBusinessId());
@@ -193,8 +203,14 @@ public class StartEventCompleteListener implements ExecutionListener {
         }
     }
 
-    private boolean callAfterStart( String businessKey,FlowDefVersion flowDefVersion){
-        boolean result = true;
+    /**
+     *  流程启动结束后调用调用服务
+     * @param businessKey
+     * @param flowDefVersion
+     * @return
+     */
+    private FlowOperateResult callAfterStart( String businessKey,FlowDefVersion flowDefVersion){
+        FlowOperateResult result = null;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String afterStartServiceId = flowDefVersion.getAfterStartServiceId();
             Boolean afterStartServiceAync = flowDefVersion.getAfterStartServiceAync();
@@ -211,11 +227,13 @@ public class StartEventCompleteListener implements ExecutionListener {
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                 ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+                                FlowOperateResult resultAync =  ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                                logger.info(resultAync.toString());
                             }
                         }).start();
                     }else {
-                        result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<Boolean>() {},params);
+                        result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                        logger.info(result.toString());
                     }
                 }
             }

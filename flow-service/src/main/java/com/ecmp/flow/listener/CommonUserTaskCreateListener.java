@@ -5,7 +5,7 @@ import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.vo.FlowOpreateResult;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
@@ -97,7 +97,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                             }).start();
                         }else {
                             Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
-                            FlowOpreateResult flowOpreateResult = (FlowOpreateResult) result;
+                            FlowOperateResult flowOpreateResult = (FlowOperateResult) result;
                             if(true!=flowOpreateResult.isSuccess()){
                                 throw new RuntimeException("执行逻辑失败，"+flowOpreateResult.getMessage());
                             }

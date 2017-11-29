@@ -1,21 +1,22 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.context.util.NumberGenerator;
-import com.ecmp.flow.basic.vo.Employee;
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.util.NumberGenerator;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.*;
+import com.ecmp.flow.basic.vo.Employee;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.vo.FlowInvokeParams;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +27,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.GenericType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -283,6 +281,35 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             }
         }
         return resultMap;
+    }
+
+    public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams){
+        FlowOperateResult result = new FlowOperateResult();
+        String businessId = flowInvokeParams.getId();
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(businessId);
+        String changeText = "newServiceCall";
+        entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
+        defaultBusinessModelDao.save(entity);
+        int shujishu = this.getShuiJiShu(0,10);
+        if(shujishu==5){
+            throw  new RuntimeException("测试随机抛出错误信息:"+new Date());
+        }else if(shujishu ==4){
+            result.setSuccess(false);
+            result.setMessage("测试随机业务异常信息:"+new Date());
+        }
+              return result;
+    }
+    /**
+     * 获取指定范围的随机数
+     *
+     * @param max
+     * @param min
+     * @return
+     */
+    private static int getShuiJiShu(int min, int max) {
+        Random random = new Random();
+        int s = random.nextInt(max) % (max - min + 1) + min;
+        return s;
     }
 
 

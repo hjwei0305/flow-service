@@ -1,12 +1,10 @@
 package com.ecmp.flow.listener;
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
-import com.ecmp.core.dao.jpa.BaseDao;
-import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -16,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,19 +69,29 @@ public class EndEventCompleteListener implements ExecutionListener {
         Map<String,Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance  = taskEntity.getProcessInstance();
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
+
         if(flowInstance==null){
              throw new RuntimeException("流程实例不存在！");
         }else {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                AppModule appModule = businessModel.getAppModule();
+                FlowOperateResult callBeforeEndResult = callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion());
+                if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
+                    String message = "单据id="+flowInstance.getBusinessId()
+                            +",流程版本id="+flowInstance.getFlowDefVersion()
+                            +",业务对象="+appModule.getCode()
+                            +",流程结束前检查出错，返回消息:"+callBeforeEndResult.getMessage();
+                    logger.info(message);
+                    throw new RuntimeException(message);
+                }
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
                 flowInstanceDao.save(flowInstance);
 
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
-                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
 
-                AppModule appModule = businessModel.getAppModule();
                 Map<String, Object> params = new HashMap<String,Object>();;
                 params.put("businessModelCode",businessModel.getClassName());
                 params.put("id",flowInstance.getBusinessId());
@@ -136,5 +143,31 @@ public class EndEventCompleteListener implements ExecutionListener {
             }
          }
         }
+    }
+
+    /**
+     *  流程即将结束时调用服务检查，如果失败流程结束失败，同步
+     * @param businessKey
+     * @param flowDefVersion
+     * @return
+     */
+    private FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion){
+        FlowOperateResult result = null;
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+            String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
+
+            if(StringUtils.isNotEmpty(endBeforeCallServiceUrlId)){
+                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
+                String checkUrl = flowServiceUrl.getUrl();
+                if(StringUtils.isNotEmpty(checkUrl)){
+                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String checkUrlPath = baseUrl+checkUrl;
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("id",businessKey);
+                    result = ApiClient.getEntityViaProxy(checkUrlPath,new GenericType<FlowOperateResult>() {},params);
+                }
+            }
+        }
+        return result;
     }
 }

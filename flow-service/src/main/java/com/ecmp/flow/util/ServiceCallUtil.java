@@ -6,15 +6,13 @@ import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.vo.FlowInvokeParams;
-import com.ecmp.flow.vo.FlowOpreateResult;
+import com.ecmp.flow.vo.FlowOperateResult;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,7 +78,7 @@ public class ServiceCallUtil {
                   paramsFlow.put("paramJson",args[0]);
                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, paramsFlow);
-                  FlowOpreateResult flowOpreateResult = new FlowOpreateResult();
+                  FlowOperateResult flowOpreateResult = new FlowOperateResult();
                   result = flowOpreateResult;
               }else{
                   params.setId(businessId);

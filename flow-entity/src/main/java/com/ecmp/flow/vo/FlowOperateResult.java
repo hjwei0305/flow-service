@@ -14,16 +14,16 @@ import java.io.Serializable;
  * <p/>
  * *************************************************************************************************
  */
-public class FlowOpreateResult implements Serializable{
+public class FlowOperateResult implements Serializable{
     private boolean success;
     private String message;
 
-    public FlowOpreateResult(){
+    public FlowOperateResult(){
         this.success=true;
         this.message="操作成功";
     }
 
-    public FlowOpreateResult(boolean success,String message){
+    public FlowOperateResult(boolean success,String message){
         this.success=success;
         this.message=message;
     }
@@ -43,5 +43,9 @@ public class FlowOpreateResult implements Serializable{
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public String toString(){
+        return "成功状态："+this.isSuccess()+";返回消息="+this.getMessage();
     }
 }
