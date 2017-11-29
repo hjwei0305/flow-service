@@ -8,6 +8,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.NodeInfo;
@@ -139,7 +140,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                    flowTaskDao.save(flowTask);
 
                 }else{
-                    throw new RuntimeException("服务地址不能为空！");
+                    throw new FlowException("服务地址不能为空！");
                 }
             }
     }

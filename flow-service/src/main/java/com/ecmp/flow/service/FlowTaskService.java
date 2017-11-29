@@ -13,6 +13,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
@@ -142,6 +143,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
         Map<String,String> manualSelectedNodes = flowTaskCompleteVO.getManualSelectedNode();
         OperateResultWithData<FlowStatus> result = null;
+        try{
         if (manualSelectedNodes == null || manualSelectedNodes.isEmpty()) {//非人工选择任务的情况
             result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
         } else {//人工选择任务的情况
@@ -258,6 +260,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
+          }
+        }catch (FlowException e){
+            OperateResultWithData.operationFailure(e.getMessage());
         }
         return result;
     }
@@ -573,6 +578,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) {
         OperateResult result = OperateResult.operationSuccess("10006");
+        try{
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
             return OperateResult.operationFailure("10009");
@@ -587,6 +593,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         } else {
             return OperateResult.operationFailure("10023");
+        }}catch(FlowException flowE){
+            return OperateResult.operationFailure(flowE.getMessage());
         }
         return result;
     }

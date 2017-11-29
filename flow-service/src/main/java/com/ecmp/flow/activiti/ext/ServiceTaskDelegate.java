@@ -11,6 +11,7 @@ import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
@@ -152,7 +153,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         String message = serviceCallResult.getMessage();
                         message="serviceTaskId="+serviceTaskId+",businessId"+businessId+";调用返回失败！"+message;
                         logger.error(message);
-                        throw new RuntimeException(message);
+                        throw new FlowException(message);
                     }
 //                    if(serviceCallResultStr!=null && StringUtils.isNotEmpty(serviceCallResultStr)){
 //                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
@@ -290,7 +291,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         }
                     }
                 }else{
-                    throw new RuntimeException("服务地址不能为空！");
+                    throw new FlowException("服务地址不能为空！");
                 }
             }
     }

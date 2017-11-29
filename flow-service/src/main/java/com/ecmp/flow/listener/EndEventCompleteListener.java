@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -71,7 +72,7 @@ public class EndEventCompleteListener implements ExecutionListener {
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
 
         if(flowInstance==null){
-             throw new RuntimeException("流程实例不存在！");
+             throw new FlowException("流程实例不存在！");
         }else {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
@@ -83,7 +84,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                             +",业务对象="+appModule.getCode()
                             +",流程结束前检查出错，返回消息:"+callBeforeEndResult.getMessage();
                     logger.info(message);
-                    throw new RuntimeException(message);
+                    throw new FlowException(message);
                 }
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
@@ -99,7 +100,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
                 Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
                 if(!result){
-                    throw new RuntimeException("调用重置表单流程结束状态失败");
+                    throw new FlowException("调用重置表单流程结束状态失败");
                 }
                 if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();

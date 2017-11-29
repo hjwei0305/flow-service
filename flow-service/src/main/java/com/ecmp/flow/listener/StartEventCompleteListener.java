@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowOperateResult;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -135,7 +136,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                     runtimeService.updateBusinessKey(processInstance.getId(),parentBusinessKey);
                     currentBusinessId = parentBusinessKey;
                 }else{//跨业务实体子流程,必须指定子流程关联单据id
-                        throw new RuntimeException("子流程关联的单据找不到！");
+                        throw new FlowException("子流程关联的单据找不到！");
                 }
             }else {
                     runtimeService.updateBusinessKey(processInstance.getId(),currentBusinessId);
@@ -155,7 +156,7 @@ public class StartEventCompleteListener implements ExecutionListener {
             String flowDefVersionId= (String) variables.get("flowDefVersionId");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
             if(flowDefVersion==null){
-                throw new RuntimeException("流程版本找不到！");
+                throw new FlowException("流程版本找不到！");
             }
             flowInstance.setFlowDefVersion(flowDefVersion);
             flowInstance.setStartDate(new Date());
@@ -166,7 +167,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 String actDefinitionKey = processInstance.getProcessDefinitionKey();
                List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(actDefinitionKey);
                 if(flowDefVersionList == null || flowDefVersionList.isEmpty()){
-                    throw new RuntimeException("子流程的流程版本找不到！");
+                    throw new FlowException("子流程的流程版本找不到！");
                 }
                 flowDefVersion = flowDefVersionList.get(0);
                 flowInstance.setFlowDefVersion(flowDefVersion);
@@ -189,7 +190,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                     +",业务对象="+appModule.getCode()
                     +",流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
             logger.info(message);
-            throw new RuntimeException(message);
+            throw new FlowException(message);
         }
 
         Map<String, Object> params = new HashMap<String,Object>();;
@@ -199,7 +200,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
         Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
         if(!result){
-            throw new RuntimeException("调用重置表单进入流程中状态失败");
+            throw new FlowException("调用重置表单进入流程中状态失败");
         }
     }
 
