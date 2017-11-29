@@ -196,8 +196,14 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setDefKey(process.getId());
             entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
             entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
+            entity.setAfterStartServiceId(process.getAfterStartServiceId());
+            entity.setAfterStartServiceName(process.getAfterStartServiceName());
+            entity.setAfterStartServiceAync(process.getAfterStartServiceAync());
+
             entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
             entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
+            entity.setEndBeforeCallServiceUrlId(process.getBeforeEndServiceId());
+            entity.setEndBeforeCallServiceUrlName(process.getBeforeEndServiceName());
 //            entity.setVersionCode(1);
             entity.setFlowDefination(flowDefination);
             entity.setDefJson(definition.getDefJson());
