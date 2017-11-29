@@ -23,7 +23,7 @@ public class FlowInvokeParams implements Serializable{
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String receiveTaskActDefId;//针对接收任务，传递接收任务key
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
-    List<String> callActivtiySonPaths;//子流程路径
+    private List<String> callActivtiySonPaths;//子流程路径
 
     public String getId() {
         return id;
