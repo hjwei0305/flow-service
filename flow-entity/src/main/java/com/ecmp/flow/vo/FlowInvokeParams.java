@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +23,7 @@ public class FlowInvokeParams implements Serializable{
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String receiveTaskActDefId;//针对接收任务，传递接收任务key
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
+    List<String> callActivtiySonPaths;//子流程路径
 
     public String getId() {
         return id;
@@ -69,5 +71,13 @@ public class FlowInvokeParams implements Serializable{
 
     public void setReject(Boolean reject) {
         this.reject = reject;
+    }
+
+    public List<String> getCallActivtiySonPaths() {
+        return callActivtiySonPaths;
+    }
+
+    public void setCallActivtiySonPaths(List<String> callActivtiySonPaths) {
+        this.callActivtiySonPaths = callActivtiySonPaths;
     }
 }

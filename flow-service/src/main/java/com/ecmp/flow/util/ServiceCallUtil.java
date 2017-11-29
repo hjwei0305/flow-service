@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,24 +69,18 @@ public class ServiceCallUtil {
                                 params.setReject(true);
                             }
                         }
+                        if(jsonObject.has("callActivtiySonPaths")){
+                            List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                            params.setCallActivtiySonPaths(callActivtiySonPaths);
+                        }
+
                     }catch (Exception e){
                     }
                 }
-
-              if(appModule.getCode().equalsIgnoreCase("FLOW")){
-                 Map<String, Object> paramsFlow = new HashMap<String,Object>();;
-                  paramsFlow.put("id",businessId);
-                  paramsFlow.put("paramJson",args[0]);
-                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, paramsFlow);
-                  FlowOperateResult flowOpreateResult = new FlowOperateResult();
-                  result = flowOpreateResult;
-              }else{
-                  params.setId(businessId);
-                  params.setParams(paramMap);
-                  String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-                  result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
-              }
+                params.setId(businessId);
+                params.setParams(paramMap);
+                String url = appModule.getApiBaseAddress()+"/"+clientUrl;
+                result = ApiClient.postViaProxyReturnResult(url,new GenericType<String>() {}, params);
             }else {
                 throw new RuntimeException("服务对象找不到");
             }
