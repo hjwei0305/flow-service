@@ -263,6 +263,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 删除流程引擎实例相关数据
      * @param processInstanceId
      */
+    @Transactional( propagation= Propagation.REQUIRED)
     private  void  deleteActiviti(String processInstanceId,String deleteReason){
         runtimeService.deleteProcessInstance(processInstanceId, deleteReason);
     }
@@ -729,7 +730,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             BeanUtils.copyProperties(flowHistory, flowTask);
                             flowHistory.setId(null);
                             flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                            if(force){
+                            if(!force){
                                 flowHistory.setDepict("【被发起人终止流程】");
                             }else {
                                 flowHistory.setDepict("【被管理员强制终止流程】");
@@ -770,7 +771,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 fTemp.setEnded(true);
                 fTemp.setManuallyEnd(true);
                 flowInstanceDao.save(fTemp);
-
+//                if(endSign == 1)
+//                throw new FlowException("tt");
                 //重置客户端表单流程状态
                 String businessId = fTemp.getBusinessId();
                 FlowStatus status = FlowStatus.INIT;
@@ -825,19 +827,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     private void callEndServiceAndSon(FlowInstance flowInstance,int endSign){
         FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
-        String actInstanceId = flowInstance.getActInstanceId();
-        ProcessInstance processInstance = runtimeService
-                .createProcessInstanceQuery()
-                .processInstanceId(actInstanceId)
-                .singleResult();
-        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         List<FlowInstance>  flowInstanceChildren = flowInstanceDao.findByParentId(flowInstance.getId());//针对子流程
         if(flowInstanceChildren!=null && !flowInstanceChildren.isEmpty()){
             for(FlowInstance son :flowInstanceChildren){
                 callEndServiceAndSon(son,endSign);
             }
         }
-        callEndService(processInstance.getBusinessKey(),flowDefVersion,endSign);
+        callEndService(flowInstance.getBusinessId(),flowDefVersion,endSign);
     }
 
     private void callEndService( String businessKey,FlowDefVersion flowDefVersion,int endSign){
@@ -874,20 +870,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     private FlowOperateResult callBeforeEndAndSon(FlowInstance flowInstance,int endSign){
         FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
-        String actInstanceId = flowInstance.getActInstanceId();
-        ProcessInstance processInstance = runtimeService
-                .createProcessInstanceQuery()
-                .processInstanceId(actInstanceId)
-                .singleResult();
-        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         List<FlowInstance>  flowInstanceChildren = flowInstanceDao.findByParentId(flowInstance.getId());//针对子流程
         if(flowInstanceChildren!=null && !flowInstanceChildren.isEmpty()){
             for(FlowInstance son :flowInstanceChildren){
                 callBeforeEndAndSon(son,endSign);
             }
         }
+        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
-        FlowOperateResult callBeforeEndResult = callBeforeEnd(processInstance.getBusinessKey(), flowDefVersion,endSign);
+        FlowOperateResult callBeforeEndResult = callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion,endSign);
         if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
             String message = "单据id="+flowInstance.getBusinessId()
                     +",流程版本id="+flowInstance.getFlowDefVersion()
