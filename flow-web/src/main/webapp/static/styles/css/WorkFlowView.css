@@ -708,3 +708,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     display: none;
     z-index: 60;
 }
+#workFlowFormPanelToolBar .ux-toolbar-item{
+    float: left;
+    margin-right: 2px !important;
+}

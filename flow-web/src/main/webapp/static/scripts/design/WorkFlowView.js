@@ -29,6 +29,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             items: [{
                 xtype: "ToolBar",
                 region: "north",
+                id:"workFlowFormPanelToolBar",
                 border: false,
                 isOverFlow: false,
                 height: 40,
