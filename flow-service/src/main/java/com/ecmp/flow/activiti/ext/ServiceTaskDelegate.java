@@ -15,6 +15,7 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
