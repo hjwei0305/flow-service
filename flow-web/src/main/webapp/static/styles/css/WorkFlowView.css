@@ -706,5 +706,5 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border: 1px solid #c4cfd5;
     border-top: none;
     display: none;
-    z-index: 1000;
+    z-index: 60;
 }
