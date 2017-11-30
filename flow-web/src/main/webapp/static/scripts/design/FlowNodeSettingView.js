@@ -285,7 +285,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }];
         }
-        if(this.type != 'CallActivity'||this.nodeType != "CounterSign"||this.nodeType != "Approve"){
+        if(this.type != 'CallActivity'&& this.nodeType != "CounterSign" && this.nodeType != "Approve"){
             items = items.concat([{
                 title: "默认意见",
                 labelWidth: 100,

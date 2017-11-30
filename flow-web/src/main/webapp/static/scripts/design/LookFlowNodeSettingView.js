@@ -216,6 +216,14 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }
             }];
         }
+        if(this.type != 'CallActivity'&& this.nodeType != "CounterSign" && this.nodeType != "Approve"){
+            items = items.concat([{
+                title: "默认意见",
+                labelWidth: 100,
+                name: "defaultOpinion",
+                maxlength: 80
+            }]);
+        }
         if (this.nodeType == "CounterSign") {
             items = items.concat([{
                 xtype: "NumberField",
