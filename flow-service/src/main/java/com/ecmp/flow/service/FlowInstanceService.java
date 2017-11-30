@@ -12,9 +12,13 @@ import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
+import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowException;
+import com.ecmp.flow.vo.FlowInvokeParams;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
@@ -34,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -83,6 +88,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private ProcessEngine processEngine;
+
+    @Autowired
+    private FlowServiceUrlDao flowServiceUrlDao;
 
 
 
@@ -746,22 +754,35 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
                 String actInstanceId = fTemp.getActInstanceId();
                 String deleteReason=null;
+                int endSign = 0;
                 if(force){
                     deleteReason= "10035";//"被管理员强制终止流程";
+                    endSign=2;
                 }else {
                     deleteReason = "10036";// "被发起人终止流程";
+                    endSign=1;
                 }
+                callBeforeEndAndSon(flowInstance,endSign);
+
                 this.deleteActiviti(actInstanceId,deleteReason);
+
                 fTemp.setEndDate(new Date());
                 fTemp.setEnded(true);
                 fTemp.setManuallyEnd(true);
                 flowInstanceDao.save(fTemp);
 
                 //重置客户端表单流程状态
-                BusinessModel businessModel = fTemp.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 String businessId = fTemp.getBusinessId();
                 FlowStatus status = FlowStatus.INIT;
+                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 ExpressionUtil.resetState(businessModel,  businessId,  status);
+
+                //结束后触发
+                try {
+                    this.callEndServiceAndSon(flowInstance,endSign);
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                }
             }
         }else {
             if(force){
@@ -802,4 +823,107 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
+    private void callEndServiceAndSon(FlowInstance flowInstance,int endSign){
+        FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+        String actInstanceId = flowInstance.getActInstanceId();
+        ProcessInstance processInstance = runtimeService
+                .createProcessInstanceQuery()
+                .processInstanceId(actInstanceId)
+                .singleResult();
+        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        List<FlowInstance>  flowInstanceChildren = flowInstanceDao.findByParentId(flowInstance.getId());//针对子流程
+        if(flowInstanceChildren!=null && !flowInstanceChildren.isEmpty()){
+            for(FlowInstance son :flowInstanceChildren){
+                callEndServiceAndSon(son,endSign);
+            }
+        }
+        callEndService(processInstance.getBusinessKey(),flowDefVersion,endSign);
+    }
+
+    private void callEndService( String businessKey,FlowDefVersion flowDefVersion,int endSign){
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+            String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
+            if(StringUtils.isNotEmpty(endCallServiceUrlId)){
+                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
+                String checkUrl = flowServiceUrl.getUrl();
+                if(StringUtils.isNotEmpty(checkUrl)){
+                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String endCallServiceUrlPath = baseUrl+checkUrl;
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(businessKey);
+                    Map<String,String> params = new HashMap<String,String>();
+                    params.put("endSign",endSign+"");
+                    flowInvokeParams.setParams(params);
+                    new Thread(new Runnable() {//模拟异步
+                        @Override
+                        public void run() {
+                            FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                            logger.info(flowOperateResult.toString());
+                        }
+                    }).start();
+                }
+            }
+        }
+    }
+
+    /**
+     *  对包含子流程在内进行终止前服务调用检查
+     * @param flowInstance
+     * @param endSign
+     * @return
+     */
+    private FlowOperateResult callBeforeEndAndSon(FlowInstance flowInstance,int endSign){
+        FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+        String actInstanceId = flowInstance.getActInstanceId();
+        ProcessInstance processInstance = runtimeService
+                .createProcessInstanceQuery()
+                .processInstanceId(actInstanceId)
+                .singleResult();
+        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+        List<FlowInstance>  flowInstanceChildren = flowInstanceDao.findByParentId(flowInstance.getId());//针对子流程
+        if(flowInstanceChildren!=null && !flowInstanceChildren.isEmpty()){
+            for(FlowInstance son :flowInstanceChildren){
+                callBeforeEndAndSon(son,endSign);
+            }
+        }
+        AppModule appModule = businessModel.getAppModule();
+        FlowOperateResult callBeforeEndResult = callBeforeEnd(processInstance.getBusinessKey(), flowDefVersion,endSign);
+        if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
+            String message = "单据id="+flowInstance.getBusinessId()
+                    +",流程版本id="+flowInstance.getFlowDefVersion()
+                    +",业务对象="+appModule.getCode()
+                    +",流程结束前检查出错，返回消息:"+callBeforeEndResult.getMessage();
+            logger.info(message);
+            throw new FlowException(message);
+        }
+        return callBeforeEndResult;
+    }
+    /**
+     *  流程即将结束时调用服务检查，如果失败流程结束失败，同步
+     * @param businessKey
+     * @param flowDefVersion
+     * @return
+     */
+    private FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign){
+        FlowOperateResult result = null;
+        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+            String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
+
+            if(StringUtils.isNotEmpty(endBeforeCallServiceUrlId)){
+                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
+                String checkUrl = flowServiceUrl.getUrl();
+                if(StringUtils.isNotEmpty(checkUrl)){
+                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String checkUrlPath = baseUrl+checkUrl;
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(businessKey);
+                    Map<String,String> params = new HashMap<String,String>();
+                    params.put("endSign",endSign+"");
+                    flowInvokeParams.setParams(params);
+                    result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                }
+            }
+        }
+        return result;
+    }
 }
