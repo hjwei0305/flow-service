@@ -10,7 +10,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     afterCancel: null,
     startUEL: null,
-    width:895,
+    width:875,
 
     initComponent: function () {
         var g = this;
