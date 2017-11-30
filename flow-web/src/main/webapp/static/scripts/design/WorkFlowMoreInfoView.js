@@ -10,11 +10,12 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
     afterConfirm: null,
     afterCancel: null,
     startUEL: null,
+    width:895,
 
     initComponent: function () {
         var g = this;
         this.form = EUI.FormPanel({
-            width: 895,
+            width: g.width,
             renderTo: this.renderTo,
             height: "auto",
             style: {

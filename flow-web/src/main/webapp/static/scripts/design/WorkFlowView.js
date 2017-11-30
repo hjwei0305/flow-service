@@ -206,7 +206,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }
         return [{
             xtype: "FormPanel",
-            width: 800,
+            width: isCopy && !isFromVersion ? 848 : 800,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -277,7 +277,8 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             businessModelCode: this.businessModelCode,
             isCopy: isCopy,//参考创建
             isFromVersion: isFromVersion,//流程定义版本参考创建（true）
-            data: data
+            data: data,
+            width:isCopy && !isFromVersion ? 943 : 895
         });
     },
     getLeftHtml: function () {

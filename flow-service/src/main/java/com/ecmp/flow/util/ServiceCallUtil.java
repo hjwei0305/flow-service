@@ -65,8 +65,7 @@ public class ServiceCallUtil {
                         if(jsonObject.has("reject")){
                             int reject = jsonObject.getInt("reject");
                             if(reject==1){
-//                                paramMap.put("reject","true");//是否被驳回
-                                params.setReject(true);
+                                params.setReject(true);//是否被驳回
                             }
                         }
                         if(jsonObject.has("callActivtiySonPaths")){
