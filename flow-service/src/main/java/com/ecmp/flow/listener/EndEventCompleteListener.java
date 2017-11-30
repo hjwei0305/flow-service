@@ -71,14 +71,22 @@ public class EndEventCompleteListener implements ExecutionListener {
         Map<String,Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance  = taskEntity.getProcessInstance();
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-
+        String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
+        int endSign = 0;
+        if(StringUtils.isNotEmpty(deleteReason)){
+            if("10035".equals(deleteReason)){//"被管理员强制终止流程
+                endSign = 2;
+            }else if( "10036".equals(deleteReason)) {//被发起人终止流程
+                endSign = 1;
+            }
+        }
         if(flowInstance==null){
              throw new FlowException("流程实例不存在！");
         }else {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 AppModule appModule = businessModel.getAppModule();
-                FlowOperateResult callBeforeEndResult = callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion());
+                FlowOperateResult callBeforeEndResult = callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion(),endSign);
                 if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
                     String message = "单据id="+flowInstance.getBusinessId()
                             +",流程版本id="+flowInstance.getFlowDefVersion()
@@ -117,7 +125,7 @@ public class EndEventCompleteListener implements ExecutionListener {
 //                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
                 try {
                     String businessId = delegateTask.getProcessBusinessKey();
-                    this.callEndService(businessId, flowInstance.getFlowDefVersion());
+                    this.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign);
                 }catch (Exception e){
                     logger.error(e.getMessage());
                 }
@@ -125,7 +133,7 @@ public class EndEventCompleteListener implements ExecutionListener {
         }
     }
 
-    private void callEndService( String businessKey,FlowDefVersion flowDefVersion){
+    private void callEndService( String businessKey,FlowDefVersion flowDefVersion,int endSign){
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
             if(StringUtils.isNotEmpty(endCallServiceUrlId)){
@@ -136,6 +144,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                 String endCallServiceUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
+                    Map<String,Object> params = new HashMap<String,Object>();
+                    params.put("endSign",endSign);
+                    flowInvokeParams.setParams(params);
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
@@ -154,7 +165,7 @@ public class EndEventCompleteListener implements ExecutionListener {
      * @param flowDefVersion
      * @return
      */
-    private FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion){
+    private FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign){
         FlowOperateResult result = null;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
@@ -167,6 +178,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
+                    Map<String,Object> params = new HashMap<String,Object>();
+                    params.put("endSign",endSign);
+                    flowInvokeParams.setParams(params);
                     result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                 }
             }

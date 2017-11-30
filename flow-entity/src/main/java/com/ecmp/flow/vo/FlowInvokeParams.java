@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class FlowInvokeParams implements Serializable{
     private String id;//业务单据id
-    private Map<String,String> params;//其他参数
+    private Map<String,Object> params;//其他参数
     private Boolean isAgree;  //是否同意
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String receiveTaskActDefId;//针对接收任务，传递接收任务key
@@ -33,11 +33,11 @@ public class FlowInvokeParams implements Serializable{
         this.id = id;
     }
 
-    public Map<String, String> getParams() {
+    public Map<String, Object> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public void setParams(Map<String, Object> params) {
         this.params = params;
     }
 

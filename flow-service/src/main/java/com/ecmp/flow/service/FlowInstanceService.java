@@ -747,9 +747,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 String actInstanceId = fTemp.getActInstanceId();
                 String deleteReason=null;
                 if(force){
-                    deleteReason="被管理员强制终止流程";
+                    deleteReason= "10035";//"被管理员强制终止流程";
                 }else {
-                    deleteReason = "被发起人终止流程";
+                    deleteReason = "10036";// "被发起人终止流程";
                 }
                 this.deleteActiviti(actInstanceId,deleteReason);
                 fTemp.setEndDate(new Date());
