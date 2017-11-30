@@ -144,8 +144,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                 String endCallServiceUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    Map<String,Object> params = new HashMap<String,Object>();
-                    params.put("endSign",endSign);
+                    Map<String,String> params = new HashMap<String,String>();
+                    params.put("endSign",endSign+"");
                     flowInvokeParams.setParams(params);
                 new Thread(new Runnable() {//模拟异步
                     @Override
@@ -178,8 +178,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    Map<String,Object> params = new HashMap<String,Object>();
-                    params.put("endSign",endSign);
+                    Map<String,String> params = new HashMap<String,String>();
+                    params.put("endSign",endSign+"");
                     flowInvokeParams.setParams(params);
                     result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                 }

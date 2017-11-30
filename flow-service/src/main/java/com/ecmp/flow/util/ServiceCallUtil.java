@@ -39,7 +39,7 @@ public class ServiceCallUtil {
               String  clientUrl = flowServiceUrl.getUrl();
               AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
 
-                Map<String,Object> paramMap = new HashMap<>();
+                Map<String,String> paramMap = new HashMap<String,String>();
                 FlowInvokeParams params = new FlowInvokeParams();
                 if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
                     try {
