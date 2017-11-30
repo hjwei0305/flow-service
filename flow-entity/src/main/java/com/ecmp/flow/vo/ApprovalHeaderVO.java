@@ -52,6 +52,11 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private String flowBaseUrl;
 
+    /**
+     * 当前节点配置的默认意见
+     */
+    private String currentNodeDefaultOpinion;
+
 
     public String getBusinessId() {
         return businessId;
@@ -115,5 +120,13 @@ public class ApprovalHeaderVO implements Serializable{
 
     public void setFlowBaseUrl(String flowBaseUrl) {
         this.flowBaseUrl = flowBaseUrl;
+    }
+
+    public String getCurrentNodeDefaultOpinion() {
+        return currentNodeDefaultOpinion;
+    }
+
+    public void setCurrentNodeDefaultOpinion(String currentNodeDefaultOpinion) {
+        this.currentNodeDefaultOpinion = currentNodeDefaultOpinion;
     }
 }

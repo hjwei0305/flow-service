@@ -889,6 +889,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setBusinessCode(flowTask.getFlowInstance().getBusinessCode());
         result.setCreateUser(flowTask.getFlowInstance().getCreatorName());
         result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
+
+        String defJson = flowTask.getTaskJsonDef();
+        JSONObject defObj = JSONObject.fromObject(defJson);
+        net.sf.json.JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+        if(normalInfo.has("defaultOpinion")){
+            result.setCurrentNodeDefaultOpinion(normalInfo.getString("defaultOpinion"));
+        }
+
         if (!StringUtils.isEmpty(preId)) {
             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
         }

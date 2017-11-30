@@ -247,7 +247,7 @@ Flow.EUI.FlowApprove = EUI.extend(EUI.CustomUI, {
         $(".flow-info-creater").text(this.lang.docMarkerText + data.createUser);
         $(".flow-info-excutor").text(data.prUser);
         $(".flow-info-remark").text(data.prOpinion);
-
+        $(".flow-remark").val(data.currentNodeDefaultOpinion);
     },
     getNodeInfo: function () {
         var g = this;
