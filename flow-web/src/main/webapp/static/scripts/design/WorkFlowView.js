@@ -279,7 +279,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             isCopy: isCopy,//参考创建
             isFromVersion: isFromVersion,//流程定义版本参考创建（true）
             data: data,
-            width:isCopy && !isFromVersion ? 923 : 875
+            width:isCopy && !isFromVersion ? 925 : 877
         });
     },
     getLeftHtml: function () {
