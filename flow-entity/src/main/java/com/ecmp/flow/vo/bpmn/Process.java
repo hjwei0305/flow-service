@@ -269,7 +269,7 @@ public class Process extends BaseNode implements Serializable {
                         if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())||"Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             exclusiveGatewayIn = new ExclusiveGateway();
                             exclusiveGateway.add(exclusiveGatewayIn);
-                            exclusiveGatewayInId = (indexCount++)+"ExclusiveGateway_In_"+System.currentTimeMillis();
+                            exclusiveGatewayInId = "ExclusiveGateway_In_"+System.currentTimeMillis()+"_"+(indexCount++);
                             exclusiveGatewayIn.setId(exclusiveGatewayInId);
                             String id = "flow" + (++lineCount);
                             SequenceFlow sf = new SequenceFlow(id, userTaskTemp.getId(), exclusiveGatewayInId, null);
