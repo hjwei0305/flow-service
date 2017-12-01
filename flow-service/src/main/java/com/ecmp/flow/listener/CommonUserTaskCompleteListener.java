@@ -123,7 +123,12 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                         if(!async){
                               throw new FlowException(e.getMessage());
                         }
-                        LogUtil.addExceptionLog(e.getMessage());
+                        new Thread(new Runnable() {//模拟异步
+                            @Override
+                            public void run() {
+                                LogUtil.addExceptionLog(e.getMessage());
+                            }
+                        }).start();
                     }
                     if(!async){
                         throw new FlowException("自定义异常信息");
@@ -132,7 +137,12 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             }
         }catch (Exception e){
             logger.error(e.getMessage());
-            LogUtil.addExceptionLog(e.getMessage());
+            new Thread(new Runnable() {//模拟异步
+                @Override
+                public void run() {
+                    LogUtil.addExceptionLog(e.getMessage());
+                }
+            }).start();
             throw new FlowException(e.getMessage());
         }
     }
