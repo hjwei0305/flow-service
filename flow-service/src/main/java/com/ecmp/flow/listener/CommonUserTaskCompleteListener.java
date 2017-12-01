@@ -72,11 +72,22 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
             net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-            net.sf.json.JSONObject event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
+            net.sf.json.JSONObject event =null;
+            if(currentNode.has("nodeConfig")&&currentNode.getJSONObject("nodeConfig").has("event")){
+                event = currentNode.getJSONObject("nodeConfig").getJSONObject("event");
+            }
             if (event != null) {
-                String afterExcuteServiceId = (String) event.get("afterExcuteServiceId");
+                String afterExcuteServiceIdTemp = null;
+                if(event.has("afterExcuteServiceId")){
+                    afterExcuteServiceIdTemp = event.getString("afterExcuteServiceId");
+                }
+                String afterExcuteServiceId = afterExcuteServiceIdTemp;
                 boolean async = false;//默认为同步
-                String afterAsyncStr = event.get("afterAsync")+"";
+                String afterAsyncStr = null;
+                if(event.has("afterAsync")){
+                    afterAsyncStr =  event.getString("afterAsync");
+                }
+
                 if("true".equalsIgnoreCase(afterAsyncStr)){
                     async=true;
                 }
