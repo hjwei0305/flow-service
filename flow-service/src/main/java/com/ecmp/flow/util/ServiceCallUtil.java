@@ -80,13 +80,25 @@ public class ServiceCallUtil {
                 params.setId(businessId);
                 params.setParams(paramMap);
                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
-                result = ApiClient.postViaProxyReturnResult(url,new GenericType<FlowOperateResult>() {}, params);
+                String exceptionMessage = null;
+                try {
+                    result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {
+                    }, params);
+                }catch (Exception e){
+                    exceptionMessage=e.getMessage();
+                }
+                String exceptionMessageFinal = exceptionMessage;
                 FlowOperateResult resultAy = result;
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
                         String paramsStr = JsonUtils.toJson(params);
-                        String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = "+resultAy.toString();
+                        String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = ";
+                        if(StringUtils.isNotEmpty(exceptionMessageFinal)){
+                            message+=exceptionMessageFinal;
+                        }else {
+                            message+=resultAy.toString();
+                        }
                         LogUtil.addExceptionLog(message);
                     }
                 }).start();

@@ -1271,6 +1271,7 @@ public class FlowTaskTool {
      * @param actTaskDefKeyCurrent
      */
     public  void initTask(FlowInstance flowInstance,  FlowHistory preTask,String actTaskDefKeyCurrent) {
+
         if(flowInstance == null || flowInstance.isEnded()){
             return;
         }
@@ -1288,6 +1289,7 @@ public class FlowTaskTool {
             taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
         }
         if (taskList != null && taskList.size() > 0) {
+            Date currentDate = null;
             String flowName = null;
             String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -1345,6 +1347,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
+                            currentDate = flowTask.getCreatedDate();
                         }
                     }
                 }else{
@@ -1383,6 +1386,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
+                            currentDate = flowTask.getCreatedDate();
                         }else{
                             throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
                         }
@@ -1390,6 +1394,10 @@ public class FlowTaskTool {
                 }
             }
             flowInstanceService.checkCanEnd(flowInstance.getId());
+            if(currentDate!=null){
+                flowInstance.setEndDate(currentDate);
+                flowInstanceService.save(flowInstance);
+            }
         }
     }
 

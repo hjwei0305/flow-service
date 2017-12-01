@@ -130,9 +130,9 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                             }
                         }).start();
                     }
-                    if(!async){
-                        throw new FlowException("自定义异常信息");
-                    }
+//                    if(!async){
+//                        throw new FlowException("自定义异常信息");
+//                    }
                 }
             }
         }catch (Exception e){

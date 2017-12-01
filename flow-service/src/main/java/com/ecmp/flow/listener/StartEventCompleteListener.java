@@ -160,7 +160,9 @@ public class StartEventCompleteListener implements ExecutionListener {
                 throw new FlowException("流程版本找不到！");
             }
             flowInstance.setFlowDefVersion(flowDefVersion);
-            flowInstance.setStartDate(new Date());
+            Date now = new Date();
+            flowInstance.setStartDate(now);
+            flowInstance.setEndDate(now);
             flowInstance.setFlowName(flowDefVersion.getName());
             flowInstance.setActInstanceId(processInstance.getId());
             if(parentProcessInstance !=null){
