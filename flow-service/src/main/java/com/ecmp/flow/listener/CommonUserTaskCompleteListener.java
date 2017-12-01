@@ -8,6 +8,7 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
@@ -122,12 +123,15 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                         if(!async){
                               throw new FlowException(e.getMessage());
                         }
+                        LogUtil.addExceptionLog(e.getMessage());
                     }
                 }
             }
         }catch (Exception e){
             logger.error(e.getMessage());
+            LogUtil.addExceptionLog(e.getMessage());
             throw new FlowException(e.getMessage());
+
         }
     }
 }
