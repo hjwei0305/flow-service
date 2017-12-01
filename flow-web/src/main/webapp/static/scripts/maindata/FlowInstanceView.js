@@ -358,7 +358,8 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.appModule.id":EUI.getCmp("appModuleComboBoxId").getSubmitValue().appModuleId,
             "Q_EQ_flowDefVersion.flowDefination.flowType.businessModel.id": EUI.getCmp("businessModelComboBoxId").getSubmitValue().businessModelId,
             "Q_EQ_flowDefVersion.flowDefination.flowType.id":  EUI.getCmp("flowTypeComboBoxId").getSubmitValue().flowTypeId,
-            "Q_LK_flowName": EUI.getCmp("searchBox").getValue()
+            "Quick_value": EUI.getCmp("searchBox").getValue(),
+            "S_createdDate":"DESC"
         };
         if(g.inFlow){
             postData["Q_EQ_manuallyEnd__Boolean"]=false;

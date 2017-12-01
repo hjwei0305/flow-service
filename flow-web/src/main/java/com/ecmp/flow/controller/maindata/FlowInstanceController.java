@@ -65,6 +65,11 @@ public class FlowInstanceController {
     @ResponseBody
     public PageResult<FlowInstance> listFlowInstance(ServletRequest request) throws JsonProcessingException, ParseException {
         Search search = SearchUtil.genSearch(request);
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("businessId");
+        search.addQuickSearchProperty("businessCode");
+        search.addQuickSearchProperty("businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
         PageResult<FlowInstance> flowInstancePageResult = proxy.findByPage(search);
         return flowInstancePageResult;
