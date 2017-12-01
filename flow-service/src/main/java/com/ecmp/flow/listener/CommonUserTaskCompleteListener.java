@@ -120,7 +120,7 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                     }catch (Exception e){
                         logger.error(e.getMessage());
                         if(!async){
-                            throw e;
+                              throw new FlowException(e.getMessage());
                         }
                     }
                 }
