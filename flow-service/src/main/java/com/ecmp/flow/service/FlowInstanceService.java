@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -688,110 +689,115 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResult endCommon(String id,boolean force) {
         OperateResult result =  OperateResult.operationSuccess("10010");
-        FlowInstance flowInstance = flowInstanceDao.findOne(id);
-        Map<String,FlowInstance> flowInstanceMap = new HashMap<String,FlowInstance>();
-        flowInstanceMap = initAllGulianInstance(flowInstanceMap,flowInstance,force);
+        try {
+            FlowInstance flowInstance = flowInstanceDao.findOne(id);
+            Map<String, FlowInstance> flowInstanceMap = new HashMap<String, FlowInstance>();
+            flowInstanceMap = initAllGulianInstance(flowInstanceMap, flowInstance, force);
 
-        if(flowInstanceMap!=null && !flowInstanceMap.isEmpty()){
-            List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
-            flowInstanceList.addAll(flowInstanceMap.values());//加入排序，按照创建时候倒序，保证子流程先终止
-            Collections.sort(flowInstanceList, new Comparator() {
-                @Override
-                public int compare(Object o1, Object o2) {
-                    FlowInstance flowInstance1 = (FlowInstance)o1;
-                    FlowInstance flowInstance2 = (FlowInstance)o2;
-                    Long time1= flowInstance1.getCreatedDate().getTime();
-                    Long time2= flowInstance2.getCreatedDate().getTime();
-                    int result = 0;
-                    if((time1-time2)>0){
-                        result = -1;
-                    }else if((time1-time2)==0){
-                        result = 0;
-                    }else {
-                        result = 1;
-                    }
-                    return  result;
-                }
-            });
-            for(FlowInstance fTemp:flowInstanceList){
-                if(fTemp.isEnded()){
-                    continue;
-                }
-                Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
-                if(flowTaskList!=null && !flowTaskList.isEmpty()){
-                    for(FlowTask flowTask:flowTaskList){
-                        try {
-                            FlowHistory flowHistory = new FlowHistory();
-                            String preFlowHistoryId = flowTask.getPreId();
-                            FlowHistory preFlowHistory = null;
-                            if(StringUtils.isNotEmpty(preFlowHistoryId)){
-                                preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
-                            }
-                            BeanUtils.copyProperties(flowHistory, flowTask);
-                            flowHistory.setId(null);
-                            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                            if(!force){
-                                flowHistory.setDepict("【被发起人终止流程】");
-                            }else {
-                                flowHistory.setDepict("【被管理员强制终止流程】");
-                            }
-
-                            flowHistory.setFlowTaskName(flowTask.getTaskName());
-                            Date now = new Date();
-                            if(preFlowHistory!=null){
-                                flowHistory.setActDurationInMillis(now.getTime()-preFlowHistory.getActEndTime().getTime());
-                            }else{
-                                flowHistory.setActDurationInMillis(now.getTime()-flowTask.getCreatedDate().getTime());
-                            }
-                            flowHistory.setActEndTime(now);
-
-                            flowHistoryDao.save(flowHistory);
-                        }catch(Exception e){
-                            logger.error(e.getMessage());
+            if (flowInstanceMap != null && !flowInstanceMap.isEmpty()) {
+                List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
+                flowInstanceList.addAll(flowInstanceMap.values());//加入排序，按照创建时候倒序，保证子流程先终止
+                Collections.sort(flowInstanceList, new Comparator() {
+                    @Override
+                    public int compare(Object o1, Object o2) {
+                        FlowInstance flowInstance1 = (FlowInstance) o1;
+                        FlowInstance flowInstance2 = (FlowInstance) o2;
+                        Long time1 = flowInstance1.getCreatedDate().getTime();
+                        Long time2 = flowInstance2.getCreatedDate().getTime();
+                        int result = 0;
+                        if ((time1 - time2) > 0) {
+                            result = -1;
+                        } else if ((time1 - time2) == 0) {
+                            result = 0;
+                        } else {
+                            result = 1;
                         }
-                        flowTaskDao.delete(flowTask);
+                        return result;
                     }
-                }
+                });
+                for (FlowInstance fTemp : flowInstanceList) {
+                    if (fTemp.isEnded()) {
+                        continue;
+                    }
+                    Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
+                    if (flowTaskList != null && !flowTaskList.isEmpty()) {
+                        for (FlowTask flowTask : flowTaskList) {
+                            try {
+                                FlowHistory flowHistory = new FlowHistory();
+                                String preFlowHistoryId = flowTask.getPreId();
+                                FlowHistory preFlowHistory = null;
+                                if (StringUtils.isNotEmpty(preFlowHistoryId)) {
+                                    preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
+                                }
+                                BeanUtils.copyProperties(flowHistory, flowTask);
+                                flowHistory.setId(null);
+                                flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+                                if (!force) {
+                                    flowHistory.setDepict("【被发起人终止流程】");
+                                } else {
+                                    flowHistory.setDepict("【被管理员强制终止流程】");
+                                }
 
-                String actInstanceId = fTemp.getActInstanceId();
-                String deleteReason=null;
-                int endSign = 0;
-                if(force){
-                    deleteReason= "10035";//"被管理员强制终止流程";
-                    endSign=2;
-                }else {
-                    deleteReason = "10036";// "被发起人终止流程";
-                    endSign=1;
-                }
-                callBeforeEndAndSon(flowInstance,endSign);
+                                flowHistory.setFlowTaskName(flowTask.getTaskName());
+                                Date now = new Date();
+                                if (preFlowHistory != null) {
+                                    flowHistory.setActDurationInMillis(now.getTime() - preFlowHistory.getActEndTime().getTime());
+                                } else {
+                                    flowHistory.setActDurationInMillis(now.getTime() - flowTask.getCreatedDate().getTime());
+                                }
+                                flowHistory.setActEndTime(now);
 
-                this.deleteActiviti(actInstanceId,deleteReason);
+                                flowHistoryDao.save(flowHistory);
+                            } catch (Exception e) {
+                                logger.error(e.getMessage());
+                            }
+                            flowTaskDao.delete(flowTask);
+                        }
+                    }
 
-                fTemp.setEndDate(new Date());
-                fTemp.setEnded(true);
-                fTemp.setManuallyEnd(true);
-                flowInstanceDao.save(fTemp);
+                    String actInstanceId = fTemp.getActInstanceId();
+                    String deleteReason = null;
+                    int endSign = 0;
+                    if (force) {
+                        deleteReason = "10035";//"被管理员强制终止流程";
+                        endSign = 2;
+                    } else {
+                        deleteReason = "10036";// "被发起人终止流程";
+                        endSign = 1;
+                    }
+                    callBeforeEndAndSon(flowInstance, endSign);
+
+                    this.deleteActiviti(actInstanceId, deleteReason);
+
+                    fTemp.setEndDate(new Date());
+                    fTemp.setEnded(true);
+                    fTemp.setManuallyEnd(true);
+                    flowInstanceDao.save(fTemp);
 //                if(endSign == 1)
 //                throw new FlowException("tt");
-                //重置客户端表单流程状态
-                String businessId = fTemp.getBusinessId();
-                FlowStatus status = FlowStatus.INIT;
-                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                ExpressionUtil.resetState(businessModel,  businessId,  status);
+                    //重置客户端表单流程状态
+                    String businessId = fTemp.getBusinessId();
+                    FlowStatus status = FlowStatus.INIT;
+                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                    ExpressionUtil.resetState(businessModel, businessId, status);
 
-                //结束后触发
-                try {
-                    this.callEndServiceAndSon(flowInstance,endSign);
-                }catch (Exception e){
-                    logger.error(e.getMessage());
+                    //结束后触发
+                    try {
+                        this.callEndServiceAndSon(flowInstance, endSign);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
+                    }
+                }
+            } else {
+                if (force) {
+                    result = OperateResult.operationFailure("10002");//不能终止
+                } else {
+                    result = OperateResult.operationFailure("10011");//不能终止
                 }
             }
-        }else {
-            if(force){
-                result =  OperateResult.operationFailure("10002");//不能终止
-            }else{
-                result =  OperateResult.operationFailure("10011");//不能终止
-            }
+        }catch (FlowException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            result = OperateResult.operationFailure(e.getMessage());//终止失败
         }
         return result;
     }

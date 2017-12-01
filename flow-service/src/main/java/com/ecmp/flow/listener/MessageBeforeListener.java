@@ -54,7 +54,7 @@ import java.util.concurrent.Executors;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="messageBeforeListener")
+//@Component(value="messageBeforeListener")
 public class MessageBeforeListener implements Serializable, org.activiti.engine.delegate.ExecutionListener{
 
     private final Logger logger = LoggerFactory.getLogger(MessageBeforeListener.class);

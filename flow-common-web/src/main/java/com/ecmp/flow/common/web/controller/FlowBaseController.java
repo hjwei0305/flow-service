@@ -141,7 +141,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) {
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) throws Exception{
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -225,7 +225,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public OperateStatus rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);

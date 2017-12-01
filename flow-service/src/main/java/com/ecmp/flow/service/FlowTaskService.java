@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -138,7 +139,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) {
+    public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) throws Exception {
         String taskId = flowTaskCompleteVO.getTaskId();
         Map<String, Object> variables = flowTaskCompleteVO.getVariables();
         Map<String,String> manualSelectedNodes = flowTaskCompleteVO.getManualSelectedNode();
@@ -262,7 +263,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
           }
         }catch (FlowException e){
-            OperateResultWithData.operationFailure(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            result =   OperateResultWithData.operationFailure(e.getMessage());
         }
         return result;
     }
@@ -277,7 +279,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) {
+    private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception{
         FlowTask flowTask = flowTaskDao.findOne(id);
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
@@ -564,8 +566,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private void completeActiviti(String taskId, Map<String, Object> variables) {
-        taskService.complete(taskId, variables);
+    private void completeActiviti(String taskId, Map<String, Object> variables) throws Exception{
+            taskService.complete(taskId, variables);
     }
 
     /**
@@ -576,7 +578,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) {
+    public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) throws Exception{
         OperateResult result = OperateResult.operationSuccess("10006");
         try{
         FlowTask flowTask = flowTaskDao.findOne(id);
@@ -594,6 +596,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else {
             return OperateResult.operationFailure("10023");
         }}catch(FlowException flowE){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
         }
         return result;
@@ -608,7 +611,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) {
+    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception{
         OperateResult result = OperateResult.operationSuccess("10015");
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
@@ -1090,11 +1093,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
-    public OperateResultWithData<FlowStatus> completeBatchApproval(List<FlowTaskCompleteVO> flowTaskCompleteVOList){
+    public OperateResultWithData<FlowStatus> completeBatchApproval(List<FlowTaskCompleteVO> flowTaskCompleteVOList) throws Exception{
         for(FlowTaskCompleteVO flowTaskCompleteVO:flowTaskCompleteVOList){
             OperateResultWithData<FlowStatus>   tempResult = this.complete(flowTaskCompleteVO);
             if(!tempResult.successful()){
-                throw new RuntimeException("batch approval is failure! ");
+                throw new FlowException("batch approval is failure! ");
             }
         }
        return OperateResultWithData.operationSuccess("10017");

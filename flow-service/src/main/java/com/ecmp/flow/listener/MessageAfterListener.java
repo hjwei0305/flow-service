@@ -48,7 +48,7 @@ import java.util.concurrent.Executors;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="messageAfterListener")
+//@Component(value="messageAfterListener")
 public class MessageAfterListener implements Serializable, org.activiti.engine.delegate.ExecutionListener{
 
     private final Logger logger = LoggerFactory.getLogger(MessageAfterListener.class);

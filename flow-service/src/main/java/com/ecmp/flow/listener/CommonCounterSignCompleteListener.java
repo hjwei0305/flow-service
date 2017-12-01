@@ -33,7 +33,7 @@ import java.util.Map;
  * <p>
  * *************************************************************************************************
  */
-@Component(value="commonCounterSignCompleteListener")
+//@Component(value="commonCounterSignCompleteListener")
 public class CommonCounterSignCompleteListener implements TaskListener{
 
     @Autowired

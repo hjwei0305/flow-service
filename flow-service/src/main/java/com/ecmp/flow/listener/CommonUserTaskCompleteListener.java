@@ -37,7 +37,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="commonUserTaskCompleteListener")
+//@Component(value="commonUserTaskCompleteListener")
 public class CommonUserTaskCompleteListener implements ExecutionListener {
 
     @Autowired
@@ -125,13 +125,15 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                         }
                         LogUtil.addExceptionLog(e.getMessage());
                     }
+                    if(!async){
+                        throw new FlowException("自定义异常信息");
+                    }
                 }
             }
         }catch (Exception e){
             logger.error(e.getMessage());
             LogUtil.addExceptionLog(e.getMessage());
             throw new FlowException(e.getMessage());
-
         }
     }
 }

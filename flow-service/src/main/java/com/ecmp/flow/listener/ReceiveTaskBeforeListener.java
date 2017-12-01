@@ -42,7 +42,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="receiveTaskBeforeListener")
+//@Component(value="receiveTaskBeforeListener")
 public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(ReceiveTaskBeforeListener.class);

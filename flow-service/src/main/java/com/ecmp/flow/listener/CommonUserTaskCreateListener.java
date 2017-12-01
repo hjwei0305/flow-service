@@ -38,7 +38,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="commonUserTaskCreateListener")
+//@Component(value="commonUserTaskCreateListener")
 public class CommonUserTaskCreateListener implements ExecutionListener {
 
     private final Logger logger = LoggerFactory.getLogger(CommonUserTaskCreateListener.class);

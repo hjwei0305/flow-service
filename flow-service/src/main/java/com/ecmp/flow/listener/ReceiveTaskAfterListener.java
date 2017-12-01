@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="receiveTaskAfterListener")
+//@Component(value="receiveTaskAfterListener")
 public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.JavaDelegate {
 
     private final Logger logger = LoggerFactory.getLogger(ReceiveTaskAfterListener.class);

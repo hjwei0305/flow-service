@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -987,6 +988,7 @@ public class FlowTaskTool {
             initTask(flowHistory.getFlowInstance(), flowHistory,currTask.getTaskDefinitionKey());
             return result;
         } catch(FlowException flowE){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
         }catch (Exception e) {
             e.printStackTrace();

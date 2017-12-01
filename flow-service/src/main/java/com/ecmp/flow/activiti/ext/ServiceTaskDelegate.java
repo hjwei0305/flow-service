@@ -54,8 +54,10 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="serviceTaskDelegate")
+//@Component(value="serviceTaskDelegate")
 public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDelegate {
+
+    public ServiceTaskDelegate(){}
 
     private final Logger logger = LoggerFactory.getLogger(ServiceTaskDelegate.class);
 

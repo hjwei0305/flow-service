@@ -85,7 +85,7 @@ public class FlowClientController {
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
-    public OperateStatus rejectTask(String taskId, String opinion) {
+    public OperateStatus rejectTask(String taskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResult result = proxy.taskReject(taskId, opinion, null);

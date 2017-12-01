@@ -2,6 +2,8 @@ package com.ecmp.config;
 
 import com.ecmp.flow.activiti.ext.ActivityBehaviorFactoryExt;
 import com.ecmp.flow.activiti.ext.ExclusiveGatewayActivityBehaviorExt;
+import com.ecmp.flow.activiti.ext.ServiceTaskDelegate;
+import com.ecmp.flow.listener.*;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.persistence.StrongUuidGenerator;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -101,5 +103,56 @@ public class ActivityConfig {
     @Bean("managementService")
     public ManagementService managementService(ProcessEngine processEngine) {
         return processEngine.getManagementService();
+    }
+
+
+    @Bean
+    public CommonUserTaskCompleteListener commonUserTaskCompleteListener(){
+        return new CommonUserTaskCompleteListener();
+    }
+
+    @Bean
+    public CommonCounterSignCompleteListener commonCounterSignCompleteListener(){
+        return new CommonCounterSignCompleteListener();
+    }
+
+    @Bean
+    public ServiceTaskDelegate serviceTaskDelegate(){
+        return new ServiceTaskDelegate();
+    }
+
+    @Bean
+    public CommonUserTaskCreateListener commonUserTaskCreateListener(){
+        return new CommonUserTaskCreateListener();
+    }
+
+    @Bean
+    public EndEventCompleteListener endEventCompleteListener(){
+        return new EndEventCompleteListener();
+    }
+
+    @Bean
+    public MessageAfterListener messageAfterListener(){
+        return new MessageAfterListener();
+    }
+
+    @Bean
+    public MessageBeforeListener messageBeforeListener(){
+        return new MessageBeforeListener();
+    }
+
+    @Bean
+    public ReceiveTaskAfterListener receiveTaskAfterListener(){
+        return new ReceiveTaskAfterListener();
+    }
+
+    @Bean
+    public ReceiveTaskBeforeListener receiveTaskBeforeListener(){
+        return new ReceiveTaskBeforeListener();
+    }
+
+    @Bean
+    public  StartEventCompleteListener startEventCompleteListener(){
+        return new StartEventCompleteListener();
     }
 }

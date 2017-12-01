@@ -42,7 +42,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-@Component(value="startEventCompleteListener")
+//@Component(value="startEventCompleteListener")
 public class StartEventCompleteListener implements ExecutionListener {
 
     private final Logger logger = LoggerFactory.getLogger(StartEventCompleteListener.class);
