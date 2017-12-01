@@ -7,6 +7,8 @@ import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -79,6 +81,15 @@ public class ServiceCallUtil {
                 params.setParams(paramMap);
                 String url = appModule.getApiBaseAddress()+"/"+clientUrl;
                 result = ApiClient.postViaProxyReturnResult(url,new GenericType<FlowOperateResult>() {}, params);
+                FlowOperateResult resultAy = result;
+                new Thread(new Runnable() {//模拟异步
+                    @Override
+                    public void run() {
+                        String paramsStr = JsonUtils.toJson(params);
+                        String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = "+resultAy.toString();
+                        LogUtil.addExceptionLog(message);
+                    }
+                }).start();
             }else {
                 throw new FlowException("服务对象找不到");
             }

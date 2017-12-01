@@ -174,7 +174,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
                 if(StringUtils.isNotEmpty(checkUrl)){
-                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress ();
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
