@@ -69,6 +69,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
         OperateStatus operateStatus = null;
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -123,6 +124,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "listFlowTask")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus claimTask(String taskId){
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         String userId = ContextUtil.getUserId();
@@ -143,6 +145,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) throws Exception{
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
@@ -210,6 +213,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "cancelTask")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
@@ -227,6 +231,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "rejectTask")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus rejectTask(String taskId, String opinion) throws Exception{
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
@@ -244,6 +249,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "nextNodesInfo")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus nextNodesInfo(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
@@ -265,6 +271,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "getSelectedNodesInfo")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus getSelectedNodesInfo(String taskId,String approved, String includeNodeIdsStr) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
@@ -300,6 +307,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "nextNodesInfoWithUser")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
@@ -321,6 +329,7 @@ public abstract class FlowBaseController<T extends IBaseEntityService, V extends
      */
     @RequestMapping(value = "getApprovalHeaderInfo")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus getApprovalHeaderInfo(String taskId) {
         OperateStatus operateStatus = null;
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
