@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base :: base_head"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>采购页面t</title>
+    <link rel="stylesheet" type="text/css"
+          data-th-href="@{/static/styles/css/BuiltInApproveView.css}">
+    <script type="text/javascript"
+            data-th-src="@{/static/scripts/maindata/DefaultBusinessModel2View.js}"></script>
+    <script type="text/javascript"
+            data-th-src="@{/static/lang/lang.js}"></script>
+    <script type="text/javascript">
+        var defaultBusinessModel2View;
+        EUI.onReady(function () {
+           defaultBusinessModel2View = new EUI.DefaultBusinessModel2View({
+                renderTo: "content"
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
+
