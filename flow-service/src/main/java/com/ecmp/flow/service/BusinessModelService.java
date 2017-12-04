@@ -90,12 +90,11 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
            cause=  cause.getCause();
            SQLException sqlException = (SQLException)cause;
            if(sqlException!=null && sqlException.getSQLState().equals("23000")){
-               resultWithData = OperateResultWithData.operationFailure("类全路径重复，请检查！");
+               resultWithData = OperateResultWithData.operationFailure("10037");//类全路径重复，请检查！
            }else{
                resultWithData = OperateResultWithData.operationFailure(e.getMessage());
            }
            logger.error(e.getMessage());
-
        }
        return resultWithData;
     }

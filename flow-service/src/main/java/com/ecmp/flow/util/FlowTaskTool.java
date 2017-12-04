@@ -1936,4 +1936,43 @@ public class FlowTaskTool {
         return result;
     }
 
+    public FlowHistory initFlowHistory(FlowTask flowTask,HistoricTaskInstance historicTaskInstance,Boolean canCancel){
+        FlowHistory flowHistory = new FlowHistory();
+        flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
+        flowHistory.setActType(flowTask.getActType());
+        flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
+        flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+        flowHistory.setCanCancel(canCancel);
+        flowHistory.setFlowName(flowTask.getFlowName());
+        flowHistory.setDepict(flowTask.getDepict());
+        flowHistory.setActClaimTime(flowTask.getActClaimTime());
+        flowHistory.setFlowTaskName(flowTask.getTaskName());
+        flowHistory.setFlowInstance(flowTask.getFlowInstance());
+        flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
+        flowHistory.setOwnerName(flowTask.getOwnerName());
+        flowHistory.setExecutorAccount(flowTask.getExecutorAccount());
+        flowHistory.setExecutorId(flowTask.getExecutorId());
+        flowHistory.setExecutorName(flowTask.getExecutorName());
+        flowHistory.setCandidateAccount(flowTask.getCandidateAccount());
+
+        flowHistory.setActDurationInMillis(historicTaskInstance.getDurationInMillis());
+        flowHistory.setActWorkTimeInMillis(historicTaskInstance.getWorkTimeInMillis());
+        flowHistory.setActStartTime(historicTaskInstance.getStartTime());
+        flowHistory.setActEndTime(historicTaskInstance.getEndTime());
+        flowHistory.setActHistoryId(historicTaskInstance.getId());
+        flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
+        flowHistory.setPreId(flowTask.getPreId());
+        flowHistory.setDepict(flowTask.getDepict());
+        flowHistory.setTaskStatus(flowTask.getTaskStatus());
+
+        if(flowHistory.getActEndTime() == null){
+            flowHistory.setActEndTime(new Date());
+        }
+        if(flowHistory.getActDurationInMillis() == null){
+            Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
+            flowHistory.setActDurationInMillis(actDurationInMillis);
+        }
+        return flowHistory;
+    }
+
 }

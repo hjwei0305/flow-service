@@ -37,6 +37,8 @@ import java.util.Map;
  */
 @Path("flowTask")
 @Api(value = "IFlowTaskService 流程任务服务API接口")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 任务签收
@@ -395,4 +397,29 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息与版本分组)",notes = "测试")
     public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds")String taskIds)  throws NoSuchMethodException;
+
+
+    /**
+     * 将任务转办给指定用户
+     * @param taskId 任务ID
+     * @param  userId 用户id
+     * @return 操作结果
+     */
+    @POST
+    @Path("taskTurnToDo")
+    @ApiOperation(value = "将任务转办给指定用户",notes = "测试")
+    public OperateResult taskTurnToDo(@QueryParam("taskId") String taskId,@QueryParam("userId") String userId);
+
+    /**
+     * 将任务委托给指定用户
+     * @param taskId 任务ID
+     * @param  userId 用户id
+     * @return 操作结果
+     */
+    @POST
+    @Path("taskTrustToDo")
+    @ApiOperation(value = "将任务委托给指定用户",notes = "测试")
+    public OperateResult taskTrustToDo(@QueryParam("taskId") String taskId,@QueryParam("userId") String userId);
+
+
 }

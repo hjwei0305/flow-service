@@ -412,44 +412,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 canCancel =  normalInfo.getBoolean("allowPreUndo");
             }
 
-            FlowHistory flowHistory = new FlowHistory();
-            flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
-            flowHistory.setActType(flowTask.getActType());
-            flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
-            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-            flowHistory.setCanCancel(canCancel);
-            flowHistory.setFlowName(flowTask.getFlowName());
-            flowHistory.setDepict(flowTask.getDepict());
-            flowHistory.setActClaimTime(flowTask.getActClaimTime());
-            flowHistory.setFlowTaskName(flowTask.getTaskName());
-            flowHistory.setFlowInstance(flowTask.getFlowInstance());
-            flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
-            flowHistory.setOwnerName(flowTask.getOwnerName());
-            flowHistory.setExecutorAccount(flowTask.getExecutorAccount());
-            flowHistory.setExecutorId(flowTask.getExecutorId());
-            flowHistory.setExecutorName(flowTask.getExecutorName());
-            flowHistory.setCandidateAccount(flowTask.getCandidateAccount());
-
-            flowHistory.setActDurationInMillis(historicTaskInstance.getDurationInMillis());
-            flowHistory.setActWorkTimeInMillis(historicTaskInstance.getWorkTimeInMillis());
-            flowHistory.setActStartTime(historicTaskInstance.getStartTime());
-            flowHistory.setActEndTime(historicTaskInstance.getEndTime());
-            flowHistory.setActHistoryId(historicTaskInstance.getId());
-            flowHistory.setActTaskDefKey(historicTaskInstance.getTaskDefinitionKey());
-            flowHistory.setPreId(flowTask.getPreId());
-            flowHistory.setDepict(flowTask.getDepict());
-            flowHistory.setTaskStatus(flowTask.getTaskStatus());
-
-            if(flowHistory.getActEndTime() == null){
-                flowHistory.setActEndTime(new Date());
-            }
-            if(flowHistory.getActDurationInMillis() == null){
-                Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
-                flowHistory.setActDurationInMillis(actDurationInMillis);
-            }
+            FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,canCancel);
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
-
             if("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
                 flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
             }
@@ -1233,5 +1198,74 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
            result =  OperateResultWithData.operationFailure("10034");
        }
        return result;
+    }
+    public OperateResult taskTurnToDo(String taskId,String userId){
+        OperateResult result =  null;
+        FlowTask flowTask = flowTaskDao.findOne(taskId);
+        if(flowTask!=null){
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+            Map<String,Object> params = new HashMap();
+            params.put("employeeIds",java.util.Arrays.asList(userId));
+            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            if(employees!=null && !employees.isEmpty()){
+                Executor executor = employees.get(0);
+                FlowTask newFlowTask = new FlowTask();
+                BeanUtils.copyProperties(flowTask,newFlowTask);
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,false);//转办后先不允许撤回
+                flowHistory.setDepict("【被转办给："+executor.getName()+"】");
+                taskService.setAssignee(taskId, executor.getId());
+                flowHistoryDao.save(flowHistory);
+                flowTaskDao.delete(flowTask);
+                newFlowTask.setId(null);
+                newFlowTask.setExecutorId(executor.getId());
+                newFlowTask.setExecutorAccount(executor.getCode());
+                newFlowTask.setExecutorName(executor.getName());
+                newFlowTask.setOwnerId(executor.getId());
+                newFlowTask.setOwnerName(executor.getName());
+                newFlowTask.setOwnerAccount(executor.getCode());
+                newFlowTask.setPreId(flowHistory.getId());
+                flowTaskDao.save(newFlowTask);
+                result = OperateResult.operationSuccess();
+            }else{
+                result = OperateResult.operationFailure("10038");//执行人查询结果为空
+            }
+        }else {
+            result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
+        }
+        return result;
+    }
+
+    public OperateResult taskTrustToDo(String taskId,String userId){
+        OperateResult result =  null;
+        FlowTask flowTask = flowTaskDao.findOne(taskId);
+        if(flowTask!=null){
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+            Map<String,Object> params = new HashMap();
+            params.put("employeeIds",java.util.Arrays.asList(userId));
+            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            if(employees!=null && !employees.isEmpty()){
+                Executor executor = employees.get(0);
+                FlowTask newFlowTask = new FlowTask();
+                BeanUtils.copyProperties(flowTask,newFlowTask);
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,false); //转办后先不允许撤回
+                flowHistory.setDepict("【被委托给："+executor.getName()+"】");
+                flowHistoryDao.save(flowHistory);
+                flowTaskDao.delete(flowTask);
+                newFlowTask.setId(null);
+                newFlowTask.setExecutorId(executor.getId());
+                newFlowTask.setExecutorAccount(executor.getCode());
+                newFlowTask.setExecutorName(executor.getName());
+                newFlowTask.setPreId(flowHistory.getId());
+                flowTaskDao.save(newFlowTask);
+                result = OperateResult.operationSuccess();
+            }else{
+                result = OperateResult.operationFailure("10038");//执行人查询结果为空
+            }
+        }else {
+            result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
+        }
+        return result;
     }
 }
