@@ -53,16 +53,11 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/defaultBusinessModel3")
 @IgnoreCheckAuth
-public class DefaultBusinessModel3Controller extends FlowBaseController<IDefaultBusinessModel3Service,DefaultBusinessModel3> {
+public class DefaultBusinessModel3Controller extends FlowBaseController<DefaultBusinessModel3> {
 
-    public DefaultBusinessModel3Controller(){
-        super(IDefaultBusinessModel3Service.class);
+    public   IDefaultBusinessModel3Service getBaseService(){
+        return ApiClient.createProxy(IDefaultBusinessModel3Service.class);
     }
-
-//    @RequestMapping(value = "show", method = RequestMethod.GET)
-//    public String show() {
-//        return "maindata/DefaultBusinessModel3View";
-//    }
 
     @RequestMapping(value = "showBill", method = RequestMethod.GET)
     public String showBill() {
@@ -152,7 +147,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
         OperateStatus operateStatus = null;
         DefaultBusinessModel3 defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -252,7 +247,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<IDefault
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
         OperateStatus operateStatus = null;
         DefaultBusinessModel3 defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessId);
         if (defaultBusinessModel3 != null) {

@@ -51,11 +51,11 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/builtInApprove")
 @IgnoreCheckAuth
-public class BuiltInApproveController extends FlowBaseController<IDefaultBusinessModelService, DefaultBusinessModel> {
+public class BuiltInApproveController extends FlowBaseController<DefaultBusinessModel> {
 
 
-    public BuiltInApproveController() {
-        super(IDefaultBusinessModelService.class);
+    public   IDefaultBusinessModelService getBaseService(){
+        return ApiClient.createProxy(IDefaultBusinessModelService.class);
     }
 
 
@@ -123,7 +123,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -224,7 +224,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
         DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessId);
         if (defaultBusinessModel != null) {
@@ -345,7 +345,7 @@ public class BuiltInApproveController extends FlowBaseController<IDefaultBusines
     }
 
     public OperateStatus startFlowTTT(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
 
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;

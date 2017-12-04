@@ -53,10 +53,10 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/defaultBusinessModel2")
 @IgnoreCheckAuth
-public class DefaultBusinessModel2Controller extends FlowBaseController<IDefaultBusinessModel2Service, DefaultBusinessModel2> {
+public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultBusinessModel2> {
 
-    public DefaultBusinessModel2Controller() {
-        super(IDefaultBusinessModel2Service.class);
+    public   IDefaultBusinessModel2Service getBaseService(){
+        return ApiClient.createProxy(IDefaultBusinessModel2Service.class);
     }
 
 
@@ -147,7 +147,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
     @RequestMapping(value = "startFlow")
     @ResponseBody
     public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
@@ -247,7 +247,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<IDefault
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
             flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
         }
-        IBaseEntityService baseService = ApiClient.createProxy(apiClass);
+        IBaseEntityService baseService =getBaseService();
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessId);
         if (defaultBusinessModel2 != null) {

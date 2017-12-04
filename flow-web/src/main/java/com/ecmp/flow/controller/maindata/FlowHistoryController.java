@@ -38,7 +38,10 @@ import java.text.ParseException;
 @Controller
 @RequestMapping(value = "/flowHistory")
 @IgnoreCheckAuth
-public class FlowHistoryController extends FlowBaseController{
+public class FlowHistoryController extends FlowBaseController<FlowHistory>{
+    public   IFlowHistoryService getBaseService(){
+        return ApiClient.createProxy(IFlowHistoryService.class);
+    }
 
 //    @RequestMapping(value = "show", method = RequestMethod.GET)
 //    public String show() {

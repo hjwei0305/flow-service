@@ -1,15 +1,15 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
+import org.hibernate.exception.DataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +31,8 @@ import java.util.Objects;
  */
 @Service
 public class BusinessModelService extends BaseEntityService<BusinessModel> implements IBusinessModelService{
+
+    private final Logger logger = LoggerFactory.getLogger(BusinessModel.class);
 
     @Autowired
     private BusinessModelDao businessModelDao;
@@ -76,6 +78,26 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             }
         }
         return operateResult;
+    }
+
+   public OperateResultWithData<BusinessModel> save(BusinessModel businessModel){
+       OperateResultWithData<BusinessModel> resultWithData = null;
+       try {
+           resultWithData = super.save(businessModel);
+       }catch (org.springframework.dao.DataIntegrityViolationException e){
+           e.printStackTrace();
+           Throwable cause =  e.getCause();
+           cause=  cause.getCause();
+           SQLException sqlException = (SQLException)cause;
+           if(sqlException!=null && sqlException.getSQLState().equals("23000")){
+               resultWithData = OperateResultWithData.operationFailure("类全路径重复，请检查！");
+           }else{
+               resultWithData = OperateResultWithData.operationFailure(e.getMessage());
+           }
+           logger.error(e.getMessage());
+
+       }
+       return resultWithData;
     }
 
 }

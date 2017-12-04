@@ -45,21 +45,10 @@ import java.util.Map;
  * *************************************************************************************************<br>
  */
 @IgnoreCheckAuth
-public abstract class FlowBaseController<T extends IBaseEntityService, V extends BaseEntity> extends BaseEntityController<V> {
-
-    protected Class<T> apiClass;
+public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntityController<V> {
 
     public FlowBaseController() {
     }
-
-    protected  Object getBaseService(){
-        return ApiClient.createProxy(apiClass);
-    }
-
-    public FlowBaseController(Class<T> apiClass) {
-        this.apiClass = apiClass;
-    }
-
 
     /**
      * 通过流程定义key启动流程
