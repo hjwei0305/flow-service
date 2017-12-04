@@ -1919,14 +1919,15 @@ public class FlowTaskTool {
                     }
                 }
 
-                net.sf.json.JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                String userType = (String) executor.get("userType");
-                if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
-                {
-                }else {
-                    return false;
+                if( nextNode.getJSONObject("nodeConfig").has("executor")){
+                    net.sf.json.JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                    String userType = (String) executor.get("userType");
+                    if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
+                    {
+                    }else {
+                        return false;
+                    }
                 }
-
             }catch(Exception e){
                 logger.error(e.getMessage());
                 result = false;

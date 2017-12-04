@@ -1,5 +1,6 @@
 package com.ecmp.flow.common.web.controller;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.api.IBaseEntityService;
@@ -43,6 +44,7 @@ import java.util.Map;
  * <br>
  * *************************************************************************************************<br>
  */
+@IgnoreCheckAuth
 public abstract class FlowBaseController<T extends IBaseEntityService, V extends BaseEntity> extends BaseEntityController<V> {
 
     protected Class<T> apiClass;
