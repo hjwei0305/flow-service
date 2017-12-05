@@ -79,24 +79,24 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         }
         return operateResult;
     }
-
-   public OperateResultWithData<BusinessModel> save(BusinessModel businessModel){
-       OperateResultWithData<BusinessModel> resultWithData = null;
-       try {
-           resultWithData = super.save(businessModel);
-       }catch (org.springframework.dao.DataIntegrityViolationException e){
-           e.printStackTrace();
-           Throwable cause =  e.getCause();
-           cause=  cause.getCause();
-           SQLException sqlException = (SQLException)cause;
-           if(sqlException!=null && sqlException.getSQLState().equals("23000")){
-               resultWithData = OperateResultWithData.operationFailure("10037");//类全路径重复，请检查！
-           }else{
-               resultWithData = OperateResultWithData.operationFailure(e.getMessage());
-           }
-           logger.error(e.getMessage());
-       }
-       return resultWithData;
-    }
+//
+//   public OperateResultWithData<BusinessModel> save(BusinessModel businessModel){
+//       OperateResultWithData<BusinessModel> resultWithData = null;
+//       try {
+//           resultWithData = super.save(businessModel);
+//       }catch (org.springframework.dao.DataIntegrityViolationException e){
+//           e.printStackTrace();
+//           Throwable cause =  e.getCause();
+//           cause=  cause.getCause();
+//           SQLException sqlException = (SQLException)cause;
+//           if(sqlException!=null && sqlException.getSQLState().equals("23000")){
+//               resultWithData = OperateResultWithData.operationFailure("10037");//类全路径重复，请检查！
+//           }else{
+//               resultWithData = OperateResultWithData.operationFailure(e.getMessage());
+//           }
+//           logger.error(e.getMessage());
+//       }
+//       return resultWithData;
+//    }
 
 }
