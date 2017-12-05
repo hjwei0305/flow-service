@@ -188,11 +188,12 @@ public class StartEventCompleteListener implements ExecutionListener {
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(),flowInstance.getFlowDefVersion());
         if(callAfterStartResult!=null && callAfterStartResult.isSuccess()!=true){
-            String message = "单据id="+flowInstance.getBusinessId()
-                    +",流程版本id="+flowInstance.getFlowDefVersion()
-                    +",业务对象="+appModule.getCode()
-                    +",流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
-            logger.info(message);
+            String message = "流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
+             String messageLogger =message+
+                    ";单据id="+flowInstance.getBusinessId()
+                    +",流程版本id="+flowInstance.getFlowDefVersion().getId()
+                    +",业务对象="+appModule.getCode();
+            logger.info(messageLogger);
             throw new FlowException(message);
         }
 
@@ -203,7 +204,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
         Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
         if(!result){
-            throw new FlowException("调用重置表单进入流程中状态失败");
+            throw new FlowException("调用重置表单服务-进入流程中状态，失败");
         }
     }
 
