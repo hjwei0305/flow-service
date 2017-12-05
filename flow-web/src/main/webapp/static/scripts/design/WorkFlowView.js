@@ -602,7 +602,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
                 var input = dom.find(".node-title");
                 if (type.endsWith("Gateway") || type == 'ManualTask') {
-                    g.showSimpleNodeConfig(input.text(), function (value) {
+                    g.showSimpleNodeConfig(input.text(),null,null, function (value,code) {
                         input.text(value);
                         input.attr("title", value);
                     });
@@ -744,7 +744,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var ueldata = g.uelInfo[connection.sourceId + "," + connection.targetId];
             var type = $("#" + connection.sourceId).attr("type");
             var noUELSetting = false;
-            if (type == "UserTask") {
+            if(type=="StartEvent"){
+                noUELSetting = true;
+            }
+            else if (type == "UserTask") {
                 var nodeType = $("#" + connection.sourceId).attr("nodetype");
                 switch (nodeType) {
                     case "SingleSign":  //单签
@@ -760,9 +763,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             var busType = $("#" + connection.sourceId).attr("bustype");
             if (busType == "ManualExclusiveGateway" || busType == "ParallelGateway" || noUELSetting) {
                 var name = ueldata ? ueldata.name : "";
-                g.showSimpleNodeConfig(name, function (value) {
+                var code = ueldata ? ueldata.code : "";
+                g.showSimpleNodeConfig(name,code,connection.sourceId ,function (value,code) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: value,
+                        code:code,
                         groovyUel: "",
                         logicUel: ""
                     };
@@ -1403,9 +1408,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
-    showSimpleNodeConfig: function (title, callback) {
+    showSimpleNodeConfig: function (title,code,sourceID, callback) {
+        var g = this;
         var win = EUI.Window({
-            height: 30,
+            height: 50,
             padding: 30,
             items: [{
                 xtype: "TextField",
@@ -1416,6 +1422,15 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 id: "nodeName",
                 name: "name",
                 value: title
+            },{
+                xtype: "TextField",
+                title: "代码",
+                labelWidth: 80,
+                width: 220,
+                maxlength: 80,
+                id: "nodeFlowCode",
+                name: "code",
+                value: code
             }],
             buttons: [{
                 title: "取消",
@@ -1427,6 +1442,25 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
+                    var codeNew = EUI.getCmp("nodeFlowCode").getValue();
+                    if(codeNew){
+                        for (var key in g.connectInfo) {
+                            if (key.startsWith(sourceID + ",")) {
+                              var value =  g.uelInfo[key];
+                              if(value && value.code){
+                                  if(codeNew==value.code){
+                                      EUI.ProcessStatus({
+                                          success: false,
+                                          msg: "代码冲突，请检查！"
+                                      });
+                                      return;
+                                  }
+                              }
+                            }
+
+
+                        }
+                    }
                     if (!EUI.getCmp("nodeName").sysValidater()) {
                         EUI.ProcessStatus({
                             success: false,
@@ -1434,7 +1468,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                         });
                         return;
                     }
-                    callback && callback.call(this, name);
+                    callback && callback.call(this, name,codeNew);
                     win.close();
                 }
             }]
