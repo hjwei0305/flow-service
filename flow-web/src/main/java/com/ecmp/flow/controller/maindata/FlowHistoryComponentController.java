@@ -132,6 +132,7 @@ public class FlowHistoryComponentController {
 //    }
     @RequestMapping(value = "getFlowHistoryInfo")
     @ResponseBody
+    @IgnoreCheckAuth
     public OperateStatus getFlowHistoryInfo(String businessId, String instanceId) throws JsonProcessingException {
         List<ProcessTrackVO> result = null;
         IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
