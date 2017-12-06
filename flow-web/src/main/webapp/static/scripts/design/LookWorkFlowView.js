@@ -110,7 +110,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 }
                 var input = dom.find(".node-title");
                 if (type.endsWith("Gateway")) {
-                    g.showSimpleNodeConfig(input.text());
+                    g.showSimpleNodeConfig(input.text(),'');
                 } else {
                     new EUI.LookFlowNodeSettingView({
                         businessModelId: g.businessModelId,
@@ -164,7 +164,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             }
             var type = $("#" + connection.sourceId).attr("bustype");
             if (type == "ManualExclusiveGateway") {
-                g.showSimpleNodeConfig(ueldata.name);
+                g.showSimpleNodeConfig(ueldata.name,ueldata.code);
                 return;
             }
             new EUI.LookUELSettingView({
@@ -426,9 +426,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             + "<div class='node-title' title='"+ node.name+"'>" + node.name + "</div>"
             + "</div>";
     },
-    showSimpleNodeConfig: function (title) {
+    showSimpleNodeConfig: function (title,code) {
         var win = EUI.Window({
-            height: 33,
+            height: 50,
             padding: 30,
             title: "节点配置",
             items: [{
@@ -440,6 +440,15 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 id: "nodeName",
                 name: "name",
                 value: title
+            },{
+                xtype: "TextField",
+                title: "代码",
+                labelWidth: 100,
+                width: 220,
+                readonly: true,
+                id: "nodeFlowCode",
+                name: "code",
+                value: code
             }]
         });
     }
