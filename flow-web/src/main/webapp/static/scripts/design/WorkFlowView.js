@@ -764,7 +764,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             if (busType == "ManualExclusiveGateway" || busType == "ParallelGateway" || noUELSetting) {
                 var name = ueldata ? ueldata.name : "";
                 var code = ueldata ? ueldata.code : "";
-                g.showSimpleNodeConfig(name,code,connection.sourceId ,function (value,code) {
+                g.showSimpleNodeConfig(name,code,connection,function (value,code) {
                     g.uelInfo[connection.sourceId + "," + connection.targetId] = {
                         name: value,
                         code:code,
@@ -1408,8 +1408,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         this.instance.deleteEveryEndpoint();
         $(".node-choosed").remove();
     },
-    showSimpleNodeConfig: function (title,code,sourceID, callback) {
+    showSimpleNodeConfig: function (title,code,connection,callback) {
         var g = this;
+        var sourceId = connection.sourceId;
         var win = EUI.Window({
             height: 50,
             padding: 30,
@@ -1445,9 +1446,12 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     var codeNew = EUI.getCmp("nodeFlowCode").getValue();
                     if(codeNew){
                         for (var key in g.connectInfo) {
-                            if (key.startsWith(sourceID + ",")) {
-                              var value =  g.uelInfo[key];
-                              if(value && value.code){
+                            if (key.startsWith(sourceId + ",")) {
+                                if(key == sourceId + "," + connection.targetId ){
+                                    continue;
+                                }
+                                var value =  g.uelInfo[key];
+                                if(value && value.code){
                                   if(codeNew==value.code){
                                       EUI.ProcessStatus({
                                           success: false,
@@ -1457,8 +1461,6 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                   }
                               }
                             }
-
-
                         }
                     }
                     if (!EUI.getCmp("nodeName").sysValidater()) {
