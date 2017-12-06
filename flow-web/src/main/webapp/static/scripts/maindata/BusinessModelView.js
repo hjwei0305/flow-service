@@ -407,7 +407,56 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         });
     },
     addBusinessModel: function (data,isCopy) {
-        var g = this;
+        var g = this,baseItem=[];
+        if(isCopy){
+            baseItem=[
+                {
+                    xtype: "ComboBox",
+                    title: g.lang.modelText,
+                    canClear: false,
+                    allowBlank:false,
+                    name: "appModuleName",
+                    store: {
+                        url: _ctxPath + "/businessModel/listAllAppModule"
+                    },
+                    field: ["appModule.id","appModuleCode"],
+                    reader: {
+                        name: "name",
+                        field: ["id","code"]
+                    }
+                }];
+
+        }else {
+            baseItem=[{
+                xtype: "TextField",
+                title: g.lang.appModelIdText,
+                // labelWidth: 115,
+                allowBlank: false,
+                name: "appModule.id",
+                // width: 300,
+                value: g.appModule.id,
+                hidden: true
+            }, {
+                xtype: "TextField",
+                title: g.lang.modelText,
+                readonly: true,
+                // labelWidth: 115,
+                allowBlank: false,
+                name: "appModuleName",
+                // width: 300,
+                value: g.appModuleName +"--"+g.appModuleCode
+            },{
+                xtype: "TextField",
+                title: this.lang.applyModuleCodeText,
+                readonly: true,
+                // labelWidth: 115,
+                allowBlank: false,
+                name: "appModuleCode",
+                // width: 300,
+                value: g.appModuleCode,
+                hidden:true
+            }]
+        }
         win = EUI.Window({
             title: isCopy?g.lang.copyBusinessModelText: g.lang.addNewBusinessModelText,
             iconCss:isCopy?"ecmp-common-copy":"ecmp-eui-add",
@@ -423,35 +472,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     labelWidth: 180,
                     width: 380
                 },
-                items: [{
-                    xtype: "TextField",
-                    title: g.lang.appModelIdText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModule.id",
-                    // width: 300,
-                    value: g.appModule.id,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.modelText,
-                    readonly: true,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModuleName",
-                    // width: 300,
-                    value: g.appModuleName +"--"+g.appModuleCode
-                },{
-                    xtype: "TextField",
-                    title: this.lang.applyModuleCodeText,
-                    readonly: true,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModuleCode",
-                    // width: 300,
-                    value: g.appModuleCode,
-                    hidden:true
-                }, {
+                items: baseItem.concat([{
                     title: g.lang.nameText,
                     xtype: "TextField",
                     // labelWidth: 115,
@@ -513,7 +534,7 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     // labelWidth: 115,
                     name: "depict",
                     // width: 300
-                }]
+                }])
             }],
             buttons: [ {
                 title: g.lang.cancelText,
