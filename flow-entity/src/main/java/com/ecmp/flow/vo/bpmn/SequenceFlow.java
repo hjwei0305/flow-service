@@ -39,6 +39,9 @@ public class SequenceFlow extends BaseNode implements Serializable {
     @XmlAttribute
     private String name;
 
+    @XmlElement(name = "documentation")
+    private Documentation documentation;
+
     /**
      * UEL
      */
@@ -56,7 +59,15 @@ public class SequenceFlow extends BaseNode implements Serializable {
             if(StringUtils.isNotEmpty(uelValue)){
                 this.conditionExpression = new ConditionExpression(uelValue);
             }
+            if(uelObject.has("code")){
+                String code = (String) uelObject.get("code");
+                if(StringUtils.isNotEmpty(code)){
+                    documentation = new Documentation(code);
+                }
+            }
+
         }
+
     }
 
     public String getSourceRef() {
@@ -92,4 +103,12 @@ public class SequenceFlow extends BaseNode implements Serializable {
     }
 
     public SequenceFlow(){};
+
+    public Documentation getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(Documentation documentation) {
+        this.documentation = documentation;
+    }
 }

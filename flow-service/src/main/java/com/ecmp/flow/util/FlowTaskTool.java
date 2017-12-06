@@ -512,6 +512,9 @@ public class FlowTaskTool {
                         tempNodeInfo.setGateWayName(gateWayName);
                         tempNodeInfo.setUiType(uiType);
                         tempNodeInfo.setPreLineName(nextNodes.get(tempActivity).get(0)+"");
+                        if(nextNodes.get(tempActivity)!=null && nextNodes.get(tempActivity).size()>=3){
+                            tempNodeInfo.setPreLineCode(nextNodes.get(tempActivity).get(2)+"");
+                        }
                         nodeInfoList.add(tempNodeInfo);
                     }
                 }
@@ -604,6 +607,7 @@ public class FlowTaskTool {
             for (PvmTransition pv : nextTransitionList) {
                 PvmActivity currTempActivity = pv.getDestination();
                 String lineName = pv.getProperty("name") + "";//线的名称
+                String documentation = (String)pv.getProperty("documentation");
                 List value = null;
                 if(lineInfo!=null){
                     value = lineInfo;
@@ -611,6 +615,7 @@ public class FlowTaskTool {
                     value = new ArrayList<>();
                     value.add(lineName);
                     value.add(index);
+                    value.add(documentation);
                 }
                 Boolean ifGateWay = ifGageway(currTempActivity);
                 String type = currTempActivity.getProperty("type")+"";
