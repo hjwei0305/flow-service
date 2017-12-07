@@ -19,7 +19,7 @@ public enum TaskStatus {
      */
     INIT("init"),
     CLAIM("claim"),
-    CANCLE("cancel"),
+    CANCEL("cancel"),
     COMPLETED("completed"),
     REJECT("reject"),
     SUSPEND("suspend");

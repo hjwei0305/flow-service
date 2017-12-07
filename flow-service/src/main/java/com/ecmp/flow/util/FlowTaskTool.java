@@ -960,7 +960,7 @@ public class FlowTaskTool {
             newTask.setName(currTask.getName());
             newTask.setOwner(currTask.getOwner());
             newTask.setParentTaskId(currTask.getParentTaskId());
-            newTask.setPriority(currTask.getPriority());
+            newTask.setPriority(currTask.getPriority()+1);
             newTask.setTenantId(currTask.getTenantId());
             newTask.setCreateTime(new Date());
 
@@ -979,7 +979,7 @@ public class FlowTaskTool {
 
             //记录历史
             if (result.successful()) {
-                flowHistory.setTaskStatus(TaskStatus.CANCLE.toString());
+                flowHistory.setTaskStatus(TaskStatus.CANCEL.toString());
                 flowHistoryDao.save(flowHistory);
                 FlowHistory flowHistoryNew = (FlowHistory) flowHistory.clone();
                 flowHistoryNew.setId(null);
@@ -1007,6 +1007,8 @@ public class FlowTaskTool {
      *
      * @param taskId
      */
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public  void callBackRunIdentityLinkEntity(String taskId) {
         List<HistoricIdentityLink> historicIdentityLinks = historyService.getHistoricIdentityLinksForTask(taskId);
 
@@ -1062,13 +1064,14 @@ public class FlowTaskTool {
             }
             if ((nextTasks != null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
 
-                HistoricActivityInstance gateWayActivity = historyService.createHistoricActivityInstanceQuery()
+                List<HistoricActivityInstance> gateWayActivityList = historyService.createHistoricActivityInstanceQuery()
                         .processInstanceId(destnetionTask.getProcessInstanceId()).activityId(currActivity.getId())
-                        .singleResult();
-                if (gateWayActivity != null) {
-                    historyService.deleteHistoricActivityInstanceById(gateWayActivity.getId());
+                        .list();
+                if(gateWayActivityList!=null && !gateWayActivityList.isEmpty()){
+                    for(HistoricActivityInstance gateWayActivity:gateWayActivityList){
+                        historyService.deleteHistoricActivityInstanceById(gateWayActivity.getId());
+                    }
                 }
-
             }
             if (ifMultiInstance) {//多实例任务，清除父执行分支
                 ExecutionEntity pExecution = (ExecutionEntity) runtimeService.createExecutionQuery().processInstanceId(instance.getId()).activityIdNoActive(nextActivity.getId()).singleResult();
@@ -1231,7 +1234,10 @@ public class FlowTaskTool {
         if (preTask != null) {//初始化上一步的执行历史信息
             if (TaskStatus.REJECT.toString().equalsIgnoreCase(preTask.getTaskStatus())) {
                 flowTask.setTaskStatus(TaskStatus.REJECT.toString());
-            } else {
+                flowTask.setPriority(1);
+            } else if(TaskStatus.CANCEL.toString().equalsIgnoreCase(preTask.getTaskStatus())){
+                flowTask.setPriority(2);
+            }else {
                 flowTask.setPreId(preTask.getId());
             }
             flowTask.setPreId(preTask.getId());
@@ -1341,7 +1347,6 @@ public class FlowTaskTool {
                             flowTask.setExecutorAccount(executor.getCode());
                             flowTask.setExecutorId(executor.getId());
                             flowTask.setExecutorName(executor.getName());
-                            flowTask.setPriority(task.getPriority());
                             flowTask.setActType("candidate");
                             if(StringUtils.isEmpty(task.getDescription())){
                                 flowTask.setDepict("流程启动");
@@ -1349,6 +1354,7 @@ public class FlowTaskTool {
                                 flowTask.setDepict(task.getDescription());
                             }
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
@@ -1384,10 +1390,10 @@ public class FlowTaskTool {
                             flowTask.setExecutorAccount(executor.getCode());
                             flowTask.setExecutorId(executor.getId());
                             flowTask.setExecutorName(executor.getName());
-                            flowTask.setPriority(task.getPriority());
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                            flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);

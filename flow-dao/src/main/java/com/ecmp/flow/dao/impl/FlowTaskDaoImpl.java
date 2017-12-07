@@ -39,6 +39,8 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     @Autowired
     private AppModuleDao appModuleDao;
 
+    String hqlQueryOrder="   order by ft.priority desc,ft.createdDate asc ";
+
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
@@ -60,7 +62,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.createdDate desc";
+        hqlQuery+=hqlQueryOrder;
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
@@ -136,7 +138,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.createdDate desc";
+        hqlQuery+=hqlQueryOrder;
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         Long total = queryTotal.getSingleResult();
@@ -176,7 +178,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.createdDate desc";
+        hqlQuery+=hqlQueryOrder;
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         Long total = queryTotal.getSingleResult();
@@ -243,7 +245,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.createdDate desc";
+        hqlQuery+=hqlQueryOrder;
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
