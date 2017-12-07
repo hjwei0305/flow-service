@@ -47,7 +47,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             title: "全选",
             id: "batchBtn",
             handler: function () {
-                var select = this.title != "全选";
+                var select = this.title == "全选";
                 g.setBatchSelect(select);
             }
         }, {
