@@ -35,17 +35,17 @@ import java.util.List;
 @Api(value = "IBusinessModelService 业务实体服务API接口")
 public interface IBusinessModelService extends IBaseService<BusinessModel, String> {
 
-    /**
-     * 保存一个实体
-     * @param businessModel 实体
-     * @return 保存后的实体
-     */
-    @POST
-    @Path("save")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<BusinessModel> save(BusinessModel businessModel);
+//    /**
+//     * 保存一个实体
+//     * @param businessModel 实体
+//     * @return 保存后的实体
+//     */
+//    @POST
+//    @Path("save")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+//    OperateResultWithData<BusinessModel> save(BusinessModel businessModel);
 
     /**
      * 获取分页数据
