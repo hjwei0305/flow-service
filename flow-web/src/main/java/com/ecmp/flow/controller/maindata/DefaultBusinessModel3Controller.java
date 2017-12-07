@@ -317,7 +317,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<DefaultB
 //                defaultBusinessModel3.setFlowStatus(FlowStatus.COMPLETED);
 //                baseService.save(defaultBusinessModel3);
 //            }
-            operateStatus = new OperateStatus(true, operateResult.getMessage());
+            operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
         } else {
             operateStatus = new OperateStatus(false, "业务对象不存在");
         }

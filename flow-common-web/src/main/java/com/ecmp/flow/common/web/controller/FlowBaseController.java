@@ -189,7 +189,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            OperateStatus operateStatus = new OperateStatus(true, operateResult.getMessage());
+            OperateStatus operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
 
         return operateStatus;
     }
