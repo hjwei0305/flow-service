@@ -145,16 +145,38 @@ EUI.BatchApproveUserView = EUI.extend(EUI.CustomUI, {
                 selectDoms.each(function () {
                     userIds.push($(this).attr("id"));
                 });
-                submitData.push({
-                    taskIdList: taskdata.ids,
-                    flowTaskCompleteList: [{
-                        nodeId: taskdata.nodeId,
-                        userIds: userIds.join(","),
-                        flowTaskType: taskdata.flowTaskType,
-                        userVarName: taskdata.userVarName,
-                        callActivityPath: taskdata.callActivityPath
-                    }]
-                });
+
+                var  taskIdListCurrent = taskdata.ids;
+                var  flowTaskCompleteListCurrent = {
+                    nodeId: taskdata.nodeId,
+                    userIds: userIds.join(","),
+                    flowTaskType: taskdata.flowTaskType,
+                    userVarName: taskdata.userVarName,
+                    callActivityPath: taskdata.callActivityPath
+                };
+                if(submitData.length>0){
+                    var mark = true;
+                    for(var index in submitData){
+                        var taskIdList  = submitData[index].taskIdList;
+                        if(taskIdList.sort().toString()==taskIdListCurrent.sort().toString()){//a.sort().toString() == b.sort().toString()
+                            submitData[index].flowTaskCompleteList.push(flowTaskCompleteListCurrent);
+                            mark=false;
+                            break;
+                        }
+                    }
+                    if(mark){
+                        submitData.push({
+                            taskIdList: taskIdListCurrent,
+                            flowTaskCompleteList: [flowTaskCompleteListCurrent]
+                        });
+                    }
+                }else {
+                    submitData.push({
+                        taskIdList: taskIdListCurrent,
+                        flowTaskCompleteList: [flowTaskCompleteListCurrent]
+                    });
+                }
+
             }
         }
         return submitData;
