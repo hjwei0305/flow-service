@@ -565,27 +565,35 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
-    private boolean initTask(FlowInstance flowInstance){
+    private boolean initTask(FlowInstance flowInstance,Boolean force){
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
-        if(flowTaskList!=null && !flowTaskList.isEmpty()){
-            int taskCount = flowTaskList.size();
-            int index=0;
-            for(FlowTask flowTask:flowTaskList){
-                Boolean canCancel = flowTask.getCanSuspension();
-                if(canCancel!=null && canCancel){
-                    index++;
-                }
+        if(force){
+            if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                flowInstance.getFlowTasks().addAll(flowTaskList);
             }
-            if(index == taskCount){
+            canEnd=true;
+        }else{
+            if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                int taskCount = flowTaskList.size();
+                int index=0;
+                for(FlowTask flowTask:flowTaskList){
+                    Boolean canCancel = flowTask.getCanSuspension();
+                    if(canCancel!=null && canCancel){
+                        index++;
+                    }
+                }
+                if(index == taskCount){
+                    canEnd = true;
+                    if(flowInstance.getFlowTasks().isEmpty()){
+                        flowInstance.getFlowTasks().addAll(flowTaskList);
+                    }
+                }
+            }else {
                 canEnd = true;
-                if(flowInstance.getFlowTasks().isEmpty()){
-                    flowInstance.getFlowTasks().addAll(flowTaskList);
-                }
             }
-        }else {
-            canEnd = true;
         }
+
         return  canEnd;
     }
     private Map<String,FlowInstance> initAllGulianInstance(Map<String,FlowInstance> flowInstanceMap ,FlowInstance flowInstance,boolean force){
@@ -609,11 +617,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private Map<String,FlowInstance> initGulianSonInstance(  Map<String,FlowInstance> flowInstanceMapReal,FlowInstance flowInstance,boolean force){
         List<FlowInstance> children = flowInstanceDao.findByParentId(flowInstance.getId());
         boolean canEnd = false;
-        if(force){
-            canEnd=true;
-        }else{
-            canEnd = initTask(flowInstance);
-        }
+        canEnd = initTask(flowInstance,force);
         if(canEnd){
             if(flowInstanceMapReal.get(flowInstance.getId())==null){
                 flowInstanceMapReal.put(flowInstance.getId(),flowInstance);
@@ -767,7 +771,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                     callBeforeEndAndSon(flowInstance, endSign);
 
-                    this.deleteActiviti(actInstanceId, deleteReason);
+                     this.deleteActiviti(actInstanceId, deleteReason);
 
                     fTemp.setEndDate(new Date());
                     fTemp.setEnded(true);
