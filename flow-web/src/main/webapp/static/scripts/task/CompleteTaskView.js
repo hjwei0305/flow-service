@@ -122,12 +122,18 @@ EUI.CompleteTaskView = EUI.extend(EUI.CustomUI, {
         for (var j = 0; j < items.length; j++) {
             var backoutHtml = (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
                 ? '<div class="todo-btn flow-backout-btn"><i class="ecmp-flow-backout backout-icon" title="撤回"></i><span>撤回</span></div>' : "";
+            var workRemark = null;
+            if(items[j].flowInstance.businessModelRemark && items[j].flowInstance.businessModelRemark!='null'){
+                workRemark =  items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark;
+            }else {
+                workRemark =  items[j].flowInstance.businessCode;
+            }
             var itemdom = $('<div class="info-item">' +
                 '<div class="item">' +
                 '    <span class="flow-text">' + items[j].flowName + '_' + items[j].flowTaskName + '</span>' +
                 '</div>' +
                 '<div class="item flow-digest">' +
-                '   <span class="digest">' + items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '   <span class="digest">' + workRemark + '</span></span>' +
                 '</div>' +
                 '<div class="item">' +
                 '    <div class="end">' +

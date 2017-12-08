@@ -67,12 +67,16 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
+                var businessModelRemark = '';
+                if(item.businessModelRemark&&item.businessModelRemark!='null'){
+                    businessModelRemark = item.businessModelRemark;
+                }
                 html = $('<div class="info-items">' +
                     ' <div class="item">' +
                     '     <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
                     ' </div>' +
                     ' <div class="item">' +
-                    '     <div class="remark">' + item.businessModelRemark +
+                    '     <div class="remark">' + businessModelRemark +
                     '     </div>' +
                     ' </div>' +
                     ' <div class="item">' +

@@ -66,12 +66,16 @@ EUI.ProcessingOrderView = EUI.extend(EUI.CustomUI, {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
                 var endFlowHtml = item.canManuallyEnd ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
+                var businessModelRemark = '';
+                if(item.businessModelRemark&&item.businessModelRemark!='null'){
+                    businessModelRemark = item.businessModelRemark;
+                }
                 html = $('<div class="info-items">' +
                     ' <div class="item">' +
                     '     <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
                     ' </div>' +
                     ' <div class="item">' +
-                    '     <div class="remark">' + item.businessModelRemark +
+                    '     <div class="remark">' + businessModelRemark +
                     '     </div>' +
                     ' </div>' +
                     ' <div class="item">' +
