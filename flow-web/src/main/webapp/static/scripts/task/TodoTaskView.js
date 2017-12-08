@@ -189,7 +189,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <div class="end">'
                 + claimTaskHtml +
                 '                          <div class="todo-btn approve-btn"><i class="ecmp-eui-edit end-icon handle-icon-size" title="审批"></i><span>处理</span></div>'
-                +'                          <div class="todo-btn turn-to-do-btn"><i class="ecmp-flow-turn-to-do-c turn-to-do-icon handle-icon-size" title="转办"></i><span>转办</span></div>'
+                // +'                          <div class="todo-btn turn-to-do-btn"><i class="ecmp-flow-turn-to-do-c turn-to-do-icon handle-icon-size" title="转办"></i><span>转办</span></div>'
                 + rejectHtml + endFlowHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
