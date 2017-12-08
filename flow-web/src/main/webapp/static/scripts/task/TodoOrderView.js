@@ -210,7 +210,10 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-item");
             var data = itemdom.data();
-            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            var url = data.flowInstance.flowDefVersion.flowDefination.flowType.lookUrl;
+            if(!url){
+                url = data.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.lookUrl;
+            }
             var joinStr = url.indexOf("?") != -1 ? "&" : "?";
             var tab = {
                 title: "查看表单",

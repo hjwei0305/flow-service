@@ -72,6 +72,19 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowType")
     private Set<FlowDefination> flowDefinations = new LinkedHashSet<>(0);
 
+    /**
+     * 完成任务时调用的web地址
+     */
+    @Column(length = 255, name = "complete_task_service_url")
+    private String completeTaskServiceUrl;
+
+    /**
+     * 查看单据的URL
+     */
+    @Column(length = 6000,name = "look_url")
+    @Lob
+    private String lookUrl;
+
 
     public String getName() {
         return name;
@@ -135,6 +148,8 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("code", code)
                 .append("depict", depict)
                 .append("businessModel", businessModel)
+                .append("completeTaskServiceUrl", completeTaskServiceUrl)
+                .append("lookUrl", lookUrl)
                 .append("flowDefinations", flowDefinations)
                 .toString();
     }
@@ -142,5 +157,21 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public String getCompleteTaskServiceUrl() {
+        return completeTaskServiceUrl;
+    }
+
+    public void setCompleteTaskServiceUrl(String completeTaskServiceUrl) {
+        this.completeTaskServiceUrl = completeTaskServiceUrl;
+    }
+
+    public String getLookUrl() {
+        return lookUrl;
+    }
+
+    public void setLookUrl(String lookUrl) {
+        this.lookUrl = lookUrl;
     }
 }

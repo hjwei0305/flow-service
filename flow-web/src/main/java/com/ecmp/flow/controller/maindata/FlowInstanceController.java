@@ -19,6 +19,7 @@ import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.vo.OperateResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -160,7 +161,11 @@ public class FlowInstanceController {
                 myBillVO.setCreatorName(f.getCreatorName());
                 myBillVO.setCreatorId(f.getCreatorId());
                 myBillVO.setFlowName(f.getFlowName());
-                myBillVO.setLookUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl());
+                String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+                if(StringUtils.isEmpty(lookUrl)){
+                    lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                }
+                myBillVO.setLookUrl(lookUrl);
                 myBillVO.setEndDate(f.getEndDate());
                 myBillVO.setFlowInstanceId(f.getId());
                 myBillVO.setWebBaseAddress(f.getWebBaseAddress());

@@ -124,6 +124,16 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 index: "depict",
                 width:250
             }, {
+                label: 'completeTaskServiceUrl',
+                name: "completeTaskServiceUrl",
+                index: "completeTaskServiceUrl",
+                hidden: true
+            }, {
+                label:'lookUrl',
+                name: "lookUrl",
+                index: "lookUrl",
+                hidden: true
+            }, {
                 label: "businessModelId",
                 name: "businessModel.id",
                 index: "businessModel.id",
@@ -194,7 +204,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateFlowTypeText,
             iconCss: "ecmp-eui-edit",
-            height: 250,
+            height: 350,
+            width: 400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -214,8 +225,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     name: "businessModel.name",
                     field: ["businessModel.id"],
                     listWidth: 400,
-                    labelWidth: 90,
-                    width: 240,
+                    labelWidth: 120,
+                    width: 270,
                     allowBlank: false,
                     showSearch:true,
                     onSearch:function(value){
@@ -241,24 +252,38 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "code",
-                    width: 240
+                    width: 270
                 }, {
                     xtype: "TextField",
                     title: g.lang.nameText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "name",
-                    width: 240
+                    width: 270
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.completeTaskServiceUrlText,
+                    labelWidth: 120,
+                    allowBlank: true,
+                    name: "completeTaskServiceUrl",
+                    width: 270
+                }, {
+                    xtype: "TextArea",
+                    title: g.lang.lookUrlText,
+                    labelWidth: 120,
+                    allowBlank: true,
+                    name: "lookUrl",
+                    width: 270
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "depict",
-                    width: 240
+                    width: 270
                 }]
             }],
             buttons: [{
@@ -287,7 +312,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.addNewFlowTypeText,
             iconCss: "ecmp-eui-add",
-            height: 250,
+            height: 330,
+            width: 400,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -299,8 +325,8 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     name: "businessModelName",
                     field: ["businessModel.id"],
                     listWidth: 400,
-                    labelWidth: 90,
-                    width: 240,
+                    labelWidth: 120,
+                    width: 270,
                     allowBlank: false,
                     showSearch:true,
                     onSearch:function(value){
@@ -326,24 +352,38 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "TextField",
                     title: g.lang.codeText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "code",
-                    width: 240
+                    width: 270,
                 }, {
                     xtype: "TextField",
                     title: this.lang.nameText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "name",
-                    width: 240
+                    width: 270,
+                }, {
+                    xtype: "TextField",
+                    title: g.lang.completeTaskServiceUrlText,
+                    labelWidth: 120,
+                    allowBlank: true,
+                    name: "completeTaskServiceUrl",
+                    width: 270,
                 }, {
                     xtype: "TextArea",
+                    title: this.lang.lookUrlText,
+                    labelWidth: 120,
+                    allowBlank: true,
+                    name: "lookUrl",
+                    width: 270,
+                },{
+                    xtype: "TextArea",
                     title: this.lang.depictText,
-                    labelWidth: 90,
+                    labelWidth: 120,
                     allowBlank: false,
                     name: "depict",
-                    width: 240
+                    width: 270,
                 }]
             }],
             buttons: [{

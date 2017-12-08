@@ -98,7 +98,11 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                    flowTask.setApiBaseAddress(apiBaseAddress);
                    flowTask.setWebBaseAddress(webBaseAddress);
                    WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
-                   flowTask.setCompleteTaskServiceUrl(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl());
+                   String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
+                   if(StringUtils.isEmpty(completeTaskServiceUrl)){
+                       completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+                   }
+                   flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
                    if(workPageUrl!=null){
                        flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
                        flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());

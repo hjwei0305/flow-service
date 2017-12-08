@@ -145,6 +145,7 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
         $(".look-approve-btn", "#" + this.renderTo).live("click", function () {
             var itemdom = $(this).parents(".info-items");
             var data = itemdom.data();
+            console.log(data);
             var tab = {
                 title: "查看表单",
                 url: data.webBaseAddress + data.lookUrl + "?id=" + data.businessId,
