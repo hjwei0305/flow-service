@@ -172,13 +172,18 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             var nodeType = JSON.parse(items[j].taskJsonDef).nodeType;
             var claimTaskHtml = nodeType == "SingleSign" && !items[j].actClaimTime ? '<div class="todo-btn claim-btn"><i class="ecmp-common-claim claim-icon" title="签收"></i><span>签收</span></div>' : '';
             var flowInstanceCreatorId = items[j].flowInstance ? items[j].flowInstance.creatorId : "";
-            var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon icon-size" title="终止"></i><span>终止</span></div>' : '';
-            var itemdom = $('<div class="info-item">' +
+            var workRemark = null;
+            if(items[j].flowInstance.businessModelRemark && items[j].flowInstance.businessModelRemark!='null'){
+                workRemark =  items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark;
+            }else {
+                workRemark =  items[j].flowInstance.businessCode;
+            }
+            var endFlowHtml = items[j].canSuspension && flowInstanceCreatorId == items[j].executorId ? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon icon-size" title="终止"></i><span>终止</span></div>' : '';var itemdom = $('<div class="info-item">' +
                 '                 <div class="item">' +
                 '                     <span class="flow-text">' + items[j].flowName + '_' + items[j].taskName + '</span>' +
                 '                 </div>' +
                 '                 <div class="item flow-digest">' +
-                '                     <span class="digest">' + items[j].flowInstance.businessCode + '-' + items[j].flowInstance.businessModelRemark + '</span></span>' +
+                '                     <span class="digest">' + workRemark + '</span></span>' +
                 '                 </div>' +
                 '                 <div class="item operation">' +
                 '                     <div class="end">'

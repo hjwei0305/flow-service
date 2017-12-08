@@ -771,7 +771,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                     callBeforeEndAndSon(flowInstance, endSign);
 
-                     this.deleteActiviti(actInstanceId, deleteReason);
+                    this.deleteActiviti(actInstanceId, deleteReason);
 
                     fTemp.setEndDate(new Date());
                     fTemp.setEnded(true);
