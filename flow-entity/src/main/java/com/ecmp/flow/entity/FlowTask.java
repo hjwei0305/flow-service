@@ -296,6 +296,18 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(name = "can_mobile")
     private Boolean canMobile;
 
+    /**
+     * 是被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态或者委托完成为null
+     */
+    @Column(name = "trust_state")
+    private Integer trustState;
+
+    /**
+     * 被委托的任务id
+     */
+    @Column(name = "trust_owner_taskId")
+    private String trustOwnerTaskId;
+
     public FlowTask() {
     }
 
@@ -367,19 +379,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     public void setActTaskDefKey(String actTaskDefKey) {
         this.actTaskDefKey = actTaskDefKey;
     }
-
-//    public String getTaskFormUrl() {
-//        String taskFormUrl =null;
-//        WorkPageUrl workPageUrl = this.getWorkPageUrl();
-//        if(workPageUrl!=null){
-//             taskFormUrl = workPageUrl.getUrl();
-//        }
-//        return taskFormUrl;
-//    }
-
-//    public void setTaskFormUrl(String taskFormUrl) {
-//        this.taskFormUrl = taskFormUrl;
-//    }
 
     public String getTaskStatus() {
         return this.taskStatus;
@@ -611,6 +610,8 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
+                .append("depict", trustState)
+                .append("depict", trustOwnerTaskId)
                 .toString();
     }
 
@@ -701,19 +702,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.canMobile = canMobile;
     }
 
-//    public String getWebBaseAddressAbsolute() {
-//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-//    }
-//
-//    public String getApiBaseAddressAbsolute() {
-//        FlowInstance flowInstance = this.getFlowInstance();
-//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-//    }
-//
-//    public String getCompleteTaskServiceUrl() {
-//        return this.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
-//    }
-
     public WorkPageUrl getWorkPageUrl() {
         return workPageUrl;
     }
@@ -762,5 +750,21 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setTaskFormUrl(String taskFormUrl) {
         this.taskFormUrl = taskFormUrl;
+    }
+
+    public Integer getTrustState() {
+        return trustState;
+    }
+
+    public void setTrustState(Integer trustState) {
+        this.trustState = trustState;
+    }
+
+    public String getTrustOwnerTaskId() {
+        return trustOwnerTaskId;
+    }
+
+    public void setTrustOwnerTaskId(String trustOwnerTaskId) {
+        this.trustOwnerTaskId = trustOwnerTaskId;
     }
 }

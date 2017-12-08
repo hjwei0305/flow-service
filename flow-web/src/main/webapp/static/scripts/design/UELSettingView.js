@@ -70,6 +70,14 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 onChecked: function (value) {
                     g.setDefault(value);
                 }
+            },{
+                xtype: "TextField",
+                name: "code",
+                id: "nodeFlowCode",
+                title: "代码",
+                labelWidth: 50,
+                width: 100,
+                value: this.data ? this.data.code : ""
             }]
         };
     },
@@ -96,11 +104,13 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
             selected: true,
             handler: function () {
                 var name, isDefault = false;
+                var code='';
                 if (g.showName) {
                     var formPanel = EUI.getCmp("uelform");
                     var headData = formPanel.getFormValue();
                     isDefault = headData.isDefault;
                     name = headData.name;
+                    code = headData.code;
                     if (!headData.name) {
                         EUI.ProcessStatus({
                             success: false,
@@ -120,6 +130,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                 if((!g.isDefault&&!logicUel&&!g.showName)||g.isDefault){
                     var data = {
                         name: name,
+                        code:code,
                         isDefault: isDefault,
                         logicUel:logicUel ,
                         groovyUel: g.groovyUelCmp.getValue()
@@ -141,6 +152,7 @@ EUI.UELSettingView = EUI.extend(EUI.CustomUI, {
                         myMask.hide();
                         var data = {
                             name: name,
+                            code:code,
                             isDefault: isDefault,
                             logicUel:logicUel ,
                             groovyUel: g.groovyUelCmp.getValue()

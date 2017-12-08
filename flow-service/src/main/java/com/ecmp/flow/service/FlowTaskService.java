@@ -39,6 +39,7 @@ import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.ProcessElementImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,6 +298,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (reject != null && reject == 1) {
             flowTask.setDepict("【被驳回】" + flowTask.getDepict());
             flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+            flowTask.setPriority(1);
         } else {
             flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
         }
@@ -1212,11 +1214,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask,newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,false);//转办后先不允许撤回
-                flowHistory.setDepict("【被转办给："+executor.getName()+"】");
-                taskService.setAssignee(taskId, executor.getId());
-                flowHistoryDao.save(flowHistory);
-                flowTaskDao.delete(flowTask);
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true);//转办后先允许撤回
+                flowHistory.setDepict("【被转办给：“"+executor.getName()+"”】");
+
                 newFlowTask.setId(null);
                 newFlowTask.setExecutorId(executor.getId());
                 newFlowTask.setExecutorAccount(executor.getCode());
@@ -1225,6 +1225,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setOwnerName(executor.getName());
                 newFlowTask.setOwnerAccount(executor.getCode());
                 newFlowTask.setPreId(flowHistory.getId());
+                newFlowTask.setTrustState(0);
+                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + flowTask.getDepict());
+                taskService.setAssignee(taskId, executor.getId());
+                flowHistoryDao.save(flowHistory);
+                flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
                 result = OperateResult.operationSuccess();
             }else{
@@ -1236,7 +1241,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    public OperateResult taskTrustToDo(String taskId,String userId){
+    public OperateResult taskTrustToDo(String taskId,String userId) throws Exception{
         OperateResult result =  null;
         FlowTask flowTask = flowTaskDao.findOne(taskId);
         if(flowTask!=null){
@@ -1249,15 +1254,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask,newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,false); //转办后先不允许撤回
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true); //委托后先允许撤回
                 flowHistory.setDepict("【被委托给："+executor.getName()+"】");
-                flowHistoryDao.save(flowHistory);
-                flowTaskDao.delete(flowTask);
+
                 newFlowTask.setId(null);
                 newFlowTask.setExecutorId(executor.getId());
                 newFlowTask.setExecutorAccount(executor.getCode());
                 newFlowTask.setExecutorName(executor.getName());
                 newFlowTask.setPreId(flowHistory.getId());
+                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”委托】" + flowTask.getDepict());
+                flowHistoryDao.save(flowHistory);
+                flowTask.setTrustState(1);
+                newFlowTask.setTrustState(2);
+                newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+                flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
                 result = OperateResult.operationSuccess();
             }else{
