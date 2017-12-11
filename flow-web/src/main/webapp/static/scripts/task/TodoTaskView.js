@@ -63,6 +63,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         }, {
             xtype: "ComboBox",
             name: "businessModelName",
+            // tpl:'<tpl for="."><div class="x-combo-list-item">{businessModelName}:{count}</div></tpl>',
             displayText: "筛选",
             async: false,
             store: {

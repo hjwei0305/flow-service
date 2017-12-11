@@ -149,7 +149,11 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                     name: "businessId",
                     index: "businessId",
                     hidden: true
-                }, {
+                },{
+                    name: "webBaseAddress",
+                    index: "webBaseAddress",
+                    hidden: true
+                },{
                     label: g.lang.flowNameText,
                     name: "flowName",
                     index: "flowName",
@@ -235,7 +239,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             }
             var tab = {
                 title: g.lang.viewOrderText,
-                url: _basePath + "/brm-act-service/"+lookUrl + "?id=" + data.businessId,
+                url: _basePath + data.webBaseAddress+lookUrl + "?id=" + data.businessId,
                 id: data.businessId
             };
             g.addTab(tab);

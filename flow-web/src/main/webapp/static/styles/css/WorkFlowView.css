@@ -38,7 +38,8 @@
 }
 
 .flow-task:hover {
-    box-shadow: 0 0 6px #aaa;
+    box-shadow: 0 0 6px #4487e5;
+    border: 2px solid #4487e5;
 }
 
 .flow-item-title {
@@ -56,8 +57,8 @@
 }
 
 .flow-task {
-    background: #fefed9 none repeat scroll 0 0;
-    border: 1px solid #45b7ff;
+    background: #f7fbff  none repeat scroll 0 0;
+    border: 2px solid #cdcdcd;
     border-radius: 4px;
     display: inline-block;
     height: 50px;
@@ -94,8 +95,8 @@
 .flow-event-start {
     background: url("../images/flow_start.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 35px;
-    width: 35px;
+    height: 45px;
+    width: 45px;
     vertical-align: middle;
 }
 
@@ -146,21 +147,21 @@
 .parallelgateway {
     background: url("../images/flow_gateway_sync.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 48px;
-    width: 48px;
+    height: 53px;
+    width: 53px;
 }
 
 .parallelgateway:hover {
     background: url("../images/flow_gateway_sync_select.png") no-repeat scroll 0 0/cover;
-    height: 51px;
-    width: 51px;
+    height: 53px;
+    width: 53px;
 }
 
 .exclusivegateway {
     background: url("../images/flow_gateway_fork.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 48px;
-    width: 48px;
+    height: 53px;
+    width: 53px;
 }
 
 .exclusivegateway:hover {
@@ -172,8 +173,8 @@
 .inclusivegateway {
     background: url("../images/flow_gateway_condition.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 48px;
-    width: 48px;
+    height: 53px;
+    width: 53px;
 }
 
 .inclusivegateway:hover {
@@ -185,8 +186,8 @@
 .eventgateway {
     background: url("../images/flow_gateway_event.png") no-repeat scroll 0 0/cover;
     display: inline-block;
-    height: 48px;
-    width: 48px;
+    height: 53px;
+    width: 53px;
 }
 
 .eventgateway:hover {
@@ -198,26 +199,56 @@
 .flow-task .usertask {
     background: url("../images/flow_task_user.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 16px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .usertask {
+    background: url("../images/flow_task_user_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .singletask {
     background: url("../images/singletask.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 22px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .singletask {
+    background: url("../images/singletask_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .countertask {
     background: url("../images/countertask.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 24px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .countertask {
+    background: url("../images/countertask_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .serial-countertask::before {
     background: url("../images/flow_serial_task.png") no-repeat scroll 0 0 / cover;
+    content: "";
+    float: left;
+    height: 12px;
+    margin-left: -28px;
+    width: 12px;
+}
+
+.currentNode .serial-countertask::before {
+    background: url("../images/flow_serial_task_currentNode.png") no-repeat scroll 0 0 / cover !important;
     content: "";
     float: left;
     height: 12px;
@@ -234,11 +265,27 @@
     width: 12px;
 }
 
+.flow-task .parallel-countertask::before {
+    background: url("../images/flow_parallel_task_currentNode.png") no-repeat scroll 0 0 / cover !important;
+    content: "";
+    float: left;
+    height: 12px;
+    margin-left: -28px;
+    width: 12px;
+}
+
 .flow-task .servicetask {
-    background: url("../images/flow_task_service.png") no-repeat;
+    background: url("../images/flow_task_service.png") no-repeat !important;
     display: inline-block;
-    height: 20px;
-    width: 27px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .servicetask {
+    background: url("../images/flow_task_service_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .emailtask {
@@ -258,36 +305,71 @@
 .flow-task .manualtask {
     background: url("../images/flow_task_man.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 18px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .manualtask {
+    background: url("../images/flow_task_man_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .approvetask {
     background: url("../images/flow_approve_task.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 20px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .approvetask {
+    background: url("../images/flow_approve_task_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .paralleltask {
     background: url("../images/flow_parallel_task.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 20px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .paralleltask {
+    background: url("../images/flow_parallel_task_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .serialtask {
     background: url("../images/flow_serial_task.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 22px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .serialtask {
+    background: url("../images/flow_serial_task_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .receiveTask {
-    background: url("../images/flow_task_mail.png") no-repeat;
+    background: url("../images/flow_task_receive.png") no-repeat;
     display: inline-block;
-    height: 20px;
-    width: 24px;
+    height: 25px;
+    width: 25px;
+}
+
+.currentNode .receiveTask {
+    background: url("../images/flow_task_receive_currentNode.png") no-repeat !important;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
 }
 
 .flow-task .callActivity {
@@ -295,7 +377,7 @@
     /*display: inline-block;*/
     /*height: 20px;*/
     /*width: 20px;*/
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .flow-task[type="CallActivity"] {
@@ -502,6 +584,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-top: -5px;
 }
 
 .node-choosed .node-title {
@@ -640,9 +723,9 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 }
 
 .flow-content .currentNode {
-    background: lightgreen none repeat scroll 0 0;
-    border: 1px solid green;
-    box-shadow: 0 0 8px lightgreen;
+    background: #4587e5 none repeat scroll 0 0;
+    border: 1px solid #4587e5;
+    box-shadow: 0 0 8px #4587e5;
     color: white;
 }
 

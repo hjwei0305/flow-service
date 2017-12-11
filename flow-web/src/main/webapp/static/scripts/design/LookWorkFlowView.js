@@ -204,7 +204,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             connectorHoverStyle: {
                 strokeWidth: 3,
                 stroke: "#216477",
-                outlineWidth: 5,
+                outlineWidth: 2,
                 outlineStroke: "white"
             },
             connectionType: "basic"

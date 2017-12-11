@@ -959,7 +959,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 cornerRadius: 0
             }],
             connectorStyle: {
-                stroke: "#61B7CF",
+                stroke: "#c7c7c7",
                 strokeWidth: 2,
                 joinstyle: "round",
                 outlineStroke: "white",

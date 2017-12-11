@@ -986,7 +986,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
                 todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
                 todoBusinessSummaryVO.setCount(map.getValue());
-                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName()+"("+map.getValue()+")");
                 voList.add(todoBusinessSummaryVO);
             }
         }
