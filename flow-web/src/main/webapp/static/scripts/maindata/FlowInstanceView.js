@@ -118,7 +118,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
                 id:"searchBox",
                 displayText: g.lang.searchByNameText,
                 onSearch: function (value) {
-                    g.getFlowInstance();
+                    g.getFlowInstance(true);
                 }
             }];
     },
@@ -351,7 +351,7 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             }]
         });
     },
-    getFlowInstance:function () {
+    getFlowInstance:function (isSearch) {
       var g=this;
         g.gridCmp.grid[0].p.postData={};
         var postData={
@@ -365,12 +365,16 @@ EUI.FlowInstanceView = EUI.extend(EUI.CustomUI, {
             postData["Q_EQ_manuallyEnd__Boolean"]=false;
             postData["Q_EQ_ended__Boolean"]=false;
         }
-        g.gridCmp.setGridParams({
+        var params = {
             url: _ctxPath + "/flowInstance/listFlowInstance",
             loadonce: false,
             datatype: "json",
             postData:postData
-        }, true)
+        };
+        if(isSearch){
+            params.page = 1;
+        }
+        g.gridCmp.setGridParams(params, true)
     },
     initWindTbar: function () {
         var g = this;
