@@ -486,20 +486,38 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         $(".flow-content > .flow-node>.delete-node").live("click", function (e) {
             var dom = $(this).parent(".flow-node");
-            g.instance.detachAllConnections(dom);
-            var sourceId = dom.attr("id");
-            for (var key in g.connectInfo) {
-                if (key.indexOf(sourceId) != -1) {
-                    delete g.connectInfo[key];
-                }
-            }
-            for (var key in g.uelInfo) {
-                if (key.indexOf(sourceId) != -1) {
-                    delete g.uelInfo[key];
-                }
-            }
-            dom.remove();
-            e.stopPropagation();
+            var mes = EUI.MessageBox({
+                title: g.lang.hintText,
+                msg: "确认删除？",
+                buttons: [{
+                    title: g.lang.cancelText,
+                    handler: function () {
+                        mes.remove();
+                    }
+                },{
+                    title: g.lang.okText,
+                    selected:true,
+                    handler: function () {
+                        mes.remove();
+                        g.instance.detachAllConnections(dom);
+                        var sourceId = dom.attr("id");
+                        for (var key in g.connectInfo) {
+                            if (key.indexOf(sourceId) != -1) {
+                                delete g.connectInfo[key];
+                            }
+                        }
+                        for (var key in g.uelInfo) {
+                            if (key.indexOf(sourceId) != -1) {
+                                delete g.uelInfo[key];
+                            }
+                        }
+                        dom.remove();
+                        e.stopPropagation();
+                    }
+                }]
+            });
+
+
         });
         $(".flow-content > .flow-node").die().live({
             "mouseleave": function () {
