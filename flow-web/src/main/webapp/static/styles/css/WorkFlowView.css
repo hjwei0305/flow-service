@@ -239,7 +239,7 @@
 }
 
 .flow-task .serial-countertask::before {
-    background: url("../images/flow_serial_task.png") no-repeat scroll 0 0 / cover;
+    background: url("../images/flow_serial_task_title.png") no-repeat scroll 0 0 / cover;
     content: "";
     float: left;
     height: 12px;
@@ -248,7 +248,7 @@
 }
 
 .currentNode .serial-countertask::before {
-    background: url("../images/flow_serial_task_currentNode.png") no-repeat scroll 0 0 / cover !important;
+    background: url("../images/flow_serial_task_title_currentNode.png") no-repeat scroll 0 0 / cover !important;
     content: "";
     float: left;
     height: 12px;
@@ -257,7 +257,7 @@
 }
 
 .flow-task .parallel-countertask::before {
-    background: url("../images/flow_parallel_task.png") no-repeat scroll 0 0 / cover;
+    background: url("../images/flow_parallel_task_title.png") no-repeat scroll 0 0 / cover;
     content: "";
     float: left;
     height: 12px;
@@ -265,8 +265,8 @@
     width: 12px;
 }
 
-.flow-task .parallel-countertask::before {
-    background: url("../images/flow_parallel_task_currentNode.png") no-repeat scroll 0 0 / cover !important;
+.currentNode .parallel-countertask::before {
+    background: url("../images/flow_parallel_task_title_currentNode.png") no-repeat scroll 0 0 / cover !important;
     content: "";
     float: left;
     height: 12px;
