@@ -596,30 +596,30 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
-            nodeInfo.setUiType("radiobox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("common");
         } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
-            nodeInfo.setUiType("checkbox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("singleSign");
         } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
-            nodeInfo.setUiType("radiobox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("approve");
         } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
-            nodeInfo.setUiType("checkbox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("countersign");
         } else if ("ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType()) || "SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
-            nodeInfo.setUiType("checkbox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType(userTaskTemp.getNodeType());
         } else if ("ServiceTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {//服务任务
             ServiceTask serviceTaskTemp = (ServiceTask) JSONObject.toBean(currentNode, ServiceTask.class);
             nodeInfo.setName(serviceTaskTemp.getName());
             nodeInfo.setType(serviceTaskTemp.getType());
             nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
-            nodeInfo.setUiType("radiobox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             Map<String,Object> params = new HashMap();
@@ -636,7 +636,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setName(receiveTaskTemp.getName());
             nodeInfo.setType(receiveTaskTemp.getType());
             nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
-            nodeInfo.setUiType("radiobox");
+            nodeInfo.setUiType("readOnly");
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             Map<String,Object> params = new HashMap();

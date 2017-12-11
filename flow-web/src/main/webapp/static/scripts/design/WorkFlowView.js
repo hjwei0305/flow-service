@@ -734,9 +734,25 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 events: {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
-                        delete g.uelInfo[connection.sourceId + "," + connection.targetId];
-                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
-                        g.instance.detach(connection);
+                        var mes = EUI.MessageBox({
+                            title: g.lang.hintText,
+                            msg: '确认删除？',
+                            buttons: [{
+                                title: g.lang.cancelText,
+                                handler: function () {
+                                    mes.remove();
+                                }
+                            },{
+                                title: g.lang.okText,
+                                selected:true,
+                                handler: function () {
+                                    mes.remove();
+                                    delete g.uelInfo[connection.sourceId + "," + connection.targetId];
+                                    delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                                    g.instance.detach(connection);
+                                }
+                            }]
+                        });
                     }
                 }
             }]],
