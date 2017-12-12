@@ -490,6 +490,11 @@ public class FlowTaskTool {
             }
             else   if("CallActivity".equalsIgnoreCase(nextActivtityType)){
                 nodeInfoList =  getCallActivityNodeInfo(flowTask,firstActivity.getId(),nodeInfoList);
+                if(nodeInfoList!=null && !nodeInfoList.isEmpty()){
+                    for(NodeInfo nodeInfo :nodeInfoList){
+                        nodeInfo.setUiType("readOnly");
+                    }
+                }
             }
             else if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType)) {// 排他网关，radiobox,有且只能选择一个
                 if (this.checkManualExclusiveGateway(flowTask, firstActivity.getId())) {//如果人工网关

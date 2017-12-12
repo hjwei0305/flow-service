@@ -289,7 +289,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items = items.concat([{
                 title: "默认意见",
                 labelWidth: 100,
-                name: "defaultOpinion",
+                name: "",
                 maxlength: 80
             }]);
         }
