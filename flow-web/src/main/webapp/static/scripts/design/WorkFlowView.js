@@ -341,7 +341,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     + "</div></div>";
             }
         }
-        html += "</div><div class='flow-item-space' style='display:none;'></div></div>";
+        html += "</div><div class='flow-item-space'></div></div>";
         return html;
     },
     initGatewayNode: function (gateways) {
@@ -367,7 +367,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     + "</div></div>";
             }
         }
-        html += "</div><div class='flow-item-space' style='display:none;'></div></div>";
+        html += "</div><div class='flow-item-space'></div></div>";
         return html;
     },
     getCenterHtml: function () {
@@ -734,25 +734,27 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 events: {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
-                        var mes = EUI.MessageBox({
-                            title: g.lang.hintText,
-                            msg: '确认删除？',
-                            buttons: [{
-                                title: g.lang.cancelText,
-                                handler: function () {
-                                    mes.remove();
-                                }
-                            },{
-                                title: g.lang.okText,
-                                selected:true,
-                                handler: function () {
-                                    mes.remove();
-                                    delete g.uelInfo[connection.sourceId + "," + connection.targetId];
-                                    delete g.connectInfo[connection.sourceId + "," + connection.targetId];
-                                    g.instance.detach(connection);
-                                }
-                            }]
-                        });
+                        if(g.connectInfo && g.connectInfo[connection.sourceId + "," + connection.targetId]){
+                            var mes = EUI.MessageBox({
+                                title: g.lang.hintText,
+                                msg: '确认删除？',
+                                buttons: [{
+                                    title: g.lang.cancelText,
+                                    handler: function () {
+                                        mes.remove();
+                                    }
+                                },{
+                                    title: g.lang.okText,
+                                    selected:true,
+                                    handler: function () {
+                                        mes.remove();
+                                        delete g.uelInfo[connection.sourceId + "," + connection.targetId];
+                                        delete g.connectInfo[connection.sourceId + "," + connection.targetId];
+                                        g.instance.detach(connection);
+                                    }
+                                }]
+                            });
+                        }
                     }
                 }
             }]],
