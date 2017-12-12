@@ -162,7 +162,10 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 //                        Map serviceCallResult = JsonUtils.fromJson(serviceCallResultStr,Map.class);
 //                        serviceVariables.putAll(serviceCallResult);
 //                    }
-                    flowHistory.setActEndTime(new Date());
+                    Calendar c = new GregorianCalendar();
+                    c.setTime(new Date());
+                    c.add(Calendar.SECOND,10);
+                    flowHistory.setActEndTime(c.getTime());//服务任务，默认延后10S
                     flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
                     if(flowHistory.getActDurationInMillis() == null){
                         Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
