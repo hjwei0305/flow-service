@@ -873,6 +873,44 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         //delete删除连线
         this.instance.bind("mouseover", function (connection) {
             connection.getOverlay("delete").show();
+
+            //连接即显示同意不同意
+            if (g.connectInfo[connection.sourceId + "," + connection.targetId]) {
+                // jsPlumb.detach(connection);
+                return;
+            }
+            var busType = $("#" + connection.sourceId).attr("bustype");
+            if (busType == "ExclusiveGateway" || busType == "InclusiveGateway") {
+                    var overlay = connection.getOverlay("label");
+                    overlay.setLabel("默认");
+                    $(overlay.canvas).attr("title", "默认");
+                    overlay.show();
+            } else {
+                    var nodeType = $("#" + connection.sourceId).attr("nodetype");
+                    if (nodeType == "Approve") {
+                        var result = g.getApproveLineInfo(connection.sourceId);
+                        var name = "同意", agree = true;
+                        if (result == 0) {
+                            name = "不同意";
+                            agree = false;
+                        }
+                        var overlay = connection.getOverlay("label");
+                        overlay.setLabel(name);
+                        $(overlay.canvas).attr("title", name);
+                        overlay.show();
+                    } else if (nodeType == "CounterSign") {
+                        var result = g.getApproveLineInfo(connection.sourceId);
+                        var name = "通过", agree = true;
+                        if (result == 0) {
+                            name = "未通过";
+                            agree = false;
+                        }
+                        var overlay = connection.getOverlay("label");
+                        overlay.setLabel(name);
+                        $(overlay.canvas).attr("title", name);
+                        overlay.show();
+                    }
+            }
         });
         this.instance.bind("mouseout", function (connection) {
             connection.hideOverlay("delete");
