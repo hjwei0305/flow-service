@@ -16,6 +16,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     isFromVersion: false,//流程定义版本参考创建（true）
     businessModelId: null,//业务实体ID
     businessModelCode: null,//业务实体Code
+    gDeleteConnectionId:null,//删除节点提示的标记，预防事件重发
 
     initComponent: function () {
         var g = this;
@@ -486,6 +487,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         });
         $(".flow-content > .flow-node>.delete-node").live("click", function (e) {
             var dom = $(this).parent(".flow-node");
+            var sourceId = dom.attr("id");
+            if(!sourceId){
+                dom = $(this);
+            }
             var mes = EUI.MessageBox({
                 title: g.lang.hintText,
                 msg: "确认删除？",
@@ -589,20 +594,37 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             "keyup": function (e) {
                 var code = e.keyCode || e.charCode;
                 if (code == 46) {
-                    g.instance.detachAllConnections($(this));
-                    var sourceId = $(this).attr("id");
-                    for (var key in g.connectInfo) {
-                        if (key.indexOf(sourceId) != -1) {
-                            delete g.connectInfo[key];
-                        }
-                    }
-                    for (var key in g.uelInfo) {
-                        if (key.indexOf(sourceId) != -1) {
-                            delete g.uelInfo[key];
-                        }
-                    }
-                    $(this).remove();
-                    e.stopPropagation();
+                    var dom = $(this);
+                    var mes = EUI.MessageBox({
+                        title: g.lang.hintText,
+                        msg: "确认删除？",
+                        buttons: [{
+                            title: g.lang.cancelText,
+                            handler: function () {
+                                mes.remove();
+                            }
+                        },{
+                            title: g.lang.okText,
+                            selected:true,
+                            handler: function () {
+                                mes.remove();
+                                g.instance.detachAllConnections(dom);
+                                var sourceId = dom.attr("id");
+                                for (var key in g.connectInfo) {
+                                    if (key.indexOf(sourceId) != -1) {
+                                        delete g.connectInfo[key];
+                                    }
+                                }
+                                for (var key in g.uelInfo) {
+                                    if (key.indexOf(sourceId) != -1) {
+                                        delete g.uelInfo[key];
+                                    }
+                                }
+                                dom.remove();
+                                e.stopPropagation();
+                            }
+                        }]
+                    });
                 }
             },
             "dblclick": function () {
@@ -649,6 +671,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             }
         });
         $(".jtk-connector").live("keyup", function (e) {
+            var code = e.keyCode || e.charCode;
+            if (code == 46) {
+                g.instance.detachAllConnections($(this));
+                $(this).remove();
+                e.stopPropagation();
+            }
+        });
+        $(".node-delete").live("keyup", function (e) {
             var code = e.keyCode || e.charCode;
             if (code == 46) {
                 g.instance.detachAllConnections($(this));
@@ -734,6 +764,11 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 events: {
                     click: function (overlay, originalEvent) {
                         var connection = overlay.component;
+                        if(g.gDeleteConnectionId){
+                            return;
+                        }else{
+                            g.gDeleteConnectionId = connection.id;
+                        }
                         if(g.connectInfo && g.connectInfo[connection.sourceId + "," + connection.targetId]){
                             var mes = EUI.MessageBox({
                                 title: g.lang.hintText,
@@ -741,6 +776,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                 buttons: [{
                                     title: g.lang.cancelText,
                                     handler: function () {
+                                        g.gDeleteConnectionId = null;
                                         mes.remove();
                                     }
                                 },{
@@ -748,6 +784,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                                     selected:true,
                                     handler: function () {
                                         mes.remove();
+                                        g.gDeleteConnectionId = null;
                                         delete g.uelInfo[connection.sourceId + "," + connection.targetId];
                                         delete g.connectInfo[connection.sourceId + "," + connection.targetId];
                                         g.instance.detach(connection);
