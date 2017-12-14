@@ -329,7 +329,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         String orgCode =orgParentCodeList.get(level);
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(), orgCode);
-        Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
+//        Boolean ifAllNoStartUel = true;//是否所有的流程定义未配置启动UEL
         if (flowDefinationList != null && flowDefinationList.size() > 0) {
 
             for (FlowDefination flowDefination : flowDefinationList) {
@@ -338,7 +338,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     JSONObject startUelObject = JSONObject.fromObject(startUelStr);
                     String conditionText = startUelObject.getString("groovyUel");
                     if (StringUtils.isNotEmpty(conditionText)) {
-                        ifAllNoStartUel = false;
+//                        ifAllNoStartUel = false;
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
@@ -361,12 +361,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             }
                         }
                     }
-
+                }else{
+                    if(finalFlowDefination == null){
+                        finalFlowDefination = flowDefination;
+                    }
                 }
             }
-            if (ifAllNoStartUel) {
-                finalFlowDefination = flowDefinationList.get(0);
-            }
+//            if (ifAllNoStartUel) {
+//                finalFlowDefination = flowDefinationList.get(0);
+//            }
         }
         if (finalFlowDefination == null) {//同级组织机构找不到符合条件流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;

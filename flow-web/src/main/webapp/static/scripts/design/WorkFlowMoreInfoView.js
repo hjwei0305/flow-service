@@ -35,6 +35,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     title: "优先级",
                     labelWidth: 90,
                     allowNegative: false,
+                    allowBlank:false,
                     width: 181,
                     value:0,
                     name: "priority"
@@ -234,6 +235,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
         EUI.getCmp("beforeEnd").store.params.busModelId = businessModelId;
         EUI.getCmp("afterEnd").store.params.busModelId = businessModelId;
         this.reset();
+        this.form.getCmpByName("priority").setValue(0);
     }
 })
 ;
