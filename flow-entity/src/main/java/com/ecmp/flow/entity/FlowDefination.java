@@ -70,7 +70,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	/**
 	 * 启动条件UEL
 	 */
-	@Column(name = "start_uel")
+	@Column(name = "start_uel",length = 6000)
 	private String startUel;
 
 	/**

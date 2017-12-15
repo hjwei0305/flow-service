@@ -69,7 +69,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 启动条件UEL
      */
-    @Column(name = "start_uel")
+    @Column(name = "start_uel",length = 6000)
     private String startUel;
 
     /**
