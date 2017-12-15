@@ -1,17 +1,15 @@
 /**
  * 流程设计界面
  */
-EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
+EUI.LookWorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
     renderTo: "moreinfo",
-    isCopy: false,//参考创建
-    isFromVersion: false,//流程定义版本参考创建（true）
     businessModelId: null,
     businessModelCode: null,
     afterConfirm: null,
     afterCancel: null,
     startUEL: null,
-    parent: null,
     width:875,
+    parent:null,
 
     initComponent: function () {
         var g = this;
@@ -36,14 +34,14 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     title: "优先级",
                     labelWidth: 90,
                     allowNegative: false,
-                    allowBlank:false,
                     width: 181,
-                    value:0,
+                    readonly: true,
                     name: "priority"
                 }, {
                     xtype: "CheckBox",
                     title: "允许为子流程",
                     labelWidth: 110,
+                    readonly: true,
                     name: "subProcess"
                 }]
             }, {
@@ -51,6 +49,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "ComboBox",
                     title: "启动前事件",
+                    readonly: true,
                     id: "beforeStart",
                     name: "beforeStartServiceName",
                     field: ["beforeStartServiceId"],
@@ -72,6 +71,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "ComboBox",
                     title: "启动后事件",
+                    readonly: true,
                     id: "afterStart",
                     loadonce:false,
                     name: "afterStartServiceName",
@@ -91,6 +91,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                 }, {
                     xtype: "CheckBox",
                     title: "异步调用",
+                    readonly: true,
                     labelFirst: false,
                     name: "afterStartServiceAync"
                 }]
@@ -99,6 +100,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     xtype: "ComboBox",
                     title: "结束前事件",
                     id: "beforeEnd",
+                    readonly: true,
                     loadonce:false,
                     name: "beforeEndServiceName",
                     field: ["beforeEndServiceId"],
@@ -119,6 +121,7 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                 items: [{
                     xtype: "ComboBox",
                     title: "结束后事件",
+                    readonly: true,
                     id: "afterEnd",
                     loadonce:false,
                     name: "afterEndServiceName",
@@ -142,30 +145,10 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
                     readonly: true,
                     title: "启动条件",
                     labelWidth: 90,
-                    width: 322,
+                    width: 302,
                     submitName: false,
                     id: "startUEL",
                     name: "logicUel"
-                }, {
-                    xtype: "Label",
-                    content: "<span class='ecmp-eui-setting'></span>",
-                    style: {
-                        cursor: "pointer"
-                    },
-                    onClick: function () {
-                        new EUI.UELSettingView({
-                            title: "流程启动条件",
-                            data: g.startUEL,
-                            showName: false,
-                            businessModelId: g.businessModelId,
-                            businessModelCode: g.businessModelCode,
-                            flowTypeId: EUI.getCmp("formPanel").getFormValue().flowTypeId,
-                            afterConfirm: function (data) {
-                                EUI.getCmp("startUEL").setValue(data.logicUel);
-                                g.startUEL = data;
-                            }
-                        });
-                    }
                 }]
             }, this.initTbar()]
         });
@@ -179,21 +162,8 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
             xtype: "ToolBar",
             items: ["->", {
                 xtype: "Button",
-                title: "取消",
+                title: "收起",
                 handler: function () {
-                    g.hide();
-                    g.afterCancel && g.afterCancel.call(g);
-                    g.parent.moreShow=false;
-                }
-            }, {
-                xtype: "Button",
-                title: "确定",
-                selected: true,
-                handler: function () {
-                    var data = g.getData();
-                    if (data) {
-                        g.afterConfirm && g.afterConfirm.call(g, data);
-                    }
                     g.hide();
                     g.parent.moreShow=false;
                 }
@@ -229,16 +199,6 @@ EUI.WorkFlowMoreInfoView = EUI.extend(EUI.CustomUI, {
             data.logicUel = data.startUEL.logicUel;
         }
         this.form.loadData(data);
-    },
-    updateParams: function (businessModelId, businessModelCode) {
-        this.businessModelId = businessModelId;
-        this.businessModelCode = businessModelCode;
-        EUI.getCmp("beforeStart").store.params.busModelId = businessModelId;
-        EUI.getCmp("afterStart").store.params.busModelId = businessModelId;
-        EUI.getCmp("beforeEnd").store.params.busModelId = businessModelId;
-        EUI.getCmp("afterEnd").store.params.busModelId = businessModelId;
-        this.reset();
-        this.form.getCmpByName("priority").setValue(0);
     }
 })
 ;

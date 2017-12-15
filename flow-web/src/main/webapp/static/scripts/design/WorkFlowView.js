@@ -17,7 +17,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     businessModelId: null,//业务实体ID
     businessModelCode: null,//业务实体Code
     gDeleteConnectionId:null,//删除节点提示的标记，预防事件重发
-
+    moreShow:false,
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -231,7 +231,13 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                g.moreInfoView.show();
+                if(g.moreShow){
+                    g.moreInfoView.hide();
+                    g.moreShow=false;
+                }else{
+                    g.moreInfoView.show();
+                    g.moreShow=true;
+                }
             }
         }, "->", {
             xtype: "Button",
@@ -274,12 +280,14 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
         }];
     },
     initMoreInfo: function (data) {
+        var g = this;
         this.moreInfoView = new EUI.WorkFlowMoreInfoView({
             businessModelId: this.businessModelId,
             businessModelCode: this.businessModelCode,
             isCopy: isCopy,//参考创建
             isFromVersion: isFromVersion,//流程定义版本参考创建（true）
             data: data,
+            parent: g,
             width:isCopy && !isFromVersion ? 925 : 877
         });
     },

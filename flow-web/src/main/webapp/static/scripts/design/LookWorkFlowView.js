@@ -12,6 +12,7 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
     uelInfo: {},
     businessModelId: null,//业务实体ID
     viewFlowDefByVersionId: false,//根据流程定义版本id查看流程定义
+    moreShow:false,
     initComponent: function () {
         var g = this;
         EUI.Container({
@@ -42,12 +43,13 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
         if (this.id) {
             this.loadData();
         }
+        // this.initMoreInfo();
     },
     getTopItems: function () {
         var g = this;
         return [{
             xtype: "FormPanel",
-            width: 850,
+            width: 781,
             isOverFlow: false,
             height: 40,
             padding: 0,
@@ -63,38 +65,44 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             items: [{
                 name: "flowTypeName",
                 title: "流程类型",
-                width: 200
+                width: 200,
+                labelWidth: 90
             }, {
                 name: "id",
-                width: 120,
+                width: 110,
                 labelWidth: 85,
                 title: "流程代码"
             }, {
                 xtype: "TextField",
                 title: "流程名称",
                 labelWidth: 85,
-                width: 250,
+                width: 190,
                 name: "name"
             }]
-        }, {
+        },{
             xtype: "Button",
-            title: "启动条件",
-            // selected: true,
-            iconCss: "ecmp-common-configuration",
-            id: "setStartUel",
-            hidden: true,
+            title: "更多配置",
             handler: function () {
-                var scope = this;
-                new EUI.LookUELSettingView({
-                    title: "流程启动条件",
-                    data: g.startUEL,
-                    businessModelId: g.businessModelId,
-                    afterConfirm: function (data) {
-                        scope.startUEL = data;
-                    }
-                });
+                if(g.moreShow){
+                    g.moreInfoView.hide();
+                    g.moreShow=false;
+                }else{
+                    g.moreInfoView.show();
+                    g.moreShow=true;
+                }
+
             }
         }];
+    },
+    initMoreInfo: function (data) {
+        var g = this;
+        this.moreInfoView = new EUI.LookWorkFlowMoreInfoView({
+            businessModelId: this.businessModelId,
+            businessModelCode: this.businessModelCode,
+            data: data,
+            parent: g,
+            width: 877
+        });
     },
     getCenterHtml: function () {
         return "<div class='flow-content'></div>";
@@ -315,11 +323,16 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
             flowTypeId: data.flowTypeId,
             flowTypeName: data.flowTypeName
         };
-        this.startUEL = data.process.startUEL;
+        // this.startUEL = data.process.startUEL;
         EUI.getCmp("formPanel").loadData(headData);
-        if (this.startUEL&&this.startUEL.groovyUel&&this.startUEL.logicUel) {
-            EUI.getCmp("setStartUel").show();
-        }
+        // if (this.startUEL&&this.startUEL.groovyUel&&this.startUEL.logicUel) {
+        //     EUI.getCmp("setStartUel").show();
+        // }
+        var moreInfo = EUI.apply({
+            subProcess: data.subProcess,
+            priority: data.priority
+        }, data.process);
+        this.initMoreInfo(moreInfo);
     },
     showStartNode: function (id, node) {
         return "<div tabindex=0 type='StartEvent' id='"
