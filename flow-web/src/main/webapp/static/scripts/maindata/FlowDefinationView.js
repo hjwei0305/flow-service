@@ -329,9 +329,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                 canClear: true,
                 onSearch: function (v) {
                     g.treeCmp.search(v);
-                    if(g.treeCmp.data&&g.treeCmp.data.length>0){
-                        g.treeCmp.afterShowTree(g.treeCmp.data);
-                    }
                     g.selectedNodeId = null;
                     g.selectedNodeOrgCode = null;
                     g.selectedNodeName = null;
@@ -381,9 +378,6 @@ EUI.FlowDefinationView = EUI.extend(EUI.CustomUI, {
                     itemCmp.addClass("ux-tree-freeze");
                     itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + g.lang.FreezeText);
                 }
-            },
-            afterShowTree:function(data){
-                this.setSelect(data[0].id);
             }
         }
     },
