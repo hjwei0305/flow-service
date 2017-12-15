@@ -359,7 +359,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         }
                     }
                 }else{
-                    if(finalFlowDefination == null){//未配置启动UEL
+                    if(finalFlowDefination == null && flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate){//未配置启动UEL
                         finalFlowDefination = flowDefination;
                     }
                 }
