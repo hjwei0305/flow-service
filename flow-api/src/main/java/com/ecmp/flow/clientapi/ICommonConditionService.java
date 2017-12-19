@@ -33,6 +33,7 @@ public interface ICommonConditionService {
     /**
      * 获取条件POJO属性说明
      * @param businessModelCode 业务实体代码
+     * @param  all  是否查询全部
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
      */
@@ -45,7 +46,7 @@ public interface ICommonConditionService {
 
 
     /**
-     * 获取条件POJO属性说明
+     * 获取条件POJO属性初始化值键值对
      * @param businessModelCode 业务实体代码
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
@@ -58,12 +59,12 @@ public interface ICommonConditionService {
     @Path("initPropertiesAndValues")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体ID获取条件POJO属性及初始化值说明",notes = "测试")
+    @ApiOperation(value = "通过业务实体代码获取获取条件POJO属性初始化值键值对",notes = "测试")
     public Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
 
     /**
-     * 获取条件POJO属性说明
+     * 获取条件POJO属性键值对
      * @param businessModelCode 业务实体代码
      * @param id 单据id
      * @return  POJO属性说明Map
@@ -77,7 +78,7 @@ public interface ICommonConditionService {
     @Path("propertiesAndValues")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO的值",notes = "测试")
+    @ApiOperation(value = "通过业务实体ID,业务ID获取条件POJO属性键值对",notes = "测试")
     public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id,@QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 

@@ -86,7 +86,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Path("changeStatus/{id}/{status}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
+    @ApiOperation(value = "改变流程版本状态",notes = "测试 改变流程版本状态")
     public OperateResultWithData<FlowDefVersion> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status);
 
 }

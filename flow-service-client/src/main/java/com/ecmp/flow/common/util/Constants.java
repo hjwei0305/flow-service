@@ -94,11 +94,11 @@ public class Constants extends ConfigurableContants {
 	public final static String BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL=getProperty(
 			"basic.position.getExecutorsByPosCateIds", "/position/getExecutorsByPosCateIds");
 
-	/**
-	 * 获取岗位类别列表
-	 */
-	public final static String BASIC_POSITIONCATEGORY_FINDBYPAGE_URL=getProperty(
-			"basic.positionCategory.findByPage", "/positionCategory/findByPage");
+//	/**
+//	 * 获取岗位类别列表
+//	 */
+//	public final static String BASIC_POSITIONCATEGORY_FINDBYPAGE_URL=getProperty(
+//			"basic.positionCategory.findByPage", "/positionCategory/findByPage");
 
 
 	/**

@@ -79,13 +79,25 @@ EUI.TodoOrderView = EUI.extend(EUI.CustomUI, {
         if (datas) {
             for (var i = 0; i < datas.length; i++) {
                 var item = datas[i];
+                var businessModelRemark = '';
+                if(item.businessModelRemark&&item.businessModelRemark!='null'){
+                    businessModelRemark = item.businessModelRemark;
+                }
+                var businessName = '';
+                var flowText="";
+                if(item.businessName&&item.businessName!='null'){
+                    businessName = item.businessName;
+                    flowText = '【' + item.businessCode + '】' + '-' + businessName;
+                }else{
+                    flowText = '【' + item.businessCode + '】';
+                }
                 var endFlowHtml = item.canManuallyEnd? '<div class="todo-btn endFlow-btn"><i class="ecmp-flow-end endFlow-icon" title="终止"></i><span>终止</span></div>' : '';
                 html = $('<div class="info-items">' +
                     '                            <div class="item">' +
-                    '                                <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
+                    '                                <span class="flow-text">' + flowText + '</span>' +
                     '                            </div>' +
                     '                            <div class="item">' +
-                    '                                <div class="remark">' + item.businessModelRemark +
+                    '                                <div class="remark">' +businessModelRemark +
                     '                                </div>' +
                     '                            </div>' +
                     '                            <div class="item">' +

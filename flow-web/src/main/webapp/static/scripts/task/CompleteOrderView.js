@@ -71,9 +71,17 @@ EUI.CompleteOrderView = EUI.extend(EUI.CustomUI, {
                 if(item.businessModelRemark&&item.businessModelRemark!='null'){
                     businessModelRemark = item.businessModelRemark;
                 }
+                var businessName = '';
+                var flowText="";
+                if(item.businessName&&item.businessName!='null'){
+                    businessName = item.businessName;
+                    flowText = '【' + item.businessCode + '】' + '-' + businessName;
+                }else{
+                    flowText = '【' + item.businessCode + '】';
+                }
                 html = $('<div class="info-items">' +
                     ' <div class="item">' +
-                    '     <span class="flow-text">【' + item.businessCode + '】' + '-' + item.businessName + '</span>' +
+                    '     <span class="flow-text">' + flowText + '</span>' +
                     ' </div>' +
                     ' <div class="item">' +
                     '     <div class="remark">' + businessModelRemark +

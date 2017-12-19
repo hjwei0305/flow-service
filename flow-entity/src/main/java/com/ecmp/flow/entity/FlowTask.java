@@ -297,7 +297,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     private Boolean canMobile;
 
     /**
-     * 是被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态或者委托完成为null
+     * 是被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态为null,委托完成为3
      */
     @Column(name = "trust_state")
     private Integer trustState;

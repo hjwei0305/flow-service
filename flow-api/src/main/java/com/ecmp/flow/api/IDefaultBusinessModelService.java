@@ -67,16 +67,15 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 测试自定义执行人选择
-     * @param businessId 单据id
-     * @param    paramJson json参数
+     * @param flowInvokeParams 流程参数
      * @return 执行结果
      */
     @POST
     @Path("getPersonToExecutorConfig")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
-    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId,@QueryParam("paramJson")String paramJson);
+    @ApiOperation(value = "自定义获取excutor",notes = "测试 自定义获取excutor")
+   public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
  /**

@@ -152,12 +152,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
     /**
      *
-     * @param businessId  业务单据id
-     * @param paramJson  参数json
+     * @param flowInvokeParams  流程输入参数
      * @return
      */
     @Transactional( propagation= Propagation.REQUIRES_NEW)
-    public List<Executor> getPersonToExecutorConfig(String businessId,String paramJson){
+    public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams){
+        String businessId = flowInvokeParams.getId();
         List<Executor> result = new ArrayList<Executor>();
         if(StringUtils.isNotEmpty(businessId)){
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
