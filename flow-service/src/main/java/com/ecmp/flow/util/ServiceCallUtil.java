@@ -48,19 +48,19 @@ public class ServiceCallUtil {
                     try {
                         JSONObject jsonObject = JSONObject.fromObject(args[0]);
                         if(jsonObject.has(Constants.APPROVED)){
-                            String approved = (String) jsonObject.get(Constants.APPROVED);
+                            String approved = jsonObject.get(Constants.APPROVED)+"";
                             if (StringUtils.isNotEmpty(approved) && !Constants.NULL_S.equalsIgnoreCase(approved)) {
                                 params.setAgree(Boolean.parseBoolean(approved));
                             }
                         }
                         if(jsonObject.has(Constants.APPROVE_RESULT)){
-                            String approveResult = (String) jsonObject.get(Constants.APPROVE_RESULT);
+                            String approveResult = jsonObject.get(Constants.APPROVE_RESULT)+"";
                             if (StringUtils.isNotEmpty(approveResult) && !Constants.NULL_S.equalsIgnoreCase(approveResult)) {
                                 params.setFinalAgree(Boolean.parseBoolean(approveResult));
                             }
                         }
                         if(jsonObject.has(Constants.RECEIVE_TASK_ACT_DEF_ID)){
-                            String receiveTaskActDefId = (String) jsonObject.get(Constants.RECEIVE_TASK_ACT_DEF_ID) ;
+                            String receiveTaskActDefId = jsonObject.get(Constants.RECEIVE_TASK_ACT_DEF_ID)+"";
                             if (StringUtils.isNotEmpty(receiveTaskActDefId) && !Constants.NULL_S.equalsIgnoreCase(receiveTaskActDefId)) {
                                 params.setReceiveTaskActDefId(receiveTaskActDefId);
                             }
