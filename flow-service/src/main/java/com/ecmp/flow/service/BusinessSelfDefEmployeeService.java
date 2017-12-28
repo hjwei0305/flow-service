@@ -5,12 +5,10 @@ import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IBusinessSelfDefEmployeeService;
 import com.ecmp.flow.dao.BusinessSelfDefEmployeeDao;
 import com.ecmp.flow.entity.BusinessSelfDefEmployee;
-import net.sf.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

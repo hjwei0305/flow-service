@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.annotation.Remark;
 import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.DynamicInsert;
@@ -47,6 +48,7 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
      */
     private  String applyCaption;
 
+    @Remark("单价")
     public double getUnitPrice() {
         return unitPrice;
     }
@@ -55,6 +57,7 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
         this.unitPrice = unitPrice;
     }
 
+    @Remark("数量")
     public int getCount() {
         return count;
     }

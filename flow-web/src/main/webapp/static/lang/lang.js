@@ -106,7 +106,8 @@ if (EUI.BusinessModelView) {
         applyModuleCodeText: "应用模块Code",
         dataAccessObjectText: "数据访问对象",
         formURLText: "表单URL",
-        configExecutorText: "自定义执行人配置"
+        configExecutorText: "自定义执行人配置",
+        businessDetailServiceUrlText:"表单明细URL"
     }, common_lang);
 }
 
@@ -146,7 +147,8 @@ if (EUI.FlowTypeView) {
         belongToBusinessText: "所属业务实体",
         addNewFlowTypeText: "新增流程类型",
         completeTaskServiceUrlText:'提交任务地址',
-        lookUrlText:'表单URL'
+        lookUrlText:'表单URL',
+        businessDetailServiceUrlText:"表单明细URL"
     }, common_lang);
 }
 

@@ -102,4 +102,18 @@ public interface ICommonConditionService {
     @ApiOperation(value = "获取条件POJO属性及初始化值说明",notes = "测试")
     public Boolean resetState(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id")String id,
                               @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
+
+    /**
+     * 获取条件POJO属性键值对
+     * @param businessModelCode 业务实体代码
+     * @param id 单据id
+     * @return  POJO属性说明Map
+     */
+    @GET
+    @Path("formPropertiesAndValues")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID,业务ID获取POJO属性键值对",notes = "测试")
+    public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
 }

@@ -192,6 +192,12 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 //     width:220
                 // },
                     {
+                        label: this.lang.businessDetailServiceUrlText,
+                        name: "businessDetailServiceUrl",
+                        index: "businessDetailServiceUrl",
+                        width:400
+                    },
+                    {
                     label: this.lang.formURLText,
                     name: "lookUrl",
                     index: "lookUrl",
@@ -370,7 +376,15 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     // width: 300,
                     value: data.completeTaskServiceUrl
                 },{
-                    xtype: "TextArea",
+                    xtype: "TextField",
+                    title: this.lang.businessDetailServiceUrlText,
+                    // labelWidth: 115,
+                    allowBlank: false,
+                    name: "businessDetailServiceUrl",
+                    // width: 300,
+                    value: data.businessDetailServiceUrl
+                },{
+                    xtype: "TextField",
                     title: this.lang.formURLText,
                     // labelWidth: 115,
                     allowBlank: false,
@@ -521,8 +535,17 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                     allowBlank: false,
                     name: "completeTaskServiceUrl",
                     // width: 300
-                }, {
-                    xtype: "TextArea",
+                }, //businessDetailServiceUrlText
+                 {
+                        xtype: "TextField",
+                        title: this.lang.businessDetailServiceUrlText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "businessDetailServiceUrl",
+                        // width: 300
+                 },
+                    {
+                    xtype: "TextField",
                     title: this.lang.formURLText,
                     // labelWidth: 115,
                     allowBlank: false,

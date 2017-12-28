@@ -85,6 +85,13 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
     @Lob
     private String lookUrl;
 
+    /**
+     * 业务单据明细服务地址-主要供移动端使用
+     */
+    @Column(name="business_detail_service_url")
+    private String businessDetailServiceUrl;
+
+
 
     public String getName() {
         return name;
@@ -151,6 +158,7 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("completeTaskServiceUrl", completeTaskServiceUrl)
                 .append("lookUrl", lookUrl)
                 .append("flowDefinations", flowDefinations)
+                .append("businessDetailServiceUrl",businessDetailServiceUrl)
                 .toString();
     }
 
@@ -173,5 +181,13 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setLookUrl(String lookUrl) {
         this.lookUrl = lookUrl;
+    }
+
+    public String getBusinessDetailServiceUrl() {
+        return businessDetailServiceUrl;
+    }
+
+    public void setBusinessDetailServiceUrl(String businessDetailServiceUrl) {
+        this.businessDetailServiceUrl = businessDetailServiceUrl;
     }
 }

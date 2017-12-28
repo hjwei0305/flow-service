@@ -1633,6 +1633,40 @@ public class FlowTaskTool {
         return result;
     }
 
+    private void shenPiNodesInit(PvmActivity currActivity,List<NodeInfo> result,boolean approved,FlowTask flowTask,Map<String, Object> v )
+            throws NoSuchMethodException, SecurityException {
+        PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
+        List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
+        if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
+            for (PvmTransition pv : nextTransitionList) {
+                String conditionText = (String) pv.getProperty("conditionText");
+                Boolean mark = false;
+                if(approved){
+                    if("${approveResult == true}".equalsIgnoreCase(conditionText)){
+                        mark = true;
+                    }
+                }else{
+                    if(StringUtils.isEmpty(conditionText)){
+                        mark = true;
+                    }
+                }
+                if(mark){
+                    PvmActivity currTempActivity = pv.getDestination();
+                    String type = currTempActivity.getProperty("type")+"";
+                    if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
+                        List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
+                        result.addAll(temp);
+                    }else  if("CallActivity".equalsIgnoreCase(type)){
+                        result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
+                    }else{
+                        NodeInfo tempNodeInfo = new NodeInfo();
+                        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
+                        result.add(tempNodeInfo);
+                    }
+                }
+            }
+        }
+    }
     /**
      * 选择下一步执行的节点信息
      *
@@ -1690,50 +1724,10 @@ public class FlowTaskTool {
                 }
                 if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
                     approveResult = true;
-                    PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
-                    List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
-                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                        for (PvmTransition pv : nextTransitionList) {
-                            String conditionText = (String) pv.getProperty("conditionText");
-                            if("${approveResult == true}".equalsIgnoreCase(conditionText)){
-                                PvmActivity currTempActivity = pv.getDestination();
-                                String type = currTempActivity.getProperty("type")+"";
-                                if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
-                                    List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
-                                    result.addAll(temp);
-                                }else  if("CallActivity".equalsIgnoreCase(type)){
-                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
-                                }else{
-                                    NodeInfo tempNodeInfo = new NodeInfo();
-                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                    result.add(tempNodeInfo);
-                                }
-                            }
-                        }
-                    }
+                    shenPiNodesInit( currActivity,result,approveResult, flowTask, v );
                 }else {//获取不通过节点
                     approveResult = false;
-                    PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
-                    List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
-                    if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                        for (PvmTransition pv : nextTransitionList) {
-                            String conditionText = (String) pv.getProperty("conditionText");
-                            if(StringUtils.isEmpty(conditionText)){
-                                PvmActivity currTempActivity = pv.getDestination();
-                                String type = currTempActivity.getProperty("type")+"";
-                                if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
-                                    List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
-                                    result.addAll(temp);
-                                }else  if("CallActivity".equalsIgnoreCase(type)){
-                                    result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
-                                }else{
-                                    NodeInfo tempNodeInfo = new NodeInfo();
-                                    tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                    result.add(tempNodeInfo);
-                                }
-                            }
-                        }
-                    }
+                    shenPiNodesInit( currActivity,result,approveResult, flowTask, v );
                 }
                 return result;
             }else {
@@ -1753,49 +1747,9 @@ public class FlowTaskTool {
             Map<String, VariableInstance>  processVariables= runtimeService.getVariableInstances(executionId);
 
             if("true".equalsIgnoreCase(approved)){ //获取通过节点
-                PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
-                List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
-                if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                    for (PvmTransition pv : nextTransitionList) {
-                        String conditionText = (String) pv.getProperty("conditionText");
-                        if("${approveResult == true}".equalsIgnoreCase(conditionText)){
-                            PvmActivity currTempActivity = pv.getDestination();
-                            String type = currTempActivity.getProperty("type")+"";
-                            if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
-                                List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
-                                result.addAll(temp);
-                            }else  if("CallActivity".equalsIgnoreCase(type)){
-                                result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
-                            }else{
-                                NodeInfo tempNodeInfo = new NodeInfo();
-                                tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                result.add(tempNodeInfo);
-                            }
-                        }
-                    }
-                }
+                shenPiNodesInit( currActivity,result,true, flowTask, v );
             }else {//获取不通过节点
-                PvmActivity gateWayIn =  currActivity.getOutgoingTransitions().get(0).getDestination();
-                List<PvmTransition> nextTransitionList = gateWayIn.getOutgoingTransitions();
-                if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
-                    for (PvmTransition pv : nextTransitionList) {
-                        String conditionText = (String) pv.getProperty("conditionText");
-                        if(StringUtils.isEmpty(conditionText)){
-                            PvmActivity currTempActivity = pv.getDestination();
-                            String type = currTempActivity.getProperty("type")+"";
-                            if(ifGageway(currTempActivity)|| "ManualTask".equalsIgnoreCase(type)){
-                                List<NodeInfo>  temp =  this.selectQualifiedNode(flowTask,currTempActivity,v,null);
-                                result.addAll(temp);
-                            }else  if("CallActivity".equalsIgnoreCase(type)){
-                                result =  getCallActivityNodeInfo(flowTask,currTempActivity.getId(),result);
-                            }else{
-                                NodeInfo tempNodeInfo = new NodeInfo();
-                                tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currTempActivity);
-                                result.add(tempNodeInfo);
-                            }
-                        }
-                    }
-                }
+                shenPiNodesInit( currActivity,result,false, flowTask, v );
             }
             return result;
         }
@@ -1989,6 +1943,22 @@ public class FlowTaskTool {
             flowHistory.setActDurationInMillis(actDurationInMillis);
         }
         return flowHistory;
+    }
+
+    public OperateResultWithData statusCheck(FlowDefinationStatus status,FlowDefinationStatus statusCurrent){
+        OperateResultWithData resultWithData = null;
+        if (status == FlowDefinationStatus.Freeze) {
+            if (statusCurrent != FlowDefinationStatus.Activate) {
+                //10021=当前非激活状态，禁止冻结！
+                resultWithData = OperateResultWithData.operationFailure("10021");
+            }
+        } else if (status == FlowDefinationStatus.Activate) {
+            if (statusCurrent != FlowDefinationStatus.Freeze) {
+                //10020=当前非冻结状态，禁止激活！
+                resultWithData =  OperateResultWithData.operationFailure("10020");
+            }
+        }
+        return resultWithData;
     }
 
 }

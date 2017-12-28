@@ -1,15 +1,12 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.flow.api.IAppModuleService;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
+import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
-import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.flow.entity.AppModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 /**
  * <p>

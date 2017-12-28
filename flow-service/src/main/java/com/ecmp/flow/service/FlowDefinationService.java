@@ -83,9 +83,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private FlowInstanceDao flowInstanceDao;
 
     @Autowired
-    private FlowTaskDao flowTaskDao;
-
-    @Autowired
     private FlowExecutorConfigDao flowExecutorConfigDao;
 
 
@@ -99,22 +96,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private IdentityService identityService;
 
     @Autowired
-    private TaskService taskService;
-
-    @Autowired
     private FlowTypeDao flowTypeDao;
-
-    @Autowired
-    private HistoryService historyService;
 
     @Autowired
     private ProcessEngine processEngine;
 
     @Autowired
     private BusinessModelDao businessModelDao;
-
-    @Autowired
-    private FlowInstanceService flowInstanceService;
 
     @Autowired
     private FlowServiceUrlDao flowServiceUrlDao;
@@ -292,14 +280,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 } else {
                     processInstance = this.startFlowByKey(key, businessKey, variables);
                 }
-
                 flowInstance = new FlowInstance();
                 flowInstance.setBusinessId(processInstance.getBusinessKey());
-                String workCaption = variables.get("workCaption") + "";//工作说明
+                String workCaption = (String)variables.get(Constants.WORK_CAPTION);//工作说明
                 flowInstance.setBusinessModelRemark(workCaption);
-                String businessCode = variables.get("businessCode") + "";//工作说明
+                String businessCode = (String) variables.get(Constants.BUSINESS_CODE);//工作说明
                 flowInstance.setBusinessCode(businessCode);
-                String businessName = variables.get("name") + "";//业务单据名称
+                String businessName = (String) variables.get(Constants.NAME);//业务单据名称
                 flowInstance.setBusinessName(businessName);
 
                 flowInstance.setFlowDefVersion(flowDefVersion);
@@ -334,7 +321,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String startUelStr = flowDefination.getStartUel();
                 if (!StringUtils.isEmpty(startUelStr)) {
                     JSONObject startUelObject = JSONObject.fromObject(startUelStr);
-                    String conditionText = startUelObject.getString("groovyUel");
+                    String conditionText = startUelObject.getString(Constants.GROOVY_UEL);
                     if (StringUtils.isNotEmpty(conditionText)) {
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
@@ -364,9 +351,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             }
-//            if (ifAllNoStartUel) {
-//                finalFlowDefination = flowDefinationList.get(0);
-//            }
         }
         if (finalFlowDefination == null) {//同级组织机构找不到符合条件流程定义，自动向上级组织机构查找所属类型的流程定义
             level++;
@@ -400,7 +384,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
-        variables.put("opinion", "流程启动");//所有流程启动描述暂时都设计为“流程启动”
+        variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
         //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
         String businessId = businessKey;
         FlowDefination finalFlowDefination = null;
@@ -409,7 +393,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         BusinessModel businessModel = flowType.getBusinessModel();
         Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-        String orgId = v.get("orgId") + "";
+        String orgId = (String) v.get(Constants.ORG_ID);
         List<String> orgParentCodeList = getParentOrgCodes(orgId);
         finalFlowDefination = this.flowDefLuYou(v, flowType, orgParentCodeList, 0);
         if (v != null && !v.isEmpty()) {
@@ -438,7 +422,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     throw new FlowException(flowOperateResult.getMessage());
                 }
                 String actDefId = flowDefVersion.getActDefId();
-                variables.put("flowDefVersionId", flowDefVersion.getId());
+                variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
                     processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
@@ -462,9 +446,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     logger.error(e.getMessage());
                     AppModule appModule = businessModel.getAppModule();
                     Map<String, Object> params = new HashMap<String,Object>();;
-                    params.put("businessModelCode",businessModel.getClassName());
-                    params.put("id",flowInstance.getBusinessId());
-                    params.put("status", FlowStatus.INIT);
+                    params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+                    params.put(Constants.ID,flowInstance.getBusinessId());
+                    params.put(Constants.STATUS, FlowStatus.INIT);
                     String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
                     Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
                     throw  new FlowException(e.getMessage());
@@ -477,7 +461,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private List<String> getParentOrgCodes(String orgId){
         if(StringUtils.isEmpty(orgId)){
-            throw new RuntimeException("orgId is null!");
+            throw new FlowException("orgId is null!");
         }
         Map<String,Object> params = new HashMap();
         params.put("nodeId",orgId);
@@ -516,7 +500,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
             Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-            String orgId = v.get("orgId") + "";
+            String orgId = (String) v.get(Constants.ORG_ID);
             List<String> orgParentCodeList = getParentOrgCodes(orgId);
             flowStartResultVO.setFlowTypeList(flowTypeList);
             for (FlowType flowTypeTemp : flowTypeList) {
@@ -580,11 +564,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         nodeInfo.setId(nodeId);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
         net.sf.json.JSONObject executor=null;
-        if(currentNode.getJSONObject("nodeConfig").has("executor")){
+        if(currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)){
             try {
-                executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
             }catch (Exception e){
-
             }
         }
         UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
@@ -708,7 +691,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @return
      */
     public List<NodeInfo> findXunFanNodesInfo(List<NodeInfo> result, FlowStartVO flowStartVO, FlowDefination flowDefination, Definition definition, JSONObject jsonObjectNode, String businessVName) throws NoSuchMethodException, SecurityException {
-        //  JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
         String busType = jsonObjectNode.get("busType") + "";
         String type = jsonObjectNode.get("type") + "";
         String nodeId = jsonObjectNode.get("id") + "";
@@ -1217,16 +1199,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (flowDefination == null) {
             return OperateResultWithData.operationFailure("10003");
         }
-        if (status == FlowDefinationStatus.Freeze) {
-            if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {
-                //10021=当前非激活状态，禁止冻结！
-                return OperateResultWithData.operationFailure("10021");
-            }
-        } else if (status == FlowDefinationStatus.Activate) {
-            if (flowDefination.getFlowDefinationStatus() != FlowDefinationStatus.Freeze) {
-                //10020=当前非冻结状态，禁止激活！
-                return OperateResultWithData.operationFailure("10020");
-            }
+        OperateResultWithData resultWithData = flowTaskTool.statusCheck(status,flowDefination.getFlowDefinationStatus());
+        if(resultWithData!=null && resultWithData.notSuccessful()){
+            return resultWithData;
         }
         flowDefination.setFlowDefinationStatus(status);
         flowDefinationDao.save(flowDefination);
@@ -1267,7 +1242,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private List<NodeInfo> getCallActivityNodeInfo(FlowStartVO flowStartVO, FlowDefination flowDefination, Definition definition, JSONObject jsonObjectNode, List<NodeInfo> result, String businessVName)
             throws NoSuchMethodException, SecurityException {
-        net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        net.sf.json.JSONObject normal = jsonObjectNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
         String callActivityDefKey = (String) normal.get("callActivityDefKey");
         if (StringUtils.isEmpty(businessVName)) {
             businessVName = "/" + definition.getProcess().getId() + "/" + jsonObjectNode.get("id");

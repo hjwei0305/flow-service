@@ -215,6 +215,15 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
         var html = "";
         for (var i = 0; i < data.length; i++) {
             var itemdata = data[i];
+            var batchInfoText = itemdata.flowInstance.businessCode;
+            var businessModelRemark = '';
+            if(itemdata.flowInstance.businessModelRemark && itemdata.flowInstance.businessModelRemark!='null'){
+                businessModelRemark = itemdata.flowInstance.businessModelRemark;
+            }
+            if(businessModelRemark){
+                batchInfoText = batchInfoText + '-' + businessModelRemark;
+            }
+
             html += '<div class="work_table_box" id="' + itemdata.id + '">' +
                 '    <div class="work_checkBox">' +
                 '        <input type="checkbox">' +
@@ -222,7 +231,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 '    <div class="work_info">' +
                 '        <div class="work_info_left">' +
                 '            <div>' + itemdata.flowName + '_' + itemdata.taskName + '</div>' +
-                '            <div>' + itemdata.flowInstance.businessCode + '-' + itemdata.flowInstance.businessModelRemark + '</div>' +
+                '            <div>' + batchInfoText + '</div>' +
                 '        </div>' +
                 '        <div class="work_info_right">' +
                 '            <div>发起人 : ' + itemdata.creatorName +

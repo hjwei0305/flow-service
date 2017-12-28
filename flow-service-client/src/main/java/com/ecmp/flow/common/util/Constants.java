@@ -132,6 +132,116 @@ public class Constants extends ConfigurableContants {
 			"basic.employee.findByIds", "/employee/findByIds");
 
 	/**
+	 * 调用子流程时的路径值
+	 */
+	public final static String CALL_ACTIVITY_SON_PATHS="callActivitySonPaths";
+
+	/**
+	 * 同意-过去式
+	 */
+	public final static String APPROVED= "approved";
+
+	/**
+	 * 同意-现在式
+	 */
+	public final static String APPROVE= "approve";
+
+	/**
+	 * 同意结论
+	 */
+	public final static String APPROVE_RESULT= "approveResult";
+
+	/**
+	 * 驳回
+	 */
+	public final static String REJECT= "reject";
+
+	/**
+	 * 接收任务实际定义ID
+	 */
+	public final static String RECEIVE_TASK_ACT_DEF_ID= "receiveTaskActDefId";
+
+
+	/**
+	 * 转办
+	 */
+	public final static String TRUST_TO_DO= "trustToDo";
+
+	/**
+	 * null对象的字符窜表示
+	 */
+	public final static String NULL_S = "null";
+
+	/**
+	 * 流程服务管理dao
+	 */
+	public final static String FLOW_SERVICE_URL_DAO = "flowServiceUrlDao";
+
+	/**
+	 * 子流程选择节点执行人参数标记
+	 */
+	public final static String SON_PROCESS_SELECT_NODE_USER = "_sonProcessSelectNodeUserV";
+
+	public final static String WORK_CAPTION = "workCaption";
+
+	public final static String BUSINESS_CODE	= "businessCode";
+	/**
+	 * 流程定义版本id
+	 */
+	public final static String FLOW_DEF_VERSION_ID = "flowDefVersionId";
+
+	public final static String NAME	= "name";
+
+	public final static String ID	= "id";
+
+	public final static String ALL	= "all";
+
+	public final static String STATUS	= "status";
+
+	public final static String  ADMIN ="admin";
+
+	public final static String  NODE_CONFIG ="nodeConfig";
+
+	public final static String  NORMAL ="normal";
+
+	public final static String  END ="end";
+
+	public final static String  EVENT ="event";
+
+	public final static String  EXECUTOR ="executor";
+
+	public final static String BEFORE_EXCUTE_SERVICE_ID = "beforeExcuteServiceId";
+
+	public final static String BEFORE_ASYNC = "beforeAsync";
+
+	public final static String AFTER_EXCUTE_SERVICE_ID = "afterExcuteServiceId";
+
+	public final static String  FLOW_TASK_SERVICE ="flowTaskService";
+
+	public final static String  SUPER_EXECUTION_ID ="_superExecutionId";
+
+	public final static String AFTER_ASYNC = "afterAsync";
+
+
+	public final static String  SERVICE_TASK_ID ="serviceTaskId";
+
+	public final static String BUSINESS_MODEL_CODE = "businessModelCode";
+
+	public final static String CONDITION_TEXT = "conditionText";
+
+	public final static String COUNTER_SIGN_AGREE = "counterSign_agree";
+
+	public final static String COUNTER_SIGN_OPPOSITION = "counterSign_opposition";
+
+	public final static String COUNTER_SIGN_WAIVER = "counterSign_waiver";
+
+	public final static String GROOVY_UEL  = "groovyUel";
+
+	public final static String OPINION  = "opinion";
+
+	public final static String ORG_ID  = "orgId";
+
+	/**
 	 * 根据自定义的查询参数获取员工列表
 	 */
 	public final static String BASIC_EMPLOYEE_FINDBYPARAM_URL=getProperty(

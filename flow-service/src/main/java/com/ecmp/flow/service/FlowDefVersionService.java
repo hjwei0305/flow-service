@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.XmlUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.Process;
@@ -61,19 +62,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
     private FlowInstanceDao flowInstanceDao;
 
     @Autowired
-    private RepositoryService repositoryService;
-
-    @Autowired
-    private RuntimeService runtimeService;
-
-    @Autowired
-    private IdentityService identityService;
-
-    @Autowired
-    private TaskService taskService;
-
-    @Autowired
-    private HistoryService historyService;
+    private FlowTaskTool flowTaskTool;
 
     @Autowired
     private ProcessEngine processEngine;
@@ -131,6 +120,10 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 //10020=当前非冻结状态，禁止激活！
                 return  OperateResultWithData.operationFailure("10020");
             }
+        }
+        OperateResultWithData resultWithData = flowTaskTool.statusCheck(status,flowDefVersion.getFlowDefinationStatus());
+        if(resultWithData!=null && resultWithData.notSuccessful()){
+            return resultWithData;
         }
         flowDefVersion.setFlowDefinationStatus(status);
         flowDefVersionDao.save(flowDefVersion);

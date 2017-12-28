@@ -2,6 +2,7 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
@@ -42,13 +43,11 @@ public class ExpressionUtil {
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String,Object> params = new HashMap();
-        params.put("businessModelCode",businessModelCode);
-        params.put("id",businessId);
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
+        params.put(Constants.ID,businessId);
         Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         return pvs;
     }
-
-
 
     /**
      * 获取条件表达式的属性值对
@@ -61,9 +60,9 @@ public class ExpressionUtil {
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
-        params.put("businessModelCode",businessModelCode);
-        params.put("id",businessId);
-        params.put("all",all);
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
+        params.put(Constants.ID,businessId);
+        params.put(Constants.ALL,all);
         Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         return pvs;
     }
@@ -79,7 +78,7 @@ public class ExpressionUtil {
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
         Map<String,Object> params = new HashMap();
-        params.put("businessModelCode",businessModel.getClassName());
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
         Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
@@ -98,13 +97,12 @@ public class ExpressionUtil {
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
-        params.put("businessModelCode",businessModelCode);
-        params.put("id",businessId);
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
+        params.put(Constants.ID,businessId);
         Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
-
 
     /**
      * 重置单据状态
@@ -119,9 +117,9 @@ public class ExpressionUtil {
         String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
         Map<String,Object> params = new HashMap();
-        params.put("businessModelCode",businessModelCode);
-        params.put("id",businessId);
-        params.put("status",status);
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
+        params.put(Constants.ID,businessId);
+        params.put(Constants.STATUS,status);
         result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
         return result;
     }

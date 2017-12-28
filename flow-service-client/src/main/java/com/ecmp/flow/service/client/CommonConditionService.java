@@ -7,6 +7,7 @@ import com.ecmp.core.entity.BaseEntity;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.api.client.util.ExpressionUtil;
 import com.ecmp.flow.clientapi.ICommonConditionService;
+import com.ecmp.flow.common.util.BusinessUtil;
 import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.BusinessModel;
@@ -130,12 +131,25 @@ public class CommonConditionService implements ICommonConditionService {
             }
         }else{
           if(content==null){
-             throw new RuntimeException("单据不存在,不能启动或完成流程!");
+             throw new RuntimeException("business.id do not exist, can not start or complete the process!");
            }
             content.setFlowStatus(status);
             appModuleDao.save(content);
         }
         return true;
+    }
+
+    public Map<String,Object> businessPropertiesAndValues(String businessModelCode,String id) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        String daoBeanName = null;
+        if (businessModel != null) {
+            daoBeanName = getDaoBeanName(businessModelCode);
+        }
+        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+        BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
+        IBusinessFlowEntity content = (IBusinessFlowEntity) appModuleDao.findOne(id);
+        return   BusinessUtil.getPropertiesAndValues(content,null);
     }
     private String getDaoBeanName(String className)throws ClassNotFoundException {
         BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);

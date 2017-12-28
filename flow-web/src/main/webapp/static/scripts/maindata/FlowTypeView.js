@@ -128,7 +128,12 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                 name: "completeTaskServiceUrl",
                 index: "completeTaskServiceUrl",
                 hidden: true
-            }, {
+            },{
+                label: 'businessDetailServiceUrl',
+                name: "businessDetailServiceUrl",
+                index: "businessDetailServiceUrl",
+                hidden: true
+            },{
                 label:'lookUrl',
                 name: "lookUrl",
                 index: "lookUrl",
@@ -270,12 +275,21 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     allowBlank: true,
                     name: "completeTaskServiceUrl",
                     width: 270
-                }, {
-                    xtype: "TextArea",
-                    title: g.lang.lookUrlText,
+                },
+                    {
+                        xtype: "TextField",
+                        title: g.lang.lookUrlText,
+                        labelWidth: 120,
+                        allowBlank: true,
+                        name: "lookUrl",
+                        width: 270
+                    },
+                    {
+                    xtype: "TextField",
+                    title: g.lang.businessDetailServiceUrlText,
                     labelWidth: 120,
                     allowBlank: true,
-                    name: "lookUrl",
+                    name: "businessDetailServiceUrl",
                     width: 270
                 }, {
                     xtype: "TextArea",
@@ -371,7 +385,14 @@ EUI.FlowTypeView = EUI.extend(EUI.CustomUI, {
                     name: "completeTaskServiceUrl",
                     width: 270,
                 }, {
-                    xtype: "TextArea",
+                    xtype: "TextField",
+                    title: this.lang.businessDetailServiceUrlText,
+                    labelWidth: 120,
+                    allowBlank: true,
+                    name: "businessDetailServiceUrl",
+                    width: 270,
+                },{
+                    xtype: "TextField",
                     title: this.lang.lookUrlText,
                     labelWidth: 120,
                     allowBlank: true,

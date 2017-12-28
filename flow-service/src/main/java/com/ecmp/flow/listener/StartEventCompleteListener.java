@@ -1,6 +1,8 @@
 package com.ecmp.flow.listener;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
@@ -19,7 +21,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 
 /**
@@ -120,15 +122,12 @@ public class StartEventCompleteListener implements ExecutionListener {
 //            String sonBusinessVName = parentBusinessModelCode+"_"+parent.getActivityId()+"_"+definitionKey+"_sonBusinessId";
             sonBusinessVNameBuff.append("/"+definitionKey);
             currentBusinessId =(String )delegateTask.getVariable(sonBusinessVNameBuff.toString());
-            List<String> userVarNameList = (List)delegateTask.getVariable(sonBusinessVNameBuff+"_sonProcessSelectNodeUserV");
+            List<String> userVarNameList = (List)delegateTask.getVariable(sonBusinessVNameBuff + Constants.SON_PROCESS_SELECT_NODE_USER);
             if(userVarNameList!=null && !userVarNameList.isEmpty()){
                 for(String userVarName :userVarNameList){
                    Object userValue = delegateTask.getVariable(sonBusinessVNameBuff+"/"+userVarName);
                     delegateTask.setVariable(userVarName,userValue);
-//                    delegateTask.removeVariable(callActivityPath+"/"+userVarName);
                 }
-//                variablesParent.remove(callActivityPath+"_sonProcessSelectNodeUserV");
-//                delegateTask.removeVariable(callActivityPath+"_sonProcessSelectNodeUserV");
             }
             if(StringUtils.isEmpty(currentBusinessId)){
                 if(parentBusinessModelCode.equals(sonBusinessModelCode)){//非跨业务实体子流程
@@ -137,7 +136,8 @@ public class StartEventCompleteListener implements ExecutionListener {
                     runtimeService.updateBusinessKey(processInstance.getId(),parentBusinessKey);
                     currentBusinessId = parentBusinessKey;
                 }else{//跨业务实体子流程,必须指定子流程关联单据id
-                        throw new FlowException("子流程关联的单据找不到！");
+                    String message = ContextUtil.getMessage("10039");
+                    throw new FlowException(message);//子流程关联的单据找不到！
                 }
             }else {
                     runtimeService.updateBusinessKey(processInstance.getId(),currentBusinessId);
@@ -148,16 +148,32 @@ public class StartEventCompleteListener implements ExecutionListener {
         if(flowInstance==null){
             flowInstance = new FlowInstance();
             flowInstance.setBusinessId(processInstance.getBusinessKey());
-            String workCaption = variables.get("workCaption")+"";//工作说明
+            String workCaption = null;
+            if(variables.containsKey(Constants.WORK_CAPTION)){
+                workCaption = (String)variables.get(Constants.WORK_CAPTION);//工作说明
+            }
             flowInstance.setBusinessModelRemark(workCaption);
-            String businessCode = variables.get("businessCode")+"";
+
+            String businessCode = null;
+            if(variables.containsKey(Constants.BUSINESS_CODE)){
+                businessCode = (String)variables.get(Constants.BUSINESS_CODE);//工作说明
+            }
             flowInstance.setBusinessCode(businessCode);
-            String businessName = variables.get("name")+"";//业务单据名称
+
+            String businessName = null;
+            if(variables.containsKey(Constants.NAME)){
+                businessName = (String)variables.get(Constants.NAME);//业务单据名称
+            }
             flowInstance.setBusinessName(businessName);
-            String flowDefVersionId= (String) variables.get("flowDefVersionId");
+
+            String flowDefVersionId = null;
+            if(variables.containsKey(Constants.FLOW_DEF_VERSION_ID)){
+                flowDefVersionId = (String) variables.get(Constants.FLOW_DEF_VERSION_ID);//流程定义版本id
+            }
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
             if(flowDefVersion==null){
-                throw new FlowException("流程版本找不到！");
+                String message = ContextUtil.getMessage("10040");
+                throw new FlowException(message);//"流程版本找不到！
             }
             flowInstance.setFlowDefVersion(flowDefVersion);
             Date now = new Date();
@@ -170,7 +186,8 @@ public class StartEventCompleteListener implements ExecutionListener {
                 String actDefinitionKey = processInstance.getProcessDefinitionKey();
                List<FlowDefVersion> flowDefVersionList = flowDefVersionDao.findByKeyActivate(actDefinitionKey);
                 if(flowDefVersionList == null || flowDefVersionList.isEmpty()){
-                    throw new FlowException("子流程的流程版本找不到！");
+                    String message = ContextUtil.getMessage("10041");
+                    throw new FlowException(message);//子流程的流程版本找不到！
                 }
                 flowDefVersion = flowDefVersionList.get(0);
                 flowInstance.setFlowDefVersion(flowDefVersion);
@@ -188,23 +205,25 @@ public class StartEventCompleteListener implements ExecutionListener {
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(),flowInstance.getFlowDefVersion());
         if(callAfterStartResult!=null && callAfterStartResult.isSuccess()!=true){
-            String message = "流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
-             String messageLogger =message+
-                    ";单据id="+flowInstance.getBusinessId()
-                    +",流程版本id="+flowInstance.getFlowDefVersion().getId()
-                    +",业务对象="+appModule.getCode();
+//            String message = "流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
+            String message = ContextUtil.getMessage("10043",callAfterStartResult.getMessage());
+            String messageLogger =message+
+                    ";businessId="+flowInstance.getBusinessId()
+                    +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
+                    +",appModule.code="+appModule.getCode();
             logger.info(messageLogger);
             throw new FlowException(message);
         }
 
         Map<String, Object> params = new HashMap<String,Object>();;
-        params.put("businessModelCode",businessModel.getClassName());
-        params.put("id",flowInstance.getBusinessId());
-        params.put("status", FlowStatus.INPROCESS);
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+        params.put(Constants.ID,flowInstance.getBusinessId());
+        params.put(Constants.STATUS, FlowStatus.INPROCESS);
         String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
         Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
         if(!result){
-            throw new FlowException("调用重置表单服务-进入流程中状态，失败");
+            String message = ContextUtil.getMessage("10042");
+            throw new FlowException(message);//流程启动-调用重置表单服务失败！
         }
     }
 
@@ -226,8 +245,6 @@ public class StartEventCompleteListener implements ExecutionListener {
                 if(StringUtils.isNotEmpty(checkUrl)){
                     String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String checkUrlPath = baseUrl+checkUrl;
-//                    Map<String, Object> params = new HashMap<>();
-//                    params.put("id",businessKey);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     if(afterStartServiceAync == true){

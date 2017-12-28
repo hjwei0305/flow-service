@@ -93,6 +93,13 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
 
     /**
+     * 业务单据明细服务地址-主要供移动端使用
+     */
+    @Column(name="business_detail_service_url")
+    private String businessDetailServiceUrl;
+
+
+    /**
      * 描述
      */
     @Column(length = 250)
@@ -266,6 +273,14 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
         this.completeTaskServiceUrl = completeTaskServiceUrl;
     }
 
+    public String getBusinessDetailServiceUrl() {
+        return businessDetailServiceUrl;
+    }
+
+    public void setBusinessDetailServiceUrl(String businessDetailServiceUrl) {
+        this.businessDetailServiceUrl = businessDetailServiceUrl;
+    }
+
     //    public String getAppModuleId() {
 //        return appModuleId;
 //    }
@@ -312,6 +327,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("flowTypes", flowTypes)
                 .append("lookUrl", lookUrl)
                 .append("completeTaskServiceUrl",completeTaskServiceUrl)
+                .append("businessDetailServiceUrl",businessDetailServiceUrl)
                 .toString();
     }
 

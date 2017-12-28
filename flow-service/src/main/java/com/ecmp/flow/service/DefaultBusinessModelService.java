@@ -390,7 +390,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             if (entity != null) {
                 try {
 
-                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivtiySonPaths();
+                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                     if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -428,7 +428,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             if (entity != null) {
                 try {
 
-                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivtiySonPaths();
+                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                     if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -467,7 +467,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             if (entity != null) {
                 receiveTaskActDefId = flowInvokeParams.getReceiveTaskActDefId();
                 List<String> callActivtiySonPaths = null;
-                callActivtiySonPaths = flowInvokeParams.getCallActivtiySonPaths();
+                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                 if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();

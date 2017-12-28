@@ -67,6 +67,12 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
     private String completeTaskServiceUrl;
 
     /**
+     * 表单明细地址
+     */
+    @Transient
+    private String businessDetailServiceUrl;
+
+    /**
      * 乐观锁- 版本
      */
 //	@Version
@@ -610,8 +616,9 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
                 .append("candidateAccount", candidateAccount)
                 .append("executeDate", executeDate)
                 .append("depict", depict)
-                .append("depict", trustState)
-                .append("depict", trustOwnerTaskId)
+                .append("trustState", trustState)
+                .append("trustOwnerTaskId", trustOwnerTaskId)
+                .append("businessDetailServiceUrl", businessDetailServiceUrl)
                 .toString();
     }
 
@@ -677,6 +684,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
         this.canBatchApproval = canBatchApproval;
     }
 
+    public String getBusinessDetailServiceUrl() {
+        return businessDetailServiceUrl;
+    }
+
+    public void setBusinessDetailServiceUrl(String businessDetailServiceUrl) {
+        this.businessDetailServiceUrl = businessDetailServiceUrl;
+    }
 
     public String getWebBaseAddress() {
         return webBaseAddress;

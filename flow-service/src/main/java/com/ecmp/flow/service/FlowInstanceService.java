@@ -1,30 +1,24 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.vo.FlowInvokeParams;
+import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
-import com.ecmp.vo.OperateResultWithData;
-import net.sf.json.JSONObject;
-import org.activiti.engine.*;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
@@ -39,7 +33,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -73,27 +66,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private FlowHistoryDao flowHistoryDao;
 
     @Autowired
-    private RepositoryService repositoryService;
-
-    @Autowired
     private RuntimeService runtimeService;
-
-    @Autowired
-    private IdentityService identityService;
-
-    @Autowired
-    private TaskService taskService;
 
     @Autowired
     private HistoryService historyService;
 
     @Autowired
-    private ProcessEngine processEngine;
-
-    @Autowired
-    private FlowServiceUrlDao flowServiceUrlDao;
-
-
+    private FlowListenerTool flowListenerTool;
 
     /**
      * 撤销流程实例
@@ -119,24 +98,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
-
-//    /**
-//     * 主键删除
-//     *
-//     * @param id 主键
-//     * @return 返回操作结果对象
-//     */
-//    public OperateResult deleteById(String id) {
-//        FlowInstance entity = flowInstanceDao.findOne(id);
-//        return this.delete(entity);
-//    }
-
     /**
      * 将流程实例挂起
      * @param id
      */
     @Override
-    public   OperateResult  suspend(String id){
+    public OperateResult suspend(String id){
         FlowInstance entity = flowInstanceDao.findOne(id);
         String actInstanceId = entity.getActInstanceId();
         this.suspendActiviti(actInstanceId);
@@ -148,7 +115,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * 获取流程实例在线任务id列表
      * @param id
      */
-    public Map<String,String>  currentNodeIds(String id){
+    public Map<String,String> currentNodeIds(String id){
         FlowInstance flowInstance = flowInstanceDao.findOne(id);
         Map<String,String> nodeIds = new HashMap<String,String>();
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
@@ -244,19 +211,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return nodeIds;
     }
 
-//    /**
-//     * 获取流程实例在线任务id列表
-//     * @param businessModelId  业务实体类型id
-//     */
-//    public Set<String>  currentNodeIdsByBusinessModelId(String businessModelId,String businessId){
-//                      flowInstanceDao.
-//    }
-
     /**
      * 将流程实例挂起
      * @param processInstanceId
      */
-    private  void  suspendActiviti(String processInstanceId){
+    private void suspendActiviti(String processInstanceId){
         runtimeService.suspendProcessInstanceById(processInstanceId);// 挂起该流程实例
     }
 
@@ -289,6 +248,21 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return flowInstanceListReal;
     }
 
+    private void flowTaskSort(List<FlowTask>  flowTaskList){
+        //去重复
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            Set<FlowTask> tempflowTaskSet = new LinkedHashSet<>();
+            tempflowTaskSet.addAll(flowTaskList);
+            flowTaskList.clear();
+            flowTaskList.addAll(tempflowTaskSet);
+            Collections.sort(flowTaskList, new Comparator<FlowTask>() {
+                @Override
+                public int compare(FlowTask flowTask1, FlowTask flowTask2) {
+                    return  timeCompare(flowTask1.getCreatedDate(),flowTask2.getCreatedDate());
+                }
+            });
+        }
+    }
     /**
      * 通过单据id，获取流程实例及关联待办及任务历史
      * @param businessId
@@ -325,32 +299,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             for(ProcessTrackVO processTrackVO:result){
                List<FlowHistory> flowHistoryList = processTrackVO.getFlowHistoryList();
                List<FlowTask>  flowTaskList =  processTrackVO.getFlowTaskList();
-                //去重复
-                if(flowTaskList!=null && !flowTaskList.isEmpty()){
-                    Set<FlowTask> tempflowTaskSet = new LinkedHashSet<>();
-                    tempflowTaskSet.addAll(flowTaskList);
-                    flowTaskList.clear();
-                    flowTaskList.addAll(tempflowTaskSet);
-                    Collections.sort(flowTaskList, new Comparator() {
-                        @Override
-                        public int compare(Object o1, Object o2) {
-                            FlowTask flowTask1 = (FlowTask)o1;
-                            FlowTask flowTask2 = (FlowTask)o2;
-                            Long time1= flowTask1.getCreatedDate().getTime();
-                            Long time2= flowTask2.getCreatedDate().getTime();
-                            int result = 0;
-                            if((time1-time2)>0){
-                                result = -1;
-                            }else if((time1-time2)==0){
-                                result = 0;
-                            }else {
-                                result = 1;
-                            }
-                            return  result;
-                        }
-                    });
-                }
-
+               flowTaskSort(flowTaskList);
 
                if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
                    //去重复
@@ -358,22 +307,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                    tempFlowHistorySet.addAll(flowHistoryList);
                    flowHistoryList.clear();
                    flowHistoryList.addAll(tempFlowHistorySet);
-                   Collections.sort(flowHistoryList, new Comparator() {
+                   Collections.sort(flowHistoryList, new Comparator<FlowHistory>() {
                        @Override
-                       public int compare(Object o1, Object o2) {
-                           FlowHistory flowHistory1 = (FlowHistory)o1;
-                           FlowHistory flowHistory2 = (FlowHistory)o2;
-                           Long time1= flowHistory1.getActEndTime().getTime();
-                           Long time2= flowHistory2.getActEndTime().getTime();
-                           int result = 0;
-                           if((time1-time2)>0){
-                               result = 1;
-                           }else if((time1-time2)==0){
-                               result = 0;
-                           }else {
-                               result = -1;
-                           }
-                           return  result;
+                       public int compare(FlowHistory flowHistory1, FlowHistory flowHistory2) {
+                           Date time1= flowHistory1.getActEndTime();
+                           Date time2= flowHistory2.getActEndTime();
+                           return  timeCompare(time1,time2);
                        }
                    });
                }
@@ -383,6 +322,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
+    private int timeCompare( Date date1, Date date2){
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(date1);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(date2);
+        return calendar2.compareTo(calendar1);
+    }
     public List<ProcessTrackVO> getProcessTrackVOById(String instanceId){
         FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
         List<ProcessTrackVO> result = new ArrayList<ProcessTrackVO>();
@@ -412,31 +358,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             for(ProcessTrackVO processTrackVO:result){
                 List<FlowHistory> flowHistoryList = processTrackVO.getFlowHistoryList();
                 List<FlowTask>  flowTaskList =  processTrackVO.getFlowTaskList();
-                //去重复
-                if(flowTaskList!=null && !flowTaskList.isEmpty()){
-                    Set<FlowTask> tempflowTaskSet = new LinkedHashSet<>();
-                    tempflowTaskSet.addAll(flowTaskList);
-                    flowTaskList.clear();
-                    flowTaskList.addAll(tempflowTaskSet);
-                    Collections.sort(flowTaskList, new Comparator() {
-                        @Override
-                        public int compare(Object o1, Object o2) {
-                            FlowTask flowTask1 = (FlowTask)o1;
-                            FlowTask flowTask2 = (FlowTask)o2;
-                            Long time1= flowTask1.getCreatedDate().getTime();
-                            Long time2= flowTask2.getCreatedDate().getTime();
-                            int result = 0;
-                            if((time1-time2)>0){
-                                result = -1;
-                            }else if((time1-time2)==0){
-                                result = 0;
-                            }else {
-                                result = 1;
-                            }
-                            return  result;
-                        }
-                    });
-                }
+                flowTaskSort(flowTaskList);
 
 
                 if(flowHistoryList!=null && !flowHistoryList.isEmpty()){
@@ -445,28 +367,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     tempFlowHistorySet.addAll(flowHistoryList);
                     flowHistoryList.clear();
                     flowHistoryList.addAll(tempFlowHistorySet);
-                    Collections.sort(flowHistoryList, new Comparator() {
+                    Collections.sort(flowHistoryList, new Comparator<FlowHistory>() {
                         @Override
-                        public int compare(Object o1, Object o2) {
-                            FlowHistory flowHistory1 = (FlowHistory)o1;
-                            FlowHistory flowHistory2 = (FlowHistory)o2;
-                            Long time1= flowHistory1.getActEndTime().getTime();
-                            Long time2= flowHistory2.getActEndTime().getTime();
-                            int result = 0;
-                            if((time1-time2)>0){
-                                result = 1;
-                            }else if((time1-time2)==0){
-                                time1= flowHistory1.getActStartTime().getTime();
-                                time2= flowHistory2.getActStartTime().getTime();
-                                if((time1-time2)>0){
-                                    result = 1;
-                                }else if((time1-time2)==0){
-                                    result = 0;
-                                }else {
-                                    result = -1;
-                                }
-                            }else {
-                                result = -1;
+                        public int compare(FlowHistory flowHistory1, FlowHistory flowHistory2) {
+                            Date time1= flowHistory1.getActEndTime();
+                            Date time2= flowHistory2.getActEndTime();
+                            int result = timeCompare(time2,time1);
+                            if(result==0){
+                                time1= flowHistory1.getActStartTime();
+                                time2= flowHistory2.getActStartTime();
+                                result = timeCompare(time2,time1);
                             }
                             return  result;
                         }
@@ -559,7 +469,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             result = new ArrayList<Boolean>(ids.size());
             for(String id:ids){
               Boolean canEnd = this.checkCanEnd(id);
-                result.add(canEnd);
+              result.add(canEnd);
             }
         }
         return result;
@@ -701,22 +611,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (flowInstanceMap != null && !flowInstanceMap.isEmpty()) {
                 List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
                 flowInstanceList.addAll(flowInstanceMap.values());//加入排序，按照创建时候倒序，保证子流程先终止
-                Collections.sort(flowInstanceList, new Comparator() {
+                Collections.sort(flowInstanceList, new Comparator<FlowInstance>() {
                     @Override
-                    public int compare(Object o1, Object o2) {
-                        FlowInstance flowInstance1 = (FlowInstance) o1;
-                        FlowInstance flowInstance2 = (FlowInstance) o2;
-                        Long time1 = flowInstance1.getCreatedDate().getTime();
-                        Long time2 = flowInstance2.getCreatedDate().getTime();
-                        int result = 0;
-                        if ((time1 - time2) > 0) {
-                            result = -1;
-                        } else if ((time1 - time2) == 0) {
-                            result = 0;
-                        } else {
-                            result = 1;
-                        }
-                        return result;
+                    public int compare(FlowInstance flowInstance1, FlowInstance flowInstance2) {
+                        return timeCompare(flowInstance1.getCreatedDate(),flowInstance2.getCreatedDate());
                     }
                 });
                 for (FlowInstance fTemp : flowInstanceList) {
@@ -737,11 +635,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 flowHistory.setId(null);
                                 flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
                                 if (!force) {
-                                    flowHistory.setDepict("【被发起人终止流程】");
+                                    flowHistory.setDepict(ContextUtil.getMessage("10036"));//【被发起人终止流程】
                                 } else {
-                                    flowHistory.setDepict("【被管理员强制终止流程】");
+                                    flowHistory.setDepict(ContextUtil.getMessage("10035"));//"【被管理员强制终止流程】"
                                 }
-
                                 flowHistory.setFlowTaskName(flowTask.getTaskName());
                                 Date now = new Date();
                                 if (preFlowHistory != null) {
@@ -777,14 +674,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     fTemp.setEnded(true);
                     fTemp.setManuallyEnd(true);
                     flowInstanceDao.save(fTemp);
-//                if(endSign == 1)
-//                throw new FlowException("tt");
                     //重置客户端表单流程状态
                     String businessId = fTemp.getBusinessId();
                     FlowStatus status = FlowStatus.INIT;
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                     ExpressionUtil.resetState(businessModel, businessId, status);
-
                     //结束后触发
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);
@@ -843,34 +737,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callEndServiceAndSon(son,endSign);
             }
         }
-        callEndService(flowInstance.getBusinessId(),flowDefVersion,endSign);
+        flowListenerTool.callEndService(flowInstance.getBusinessId(),flowDefVersion,endSign);
     }
 
-    private void callEndService( String businessKey,FlowDefVersion flowDefVersion,int endSign){
-        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
-            String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
-            if(StringUtils.isNotEmpty(endCallServiceUrlId)){
-                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
-                String checkUrl = flowServiceUrl.getUrl();
-                if(StringUtils.isNotEmpty(checkUrl)){
-                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String endCallServiceUrlPath = baseUrl+checkUrl;
-                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
-                    flowInvokeParams.setId(businessKey);
-                    Map<String,String> params = new HashMap<String,String>();
-                    params.put("endSign",endSign+"");
-                    flowInvokeParams.setParams(params);
-                    new Thread(new Runnable() {//模拟异步
-                        @Override
-                        public void run() {
-                            FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                            logger.info(flowOperateResult.toString());
-                        }
-                    }).start();
-                }
-            }
-        }
-    }
 
     /**
      *  对包含子流程在内进行终止前服务调用检查
@@ -888,43 +757,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
-        FlowOperateResult callBeforeEndResult = callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion,endSign);
+        FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion,endSign);
         if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
-            String message = "单据id="+flowInstance.getBusinessId()
-                    +",流程版本id="+flowInstance.getFlowDefVersion()
-                    +",业务对象="+appModule.getCode()
-                    +",流程结束前检查出错，返回消息:"+callBeforeEndResult.getMessage();
+            String message = "BusinessId="+flowInstance.getBusinessId()
+                    +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
+                    +",appModule.code="+appModule.getCode()
+                    +",Check the error before the end of the process and return the message :"+callBeforeEndResult.getMessage();
             logger.info(message);
             throw new FlowException(message);
         }
         return callBeforeEndResult;
     }
-    /**
-     *  流程即将结束时调用服务检查，如果失败流程结束失败，同步
-     * @param businessKey
-     * @param flowDefVersion
-     * @return
-     */
-    private FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign){
-        FlowOperateResult result = null;
-        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
-            String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
 
-            if(StringUtils.isNotEmpty(endBeforeCallServiceUrlId)){
-                FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
-                String checkUrl = flowServiceUrl.getUrl();
-                if(StringUtils.isNotEmpty(checkUrl)){
-                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String checkUrlPath = baseUrl+checkUrl;
-                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
-                    flowInvokeParams.setId(businessKey);
-                    Map<String,String> params = new HashMap<String,String>();
-                    params.put("endSign",endSign+"");
-                    flowInvokeParams.setParams(params);
-                    result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                }
-            }
-        }
-        return result;
-    }
 }

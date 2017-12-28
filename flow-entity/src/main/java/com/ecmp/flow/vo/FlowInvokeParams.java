@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：事件输入参数VO
+ * 实现功能：服务、事件输入参数VO
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -23,7 +23,7 @@ public class FlowInvokeParams implements Serializable{
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String receiveTaskActDefId;//针对接收任务，传递接收任务key
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
-    private List<String> callActivtiySonPaths;//子流程路径
+    private List<String> callActivitySonPaths;//调用子流程路径
 
     public String getId() {
         return id;
@@ -73,11 +73,11 @@ public class FlowInvokeParams implements Serializable{
         this.reject = reject;
     }
 
-    public List<String> getCallActivtiySonPaths() {
-        return callActivtiySonPaths;
+    public List<String> getCallActivitySonPaths() {
+        return callActivitySonPaths;
     }
 
-    public void setCallActivtiySonPaths(List<String> callActivtiySonPaths) {
-        this.callActivtiySonPaths = callActivtiySonPaths;
+    public void setCallActivitySonPaths(List<String> callActivitySonPaths) {
+        this.callActivitySonPaths = callActivitySonPaths;
     }
 }

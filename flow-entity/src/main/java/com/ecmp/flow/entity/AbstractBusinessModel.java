@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.annotation.Remark;
 import com.ecmp.flow.constant.ConditionAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.conditon.DefaultBusinessModelCondition;
@@ -234,15 +235,18 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
 
     @Override
     @ConditionAnnotaion(name="工作说明",rank = -10000,canSee=false)
+    @Remark("工作说明")
     public String getWorkCaption(){return this.workCaption;}
 
     @Override
     @ConditionAnnotaion(name="业务名称",rank = -10000,canSee=false)
+    @Remark("业务名称")
     public String getName() {
         return name;
     }
 
     @ConditionAnnotaion(name="业务单号",rank = -10000,canSee=false)
+    @Remark("业务单号")
     public String getBusinessCode() {
         return businessCode;
     }

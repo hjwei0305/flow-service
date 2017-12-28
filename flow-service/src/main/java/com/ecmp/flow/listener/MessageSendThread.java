@@ -49,12 +49,9 @@ public class MessageSendThread implements Runnable {
     private DelegateExecution execution;
     private String contentTemplateCode;
 
-
     private FlowTaskDao flowTaskDao;
 
-
     private FlowDefVersionDao flowDefVersionDao;
-
 
     private HistoryService historyService;
 
@@ -64,21 +61,14 @@ public class MessageSendThread implements Runnable {
 
     private TaskService taskService;
 
-    private String dateFormat = "yyyy-MM-dd HH:mm:ss";
-
-
     public MessageSendThread() {
     }
-
-    ;
 
     public MessageSendThread(String eventType, DelegateExecution execution, String contentTemplateCode) {
         this.eventType = eventType;
         this.execution = execution;
         this.contentTemplateCode = contentTemplateCode;
     }
-
-    ;
 
     @Override
     public void run() {
@@ -89,33 +79,24 @@ public class MessageSendThread implements Runnable {
         ProcessInstance instance = taskEntity.getProcessInstance();
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(instance.getId()).singleResult();
         String startUserId = null;
-//        Date startTime = null;
-//        String startTimeStr = null;
+
         if (historicProcessInstance != null) {
             startUserId = historicProcessInstance.getStartUserId();
-//            startTime = historicProcessInstance.getStartTime();
-//            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
         } else {
             startUserId = ContextUtil.getUserId();
-//            startTime = new Date();
-//            startTimeStr = new SimpleDateFormat(dateFormat).format(startTime);
         }
-
-//        String businessId = instance.getBusinessKey();
         FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
         String flowDefJson = flowDefVersion.getDefJson();
         JSONObject defObj = JSONObject.fromObject(flowDefJson);
         Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-
         net.sf.json.JSONObject notify = currentNode.getJSONObject("nodeConfig").getJSONObject("notify");
         if (notify != null) {
-
             JSONObject currentNotify = notify.getJSONObject(eventType);
 //            String[] notifyType = {"notifyExecutor", "notifyStarter", "notifyPosition"};
             if (currentNotify != null ) {//只有执行前才能发给执行人
                 JSONArray selectType = null;
-//发送给流程的实际执行人
+                //发送给流程的实际执行人
                 if("before".equalsIgnoreCase(eventType)) {
                     JSONObject notifyExecutor = null;
                     try {
@@ -124,15 +105,11 @@ public class MessageSendThread implements Runnable {
                     }catch (Exception e){
                         logger.error(e.getMessage());
                     }
-
                     if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
                         Object[] types = selectType.toArray();
                         for (Object type : types) {
                             if ("EMAIL".equalsIgnoreCase(type.toString())) {
-                                INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                                 EcmpMessage message = new EcmpMessage();
-                                String taskName = (String) taskEntity.getActivity().getProperty("name");
-                                message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                                 String senderId = ContextUtil.getUserId();
                                 message.setSenderId(senderId);
                                 List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
@@ -140,135 +117,50 @@ public class MessageSendThread implements Runnable {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
-
-                                Map<String, String> contentTemplateParams = new HashMap<String, String>();
-                                String workCaption = (String) execution.getVariable("workCaption");
-                                String businessName = (String) execution.getVariable("name");
-                                String businessCode = (String) execution.getVariable("businessCode");
-                                String preOpinion = null;
-                                String opinion = null;
-
-                                if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                    preOpinion = execution.getVariable("opinion") + "";
-                                } else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                    opinion = execution.getVariable("opinion") + "";
-                                    String eventName = execution.getEventName();
-                                    if("end".equalsIgnoreCase(eventName)){
-                                        opinion=((ExecutionEntity) execution).getDeleteReason();
-                                    }
-                                }
-
-                                contentTemplateParams.put("businessName", businessName);//业务单据名称
-                                contentTemplateParams.put("businessCode", businessCode);//业务单据代码
-//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                                if ("before".equalsIgnoreCase(eventType)) {
-                                    contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
-                                } else if ("after".equalsIgnoreCase(eventType)) {
-                                    contentTemplateParams.put("opinion", opinion);//审批意见
-                                }
-                                contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
-//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
+                                Map<String, String> contentTemplateParams = getParamsMap();
                                 contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
                                 message.setContentTemplateParams(contentTemplateParams);
                                 message.setContentTemplateCode(contentTemplateCode);//模板代码
-
-                                List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-                                notifyTypes.add(NotifyType.Email);
-                                message.setNotifyTypes(notifyTypes);
-//                            System.out.println(JsonUtils.toJson(message));
                                 message.setCanToSender(canToSender);
-//                            iNotifyService.send(message);
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        iNotifyService.send(message);
-                                    }
-                                }).start();
-                            } else if ("SMS".equalsIgnoreCase(type.toString())) {
-
-                            } else if ("APP".equalsIgnoreCase(type.toString())) {
-
+                                this.emailSend(message,flowDefVersion);
+                            } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
+                            } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
                             }
                         }
                     }
                 }
-              String multiInstance =  (String)taskEntity.getActivity().getProperty("multiInstance");
-               Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
-              if((isMmultiInstance && taskEntity.getTransition()!=null) ||  !isMmultiInstance){
+                String multiInstance =  (String)taskEntity.getActivity().getProperty("multiInstance");
+                Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
+                if((isMmultiInstance && taskEntity.getTransition()!=null) ||  !isMmultiInstance){
                   //发送给流程启动人
-                  JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter");
-                  selectType = notifyStarter.getJSONArray("type");
-                  if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
-
-                      Object[] types = selectType.toArray();
-                      for (Object type : types) {
+                    JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter");
+                    selectType = notifyStarter.getJSONArray("type");
+                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                       Object[] types = selectType.toArray();
+                       for (Object type : types) {
                           if ("EMAIL".equalsIgnoreCase(type.toString())) {
-                              INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                               EcmpMessage message = new EcmpMessage();
-                              String taskName = (String)taskEntity.getActivity().getProperty("name");
-                              message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                               String senderId = ContextUtil.getUserId();
                               message.setSenderId(senderId);
-
                               List<String> receiverIds = new ArrayList<String>();
                               receiverIds.add(startUserId);//流程启动人
                               message.setReceiverIds(receiverIds);
-
-                              Map<String, String> contentTemplateParams = new HashMap<String, String>();
-                              String workCaption = (String) execution.getVariable("workCaption");
-                              String businessName = (String) execution.getVariable("name");
-                              String businessCode = (String) execution.getVariable("businessCode");
-                              String preOpinion = null;
-                              String opinion = null;
-
-                              if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                  preOpinion =  execution.getVariable("opinion")+"";
-                              }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                  opinion =  execution.getVariable("opinion")+"";
-                                  String eventName = execution.getEventName();
-                                  if("end".equalsIgnoreCase(eventName)){
-                                      opinion=((ExecutionEntity) execution).getDeleteReason();
-                                  }
-                              }
-
-                              contentTemplateParams.put("businessName", businessName);//业务单据名称
-                              contentTemplateParams.put("businessCode", businessCode);//业务单据代码
-//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                              if ("before".equalsIgnoreCase(eventType)) {
-                                  contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
-                              } else if ("after".equalsIgnoreCase(eventType)) {
-                                  contentTemplateParams.put("opinion", opinion);//审批意见
-                              }
-                              contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
-//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
+                              Map<String, String> contentTemplateParams = getParamsMap();
                               contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
-
                               message.setContentTemplateParams(contentTemplateParams);
                               message.setContentTemplateCode(contentTemplateCode);//模板代码
-
-                              List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-                              notifyTypes.add(NotifyType.Email);
-                              message.setNotifyTypes(notifyTypes);
                               message.setCanToSender(canToSender);
-//                            iNotifyService.send(message);
-                              new Thread(new Runnable() {
-                                  @Override
-                                  public void run() {
-                                      iNotifyService.send(message);
-                                  }
-                              }).start();
-
-                          } else if ("SMS".equalsIgnoreCase(type.toString())) {
-                          } else if ("APP".equalsIgnoreCase(type.toString())) {
+                              this.emailSend(message,flowDefVersion);
+                          } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
+                          } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
                           }
                       }
                   }
 
-//发送给选定的岗位
+                  //发送给选定的岗位
                   JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");
                   selectType = notifyPosition.getJSONArray("type");
                   if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
-
                       Object[] types = selectType.toArray();
                       for (Object type : types) {
                           if ("EMAIL".equalsIgnoreCase(type.toString())) {
@@ -282,13 +174,10 @@ public class MessageSendThread implements Runnable {
                                           idList.add(positionId);
                                       }
                                   }
-//                                  IPositionService iPositionService = ApiClient.createProxy(IPositionService.class);
-//                                  List<Executor>  employees  = iPositionService.getExecutorsByPositionIds(idList);
                                   Map<String,Object> params = new HashMap();
                                   params.put("positionIds",idList);
                                   String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
                                   List<Executor>  employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
                                   Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
                                   List<String> receiverIds = new ArrayList<String>();
                                   if(employees != null && !employees.isEmpty() ){
@@ -299,63 +188,20 @@ public class MessageSendThread implements Runnable {
                                       return;
                                   }
                                   receiverIds.addAll(linkedHashSetReceiverIds);
-                                  INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
                                   EcmpMessage message = new EcmpMessage();
-                                  String taskName = (String)taskEntity.getActivity().getProperty("name");
-                                  message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
                                   String senderId = ContextUtil.getUserId();
                                   message.setSenderId(senderId);
-
-
                                   message.setReceiverIds(receiverIds);
-
-                                  Map<String, String> contentTemplateParams = new HashMap<String, String>();
-                                  String workCaption = (String) execution.getVariable("workCaption");
-                                  String businessName = (String) execution.getVariable("name");
-                                  String businessCode = (String) execution.getVariable("businessCode");
-                                  String preOpinion = null;
-                                  String opinion = null;
-
-                                  if ("before".equalsIgnoreCase(eventType)) {//上一步执行意见
-                                      preOpinion =  execution.getVariable("opinion")+"";
-                                  }else if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
-                                      opinion =  execution.getVariable("opinion")+"";
-                                      String eventName = execution.getEventName();
-                                      if("end".equalsIgnoreCase(eventName)){
-                                          opinion=((ExecutionEntity) execution).getDeleteReason();
-                                      }
-                                  }
-
-                                  contentTemplateParams.put("businessName", businessName);//业务单据名称
-                                  contentTemplateParams.put("businessCode", businessCode);//业务单据代码
-//                            contentTemplateParams.put("businessId", businessId);//业务单据Id
-                                  if ("before".equalsIgnoreCase(eventType)) {
-                                      contentTemplateParams.put("preOpinion", preOpinion);//上一步审批意见
-                                  } else if ("after".equalsIgnoreCase(eventType)) {
-                                      contentTemplateParams.put("opinion", opinion);//审批意见
-                                  }
-                                  contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
-//                            contentTemplateParams.put("startTime",startTimeStr );//流程启动时间
+                                  Map<String, String> contentTemplateParams = getParamsMap();
                                   contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
-
                                   message.setContentTemplateParams(contentTemplateParams);
                                   message.setContentTemplateCode(contentTemplateCode);//模板代码
-
-                                  List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-                                  notifyTypes.add(NotifyType.Email);
-                                  message.setNotifyTypes(notifyTypes);
                                   message.setCanToSender(canToSender);
-//                            iNotifyService.send(message);
-                                  new Thread(new Runnable() {
-                                      @Override
-                                      public void run() {
-                                          iNotifyService.send(message);
-                                      }
-                                  }).start();
+                                  this.emailSend(message,flowDefVersion);
                               }
 
-                          } else if ("SMS".equalsIgnoreCase(type.toString())) {
-                          } else if ("APP".equalsIgnoreCase(type.toString())) {
+                          } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
+                          } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
                           }
                       }
                   }
@@ -365,6 +211,44 @@ public class MessageSendThread implements Runnable {
     }
 
 
+    private void emailSend(EcmpMessage message, FlowDefVersion flowDefVersion ){
+        INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+        ExecutionEntity taskEntity = (ExecutionEntity) execution;
+        String taskName = (String) taskEntity.getActivity().getProperty("name");
+        message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
+        List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+        notifyTypes.add(NotifyType.Email);
+        message.setNotifyTypes(notifyTypes);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                iNotifyService.send(message);
+            }
+        }).start();
+    }
+    private Map<String, String> getParamsMap(){
+        Map<String, String> contentTemplateParams = new HashMap<String, String>();
+        String workCaption = (String) execution.getVariable("workCaption");
+        String businessName = (String) execution.getVariable("name");
+        String businessCode = (String) execution.getVariable("businessCode");
+        String opinion = (String) execution.getVariable("opinion") ;
+        if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
+            String eventName = execution.getEventName();
+            if("end".equalsIgnoreCase(eventName)){
+                opinion=((ExecutionEntity) execution).getDeleteReason();
+            }
+        }
+
+        contentTemplateParams.put("businessName", businessName);//业务单据名称
+        contentTemplateParams.put("businessCode", businessCode);//业务单据代码
+        if ("before".equalsIgnoreCase(eventType)) {
+            contentTemplateParams.put("preOpinion", opinion);//上一步审批意见
+        } else if ("after".equalsIgnoreCase(eventType)) {
+            contentTemplateParams.put("opinion", opinion);//审批意见
+        }
+        contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
+        return contentTemplateParams;
+    }
 
     private List<String> getReceiverIds(net.sf.json.JSONObject currentNode ,ExecutionEntity taskEntity ){
         List<String> receiverIds = new ArrayList<String>();

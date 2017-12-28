@@ -1,6 +1,7 @@
 package com.ecmp.flow.activiti.ext;
 
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.util.ConditionUtil;
 import com.ecmp.flow.util.ExpressionUtil;
 import org.activiti.engine.RepositoryService;
@@ -38,30 +39,22 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
     protected void leave(ActivityExecution execution) {
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         repositoryService = (RepositoryService) applicationContext.getBean("repositoryService");
-        String processInstanceId = execution.getProcessInstanceId();
-        String processDefId = execution.getProcessDefinitionId();
-        //execution.getId()
         List<PvmTransition> outSequenceList = execution.getActivity().getOutgoingTransitions();
         if (outSequenceList != null && outSequenceList.size() > 0) {
             for (PvmTransition pv : outSequenceList) {
-                String pvId = pv.getId();
-                String conditionText = (String) pv.getProperty("conditionText");
-                String name = (String) pv.getProperty("name");
-                Condition conditon = (Condition) pv.getProperty("condition");
+                String conditionText = (String) pv.getProperty(Constants.CONDITION_TEXT);
                 if(conditionText != null && conditionText.startsWith("#{")){
-                    String conditonFinal = conditionText.substring(conditionText.indexOf("#{")+2, conditionText.lastIndexOf("}"));
+                    String conditionFinal = conditionText.substring(conditionText.indexOf("#{")+2, conditionText.lastIndexOf("}"));
                     Map<String, Object> map = execution.getVariables();
-                    if(ConditionUtil.groovyTest(conditonFinal, map)){
+                    if(ConditionUtil.groovyTest(conditionFinal, map)){
                         execution.take(pv);
                         return;
                     }
                 }
             }
         }
-
         // 执行父类的写法，以使其还是可以支持旧式的在跳出线上写条件的做法
         super.leave(execution);
-
     }
 
 }

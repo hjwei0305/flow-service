@@ -2,6 +2,7 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
@@ -35,7 +36,7 @@ public class ServiceCallUtil {
         FlowOperateResult result = null;
         if(!StringUtils.isEmpty(serviceUrlId)){
             ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-            FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao)applicationContext.getBean("flowServiceUrlDao");
+            FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao)applicationContext.getBean(Constants.FLOW_SERVICE_URL_DAO);
             FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(serviceUrlId);
             if(flowServiceUrl != null){
               String  clientUrl = flowServiceUrl.getUrl();
@@ -46,35 +47,37 @@ public class ServiceCallUtil {
                 if(org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])){
                     try {
                         JSONObject jsonObject = JSONObject.fromObject(args[0]);
-                        if(jsonObject.has("approved")){
-                            String approved = jsonObject.get("approved") + "";
-                            if (StringUtils.isNotEmpty(approved) && !"null".equalsIgnoreCase(approved)) {
+                        if(jsonObject.has(Constants.APPROVED)){
+                            String approved = (String) jsonObject.get(Constants.APPROVED);
+                            if (StringUtils.isNotEmpty(approved) && !Constants.NULL_S.equalsIgnoreCase(approved)) {
                                 params.setAgree(Boolean.parseBoolean(approved));
                             }
                         }
-                        if(jsonObject.has("approveResult")){
-                            String approveResult = jsonObject.get("approveResult") + "";
-                            if (StringUtils.isNotEmpty(approveResult)) {
+                        if(jsonObject.has(Constants.APPROVE_RESULT)){
+                            String approveResult = (String) jsonObject.get(Constants.APPROVE_RESULT);
+                            if (StringUtils.isNotEmpty(approveResult) && !Constants.NULL_S.equalsIgnoreCase(approveResult)) {
                                 params.setFinalAgree(Boolean.parseBoolean(approveResult));
                             }
                         }
-                        if(jsonObject.has("receiveTaskActDefId")){
-                            String receiveTaskActDefId = (String) jsonObject.get("receiveTaskActDefId") ;
-                            if (StringUtils.isNotEmpty(receiveTaskActDefId)) {
+                        if(jsonObject.has(Constants.RECEIVE_TASK_ACT_DEF_ID)){
+                            String receiveTaskActDefId = (String) jsonObject.get(Constants.RECEIVE_TASK_ACT_DEF_ID) ;
+                            if (StringUtils.isNotEmpty(receiveTaskActDefId) && !Constants.NULL_S.equalsIgnoreCase(receiveTaskActDefId)) {
                                 params.setReceiveTaskActDefId(receiveTaskActDefId);
                             }
                         }
-                        if(jsonObject.has("reject")){
-                            int reject = jsonObject.getInt("reject");
+                        if(jsonObject.has(Constants.REJECT)){
+                            int reject = jsonObject.getInt(Constants.REJECT);
                             if(reject==1){
                                 params.setReject(true);//是否被驳回
                             }
                         }
-                        if(jsonObject.has("callActivtiySonPaths")){
-                            List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                            params.setCallActivtiySonPaths(callActivtiySonPaths);
+                        if(jsonObject.has(Constants.CALL_ACTIVITY_SON_PATHS)){
+                            List<String> callActivitySonPaths = jsonObject.getJSONArray(Constants.CALL_ACTIVITY_SON_PATHS);
+                            params.setCallActivitySonPaths(callActivitySonPaths);
                         }
                     }catch (Exception e){
+                        e.printStackTrace();
+                        throw e;
                     }
                 }
                 params.setId(businessId);
@@ -89,7 +92,7 @@ public class ServiceCallUtil {
                 }
                 String exceptionMessageFinal = exceptionMessage;
                 FlowOperateResult resultAy = result;
-                new Thread(new Runnable() {//模拟异步
+                new Thread(new Runnable() {//模拟异步,上传调用日志
                     @Override
                     public void run() {
                         String paramsStr = JsonUtils.toJson(params);
@@ -103,7 +106,7 @@ public class ServiceCallUtil {
                     }
                 }).start();
             }else {
-                throw new FlowException("服务对象找不到");
+                throw new FlowException("serviceUrlId='"+serviceUrlId+"'s service object can't be found!");
             }
         }
          return result;

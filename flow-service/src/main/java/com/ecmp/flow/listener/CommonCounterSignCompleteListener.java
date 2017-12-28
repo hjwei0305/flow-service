@@ -1,21 +1,13 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.flow.dao.FlowDefVersionDao;
-import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.vo.bpmn.Definition;
-import net.sf.json.JSONObject;
-import org.activiti.engine.HistoryService;
+import com.ecmp.flow.common.util.Constants;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -35,16 +27,7 @@ import java.util.Map;
  */
 //@Component(value="commonCounterSignCompleteListener")
 public class CommonCounterSignCompleteListener implements TaskListener{
-
-    @Autowired
-    private FlowTaskDao flowTaskDao;
-
-    @Autowired
-    private FlowDefVersionDao flowDefVersionDao;
-
-    @Autowired
-    private HistoryService historyService;
-
+    
     @Autowired
     private RuntimeService runtimeService;
 
@@ -56,20 +39,20 @@ public class CommonCounterSignCompleteListener implements TaskListener{
     public void notify(DelegateTask delegateTask) {
         Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(delegateTask.getProcessInstanceId());
         Integer counterSignAgree = 0;//同意票数
-        if(processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey())!=null) {
-            counterSignAgree = (Integer) processVariables.get("counterSign_agree"+delegateTask.getTaskDefinitionKey()).getValue();//同意票数
+        if(processVariables.get(Constants.COUNTER_SIGN_AGREE+delegateTask.getTaskDefinitionKey())!=null) {
+            counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE+delegateTask.getTaskDefinitionKey()).getValue();//同意票数
         }
         Integer counterSignOpposition = 0;//反对
-        if( processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey())!=null) {
-             counterSignOpposition = (Integer) processVariables.get("counterSign_opposition"+delegateTask.getTaskDefinitionKey()).getValue();
+        if( processVariables.get(Constants.COUNTER_SIGN_OPPOSITION+delegateTask.getTaskDefinitionKey())!=null) {
+             counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
         Integer counterSignWaiver = 0;//弃权
-        if( processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey())!=null) {
-            counterSignOpposition = (Integer) processVariables.get("counterSign_waiver"+delegateTask.getTaskDefinitionKey()).getValue();
+        if( processVariables.get(Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey())!=null) {
+            counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
-        String approved = delegateTask.getVariable("approved")+"";
+        String approved = delegateTask.getVariable(Constants.APPROVED)+"";
 
         if("true".equalsIgnoreCase(approved)){
             counterSignAgree++;
@@ -78,8 +61,8 @@ public class CommonCounterSignCompleteListener implements TaskListener{
         }else {
             counterSignWaiver++;
         }
-        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_agree"+delegateTask.getTaskDefinitionKey(), counterSignAgree);
-        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_opposition"+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
-        runtimeService.setVariable(delegateTask.getProcessInstanceId(),"counterSign_waiver"+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),Constants.COUNTER_SIGN_AGREE+delegateTask.getTaskDefinitionKey(), counterSignAgree);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),Constants.COUNTER_SIGN_OPPOSITION+delegateTask.getTaskDefinitionKey(), counterSignOpposition);
+        runtimeService.setVariable(delegateTask.getProcessInstanceId(),Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey(), counterSignWaiver);
     }
 }
