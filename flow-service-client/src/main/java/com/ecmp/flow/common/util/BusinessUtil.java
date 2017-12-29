@@ -35,7 +35,6 @@ public class BusinessUtil {
 //            //额外属性值初始化
 //            Method customLogicMethod = sourceClass.getMethod("customLogic");
 //            customLogicMethod.invoke(conditionPojo);
-
             Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
             result = new HashMap<String, Object>();
             for (Method sourceMethod : sourceMethods) {
