@@ -2,6 +2,7 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -12,6 +13,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskPageResultVO;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -76,6 +78,7 @@ public class FlowTaskController {
         search.addQuickSearchProperty("flowInstance.businessCode");
         search.addQuickSearchProperty("flowInstance.businessModelRemark");
         search.addQuickSearchProperty("creatorName");
+        LogUtil.addExceptionLog("测试移动端调工作流页面[" + ContextUtil.getSessionUser() + "]  ACCESS_TOKEN  " + ContextUtil.getAccessToken());
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         FlowTaskPageResultVO<FlowTask> flowTaskPageResult = proxy.findByBusinessModelIdWithAllCount(modelId,search);
         return flowTaskPageResult;
