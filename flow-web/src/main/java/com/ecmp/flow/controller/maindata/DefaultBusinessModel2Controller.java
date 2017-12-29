@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -134,6 +135,19 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultB
         IDefaultBusinessModel2Service proxy = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
         DefaultBusinessModel2 result = proxy.findOne(id);
         OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
+        return status;
+    }
+
+    @RequestMapping(value = "test")
+    @ResponseBody
+    public OperateStatus getApproveBill2(String businessModelCode,String id) throws JsonProcessingException {
+        String url="http://localhost:9082/flow-service/condition/formPropertiesAndValues";
+        Map<String, Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",id);
+        Map<String, Object> tt = ApiClient.getEntityViaProxy(url,new GenericType< Map<String, Object>>() {
+        },params);
+        OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, tt);
         return status;
     }
 

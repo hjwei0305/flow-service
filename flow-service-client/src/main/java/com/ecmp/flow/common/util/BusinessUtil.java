@@ -41,9 +41,9 @@ public class BusinessUtil {
             for (Method sourceMethod : sourceMethods) {
                 Remark annotation = sourceMethod.getAnnotation(Remark.class);
 //                String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
-//                if (annotation == null || sourceFieldName == null || "".equals(sourceFieldName)) {
-//                    continue;
-//                }
+                if (annotation == null) {
+                    continue;
+                }
                 String key = annotation.value();
                 int  rank = 0;
                 boolean hasSon = false;

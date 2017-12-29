@@ -476,11 +476,32 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         return orgCodesList;
     }
+
+    private boolean checkFlowInstanceActivate(String businessKey){
+        boolean result = false;
+        if(StringUtils.isNotEmpty(businessKey)){
+            FlowInstance flowInstance = flowInstanceDao.findByBusinessId(businessKey);
+            if(flowInstance != null){
+                if(flowInstance.isEnded()!=true){
+                    result = true;
+                }
+            }
+        }else {
+            throw new FlowException("business's id is null");
+        }
+       return result;
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
+        if(checkFlowInstanceActivate(flowStartVO.getBusinessKey())){
+            String message = ContextUtil.getMessage("10051",flowStartVO.getBusinessKey());
+            return  OperateResultWithData.operationFailure(message);
+        }
         OperateResultWithData resultWithData = OperateResultWithData.operationSuccess();
         try{
             FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
+
             resultWithData.setData(flowStartResultVO);
         Map<String, Object> userMap = flowStartVO.getUserMap();
         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());

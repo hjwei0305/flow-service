@@ -638,9 +638,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
             "dblclick": function () {
                 var dom = $(this);
                 var type = dom.attr("type");
-                if (type == "StartEvent" || type.indexOf("EndEvent") != -1) {
-                    return;
-                }
+                // if (type == "StartEvent" || type.indexOf("EndEvent") != -1) {
+                //     return;
+                // }
                 if (!g.businessModelId) {
                     EUI.ProcessStatus({
                         success: false,
@@ -649,7 +649,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     return;
                 }
                 var input = dom.find(".node-title");
-                if (type.endsWith("Gateway") || type == 'ManualTask') {
+                if (type == "StartEvent" || type.indexOf("EndEvent") != -1 || type.endsWith("Gateway") || type == 'ManualTask') {
                     g.showSimpleNodeConfig(input.text(),null,null, function (value,code) {
                         input.text(value);
                         input.attr("title", value);
@@ -1529,29 +1529,34 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
     },
     showSimpleNodeConfig: function (title,code,connection,callback) {
         var g = this;
-        var sourceId = connection.sourceId;
+        var sourceId = '';
+        var myItems =  [{
+            xtype: "TextField",
+            title: "名称",
+            labelWidth: 80,
+            width: 220,
+            maxlength: 80,
+            id: "nodeName",
+            name: "name",
+            value: title
+        }];
+        if(connection){
+            sourceId = connection.sourceId;
+            myItems.push({
+                xtype: "TextField",
+                    title: "代码",
+                    labelWidth: 80,
+                    width: 220,
+                    maxlength: 80,
+                    id: "nodeFlowCode",
+                    name: "code",
+                    value: code
+            });
+        }
         var win = EUI.Window({
-            height: 50,
+            height: connection?50:25,
             padding: 30,
-            items: [{
-                xtype: "TextField",
-                title: "名称",
-                labelWidth: 80,
-                width: 220,
-                maxlength: 80,
-                id: "nodeName",
-                name: "name",
-                value: title
-            },{
-                xtype: "TextField",
-                title: "代码",
-                labelWidth: 80,
-                width: 220,
-                maxlength: 80,
-                id: "nodeFlowCode",
-                name: "code",
-                value: code
-            }],
+            items: myItems,
             buttons: [{
                 title: "取消",
                 handler: function () {
@@ -1562,7 +1567,10 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                 selected: true,
                 handler: function () {
                     var name = EUI.getCmp("nodeName").getValue();
-                    var codeNew = EUI.getCmp("nodeFlowCode").getValue();
+                    var codeNew ='';
+                    if(connection){
+                        codeNew = EUI.getCmp("nodeFlowCode").getValue();
+                    }
                     if(codeNew){
                         for (var key in g.connectInfo) {
                             if (key.startsWith(sourceId + ",")) {
