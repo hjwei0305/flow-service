@@ -162,9 +162,15 @@ public class FlowInstanceController {
                 myBillVO.setCreatorId(f.getCreatorId());
                 myBillVO.setFlowName(f.getFlowName());
                 String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+                String businessDetailServiceUrl =  f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
                 if(StringUtils.isEmpty(lookUrl)){
                     lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
                 }
+                if(StringUtils.isEmpty(businessDetailServiceUrl)){
+                    businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                }
+                myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+                myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
                 myBillVO.setLookUrl(lookUrl);
                 myBillVO.setEndDate(f.getEndDate());
                 myBillVO.setFlowInstanceId(f.getId());

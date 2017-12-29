@@ -16,6 +16,11 @@ import java.util.Date;
  * *************************************************************************************************
  */
 public class MyBillVO implements Serializable{
+
+    private String businessModelCode;//业务模型code
+
+    private String businessDetailServiceUrl;//表单明细地址
+
     private String businessName;//业务单据名称
 
     private String creatorId;//流程发起人id
@@ -185,5 +190,21 @@ public class MyBillVO implements Serializable{
 
     public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
         this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
+    }
+
+    public String getBusinessModelCode() {
+        return businessModelCode;
+    }
+
+    public void setBusinessModelCode(String businessModelCode) {
+        this.businessModelCode = businessModelCode;
+    }
+
+    public String getBusinessDetailServiceUrl() {
+        return businessDetailServiceUrl;
+    }
+
+    public void setBusinessDetailServiceUrl(String businessDetailServiceUrl) {
+        this.businessDetailServiceUrl = businessDetailServiceUrl;
     }
 }
