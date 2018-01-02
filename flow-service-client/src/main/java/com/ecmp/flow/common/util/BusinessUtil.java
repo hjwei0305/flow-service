@@ -45,7 +45,7 @@ public class BusinessUtil {
                     continue;
                 }
                 String key = annotation.value();
-                int  rank = 0;
+                int  rank = annotation.rank();
                 boolean hasSon = false;
                 String sourceFieldNameDes = ContextUtil.getMessage(key);
                 if(StringUtils.isEmpty(sourceFieldNameDes)){

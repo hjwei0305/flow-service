@@ -49,7 +49,7 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
      */
     private  String applyCaption;
 
-    @Remark("单价")
+    @Remark(value = "单价",rank = 11)
     public double getUnitPrice() {
         return unitPrice;
     }
@@ -58,7 +58,7 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
         this.unitPrice = unitPrice;
     }
 
-    @Remark("数量")
+    @Remark(value = "数量",rank = 10)
     public int getCount() {
         return count;
     }

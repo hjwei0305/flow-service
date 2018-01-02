@@ -235,7 +235,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
 
     @Override
     @ConditionAnnotaion(name="工作说明",rank = -10000,canSee=false)
-    @Remark("工作说明")
+    @Remark(value = "工作说明",rank = 1)
     public String getWorkCaption(){return this.workCaption;}
 
     @Override
