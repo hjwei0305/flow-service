@@ -19,10 +19,7 @@ public class BusinessFormValue implements Serializable {
      * 值
      */
     private Object value;
-    /**
-     * 排序，DESC
-     */
-    private int rank = 0;
+
     /**
      * 是否有关联对象
      */
@@ -34,18 +31,10 @@ public class BusinessFormValue implements Serializable {
         this.value = value;
     }
 
-    public BusinessFormValue( Object value,int rank){
+    public BusinessFormValue( Object value,boolean hasSon){
         this.value = value;
-        this.rank = rank;
-    }
-
-    public BusinessFormValue( Object value,int rank,boolean hasSon){
-        this.value = value;
-        this.rank = rank;
         this.hasSon = hasSon;
     }
-
-
 
     public Object getValue() {
         return value;
@@ -53,14 +42,6 @@ public class BusinessFormValue implements Serializable {
 
     public void setValue(Object value) {
         this.value = value;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
     }
 
     public boolean isHasSon() {

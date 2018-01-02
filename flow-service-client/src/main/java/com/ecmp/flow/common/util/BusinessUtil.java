@@ -28,7 +28,7 @@ public class BusinessUtil {
     public static Map<String, Object> getPropertiesAndValues(Object conditionPojo, String[] excludeProperties)
             throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
         Map<String, Object> result = null;
-        Map<String, BusinessFormValue> tempMap = new HashMap<String, BusinessFormValue>();
+        Map<String, List> tempMap = new HashMap<String, List>();
         // String[] excludeProperties = { "class", "pk", "equalFlag" };//
         // 不用包括在内的字段
         if (conditionPojo != null) {
@@ -53,7 +53,7 @@ public class BusinessUtil {
                 }
                 Object v = sourceMethod.invoke(conditionPojo,  null);
                 if(v!=null){
-//                    List tempResult = new ArrayList();
+                    List tempResult = new ArrayList();
                     BusinessFormValue businessFormValue = new BusinessFormValue();
                    if(ifBaseType(v)){
                    }else if(!ifListOrMapType(v)){
@@ -65,28 +65,27 @@ public class BusinessUtil {
                    if(v!=null) {
                        businessFormValue.setValue(v);
                        businessFormValue.setHasSon(hasSon);
-                       businessFormValue.setRank(rank);
-//                       tempResult.add(v);
-//                       tempResult.add(hasSon);
+                       tempResult.add(businessFormValue);
+                       tempResult.add(rank);
 //                       tempResult.add(rank);
-                       tempMap.put(sourceFieldNameDes, businessFormValue);
+                       tempMap.put(sourceFieldNameDes, tempResult);
                    }
                 }
             }
 
             // 将Map里面的所以元素取出来先变成一个set，然后将这个set装到一个list里面
-            List<Map.Entry<String, BusinessFormValue>> list = new ArrayList<Map.Entry<String, BusinessFormValue>>(tempMap.entrySet());
+            List<Map.Entry<String, List>> list = new ArrayList<Map.Entry<String, List>>(tempMap.entrySet());
             // 定义一个comparator
-            Comparator<Map.Entry<String, BusinessFormValue>> comparator = new Comparator<Map.Entry<String, BusinessFormValue>>() {
+            Comparator<Map.Entry<String, List>> comparator = new Comparator<Map.Entry<String, List>>() {
                 @Override
-                public int compare(Map.Entry<String, BusinessFormValue> p1, Map.Entry<String, BusinessFormValue> p2) {
+                public int compare(Map.Entry<String, List> p1, Map.Entry<String, List> p2) {
                     // 之所以使用减号，是想要按照数从高到低来排列
-                    return -(p1.getValue().getRank()- p2.getValue().getRank());
+                    return -((int)p1.getValue().get(1)- (int)p2.getValue().get(1));
                 }
             };
             Collections.sort(list, comparator);
-            for (Map.Entry<String, BusinessFormValue> entry : list) {
-                result.put(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, List> entry : list) {
+                result.put(entry.getKey(), entry.getValue().get(0));
             }
         }
         return result;
