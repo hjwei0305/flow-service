@@ -271,8 +271,8 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         win = EUI.Window({
             title: g.lang.updateBusinessModelText,
             iconCss:"ecmp-eui-edit",
-            height: 480,
-            width:560,
+            height: 280,
+            width:1000,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -280,123 +280,173 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 defaultConfig:{
                   labelWidth: 180,
-                  width: 380
+                  width: 1000
                 },
-                items: [{
-                    xtype: "TextField",
-                    title: "ID",
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "id",
-                    // width: 300,
-                    value: data.id,
-                    hidden: true
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.appModelIdText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModule.id",
-                    // width: 300,
-                    value: g.appModule.id,
-                    hidden: true
+                items: [ {
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                    },
+                    items: [{
+                        xtype: "TextField",
+                        title: "ID",
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "id",
+                        // width: 300,
+                        value: data.id,
+                        hidden: true
+                    }, {
+                        xtype: "TextField",
+                        title: g.lang.appModelIdText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModule.id",
+                        // width: 300,
+                        value: g.appModule.id,
+                        hidden: true
+                    },{
+                        xtype: "TextField",
+                        title: g.lang.modelText,
+                        readonly: true,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModuleName",
+                        // width: 300,
+                        value: g.appModuleName +"--"+data.appModuleCode
+                    }, {
+                        xtype: "TextField",
+                        title: this.lang.applyModuleCodeText,
+                        readonly: true,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModuleCode",
+                        // width: 300,
+                        value: data.appModuleCode,
+                        hidden:true
+                    },  {
+                        xtype: "TextField",
+                        title: g.lang.nameText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "name",
+                        // width: 300,
+                        value: data.name
+                    }]
                 },{
-                    xtype: "TextField",
-                    title: g.lang.modelText,
-                    readonly: true,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModuleName",
-                    // width: 300,
-                    value: g.appModuleName +"--"+data.appModuleCode
-                }, {
-                    xtype: "TextField",
-                    title: this.lang.applyModuleCodeText,
-                    readonly: true,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "appModuleCode",
-                    // width: 300,
-                    value: data.appModuleCode,
-                    hidden:true
-                },  {
-                    xtype: "TextField",
-                    title: g.lang.nameText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "name",
-                    // width: 300,
-                    value: data.name
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.classPathText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "className",
-                    // width: 300,
-                    value: data.className
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.conditonPropertiesText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonProperties",
-                    // width: 300,
-                    value: data.conditonProperties
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                    },
+                    items: [ {
+                        xtype: "TextField",
+                        title: g.lang.classPathText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "className",
+                        // width: 300,
+                        value: data.className
+                    }, {
+                        xtype: "TextField",
+                        title: g.lang.conditonPropertiesText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "conditonProperties",
+                        // width: 300,
+                        value: data.conditonProperties
+                    }]
                 },{
-                    xtype: "TextField",
-                    title: this.lang.conditonPValueText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonPValue",
-                    // width: 300,
-                    value: data.conditonPValue
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                    },
+                    items: [{
+                        xtype: "TextField",
+                        title: this.lang.conditonPValueText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "conditonPValue",
+                        // width: 300,
+                        value: data.conditonPValue
+                    },{
+                        xtype: "TextField",
+                        title: this.lang.conditonPSValueText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "conditonPSValue",
+                        // width: 300,
+                        value: data.conditonPSValue
+                    }]
                 },{
-                    xtype: "TextField",
-                    title: this.lang.conditonPSValueText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonPSValue",
-                    // width: 300,
-                    value: data.conditonPSValue
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                    },
+                    items: [{
+                        xtype: "TextField",
+                        title: this.lang.conditonStatusRestText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "conditonStatusRest",
+                        // width: 300,
+                        value: data.conditonStatusRest
+                    },{
+                        xtype: "TextField",
+                        title: this.lang.completeTaskServiceUrlText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "completeTaskServiceUrl",
+                        // width: 300,
+                        value: data.completeTaskServiceUrl
+                    }]
                 },{
-                    xtype: "TextField",
-                    title: this.lang.conditonStatusRestText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonStatusRest",
-                    // width: 300,
-                    value: data.conditonStatusRest
-                },{
-                    xtype: "TextField",
-                    title: this.lang.completeTaskServiceUrlText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "completeTaskServiceUrl",
-                    // width: 300,
-                    value: data.completeTaskServiceUrl
-                },{
-                    xtype: "TextField",
-                    title: this.lang.businessDetailServiceUrlText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "businessDetailServiceUrl",
-                    // width: 300,
-                    value: data.businessDetailServiceUrl
-                },{
-                    xtype: "TextField",
-                    title: this.lang.formURLText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "lookUrl",
-                    // width: 300,
-                    value: data.lookUrl
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                    },
+                    items: [{
+                        xtype: "TextField",
+                        title: this.lang.businessDetailServiceUrlText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "businessDetailServiceUrl",
+                        // width: 300,
+                        value: data.businessDetailServiceUrl
+                    },{
+                        xtype: "TextField",
+                        title: this.lang.formURLText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "lookUrl",
+                        // width: 300,
+                        value: data.lookUrl
+                    }]
                 }, {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    // labelWidth: 115,
+                    labelWidth: 180,
                     name: "depict",
-                    // width: 300,
+                    width: 800,
                     value: data.depict
                 }]
             }],
@@ -425,58 +475,96 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
         if(isCopy){
             baseItem=[
                 {
-                    xtype: "ComboBox",
-                    title: g.lang.modelText,
-                    canClear: false,
-                    allowBlank:false,
-                    name: "appModuleName",
-                    store: {
-                        url: _ctxPath + "/businessModel/listAllAppModule"
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                        //  readonly: true
                     },
-                    field: ["appModule.id","appModuleCode"],
-                    reader: {
+                    items: [ {
+                        xtype: "ComboBox",
+                        title: g.lang.modelText,
+                        canClear: false,
+                        allowBlank:false,
+                        name: "appModuleName",
+                        store: {
+                            url: _ctxPath + "/businessModel/listAllAppModule"
+                        },
+                        field: ["appModule.id","appModuleCode"],
+                        reader: {
+                            name: "name",
+                            field: ["id","code"]
+                        }
+                    },{
+                        title: g.lang.nameText,
+                        xtype: "TextField",
+                        // labelWidth: 115,
+                        allowBlank: false,
                         name: "name",
-                        field: ["id","code"]
-                    }
-                }];
+                        // width: 300
+                    }]
+                }
+               ];
 
         }else {
-            baseItem=[{
-                xtype: "TextField",
-                title: g.lang.appModelIdText,
-                // labelWidth: 115,
-                allowBlank: false,
-                name: "appModule.id",
-                // width: 300,
-                value: g.appModule.id,
-                hidden: true
-            }, {
-                xtype: "TextField",
-                title: g.lang.modelText,
-                readonly: true,
-                // labelWidth: 115,
-                allowBlank: false,
-                name: "appModuleName",
-                // width: 300,
-                value: g.appModuleName +"--"+g.appModuleCode
-            },{
-                xtype: "TextField",
-                title: this.lang.applyModuleCodeText,
-                readonly: true,
-                // labelWidth: 115,
-                allowBlank: false,
-                name: "appModuleCode",
-                // width: 300,
-                value: g.appModuleCode,
-                hidden:true
-            }]
+            baseItem=[
+                {
+                    xtype: "FieldGroup",
+                    layout: "column",
+                    width: 1000,
+                    defaultConfig: {
+                        padding: 0,
+                        labelWidth: 180,
+                        width: 300
+                        //  readonly: true
+                    },
+                    items: [ {
+                        xtype: "TextField",
+                        title: g.lang.appModelIdText,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModule.id",
+                        // width: 300,
+                        value: g.appModule.id,
+                        hidden: true
+                    }, {
+                        xtype: "TextField",
+                        title: g.lang.modelText,
+                        readonly: true,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModuleName",
+                        // width: 300,
+                        value: g.appModuleName +"--"+g.appModuleCode
+                    },{
+                        xtype: "TextField",
+                        title: this.lang.applyModuleCodeText,
+                        readonly: true,
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "appModuleCode",
+                        // width: 300,
+                        value: g.appModuleCode,
+                        hidden:true
+                    },{
+                        title: g.lang.nameText,
+                        xtype: "TextField",
+                        // labelWidth: 115,
+                        allowBlank: false,
+                        name: "name",
+                        // width: 300
+                    }]
+                }]
         }
         win = EUI.Window({
             title: isCopy?g.lang.copyBusinessModelText: g.lang.addNewBusinessModelText,
             iconCss:isCopy?"ecmp-common-copy":"ecmp-eui-add",
             iconCss:"ecmp-eui-add",
-            height: 480,
-            width:560,
+            height: 280,
+            width:1000,
             padding: 15,
             items: [{
                 xtype: "FormPanel",
@@ -484,79 +572,112 @@ EUI.BusinessModelView = EUI.extend(EUI.CustomUI, {
                 padding: 0,
                 defaultConfig:{
                     labelWidth: 180,
-                    width: 380
+                    width: 1000
                 },
-                items: baseItem.concat([{
-                    title: g.lang.nameText,
-                    xtype: "TextField",
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "name",
-                    // width: 300
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.classPathText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "className",
-                    // width: 300
-                }, {
-                    xtype: "TextField",
-                    title: g.lang.conditonPropertiesText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonProperties",
-                    // width: 300
-                },{
-                    xtype: "TextField",
-                    title: this.lang.conditonPValueText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonPValue",
-                    // width: 300
-                },{
-                    xtype: "TextField",
-                    title: this.lang.conditonPSValueText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonPSValue",
-                    // width: 300
-                },{
-                    xtype: "TextField",
-                    title: this.lang.conditonStatusRestText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "conditonStatusRest",
-                    // width: 300
-                }, {
-                    xtype: "TextField",
-                    title: this.lang.completeTaskServiceUrlText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "completeTaskServiceUrl",
-                    // width: 300
-                }, //businessDetailServiceUrlText
-                 {
-                        xtype: "TextField",
-                        title: this.lang.businessDetailServiceUrlText,
-                        // labelWidth: 115,
-                        allowBlank: false,
-                        name: "businessDetailServiceUrl",
-                        // width: 300
-                 },
+                items: baseItem.concat([
                     {
-                    xtype: "TextField",
-                    title: this.lang.formURLText,
-                    // labelWidth: 115,
-                    allowBlank: false,
-                    name: "lookUrl",
-                    // width: 300
-                }, {
+                        xtype: "FieldGroup",
+                        layout: "column",
+                        width: 1000,
+                        defaultConfig: {
+                            padding: 0,
+                            labelWidth: 180,
+                            width: 300
+                        },
+                        items: [{
+                            xtype: "TextField",
+                            title: g.lang.classPathText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "className",
+                            // width: 300
+                        },{
+                            xtype: "TextField",
+                            title: g.lang.conditonPropertiesText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "conditonProperties",
+                            // width: 300
+                        }]
+                    },{
+                        xtype: "FieldGroup",
+                        layout: "column",
+                        width: 1000,
+                        defaultConfig: {
+                            padding: 0,
+                            labelWidth: 180,
+                            width: 300
+                        },
+                        items: [{
+                            xtype: "TextField",
+                            title: this.lang.conditonPValueText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "conditonPValue",
+                            // width: 300
+                        },{
+                            xtype: "TextField",
+                            title: this.lang.conditonPSValueText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "conditonPSValue",
+                            // width: 300
+                        }]
+                    },{
+                        xtype: "FieldGroup",
+                        layout: "column",
+                        width: 1000,
+                        defaultConfig: {
+                            padding: 0,
+                            labelWidth: 180,
+                            width: 300
+                        },
+                        items: [ {
+                            xtype: "TextField",
+                            title: this.lang.conditonStatusRestText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "conditonStatusRest",
+                            // width: 300
+                        },{
+                            xtype: "TextField",
+                            title: this.lang.completeTaskServiceUrlText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "completeTaskServiceUrl",
+                            // width: 300
+                        }]
+                    },{
+                        xtype: "FieldGroup",
+                        layout: "column",
+                        width: 1000,
+                        defaultConfig: {
+                            padding: 0,
+                            labelWidth: 180,
+                            width: 300
+                        },
+                        items: [{
+                            xtype: "TextField",
+                            title: this.lang.businessDetailServiceUrlText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "businessDetailServiceUrl",
+                            // width: 300
+                        },{
+                            xtype: "TextField",
+                            title: this.lang.formURLText,
+                            // labelWidth: 115,
+                            allowBlank: false,
+                            name: "lookUrl",
+                            // width: 300
+                        }]
+                    },
+                    {
                     xtype: "TextArea",
                     title: g.lang.depictText,
-                    // labelWidth: 115,
+                    labelWidth: 180,
                     name: "depict",
-                    // width: 300
+                    width: 800
                 }])
             }],
             buttons: [ {
