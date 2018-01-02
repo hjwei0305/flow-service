@@ -3,6 +3,7 @@ package com.ecmp.flow.common.util;
 import com.ecmp.annotation.Remark;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.constant.ConditionAnnotaion;
+import com.ecmp.flow.vo.BusinessFormValue;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class BusinessUtil {
     public static Map<String, Object> getPropertiesAndValues(Object conditionPojo, String[] excludeProperties)
             throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
         Map<String, Object> result = null;
-        Map<String, List> tempMap = new HashMap<String, List>();
+        Map<String, BusinessFormValue> tempMap = new HashMap<String, BusinessFormValue>();
         // String[] excludeProperties = { "class", "pk", "equalFlag" };//
         // 不用包括在内的字段
         if (conditionPojo != null) {
@@ -36,7 +37,7 @@ public class BusinessUtil {
 //            Method customLogicMethod = sourceClass.getMethod("customLogic");
 //            customLogicMethod.invoke(conditionPojo);
             Method[] sourceMethods = sourceClass.getMethods();// 得到某类的所有公共方法，包括父类
-            result = new HashMap<String, Object>();
+            result = new LinkedHashMap<String, Object>();
             for (Method sourceMethod : sourceMethods) {
                 Remark annotation = sourceMethod.getAnnotation(Remark.class);
 //                String sourceFieldName = getFieldName(sourceMethod, excludeProperties);
@@ -52,7 +53,8 @@ public class BusinessUtil {
                 }
                 Object v = sourceMethod.invoke(conditionPojo,  null);
                 if(v!=null){
-                    List tempResult = new ArrayList();
+//                    List tempResult = new ArrayList();
+                    BusinessFormValue businessFormValue = new BusinessFormValue();
                    if(ifBaseType(v)){
                    }else if(!ifListOrMapType(v)){
                       v = getPropertiesAndValues(v,null);
@@ -61,26 +63,29 @@ public class BusinessUtil {
                        throw new RuntimeException("v'type can not support,type = "+ v.getClass());
                    }
                    if(v!=null) {
-                       tempResult.add(v);
-                       tempResult.add(hasSon);
-                       tempResult.add(rank);
-                       tempMap.put(sourceFieldNameDes, tempResult);
+                       businessFormValue.setValue(v);
+                       businessFormValue.setHasSon(hasSon);
+                       businessFormValue.setRank(rank);
+//                       tempResult.add(v);
+//                       tempResult.add(hasSon);
+//                       tempResult.add(rank);
+                       tempMap.put(sourceFieldNameDes, businessFormValue);
                    }
                 }
             }
 
             // 将Map里面的所以元素取出来先变成一个set，然后将这个set装到一个list里面
-            List<Map.Entry<String, List>> list = new ArrayList<Map.Entry<String, List>>(tempMap.entrySet());
+            List<Map.Entry<String, BusinessFormValue>> list = new ArrayList<Map.Entry<String, BusinessFormValue>>(tempMap.entrySet());
             // 定义一个comparator
-            Comparator<Map.Entry<String, List>> comparator = new Comparator<Map.Entry<String, List>>() {
+            Comparator<Map.Entry<String, BusinessFormValue>> comparator = new Comparator<Map.Entry<String, BusinessFormValue>>() {
                 @Override
-                public int compare(Map.Entry<String, List> p1, Map.Entry<String, List> p2) {
+                public int compare(Map.Entry<String, BusinessFormValue> p1, Map.Entry<String, BusinessFormValue> p2) {
                     // 之所以使用减号，是想要按照数从高到低来排列
-                    return -((int) p1.getValue().get(2) - (int) p2.getValue().get(2));
+                    return -(p1.getValue().getRank()- p2.getValue().getRank());
                 }
             };
             Collections.sort(list, comparator);
-            for (Map.Entry<String, List> entry : list) {
+            for (Map.Entry<String, BusinessFormValue> entry : list) {
                 result.put(entry.getKey(), entry.getValue());
             }
         }
