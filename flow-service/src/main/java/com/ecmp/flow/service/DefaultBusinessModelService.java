@@ -1,14 +1,18 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.context.util.NumberGenerator;
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.BusinessUtil;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
@@ -23,11 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.GenericType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -520,5 +526,41 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
+    public Map<String,Object> businessPropertiesAndValues(String businessModelCode,String id) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
+       IBusinessModelService businessModelService;
+        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
+        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+        String daoBeanName = null;
+        if (businessModel != null) {
+            daoBeanName = getDaoBeanName(businessModelCode);
+        }
+        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+        BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
+        DefaultBusinessModel content = (DefaultBusinessModel) appModuleDao.findOne(id);
+        DefaultBusinessModel2 defaultBusinessModel2 = new DefaultBusinessModel2();
+        defaultBusinessModel2.setId("testId2");
+        defaultBusinessModel2.setBusinessCode("testBusinessCode2");
+        defaultBusinessModel2.setWorkCaption("testWorkCaption2");
+        defaultBusinessModel2.setName("testName2");
+        defaultBusinessModel2.setCount(4);
+        defaultBusinessModel2.setUnitPrice(3);
+        defaultBusinessModel2.setSum(defaultBusinessModel2.getCount()*defaultBusinessModel2.getUnitPrice());
+        content.setDefaultBusinessModel2(defaultBusinessModel2);
+        return   BusinessUtil.getPropertiesAndValues(content,null);
+    }
+    private String getDaoBeanName(String className)throws ClassNotFoundException {
+        BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);
+        return   businessEntityAnnotaion.daoBean();
+    }
+
+    private BusinessEntityAnnotaion getBusinessEntityAnnotaion(String className)throws ClassNotFoundException {
+        if (org.apache.commons.lang.StringUtils.isNotEmpty(className)) {
+            Class sourceClass = Class.forName(className);
+            BusinessEntityAnnotaion businessEntityAnnotaion = (BusinessEntityAnnotaion) sourceClass.getAnnotation(BusinessEntityAnnotaion.class);
+            return  businessEntityAnnotaion;
+        }else {
+            throw new RuntimeException("className is null!");
+        }
+    }
 
 }

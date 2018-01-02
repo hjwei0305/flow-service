@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -148,4 +149,11 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "测试testReceiveCallNew",notes = "testReceiveCallNew")
  public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+
+ @GET
+ @Path("testPJoin")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "testPJoin",notes = "testPJoin")
+ public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
 }

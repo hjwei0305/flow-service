@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 
 /**
@@ -90,5 +91,29 @@ public class DefaultBusinessModel extends AbstractBusinessModel{
         this.count = count;
         this.sum = sum;
         this.applyCaption = applyCaption;
+    }
+
+    @Transient
+    private DefaultBusinessModel2 defaultBusinessModel2;
+
+    @Transient
+    private DefaultBusinessModel3 defaultBusinessModel3;
+
+    @Remark("采购")
+    public DefaultBusinessModel2 getDefaultBusinessModel2() {
+        return defaultBusinessModel2;
+    }
+
+    public void setDefaultBusinessModel2(DefaultBusinessModel2 defaultBusinessModel2) {
+        this.defaultBusinessModel2 = defaultBusinessModel2;
+    }
+
+    @Remark("销售")
+    public DefaultBusinessModel3 getDefaultBusinessModel3() {
+        return defaultBusinessModel3;
+    }
+
+    public void setDefaultBusinessModel3(DefaultBusinessModel3 defaultBusinessModel3) {
+        this.defaultBusinessModel3 = defaultBusinessModel3;
     }
 }

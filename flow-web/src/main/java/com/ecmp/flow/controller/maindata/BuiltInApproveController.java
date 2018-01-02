@@ -19,6 +19,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -427,5 +429,18 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
         return operateStatus;
     }
 
+
+    @RequestMapping(value = "test")
+    @ResponseBody
+    public OperateStatus getApproveBill2(String businessModelCode,String id) throws JsonProcessingException {
+        String url="http://localhost:9082/flow-service/defaultBusinessModel/testPJoin";
+        Map<String, Object> params = new HashMap();
+        params.put("businessModelCode",businessModelCode);
+        params.put("id",id);
+        Map<String, Object> tt = ApiClient.getEntityViaProxy(url,new GenericType< Map<String, Object>>() {
+        },params);
+        OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, tt);
+        return status;
+    }
 }
 
