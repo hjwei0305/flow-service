@@ -64,7 +64,7 @@ public class BusinessUtil {
                    }
                    if(v!=null) {
                        if(hasSon){
-                           businessFormValue.setSon(v);
+                           businessFormValue.setSon((Map<String,Object>)v);
                            businessFormValue.setValue("");
                        }else {
                            businessFormValue.setValue(v);
