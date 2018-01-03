@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -20,10 +21,8 @@ public class BusinessFormValue implements Serializable {
      */
     private Object value;
 
-    /**
-     * 是否有关联对象
-     */
-    private boolean hasSon = false;
+    private Map<String, Object> son;
+
 
     public BusinessFormValue(){}
 
@@ -31,9 +30,9 @@ public class BusinessFormValue implements Serializable {
         this.value = value;
     }
 
-    public BusinessFormValue( Object value,boolean hasSon){
+    public BusinessFormValue( Object value,Map<String, Object> son){
         this.value = value;
-        this.hasSon = hasSon;
+        this.son = son;
     }
 
     public Object getValue() {
@@ -45,10 +44,14 @@ public class BusinessFormValue implements Serializable {
     }
 
     public boolean isHasSon() {
-        return hasSon;
+        return this.son == null || this.son.isEmpty() ? false:true;
     }
 
-    public void setHasSon(boolean hasSon) {
-        this.hasSon = hasSon;
+    public Map<String, Object> getSon() {
+        return son;
+    }
+
+    public void setSon(Map<String, Object> son) {
+        this.son = son;
     }
 }

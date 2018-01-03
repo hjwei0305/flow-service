@@ -63,8 +63,12 @@ public class BusinessUtil {
                        throw new RuntimeException("v'type can not support,type = "+ v.getClass());
                    }
                    if(v!=null) {
-                       businessFormValue.setValue(v);
-                       businessFormValue.setHasSon(hasSon);
+                       if(hasSon){
+                           businessFormValue.setSon(v);
+                           businessFormValue.setValue("");
+                       }else {
+                           businessFormValue.setValue(v);
+                       }
                        tempResult.add(businessFormValue);
                        tempResult.add(rank);
 //                       tempResult.add(rank);
