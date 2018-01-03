@@ -442,7 +442,7 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                             text = "只允许一个人拥有待办，只允许一个人执行";
                         }
                         else if (nodeType == "SingleSign") {
-                            text = "允许多个人拥有待办，只允许一个人执行，一旦任务被其中一个候选人签收或者执行，其他人对该任务的待办即失效。";
+                            text = "允许多个人拥有待办，只允许一个人执行，一旦任务被其中一个候选人签收或者执行，其他人对该任务即无权执行。";
                         }
                         else if (nodeType == "CounterSign") {
                             text = "多个参与人，必须每人都完成任务，通过会签决策配置的百分比决定流程走向。";
