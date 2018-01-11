@@ -4,6 +4,7 @@ import com.ecmp.flow.activiti.ext.ActivityBehaviorFactoryExt;
 import com.ecmp.flow.activiti.ext.ExclusiveGatewayActivityBehaviorExt;
 import com.ecmp.flow.activiti.ext.ServiceTaskDelegate;
 import com.ecmp.flow.listener.*;
+import com.ecmp.flow.util.FlowListenerTool;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.persistence.StrongUuidGenerator;
 import org.activiti.spring.ProcessEngineFactoryBean;
@@ -155,4 +156,10 @@ public class ActivityConfig {
     public  StartEventCompleteListener startEventCompleteListener(){
         return new StartEventCompleteListener();
     }
+
+    @Bean
+    public FlowListenerTool FlowListenerTool(){
+        return new FlowListenerTool();
+    }
+
 }

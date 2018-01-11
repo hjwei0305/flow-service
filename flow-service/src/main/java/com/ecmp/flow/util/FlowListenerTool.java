@@ -7,7 +7,6 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.listener.EndEventCompleteListener;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -25,8 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -46,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * *************************************************************************************************
  */
-@Component
+//@Component
 public class FlowListenerTool {
 
     @Autowired
@@ -316,7 +313,6 @@ public class FlowListenerTool {
                 FlowOperateResult flowOpreateResult = (FlowOperateResult) result;
                 if(true!=flowOpreateResult.isSuccess()){
                     throw new FlowException("执行逻辑失败，"+flowOpreateResult.getMessage());
-
                 }
             }
         }catch (Exception e){
