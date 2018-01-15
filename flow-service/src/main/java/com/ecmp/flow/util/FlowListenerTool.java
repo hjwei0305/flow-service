@@ -253,6 +253,12 @@ public class FlowListenerTool {
                         public void run() {
                             FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                             logger.info(flowOperateResult.toString());
+                            new Thread(new Runnable() {//模拟异步
+                                @Override
+                                public void run() {
+                                    LogUtil.addExceptionLog("businessKey="+businessKey+";endSign="+endSign+";"+flowOperateResult.toString());
+                                }
+                            }).start();
                         }
                     }).start();
                 }
