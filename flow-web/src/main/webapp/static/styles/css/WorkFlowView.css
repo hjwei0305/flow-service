@@ -795,3 +795,13 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     float: left;
     margin-right: 2px !important;
 }
+#notifyBeforeChoosePositionBtn .ux-btn-title{
+    line-height: 20px;
+    margin-right: 0;
+    padding: 0 5px;
+}
+#notifyAfterChoosePositionBtn .ux-btn-title{
+    line-height: 20px;
+    margin-right: 0;
+    padding: 0 5px;
+}
