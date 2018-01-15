@@ -15,7 +15,7 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.actInstanceId = :actInstanceId")
     public  FlowInstance findByActInstanceId(@Param("actInstanceId")String actInstanceId);
 
-    public  FlowInstance findByBusinessId(String businessId);
+    public  List<FlowInstance> findByBusinessId(String businessId);
 
     public   List<FlowInstance> findByParentId(String parentId);
 

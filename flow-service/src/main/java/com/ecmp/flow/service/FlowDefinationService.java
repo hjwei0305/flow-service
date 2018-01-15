@@ -480,10 +480,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private boolean checkFlowInstanceActivate(String businessKey){
         boolean result = false;
         if(StringUtils.isNotEmpty(businessKey)){
-            FlowInstance flowInstance = flowInstanceDao.findByBusinessId(businessKey);
-            if(flowInstance != null){
-                if(flowInstance.isEnded()!=true){
-                    result = true;
+            List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessId(businessKey);
+            if(flowInstanceList != null && !flowInstanceList.isEmpty()){
+                for(FlowInstance flowInstance: flowInstanceList){
+                    if(flowInstance.isEnded()!=true){
+                        result = true;
+                    }
                 }
             }
         }else {
