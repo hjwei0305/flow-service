@@ -312,7 +312,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                        public int compare(FlowHistory flowHistory1, FlowHistory flowHistory2) {
                            Date time1= flowHistory1.getActEndTime();
                            Date time2= flowHistory2.getActEndTime();
-                           return  timeCompare(time1,time2);
+                           return  timeCompare(time2,time1);
                        }
                    });
                }
