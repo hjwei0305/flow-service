@@ -58,8 +58,8 @@ public class StartEventCompleteListener implements ExecutionListener {
     @Autowired
     private RepositoryService repositoryService;
 
-    @Autowired
-    private FlowTaskDao flowTaskDao;
+//    @Autowired
+//    private FlowTaskDao flowTaskDao;
 
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
@@ -79,7 +79,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         Map<String,Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance  = taskEntity.getProcessInstance();
         ProcessInstance parentProcessInstance = null;
-        ExecutionEntity son = taskEntity.getSubProcessInstance();
+//        ExecutionEntity son = taskEntity.getSubProcessInstance();
         ExecutionEntity parent = taskEntity.getSuperExecution();
         String currentBusinessId = null;
         String callActivityPath = null;
