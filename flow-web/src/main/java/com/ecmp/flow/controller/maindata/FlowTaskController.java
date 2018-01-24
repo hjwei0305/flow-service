@@ -161,7 +161,7 @@ public class FlowTaskController {
     public OperateStatus findTaskSumHeaderCanBatchApproval(ServletRequest request) throws JsonProcessingException, ParseException {
         OperateStatus status = OperateStatus.defaultSuccess();
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        List<TodoBusinessSummaryVO>  result = proxy.findTaskSumHeader(true);
+        List<TodoBusinessSummaryVO>  result = proxy.findCommonTaskSumHeader(true);
         status.setData(result);
         return status;
     }

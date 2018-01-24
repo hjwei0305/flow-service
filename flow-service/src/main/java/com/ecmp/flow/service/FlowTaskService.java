@@ -961,7 +961,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     public List<TodoBusinessSummaryVO> findTaskSumHeader() {
-        return this.findTaskSumHeader(false);
+        return this.findCommonTaskSumHeader(false);
     }
 
     /**
@@ -969,11 +969,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @return
      */
-    public List<TodoBusinessSummaryVO> findTaskSumHeader(Boolean batchApproval) {
+    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(Boolean batchApproval) {
         List<TodoBusinessSummaryVO> voList = null;
         String userID = ContextUtil.getUserId();
         List groupResultList = null;
-        if(batchApproval){
+        if(batchApproval==true){
             groupResultList = flowTaskDao.findByExecutorIdGroupCanBatchApproval(userID);
         }else {
             groupResultList = flowTaskDao.findByExecutorIdGroup(userID);

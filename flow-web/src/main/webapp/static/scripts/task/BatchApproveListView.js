@@ -89,13 +89,13 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
                 url: _ctxPath + "/flowTask/findTaskSumHeaderCanBatchApproval"
             },
             afterSelect: function (data) {
-                g.setBatchSelect(true);
+                g.setBatchSelect(false);
                 g.params.modelId = data.data.businessModeId;
                 g.params.page = 1;
                 g.getData();
             },
             afterClear: function () {
-                g.setBatchSelect(true);
+                g.setBatchSelect(false);
                 g.params.page = 1;
                 g.params.modelId = null;
                 g.getData();
@@ -104,7 +104,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             xtype: "SearchBox",
             name: "Quick_value",
             onSearch: function (value) {
-                g.setBatchSelect(true);
+                g.setBatchSelect(false);
                 g.params.page = 1;
                 g.params.Quick_value = value;
                 g.getData();
