@@ -138,7 +138,11 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             url: _ctxPath + "/flowTask/listFlowTaskWithAllCount",
             params: this.params,
             success: function (result) {
-                if (result.allTotal > 0) {
+                if(result.allTotal == 1000){
+                    $(".todo-count").text('千').show();
+                }else if(result.allTotal > 999){
+                    $(".todo-count").text('>千').show();
+                }else if (result.allTotal > 0) {
                     $(".todo-count").text(result.allTotal).show();
                 } else {
                     $(".todo-count").text(0).hide();

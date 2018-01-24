@@ -273,7 +273,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return 待办汇总信息
      */
     @GET
-    @Path("findTaskSumHeaderCanBatchApproval")
+    @Path("findCanBatchApprovalTaskSumHeader")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
