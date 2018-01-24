@@ -267,6 +267,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public List<TodoBusinessSummaryVO> findTaskSumHeader();
 
+
+    /**
+     * 获取待办汇总信息-可批量审批
+     * @return 待办汇总信息
+     */
+    @GET
+    @Path("findTaskSumHeaderCanBatchApproval")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
+    public List<TodoBusinessSummaryVO> findTaskSumHeader(Boolean batchApproval);
+
     /**
      * 获取待办汇总信息
      * @param businessModelId 业务实体id

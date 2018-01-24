@@ -1965,7 +1965,7 @@ public class FlowTaskTool {
 
 
 
-    @Cacheable(cacheNames="BrmGetParentCodes",key = "'BrmGetParentCodes_' + #nodeId")
+    @Cacheable(value = "FLowGetParentCodes", key = "'FLowOrgParentCodes_' + #nodeId")
     public List<String> getParentOrgCodes(String nodeId){
         if(org.apache.commons.lang.StringUtils.isEmpty(nodeId)){
             throw new FlowException("orgId is null!");

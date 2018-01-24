@@ -149,6 +149,24 @@ public class FlowTaskController {
 
 
     /**
+     * 查询流程待办和任务汇总列表-可批量审批
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "findTaskSumHeaderCanBatchApproval")
+    @ResponseBody
+    public OperateStatus findTaskSumHeaderCanBatchApproval(ServletRequest request) throws JsonProcessingException, ParseException {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        List<TodoBusinessSummaryVO>  result = proxy.findTaskSumHeader(true);
+        status.setData(result);
+        return status;
+    }
+
+
+    /**
      * 通过流程
      * @param id
      * @return 操作结果

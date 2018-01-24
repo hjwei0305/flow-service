@@ -954,15 +954,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskDao.findByInstanceId(instanceId);
     }
 
+
     /**
      * 查询当前用户待办业务单据汇总信息
      *
      * @return
      */
     public List<TodoBusinessSummaryVO> findTaskSumHeader() {
+        return this.findTaskSumHeader(false);
+    }
+
+    /**
+     * 查询当前用户待办业务单据汇总信息,只有批量审批
+     *
+     * @return
+     */
+    public List<TodoBusinessSummaryVO> findTaskSumHeader(Boolean batchApproval) {
         List<TodoBusinessSummaryVO> voList = null;
         String userID = ContextUtil.getUserId();
-        List groupResultList = flowTaskDao.findByExecutorIdGroup(userID);
+        List groupResultList = null;
+        if(batchApproval){
+            groupResultList = flowTaskDao.findByExecutorIdGroupCanBatchApproval(userID);
+        }else {
+            groupResultList = flowTaskDao.findByExecutorIdGroup(userID);
+        }
+
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
             Iterator it = groupResultList.iterator();
