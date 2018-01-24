@@ -5,6 +5,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.*;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.*;
@@ -37,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -1961,4 +1963,24 @@ public class FlowTaskTool {
         return resultWithData;
     }
 
+
+
+    @Cacheable(cacheNames="BrmGetParentCodes",key = "'BrmGetParentCodes_' + #nodeId")
+    public List<String> getParentOrgCodes(String nodeId){
+        if(org.apache.commons.lang.StringUtils.isEmpty(nodeId)){
+            throw new FlowException("orgId is null!");
+        }
+        Map<String,Object> params = new HashMap();
+        params.put("nodeId",nodeId);
+        params.put("includeSelf",true);
+        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_ORG_FINDPARENTNODES_URL;
+        List<Organization> organizationsList= ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},params);
+        List<String> orgCodesList = new ArrayList<>();
+        if(organizationsList!=null && !organizationsList.isEmpty()){
+            for(Organization organization:organizationsList ){
+                orgCodesList.add(organization.getCode());
+            }
+        }
+        return orgCodesList;
+    }
 }

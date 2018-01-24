@@ -465,24 +465,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
 
-    @Cacheable(cacheNames="parentOrgCodes")
-    public List<String> getParentOrgCodes(String orgId){
-        if(StringUtils.isEmpty(orgId)){
-            throw new FlowException("orgId is null!");
-        }
-        Map<String,Object> params = new HashMap();
-        params.put("nodeId",orgId);
-        params.put("includeSelf",true);
-        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_ORG_FINDPARENTNODES_URL;
-        List<Organization> organizationsList=ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},params);
-        List<String> orgCodesList = new ArrayList<>();
-        if(organizationsList!=null && !organizationsList.isEmpty()){
-            for(Organization organization:organizationsList ){
-                orgCodesList.add(organization.getCode());
-            }
-        }
-        return orgCodesList;
-    }
 
     private boolean checkFlowInstanceActivate(String businessKey){
         boolean result = false;
@@ -532,7 +514,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
             String orgId = (String) businessV.get(Constants.ORG_ID);
-            orgParentCodeList = getParentOrgCodes(orgId);
+            orgParentCodeList = flowTaskTool.getParentOrgCodes(orgId);
             flowStartResultVO.setFlowTypeList(flowTypeList);
             for (FlowType flowTypeTemp : flowTypeList) {
                 finalFlowDefination = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
