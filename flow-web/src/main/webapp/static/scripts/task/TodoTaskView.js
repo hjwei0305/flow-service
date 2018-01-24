@@ -1,6 +1,7 @@
 // 待办部分
 EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
     renderTo: null,
+    selectedOrgId: null,  //当前选中的节点的ID
     params: {
         page: 1,
         rows: 5,
@@ -190,7 +191,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 '                     <div class="end">'
                 + claimTaskHtml +
                 '                          <div class="todo-btn approve-btn"><i class="ecmp-eui-edit end-icon handle-icon-size" title="审批"></i><span>处理</span></div>'
-                // +'                          <div class="todo-btn turn-to-do-btn"><i class="ecmp-flow-turn-to-do-c turn-to-do-icon handle-icon-size" title="转办"></i><span>转办</span></div>'
+                +'                          <div class="todo-btn turn-to-do-btn"><i class="ecmp-flow-turn-to-do-c turn-to-do-icon handle-icon-size" title="转办"></i><span>转办</span></div>'
                 + rejectHtml + endFlowHtml +
                 '                          <div class="todo-btn look-approve-btn"><i class="ecmp-common-view look-icon look-approve" title="查看表单"></i><span>查看表单</span></div>' +
                 '                          <div class="todo-btn flowInstance-btn"><i class="ecmp-flow-history time-icon flowInstance icon-size" title="流程历史"></i><span>流程历史</span></div>' +
@@ -291,7 +292,7 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         g.showRejectWindow();
         g.claimEvent();
         g.endFlowEvent();
-        // g.showTurnToDoWindow();
+        g.turnToDoViewWindow();
     }
     ,
     //点击打开审批界面的新页签
@@ -310,8 +311,276 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
             };
             g.addTab(tab);
         });
+    },
+    //转办-选择人
+    turnToDoViewWindow: function () {
+        var g = this;
+        $(".turn-to-do-btn", "#" + this.renderTo).live("click", function () {
+            var itemdom = $(this).parents(".info-item");
+            var data = itemdom.data();
+            // var taskConfig = JSON.parse(data.taskJsonDef);
+            // var workPageUrl = data.taskFormUrlXiangDui;
+            // var joinStr = workPageUrl.indexOf("?") != -1 ? "&" : "?";
+            // var tab = {
+            //     title: data.taskName,
+            //     url: workPageUrl + joinStr + "id=" + data.flowInstance.businessId + "&taskId=" + data.id,
+            //     id: data.id
+            // };
+            // g.addTab(tab);
+            g.showChooseExecutorWind(data.id);
+        });
     }
     ,
+    showChooseExecutorWind: function (taskId) {
+        var g = this;
+        var isChooseOneTitle;
+        var saveBtnIsHidden;
+        isChooseOneTitle = "选择转办执行人【可双击选择】";
+        saveBtnIsHidden = true;
+        g.chooseAnyOneWind = EUI.Window({
+            title: isChooseOneTitle,
+            width: 720,
+            layout: "border",
+            height: 380,
+            padding: 5,
+            itemspace: 0,
+            items: [this.initChooseUserWindLeft(), this.InitChooseUserGrid(taskId)],
+            buttons: [{
+                title: "取消",
+                handler: function () {
+                    g.chooseAnyOneWind.remove();
+                }
+            }, {
+                title: "确定",
+                selected: true,
+                hidden: false,
+                handler: function () {
+                    var selectRow = EUI.getCmp("chooseUserGridPanel").getSelectRow();
+                    if (typeof(selectRow) == "undefined") {
+                        return;
+                    }
+                    // if (saveBtnIsHidden) {
+                    //     var rowData = selectRow;
+                    //     var html = '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
+                    //         '<div class="choose-icon ecmp-flow-delete" title="删除"></div>' +
+                    //         '<div class="excutor-item-title">姓名：' + rowData["userName"] +
+                    //         '，组织机构：' + rowData["organization.name"] + '，编号：' + rowData.code + '</div>' +
+                    //         '</div>';
+                    //     $("div[index=" + currentChooseDivIndex + "]").children().eq(1).html(html);
+                    // } else {
+                    //     g.addChooseUsersInContainer(selectRow, currentChooseDivIndex, currentChooseTaskType);
+                    // }
+                    g.turnToDoSubmit(taskId,selectRow.id);
+                    // g.chooseAnyOneWind.close();
+                }
+            }]
+        });
+    }
+    ,turnToDoSubmit:function(taskId,userId){
+        if(__SessionUser.userId==userId){
+            var status = {
+                msg: "不能转办给自己",
+                success: false,
+                showTime: 4
+            };
+            EUI.ProcessStatus(status);
+            return;
+        }
+        var g = this;
+        var msgBox = EUI.MessageBox({
+            title: '提示',
+            msg: "转办后将对该任务失去所有权，请确定是否继续?",
+            buttons: [{
+                title: "取消",
+                handler: function () {
+                    msgBox.remove();
+                }
+            }, {
+                title: "确定",
+                selected: true,
+                handler: function () {
+                    msgBox.remove();
+                    var mask = EUI.LoadMask({
+                        msg: "正在执行，请稍候..."
+                    });
+                    EUI.Store({
+                        url: _ctxPath + "/flowTask/taskTurnToDo",
+                        params: {
+                            taskId: taskId,
+                            userId: userId
+                        },
+                        success: function (status) {
+                            mask.hide();
+                            var status = {
+                                msg: "执行成功",
+                                success: true
+                            };
+                            EUI.ProcessStatus(status);
+                            g.chooseAnyOneWind.close();
+                            g.refresh();
+                        },
+                        failure: function (response) {
+                            mask.hide();
+                            EUI.ProcessStatus(response);
+                        }
+                    });
+                }
+            }]
+        });
+
+    }
+    ,
+    initChooseUserWindLeft: function (mask) {
+        var g = this;
+        return {
+            xtype: "Container",
+            region: "west",
+            border: false,
+            width: 250,
+            itemspace: 0,
+            layout: "border",
+            items: [this.initChooseUserWindTopBar(), this.initChooseUserWindTree()]
+        }
+    }
+    ,
+    initChooseUserWindTopBar: function () {
+        var g = this;
+        return {
+            xtype: "ToolBar",
+            region: "north",
+            height: 40,
+            border: false,
+            padding: 0,
+            isOverFlow: false,
+            items: ['->', {
+                xtype: "SearchBox",
+                width: 160,
+                displayText: "根据名称搜索",
+                onSearch: function (v) {
+                    EUI.getCmp("chooseAnyUserTree").search(v);
+                    g.selectedOrgId = null;
+                },
+                afterClear: function () {
+                    EUI.getCmp("chooseAnyUserTree").reset();
+                    g.selectedOrgId = null;
+                }
+            }]
+        };
+    }
+    ,
+    initChooseUserWindTree: function () {
+        var g = this;
+        var mask = EUI.LoadMask({msg: "正在加载，请稍候"});
+        return {
+            xtype: "TreePanel",
+            region: "center",
+            id: "chooseAnyUserTree",           
+            url: _ctxPath + "/flowDefination/listAllOrgs",
+            border: true,
+            searchField: ["name"],
+            showField: "name",
+            style: {
+                "background": "#fff"
+            },
+            onSelect: function (node) {
+                g.selectedOrgId = node.id;
+                var chooseUserGridPanel = EUI.getCmp("chooseUserGridPanel").setGridParams({
+                    url: _ctxPath + "/customExecutor/listAllUser",
+                    loadonce: true,
+                    datatype: "json",
+                    postData: {
+                        organizationId: g.selectedOrgId
+                    }
+                }, true);
+            },
+            afterItemRender: function (nodeData) {
+                if (nodeData.frozen) {
+                    var nodeDom = $("#" + nodeData.id);
+                    if (nodeDom == []) {
+                        return;
+                    }
+                    var itemCmp = $(nodeDom[0].children[0]);
+                    itemCmp.addClass("ux-tree-freeze");
+                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
+                }
+            },
+            afterShowTree: function (data) {
+                this.setSelect(data[0].id);
+                mask.hide();
+            }
+        }
+    }
+    ,
+    InitChooseUserGrid: function (taskId) {
+        var g = this;
+        var isShowMultiselect=false;
+        return {
+            xtype: "Container",
+            region: "center",
+            itemspace: 0,
+            layout: "border",
+            border: false,
+            items: [{
+                xtype: "ToolBar",
+                region: "north",
+                isOverFlow: false,
+                padding: 0,
+                height: 40,
+                border: false,
+                items: ['->', {
+                    xtype: "SearchBox",
+                    displayText: g.searchDisplayText,
+                    onSearch: function (value) {
+                        EUI.getCmp("chooseUserGridPanel").localSearch(value);
+                    },
+                    afterClear: function () {
+                        EUI.getCmp("chooseUserGridPanel").restore();
+                    }
+                }]
+            }, {
+                xtype: "GridPanel",
+                region: "center",
+                id: "chooseUserGridPanel",
+                searchConfig: {
+                    searchCols: ["userName", "code"]
+                },
+                style: {"border-radius": "3px"},
+                gridCfg: {
+                    datatype: "local",
+                    loadonce: true,
+                    multiselect: isShowMultiselect,
+                    colModel: [{
+                        label: "用户ID",
+                        name: "id",
+                        index: "id",
+                        hidden: true
+                    }, {
+                        label: "用户名称",
+                        name: "userName",
+                        index: "userName",
+                        width: 150,
+                        align: "center"
+                    }, {
+                        label: "员工编号",
+                        name: "code",
+                        index: "code",
+                        width: 200
+                    }, {
+                        label: "组织机构",
+                        name: "organization.name",
+                        index: "organization.name",
+                        width: 150,
+                        align: "center",
+                        hidden: true
+                    }],
+                    ondblClickRow: function (rowid) {
+                        var rowData = EUI.getCmp("chooseUserGridPanel").grid.jqGrid('getRowData', rowid);
+                        g.turnToDoSubmit(taskId,rowData.id);
+                    }
+                }
+            }]
+        }
+    },
     refresh: function (modelId) {
         this.params.page = 1;
         this.getData();
@@ -412,25 +681,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
         });
     }
     ,
-    //转办
-    showTurnToDoWindow: function () {
-        var g = this;
-        var isChooseOneTitle = "选择转办人【请双击进行选择】";
-        var saveBtnIsHidden = false;
-        $(".turn-to-do-btn", "#" + this.renderTo).live("click", function () {
-            var itemdom = $(this).parents(".info-item");
-            var data = itemdom.data();
-            g.chooseAnyOneWind = EUI.Window({
-                title: isChooseOneTitle,
-                width: 720,
-                layout: "border",
-                height: 500,
-                padding: 8,
-                items: [g.initChooseUserWindTree(), g.InitChooseUserGrid(data.id)]
-            });
-        });
-    }
-    ,
     //签收事件
     claimEvent: function () {
         var g = this;
@@ -472,174 +722,6 @@ EUI.TodoTaskView = EUI.extend(EUI.CustomUI, {
                 }]
             });
         });
-    },
-
-    initChooseUserWindTopBar: function () {
-        var g = this;
-        return   ['->', {
-            xtype: "SearchBox",
-            width: 200,
-            displayText: g.lang.searchDisplayText,
-            onSearch: function (v) {
-                EUI.getCmp("chooseAnyUserTree").search(v);
-                g.selectedOrgId = null;
-            },
-            afterClear: function () {
-                EUI.getCmp("chooseAnyUserTree").reset();
-                g.selectedOrgId = null;
-            }
-        }];
-    },
-    initChooseUserWindTree: function () {
-        var g = this;
-        return {
-            xtype: "TreePanel",
-            width: 250,
-            tbar: this.initChooseUserWindTopBar(),
-            region: "west",
-            id: "chooseAnyUserTree",
-            url: _ctxPath + "/flowDefination/listAllOrgs",
-            border: true,
-            searchField: ["name"],
-            showField: "name",
-            style: {
-                "background": "#fff"
-            },
-            onSelect: function (node) {
-                g.selectedOrgId = node.id;
-                //   EUI.getCmp("gridPanel").grid[0].p.postData={}
-                EUI.getCmp("chooseUserGridPanel_start").setGridParams({
-                    url: _ctxPath + "/customExecutor/listAllUser",
-                    loadonce: true,
-                    datatype: "json",
-                    postData: {
-                        organizationId: g.selectedOrgId
-                    }
-                }, true);
-            },
-            afterItemRender: function (nodeData) {
-                if (nodeData.frozen) {
-                    var nodeDom = $("#" + nodeData.id);
-                    if (nodeDom.length === 0) {
-                        return;
-                    }
-                    var itemCmp = $(nodeDom[0].children[0]);
-                    itemCmp.addClass("ux-tree-freeze");
-                    itemCmp.find(".ux-tree-title").text(itemCmp.find(".ux-tree-title").text() + "(已冻结)");
-                }
-            },
-            afterShowTree: function (data) {
-                this.setSelect(data[0].id);
-            }
-        }
-    },
-    initUserGridTbar: function(){
-        var g =this;
-        return  ['->', {
-            xtype: "SearchBox",
-            displayText: g.lang.searchDisplayText,
-            onSearch: function (value) {
-                EUI.getCmp("chooseUserGridPanel_start").localSearch(value);
-            },
-            afterClear: function () {
-                EUI.getCmp("chooseUserGridPanel_start").restore();
-            }
-        }];
-    },
-    InitChooseUserGrid: function (taskId) {
-        var g = this;
-        var isShowMultiselect=false;
-
-        return  {
-            xtype: "GridPanel",
-            tbar: this.initUserGridTbar(),
-            region: "center",
-            id: "chooseUserGridPanel_start",
-            searchConfig: {
-                searchCols: ["userName", "code"]
-            },
-            style: {"border-radius": "3px"},
-            gridCfg: {
-                loadonce: true,
-                datatype: "local",
-                multiselect: isShowMultiselect,
-                colModel: [{
-                    label: "用户ID",
-                    name: "id",
-                    index: "id",
-                    hidden: true
-                }, {
-                    label: "用户名称",
-                    name: "userName",
-                    index: "userName",
-                    width: 150,
-                    align: "center"
-                }, {
-                    label: "员工编号",
-                    name: "code",
-                    index: "code",
-                    width: 200
-                }, {
-                    label: "组织机构",
-                    name: "organization.name",
-                    index: "organization.name",
-                    width: 150,
-                    align: "center",
-                    hidden: true
-                }],
-                ondblClickRow: function (rowid) {
-                    // var $content2 = $(".flowstart-excutor-content2","div[index=" + currentChooseDivIndex + "]");
-                    // var html = "";
-                    // if(isShowMultiselect){
-                    //     html = $content2.html();
-                    // }
-                    // var rowData = EUI.getCmp("chooseUserGridPanel_start").grid.jqGrid('getRowData', rowid);
-                    // var selectedUser = [];
-                    // $content2.children().each(function (index, domEle) {
-                    //     selectedUser.push(domEle.id)
-                    // });
-                    // if (!g.itemIdIsInArray(rowData.id, selectedUser)) {
-                    //     html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + rowData.id + '">' +
-                    //         '<div class="choose-icon choose-delete"></div>' +
-                    //         '<div class="excutor-item-title">' +
-                    //         String.format(g.lang.showUserInfo2Text, rowData["userName"], rowData["organization.name"], rowData.code) +
-                    //         '</div>' +
-                    //         '</div>';
-                    //     $content2.html(html);
-                    // }
-                    g.chooseAnyOneWind.close();
-                }
-            }
-        };
-    },
-    addChooseUsersInContainer: function (selectRow, currentChooseDivIndex, currentChooseTaskType) {
-        var g = this;
-        var $content2 = $(".flowstart-excutor-content2","div[index=" + currentChooseDivIndex + "]");
-        var html = "";
-        var selectedUser = [];
-        $content2.children().each(function (index, domEle) {
-            selectedUser.push(domEle.id)
-        });
-        for (var j = 0; j < selectRow.length; j++) {
-            var item = selectRow[j];
-            if (!g.itemIdIsInArray(item.id, selectedUser)) {
-                html += '<div class="flow-anyOneUser-item select" type="' + currentChooseTaskType + '" id="' + item.id + '">' +
-                    '<div class="choose-icon choose-delete"></div>' +
-                    '<div class="excutor-item-title">' +
-                    String.format(g.lang.showUserInfo2Text, item["userName"], item["organization.name"], item.code) +
-                    '</div>' +
-                    '</div>';
-            }
-        }
-        $content2.append(html);
-    },
-    itemIdIsInArray: function (id, array) {
-        for (var i = 0; i < array.length; i++) {
-            if (id == array[i]) {
-                return true;
-            }
-        }
-        return false;
     }
     ,
     //终止事件

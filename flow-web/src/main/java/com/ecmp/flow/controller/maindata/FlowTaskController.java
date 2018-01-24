@@ -12,6 +12,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskPageResultVO;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
+import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Controller;
@@ -202,6 +203,21 @@ public class FlowTaskController {
         flowTaskCompleteVO.setTaskId(id);
         flowTaskCompleteVO.setVariables(variables);
         OperateResultWithData result = proxy.complete(flowTaskCompleteVO);
+        OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
+        return status;
+    }
+
+    /**
+     * 任务转办
+     * @param taskId 任务ID
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    @RequestMapping(value = "taskTurnToDo")
+    @ResponseBody
+    public OperateStatus taskTurnToDo(String taskId,String userId)  throws Exception{
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResult result = proxy.taskTurnToDo(taskId,userId);
         OperateStatus status=new OperateStatus(result.successful(),result.getMessage());
         return status;
     }
