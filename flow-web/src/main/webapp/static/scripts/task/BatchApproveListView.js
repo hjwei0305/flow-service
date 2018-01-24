@@ -86,7 +86,7 @@ EUI.BatchApproveListView = EUI.extend(EUI.CustomUI, {
             displayText: "筛选",
             async: false,
             store: {
-                url: _ctxPath + "/flowTask/listFlowTaskHeader"
+                url: _ctxPath + "/flowTask/findTaskSumHeaderCanBatchApproval"
             },
             afterSelect: function (data) {
                 g.setBatchSelect(true);
