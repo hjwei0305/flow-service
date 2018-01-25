@@ -62,6 +62,14 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>,CustomFlowTaskDao {
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId group by ft.flowDefinitionId")
     public List findByExecutorIdGroup(@Param("executorId")String executorId);
 
+    /**
+     * 根据执行人账号归类查询,可批量审批
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.canBatchApproval = true  group by ft.flowDefinitionId")
+    public List findByExecutorIdGroupCanBatchApproval(@Param("executorId")String executorId);
+
 
 //    /**
 //     * 根据业务实体类型id，业务单据id，获取所有业务执行的待办，包括撤销之前的历史任务
