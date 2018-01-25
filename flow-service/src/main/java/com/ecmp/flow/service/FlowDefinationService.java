@@ -192,6 +192,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         flowDefination.setName(flowDefVersion.getName());
         flowDefinationDao.save(flowDefination);
 
+        //清除缓存
+        String pattern = "FlowFindByTypeCodeAndOrgCode_*";
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys!=null&&!keys.isEmpty()){
+            redisTemplate.delete(keys);
+        }
         return deployId;
     }
 

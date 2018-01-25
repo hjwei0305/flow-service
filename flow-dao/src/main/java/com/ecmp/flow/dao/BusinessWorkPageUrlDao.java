@@ -4,9 +4,11 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.QueryHint;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public interface BusinessWorkPageUrlDao extends BaseEntityDao<BusinessWorkPageUr
 
     public BusinessWorkPageUrl findByBusinessModuleIdAndWorkPageUrlId(String businessModuleId, String workPageUrlId);
 
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     public List<BusinessWorkPageUrl> findByBusinessModuleId(String businessModuleId);
 
     @Transactional(Transactional.TxType.REQUIRED)

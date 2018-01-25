@@ -3,6 +3,7 @@ package com.ecmp.flow.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -30,6 +31,8 @@ import javax.persistence.*;
 @Entity(name = "flow_type")
 @DynamicInsert
 @DynamicUpdate
+@Cacheable(true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**

@@ -3,13 +3,11 @@ package com.ecmp.flow.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 
 /**
@@ -29,6 +27,8 @@ import javax.persistence.Version;
 @Entity(name = "business_model_page_url")
 @DynamicInsert
 @DynamicUpdate
+@Cacheable(true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class BusinessWorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**

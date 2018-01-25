@@ -3,6 +3,7 @@ package com.ecmp.flow.entity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -26,6 +27,8 @@ import java.util.Set;
 @Entity(name = "business_model")
 @DynamicInsert
 @DynamicUpdate
+@Cacheable(true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**

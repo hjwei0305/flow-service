@@ -1,14 +1,12 @@
 package com.ecmp.flow.entity;
 
 import com.ecmp.core.entity.BaseAuditableEntity;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 import com.ecmp.core.entity.ICodeUnique;
 import com.ecmp.core.entity.IRank;
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -35,7 +33,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "app_module")
 @DynamicInsert
 @DynamicUpdate
-//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+//@Cache(usage = CacheConcurrencyStrategy.READ_ONLY,region="mycache")
+@Cacheable(true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AppModule extends BaseAuditableEntity
         implements ICodeUnique, IRank {
 
