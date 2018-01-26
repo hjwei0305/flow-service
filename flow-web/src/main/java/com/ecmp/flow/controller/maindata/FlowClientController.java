@@ -144,8 +144,10 @@ public class FlowClientController {
             }else {
                 operateStatus.setData(nodeInfoList);
             }
-        } else {
+        } else if(nodeInfoList == null) {
             operateStatus = new OperateStatus(false, "任务不存在，可能已经被处理");
+        }else{
+            operateStatus = new OperateStatus(false, "当前表单规则找不到符合条件的分支");
         }
         return operateStatus;
     }
