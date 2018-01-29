@@ -1313,9 +1313,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     g.flowDefVersionId = status.data.id;
                     var data = JSON.parse(status.data.defJson);
                     if (g.isCopy) {
-                        g.id = null;
                         if (!g.isFromVersion) {
                             data.process.id = data.process.id + "COPY";
+                            g.id = null;
                         }
                         data.process.name = data.process.name + "COPY";
                     }
