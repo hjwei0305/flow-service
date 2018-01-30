@@ -111,6 +111,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Autowired
     private FlowServiceUrlDao flowServiceUrlDao;
 
+    @Autowired
+    private DefaultBusinessModelDao defaultBusinessModelDao;
+
     /**
      * 新增修改操作
      *
@@ -1292,5 +1295,14 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             throw new FlowException("找不到子流程,或子流程处于挂起状态");
         }
         return result;
+    }
+
+    public void testStart(String flowKey,String businessKey){
+        Map<String,Object> v = new HashMap<>();
+        v.put("UserTask_2_Normal","8A6A1592-4A95-11E7-A011-960F8309DEA7");
+        this.runtimeService.startProcessInstanceByKey(flowKey, businessKey, v);
+        DefaultBusinessModel   defaultBusinessModel = defaultBusinessModelDao.findOne(businessKey);
+        defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
+        defaultBusinessModelDao.save(defaultBusinessModel);
     }
 }

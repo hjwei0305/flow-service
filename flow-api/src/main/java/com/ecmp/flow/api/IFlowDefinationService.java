@@ -235,4 +235,11 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过key查找流程定义",notes = "通过key查找流程定义")
     public FlowDefination findByKey(@PathParam("key") String key);
+
+    @POST
+    @Path("testStart")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "test",notes = "test")
+    public void testStart(@QueryParam("flowKey") String flowKey,@QueryParam("businessKey")String businessKey);
 }

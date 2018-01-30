@@ -4,12 +4,10 @@ import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.vo.OperateStatus;
-import com.ecmp.flow.api.IDefaultBusinessModelService;
-import com.ecmp.flow.api.IFlowDefinationService;
-import com.ecmp.flow.api.IFlowInstanceService;
-import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.api.*;
 import com.ecmp.flow.common.web.controller.FlowBaseController;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
@@ -441,6 +439,18 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
         },params);
         OperateStatus status = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, tt);
         return status;
+    }
+
+
+    @RequestMapping(value = "testStart")
+    @ResponseBody
+    public OperateStatus testStart(String id) throws Exception {
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
+//        proxy.deployByVersionId("09CF457A-04F4-11E8-81BB-0242C0A84202");
+        String flowKey = "yalitest001";
+        proxy.testStart(flowKey,id);
+        OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, null);
+        return operateStatus;
     }
 }
 
