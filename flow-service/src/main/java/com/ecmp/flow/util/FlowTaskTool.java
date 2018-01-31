@@ -1401,41 +1401,41 @@ public class FlowTaskTool {
         }
     }
 
-    /**
-     * 记录任务执行过程中传入的参数
-     *
-     * @param variables 参数map
-     * @param flowTask  关联的工作任务
-     */
-    public  void saveVariables(FlowVariableDao flowVariableDao, Map<String, Object> variables, FlowTask flowTask) {
-        if ((variables != null) && (!variables.isEmpty()) && (flowTask != null)) {
-            FlowVariable flowVariable = new FlowVariable();
-            for (Map.Entry<String, Object> vs : variables.entrySet()) {
-                String key = vs.getKey();
-                Object value = vs.getValue();
-                Long longV = null;
-                Double doubleV = null;
-                String strV = null;
-                flowVariable.setName(key);
-                flowVariable.setFlowTask(flowTask);
-                try {
-                    longV = Long.parseLong(value.toString());
-                    flowVariable.setType(Long.class.getName());
-                    flowVariable.setVLong(longV);
-                } catch (RuntimeException e1) {
-                    try {
-                        doubleV = Double.parseDouble(value.toString());
-                        flowVariable.setType(Double.class.getName());
-                        flowVariable.setVDouble(doubleV);
-                    } catch (RuntimeException e2) {
-                        strV = value.toString();
-                    }
-                }
-                flowVariable.setVText(strV);
-            }
-            flowVariableDao.save(flowVariable);
-        }
-    }
+//    /**
+//     * 记录任务执行过程中传入的参数
+//     *
+//     * @param variables 参数map
+//     * @param flowTask  关联的工作任务
+//     */
+//    public  void saveVariables(FlowVariableDao flowVariableDao, Map<String, Object> variables, FlowTask flowTask) {
+//        if ((variables != null) && (!variables.isEmpty()) && (flowTask != null)) {
+//            FlowVariable flowVariable = new FlowVariable();
+//            for (Map.Entry<String, Object> vs : variables.entrySet()) {
+//                String key = vs.getKey();
+//                Object value = vs.getValue();
+//                Long longV = null;
+//                Double doubleV = null;
+//                String strV = null;
+//                flowVariable.setName(key);
+//                flowVariable.setFlowTask(flowTask);
+//                try {
+//                    longV = Long.parseLong(value.toString());
+//                    flowVariable.setType(Long.class.getName());
+//                    flowVariable.setVLong(longV);
+//                } catch (RuntimeException e1) {
+//                    try {
+//                        doubleV = Double.parseDouble(value.toString());
+//                        flowVariable.setType(Double.class.getName());
+//                        flowVariable.setVDouble(doubleV);
+//                    } catch (RuntimeException e2) {
+//                        strV = value.toString();
+//                    }
+//                }
+//                flowVariable.setVText(strV);
+//            }
+//            flowVariableDao.save(flowVariable);
+//        }
+//    }
 
     /**
      * 检查当前任务的出口节点线上是否存在条件表达式
