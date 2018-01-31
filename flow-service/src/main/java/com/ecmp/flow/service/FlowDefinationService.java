@@ -513,10 +513,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowTypeTemp.getFlowDefinations().add(finalFlowDefination);
                         startFlowTypeVO.setFlowDefKey(finalFlowDefination.getDefKey());
                         startFlowTypeVO.setFlowDefName(finalFlowDefination.getName());
-                        flowTypeListVO.add(0,startFlowTypeVO);
-                    }else {
-                        flowTypeListVO.add(startFlowTypeVO);
                     }
+                    flowTypeListVO.add(startFlowTypeVO);
                 }
                 for (FlowType flowTypeTemp : flowTypeList) {
                     if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
