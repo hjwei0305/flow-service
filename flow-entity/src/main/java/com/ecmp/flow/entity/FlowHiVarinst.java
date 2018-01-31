@@ -23,8 +23,8 @@ import javax.persistence.Table;
  * <p/>
  * *************************************************************************************************
  */
-@Entity
-@Table(name = "flow_hi_varinst", catalog = "ecmp_flow")
+//@Entity
+//@Table(name = "flow_hi_varinst", catalog = "ecmp_flow")
 public class FlowHiVarinst extends com.ecmp.core.entity.BaseAuditableEntity  implements
 		java.io.Serializable {
 
