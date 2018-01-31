@@ -6,7 +6,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
-import com.ecmp.flow.common.util.*;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
@@ -29,7 +29,6 @@ import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
-import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
@@ -72,10 +71,7 @@ public class FlowTaskTool {
     private FlowHistoryDao flowHistoryDao;
 
     @Autowired
-    private FlowVariableDao flowVariableDao;
-
-    @Autowired
-    private FlowExecutorConfigDao flowExecutorConfigDao;
+    private FlowCommonUtil flowCommonUtil;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -126,9 +122,7 @@ public class FlowTaskTool {
      */
     public  boolean checkGateway(FlowTask flowTask) {
         boolean result = false;
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
@@ -155,9 +149,7 @@ public class FlowTaskTool {
      */
     public   boolean checkManualExclusiveGateway(FlowTask flowTask) {
         boolean result = false;
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
@@ -184,9 +176,7 @@ public class FlowTaskTool {
      */
     public   boolean checkSystemExclusiveGateway(FlowTask flowTask) {
         boolean result = false;
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
@@ -215,9 +205,7 @@ public class FlowTaskTool {
      */
     public   boolean checkManualExclusiveGateway(FlowTask flowTask, String manualExclusiveGatewayId) {
         boolean result = false;
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(manualExclusiveGatewayId);
         if ("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
             result = true;
@@ -232,9 +220,7 @@ public class FlowTaskTool {
      * @return
      */
     public   List<NodeInfo> selectNextAllNodesWithGateWay(FlowTask flowTask, PvmActivity currActivity, Map<String, Object> v, List<String> includeNodeIds) throws NoSuchMethodException, SecurityException {
-       String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         String nodeType = currentNode.get("nodeType") + "";
 
@@ -676,9 +662,7 @@ public class FlowTaskTool {
             return tempNodeInfo;
         }
 
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(tempActivity.getId());
         String nodeType = currentNode.get("nodeType") + "";
 //        tempNodeInfo.setCurrentTaskType(nodeType);
@@ -1309,9 +1293,7 @@ public class FlowTaskTool {
         if (taskList != null && taskList.size() > 0) {
             Date currentDate = null;
             String flowName = null;
-            String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
-            JSONObject defObj = JSONObject.fromObject(flowDefJson);
-            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
@@ -1336,12 +1318,12 @@ public class FlowTaskTool {
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
-                        Map<String,Object> params = new HashMap();
-                        params.put("employeeIds",java.util.Arrays.asList(userId));
-                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-                        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-                        if(employees!=null && !employees.isEmpty()){
-                            Executor executor = employees.get(0);
+//                        Map<String,Object> params = new HashMap();
+//                        params.put("employeeIds",java.util.Arrays.asList(userId));
+//                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//                        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                        Executor executor = flowCommonUtil.getBasicExecutor(userId);
+                        if(executor!=null){
                             FlowTask flowTask = new FlowTask();
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1377,13 +1359,13 @@ public class FlowTaskTool {
                         }else{
                             checkChongfu.add(key);
                         }
-                        Map<String,Object> params = new HashMap();
-                        params.put("employeeIds",
-                                java.util.Arrays.asList(identityLink.getUserId()));
-                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-                        List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-                        if (employees != null && !employees.isEmpty()) {
-                            Executor executor = employees.get(0);
+//                        Map<String,Object> params = new HashMap();
+//                        params.put("employeeIds",
+//                                java.util.Arrays.asList(identityLink.getUserId()));
+//                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//                        List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                        Executor executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
+                        if (executor != null ) {
                             FlowTask flowTask = new FlowTask();
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1593,17 +1575,13 @@ public class FlowTaskTool {
 
     public List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,String currNodeId, List<NodeInfo> result){
         FlowInstance flowInstance = flowTask.getFlowInstance();
-        String defObjStr = flowInstance.getFlowDefVersion().getDefJson();
-        JSONObject defObjP = JSONObject.fromObject(defObjStr);
-        Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
+        Definition definitionP =  flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
         net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
         net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
         String currentVersionId = (String)normal.get("currentVersionId");
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
         if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
-            String def = flowDefVersion.getDefJson();
-            JSONObject defObjSon = JSONObject.fromObject(def);
-            Definition definitionSon = (Definition) JSONObject.toBean(defObjSon, Definition.class);
+            Definition   definitionSon = flowCommonUtil.flowDefinition(flowDefVersion);
             List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
@@ -1845,11 +1823,12 @@ public class FlowTaskTool {
         return employees;
     }
 
+
     private boolean checkNextNodesCanAprool(FlowTask flowTask,net.sf.json.JSONObject currentNode ){
         boolean result = true;
-        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+//        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+//        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         if(currentNode==null){
             currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         }

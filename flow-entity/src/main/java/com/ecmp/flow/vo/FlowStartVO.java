@@ -39,6 +39,11 @@ public class FlowStartVO implements Serializable{
     private String flowTypeId;
 
     /**
+     * 选择的流程定义Key
+     */
+    private String flowDefKey;
+
+    /**
      * 手动选择出口分支节点的节点ID
      */
     private List<String> manualSelectedNodeIds ;
@@ -123,5 +128,13 @@ public class FlowStartVO implements Serializable{
 
     public void setUserMap(Map<String, Object> userMap) {
         this.userMap = userMap;
+    }
+
+    public String getFlowDefKey() {
+        return flowDefKey;
+    }
+
+    public void setFlowDefKey(String flowDefKey) {
+        this.flowDefKey = flowDefKey;
     }
 }

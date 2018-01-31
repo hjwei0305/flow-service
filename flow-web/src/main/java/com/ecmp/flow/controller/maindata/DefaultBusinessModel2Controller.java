@@ -160,7 +160,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultB
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId,String flowDefKey, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
         DefaultBusinessModel2 defaultBusinessModel2 = (DefaultBusinessModel2) baseService.findOne(businessKey);
@@ -172,6 +172,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultB
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
+            flowStartVO.setFlowDefKey(flowDefKey);
             Map<String, Object> variables = new HashMap<String, Object>();
             flowStartVO.setVariables(variables);
 

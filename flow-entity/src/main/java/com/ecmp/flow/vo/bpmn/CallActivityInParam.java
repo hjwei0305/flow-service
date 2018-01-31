@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 /**
  * *************************************************************************************************
@@ -19,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "activiti:in")
-public class CallActivityInParam {
+public class CallActivityInParam implements Serializable {
     @XmlAttribute
     private String source;
     @XmlAttribute

@@ -1,6 +1,7 @@
 package com.ecmp.flow.vo.bpmn;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 
 /**
  * *************************************************************************************************
@@ -16,7 +17,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "documentation")
-public class Documentation {
+public class Documentation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @XmlValue

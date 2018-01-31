@@ -4,6 +4,7 @@ import com.ecmp.flow.activiti.ext.ActivityBehaviorFactoryExt;
 import com.ecmp.flow.activiti.ext.ExclusiveGatewayActivityBehaviorExt;
 import com.ecmp.flow.activiti.ext.ServiceTaskDelegate;
 import com.ecmp.flow.listener.*;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowListenerTool;
 import org.activiti.engine.*;
 import org.activiti.engine.impl.persistence.StrongUuidGenerator;
@@ -158,8 +159,13 @@ public class ActivityConfig {
     }
 
     @Bean
-    public FlowListenerTool FlowListenerTool(){
+    public FlowListenerTool flowListenerTool(){
         return new FlowListenerTool();
+    }
+
+    @Bean
+    public FlowCommonUtil flowCommonUtil(){
+        return new FlowCommonUtil();
     }
 
 }

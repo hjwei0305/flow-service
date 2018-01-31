@@ -7,16 +7,12 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.ConditionUtil;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.vo.OperateResult;
@@ -38,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -89,6 +84,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Autowired
     private FlowExecutorConfigDao flowExecutorConfigDao;
 
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -393,41 +390,18 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowOpreateResult;
     }
 
-    private FlowInstance startByTypeCode(FlowType flowType,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables,BusinessModel businessModel) throws NoSuchMethodException, RuntimeException {
+    private FlowInstance startByTypeCode(String flowDefKey,FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
         variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
-        //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
-//        String businessId = businessKey;
-        FlowDefination finalFlowDefination = null;
         if (startUserId == null) {
             startUserId = ContextUtil.getUserId();
         }
-//        BusinessModel businessModel = flowType.getBusinessModel();
-//        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-//        String orgId = (String) v.get(Constants.ORG_ID);
-//        List<String> orgParentCodeList = getParentOrgCodes(orgId);
-//        finalFlowDefination = this.flowDefLuYou(v, flowType, orgParentCodeList, 0);
-        finalFlowDefination = (FlowDefination)flowType.getFlowDefinations().toArray()[0];
-//        if (v != null && !v.isEmpty()) {
-//            if (variables == null) {
-//                variables = new HashMap<String, Object>();
-//            }
-//            variables.putAll(v);
-//        }
-        String key = finalFlowDefination.getDefKey();
         FlowInstance flowInstance = null;
-        FlowDefination flowDefination = flowDefinationDao.findByDefKey(key);
+        FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
-
-            if (flowDefVersion == null || flowDefVersion.getActDefId() == null || (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate)) {//启动该版本激活状态下的最高版本
-                List<FlowDefVersion> flowDefVersionsActivates = flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
-                if (flowDefVersionsActivates != null && !flowDefVersionsActivates.isEmpty()) {
-                    flowDefVersion = flowDefVersionsActivates.get(0);
-                }
-            }
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
                 FlowOperateResult flowOperateResult = checkStart( businessKey, flowDefVersion);
                 if(flowOperateResult!=null && !flowOperateResult.isSuccess()){
@@ -443,20 +417,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     processInstance = this.startFlowById(actDefId, businessKey, variables);
                 }
                 try{
-//                   Map<String, Object> vNew = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);//再获取一次，预防事件对单据进行了更新
-//                if (vNew != null && !vNew.isEmpty()) {
-//                    if (variables == null) {
-//                        variables = new HashMap<String, Object>();
-//                    }
-//                    variables.putAll(vNew);
-//                }
                 flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-                if (processInstance == null || processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
-                } else {
+                if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                     initTask(flowInstance);
                 }
                 }catch(Exception e){
                     logger.error(e.getMessage());
+                    BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
                     AppModule appModule = businessModel.getAppModule();
                     Map<String, Object> params = new HashMap<String,Object>();;
                     params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
@@ -503,76 +470,79 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             resultWithData.setData(flowStartResultVO);
             Map<String, Object> userMap = flowStartVO.getUserMap();
             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-            FlowType flowType = null;
-            FlowDefination finalFlowDefination = null;
-            List<FlowType> flowTypeList = null;
-            if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
-              flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
-            } else {
-            flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
-            flowTypeList = new ArrayList<FlowType>();
-            if (flowType != null) {
-                flowTypeList.add(flowType);
-             }
-          }
             Map<String, Object> businessV = null;
-            List<String> orgParentCodeList = null;
-            if (flowTypeList != null && !flowTypeList.isEmpty()) {
-            //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-            String orgId = (String) businessV.get(Constants.ORG_ID);
-            orgParentCodeList = flowTaskTool.getParentOrgCodes(orgId);
-            flowStartResultVO.setFlowTypeList(flowTypeList);
-            for (FlowType flowTypeTemp : flowTypeList) {
-                finalFlowDefination = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
-                if (finalFlowDefination != null) {
-                    FlowDefination finalFlowDefinationTemp = new FlowDefination();
-                    BeanUtils.copyProperties(finalFlowDefination, finalFlowDefinationTemp);
-                    flowTypeTemp.getFlowDefinations().add(finalFlowDefinationTemp);
-                }
-            }
-            for (FlowType flowTypeTemp : flowTypeList) {
-                if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
-                    flowType = flowTypeTemp;
-                    flowTypeList.remove(flowTypeTemp);
-                    break;
-                }
-            }
-            if (flowType != null) {
-                flowTypeList.add(0, flowType);
-            }
-        } else {
-            flowStartResultVO = null;
-        }
 
-        if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
+          if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
             Map<String, Object> v = new HashMap<String, Object>();
             v.putAll(userMap);
             if (flowStartVO.getVariables() != null && !flowStartVO.getVariables().isEmpty()) {
                 v.putAll(flowStartVO.getVariables());
             }
             v.putAll(businessV);
-            FlowInstance flowInstance = this.startByTypeCode(flowType, flowStartVO,flowStartResultVO, v,businessModel);
-            flowStartResultVO.setFlowInstance(flowInstance);
+            String flowDefKey = flowStartVO.getFlowDefKey();
+//            FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
+           this.startByTypeCode(flowDefKey, flowStartVO,flowStartResultVO, v);
         } else {
-            if (flowType != null && flowType.getFlowDefinations() != null && !flowType.getFlowDefinations().isEmpty()) {
-                finalFlowDefination = (FlowDefination) flowType.getFlowDefinations().toArray()[0];
+            FlowType flowType = null;
+            FlowDefination finalFlowDefination = null;
+            List<FlowType> flowTypeList = null;
+            List<StartFlowTypeVO> flowTypeListVO = null;
+            if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
+                flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
+            } else {
+                flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
+                flowTypeList = new ArrayList<FlowType>();
+                if (flowType != null) {
+                    flowTypeList.add(flowType);
+                }
+            }
+            List<String> orgParentCodeList = null;
+            if (flowTypeList != null && !flowTypeList.isEmpty()) {
+                flowTypeListVO = new ArrayList<>();
+                flowStartResultVO.setFlowTypeList(flowTypeListVO);
+                String orgId = (String) businessV.get(Constants.ORG_ID);
+                orgParentCodeList = flowTaskTool.getParentOrgCodes(orgId);
+                for (FlowType flowTypeTemp : flowTypeList) {
+                    StartFlowTypeVO startFlowTypeVO = new StartFlowTypeVO();
+                    startFlowTypeVO.setId(flowTypeTemp.getId());
+                    startFlowTypeVO.setName(flowTypeTemp.getName());
+                    finalFlowDefination = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
+                    if (finalFlowDefination != null) {
+                        flowTypeTemp.getFlowDefinations().add(finalFlowDefination);
+                        startFlowTypeVO.setFlowDefKey(finalFlowDefination.getDefKey());
+                        startFlowTypeVO.setFlowDefName(finalFlowDefination.getName());
+                        flowTypeListVO.add(0,startFlowTypeVO);
+                    }else {
+                        flowTypeListVO.add(startFlowTypeVO);
+                    }
+                }
+                for (FlowType flowTypeTemp : flowTypeList) {
+                    if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
+                        finalFlowDefination = (FlowDefination) flowTypeTemp.getFlowDefinations().toArray()[0];
+                        break;
+                    }
+                }
+            } else {
+                flowStartResultVO = null;
+            }
+            if (finalFlowDefination != null) {
                 List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                 flowStartResultVO.setNodeInfoList(nodeInfoList);
             }
         }
-
-        if (flowTypeList != null && !flowTypeList.isEmpty()) {
-            for (FlowType flowTypeTemp : flowTypeList) {
-                Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
-                if (flowDefinationSet != null && !flowDefinationSet.isEmpty()) {
-                    for (FlowDefination flowDefination : flowDefinationSet) {
-                        flowDefination.setFlowType(null);
-                    }
-                }
-            }
-        }
+//
+//        if (flowTypeList != null && !flowTypeList.isEmpty()) {
+//            for (FlowType flowTypeTemp : flowTypeList) {
+//                Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
+//                if (flowDefinationSet != null && !flowDefinationSet.isEmpty()) {
+//                    for (FlowDefination flowDefination : flowDefinationSet) {
+//                        flowDefination.setFlowType(null);
+//                    }
+//                }
+//            }
+//        }
         }catch (FlowException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultWithData = OperateResultWithData.operationFailure(e.getMessage());
@@ -626,10 +596,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-            Map<String,Object> params = new HashMap();
-            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+//            Map<String,Object> params = new HashMap();
+//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -643,10 +614,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-            Map<String,Object> params = new HashMap();
-            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+//            Map<String,Object> params = new HashMap();
+//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -667,11 +639,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isEmpty(startUserId)) {
                     startUserId = ContextUtil.getSessionUser().getUserId();
                 }
-                Map<String,Object> params = new HashMap();
-                params.put("employeeIds",java.util.Arrays.asList(startUserId));
-                String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-               employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
+                employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             } else {
                 String selfDefId = executor.get("selfDefId") + "";
                 if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
@@ -872,10 +840,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-            Map<String,Object> params = new HashMap();
-            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+//            Map<String,Object> params = new HashMap();
+//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -893,10 +862,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-            Map<String,Object> params = new HashMap();
-            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+//            Map<String,Object> params = new HashMap();
+//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -945,8 +915,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowDefVersion = flowDefVersionsActivates.get(0);
                 }
             }
-            JSONObject defObj = JSONObject.fromObject(flowDefVersion.getDefJson());
-            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            Definition   definition = flowCommonUtil.flowDefinition(flowDefVersion);
             List<StartEvent> startEventList = definition.getProcess().getStartEvent();
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
@@ -1273,9 +1242,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String currentVersionId = (String) normal.get("currentVersionId");
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
         if (flowDefVersion != null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
-            String def = flowDefVersion.getDefJson();
-            JSONObject defObj = JSONObject.fromObject(def);
-            Definition definitionSon = (Definition) JSONObject.toBean(defObj, Definition.class);
+            Definition   definitionSon = flowCommonUtil.flowDefinition(flowDefVersion);
             List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);

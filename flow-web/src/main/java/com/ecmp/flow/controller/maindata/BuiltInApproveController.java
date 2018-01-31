@@ -122,25 +122,26 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
-        IBaseEntityService baseService = getBaseService();
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId,String flowDefKey, String taskList) throws NoSuchMethodException, SecurityException {
+//        IBaseEntityService baseService = getBaseService();
         OperateStatus operateStatus = null;
-        DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
+//        DefaultBusinessModel defaultBusinessModel = (DefaultBusinessModel) baseService.findOne(businessKey);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-        if (defaultBusinessModel != null) {
+//        if (defaultBusinessModel != null) {
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
               Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
+             flowStartVO.setFlowDefKey(flowDefKey);
             Map<String, Object> variables = new HashMap<String, Object>();
             flowStartVO.setVariables(variables);
 
-            //测试跨业务实体子流程,并发多级子流程测试
-            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+//            //测试跨业务实体子流程,并发多级子流程测试
+//            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+//            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+//            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
             if (StringUtils.isNotEmpty(taskList)) {
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
@@ -148,35 +149,11 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
                 if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
-
-                        //测试跨业务实体子流程,并发多级子流程测试
-                        String callActivityPath = f.getCallActivityPath();
-                        if (StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
-
-
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, defaultBusinessModel);
-                            List<String> userVarNameList = (List)userMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
-                            if(userVarNameList!=null){
-                                userVarNameList.add(f.getUserVarName());
-                            }else{
-                                userVarNameList = new ArrayList<>();
-                                userVarNameList.add(f.getUserVarName());
-                                userMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
-                            }
-                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                                userMap.put(callActivityPath+"/"+f.getUserVarName(), f.getUserIds());
-                            } else {
-                                String[] idArray = f.getUserIds().split(",");
-                                userMap.put(callActivityPath+"/"+f.getUserVarName(), idArray);
-                            }
-                        }else{
-                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                                userMap.put(f.getUserVarName(), f.getUserIds());
-                            } else {
-                                String[] idArray = f.getUserIds().split(",");
-                                userMap.put(f.getUserVarName(), idArray);
-                            }
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            userMap.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            userMap.put(f.getUserVarName(), idArray);
                         }
                     }
                 }
@@ -199,9 +176,10 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
             }else {
                 operateStatus=  new OperateStatus(false, operateResultWithData.getMessage());
             }
-        } else {
-            operateStatus = new OperateStatus(false, "业务对象不存在");
-        }
+//        }
+//        else {
+//            operateStatus = new OperateStatus(false, "业务对象不存在");
+//        }
         return operateStatus;
     }
 

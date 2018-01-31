@@ -1,6 +1,5 @@
-package com.ecmp.flow.vo.bpmn;
+package com.ecmp.flow.vo;
 
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 
 /**
@@ -11,18 +10,23 @@ import java.io.Serializable;
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
  * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/5/24 9:49      谭军(tanjun)                    新建
+ * 1.0.00      2018/1/30 21:21      谭军(tanjun)                    新建
  * <p/>
  * *************************************************************************************************
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "activiti:field")
-public class ActivitiField implements Serializable {
-
-    @XmlAttribute()
+public class StartFlowTypeVO implements Serializable {
+    private String id;
     private String name;
-    @XmlElement(name = "activiti:string")
-    private String activitiString;
+    private String flowDefName;//流程定义名称
+    private String flowDefKey;//流程定义Key
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -32,11 +36,19 @@ public class ActivitiField implements Serializable {
         this.name = name;
     }
 
-    public String getActivitiString() {
-        return activitiString;
+    public String getFlowDefName() {
+        return flowDefName;
     }
 
-    public void setActivitiString(String activitiString) {
-        this.activitiString = activitiString;
+    public void setFlowDefName(String flowDefName) {
+        this.flowDefName = flowDefName;
+    }
+
+    public String getFlowDefKey() {
+        return flowDefKey;
+    }
+
+    public void setFlowDefKey(String flowDefKey) {
+        this.flowDefKey = flowDefKey;
     }
 }

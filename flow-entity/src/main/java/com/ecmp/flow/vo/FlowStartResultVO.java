@@ -22,11 +22,8 @@ import java.util.Map;
  */
 public class FlowStartResultVO implements Serializable{
 
-    private com.ecmp.flow.entity.FlowInstance flowInstance;//流程启动实例
 
-    private com.ecmp.flow.entity.FlowDefination flowDefination;//选择的流程类型
-
-    private List<FlowType> flowTypeList;//流程类型选择（一个流程实体存在多个流程类型的情况下）
+    private List<StartFlowTypeVO> flowTypeList;//流程类型选择（一个流程实体存在多个流程类型的情况下）
     private List<NodeInfo> nodeInfoList;//启动时节点信息
 
     private Boolean checkStartResult=true;
@@ -37,19 +34,11 @@ public class FlowStartResultVO implements Serializable{
     private Map<String, Object> variables;
 
 
-    public FlowInstance getFlowInstance() {
-        return flowInstance;
-    }
-
-    public void setFlowInstance(FlowInstance flowInstance) {
-        this.flowInstance = flowInstance;
-    }
-
-    public List<FlowType> getFlowTypeList() {
+    public List<StartFlowTypeVO> getFlowTypeList() {
         return flowTypeList;
     }
 
-    public void setFlowTypeList(List<FlowType> flowTypeList) {
+    public void setFlowTypeList(List<StartFlowTypeVO> flowTypeList) {
         this.flowTypeList = flowTypeList;
     }
 
@@ -77,3 +66,4 @@ public class FlowStartResultVO implements Serializable{
         this.checkStartResult = checkStartResult;
     }
 }
+

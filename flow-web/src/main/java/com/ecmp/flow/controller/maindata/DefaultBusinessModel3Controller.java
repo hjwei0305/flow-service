@@ -146,7 +146,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<DefaultB
      */
     @RequestMapping(value = "startFlow")
     @ResponseBody
-    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId, String taskList) throws NoSuchMethodException, SecurityException {
+    public OperateStatus startFlow(String businessModelCode, String businessKey, String opinion, String typeId,String flowDefKey, String taskList) throws NoSuchMethodException, SecurityException {
         IBaseEntityService baseService = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
         OperateStatus operateStatus = null;
         DefaultBusinessModel3 defaultBusinessModel3 = (DefaultBusinessModel3) baseService.findOne(businessKey);
@@ -158,6 +158,7 @@ public class DefaultBusinessModel3Controller extends FlowBaseController<DefaultB
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
+            flowStartVO.setFlowDefKey(flowDefKey);
             Map<String, Object> variables = new HashMap<String, Object>();
             flowStartVO.setVariables(variables);
 

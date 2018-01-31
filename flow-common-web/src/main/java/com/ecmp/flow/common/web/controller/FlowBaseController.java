@@ -59,15 +59,16 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
     @RequestMapping(value = "startFlow")
     @ResponseBody
     @IgnoreCheckAuth
-    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String taskList) throws NoSuchMethodException, SecurityException{
+    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String flowDefKey,String taskList) throws NoSuchMethodException, SecurityException{
         OperateStatus operateStatus = null;
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+           List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
             Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
             FlowStartVO flowStartVO = new FlowStartVO();
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
+           flowStartVO.setFlowDefKey(flowDefKey);
             if (StringUtils.isNotEmpty(taskList)) {
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
