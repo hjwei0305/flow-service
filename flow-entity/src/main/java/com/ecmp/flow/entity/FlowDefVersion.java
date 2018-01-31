@@ -92,7 +92,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "def_json")
+    @Column(name = "def_json",columnDefinition="CLOB")
     private String defJson;
 
 //    /**
@@ -108,7 +108,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "def_xml")
+    @Column(name = "def_xml",columnDefinition="CLOB")
     private String defXml;
 
     /**

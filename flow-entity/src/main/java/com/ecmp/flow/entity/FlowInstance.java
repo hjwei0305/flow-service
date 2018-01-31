@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -27,6 +28,8 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "flow_instance", catalog = "ecmp_flow")
+@Cacheable(true)
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 
 	/**
@@ -74,12 +77,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	@Column(name = "businessModelRemark")
 	private String businessModelRemark;
 
-	/**
-	 * 业务额外属性
-	 */
-	@Lob
-	@Column(name = "business_extra_map")
-	private Map<String,Object> businessExtraMap;
+//	/**
+//	 * 业务额外属性
+//	 */
+//	@Lob
+//	@Basic(fetch = FetchType.LAZY)
+//	@Column(name = "business_extra_map",columnDefinition="CLOB")
+//	private Map<String,Object> businessExtraMap;
 
 	/**
 	 * 开始时间
@@ -315,13 +319,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 		this.businessName = businessName;
 	}
 
-	public Map<String, Object> getBusinessExtraMap() {
-		return businessExtraMap;
-	}
-
-	public void setBusinessExtraMap(Map<String, Object> businessExtraMap) {
-		this.businessExtraMap = businessExtraMap;
-	}
+//	public Map<String, Object> getBusinessExtraMap() {
+//		return businessExtraMap;
+//	}
+//
+//	public void setBusinessExtraMap(Map<String, Object> businessExtraMap) {
+//		this.businessExtraMap = businessExtraMap;
+//	}
 
 	public Boolean isManuallyEnd() {
 		return manuallyEnd;

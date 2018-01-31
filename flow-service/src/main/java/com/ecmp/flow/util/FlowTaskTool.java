@@ -1393,7 +1393,7 @@ public class FlowTaskTool {
                     }
                 }
             }
-            flowInstanceService.checkCanEnd(flowInstance.getId());
+//            flowInstanceService.checkCanEnd(flowInstance.getId());
             if(currentDate!=null){
                 flowInstance.setEndDate(currentDate);
                 flowInstanceService.save(flowInstance);
