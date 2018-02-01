@@ -17,7 +17,7 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.actInstanceId = :actInstanceId")
     public  FlowInstance findByActInstanceId(@Param("actInstanceId")String actInstanceId);
-    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+//    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     public  List<FlowInstance> findByBusinessId(String businessId);
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     public   List<FlowInstance> findByParentId(String parentId);

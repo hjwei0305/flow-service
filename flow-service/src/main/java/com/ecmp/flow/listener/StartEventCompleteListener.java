@@ -6,6 +6,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -60,6 +61,9 @@ public class StartEventCompleteListener implements ExecutionListener {
 
 //    @Autowired
 //    private FlowTaskDao flowTaskDao;
+
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
@@ -170,7 +174,7 @@ public class StartEventCompleteListener implements ExecutionListener {
             if(variables.containsKey(Constants.FLOW_DEF_VERSION_ID)){
                 flowDefVersionId = (String) variables.get(Constants.FLOW_DEF_VERSION_ID);//流程定义版本id
             }
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
+            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(flowDefVersionId);flowDefVersionDao.findOne(flowDefVersionId);
             if(flowDefVersion==null){
                 String message = ContextUtil.getMessage("10040");
                 throw new FlowException(message);//"流程版本找不到！
@@ -197,8 +201,6 @@ public class StartEventCompleteListener implements ExecutionListener {
             }
             flowInstanceDao.save(flowInstance);
 //        }
-
-
 
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();

@@ -1290,8 +1290,8 @@ public class FlowTaskTool {
             }
             taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
         }
-        if (taskList != null && taskList.size() > 0) {
-            Date currentDate = null;
+        if (taskList != null && !taskList.isEmpty()) {
+//            Date currentDate = null;
             String flowName = null;
             Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
@@ -1347,7 +1347,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
-                            currentDate = flowTask.getCreatedDate();
+//                            currentDate = flowTask.getCreatedDate();
                         }
                     }
                 }else{
@@ -1386,7 +1386,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
-                            currentDate = flowTask.getCreatedDate();
+//                            currentDate = flowTask.getCreatedDate();
                         }else{
                             throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
                         }
@@ -1394,10 +1394,10 @@ public class FlowTaskTool {
                 }
             }
 //            flowInstanceService.checkCanEnd(flowInstance.getId());
-            if(currentDate!=null){
-                flowInstance.setEndDate(currentDate);
-                flowInstanceService.save(flowInstance);
-            }
+//            if(currentDate!=null){
+//                flowInstance.setEndDate(currentDate);
+//                flowInstanceService.save(flowInstance);
+//            }
         }
     }
 

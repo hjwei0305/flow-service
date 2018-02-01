@@ -476,10 +476,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
-        if(checkFlowInstanceActivate(flowStartVO.getBusinessKey())){
-            String message = ContextUtil.getMessage("10051",flowStartVO.getBusinessKey());
-            return  OperateResultWithData.operationFailure(message);
-        }
+//        if(checkFlowInstanceActivate(flowStartVO.getBusinessKey())){
+//            String message = ContextUtil.getMessage("10051",flowStartVO.getBusinessKey());
+//            return  OperateResultWithData.operationFailure(message);
+//        }
         OperateResultWithData resultWithData = OperateResultWithData.operationSuccess();
         try{
             FlowStartResultVO flowStartResultVO = new FlowStartResultVO();
