@@ -174,7 +174,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //    @Transactional
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
         String deployId = null;
-        FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(id);
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
         Deployment deploy = null;
         deploy = this.deploy(flowDefVersion.getName(), flowDefVersion.getDefXml());
         deployId = deploy.getId();
@@ -184,6 +184,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
         flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
         flowDefVersionDao.save(flowDefVersion);
+//        clearFlowDefVersion(id);//清除缓存
+        clearFlowDefVersion();
 
         FlowDefination flowDefination = flowDefVersion.getFlowDefination();
         flowDefination.setFlowDefinationStatus(FlowDefinationStatus.Activate);
@@ -198,6 +200,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            redisTemplate.delete(keys);
 //        }
         return deployId;
+    }
+
+    private void clearFlowDefVersion(){
+        String pattern = "FLowGetLastFlowDefVersion_*";
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys!=null&&!keys.isEmpty()){
+            redisTemplate.delete(keys);
+        }
+    }
+    private void clearFlowDefVersion(String defVersionId){
+        String key = "FLowGetLastFlowDefVersion_"+defVersionId;
+        if (redisTemplate.hasKey(key)){
+            redisTemplate.delete(key);
+        }
     }
 
     /**
