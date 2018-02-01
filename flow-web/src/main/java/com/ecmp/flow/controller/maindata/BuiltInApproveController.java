@@ -135,8 +135,8 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
              flowStartVO.setFlowDefKey(flowDefKey);
-            Map<String, Object> variables = new HashMap<String, Object>();
-            flowStartVO.setVariables(variables);
+//            Map<String, Object> variables = new HashMap<String, Object>();
+//            flowStartVO.setVariables(variables);
 
 //            //测试跨业务实体子流程,并发多级子流程测试
 //            List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();

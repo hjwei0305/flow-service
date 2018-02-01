@@ -174,7 +174,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //    @Transactional
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
         String deployId = null;
-        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
+        FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(id);
         Deployment deploy = null;
         deploy = this.deploy(flowDefVersion.getName(), flowDefVersion.getDefXml());
         deployId = deploy.getId();
@@ -229,7 +229,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
                 String proessDefId = flowDefVersion.getActDefId();
                 ProcessInstance processInstance = null;
@@ -281,7 +281,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         FlowDefination flowDefination = flowDefinationDao.findByDefKey(key);
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null) {
                 ProcessInstance processInstance = null;
                 if ((startUserId != null) && (!"".equals(startUserId))) {
@@ -401,7 +401,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
         if (flowDefination != null) {
             String versionId = flowDefination.getLastDeloyVersionId();
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
                 FlowOperateResult flowOperateResult = checkStart( businessKey, flowDefVersion);
                 if(flowOperateResult!=null && !flowOperateResult.isSuccess()){
@@ -482,7 +482,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
             v.putAll(businessV);
             String flowDefKey = flowStartVO.getFlowDefKey();
-//            FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
            this.startByTypeCode(flowDefKey, flowStartVO,flowStartResultVO, v);
         } else {
             FlowType flowType = null;
@@ -906,7 +905,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             result = new ArrayList<NodeInfo>();
 //            String startUEL = flowDefination.getStartUel();
             String versionId = flowDefination.getLastDeloyVersionId();
-            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {//当前
                 List<FlowDefVersion> flowDefVersionsActivates = flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
                 if (flowDefVersionsActivates != null && !flowDefVersionsActivates.isEmpty()) {
@@ -972,9 +971,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (versionCode > -1) {
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
         } else {
-            FlowDefination flowDefination = flowDefinationDao.findOne(id);
-            ;
-            flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+            FlowDefination flowDefination = flowDefinationDao.findOne(id);            ;
+            flowDefVersion = flowCommonUtil.getLastFlowDefVersion(flowDefination.getLastVersionId());
         }
         return flowDefVersion;
     }
@@ -1238,7 +1236,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             businessVName += "/" + definition.getProcess().getId() + "/" + jsonObjectNode.get("id");
         }
         String currentVersionId = (String) normal.get("currentVersionId");
-        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
+        FlowDefVersion flowDefVersion =flowCommonUtil.getLastFlowDefVersion(currentVersionId);
         if (flowDefVersion != null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
             Definition   definitionSon = flowCommonUtil.flowDefinition(flowDefVersion);
             List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();

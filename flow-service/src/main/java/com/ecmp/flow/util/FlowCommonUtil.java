@@ -2,9 +2,11 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,9 @@ import java.util.Map;
  */
 //@Component
 public class FlowCommonUtil implements Serializable {
+
+    @Autowired
+    private FlowDefVersionDao flowDefVersionDao;
 
     @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
     public Definition flowDefinition(FlowDefVersion flowDefVersion ){
@@ -57,5 +62,11 @@ public class FlowCommonUtil implements Serializable {
         String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
         List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         return employees;
+    }
+
+    @Cacheable(value = "FLowGetLastFlowDefVersion", key = "'FLowGetLastFlowDefVersion_' + #versionId")
+    public FlowDefVersion getLastFlowDefVersion(String versionId ){
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+        return flowDefVersion;
     }
 }
