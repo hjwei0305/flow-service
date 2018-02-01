@@ -988,7 +988,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
         } else {
             FlowDefination flowDefination = flowDefinationDao.findOne(id);            ;
-            flowDefVersion = flowCommonUtil.getLastFlowDefVersion(flowDefination.getLastVersionId());
+            flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         }
         return flowDefVersion;
     }
