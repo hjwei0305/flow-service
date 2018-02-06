@@ -446,10 +446,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     params.put(Constants.ID,flowInstance.getBusinessId());
                     params.put(Constants.STATUS, FlowStatus.INIT);
                     String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
-                    Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                    ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
                     throw  new FlowException(e.getMessage());
                 }
             }
+        }else{
+            throw  new FlowException("流程定义未找到！");
         }
 
         return flowInstance;
