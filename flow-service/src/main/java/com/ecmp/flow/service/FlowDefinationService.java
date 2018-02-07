@@ -522,23 +522,26 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String orgId = (String) businessV.get(Constants.ORG_ID);
                 orgParentCodeList = flowTaskTool.getParentOrgCodes(orgId);
                 for (FlowType flowTypeTemp : flowTypeList) {
-                    StartFlowTypeVO startFlowTypeVO = new StartFlowTypeVO();
-                    startFlowTypeVO.setId(flowTypeTemp.getId());
-                    startFlowTypeVO.setName(flowTypeTemp.getName());
-                    finalFlowDefination = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
-                    if (finalFlowDefination != null) {
-                        flowTypeTemp.getFlowDefinations().add(finalFlowDefination);
-                        startFlowTypeVO.setFlowDefKey(finalFlowDefination.getDefKey());
-                        startFlowTypeVO.setFlowDefName(finalFlowDefination.getName());
-                    }
-                    flowTypeListVO.add(startFlowTypeVO);
-                }
-                for (FlowType flowTypeTemp : flowTypeList) {
-                    if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
-                        finalFlowDefination = (FlowDefination) flowTypeTemp.getFlowDefinations().toArray()[0];
-                        break;
+                    FlowDefination  flowDefinationTemp = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
+                    if (flowDefinationTemp != null) {
+                        StartFlowTypeVO startFlowTypeVO = new StartFlowTypeVO();
+                        startFlowTypeVO.setId(flowTypeTemp.getId());
+                        startFlowTypeVO.setName(flowTypeTemp.getName());
+//                        flowTypeTemp.getFlowDefinations().add(flowDefinationTemp);
+                        startFlowTypeVO.setFlowDefKey(flowDefinationTemp.getDefKey());
+                        startFlowTypeVO.setFlowDefName(flowDefinationTemp.getName());
+                        flowTypeListVO.add(startFlowTypeVO);
+                        if(finalFlowDefination == null){
+                            finalFlowDefination = flowDefinationTemp;
+                        }
                     }
                 }
+//                for (FlowType flowTypeTemp : flowTypeList) {
+//                    if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
+//                        finalFlowDefination = (FlowDefination) flowTypeTemp.getFlowDefinations().toArray()[0];
+//                        break;
+//                    }
+//                }
             } else {
                 flowStartResultVO = null;
             }
