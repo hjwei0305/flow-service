@@ -11,7 +11,6 @@ dependencies {
     compile project(':flow-api')
     compile project(':flow-entity')
     compile(
-            "com.ecmp:config-util-apiclient:2.+",
             "com.ecmp:core-dao:$core_version",
 //            "com.ecmp:basic-api:$basic_version"
 //            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
