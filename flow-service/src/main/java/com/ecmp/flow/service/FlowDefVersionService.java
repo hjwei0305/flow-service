@@ -149,16 +149,16 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
         Boolean canAsSubProcess = definition.getSubProcess();
-        if(definition.getId()!=null){
-            flowDefination = flowDefinationDao.findOne(definition.getId());
-        }
+//        if(definition.getId()!=null){
+//            flowDefination = flowDefinationDao.findOne(definition.getId());
+//        }
         //通过key来查找对应的流程定义是否已经存在
-        if(flowDefination == null){
+//        if(flowDefination == null){
             flowDefination = flowDefinationDao.findByDefKey(process.getId());
-            if(flowDefination!=null){
-                return  OperateResultWithData.operationFailure("10028");
-            }
-        }
+//            if(flowDefination!=null){
+//                return  OperateResultWithData.operationFailure("10028");
+//            }
+//        }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew =true;
@@ -217,16 +217,20 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
             if(entity!=null){//版本不为空
                 if(!entity.getDefKey().equals(process.getId())){
-                    throw new RuntimeException("版本key与当前流程定义key不一致！");
-                }
-                if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
-                    FlowDefVersion old = entity;
+//                    throw new RuntimeException("版本key与当前流程定义key不一致！");
                     entity  = new FlowDefVersion();
-                    entity.setActDefId(old.getId());
-                    entity.setDefKey(old.getDefKey());
-                }else{
                     entity.setActDefId(process.getId());
                     entity.setDefKey(process.getId());
+                }else{
+                    if(StringUtils.isNotEmpty(entity.getActDeployId())){//对于已经有发布ID的对象进行拷贝
+                        FlowDefVersion old = entity;
+                        entity  = new FlowDefVersion();
+                        entity.setActDefId(old.getId());
+                        entity.setDefKey(old.getDefKey());
+                    }else{
+                        entity.setActDefId(process.getId());
+                        entity.setDefKey(process.getId());
+                    }
                 }
                 if(process.getStartUEL()!=null){
                     // flowDefination.setStartUel(process.getStartUEL().toString());
