@@ -156,4 +156,19 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "testPJoin",notes = "testPJoin")
  public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
+
+ @POST
+ @Path("testPoolTaskComplete")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试testPoolTaskComplete",notes = "testPoolTaskComplete")
+ public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
+
+ @POST
+ @Path("testPoolTaskSignal")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试testPoolTaskSignal",notes = "testPoolTaskSignal")
+ public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+
 }

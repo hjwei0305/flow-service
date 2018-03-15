@@ -34,7 +34,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     items: [this.getNormalTab()]
                 }]
             });
-        } else if (this.type == "ServiceTask" || this.type == "ReceiveTask") {
+        } else if (this.type == "ServiceTask" || this.type == "ReceiveTask" || this.type == "PoolTask") {
             this.window = EUI.Window({
                 width: 550,
                 height: 420,
@@ -51,7 +51,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         iframe: false,
                         closable: false
                     },
-                    items: [this.getServiceTaskNormalTab(), this.getEventTab(),
+                    items: [this.getServiceTaskNormalTab(this.type), this.getEventTab(),
                         this.getNotifyTab(true)]
                 }]
             });
@@ -166,7 +166,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     });
                     return;
                 }
-                if ((g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity' ) && !g.checkExcutor()) {
+                if ((g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'PoolTask' && g.type != 'CallActivity' ) && !g.checkExcutor()) {
                     EUI.ProcessStatus({
                         success: false,
                         msg: "请将执行人项配置完整"
@@ -178,7 +178,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 var normalData = normalForm.getFormValue();
                 var eventData = eventForm ? eventForm.getFormValue() : '';
                 var executor = '';
-                if (g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity') {
+                if (g.type != 'ServiceTask' && g.type != 'ReceiveTask'&& g.type != 'PoolTask' && g.type != 'CallActivity') {
                     executor = g.getExcutorData()
                 }
                 g.afterConfirm && g.afterConfirm.call(this, {
@@ -322,7 +322,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 }]
             }]);
         }
-        else if (this.nodeType != "ParallelTask" && this.nodeType != "SerialTask" && this.type != "ServiceTask" && this.type != "ReceiveTask" && this.type != 'CallActivity') {
+        else if (this.nodeType != "ParallelTask" && this.nodeType != "SerialTask" && this.type != "ServiceTask" && this.type != "ReceiveTask" && this.type != "PoolTask" && this.type != 'CallActivity') {
             items = items.concat([{
                 xtype: "CheckBox",
                 title: "允许流程发起人终止",
@@ -354,7 +354,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: items
         };
     },
-    getServiceTaskNormalTab: function () {
+    getServiceTaskNormalTab: function (nodeType) {
         var items = [{
             title: "节点名称",
             labelWidth: 100,
@@ -381,6 +381,27 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 field: ["id"]
             }
         }];
+        if(nodeType == "PoolTask"){
+            items.push({
+                xtype: "ComboBox",
+                    title: "工作界面",
+                labelWidth: 100,
+                allowBlank: false,
+                name: "workPageName",
+                field: ["id", "mustCommit"],
+                async: false,
+                store: {
+                url: _ctxPath + "/design/listAllWorkPage",
+                    params: {
+                    businessModelId: this.businessModelId
+                }
+            },
+                reader: {
+                    name: "name",
+                        field: ["id", "mustCommit"]
+                }
+            });
+        }
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -832,7 +853,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         afterPosition.positionData = this.notifyAfterPositionData || [];
         afterPosition.positionIds = this.getNotifyChoosePositionIds(this.notifyAfterPositionData);
         var g = this;
-        if (g.type == "ServiceTask" || g.type == "ReceiveTask") {
+        if (g.type == "ServiceTask" || g.type == "ReceiveTask" || g.type == "PoolTask") {
             data.before = {
                 notifyStarter: EUI.getCmp(notifyTab1.items[0]).getFormValue(),
                 notifyPosition: beforePosition
@@ -1308,7 +1329,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         normalForm.loadData(this.data.normal);
 
         //加载执行人配置
-        if (g.type != 'ServiceTask' && g.type != 'ReceiveTask' && g.type != 'CallActivity') {
+        if (g.type != 'ServiceTask' && g.type != 'ReceiveTask'&& g.type != 'PoolTask' && g.type != 'CallActivity') {
             var userType = this.data.executor.userType;
             var userTypeCmp = EUI.getCmp("userType");
             userTypeCmp.setValue(userType);
@@ -1335,7 +1356,7 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     loadNotifyData: function (tab, data) {
         var g = this;
-        if (g.type == "ServiceTask" || g.type == "ReceiveTask") {
+        if (g.type == "ServiceTask" || g.type == "ReceiveTask" || g.type == "PoolTask") {
             EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
             EUI.getCmp(tab.items[tab.items.length - 1]).loadData(data.notifyPosition);
         } else {

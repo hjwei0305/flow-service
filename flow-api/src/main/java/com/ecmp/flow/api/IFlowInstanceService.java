@@ -3,9 +3,11 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -39,6 +41,8 @@ import java.util.Set;
  */
 @Path("flowInstance")
 @Api(value = "IFlowInstanceService 流程实例服务API接口")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public interface IFlowInstanceService extends IBaseService<FlowInstance, String> {
 
     /**
@@ -272,4 +276,34 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "终止流程实例", notes = "终止")
     public OperateResult endForce(@PathParam("id")String id);
+
+    /**
+     * 工作池任务确定执行人
+     * @param businessId 业务单据id
+     * @param poolTaskActDefId 工作池任务实际流程定义key
+     * @param userId 接收人id
+     * @param v 其他变量
+     * @return 操作结果
+     */
+    @POST
+    @Path("signalPoolTaskByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "工作池任务确定执行人", notes = "工作池任务确定执行人")
+    public OperateResultWithData<FlowTask> signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId,Map<String,Object> v);
+
+    /**
+     * 工作池任务确定执行人并完成任务
+     * @param businessId 业务单据id
+     * @param poolTaskActDefId 工作池任务实际流程定义key
+     * @param userId 接收人id
+     * @param flowTaskCompleteVO 完成任务VO对象
+     * @return 操作结果状态
+     */
+    @POST
+    @Path("completePoolTask")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "工作池任务确定执行人并完成任务", notes = "说明")
+    public OperateResultWithData<FlowStatus> completePoolTask(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
 }

@@ -405,6 +405,9 @@ EUI.LookWorkFlowView = EUI.extend(EUI.CustomUI, {
                 case "ReceiveTask":
                     css="receiveTask";
                     break;
+                case "PoolTask":
+                    css="poolTask";
+                    break;
                 case "CallActivity":
                     css="callActivity";
                     break;

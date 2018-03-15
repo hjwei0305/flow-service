@@ -168,4 +168,7 @@ public class ActivityConfig {
         return new FlowCommonUtil();
     }
 
+    @Bean
+    public PoolTaskBeforeListener poolTaskBeforeListener(){return new PoolTaskBeforeListener();}
+
 }

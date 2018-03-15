@@ -21,7 +21,7 @@ public class FlowInvokeParams implements Serializable{
     private Map<String,String> params;//其他参数
     private Boolean isAgree;  //是否同意
     private Boolean isFinalAgree;//是否最终同意，针对会签
-    private String receiveTaskActDefId;//针对接收任务，传递接收任务key
+    private String taskActDefId;//针对接收任务\用户池任务等，传递任务key
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
     private List<String> callActivitySonPaths;//调用子流程路径
 
@@ -57,12 +57,12 @@ public class FlowInvokeParams implements Serializable{
         isFinalAgree = finalAgree;
     }
 
-    public String getReceiveTaskActDefId() {
-        return receiveTaskActDefId;
+    public String getTaskActDefId() {
+        return taskActDefId;
     }
 
-    public void setReceiveTaskActDefId(String receiveTaskActDefId) {
-        this.receiveTaskActDefId = receiveTaskActDefId;
+    public void setTaskActDefId(String taskActDefId) {
+        this.taskActDefId = taskActDefId;
     }
 
     public Boolean getReject() {

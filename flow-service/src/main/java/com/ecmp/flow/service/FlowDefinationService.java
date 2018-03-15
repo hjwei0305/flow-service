@@ -434,7 +434,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
                 try{
                 flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-                if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                if (processInstance != null && !processInstance.isEnded() ) {//针对启动时只有服务任务这种情况（即启动就结束）
                     initTask(flowInstance);
                 }
                 }catch(Exception e){

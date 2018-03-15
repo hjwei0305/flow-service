@@ -18,6 +18,7 @@ import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -471,7 +472,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
-                receiveTaskActDefId = flowInvokeParams.getReceiveTaskActDefId();
+                receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
                 List<String> callActivtiySonPaths = null;
                 callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                 if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
@@ -504,6 +505,133 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                             try {
                                 IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
                                 OperateResult resultTemp = proxy.signalByBusinessId(flowInvokeParams.getId(), fReceiveTaskActDefId, variables);
+                                if (resultTemp.successful()) {
+                                    return;
+                                } else {
+                                    time = time * 2; //加倍
+                                    logger.error(resultTemp.getMessage());
+                                }
+                            } catch (Exception e) {
+                                time = time * 4; //加倍
+                                logger.error(e.getMessage());
+                            }
+                            index--;
+                        }
+                    }
+                }).start();
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+        }
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams){
+        FlowOperateResult result = new FlowOperateResult();
+        String taskActDefId = null;
+        Map<String,Object> variables = new HashMap<String,Object>();
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            if (entity != null) {
+                taskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = null;
+                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                    for (String callActivityPath : callActivtiySonPaths) {
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
+                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                        }
+                    }
+                }
+                String changeText = "PoolCallSingal";
+                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
+                defaultBusinessModelDao.save(entity);
+                final String fTaskActDefId = taskActDefId;
+                new Thread(new Runnable() {//模拟异步
+                    @Override
+                    public void run() {
+                        long time = 10; //默认200秒
+                        int index = 2;//重试2次
+                        while (index > 0) {
+                            try {
+                                Thread.sleep(1000 * time);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+                                OperateResultWithData<FlowTask>  resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"8A6A1592-4A95-11E7-A011-960F8309DEA7" ,variables);
+                                if (resultTemp.successful()) {
+                                    return;
+                                } else {
+                                    time = time * 2; //加倍
+                                    logger.error(resultTemp.getMessage());
+                                }
+                            } catch (Exception e) {
+                                time = time * 4; //加倍
+                                logger.error(e.getMessage());
+                            }
+                            index--;
+                        }
+                    }
+                }).start();
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+        }
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams){
+        FlowOperateResult result = new FlowOperateResult();
+        String taskActDefId = null;
+        Map<String,Object> variables = new HashMap<String,Object>();
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            if (entity != null) {
+                taskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = null;
+                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                    for (String callActivityPath : callActivtiySonPaths) {
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
+                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                        }
+                    }
+                }
+                String changeText = "PoolCallComplete";
+                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
+                defaultBusinessModelDao.save(entity);
+                final String fTaskActDefId = taskActDefId;
+                new Thread(new Runnable() {//模拟异步
+                    @Override
+                    public void run() {
+                        long time = 200; //默认200秒
+                        int index = 2;//重试20次
+                        while (index > 0) {
+                            try {
+                                Thread.sleep(1000 * time);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+                                FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
+                                OperateResultWithData<FlowStatus> resultTemp = proxy.completePoolTask(flowInvokeParams.getId(), fTaskActDefId,"8A6A1592-4A95-11E7-A011-960F8309DEA7" ,flowTaskCompleteVO);
                                 if (resultTemp.successful()) {
                                     return;
                                 } else {

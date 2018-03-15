@@ -143,17 +143,22 @@ public class BuiltInApproveController extends FlowBaseController<DefaultBusiness
 //            List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
 //            List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
             if (StringUtils.isNotEmpty(taskList)) {
-                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+                if("anonymous".equalsIgnoreCase(taskList)){
+                    flowStartVO.setPoolTask(true);
+                    userMap.put("anonymous","anonymous");
+                }else{
+                    JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                    flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
 
-                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
-                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                        String flowTaskType = f.getFlowTaskType();
-                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                            userMap.put(f.getUserVarName(), f.getUserIds());
-                        } else {
-                            String[] idArray = f.getUserIds().split(",");
-                            userMap.put(f.getUserVarName(), idArray);
+                    if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                        for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                            String flowTaskType = f.getFlowTaskType();
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(f.getUserVarName(), f.getUserIds());
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                userMap.put(f.getUserVarName(), idArray);
+                            }
                         }
                     }
                 }

@@ -1,11 +1,14 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
+import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
@@ -15,12 +18,16 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
+import com.ecmp.vo.OperateResultWithData;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
@@ -33,6 +40,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -73,6 +81,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private FlowListenerTool flowListenerTool;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private FlowTaskService flowTaskService;
 
     /**
      * 撤销流程实例
@@ -594,6 +608,84 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
            return result;
     }
 
+
+    //任务池指定真实用户，抢单池确定用户签定
+    @Transactional( propagation= Propagation.REQUIRED)
+    private OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId){
+        OperateResultWithData<FlowTask> result =  null;
+        String actTaskId = historicTaskInstance.getId();
+            Map<String,Object> params = new HashMap();
+            params.put("employeeIds",java.util.Arrays.asList(userId));
+            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            if(employees!=null && !employees.isEmpty()){
+
+                Executor executor = employees.get(0);
+                FlowTask newFlowTask =  flowTaskDao.findByActTaskId(actTaskId);
+//                newFlowTask.setId(null);
+                newFlowTask.setExecutorId(executor.getId());
+                newFlowTask.setExecutorAccount(executor.getCode());
+                newFlowTask.setExecutorName(executor.getName());
+                newFlowTask.setOwnerId(executor.getId());
+                newFlowTask.setOwnerName(executor.getName());
+                newFlowTask.setOwnerAccount(executor.getCode());
+//                newFlowTask.setPreId(flowHistory.getId());
+                newFlowTask.setTrustState(0);
+//                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
+                taskService.setAssignee(actTaskId, executor.getId());
+
+                flowTaskDao.save(newFlowTask);
+                result = OperateResultWithData.operationSuccess();
+                result.setData(newFlowTask);
+            }else{
+                result = OperateResultWithData.operationFailure("10038");//执行人查询结果为空
+            }
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResultWithData<FlowTask> signalPoolTaskByBusinessId(String businessId,String poolTaskActDefId,String userId,Map<String,Object> v){
+        if(StringUtils.isEmpty(poolTaskActDefId)){
+            return OperateResultWithData.operationFailure("10032");
+        }
+        OperateResultWithData<FlowTask> result =  null;
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
+            if(historicTaskInstance != null ){
+               result = this.poolTaskSign(historicTaskInstance,userId);
+            }else{
+                result =  OperateResultWithData.operationFailure("10031");
+            }
+        }else{
+            result =  OperateResultWithData.operationFailure("10030");
+        }
+        return result;
+    }
+
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    public OperateResultWithData<FlowStatus> completePoolTask(String businessId, String poolTaskActDefId, String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception{
+        if(StringUtils.isEmpty(poolTaskActDefId)){
+            return OperateResultWithData.operationFailure("10032");
+        }
+        OperateResultWithData<FlowStatus>  result =  null;
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            OperateResultWithData<FlowTask> resultSignal =  signalPoolTaskByBusinessId(businessId,poolTaskActDefId,userId,flowTaskCompleteVO.getVariables());
+            if(resultSignal != null && resultSignal.successful() ){
+                FlowTask flowTask = resultSignal.getData();
+                flowTaskCompleteVO.setTaskId(flowTask.getId());
+                result = flowTaskService.complete(flowTaskCompleteVO);
+            }else{
+                result =  OperateResultWithData.operationFailure("10031");
+            }
+        }else{
+            result =  OperateResultWithData.operationFailure("10030");
+        }
+        return result;
+    }
 
     /**
      * 撤销流程实例

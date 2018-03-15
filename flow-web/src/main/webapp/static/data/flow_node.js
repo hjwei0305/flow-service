@@ -62,6 +62,12 @@ var _flownode = {
             nodeType: "ReceiveTask"
         }
         , {
+            name: "poolTaskText",
+            type: "PoolTask",
+            css: "poolTask ",
+            nodeType: "PoolTask"
+        }
+        , {
             name: "callActivityText",
             type: "CallActivity",
             css: "callActivity ",

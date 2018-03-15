@@ -689,6 +689,9 @@ public class FlowTaskTool {
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("receiveTask");
         }else if("CallActivity".equalsIgnoreCase(nodeType)){
+        }else if("PoolTask".equalsIgnoreCase(nodeType)){
+            tempNodeInfo.setUiType("radiobox");
+            tempNodeInfo.setFlowTaskType("poolTask");
         }else {
             throw new RuntimeException("流程任务节点配置有错误");
         }
@@ -1359,13 +1362,8 @@ public class FlowTaskTool {
                         }else{
                             checkChongfu.add(key);
                         }
-//                        Map<String,Object> params = new HashMap();
-//                        params.put("employeeIds",
-//                                java.util.Arrays.asList(identityLink.getUserId()));
-//                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//                        List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         Executor executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
-                        if (executor != null ) {
+                        if("poolTask".equalsIgnoreCase(nodeType) && executor==null){
                             FlowTask flowTask = new FlowTask();
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1373,12 +1371,12 @@ public class FlowTaskTool {
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
                             flowTask.setActTaskId(task.getId());
-                            flowTask.setOwnerAccount(executor.getCode());
-                            flowTask.setOwnerId(executor.getId());
-                            flowTask.setOwnerName(executor.getName());
-                            flowTask.setExecutorAccount(executor.getCode());
-                            flowTask.setExecutorId(executor.getId());
-                            flowTask.setExecutorName(executor.getName());
+                            flowTask.setOwnerAccount(Constants.ANONYMOUS);
+                            flowTask.setOwnerId(Constants.ANONYMOUS);
+                            flowTask.setOwnerName(Constants.ANONYMOUS);
+                            flowTask.setExecutorAccount(Constants.ANONYMOUS);
+                            flowTask.setExecutorId(Constants.ANONYMOUS);
+                            flowTask.setExecutorName(Constants.ANONYMOUS);
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
@@ -1386,9 +1384,33 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
-//                            currentDate = flowTask.getCreatedDate();
                         }else{
-                            throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
+
+                            if (executor != null ) {
+                                FlowTask flowTask = new FlowTask();
+                                flowTask.setTaskJsonDef(currentNode.toString());
+                                flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                                flowTask.setActTaskDefKey(actTaskDefKey);
+                                flowTask.setFlowName(flowName);
+                                flowTask.setTaskName(task.getName());
+                                flowTask.setActTaskId(task.getId());
+                                flowTask.setOwnerAccount(executor.getCode());
+                                flowTask.setOwnerId(executor.getId());
+                                flowTask.setOwnerName(executor.getName());
+                                flowTask.setExecutorAccount(executor.getCode());
+                                flowTask.setExecutorId(executor.getId());
+                                flowTask.setExecutorName(executor.getName());
+                                flowTask.setActType(identityLink.getType());
+                                flowTask.setDepict(task.getDescription());
+                                flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                                flowTask.setPriority(0);
+                                flowTask.setFlowInstance(flowInstance);
+                                taskPropertityInit(flowTask,preTask,currentNode);
+                                flowTaskDao.save(flowTask);
+//                            currentDate = flowTask.getCreatedDate();
+                            }else{
+                                throw new RuntimeException("id="+identityLink.getUserId()+"的用户找不到！");
+                            }
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.ecmp.flow.vo.bpmn;
 
+import com.ecmp.flow.constant.Constants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -91,6 +92,7 @@ public class Process extends BaseNode implements Serializable {
     private List<ScriptTask> scriptTask;
     private List<ServiceTask> serviceTask;
     private List<ReceiveTask> receiveTask;
+    private List<PoolTask> poolTask;
     private List<ExclusiveGateway> exclusiveGateway;
     private List<InclusiveGateway> inclusiveGateway;
     private List<ParallelGateway> parallelGateway;
@@ -140,6 +142,7 @@ public class Process extends BaseNode implements Serializable {
             scriptTask = new ArrayList<ScriptTask>();
             serviceTask = new ArrayList<ServiceTask>();
             receiveTask = new ArrayList<ReceiveTask>();
+            poolTask = new ArrayList<PoolTask>();
             callActivity = new ArrayList<CallActivity>();
             exclusiveGateway = new ArrayList<ExclusiveGateway>();
             inclusiveGateway = new ArrayList<InclusiveGateway>();
@@ -329,6 +332,39 @@ public class Process extends BaseNode implements Serializable {
                         initMessageListener(receiveTaskTemp,node);
                         receiveTask.add(receiveTaskTemp);
                         baseFlowNodeTemp  = receiveTaskTemp;
+                        break;
+                    case "PoolTask":
+                        PoolTask poolTaskTemp = (PoolTask) JSONObject.toBean(node, PoolTask.class);
+                        poolTaskTemp.setAssignee("anonymous");//直接指定匿名用户，用于替换
+                        extensionElement  = poolTaskTemp.getExtensionElement();
+                        if(extensionElement == null){
+                            extensionElement = new ExtensionElement();
+                        }
+                        //添加默认任务到达监听器
+                        executionListener = new ExecutionListener();
+                        executionListener.setEvent("start");
+                        executionListener.setDelegateExpression("${poolTaskBeforeListener}");
+                        executionListeners = extensionElement.getExecutionListener();
+                        if(executionListeners == null){
+                            executionListeners = new ArrayList<ExecutionListener>();
+                        }
+                        executionListeners.add(executionListener);
+
+//                        //添加默认任务执行后监听器
+//                        executionListener = new ExecutionListener();
+//                        executionListener.setEvent("end");
+//                        executionListener.setDelegateExpression("${poolTaskAfterListener}");
+//                        executionListeners.add(executionListener);
+
+                        extensionElement.setExecutionListener(executionListeners);
+                        poolTaskTemp.setExtensionElement(extensionElement);
+                        initEventListener(poolTaskTemp,node);
+                        initMessageListener(poolTaskTemp,node);
+//                        poolTask.add(poolTaskTemp);
+                        UserTask userTaskTemp = new UserTask();
+                        org.springframework.beans.BeanUtils.copyProperties(poolTaskTemp,userTaskTemp);
+                        userTask.add(userTaskTemp);
+                        baseFlowNodeTemp  = userTaskTemp;
                         break;
                     case "ExclusiveGateway":
                         ExclusiveGateway exclusiveGatewayTemp = (ExclusiveGateway) JSONObject.toBean(node, ExclusiveGateway.class);

@@ -131,6 +131,12 @@ public class Constants extends ConfigurableContants {
 	public final static String BASIC_EMPLOYEE_FINDBYIDS_URL=getProperty(
 			"basic.employee.findByIds", "/employee/findByIds");
 
+
+	/**
+	 * 匿名用户
+	 */
+	public final static String ANONYMOUS="anonymous";
+
 	/**
 	 * 调用子流程时的路径值
 	 */
@@ -160,6 +166,11 @@ public class Constants extends ConfigurableContants {
 	 * 接收任务实际定义ID
 	 */
 	public final static String RECEIVE_TASK_ACT_DEF_ID= "receiveTaskActDefId";
+
+	/**
+	 * 用户池任务实际定义ID
+	 */
+	public final static String POOL_TASK_ACT_DEF_ID= "poolTaskActDefId";
 
 
 	/**

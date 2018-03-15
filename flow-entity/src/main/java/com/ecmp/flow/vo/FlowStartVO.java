@@ -43,6 +43,8 @@ public class FlowStartVO implements Serializable{
      */
     private String flowDefKey;
 
+    private Boolean poolTask;
+
     /**
      * 手动选择出口分支节点的节点ID
      */
@@ -136,5 +138,13 @@ public class FlowStartVO implements Serializable{
 
     public void setFlowDefKey(String flowDefKey) {
         this.flowDefKey = flowDefKey;
+    }
+
+    public Boolean getPoolTask() {
+        return poolTask;
+    }
+
+    public void setPoolTask(Boolean poolTask) {
+        this.poolTask = poolTask;
     }
 }

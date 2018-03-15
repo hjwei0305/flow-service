@@ -482,6 +482,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     case "ReceiveTask":
                         text = "接收任务，当执行到该节点后流程暂时停止运行，直到收到外部发送的信号以后，才会继续向前推进";
                         break;
+                    case "PoolTask":
+                        text = "工作池任务，当执行到该节点后流程暂时停止运行，直到收到外部确定人执行人，才会继续向前推进";
+                        break;
                     case "CallActivity":
                         text = "调用子流程，当流程执行到该节点时，会创建一个新分支，它是到达调用节点的流程的分支。 这个分支会用来执行子流程，默认创建并行子流程，就像一个普通的流程。 上级流程会等待子流程完成，然后才会继续向下执行。";
                         break;
@@ -1459,6 +1462,9 @@ EUI.WorkFlowView = EUI.extend(EUI.CustomUI, {
                     break;
                 case "ReceiveTask":
                     css = "receiveTask";
+                    break;
+                case "PoolTask":
+                    css = "poolTask";
                     break;
                 case "CallActivity":
                     css = "callActivity";

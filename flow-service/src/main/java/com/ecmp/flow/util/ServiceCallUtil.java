@@ -62,7 +62,14 @@ public class ServiceCallUtil {
                         if(jsonObject.has(Constants.RECEIVE_TASK_ACT_DEF_ID)){
                             String receiveTaskActDefId = jsonObject.get(Constants.RECEIVE_TASK_ACT_DEF_ID)+"";
                             if (StringUtils.isNotEmpty(receiveTaskActDefId) && !Constants.NULL_S.equalsIgnoreCase(receiveTaskActDefId)) {
-                                params.setReceiveTaskActDefId(receiveTaskActDefId);
+                                params.setTaskActDefId(receiveTaskActDefId);
+                            }
+                        }
+//                        tempV.put(Constants.POOL_TASK_ACT_DEF_ID,actTaskDefKey);
+                        if(jsonObject.has(Constants.POOL_TASK_ACT_DEF_ID)){
+                            String poolTaskActDefId = jsonObject.get(Constants.POOL_TASK_ACT_DEF_ID)+"";
+                            if (StringUtils.isNotEmpty(poolTaskActDefId) && !Constants.NULL_S.equalsIgnoreCase(poolTaskActDefId)) {
+                                params.setTaskActDefId(poolTaskActDefId);
                             }
                         }
                         if(jsonObject.has(Constants.REJECT)){
