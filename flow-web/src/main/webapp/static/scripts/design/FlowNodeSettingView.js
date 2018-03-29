@@ -383,6 +383,12 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         }];
         if(nodeType == "PoolTask"){
             items.push({
+                title: "池代码",
+                labelWidth: 100,
+                allowBlank: false,
+                name: "poolTaskCode",
+                maxlength: 80
+            },{
                 xtype: "ComboBox",
                     title: "工作界面",
                 labelWidth: 100,

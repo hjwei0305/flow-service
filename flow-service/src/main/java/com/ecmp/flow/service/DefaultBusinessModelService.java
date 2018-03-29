@@ -529,6 +529,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams){
+        System.out.println(flowInvokeParams.getPoolTaskCode());
         FlowOperateResult result = new FlowOperateResult();
         String taskActDefId = null;
         Map<String,Object> variables = new HashMap<String,Object>();

@@ -22,6 +22,7 @@ public class FlowInvokeParams implements Serializable{
     private Boolean isAgree;  //是否同意
     private Boolean isFinalAgree;//是否最终同意，针对会签
     private String taskActDefId;//针对接收任务\用户池任务等，传递任务key
+    private String poolTaskCode;//用户池任务，传递任务用户池代码
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
     private List<String> callActivitySonPaths;//调用子流程路径
 
@@ -79,5 +80,13 @@ public class FlowInvokeParams implements Serializable{
 
     public void setCallActivitySonPaths(List<String> callActivitySonPaths) {
         this.callActivitySonPaths = callActivitySonPaths;
+    }
+
+    public String getPoolTaskCode() {
+        return poolTaskCode;
+    }
+
+    public void setPoolTaskCode(String poolTaskCode) {
+        this.poolTaskCode = poolTaskCode;
     }
 }

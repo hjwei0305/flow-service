@@ -251,6 +251,7 @@ public class Constants extends ConfigurableContants {
 	public final static String OPINION  = "opinion";
 
 	public final static String ORG_ID  = "orgId";
+	public final static String POOL_TASK_CODE  = "poolTaskCode";
 
 	/**
 	 * 根据自定义的查询参数获取员工列表

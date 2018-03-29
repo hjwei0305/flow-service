@@ -67,11 +67,14 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
             JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
             JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
+
             if (normal != null) {
                 String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
+                String poolTaskCode = (String) normal.get(Constants.POOL_TASK_CODE);
                 if (!StringUtils.isEmpty(serviceTaskId)) {
                     Map<String,Object> tempV = delegateTask.getVariables();
                     tempV.put(Constants.POOL_TASK_ACT_DEF_ID,actTaskDefKey);
+                    tempV.put(Constants.POOL_TASK_CODE,poolTaskCode);
                     String flowTaskName = (String) normal.get(Constants.NAME);
                     FlowTask flowTask = new FlowTask();
                     flowTask.setTaskJsonDef(currentNode.toString());
