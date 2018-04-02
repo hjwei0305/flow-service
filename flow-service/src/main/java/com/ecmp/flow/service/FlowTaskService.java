@@ -413,8 +413,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if( normalInfo.get("allowPreUndo")!=null){
                 canCancel =  normalInfo.getBoolean("allowPreUndo");
             }
+            FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,canCancel, variables);
 
-            FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,canCancel);
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
             if("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
@@ -1230,7 +1230,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask,newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true);//转办后先允许撤回
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true,null);//转办后先允许撤回
                 flowHistory.setDepict("【被转办给：“"+executor.getName()+"”】");
 
                 newFlowTask.setId(null);
@@ -1270,7 +1270,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask,newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true); //委托后先允许撤回
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,true,null); //委托后先允许撤回
                 flowHistory.setDepict("【被委托给："+executor.getName()+"】");
 
                 newFlowTask.setId(null);

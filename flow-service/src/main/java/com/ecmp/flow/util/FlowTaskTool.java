@@ -1909,7 +1909,7 @@ public class FlowTaskTool {
         return result;
     }
 
-    public FlowHistory initFlowHistory(FlowTask flowTask,HistoricTaskInstance historicTaskInstance,Boolean canCancel){
+    public FlowHistory initFlowHistory(FlowTask flowTask,HistoricTaskInstance historicTaskInstance,Boolean canCancel, Map<String, Object> variables){
         FlowHistory flowHistory = new FlowHistory();
         flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
         flowHistory.setActType(flowTask.getActType());
@@ -1945,6 +1945,14 @@ public class FlowTaskTool {
             Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
             flowHistory.setActDurationInMillis(actDurationInMillis);
         }
+
+        Long loadOverTime = (Long)variables.get("loadOverTime");
+        Long actWorkTimeInMillis=null;
+        if(loadOverTime!=null){
+            actWorkTimeInMillis = System.currentTimeMillis()-loadOverTime;
+            flowHistory.setActWorkTimeInMillis(actWorkTimeInMillis);
+        }
+
         return flowHistory;
     }
 

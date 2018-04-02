@@ -256,7 +256,7 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultB
      */
     @RequestMapping(value = "completeTask")
     @ResponseBody
-    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved) throws Exception{
+    public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved,Long loadOverTime) throws Exception{
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -321,7 +321,9 @@ public class DefaultBusinessModel2Controller extends FlowBaseController<DefaultB
             if (manualSelected) {
                 flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
             }
-
+            if(loadOverTime != null){
+                v.put("loadOverTime", loadOverTime);
+            }
             //  Map<String,Object> v = new HashMap<String,Object>();
             v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
             flowTaskCompleteVO.setVariables(v);
