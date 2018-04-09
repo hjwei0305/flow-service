@@ -1,5 +1,5 @@
 plugins {
-    id "org.flywaydb.flyway" version "4.1.2"
+//    id "org.flywaydb.flyway" version "4.1.2"
 }
 
 // java编译的时候缺省状态下会因为中文字符而失败
@@ -41,22 +41,22 @@ jar {
 }
 
 /////////////////////////////////////flayway////////////////////////////////////////
-flyway {
-    driver = "$flyway_driver"
-    url = "$flyway_url"
-    user = "$flyway_user"
-    password = "$flyway_password"
-
-    //flyway发布版本记录的表名称
-    table = 'flyway_version'
-
-    // 默认脚本存放路径：/src/mian/resources/db/migration
-    //locations = ["filesystem:${projectDir}/db-migrate/db/migration"]
-    // 脚本文件前缀，默认V
-    //sqlMigrationPrefix = 'v'
-    // 禁止flywayClean，在生产环境中非常重要
-    cleanDisabled = true
-}
+// flyway {
+//     driver = "$flyway_driver"
+//     url = "$flyway_url"
+//     user = "$flyway_user"
+//     password = "$flyway_password"
+// 
+//     //flyway发布版本记录的表名称
+//     table = 'flyway_version'
+// 
+//     // 默认脚本存放路径：/src/mian/resources/db/migration
+//     //locations = ["filesystem:${projectDir}/db-migrate/db/migration"]
+//     // 脚本文件前缀，默认V
+//     //sqlMigrationPrefix = 'v'
+//     // 禁止flywayClean，在生产环境中非常重要
+//     cleanDisabled = true
+// }
 
 /////////////////////////////////////上传Maven仓库////////////////////////////////////////
 //打包源代码
