@@ -70,6 +70,10 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowStartVO.setFlowTypeId(typeId);
            flowStartVO.setFlowDefKey(flowDefKey);
             if (StringUtils.isNotEmpty(taskList)) {
+                if("anonymous".equalsIgnoreCase(taskList)){
+                    flowStartVO.setPoolTask(true);
+                    userMap.put("anonymous","anonymous");
+                }else{
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
                 if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
@@ -82,6 +86,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                             userMap.put(f.getUserVarName(), idArray);
                         }
                     }
+                }
                 }
             }
         flowStartVO.setUserMap(userMap);

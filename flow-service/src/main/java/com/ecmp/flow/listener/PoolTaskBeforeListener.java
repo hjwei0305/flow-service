@@ -14,6 +14,7 @@ import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
@@ -119,7 +120,10 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         tempV.put(Constants.CALL_ACTIVITY_SON_PATHS,paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                   ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    FlowOperateResult flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    if(flowOperateResult!=null && !flowOperateResult.isSuccess()){
+                        throw new FlowException(flowOperateResult.getMessage());//抛出异常
+                    }
 //                   flowTaskDao.save(flowTask);
 
                 }else{
