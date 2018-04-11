@@ -290,7 +290,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "工作池任务确定执行人", notes = "工作池任务确定执行人")
-    public OperateResultWithData<FlowTask> signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId,Map<String,Object> v);
+    public OperateResult signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId,Map<String,Object> v);
 
     /**
      * 工作池任务确定执行人并完成任务

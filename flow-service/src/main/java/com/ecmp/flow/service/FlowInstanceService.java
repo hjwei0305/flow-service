@@ -644,7 +644,33 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Transactional( propagation= Propagation.REQUIRED)
-    public OperateResultWithData<FlowTask> signalPoolTaskByBusinessId(String businessId,String poolTaskActDefId,String userId,Map<String,Object> v){
+    public OperateResult signalPoolTaskByBusinessId(String businessId,String poolTaskActDefId,String userId,Map<String,Object> v){
+        if(StringUtils.isEmpty(poolTaskActDefId)){
+            return OperateResult.operationFailure("10032");
+        }
+        OperateResult result =  null;
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
+            if(historicTaskInstance != null ){
+                OperateResultWithData<FlowTask> operateResultWithData = this.poolTaskSign(historicTaskInstance,userId);
+                if(operateResultWithData.successful()){
+                    result = OperateResult.operationSuccess(operateResultWithData.getMessage());
+                }else{
+                    result = OperateResult.operationFailure(operateResultWithData.getMessage());
+                }
+            }else{
+                result =  OperateResult.operationFailure("10031");
+            }
+        }else{
+            result =  OperateResult.operationFailure("10030");
+        }
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRED)
+    private OperateResultWithData<FlowTask> signalPoolTaskByBusinessIdWithResult(String businessId,String poolTaskActDefId,String userId,Map<String,Object> v){
         if(StringUtils.isEmpty(poolTaskActDefId)){
             return OperateResultWithData.operationFailure("10032");
         }
@@ -654,7 +680,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if(historicTaskInstance != null ){
-               result = this.poolTaskSign(historicTaskInstance,userId);
+                result= this.poolTaskSign(historicTaskInstance,userId);
             }else{
                 result =  OperateResultWithData.operationFailure("10031");
             }
@@ -664,7 +690,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
-
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> completePoolTask(String businessId, String poolTaskActDefId, String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception{
         if(StringUtils.isEmpty(poolTaskActDefId)){
@@ -673,7 +698,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResultWithData<FlowStatus>  result =  null;
         FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
         if(flowInstance != null && !flowInstance.isEnded()){
-            OperateResultWithData<FlowTask> resultSignal =  signalPoolTaskByBusinessId(businessId,poolTaskActDefId,userId,flowTaskCompleteVO.getVariables());
+            OperateResultWithData<FlowTask> resultSignal =  signalPoolTaskByBusinessIdWithResult(businessId,poolTaskActDefId,userId,flowTaskCompleteVO.getVariables());
             if(resultSignal != null && resultSignal.successful() ){
                 FlowTask flowTask = resultSignal.getData();
                 flowTaskCompleteVO.setTaskId(flowTask.getId());

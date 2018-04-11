@@ -569,7 +569,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                             }
                             try {
                                 IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                                OperateResultWithData<FlowTask>  resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"8A6A1592-4A95-11E7-A011-960F8309DEA7" ,variables);
+                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"8A6A1592-4A95-11E7-A011-960F8309DEA7" ,variables);
                                 if (resultTemp.successful()) {
                                     return;
                                 } else {
