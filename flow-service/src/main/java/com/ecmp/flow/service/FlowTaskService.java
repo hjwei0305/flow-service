@@ -733,7 +733,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         continue;
                     }
                     net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
-                    net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                    net.sf.json.JSONObject executor = null;
+                    try{
+                        executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                    }catch (Exception e){
+                        logger.error(e.getMessage());
+                    }
 
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
                     if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {

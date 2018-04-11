@@ -56,8 +56,8 @@ public class DefaultBusinessModel3Service extends BaseEntityService<DefaultBusin
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResultWithData<DefaultBusinessModel3> save(DefaultBusinessModel3 entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-        String businessCode = NumberGenerator.getNumber(DefaultBusinessModel3.class);
-//        String businessCode = CodeGenerator.genCodes(6,1).get(0);
+//        String businessCode = NumberGenerator.getNumber(DefaultBusinessModel3.class);
+        String businessCode = CodeGenerator.genCodes(6,1).get(0);
         if(StringUtils.isEmpty(entity.getBusinessCode())){
             entity.setBusinessCode(businessCode);
         }

@@ -16,6 +16,7 @@ import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
@@ -68,8 +69,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional( propagation= Propagation.REQUIRED)
     public OperateResultWithData<DefaultBusinessModel> save(DefaultBusinessModel entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-        String businessCode = NumberGenerator.getNumber(DefaultBusinessModel.class);
-//        String businessCode = CodeGenerator.genCodes(6,1).get(0);
+//        String businessCode = NumberGenerator.getNumber(DefaultBusinessModel.class);
+        String businessCode = CodeGenerator.genCodes(6,1).get(0);
         if(StringUtils.isEmpty(entity.getBusinessCode())){
             entity.setBusinessCode(businessCode);
         }
@@ -558,7 +559,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        long time = 10; //默认200秒
+                        long time = 100; //默认200秒
                         int index = 2;//重试2次
                         while (index > 0) {
                             try {
@@ -588,6 +589,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
+        result.setSuccess(false);
+        result.setMessage("test failure!");
         return result;
     }
 

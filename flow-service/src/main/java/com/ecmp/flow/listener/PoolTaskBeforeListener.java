@@ -1,15 +1,14 @@
 package com.ecmp.flow.listener;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
@@ -19,15 +18,18 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import javax.ws.rs.core.GenericType;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -55,6 +57,11 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    private final Logger logger = LoggerFactory.getLogger(PoolTaskBeforeListener.class);
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
@@ -120,8 +127,46 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         tempV.put(Constants.CALL_ACTIVITY_SON_PATHS,paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                    FlowOperateResult flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    if(flowOperateResult!=null && !flowOperateResult.isSuccess()){
+                    FlowOperateResult flowOperateResult = null;
+                    try{
+                        flowOperateResult =  ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    }catch (Exception e){
+                          logger.error(e.getMessage());
+                        flowOperateResult=null;
+                    }
+                    //如果是开始节点，手动回滚
+                    ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+                    TransitionImpl transition = taskEntity.getTransition();
+                    String sourceType =transition.getSource().getProperties().get("type")+"";
+                    if("startEvent".equalsIgnoreCase(sourceType) && (flowOperateResult==null || !flowOperateResult.isSuccess())){
+                        new Thread(){
+                            public void run(){
+                                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                Map<String, Object> params = new HashMap<String,Object>();;
+                                params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+                                params.put(Constants.ID,flowInstance.getBusinessId());
+                                params.put(Constants.STATUS, FlowStatus.INIT);
+                                String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+                                Boolean result = false;
+                                int index = 5;
+                                while (!result && index>0){
+                                    try {
+                                        Thread.sleep(1000*(6-index));
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    try {
+                                        result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                                    }catch (Exception e){
+                                        logger.error(e.getMessage());
+                                    }
+                                    index--;
+                                }
+//                                String actInstanceId = flowInstance.getActInstanceId();
+//                                runtimeService.deleteProcessInstance(actInstanceId, null);
+//                                flowInstanceDao.delete(flowInstance);
+                            }
+                        }.start();
                         throw new FlowException(flowOperateResult.getMessage());//抛出异常
                     }
 //                   flowTaskDao.save(flowTask);
