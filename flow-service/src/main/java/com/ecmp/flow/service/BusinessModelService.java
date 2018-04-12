@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -76,6 +77,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return OperateResult.operationWarning("core_00004");
             }
         }
+        clearFlowDefVersion();
         return operateResult;
     }
 
@@ -95,7 +97,14 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
            }
            logger.error(e.getMessage());
        }
+       clearFlowDefVersion();
        return resultWithData;
     }
-
+    private void clearFlowDefVersion(){
+        String pattern = "FLowGetLastFlowDefVersion_*";
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys!=null&&!keys.isEmpty()){
+            redisTemplate.delete(keys);
+        }
+    }
 }
