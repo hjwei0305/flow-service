@@ -146,7 +146,7 @@ public class FlowListenerTool {
 //                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
                     Map<String,Object> params = new HashMap();
                     params.put("employeeIds",usrIdList);
-                    String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                    String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
                     List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     Set<Executor> employeeSet = new HashSet<Executor>();
                     employeeSet.addAll(employees);
@@ -241,7 +241,9 @@ public class FlowListenerTool {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
                 if(StringUtils.isNotEmpty(checkUrl)){
-                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+//                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                    String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                     String endCallServiceUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
@@ -281,7 +283,8 @@ public class FlowListenerTool {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
                 if(StringUtils.isNotEmpty(checkUrl)){
-                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress ();
+                    String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);

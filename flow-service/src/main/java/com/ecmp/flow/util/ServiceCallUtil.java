@@ -95,7 +95,9 @@ public class ServiceCallUtil {
                 }
                 params.setId(businessId);
                 params.setParams(paramMap);
-                String url = appModule.getApiBaseAddress()+"/"+clientUrl;
+                String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String url = clientApiBaseUrl+"/"+clientUrl;
                 String exceptionMessage = null;
                 try {
                     result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {

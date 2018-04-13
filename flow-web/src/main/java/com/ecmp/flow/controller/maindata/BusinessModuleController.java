@@ -2,6 +2,7 @@ package com.ecmp.flow.controller.maindata;
 
 import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchUtil;
@@ -175,7 +176,9 @@ public class BusinessModuleController {
         IBusinessModelService  businessModelService = ApiClient.createProxy(IBusinessModelService.class);
         BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
         if (businessModel != null) {
-            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+//            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+            String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+            String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
             String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
             Map<String,Object> params = new HashMap();
             params.put("businessModelCode",businessModelCode);

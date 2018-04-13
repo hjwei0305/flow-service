@@ -1833,12 +1833,12 @@ public class FlowTaskTool {
         if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
             Map<String,Object> params = new HashMap();
             params.put("positionIds",idList);
-            String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL + com.ecmp.flow.common.util.Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+            String url = com.ecmp.flow.common.util.Constants.getBasicPositionGetexecutorsbypositionidsUrl();
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
             Map<String,Object> params = new HashMap();
             params.put("posCateIds",idList);
-            String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL + com.ecmp.flow.common.util.Constants.BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL;
+            String url = com.ecmp.flow.common.util.Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
@@ -1982,7 +1982,7 @@ public class FlowTaskTool {
         Map<String,Object> params = new HashMap();
         params.put("nodeId",nodeId);
         params.put("includeSelf",true);
-        String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_ORG_FINDPARENTNODES_URL;
+        String url = Constants.getBasicOrgFindparentnodesUrl();
         List<Organization> organizationsList= ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},params);
         List<String> orgCodesList = new ArrayList<>();
         if(organizationsList!=null && !organizationsList.isEmpty()){

@@ -60,7 +60,7 @@ public class FlowDefinationController {
     @ResponseBody
     @RequestMapping("listAllOrgs")
     public OperateStatus listAllOrgs() {
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_ORG_LISTALLORGS_URL;
+        String url = Constants.getBasicOrgListallorgsUrl();
         List<Organization> result = ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},null);
         OperateStatus operateStatus = new OperateStatus(true, OperateStatus.COMMON_SUCCESS_MSG, result);
         return operateStatus;

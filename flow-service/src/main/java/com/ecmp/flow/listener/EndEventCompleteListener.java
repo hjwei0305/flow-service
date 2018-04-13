@@ -98,7 +98,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                 params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                 params.put(Constants.ID,flowInstance.getBusinessId());
                 params.put(Constants.STATUS,FlowStatus.COMPLETED);
-                String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+                String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String url = apiBaseAddress+"/"+businessModel.getConditonStatusRest();
                 Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
                 if(!result){
                     throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!

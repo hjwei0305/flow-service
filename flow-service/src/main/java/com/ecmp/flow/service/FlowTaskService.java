@@ -702,7 +702,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     Map<String,Object> params = new HashMap();
                     params.put("employeeIds",java.util.Arrays.asList(startUserId));
-                    String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
                     List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
@@ -716,7 +716,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String  startUserId =  ContextUtil.getSessionUser().getUserId();
                     Map<String,Object> params = new HashMap();
                     params.put("employeeIds",java.util.Arrays.asList(startUserId));
-                    String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
                     List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
@@ -779,7 +779,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                             Map<String,Object> params = new HashMap();
                             params.put("employeeIds",java.util.Arrays.asList(startUserId));
-                            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
                             employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
 
                         } else {
@@ -1229,7 +1229,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String,Object> params = new HashMap();
             params.put("employeeIds",java.util.Arrays.asList(userId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
             List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if(employees!=null && !employees.isEmpty()){
                 Executor executor = employees.get(0);
@@ -1269,7 +1270,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String,Object> params = new HashMap();
             params.put("employeeIds",java.util.Arrays.asList(userId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
             List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if(employees!=null && !employees.isEmpty()){
                 Executor executor = employees.get(0);

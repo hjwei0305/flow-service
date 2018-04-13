@@ -616,7 +616,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String actTaskId = historicTaskInstance.getId();
             Map<String,Object> params = new HashMap();
             params.put("employeeIds",java.util.Arrays.asList(userId));
-            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
             List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if(employees!=null && !employees.isEmpty()){
 
@@ -831,11 +831,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private List<FlowInstance> initUrl(List<FlowInstance>  result ){
         if(result!=null && !result.isEmpty()){
             for(FlowInstance flowInstance:result){
-                String apiBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+//                String apiBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
                 apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                 apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
-                String webBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+//                String webBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddressConfig();
+                String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                 flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
                 webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));

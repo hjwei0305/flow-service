@@ -46,7 +46,7 @@ public class FlowCommonUtil implements Serializable {
     public Executor getBasicExecutor(String userId) {
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",java.util.Arrays.asList(userId));
-        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+        String url = com.ecmp.flow.common.util.Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
         List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         Executor executor = null;
         if(employees!=null && !employees.isEmpty()){
@@ -59,7 +59,7 @@ public class FlowCommonUtil implements Serializable {
     public List<Executor> getBasicExecutors(List<String> userIds) {
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",userIds);
-        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+        String url = com.ecmp.flow.common.util.Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
         List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         return employees;
     }

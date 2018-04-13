@@ -395,7 +395,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
               String checkUrl = flowServiceUrl.getUrl();
               if(StringUtils.isNotEmpty(checkUrl)){
-                  String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                  String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                  String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+//                  String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String checkUrlPath = baseUrl+checkUrl;
                   FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                   flowInvokeParams.setId(businessKey);
@@ -445,7 +447,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                     params.put(Constants.ID,flowInstance.getBusinessId());
                     params.put(Constants.STATUS, FlowStatus.INIT);
-                    String url = appModule.getApiBaseAddress()+"/"+businessModel.getConditonStatusRest();
+                    String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String url = baseUrl+"/"+businessModel.getConditonStatusRest();
                     ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
                     throw  new FlowException(e.getMessage());
                 }

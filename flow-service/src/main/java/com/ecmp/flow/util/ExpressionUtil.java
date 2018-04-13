@@ -2,6 +2,7 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiRestJsonProvider;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AppModule;
@@ -40,7 +41,8 @@ public class ExpressionUtil {
      */
     public  static Map<String,Object>  getPropertiesDecMap(BusinessModel businessModel, String businessId){
         String businessModelCode = businessModel.getClassName();
-        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
@@ -57,7 +59,8 @@ public class ExpressionUtil {
      */
     public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all){
         String businessModelCode = businessModel.getClassName();
-        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
@@ -75,7 +78,8 @@ public class ExpressionUtil {
      */
     public static Boolean validate(BusinessModel businessModel,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Boolean result = true;
-        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
@@ -94,7 +98,8 @@ public class ExpressionUtil {
     public static boolean result(BusinessModel businessModel,String businessId,String expression){
         boolean result = true;
         String businessModelCode = businessModel.getClassName();
-        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
@@ -114,7 +119,8 @@ public class ExpressionUtil {
     public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status){
         boolean result = true;
         String businessModelCode = businessModel.getClassName();
-        String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);

@@ -1,8 +1,10 @@
 package com.ecmp.flow.common.util;
 
+import com.ecmp.context.ContextUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * <p>
@@ -23,113 +25,193 @@ import java.util.Map;
  */
 public class Constants extends ConfigurableContants {
 
-	public  static  String BASIC_SERVICE_URL=null;
 	// 静态初始化读入framework.properties中的设置
 	static {
 		init("framework.properties");
-		Map<String, String> map = System.getenv();
-		BASIC_SERVICE_URL = map.get("ECMP_BASIC");
-		if(StringUtils.isEmpty(BASIC_SERVICE_URL)){
-			BASIC_SERVICE_URL =getProperty(
-					"basic.service.url", "http://decmp.changhong.com/basic-service");
+	}
+
+	public static String getBasicServiceUrl() {
+		String	BASIC_SERVICE_URL = ContextUtil.getGlobalProperty("BASIC_API");
+		return BASIC_SERVICE_URL;
+	}
+
+
+	/**
+	 * 获取所有组织机构
+	 * @return
+	 */
+	public static String getBasicOrgListallorgsUrl() {
+		String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("BASIC.ORG.LISTALLORGS");
+		if(StringUtils.isEmpty(BASIC_ORG_LISTALLORGS_URL)){
+			BASIC_ORG_LISTALLORGS_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
 		}
+		return BASIC_ORG_LISTALLORGS_URL;
 	}
 
 	/**
-	 * 从framework.properties中读取basic.org.listAllOrgs的值，
-	 * 如果配置文件不存在或配置文件中不存在该值时，默认取值"/organization/findOrgTreeWithoutFrozen"
-	 * 获取所有组织机构列表的服务地址
+	 * 获取指定id的组织机构
+	 * @return
 	 */
-
-	public final static String BASIC_ORG_LISTALLORGS_URL=getProperty(
-			"basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
+	public static String getBasicOrgFindoneUrl() {
+		String BASIC_ORG_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDONE");
+		if(StringUtils.isEmpty(BASIC_ORG_FINDONE_URL)){
+			BASIC_ORG_FINDONE_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.findOne", "/organization/findOne");
+		}
+		return BASIC_ORG_FINDONE_URL;
+	}
 
 	/**
-	 * 获取指定id的组织机构
+	 * 获取指定id的父组织机构对象列表
+	 * @return
 	 */
-	public final static String BASIC_ORG_FINDONE_URL=getProperty(
-			"basic.org.findOne", "/organization/findOne");
-
-	/**
-	 * 获取指定id的组织机构
-	 */
-	public final static String BASIC_ORG_FINDPARENTNODES_URL=getProperty(
-			"basic.org.findParentNodes", "/organization/getParentNodes");
-
+	public static String getBasicOrgFindparentnodesUrl() {
+		String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDPARENTNODES");
+		if(StringUtils.isEmpty(BASIC_ORG_FINDPARENTNODES_URL)){
+			BASIC_ORG_FINDPARENTNODES_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.findParentNodes", "/organization/getParentNodes");
+		}
+		return BASIC_ORG_FINDPARENTNODES_URL;
+	}
 
 	/**
 	 * 获取岗位列表
+	 * @return
 	 */
-	public final static String BASIC_POSITION_FINDBYPAGE_URL=getProperty(
-			"basic.position.findByPage", "/position/findByPage");
-
-//	/**
-//	 * 获取岗位列表
-//	 */
-//	public final static String BASIC_POSITION_FINDALL_URL=getProperty(
-//			"", "/position/findAll");
-
+	public static String getBasicPositionFindbypageUrl() {
+		String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYPAGE");
+		if(StringUtils.isEmpty(BASIC_POSITION_FINDBYPAGE_URL)){
+			BASIC_POSITION_FINDBYPAGE_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.findByPage", "/position/findByPage");
+		}
+		return BASIC_POSITION_FINDBYPAGE_URL;
+	}
 
 	/**
 	 * 获取指定id岗位
+	 * @return
 	 */
-	public final static String BASIC_POSITION_FINDONE_URL=getProperty(
-			"basic.position.findOne", "/position/findOne");
+	public static String getBasicPositionFindoneUrl() {
+		String BASIC_POSITION_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDONE");
+		if(StringUtils.isEmpty(BASIC_POSITION_FINDONE_URL)){
+			BASIC_POSITION_FINDONE_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.findOne", "/position/findOne");
+		}
+		return BASIC_POSITION_FINDONE_URL;
+	}
 
 	/**
 	 * 根据岗位id列表获取岗位
+	 * @return
 	 */
-	public final static String BASIC_POSITION_FINDBYIDS_URL=getProperty(
+	public static String getBasicPositionFindbyidsUrl() {
+		String BASIC_POSITION_FINDBYIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYIDS");
+		if(StringUtils.isEmpty(BASIC_POSITION_FINDBYIDS_URL)){
+			BASIC_POSITION_FINDBYIDS_URL=getBasicServiceUrl() + getProperty(
 					"basic.position.findByIds", "/position/findByIds");
+		}
+		return BASIC_POSITION_FINDBYIDS_URL;
+	}
 
 	/**
 	 * 根据岗位的id列表获取执行人
+	 * @return
 	 */
-	public final static String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL=getProperty(
-			"basic.position.getExecutorsByPositionIds", "/position/getExecutorsByPositionIds");
+	public static String getBasicPositionGetexecutorsbypositionidsUrl() {
+		String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSITIONIDS");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL)){
+			BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutorsByPositionIds", "/position/getExecutorsByPositionIds");
+		}
+		return BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+	}
 
 	/**
 	 * 根据岗位类别的id列表获取执行人
 	 */
-	public final static String BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL=getProperty(
-			"basic.position.getExecutorsByPosCateIds", "/position/getExecutorsByPosCateIds");
-
-//	/**
-//	 * 获取岗位类别列表
-//	 */
-//	public final static String BASIC_POSITIONCATEGORY_FINDBYPAGE_URL=getProperty(
-//			"basic.positionCategory.findByPage", "/positionCategory/findByPage");
-
+	public static String getBasicPositionGetexecutorsbyposcateidsUrl() {
+		String BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATEIDS");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL)){
+			BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutorsByPosCateIds", "/position/getExecutorsByPosCateIds");
+		}
+		return BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL;
+	}
 
 	/**
 	 * 获取所有岗位类别列表
 	 */
-	public final static String BASIC_POSITIONCATEGORY_FINDALL_URL=getProperty(
-			"basic.positionCategory.findAll", "/positionCategory/findAll");
+	public static String getBasicPositioncategoryFindallUrl() {
+		String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDALL");
+		if(StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDALL_URL)){
+			BASIC_POSITIONCATEGORY_FINDALL_URL=getBasicServiceUrl() + getProperty(
+					"basic.positionCategory.findAll", "/positionCategory/findAll");
+		}
+		return BASIC_POSITIONCATEGORY_FINDALL_URL;
+	}
 
 	/**
 	 * 获取指定id岗位类别
 	 */
-	public final static String BASIC_POSITIONCATEGORY_FINDONE_URL=getProperty(
-			"basic.positionCategory.findOne", "/positionCategory/findOne");
+	public static String getBasicPositioncategoryFindoneUrl() {
+		String BASIC_POSITIONCATEGORY_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDONE");
+		if(StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDONE_URL)){
+			BASIC_POSITIONCATEGORY_FINDONE_URL=getBasicServiceUrl() + getProperty(
+					"basic.positionCategory.findOne", "/positionCategory/findOne");
+		}
+		return BASIC_POSITIONCATEGORY_FINDONE_URL;
+	}
 
 	/**
 	 * 根据企业员工的id列表获取执行人
 	 */
-	public final static String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getProperty(
-			"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
+	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
+		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
+			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
+		}
+		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+	}
 
 	/**
 	 * 根据组织机构的id获取员工
 	 */
-	public final static String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL=getProperty(
-			"basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
+	public static String getBasicEmployeeFindbyorganizationidUrl() {
+		String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYORGANIZATIONID");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL)){
+			BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
+		}
+		return BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
+	}
 
 	/**
-	 * 根据组织机构的id列表获取员工列表
+	 * 通过id列表获取执行人列表
+	 * @return
 	 */
-	public final static String BASIC_EMPLOYEE_FINDBYIDS_URL=getProperty(
-			"basic.employee.findByIds", "/employee/findByIds");
+	public static String getBasicEmployeeFindbyidsUrl() {
+		String BASIC_EMPLOYEE_FINDBYIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYIDS");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYIDS_URL)){
+			BASIC_EMPLOYEE_FINDBYIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.findByIds", "/employee/findByIds");
+		}
+		return BASIC_EMPLOYEE_FINDBYIDS_URL;
+	}
+
+	/**
+	 * 根据自定义的查询参数获取员工列表
+	 * @return
+	 */
+	public static String getBasicEmployeeFindbyparamUrl() {
+		String BASIC_EMPLOYEE_FINDBYPARAM_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYEMPLOYEEPARAM");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYPARAM_URL)){
+			BASIC_EMPLOYEE_FINDBYPARAM_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.findByEmployeeParam", "/employee/findByEmployeeParam");
+		}
+		return BASIC_EMPLOYEE_FINDBYPARAM_URL;
+	}
 
 
 	/**
@@ -253,11 +335,7 @@ public class Constants extends ConfigurableContants {
 	public final static String ORG_ID  = "orgId";
 	public final static String POOL_TASK_CODE  = "poolTaskCode";
 
-	/**
-	 * 根据自定义的查询参数获取员工列表
-	 */
-	public final static String BASIC_EMPLOYEE_FINDBYPARAM_URL=getProperty(
-			"basic.employee.findByEmployeeParam", "/employee/findByEmployeeParam");
+
 
 	public final static String AUTHBASURL= getProperty(
 			"ecmp.auth2.url");

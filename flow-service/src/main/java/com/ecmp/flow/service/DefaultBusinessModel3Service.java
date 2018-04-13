@@ -76,7 +76,7 @@ public class DefaultBusinessModel3Service extends BaseEntityService<DefaultBusin
 //                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
                 Map<String,Object> params = new HashMap();
                 params.put("organizationId",orgid);
-                String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
+                String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
                 List<Employee> employeeList=ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
                 List<String> idList = new ArrayList<String>();
                 for(Employee e : employeeList){
@@ -86,7 +86,7 @@ public class DefaultBusinessModel3Service extends BaseEntityService<DefaultBusin
 //                result = proxy.getExecutorsByEmployeeIds(idList);
                 Map<String,Object> paramsV2 = new HashMap();
                 paramsV2.put("employeeIds",idList);
-                url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
                 result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
             }
         }

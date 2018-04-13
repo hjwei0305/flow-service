@@ -176,7 +176,7 @@ public class MessageSendThread implements Runnable {
                                   }
                                   Map<String,Object> params = new HashMap();
                                   params.put("positionIds",idList);
-                                  String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+                                  String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
                                   List<Executor>  employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                                   Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
                                   List<String> receiverIds = new ArrayList<String>();

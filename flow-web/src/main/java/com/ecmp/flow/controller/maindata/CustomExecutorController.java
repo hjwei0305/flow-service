@@ -83,7 +83,7 @@ public class CustomExecutorController {
 
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",selectedExecutorIds);
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_EMPLOYEE_FINDBYIDS_URL;
+        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
         List<Employee> selectedExecutor = ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
         if(selectedExecutor == null){
             List<String> list = new ArrayList<>();
@@ -114,7 +114,7 @@ public class CustomExecutorController {
         employeeQueryParam.setRows(15);
 //        IEmployeeService proxy2 = ApiClient.createProxy(IEmployeeService.class);
 //        PageResult<Employee> notSelectedExecutor = proxy2.findByEmployeeParam(employeeQueryParam);
-        String url = Constants.BASIC_SERVICE_URL+Constants.BASIC_EMPLOYEE_FINDBYPARAM_URL;
+        String url = Constants.getBasicEmployeeFindbyparamUrl();
         PageResult<Employee> notSelectedExecutor = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Employee>>() {},employeeQueryParam);
         return notSelectedExecutor;
     }
@@ -138,7 +138,7 @@ public class CustomExecutorController {
 //        List<Employee> selectedExecutor = proxy2.findByIds(selectedExecutorIds);
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",selectedExecutorIds);
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_EMPLOYEE_FINDBYIDS_URL;
+        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
         List<Employee> selectedExecutor = ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
         if(selectedExecutor == null){
             List<Employee> list = new ArrayList<>();
@@ -177,7 +177,7 @@ public class CustomExecutorController {
 //        List<Employee> employees = proxy.findByOrganizationIdWithoutFrozen(organizationId);
         Map<String,Object> params = new HashMap();
         params.put("organizationId",organizationId);
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
+        String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
         List<Employee> employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
         return employees;
     }

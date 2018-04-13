@@ -49,7 +49,7 @@ public class BasicController {
     @ResponseBody
     @RequestMapping("findAllOrgs")
     public List<Organization> findAllOrgs(){
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_ORG_LISTALLORGS_URL;
+        String url = Constants.getBasicOrgListallorgsUrl();
         List<com.ecmp.flow.basic.vo.Organization> allOrgsList = ApiClient.getEntityViaProxy(url,new GenericType<List<Organization> >() {},null);
         return allOrgsList;
     }
@@ -63,7 +63,7 @@ public class BasicController {
     public List<PositionCategory> findAllPositionCategory(){
 //        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
 //        List<PositionCategory> positionCategoryList = proxy.findAll();
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITIONCATEGORY_FINDALL_URL;
+        String url = Constants.getBasicPositioncategoryFindallUrl();
         List<PositionCategory> positionCategoryList  = ApiClient.getEntityViaProxy(url,new GenericType<List<PositionCategory>>() {},null);
         return positionCategoryList;
     }
@@ -77,7 +77,7 @@ public class BasicController {
     public PageResult<Position> findAllPosition(ServletRequest request){
         Search search = SearchUtil.genSearch(request);
 //        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_FINDBYPAGE_URL;
+        String url = Constants.getBasicPositionFindbypageUrl();
         PageResult<Position> positionCategoryList   = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Position>>() {},search);
         return positionCategoryList;
     }
