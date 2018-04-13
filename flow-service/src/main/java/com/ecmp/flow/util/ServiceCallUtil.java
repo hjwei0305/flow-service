@@ -95,7 +95,7 @@ public class ServiceCallUtil {
                 }
                 params.setId(businessId);
                 params.setParams(paramMap);
-                String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = clientApiBaseUrl+"/"+clientUrl;
                 String exceptionMessage = null;

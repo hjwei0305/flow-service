@@ -61,12 +61,12 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     private List<FlowHistory> initUrl(List<FlowHistory>  result ){
         if(result!=null && !result.isEmpty()){
             for(FlowHistory flowHistory:result){
-                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
                 apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                 apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
-                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddressConfig();
+                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                 String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                 flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
                 webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));

@@ -395,7 +395,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
               FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
               String checkUrl = flowServiceUrl.getUrl();
               if(StringUtils.isNotEmpty(checkUrl)){
-                  String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                  String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
 //                  String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                   String checkUrlPath = baseUrl+checkUrl;
@@ -447,7 +447,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                     params.put(Constants.ID,flowInstance.getBusinessId());
                     params.put(Constants.STATUS, FlowStatus.INIT);
-                    String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
                     String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                     String url = baseUrl+"/"+businessModel.getConditonStatusRest();
                     ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);

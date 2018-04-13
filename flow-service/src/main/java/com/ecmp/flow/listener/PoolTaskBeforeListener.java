@@ -146,7 +146,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                                 params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                                 params.put(Constants.ID,flowInstance.getBusinessId());
                                 params.put(Constants.STATUS, FlowStatus.INIT);
-                                String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                                String apiBaseAddressConfig = appModule.getApiBaseAddress();
                                 String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                                 String url = baseUrl+"/"+businessModel.getConditonStatusRest();
                                 Boolean result = false;

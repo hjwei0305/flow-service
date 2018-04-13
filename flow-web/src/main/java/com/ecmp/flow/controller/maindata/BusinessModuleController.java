@@ -177,7 +177,7 @@ public class BusinessModuleController {
         BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
         if (businessModel != null) {
 //            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
-            String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+            String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
             String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
             String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
             Map<String,Object> params = new HashMap();

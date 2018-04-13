@@ -41,7 +41,7 @@ public class ExpressionUtil {
      */
     public  static Map<String,Object>  getPropertiesDecMap(BusinessModel businessModel, String businessId){
         String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String,Object> params = new HashMap();
@@ -59,7 +59,7 @@ public class ExpressionUtil {
      */
     public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all){
         String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
@@ -78,7 +78,7 @@ public class ExpressionUtil {
      */
     public static Boolean validate(BusinessModel businessModel,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Boolean result = true;
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
         Map<String,Object> params = new HashMap();
@@ -98,7 +98,7 @@ public class ExpressionUtil {
     public static boolean result(BusinessModel businessModel,String businessId,String expression){
         boolean result = true;
         String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String,Object> params = new HashMap();
@@ -119,7 +119,7 @@ public class ExpressionUtil {
     public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status){
         boolean result = true;
         String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
         Map<String,Object> params = new HashMap();

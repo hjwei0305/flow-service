@@ -62,13 +62,13 @@ public class AppModule extends BaseAuditableEntity
      * web基地址
      */
     @Column(name = "web_base_address")
-    private String webBaseAddressConfig;
+    private String webBaseAddress;
 
     /**
      * api基地址
      */
     @Column(name = "api_base_address")
-    private String apiBaseAddressConfig;
+    private String apiBaseAddress;
 
     /**
      * 排序号
@@ -100,27 +100,27 @@ public class AppModule extends BaseAuditableEntity
         this.remark = remark;
     }
 
-    public String getWebBaseAddressConfig() {
-        return webBaseAddressConfig;
-    }
-
-    public void setWebBaseAddressConfig(String webBaseAddressConfig) {
-        this.webBaseAddressConfig = webBaseAddressConfig;
-    }
-
-    public String getApiBaseAddressConfig() {
-        return apiBaseAddressConfig;
-    }
-
-    public void setApiBaseAddressConfig(String apiBaseAddressConfig) {
-        this.apiBaseAddressConfig = apiBaseAddressConfig;
-    }
-
     public Integer getRank() {
         return rank;
     }
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    public String getWebBaseAddress() {
+        return webBaseAddress;
+    }
+
+    public void setWebBaseAddress(String webBaseAddress) {
+        this.webBaseAddress = webBaseAddress;
+    }
+
+    public String getApiBaseAddress() {
+        return apiBaseAddress;
+    }
+
+    public void setApiBaseAddress(String apiBaseAddress) {
+        this.apiBaseAddress = apiBaseAddress;
     }
 }

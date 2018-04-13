@@ -221,7 +221,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
         params.put(Constants.ID,flowInstance.getBusinessId());
         params.put(Constants.STATUS, FlowStatus.INPROCESS);
-        String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+        String apiBaseAddressConfig = appModule.getApiBaseAddress();
         String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String url = apiBaseAddress +"/"+businessModel.getConditonStatusRest();
         Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
@@ -247,7 +247,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(afterStartServiceId);
                 String checkUrl = flowServiceUrl.getUrl();
                 if(StringUtils.isNotEmpty(checkUrl)){
-                    String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                    String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();

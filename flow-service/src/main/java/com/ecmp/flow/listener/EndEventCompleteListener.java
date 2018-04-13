@@ -98,7 +98,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                 params.put(Constants.ID,flowInstance.getBusinessId());
                 params.put(Constants.STATUS,FlowStatus.COMPLETED);
-                String apiBaseAddressConfig = appModule.getApiBaseAddressConfig();
+                String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = apiBaseAddress+"/"+businessModel.getConditonStatusRest();
                 Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);

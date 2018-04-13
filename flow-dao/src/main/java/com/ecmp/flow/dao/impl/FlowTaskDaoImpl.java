@@ -88,12 +88,12 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     private List<FlowTask> initFlowTaskAppModule(List<FlowTask>  result ){
         if(result!=null && !result.isEmpty()){
                for(FlowTask flowTask:result){
-                   String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddressConfig();
+                   String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                    String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                    flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
                    apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                    apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
-                   String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddressConfig();
+                   String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                    String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
                    webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
@@ -117,7 +117,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                        String appModuleId = workPageUrl.getAppModuleId();
                        AppModule appModule = appModuleDao.findOne(appModuleId);
                        if(appModule!=flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()){
-                           webBaseAddressConfig = appModule.getWebBaseAddressConfig();
+                           webBaseAddressConfig = appModule.getWebBaseAddress();
                            webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                            flowTask.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
                            webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
