@@ -27,6 +27,7 @@ import javax.ws.rs.core.GenericType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,37 @@ public class FlowDesignController {
 //        model.addAttribute("orgName", orgName);
         return "/design/WorkFlowView";
     }
+
+    @RequestMapping(value = "import", method = RequestMethod.GET)
+    public String importExcel() {
+//        model.addAttribute("orgName", orgName);
+        return "/design/ImportView";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "importCols", method = RequestMethod.POST)
+    public OperateStatus importCols() {
+        OperateStatus status = OperateStatus.defaultSuccess();
+        Col col = new Col();
+        Content s1 = new Content("s1","s1",1);
+        Content s2 = new Content("s2","s2",2);
+        Content s3 = new Content("s3","s3",3);
+
+        col.getSource().add(s1);
+        col.getSource().add(s2);
+        col.getSource().add(s3);
+
+        Content t1 = new Content("t1","t1",1);
+        Content t2 = new Content("t2","t2",2);
+        Content t3 = new Content("t3","t3",3);
+        col.getTarget().add(t1);
+        col.getTarget().add(t2);
+        col.getTarget().add(t3);
+
+        status.setData(col);
+       return status;
+    }
+
 
     @RequestMapping(value = "showLook", method = RequestMethod.GET)
     public String look() {
@@ -91,7 +123,7 @@ public class FlowDesignController {
             OperateResultWithData<FlowDefVersion> result = proxy.save(definition);
             if(	result.successful()){
                 IFlowDefinationService proxy2 = ApiClient.createProxy(IFlowDefinationService.class);
-                String deployById = proxy2.deployById(result.getData().getFlowDefination().getId());
+                proxy2.deployById(result.getData().getFlowDefination().getId());
             }
             status.setSuccess(result.successful());
             status.setMsg(result.getMessage());
@@ -115,7 +147,8 @@ public class FlowDesignController {
         IBusinessModelService  businessModelService = ApiClient.createProxy(IBusinessModelService.class);
         BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
         if (businessModel != null) {
-            String clientApiBaseUrl = getAppModule(businessModel).getApiBaseAddress();
+            String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddressConfig();
+            String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
             String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
             Map<String,Object> params = new HashMap();
             params.put("businessModelCode",businessModelCode);
@@ -185,7 +218,7 @@ public class FlowDesignController {
     public List<PositionCategory> listPositonType(String notInIds) {
 //        IPositionCategoryService proxy = ApiClient.createProxy(IPositionCategoryService.class);
 //        List<PositionCategory> data = proxy.findAll();
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITIONCATEGORY_FINDALL_URL;
+        String url = Constants.getBasicPositioncategoryFindallUrl();
         List<PositionCategory> positionCategoryList  = ApiClient.getEntityViaProxy(url,new GenericType<List<PositionCategory>>() {},null);
         return positionCategoryList;
     }
@@ -204,7 +237,7 @@ public class FlowDesignController {
         search.addQuickSearchProperty("organization.name");
 //        IPositionService proxy = ApiClient.createProxy(IPositionService.class);
 //        return proxy.findByPage(search);
-        String url = Constants.BASIC_SERVICE_URL + Constants.BASIC_POSITION_FINDBYPAGE_URL;
+        String url = Constants.getBasicPositionFindbypageUrl();
         PageResult<Position> positionList   = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Position>>() {},search);
         return  positionList;
     }
@@ -258,5 +291,64 @@ public class FlowDesignController {
         }
         status.setData(data);
         return status;
+    }
+
+    class Content {
+        private String code;
+        private String desc;
+        private int rank;
+
+        public Content(){
+
+        }
+        public Content(String code,String desc,int rank){
+             this.code = code;
+             this.desc = desc;
+             this.rank = rank;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public int getRank() {
+            return rank;
+        }
+
+        public void setRank(int rank) {
+            this.rank = rank;
+        }
+    }
+    class Col{
+        private List<Content> target = new ArrayList<>();
+        private List<Content> source = new ArrayList<>();
+
+        public List<Content> getTarget() {
+            return target;
+        }
+
+        public void setTarget(List<Content> target) {
+            this.target = target;
+        }
+
+        public List<Content> getSource() {
+            return source;
+        }
+
+        public void setSource(List<Content> source) {
+            this.source = source;
+        }
     }
 }
