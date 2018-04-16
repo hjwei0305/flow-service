@@ -128,11 +128,14 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                     }
                     String param = JsonUtils.toJson(tempV);
                     FlowOperateResult flowOperateResult = null;
+                    String callMessage = null;
                     try{
                         flowOperateResult =  ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"";
                     }catch (Exception e){
                           logger.error(e.getMessage());
                         flowOperateResult=null;
+                        callMessage = e.getMessage();
                     }
                     //如果是开始节点，手动回滚
                     ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
@@ -169,7 +172,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
 //                                flowInstanceDao.delete(flowInstance);
                             }
                         }.start();
-                        throw new FlowException(flowOperateResult.getMessage());//抛出异常
+                        throw new FlowException(callMessage);//抛出异常
                     }
 //                   flowTaskDao.save(flowTask);
 
