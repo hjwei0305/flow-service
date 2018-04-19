@@ -96,7 +96,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                    String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                    String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-                   webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                   webBaseAddress =  webBaseAddress.substring(webBaseAddress.indexOf("://")+3);
                    webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
                    flowTask.setApiBaseAddress(apiBaseAddress);
                    flowTask.setWebBaseAddress(webBaseAddress);
@@ -120,7 +120,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                            webBaseAddressConfig = appModule.getWebBaseAddress();
                            webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
                            flowTask.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
-                           webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                           webBaseAddress =  webBaseAddress.substring(webBaseAddress.indexOf("://")+3);
                            webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
                            flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
                        }
