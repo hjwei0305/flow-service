@@ -1365,18 +1365,34 @@ public class FlowTaskTool {
                         Executor executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
                         if("poolTask".equalsIgnoreCase(nodeType) && executor==null){
                             FlowTask flowTask = new FlowTask();
+                            Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(actProcessInstanceId);
+                            String userId = null;
+                            if(processVariables.get(Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey)!=null){
+                                userId =  (String) processVariables.get(Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey).getValue();//是否直接返回了执行人
+                            }
+                            if(StringUtils.isNotEmpty(userId)){
+                                 executor = flowCommonUtil.getBasicExecutor(userId);
+                            }
+                            if(executor==null){
+                                flowTask.setOwnerAccount(Constants.ANONYMOUS);
+                                flowTask.setOwnerId(Constants.ANONYMOUS);
+                                flowTask.setOwnerName(Constants.ANONYMOUS);
+                                flowTask.setExecutorAccount(Constants.ANONYMOUS);
+                                flowTask.setExecutorId(Constants.ANONYMOUS);
+                                flowTask.setExecutorName(Constants.ANONYMOUS);
+                            }else{
+                                flowTask.setOwnerAccount(executor.getCode());
+                                flowTask.setOwnerName(executor.getName());
+                                flowTask.setExecutorAccount(executor.getCode());
+                                flowTask.setExecutorId(executor.getId());
+                                flowTask.setExecutorName(executor.getName());
+                            }
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                             flowTask.setActTaskDefKey(actTaskDefKey);
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
                             flowTask.setActTaskId(task.getId());
-                            flowTask.setOwnerAccount(Constants.ANONYMOUS);
-                            flowTask.setOwnerId(Constants.ANONYMOUS);
-                            flowTask.setOwnerName(Constants.ANONYMOUS);
-                            flowTask.setExecutorAccount(Constants.ANONYMOUS);
-                            flowTask.setExecutorId(Constants.ANONYMOUS);
-                            flowTask.setExecutorName(Constants.ANONYMOUS);
                             flowTask.setActType(identityLink.getType());
                             flowTask.setDepict(task.getDescription());
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());

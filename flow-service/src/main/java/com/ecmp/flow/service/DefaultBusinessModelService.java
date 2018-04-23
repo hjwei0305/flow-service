@@ -589,8 +589,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        result.setSuccess(false);
-        result.setMessage("test failure!");
+        result.setSuccess(true);
+        result.setMessage("test success!");
+        result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
         return result;
     }
 

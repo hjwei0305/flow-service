@@ -131,6 +131,9 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                     String callMessage = null;
                     try{
                         flowOperateResult =  ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        if(flowOperateResult!=null && flowOperateResult.isSuccess() && StringUtils.isNotEmpty(flowOperateResult.getUserId())){
+                            runtimeService.setVariable(delegateTask.getProcessInstanceId(),Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey, flowOperateResult.getUserId());
+                        }
                         callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"";
                     }catch (Exception e){
                           logger.error(e.getMessage());

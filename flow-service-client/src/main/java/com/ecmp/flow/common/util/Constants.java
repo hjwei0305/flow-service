@@ -254,6 +254,11 @@ public class Constants extends ConfigurableContants {
 	 */
 	public final static String POOL_TASK_ACT_DEF_ID= "poolTaskActDefId";
 
+	/**
+	 * 用户池任务实际定义ID
+	 */
+	public final static String POOL_TASK_CALLBACK_USER_ID= "poolTaskActCallbackUserId_";
+
 
 	/**
 	 * 转办

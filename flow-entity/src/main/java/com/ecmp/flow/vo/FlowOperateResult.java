@@ -15,8 +15,19 @@ import java.io.Serializable;
  * *************************************************************************************************
  */
 public class FlowOperateResult implements Serializable{
+    /**
+     * 成功状态
+     */
     private boolean success;
+    /**
+     *  返回消息
+     */
     private String message;
+
+    /**
+     *  签收人，针对需要立即签收执行人的情况，如工作池任务
+     */
+    private String userId;
 
     public FlowOperateResult(){
         this.success=true;
@@ -43,6 +54,14 @@ public class FlowOperateResult implements Serializable{
 
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String toString(){
