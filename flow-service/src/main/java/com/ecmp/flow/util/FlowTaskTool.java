@@ -1386,6 +1386,7 @@ public class FlowTaskTool {
                                 flowTask.setExecutorAccount(executor.getCode());
                                 flowTask.setExecutorId(executor.getId());
                                 flowTask.setExecutorName(executor.getName());
+                                taskService.setAssignee(task.getId(), executor.getId());
                             }
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
