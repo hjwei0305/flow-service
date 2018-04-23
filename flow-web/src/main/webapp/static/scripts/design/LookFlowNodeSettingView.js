@@ -36,7 +36,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     items: [this.getNormalTab()]
                 }]
             });
-        }else if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask" ){
+        }else if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask" || this.nodeType == "PoolTask"){
             this.window = EUI.Window({
                 title: "节点配置",
                 width: 550,
@@ -56,7 +56,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                         iframe: false,
                         closable: false
                     },
-                    items: [this.getServiceTaskNormalTab(), this.getEventTab(),
+                    items: [this.getServiceTaskNormalTab(this.nodeType), this.getEventTab(),
                         this.getNotifyTab(true)]
                 }]
             });
@@ -286,15 +286,15 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             items: items
         };
     },
-    getServiceTaskNormalTab: function () {
+    getServiceTaskNormalTab: function (nodeType) {
         var items = [{
             title: "节点名称",
             labelWidth: 100,
             allowBlank: false,
             name: "name",
-            maxlength:80,
+            maxlength: 80,
             value: this.title,
-            readonly: true
+            readonly : true
         }, {
             xtype: "ComboBox",
             title: "服务名称",
@@ -302,8 +302,8 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             allowBlank: false,
             name: "serviceTask",
             field: ["serviceTaskId"],
-            canClear:false,
-            readonly: true,
+            canClear: true,
+            readonly : true,
             store: {
                 url: _ctxPath + "/design/listAllServiceUrl",
                 params: {
@@ -315,6 +315,46 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                 field: ["id"]
             }
         }];
+        if(nodeType == "PoolTask"){
+            items.push({
+                title: "池代码",
+                labelWidth: 100,
+                allowBlank: false,
+                name: "poolTaskCode",
+                maxlength: 80,
+                readonly : true
+            },{
+                xtype: "ComboBox",
+                title: "工作界面",
+                labelWidth: 100,
+                allowBlank: false,
+                readonly : true,
+                name: "workPageName",
+                field: ["id", "mustCommit"],
+                async: false,
+                store: {
+                    url: _ctxPath + "/design/listAllWorkPage",
+                    params: {
+                        businessModelId: this.businessModelId
+                    }
+                },
+
+                reader: {
+                    name: "name",
+                    field: ["id", "mustCommit"]
+                }
+            },{
+                xtype: "CheckBox",
+                title: "允许流程发起人终止",
+                name: "allowTerminate",
+                readonly : true
+            }, {
+                xtype: "CheckBox",
+                title: "允许撤回",
+                name: "allowPreUndo",
+                readonly : true
+            });
+        }
         return {
             title: "常规",
             xtype: "FormPanel",
@@ -323,9 +363,9 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
             defaultConfig: {
                 width: 300,
                 xtype: "TextField",
+                readonly : true,
                 labelWidth: 150,
-                colon: false,
-                readonly: true
+                colon: false
             },
             style: {
                 padding: "10px 30px"
@@ -793,6 +833,7 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
         };
     },
     loadData: function () {
+        var g = this;
         var normalForm = EUI.getCmp("normal");
         var executorForm = EUI.getCmp("excutor");
         var eventForm = EUI.getCmp("event");
@@ -831,10 +872,10 @@ EUI.LookFlowNodeSettingView = EUI.extend(EUI.CustomUI, {
     },
     loadNotifyData: function (tab, data) {
         var g = this;
-        if(g.nodeType == "ServiceTask" || g.nodeType == "ReceiveTask"){
+        if (g.type == "ServiceTask" || g.type == "ReceiveTask" || g.type == "PoolTask") {
             EUI.getCmp(tab.items[0]).loadData(data.notifyStarter);
-            EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);
-        }else {
+            EUI.getCmp(tab.items[tab.items.length - 1]).loadData(data.notifyPosition);
+        } else {
             EUI.getCmp(tab.items[0]).loadData(data.notifyExecutor);
             EUI.getCmp(tab.items[1]).loadData(data.notifyStarter);
             EUI.getCmp(tab.items[tab.items.length-1]).loadData(data.notifyPosition);

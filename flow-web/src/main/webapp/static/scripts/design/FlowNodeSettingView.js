@@ -406,6 +406,14 @@ EUI.FlowNodeSettingView = EUI.extend(EUI.CustomUI, {
                     name: "name",
                         field: ["id", "mustCommit"]
                 }
+            },{
+                xtype: "CheckBox",
+                title: "允许流程发起人终止",
+                name: "allowTerminate"
+            }, {
+                xtype: "CheckBox",
+                title: "允许撤回",
+                name: "allowPreUndo"
             });
         }
         return {
