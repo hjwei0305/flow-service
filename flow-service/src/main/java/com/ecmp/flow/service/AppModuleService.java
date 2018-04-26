@@ -86,9 +86,11 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
 
     private void clearFlowDefVersion(){
         String pattern = "FLowGetLastFlowDefVersion_*";
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys!=null&&!keys.isEmpty()){
-            redisTemplate.delete(keys);
+        if(redisTemplate!=null){
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys!=null&&!keys.isEmpty()){
+                redisTemplate.delete(keys);
+            }
         }
     }
 
