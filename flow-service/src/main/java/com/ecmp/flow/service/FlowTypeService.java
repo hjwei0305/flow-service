@@ -53,9 +53,12 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     }
     private void clearFlowDefVersion(){
         String pattern = "FLowGetLastFlowDefVersion_*";
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys!=null&&!keys.isEmpty()){
-            redisTemplate.delete(keys);
+        if(redisTemplate!=null){
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys!=null&&!keys.isEmpty()){
+                redisTemplate.delete(keys);
+            }
         }
+
     }
 }

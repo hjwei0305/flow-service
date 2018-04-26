@@ -204,15 +204,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void clearFlowDefVersion(){
         String pattern = "FLowGetLastFlowDefVersion_*";
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys!=null&&!keys.isEmpty()){
-            redisTemplate.delete(keys);
+        if(redisTemplate!=null){
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys!=null&&!keys.isEmpty()){
+                redisTemplate.delete(keys);
+            }
         }
     }
     private void clearFlowDefVersion(String defVersionId){
         String key = "FLowGetLastFlowDefVersion_"+defVersionId;
-        if (redisTemplate.hasKey(key)){
-            redisTemplate.delete(key);
+        if(redisTemplate!=null){
+            if (redisTemplate.hasKey(key)){
+                redisTemplate.delete(key);
+            }
         }
     }
 
