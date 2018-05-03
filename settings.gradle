@@ -1,4 +1,4 @@
-rootProject.name = 'ecmp-workflow'
+rootProject.name = 'ecmp-flow'
 include 'flow-entity'
 include 'flow-dao'
 include 'flow-service'
