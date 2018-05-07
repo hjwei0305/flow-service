@@ -16,32 +16,4 @@ allprojects {
         maven { url 'http://10.4.32.53:8081/nexus/content/groups/ECMP_Group' }
     }
 
-    configurations.all {
-        resolutionStrategy {
-            force "commons-beanutils:commons-beanutils:$commons_beanutils_version",
-                    "com.fasterxml.jackson.core:jackson-core:$jackson_version",
-                    "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
-                    "com.fasterxml.jackson.core:jackson-annotations:$jackson_version",
-                    "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version",
-                    "org.springframework:spring-core:$spring_version",
-                    "org.springframework:spring-tx:$spring_version",
-                    "org.springframework:spring-aop:$spring_version",
-                    "org.springframework:spring-beans:$spring_version",
-                    "org.springframework:spring-context:$spring_version",
-                    "org.springframework:spring-context-support:$spring_version",
-                    "org.springframework.data:spring-data-commons:$spring_data_commons_versiong",
-                    "com.fasterxml:classmate:$fasterxml_classmate_version",
-                    "org.javassist:javassist:$javassist_version",
-                    "org.slf4j:slf4j-api:$slf4j_version",
-                    "org.slf4j:jcl-over-slf4j:$slf4j_version",
-                    "org.yaml:snakeyaml:$snakeyaml_version",
-                    "commons-codec:commons-codec:$commons_codec_version",
-                    "org.hibernate:hibernate-validator:$hibernate_validator_version",
-                    "commons-io:commons-io:$commons_io_version",
-                    "org.apache.commons:commons-lang3:$commons_lang3_version",
-                    "org.apache.commons:commons-math3:$commons_math3_version"
-            cacheDynamicVersionsFor 10 * 60, 'seconds'
-            cacheChangingModulesFor 0, 'seconds'
-        }
-    }
 }

@@ -33,7 +33,7 @@ import java.util.List;
  * </p>
  * *************************************************************************************************
  */
-public interface IBaseService<T extends Persistable<? extends Serializable>, ID extends Serializable>  {
+public interface IBaseService<T extends Persistable<? extends Serializable> & Serializable, ID extends Serializable>  {
 
     /**
      * 通过Id获取实体
