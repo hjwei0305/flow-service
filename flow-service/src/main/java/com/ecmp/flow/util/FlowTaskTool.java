@@ -1362,7 +1362,10 @@ public class FlowTaskTool {
                         }else{
                             checkChongfu.add(key);
                         }
-                        Executor executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
+                        Executor executor = null;
+                        if(!Constants.ANONYMOUS.equalsIgnoreCase(identityLink.getUserId())){
+                            executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
+                        }
                         if("poolTask".equalsIgnoreCase(nodeType) && executor==null){
                             FlowTask flowTask = new FlowTask();
                             Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(actProcessInstanceId);
