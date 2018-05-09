@@ -88,6 +88,10 @@ public class ServiceCallUtil {
                             List<String> callActivitySonPaths = jsonObject.getJSONArray(Constants.CALL_ACTIVITY_SON_PATHS);
                             params.setCallActivitySonPaths(callActivitySonPaths);
                         }
+                        if(jsonObject.has(Constants.OPINION)){
+                            String  opinion = jsonObject.get(Constants.OPINION)+"";
+                            paramMap.put(Constants.OPINION,opinion);
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                         throw e;
