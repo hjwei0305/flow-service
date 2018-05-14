@@ -177,7 +177,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                         selectedNodesMap.put(f.getNodeId(),f.getNodeId());
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             v.put(f.getUserVarName(), f.getUserIds());
-                        } else {
+                        } else if(!"poolTask".equalsIgnoreCase(flowTaskType)){
                             String[] idArray = f.getUserIds().split(",");
                             v.put(f.getUserVarName(), idArray);
                         }
