@@ -140,41 +140,43 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         flowOperateResult=null;
                         callMessage = e.getMessage();
                     }
-                    //如果是开始节点，手动回滚
-                    ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
-                    TransitionImpl transition = taskEntity.getTransition();
-                    String sourceType =transition.getSource().getProperties().get("type")+"";
-                    if("startEvent".equalsIgnoreCase(sourceType) && (flowOperateResult==null || !flowOperateResult.isSuccess())){
-                        new Thread(){
-                            public void run(){
-                                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                Map<String, Object> params = new HashMap<String,Object>();;
-                                params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-                                params.put(Constants.ID,flowInstance.getBusinessId());
-                                params.put(Constants.STATUS, FlowStatus.INIT);
-                                String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                                String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                                String url = baseUrl+"/"+businessModel.getConditonStatusRest();
-                                Boolean result = false;
-                                int index = 5;
-                                while (!result && index>0){
-                                    try {
-                                        Thread.sleep(1000*(6-index));
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
+
+                    if((flowOperateResult==null || !flowOperateResult.isSuccess())){
+                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+                        TransitionImpl transition = taskEntity.getTransition();
+                        String sourceType =transition.getSource().getProperties().get("type")+"";
+                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
+                            new Thread(){
+                                public void run(){
+                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                    Map<String, Object> params = new HashMap<String,Object>();;
+                                    params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+                                    params.put(Constants.ID,flowInstance.getBusinessId());
+                                    params.put(Constants.STATUS, FlowStatus.INIT);
+                                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
+                                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                                    String url = baseUrl+"/"+businessModel.getConditonStatusRest();
+                                    Boolean result = false;
+                                    int index = 5;
+                                    while (!result && index>0){
+                                        try {
+                                            Thread.sleep(1000*(6-index));
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        try {
+                                            result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                                        }catch (Exception e){
+                                            logger.error(e.getMessage());
+                                        }
+                                        index--;
                                     }
-                                    try {
-                                        result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-                                    }catch (Exception e){
-                                        logger.error(e.getMessage());
-                                    }
-                                    index--;
-                                }
 //                                String actInstanceId = flowInstance.getActInstanceId();
 //                                runtimeService.deleteProcessInstance(actInstanceId, null);
 //                                flowInstanceDao.delete(flowInstance);
-                            }
-                        }.start();
+                                }
+                            }.start();
+                        }
                         throw new FlowException(callMessage);//抛出异常
                     }
 //                   flowTaskDao.save(flowTask);
