@@ -572,7 +572,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }catch (FlowException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultWithData = OperateResultWithData.operationFailure(e.getMessage());
-            throw  e;
+//            throw  e;
         }
         return resultWithData;
     }
