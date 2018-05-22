@@ -142,10 +142,14 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                     }
 
                     if((flowOperateResult==null || !flowOperateResult.isSuccess())){
-                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
-                        TransitionImpl transition = taskEntity.getTransition();
-                        String sourceType =transition.getSource().getProperties().get("type")+"";
-                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
+//                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+//                        TransitionImpl transition = taskEntity.getTransition();
+//                        String sourceType =transition.getSource().getProperties().get("type")+"";
+                        List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+                        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+
+                        if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
+//                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
                             new Thread(){
                                 public void run(){
                                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();

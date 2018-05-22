@@ -4,9 +4,13 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dao.FlowDefVersionDao;
+import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.service.FlowHistoryService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -47,7 +51,13 @@ import java.util.concurrent.TimeUnit;
 public class FlowListenerTool {
 
     @Autowired
+    private FlowDefVersionDao flowDefVersionDao;
+
+    @Autowired
    private FlowTaskService flowTaskService;
+
+    @Autowired
+    FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -318,10 +328,66 @@ public class FlowListenerTool {
                     }
                 }).start();
             }else {
-                Object result = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
-                FlowOperateResult flowOpreateResult = (FlowOperateResult) result;
-                if(true!=flowOpreateResult.isSuccess()){
-                    throw new FlowException("执行逻辑失败，"+flowOpreateResult.getMessage());
+                FlowOperateResult flowOperateResult = null;
+                String callMessage = null;
+                try{
+                    flowOperateResult = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                     callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"接口调用异常！";
+                }catch (Exception e){
+                    logger.error(e.getMessage());
+                    flowOperateResult=null;
+                    callMessage = e.getMessage();
+                }
+
+                if((flowOperateResult==null || !flowOperateResult.isSuccess())){
+//                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
+//                        TransitionImpl transition = taskEntity.getTransition();
+//                        String sourceType =transition.getSource().getProperties().get("type")+"";
+
+//                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
+                    String actProcessInstanceId = delegateTask.getProcessInstanceId();
+                    FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
+                    List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+                    List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+
+                    if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
+//                            String actProcessInstanceId = delegateTask.getProcessInstanceId();
+//                            FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
+                            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
+                            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
+                            AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
+                            new Thread(){
+                                public void run(){
+                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                    Map<String, Object> params = new HashMap<String,Object>();;
+                                    params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+                                    params.put(Constants.ID,flowInstance.getBusinessId());
+                                    params.put(Constants.STATUS, FlowStatus.INIT);
+                                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
+                                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                                    String url = baseUrl+"/"+businessModel.getConditonStatusRest();
+                                    Boolean result = false;
+                                    int index = 5;
+                                    while (!result && index>0){
+                                        try {
+                                            Thread.sleep(1000*(6-index));
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        try {
+                                            result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                                        }catch (Exception e){
+                                            logger.error(e.getMessage());
+                                        }
+                                        index--;
+                                    }
+//                                String actInstanceId = flowInstance.getActInstanceId();
+//                                runtimeService.deleteProcessInstance(actInstanceId, null);
+//                                flowInstanceDao.delete(flowInstance);
+                                }
+                            }.start();
+                    }
+                    throw new FlowException(callMessage);//抛出异常
                 }
             }
         }catch (Exception e){

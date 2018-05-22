@@ -107,7 +107,8 @@ public class ServiceCallUtil {
                     result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {
                     }, params);
                 }catch (Exception e){
-                    exceptionMessage=e.getMessage();
+                    exceptionMessage="Flow call Service exception:"+e.getMessage();
+                    result = new FlowOperateResult(false,exceptionMessage);
                 }
                 String exceptionMessageFinal = exceptionMessage;
                 FlowOperateResult resultAy = result;

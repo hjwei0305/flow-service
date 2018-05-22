@@ -128,6 +128,14 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @ApiOperation(value = "测试endCall",notes = "endCall")
  public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
 
+
+ @POST
+ @Path("newServiceCallFailure")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "测试异常服务",notes = "failureCall")
+ public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
+
  @POST
  @Path("changeCreateDepictNew")
  @Produces(MediaType.APPLICATION_JSON)

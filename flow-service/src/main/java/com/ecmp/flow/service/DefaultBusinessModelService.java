@@ -308,6 +308,17 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         }
               return result;
     }
+    public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams){
+        FlowOperateResult result = new FlowOperateResult();
+        String businessId = flowInvokeParams.getId();
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(businessId);
+        String changeText = "newServiceCall_failure";
+        entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
+        defaultBusinessModelDao.save(entity);
+        result.setSuccess(false);
+        result.setMessage("测试业务异常信息:"+new Date());
+        return result;
+    }
     /**
      * 获取指定范围的随机数
      *
@@ -589,8 +600,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        result.setSuccess(true);
-        result.setMessage("test success!");
+        result.setSuccess(false);
+        result.setMessage("test failure!");
         result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
         return result;
     }
