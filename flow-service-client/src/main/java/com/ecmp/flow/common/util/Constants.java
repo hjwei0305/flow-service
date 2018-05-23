@@ -37,6 +37,19 @@ public class Constants extends ConfigurableContants {
 
 
 	/**
+	 * 获取所有组织维度
+	 * @return
+	 */
+	public static String getBasicOrgDimensionUrl() {
+		String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDORGANIZATIONDIMENSION");
+		if(StringUtils.isEmpty(BASIC_ORG_FINDORGANIZATIONDIMENSION_URL)){
+			BASIC_ORG_FINDORGANIZATIONDIMENSION_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.findOrganizationDimension", "/organization/findOrganizationDimension");
+		}
+		return BASIC_ORG_FINDORGANIZATIONDIMENSION_URL;
+	}
+
+	/**
 	 * 获取所有组织机构
 	 * @return
 	 */
