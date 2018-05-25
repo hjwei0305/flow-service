@@ -302,6 +302,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else {
             flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
         }
+        //匿名用户执行的情况，直接使用当前上下文用户
+        if(Constants.ANONYMOUS.equalsIgnoreCase(flowTask.getOwnerId())&& !Constants.ANONYMOUS.equalsIgnoreCase(ContextUtil.getUserId())){
+            flowTask.setOwnerId(ContextUtil.getUserId());
+            flowTask.setOwnerAccount(ContextUtil.getUserAccount());
+            flowTask.setOwnerName(ContextUtil.getUserName());
+            flowTask.setExecutorId(ContextUtil.getUserId());
+            flowTask.setExecutorAccount(ContextUtil.getUserAccount());
+            flowTask.setExecutorName(ContextUtil.getUserName());
+        }
         variables.put("opinion", flowTask.getDepict());
         String actTaskId = flowTask.getActTaskId();
 

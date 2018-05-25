@@ -179,4 +179,12 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @ApiOperation(value = "测试testPoolTaskSignal",notes = "testPoolTaskSignal")
  public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
 
+
+ @POST
+ @Path("testPoolTaskCreatePool")
+ @Produces(MediaType.APPLICATION_JSON)
+ @Consumes(MediaType.APPLICATION_JSON)
+ @ApiOperation(value = "testPoolTaskCreatePool",notes = "testPoolTaskCreatePool")
+ public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
+
 }

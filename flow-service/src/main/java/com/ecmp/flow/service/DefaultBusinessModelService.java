@@ -570,7 +570,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        long time = 100; //默认200秒
+                        long time = 200; //默认200秒
                         int index = 2;//重试2次
                         while (index > 0) {
                             try {
@@ -603,6 +603,44 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         result.setSuccess(false);
         result.setMessage("test failure!");
         result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
+        return result;
+    }
+
+    @Transactional( propagation= Propagation.REQUIRES_NEW)
+    public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams){
+        System.out.println(flowInvokeParams.getPoolTaskCode());
+        FlowOperateResult result = new FlowOperateResult();
+        String taskActDefId = null;
+        Map<String,Object> variables = new HashMap<String,Object>();
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            if (entity != null) {
+                taskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = null;
+                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                    for (String callActivityPath : callActivtiySonPaths) {
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
+                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                        }
+                    }
+                }
+                String changeText = "PoolCallPoolCreate";
+                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
+                defaultBusinessModelDao.save(entity);
+            }
+        }catch (Exception e){
+            result.setSuccess(false);
+            result.setMessage(e.getMessage());
+        }
+        result.setSuccess(true);
+        result.setMessage("test success!");
+//        result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
         return result;
     }
 

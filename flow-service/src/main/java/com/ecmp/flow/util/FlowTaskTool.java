@@ -1942,6 +1942,7 @@ public class FlowTaskTool {
         flowHistory.setFlowTaskName(flowTask.getTaskName());
         flowHistory.setFlowInstance(flowTask.getFlowInstance());
         flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
+        flowHistory.setOwnerId(flowTask.getOwnerId());
         flowHistory.setOwnerName(flowTask.getOwnerName());
         flowHistory.setExecutorAccount(flowTask.getExecutorAccount());
         flowHistory.setExecutorId(flowTask.getExecutorId());
