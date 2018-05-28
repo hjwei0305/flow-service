@@ -586,7 +586,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
             }catch (Exception e){
                 if(executor == null){
-                    executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                    try {
+                        executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                    }catch (Exception e2){
+
+                    }
                     if(executorList!=null && executorList.size()==1){
                         executor = executorList.getJSONObject(0);
                     }
