@@ -25,6 +25,10 @@ public class FlowInvokeParams implements Serializable{
     private String poolTaskCode;//用户池任务，传递任务用户池代码
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
     private List<String> callActivitySonPaths;//调用子流程路径
+    private String orgId;//组织机构id
+    private List<String> orgDimensionCodes;//组织维度代码集合
+    private List<String> positionIds;//岗位代码集合
+    private String jsonParam;//其他json格式参数
 
     public String getId() {
         return id;
@@ -88,5 +92,37 @@ public class FlowInvokeParams implements Serializable{
 
     public void setPoolTaskCode(String poolTaskCode) {
         this.poolTaskCode = poolTaskCode;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
+    public List<String> getOrgDimensionCodes() {
+        return orgDimensionCodes;
+    }
+
+    public void setOrgDimensionCodes(List<String> orgDimensionCodes) {
+        this.orgDimensionCodes = orgDimensionCodes;
+    }
+
+    public List<String> getPositionIds() {
+        return positionIds;
+    }
+
+    public void setPositionIds(List<String> positionIds) {
+        this.positionIds = positionIds;
+    }
+
+    public String getJsonParam() {
+        return jsonParam;
+    }
+
+    public void setJsonParam(String jsonParam) {
+        this.jsonParam = jsonParam;
     }
 }

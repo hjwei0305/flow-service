@@ -306,4 +306,18 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "工作池任务确定执行人并完成任务", notes = "说明")
     public OperateResultWithData<FlowStatus> completePoolTask(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
+
+
+    /**
+     * 工作池任务确定执行人并完成任务
+     * @param businessId 业务单据id
+     * @param taskActDefId 流程节点定义key
+     * @return 操作结果状态
+     */
+    @POST
+    @Path("findTaskByBusinessIdAndActTaskKey")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务", notes = "说明")
+    public FlowTask  findTaskByBusinessIdAndActTaskKey(@QueryParam("businessId")String businessId,@QueryParam("taskActDefId")String taskActDefId);
 }

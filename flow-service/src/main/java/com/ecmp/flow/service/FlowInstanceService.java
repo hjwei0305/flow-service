@@ -206,6 +206,25 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
+    public FlowTask  findTaskByBusinessIdAndActTaskKey(String businessId,String taskActDefId){
+        if(StringUtils.isEmpty(taskActDefId)){
+            return null;
+        }
+        FlowInstance  flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance != null && !flowInstance.isEnded()){
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(taskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
+            if(historicTaskInstance != null ){
+              return   flowTaskDao.findByActTaskId(historicTaskInstance.getId());
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
+
+    }
+
     /**
      * 通过业务单据id获取最新流程实例在线任务id列表
      * @param businessId

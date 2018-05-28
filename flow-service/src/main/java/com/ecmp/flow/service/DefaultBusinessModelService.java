@@ -184,6 +184,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 }
                 //获取执行人
 //                result = proxy.getExecutorsByEmployeeIds(idList);
+                if(idList.isEmpty()){
+                    idList.add("00A0E06A-CAAF-11E7-AA54-0242C0A84202");
+                    idList.add("8A6A1592-4A95-11E7-A011-960F8309DEA7");
+
+                }
                 Map<String,Object> paramsV2 = new HashMap();
                 paramsV2.put("employeeIds",idList);
                 url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();

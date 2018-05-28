@@ -499,14 +499,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
-
-          if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
-            Map<String, Object> v = new HashMap<String, Object>();
-            v.putAll(userMap);
-            if (flowStartVO.getVariables() != null && !flowStartVO.getVariables().isEmpty()) {
-                v.putAll(flowStartVO.getVariables());
+            if(flowStartVO.getVariables()==null || flowStartVO.getVariables().isEmpty()){
+                flowStartVO.setVariables(businessV);
             }
-            v.putAll(businessV);
+          if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
+            Map<String, Object> v = flowStartVO.getVariables();
+            v.putAll(userMap);
             String flowDefKey = flowStartVO.getFlowDefKey();
            this.startByTypeCode(flowDefKey, flowStartVO,flowStartResultVO, v);
         } else {
@@ -582,10 +580,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         nodeInfo.setId(nodeId);
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
         net.sf.json.JSONObject executor=null;
+        net.sf.json.JSONArray executorList=null;//针对两个条件以上的情况
         if(currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)){
             try {
                 executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
             }catch (Exception e){
+                if(executor == null){
+                    executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                    if(executorList!=null && executorList.size()==1){
+                        executor = executorList.getJSONObject(0);
+                    }
+                }
             }
         }
         UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
@@ -669,24 +674,78 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees  = flowCommonUtil.getBasicExecutors(java.util.Arrays.asList(startUserId));
             } else {
                 String selfDefId = executor.get("selfDefId") + "";
-                if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
-
+                if (StringUtils.isNotEmpty(ids)) {
                     if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                        FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
-                        String path = flowExecutorConfig.getUrl();
-                        AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
-                        String appModuleCode = appModule.getCode();
-                        Map<String, String> params = new HashMap<String, String>();
-                        String param = flowExecutorConfig.getParam();
-                        params.put("businessId", flowStartVO.getBusinessKey());
-                        params.put("paramJson", param);
-                        employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-                        }, params);
+                        if(StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)){
+                            FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                            String path = flowExecutorConfig.getUrl();
+                            AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                            String appModuleCode = appModule.getCode();
+                            Map<String, String> params = new HashMap<String, String>();
+                            String param = flowExecutorConfig.getParam();
+                            params.put("businessId", flowStartVO.getBusinessKey());
+                            params.put("paramJson", param);
+                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+                            }, params);
+                        }else{
+                            throw new FlowException("SelfDefinition's selfDefId is null exception!");
+                        }
                     } else {
+
                         employees=flowTaskTool.getExecutors(userType, ids);
                     }
 
                 }
+            }
+            if (employees != null && !employees.isEmpty()) {
+                employeeSet.addAll(employees);
+                nodeInfo.setExecutorSet(employeeSet);
+            }
+        }else if(executorList!=null && executorList.size()>1){
+            Set<Executor> employeeSet = new HashSet<Executor>();
+            List<Executor> employees = null;
+            String selfDefId = null;
+            List<String> orgDimensionCodes = null;//组织维度代码集合
+            List<String> positionIds = null;//岗位代码集合
+            for(Object executorObject:executorList.toArray()){
+                JSONObject executorTemp = (JSONObject) executorObject;
+                String userType = executorTemp.get("userType") + "";
+                String ids = executorTemp.get("ids") + "";
+//                nodeInfo.setUiUserType(userType);
+                List<String> tempList = null;
+                if(StringUtils.isNotEmpty(ids)){
+                    String[] idsShuZhu = ids.split(",");
+                    tempList = java.util.Arrays.asList(idsShuZhu);
+                }
+                if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                    selfDefId = executorTemp.get("selfDefOfOrgAndSelId") + "";
+                }else if("Position".equalsIgnoreCase(userType)){
+                    positionIds = tempList;
+                }else if("OrganizationDimension".equalsIgnoreCase(userType)){
+                    orgDimensionCodes = tempList;
+                }
+            }
+            if(StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)){
+                FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                String path = flowExecutorConfig.getUrl();
+                AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                String appModuleCode = appModule.getApiBaseAddress();
+                String param = flowExecutorConfig.getParam();
+                FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                flowInvokeParams.setId(flowStartVO.getBusinessKey());
+                flowInvokeParams.setOrgId(""+flowStartVO.getVariables().get("orgId"));
+                flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
+                flowInvokeParams.setPositionIds(positionIds);
+                flowInvokeParams.setJsonParam(param);
+                employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+                }, flowInvokeParams);
+            }else{
+              String path =  Constants.getBasicPositionGetExecutorsUrl();
+                Map<String,Object> params = new HashMap();
+                params.put("orgId",flowStartVO.getVariables().get("orgId"));
+                params.put("orgDimIds",orgDimensionCodes);
+                params.put("positionIds",positionIds);
+                employees=ApiClient.getEntityViaProxy(path,new GenericType<List<Executor>>() {},params);
             }
             if (employees != null && !employees.isEmpty()) {
                 employeeSet.addAll(employees);
