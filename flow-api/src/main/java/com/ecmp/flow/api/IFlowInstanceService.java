@@ -8,6 +8,7 @@ import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -309,7 +310,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
-     * 工作池任务确定执行人并完成任务
+     * 通过业务单据id,流程节点定义key获取任务
      * @param businessId 业务单据id
      * @param taskActDefId 流程节点定义key
      * @return 操作结果状态
@@ -320,4 +321,17 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务", notes = "说明")
     public FlowTask  findTaskByBusinessIdAndActTaskKey(@QueryParam("businessId")String businessId,@QueryParam("taskActDefId")String taskActDefId);
+
+    /**
+     * 通过业务单据id,流程节点定义key获取任务
+     * @param businessId 业务单据id
+     * @param taskActDefId 流程节点定义key
+     * @return 操作结果状态
+     */
+    @POST
+    @Path("findTaskVOByBusinessIdAndActTaskKey")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务VO对象", notes = "说明")
+    public FlowTaskVO findTaskVOByBusinessIdAndActTaskKey(@QueryParam("businessId")String businessId, @QueryParam("taskActDefId")String taskActDefId);
 }

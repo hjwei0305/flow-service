@@ -19,6 +19,7 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
+import com.ecmp.flow.vo.FlowTaskVO;
 import com.ecmp.flow.vo.ProcessTrackVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 
@@ -222,7 +224,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }else{
             return null;
         }
+    }
 
+    public FlowTaskVO findTaskVOByBusinessIdAndActTaskKey(String businessId, String taskActDefId){
+       FlowTask flowTask = this.findTaskByBusinessIdAndActTaskKey(businessId,taskActDefId);
+       FlowTaskVO flowTaskVO = null;
+       if(flowTask!=null){
+           flowTaskVO = new FlowTaskVO();
+           flowTaskVO.setId(flowTask.getId());
+           flowTaskVO.setName(flowTask.getTaskName());
+       }
+       return flowTaskVO;
     }
 
     /**
