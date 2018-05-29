@@ -12,6 +12,7 @@ import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -1245,25 +1246,53 @@ public class FlowTaskTool {
                 flowTask.setCanMobile(true);
             }
             if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){//能否批量审批
-                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                String userType = (String) executor.get("userType");
-                if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
-                {
+//                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                net.sf.json.JSONObject executor=null;
+                net.sf.json.JSONArray executorList=null;//针对两个条件以上的情况
+                if(currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)){
+                    try {
+                        executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
+                    }catch (Exception e){
+                        if(executor == null){
+                            try {
+                                executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                            }catch (Exception e2){
+                                e2.printStackTrace();
+                            }
+                            if(executorList!=null && executorList.size()==1){
+                                executor = executorList.getJSONObject(0);
+                            }
+                        }
+                    }
+                }
+                if (executor != null && !executor.isEmpty()) {
+                    String userType = (String) executor.get("userType");
+                    if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
+                    {
+                        if(mustCommit==null || !mustCommit){
+                            if(checkNextNodesCanAprool(flowTask,null)){
+                                flowTask.setCanBatchApproval(true);
+                            }
+                        }
+                    }
+                }else if(executorList!=null && executorList.size()>1){
+                    Boolean canBatchApproval = false;
+                    for(Object executorObject:executorList.toArray()){
+                        JSONObject executorTemp = (JSONObject) executorObject;
+                        String userType = executorTemp.get("userType") + "";
+                        if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                            canBatchApproval=false;
+                            break;
+                        }
+                    }
                     if(mustCommit==null || !mustCommit){
                         if(checkNextNodesCanAprool(flowTask,null)){
-                            flowTask.setCanBatchApproval(true);
+                            flowTask.setCanBatchApproval(canBatchApproval);
                         }
-//                        //判断下一步如果为人工网关，不允许批量审批
-//                        boolean canBatchApproval = false;
-//                        if(!checkManualExclusiveGateway(flowTask)) {
-//                            flowTask.setCanBatchApproval(true);
-//                        }
-//                        //判断下一步有子流程
-//
-//                        //判断下一步包含任务是否只包含岗位、岗位类别、启动人
-
-                     }
+                    }
                 }
+
+
             }
         }
 

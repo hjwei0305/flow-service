@@ -589,7 +589,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     try {
                         executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
                     }catch (Exception e2){
-
+                           e2.printStackTrace();
                     }
                     if(executorList!=null && executorList.size()==1){
                         executor = executorList.getJSONObject(0);
@@ -695,10 +695,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }
                     } else {
-
                         employees=flowTaskTool.getExecutors(userType, ids);
                     }
-
                 }
             }
             if (employees != null && !employees.isEmpty()) {
@@ -749,6 +747,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 params.put("orgId",flowStartVO.getVariables().get("orgId"));
                 params.put("orgDimIds",orgDimensionCodes);
                 params.put("positionIds",positionIds);
+//                params.put("orgId","0");
+//                params.put("orgDimIds",java.util.Arrays.asList("1"));
+//                params.put("positionIds",java.util.Arrays.asList("1"));
                 employees=ApiClient.getEntityViaProxy(path,new GenericType<List<Executor>>() {},params);
             }
             if (employees != null && !employees.isEmpty()) {
