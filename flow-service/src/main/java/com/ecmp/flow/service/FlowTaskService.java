@@ -743,10 +743,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
                     net.sf.json.JSONObject executor = null;
-                    try{
-                        executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                    }catch (Exception e){
-                        logger.error(e.getMessage());
+                    net.sf.json.JSONArray executorList=null;//针对两个条件以上的情况
+                    if(currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)){
+                        try {
+                            executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
+                        }catch (Exception e){
+                            if(executor == null){
+                                try {
+                                    executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                                }catch (Exception e2){
+                                    e2.printStackTrace();
+                                }
+                                if(executorList!=null && executorList.size()==1){
+                                    executor = executorList.getJSONObject(0);
+                                }
+                            }
+                        }
                     }
 
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
@@ -809,6 +821,67 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     employees=flowTaskTool.getExecutors(userType, ids);
                                 }
                             }
+                        }
+                        if (employees != null && !employees.isEmpty()) {
+                            employeeSet.addAll(employees);
+                            nodeInfo.setExecutorSet(employeeSet);
+                        }
+                    }else if(executorList!=null && executorList.size()>1){
+                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        List<Executor> employees = null;
+                        String selfDefId = null;
+                        List<String> orgDimensionCodes = null;//组织维度代码集合
+                        List<String> positionIds = null;//岗位代码集合
+                        for(Object executorObject:executorList.toArray()){
+                            JSONObject executorTemp = (JSONObject) executorObject;
+                            String userType = executorTemp.get("userType") + "";
+                            String ids = executorTemp.get("ids") + "";
+//                nodeInfo.setUiUserType(userType);
+                            List<String> tempList = null;
+                            if(StringUtils.isNotEmpty(ids)){
+                                String[] idsShuZhu = ids.split(",");
+                                tempList = java.util.Arrays.asList(idsShuZhu);
+                            }
+                            if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                                selfDefId = executorTemp.get("selfDefOfOrgAndSelId") + "";
+                            }else if("Position".equalsIgnoreCase(userType)){
+                                positionIds = tempList;
+                            }else if("OrganizationDimension".equalsIgnoreCase(userType)){
+                                orgDimensionCodes = tempList;
+                            }
+                        }
+                        // 取得当前任务
+                        HistoricTaskInstance currTask = historyService
+                                .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                                .singleResult();
+                        String executionId = currTask.getExecutionId();
+                        Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+                        String currentOrgId = processVariables.get("orgId").getValue()+"";
+                        if(StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)){
+                            FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                            String path = flowExecutorConfig.getUrl();
+                            AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                            String appModuleCode = appModule.getApiBaseAddress();
+                            String param = flowExecutorConfig.getParam();
+                            FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                            flowInvokeParams.setId(flowTask.getFlowInstance().getBusinessId());
+
+                            flowInvokeParams.setOrgId(currentOrgId);
+                            flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
+                            flowInvokeParams.setPositionIds(positionIds);
+                            flowInvokeParams.setJsonParam(param);
+                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+                            }, flowInvokeParams);
+                        }else{
+                            String path =  Constants.getBasicPositionGetExecutorsUrl();
+                            Map<String,Object> params = new HashMap();
+                            params.put("orgId",currentOrgId);
+                            params.put("orgDimIds",orgDimensionCodes);
+                            params.put("positionIds",positionIds);
+//                params.put("orgId","0");
+//                params.put("orgDimIds",java.util.Arrays.asList("1"));
+//                params.put("positionIds",java.util.Arrays.asList("1"));
+                            employees=ApiClient.getEntityViaProxy(path,new GenericType<List<Executor>>() {},params);
                         }
                         if (employees != null && !employees.isEmpty()) {
                             employeeSet.addAll(employees);
