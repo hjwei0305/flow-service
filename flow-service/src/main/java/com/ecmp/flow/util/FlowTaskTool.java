@@ -1996,7 +1996,11 @@ public class FlowTaskTool {
             flowHistory.setActDurationInMillis(actDurationInMillis);
         }
 
-        Long loadOverTime = (Long)variables.get("loadOverTime");
+        Long loadOverTime = null;
+        try{
+            loadOverTime = (Long)variables.get("loadOverTime");
+        }catch (Exception e){
+        }
         Long actWorkTimeInMillis=null;
         if(loadOverTime!=null){
             actWorkTimeInMillis = System.currentTimeMillis()-loadOverTime;
