@@ -1383,4 +1383,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
+
+    public OperateResult taskTrustToReturn(String taskId) throws Exception{
+        OperateResult result =  null;
+        FlowTask flowTask = flowTaskDao.findOne(taskId);
+        if(flowTask!=null){
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+            FlowTask  oldFlowTask=flowTaskDao.findOne(flowTask.getTrustOwnerTaskId());
+            if(oldFlowTask!=null){
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,null,null);
+                flowHistory.setDepict("【办理完成返回委托方】");
+                oldFlowTask.setTrustState(3);  //委托完成
+                oldFlowTask.setDepict(oldFlowTask.getDepict()+":委托完成");
+                oldFlowTask.setPreId(flowHistory.getId());
+                flowHistoryDao.save(flowHistory);
+                flowTaskDao.save(oldFlowTask);
+                flowTaskDao.delete(flowTask);
+                result = OperateResult.operationSuccess();
+            }else{
+                result = OperateResult.operationFailure("10038");//执行人查询结果为空
+            }
+        }else {
+            result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
+        }
+        return result;
+    }
+
 }
