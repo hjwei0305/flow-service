@@ -1384,6 +1384,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+
+    public OperateResult counterSignAdd(String flowInstanceId,String taskActKey,String userId) throws Exception{
+        OperateResult result =  null;
+        return result;
+    }
+
     public OperateResult taskTrustToReturn(String taskId) throws Exception{
         OperateResult result =  null;
         FlowTask flowTask = flowTaskDao.findOne(taskId);
@@ -1409,4 +1415,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+
+    public OperateResult counterSignDel(String taskId) throws Exception{
+        OperateResult result =  null;
+        return result;
+    }
+
+    public List<CanAddOrDelNodeInfo> getAllCanAddOrDelNodeInfoList(String businessModelId) throws Exception{
+
+        return null;
+    }
 }
+
