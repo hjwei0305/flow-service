@@ -445,9 +445,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
         List<FlowTask> newFlowTaskList=new ArrayList<FlowTask>();
         for(FlowTask bean:flowTaskList){
-           if(bean.getTrustState()!=1){
-               newFlowTaskList.add(bean);
-           }
+            if(bean.getTrustState()==null){
+                newFlowTaskList.add(bean);
+            }else{
+                if(bean.getTrustState()!=1){
+                    newFlowTaskList.add(bean);
+                }
+            }
         }
         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
         pv.setFlowHistoryList(flowHistoryList);
