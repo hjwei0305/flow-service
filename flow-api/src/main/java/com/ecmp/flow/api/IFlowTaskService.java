@@ -433,7 +433,37 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "将任务委托给指定用户",notes = "测试")
     public OperateResult taskTrustToDo(@QueryParam("taskId") String taskId,@QueryParam("userId") String userId) throws Exception;
 
+    /**
+     * 会签任务加签
+     * @param flowInstanceId 流程实例ID
+     * @param  taskActKey 任务key
+     * @param  userId 用户id
+     * @return 操作结果
+     */
+    @POST
+    @Path("counterSignAdd")
+    @ApiOperation(value = "会签加签",notes = "测试")
+    public OperateResult counterSignAdd(@QueryParam("flowInstanceId") String flowInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
 
+
+    /**
+     * 会签任务减签
+     * @param taskId 任务ID
+     * @return 操作结果
+     */
+    @POST
+    @Path("counterSignDel")
+    @ApiOperation(value = "会签减签",notes = "测试")
+    public OperateResult counterSignDel(@QueryParam("taskId") String taskId) throws Exception;
+
+    /**
+     * @param businessModelId 业务实体代码，为空查询全部
+     * @return 操作结果
+     */
+    @GET
+    @Path("getAllCanAddOrDelNodeInfoList")
+    @ApiOperation(value = "获取当前用户所有可执行会签减签的操作节点列表",notes = "测试")
+    public List<CanAddOrDelNodeInfo> getAllCanAddOrDelNodeInfoList(@QueryParam("businessModelId") String businessModelId) throws Exception;
 
     /**
      * 委托任务完成后返回给委托人

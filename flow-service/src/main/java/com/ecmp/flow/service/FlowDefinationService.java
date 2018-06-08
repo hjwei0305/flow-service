@@ -15,6 +15,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONArray;
@@ -486,6 +487,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
+//        System.setProperty("http.proxyHost", "localhost");
+//        System.setProperty("https.proxyHost", "localhost");
+//        System.setProperty("http.proxyPort", "8888");
+//        System.setProperty("https.proxyPort", "8888");
         if(checkFlowInstanceActivate(flowStartVO.getBusinessKey())){
             String message = ContextUtil.getMessage("10051",flowStartVO.getBusinessKey());
             return  OperateResultWithData.operationFailure(message);
@@ -578,6 +583,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private List<NodeInfo> initNodesInfo(List<NodeInfo> result, FlowStartVO flowStartVO, Definition definition, String nodeId) {
         NodeInfo nodeInfo = new NodeInfo();
         nodeInfo.setId(nodeId);
+
         net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
         net.sf.json.JSONObject executor=null;
         net.sf.json.JSONArray executorList=null;//针对两个条件以上的情况
@@ -684,13 +690,14 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                             String path = flowExecutorConfig.getUrl();
                             AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
-                            String appModuleCode = appModule.getCode();
-                            Map<String, String> params = new HashMap<String, String>();
+                            String appModuleCode = appModule.getApiBaseAddress();
                             String param = flowExecutorConfig.getParam();
-                            params.put("businessId", flowStartVO.getBusinessKey());
-                            params.put("paramJson", param);
+                            FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                            flowInvokeParams.setId(flowStartVO.getBusinessKey());
+                            flowInvokeParams.setOrgId(""+flowStartVO.getVariables().get("orgId"));
+                            flowInvokeParams.setJsonParam(param);
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-                            }, params);
+                            }, flowInvokeParams);
                         }else{
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }

@@ -320,7 +320,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         String changeText = "newServiceCall_failure";
         entity.setWorkCaption(changeText+":"+entity.getWorkCaption());
         defaultBusinessModelDao.save(entity);
-        result.setSuccess(false);
+        result.setSuccess(true);
         result.setMessage("测试业务异常信息:"+new Date());
         return result;
     }
