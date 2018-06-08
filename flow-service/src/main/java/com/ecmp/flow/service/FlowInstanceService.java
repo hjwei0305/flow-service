@@ -443,9 +443,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         ProcessTrackVO pv = new ProcessTrackVO();
         pv.setFlowInstance(flowInstance);
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        List<FlowTask> newFlowTaskList=new ArrayList<FlowTask>();
+        for(FlowTask bean:flowTaskList){
+           if(bean.getTrustState()!=1){
+               newFlowTaskList.add(bean);
+           }
+        }
         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
         pv.setFlowHistoryList(flowHistoryList);
-        pv.setFlowTaskList(flowTaskList);
+        pv.setFlowTaskList(newFlowTaskList);
 
         FlowInstance parent = flowInstance.getParent();
         ProcessTrackVO pProcessTrackVO = null;
