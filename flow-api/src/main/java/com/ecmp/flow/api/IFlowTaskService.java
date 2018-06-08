@@ -473,6 +473,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("taskTrustToReturn")
     @ApiOperation(value = "委托任务完成后返回给委托人",notes = "测试")
-    public OperateResult taskTrustToReturn(@QueryParam("taskId") String taskId) throws Exception;
+    public OperateResult taskTrustToReturn(@QueryParam("taskId") String taskId,@QueryParam("opinion") String opinion) throws Exception;
 
 }

@@ -1390,7 +1390,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    public OperateResult taskTrustToReturn(String taskId) throws Exception{
+    public OperateResult taskTrustToReturn(String taskId,String opinion) throws Exception{
         OperateResult result =  null;
         FlowTask flowTask = flowTaskDao.findOne(taskId);
         if(flowTask!=null){
@@ -1398,9 +1398,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask  oldFlowTask=flowTaskDao.findOne(flowTask.getTrustOwnerTaskId());
             if(oldFlowTask!=null){
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,null,null);
-                flowHistory.setDepict("【办理完成返回委托方】");
+                flowHistory.setDepict("【办理完成返回委托方】"+opinion);
                 oldFlowTask.setTrustState(3);  //委托完成
-                oldFlowTask.setDepict(oldFlowTask.getDepict()+":委托完成");
+                oldFlowTask.setDepict("【委托完成】"+opinion);
                 oldFlowTask.setPreId(flowHistory.getId());
                 flowHistoryDao.save(flowHistory);
                 flowTaskDao.save(oldFlowTask);
