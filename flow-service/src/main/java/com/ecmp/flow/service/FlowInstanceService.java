@@ -875,17 +875,25 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 //                String apiBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
-                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
-                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
-//                String webBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                if(StringUtils.isNotEmpty(apiBaseAddress)){
+                    flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
+                   String[]  tempApiBaseAddress = apiBaseAddress.split("/");
+                   if(tempApiBaseAddress!=null && tempApiBaseAddress.length>0){
+                       apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length-1];
+                       flowInstance.setApiBaseAddress(apiBaseAddress);
+                   }
+                }
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                 String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
-                flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
-                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
-                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                flowInstance.setApiBaseAddress(apiBaseAddress);
-                flowInstance.setWebBaseAddress(webBaseAddress);
+                if(StringUtils.isNotEmpty(webBaseAddress)){
+                    flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
+                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
+                        flowInstance.setWebBaseAddress(webBaseAddress);
+                    }
+                }
+
             }
         }
         return result;
