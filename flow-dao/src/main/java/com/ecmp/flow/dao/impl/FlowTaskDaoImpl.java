@@ -121,17 +121,17 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                    flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
                    flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
                    if(workPageUrl!=null){
-                       flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
-                       flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+                       flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute()+"/"+workPageUrl.getUrl());
+                       flowTask.setTaskFormUrlXiangDui("/"+webBaseAddress+"/"+workPageUrl.getUrl());
                        String appModuleId = workPageUrl.getAppModuleId();
                        AppModule appModule = appModuleDao.findOne(appModuleId);
                        if(appModule!=flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()){
                            webBaseAddressConfig = appModule.getWebBaseAddress();
                            webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
-                           flowTask.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
+                           flowTask.setTaskFormUrl(webBaseAddress+"/"+workPageUrl.getUrl());
                            webBaseAddress =  webBaseAddress.substring(webBaseAddress.indexOf("://")+3);
                            webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                           flowTask.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
+                           flowTask.setTaskFormUrlXiangDui("/"+webBaseAddress+"/"+workPageUrl.getUrl());
                        }
                    }
                }
