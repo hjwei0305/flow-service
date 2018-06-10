@@ -95,7 +95,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                        String[]  tempApiBaseAddress = apiBaseAddress.split("/");
                        if(tempApiBaseAddress!=null && tempApiBaseAddress.length>0){
                            apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length-1];
-                           flowTask.setApiBaseAddress(apiBaseAddress);
+                           flowTask.setApiBaseAddress("/"+apiBaseAddress+"/");
                        }
                    }
                    String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
@@ -106,7 +106,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                        String[]  tempWebBaseAddress = webBaseAddress.split("/");
                        if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
                            webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
-                           flowTask.setWebBaseAddress(webBaseAddress);
+                           flowTask.setWebBaseAddress("/"+webBaseAddress+"/");
                        }
                    }
                    WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
