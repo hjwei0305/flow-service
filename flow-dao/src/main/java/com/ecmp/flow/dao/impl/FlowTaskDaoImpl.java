@@ -90,16 +90,25 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                for(FlowTask flowTask:result){
                    String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                    String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                   flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
-                   apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
-                   apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                   if(StringUtils.isNotEmpty(apiBaseAddress)){
+                       flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
+                       String[]  tempApiBaseAddress = apiBaseAddress.split("/");
+                       if(tempApiBaseAddress!=null && tempApiBaseAddress.length>0){
+                           apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length-1];
+                           flowTask.setApiBaseAddress(apiBaseAddress);
+                       }
+                   }
                    String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                    String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
-                   flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-                   webBaseAddress =  webBaseAddress.substring(webBaseAddress.indexOf("://")+3);
-                   webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                   flowTask.setApiBaseAddress(apiBaseAddress);
-                   flowTask.setWebBaseAddress(webBaseAddress);
+
+                   if(StringUtils.isNotEmpty(webBaseAddress)){
+                       flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+                       String[]  tempWebBaseAddress = webBaseAddress.split("/");
+                       if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
+                           webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
+                           flowTask.setWebBaseAddress(webBaseAddress);
+                       }
+                   }
                    WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
                    String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
                    String businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();

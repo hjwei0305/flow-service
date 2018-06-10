@@ -8,13 +8,14 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.ws.rs.core.GenericType;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -31,8 +32,16 @@ import java.util.Map;
 //@Component
 public class FlowCommonUtil implements Serializable {
 
+    public FlowCommonUtil(){
+        clearAllCache();
+    }
+
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
+
+    //注入缓存模板
+    @Autowired(required = false)
+    protected RedisTemplate<String, Object> redisTemplate;
 
     @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
     public Definition flowDefinition(FlowDefVersion flowDefVersion ){
@@ -68,5 +77,25 @@ public class FlowCommonUtil implements Serializable {
     public FlowDefVersion getLastFlowDefVersion(String versionId ){
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
         return flowDefVersion;
+    }
+
+    private void clearAllCache(){
+        clearCache( "FLowGetDefinitionJSON_*");
+        clearCache( "FLowGetBasicExecutor_*");
+        clearCache( "FLowGetBasicExecutors*");
+        clearCache( "FLowGetLastFlowDefVersion_*");
+        clearCache( "FLowOrgParentCodes_*");
+
+    }
+
+
+    private void clearCache(String pattern){
+//        String pattern = "FLowGetLastFlowDefVersion_*";
+        if(redisTemplate!=null){
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys!=null&&!keys.isEmpty()){
+                redisTemplate.delete(keys);
+            }
+        }
     }
 }
