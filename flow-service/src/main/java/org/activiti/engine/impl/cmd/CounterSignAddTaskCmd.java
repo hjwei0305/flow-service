@@ -54,11 +54,10 @@ public class CounterSignAddTaskCmd implements Command<Void>, Serializable {
 	
 	public Void execute(CommandContext commandContext) {
 		ExecutionEntity parent = executionEntity.getParent();
-		ExecutionEntity executionEntityNew = executionEntity.createExecution();
-		if(parent != null){
-			executionEntityNew.setParent(parent);
-			executionEntityNew.setParentId(parent.getId());
-		}
+		ExecutionEntity executionEntityNew = executionEntity.createExecution(parent);
+		executionEntityNew.setParent(parent);
+		executionEntityNew.setParentId(parent.getId());
+
 		List<IdentityLinkEntity> oldIdentityLinkEntityList = executionEntity.getIdentityLinks();
 		if(oldIdentityLinkEntityList!=null && !oldIdentityLinkEntityList.isEmpty()){
 			IdentityLinkEntity  oldIdentityLinkEntity =  oldIdentityLinkEntityList.get(0);
@@ -81,16 +80,17 @@ public class CounterSignAddTaskCmd implements Command<Void>, Serializable {
 		newTask.setCreateTime(new Date());
 
 		newTask.setId(UUIDGenerator.getUUID());
-		newTask.setExecutionId(executionEntity.getId());
+		newTask.setExecutionId(executionEntityNew.getId());
 		newTask.setProcessDefinitionId(currTask.getProcessDefinitionId());
 		newTask.setProcessInstanceId(currTask.getProcessInstanceId());
 		newTask.setVariables(currTask.getProcessVariables());
 		newTask.setTaskDefinitionKey(currTask.getTaskDefinitionKey());
 		this.task = newTask;
 //    if (task.getRevision()==0) {
-    	 executionEntity.setActive(true);
-    	 executionEntity.update();
-         task.insert(executionEntity);
+		executionEntityNew.setActive(true);
+		executionEntityNew.setScope(false);
+//		executionEntityNew.update();
+         task.insert(executionEntityNew);
 
       
       // Need to to be done here, we can't make it generic for standalone tasks 

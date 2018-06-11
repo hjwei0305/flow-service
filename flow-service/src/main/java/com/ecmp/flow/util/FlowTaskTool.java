@@ -1298,6 +1298,63 @@ public class FlowTaskTool {
 
     }
 
+
+    /**
+     * 将新的流程任务初始化
+     *
+     * @param flowInstance
+     * @param actTaskDefKeyCurrent
+     */
+    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId) {
+        List<Task> taskList = null;
+        String actProcessInstanceId = flowInstance.getActInstanceId();
+        if(StringUtils.isNotEmpty(actTaskDefKeyCurrent)){
+            taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).taskDefinitionKey(actTaskDefKeyCurrent).active().list();
+        }
+
+        if (taskList != null && !taskList.isEmpty()) {
+            String flowName = null;
+            Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
+            flowName = definition.getProcess().getName();
+            for (Task task : taskList) {
+                String actTaskDefKey = task.getTaskDefinitionKey();
+                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
+                if(tempFlowTask!=null){
+                    continue;
+                }
+                if(StringUtils.isNotEmpty(userId)) {
+                    Executor executor = flowCommonUtil.getBasicExecutor(userId);
+                    if (executor != null) {
+                        FlowTask flowTask = new FlowTask();
+                        flowTask.setTaskJsonDef(currentNode.toString());
+                        flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
+                        flowTask.setActTaskDefKey(actTaskDefKey);
+                        flowTask.setFlowName(flowName);
+                        flowTask.setTaskName(task.getName());
+                        flowTask.setActTaskId(task.getId());
+                        flowTask.setOwnerAccount(executor.getCode());
+                        flowTask.setOwnerName(executor.getName());
+                        flowTask.setExecutorAccount(executor.getCode());
+                        flowTask.setExecutorId(executor.getId());
+                        flowTask.setExecutorName(executor.getName());
+                        flowTask.setActType("candidate");
+                        if (StringUtils.isEmpty(task.getDescription())) {
+                            flowTask.setDepict("加签的任务");
+                        } else {
+                            flowTask.setDepict(task.getDescription());
+                        }
+                        flowTask.setTaskStatus(TaskStatus.INIT.toString());
+                        flowTask.setPriority(0);
+                        flowTask.setFlowInstance(flowInstance);
+                        taskPropertityInit(flowTask, null, currentNode);
+                        flowTaskDao.save(flowTask);
+                    }
+                }
+            }
+        }
+
+    }
     /**
      * 将新的流程任务初始化
      *
@@ -1357,6 +1414,7 @@ public class FlowTaskTool {
                         Executor executor = flowCommonUtil.getBasicExecutor(userId);
                         if(executor!=null){
                             FlowTask flowTask = new FlowTask();
+                            flowTask.setTenantCode(ContextUtil.getTenantCode());
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                             flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1397,6 +1455,7 @@ public class FlowTaskTool {
                         }
                         if("poolTask".equalsIgnoreCase(nodeType) && executor==null){
                             FlowTask flowTask = new FlowTask();
+                            flowTask.setTenantCode(ContextUtil.getTenantCode());
                             Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(actProcessInstanceId);
                             String userId = null;
                             if(processVariables.get(Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey)!=null){
@@ -1437,6 +1496,7 @@ public class FlowTaskTool {
 
                             if (executor != null ) {
                                 FlowTask flowTask = new FlowTask();
+                                flowTask.setTenantCode(ContextUtil.getTenantCode());
                                 flowTask.setTaskJsonDef(currentNode.toString());
                                 flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                                 flowTask.setActTaskDefKey(actTaskDefKey);

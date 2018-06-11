@@ -263,15 +263,19 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
   public ExecutionEntity() {
   }
 
-  /** creates a new execution. properties processDefinition, processInstance and activity will be initialized. */  
-  public ExecutionEntity createExecution() {
+  /**
+   * 自定义添加，会签创建新任务
+   * @param parent
+   * @return
+   */
+  public ExecutionEntity createExecution(ExecutionEntity parent) {
     // create the new child execution
     ExecutionEntity createdExecution = newExecution();
 
     // manage the bidirectional parent-child relation
     ensureExecutionsInitialized();
     executions.add(createdExecution); 
-    createdExecution.setParent(this);
+    createdExecution.setParent(parent);
     
     // initialize the new execution
     createdExecution.setProcessDefinition(getProcessDefinition());
@@ -285,6 +289,35 @@ public class ExecutionEntity extends VariableScopeImpl implements ActivityExecut
     if (Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
       Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
         ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, createdExecution));
+      Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+              ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_INITIALIZED, createdExecution));
+    }
+
+    return createdExecution;
+  }
+
+  /** creates a new execution. properties processDefinition, processInstance and activity will be initialized. */
+  public ExecutionEntity createExecution() {
+    // create the new child execution
+    ExecutionEntity createdExecution = newExecution();
+
+    // manage the bidirectional parent-child relation
+    ensureExecutionsInitialized();
+    executions.add(createdExecution);
+    createdExecution.setParent(this);
+
+    // initialize the new execution
+    createdExecution.setProcessDefinition(getProcessDefinition());
+    createdExecution.setProcessInstance(getProcessInstance());
+    createdExecution.setActivity(getActivity());
+
+    if (log.isDebugEnabled()) {
+      log.debug("Child execution {} created with parent ", createdExecution, this);
+    }
+
+    if (Context.getProcessEngineConfiguration() != null && Context.getProcessEngineConfiguration().getEventDispatcher().isEnabled()) {
+      Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
+              ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_CREATED, createdExecution));
       Context.getProcessEngineConfiguration().getEventDispatcher().dispatchEvent(
               ActivitiEventBuilder.createEntityEvent(ActivitiEventType.ENTITY_INITIALIZED, createdExecution));
     }

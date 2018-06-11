@@ -151,6 +151,7 @@ public class StartEventCompleteListener implements ExecutionListener {
 //        FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
 //        if(flowInstance==null){
             FlowInstance    flowInstance = new FlowInstance();
+            flowInstance.setTenantCode(ContextUtil.getTenantCode());
             flowInstance.setBusinessId(processInstance.getBusinessKey());
             String workCaption = null;
             if(variables.containsKey(Constants.WORK_CAPTION)){

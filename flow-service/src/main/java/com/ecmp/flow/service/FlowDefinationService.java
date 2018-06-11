@@ -127,10 +127,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         } else {
             preUpdate(entity);
         }
+        entity.setTenantCode(ContextUtil.getTenantCode());
         flowDefinationDao.save(entity);
         logger.debug("Saved FlowDefination id is {}", entity.getId());
         if (flowDefVersion != null) {
             flowDefVersion.setFlowDefination(entity);
+            flowDefVersion.setTenantCode(ContextUtil.getTenantCode());
             flowDefVersionDao.save(flowDefVersion);
             logger.debug("Saved FlowDefVersion id is {}", entity.getId());
             entity.setLastVersionId(flowDefVersion.getId());

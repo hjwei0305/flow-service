@@ -38,7 +38,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AppModule extends BaseAuditableEntity
-        implements ICodeUnique, IRank ,ITenant {
+        implements ICodeUnique, IRank  {
 
     /**
      * 名称
@@ -132,12 +132,12 @@ public class AppModule extends BaseAuditableEntity
         this.apiBaseAddress = apiBaseAddress;
     }
 
-    @Override
+//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-    @Override
+//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }

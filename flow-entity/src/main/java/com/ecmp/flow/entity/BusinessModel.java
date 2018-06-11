@@ -30,7 +30,7 @@ import java.util.Set;
 @DynamicUpdate
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
+public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
 
     /**
      * 乐观锁-版本
@@ -347,12 +347,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity impl
     }
 
 
-    @Override
+//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-    @Override
+//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }

@@ -34,7 +34,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
+public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本
@@ -203,12 +203,12 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity implement
         this.businessDetailServiceUrl = businessDetailServiceUrl;
     }
 
-    @Override
+//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-    @Override
+//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }
