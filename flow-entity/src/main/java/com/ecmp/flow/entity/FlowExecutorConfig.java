@@ -27,7 +27,7 @@ import javax.persistence.*;
 @Entity(name = "flow_executor_config")
 @DynamicInsert
 @DynamicUpdate
-public class FlowExecutorConfig extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
+public class FlowExecutorConfig extends com.ecmp.core.entity.BaseAuditableEntity {
 
     /**
      * 乐观锁-版本
@@ -159,12 +159,12 @@ public class FlowExecutorConfig extends com.ecmp.core.entity.BaseAuditableEntity
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    @Override
+//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-    @Override
+//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }

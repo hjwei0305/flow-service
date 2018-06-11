@@ -29,7 +29,7 @@ import javax.persistence.Version;
 @Entity(name = "business_model_selfDefEmployee")
 @DynamicInsert
 @DynamicUpdate
-public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
+public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableEntity  {
 
     /**
      * 乐观锁-版本
@@ -63,12 +63,12 @@ public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableE
     private String tenantCode;
 
 
-    @Override
+//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-    @Override
+//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }
