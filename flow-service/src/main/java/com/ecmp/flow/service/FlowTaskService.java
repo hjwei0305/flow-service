@@ -1412,20 +1412,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
 //                        .findActivity(currTask.getTaskDefinitionKey());
                 ExecutionEntity executionEntity = (ExecutionEntity) execution;
-
-                taskService.counterSignAddTask(userId,executionEntity,currTask);
-
-
-                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+                String  processInstanceId = currTask.getProcessInstanceId();
+                Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(processInstanceId);
 //                //完成会签的次数
 //                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 //总循环次数
                 Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
                 Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
 
-                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
-                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
-
+                runtimeService.setVariable(processInstanceId,"nrOfInstances",(instanceOfNumbers+1));
+                //判断是否是并行会签
+                runtimeService.setVariable(processInstanceId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
+                String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
+                List userList = (List) processVariables.get(userListDesc).getValue();;
+                userList.add(userId);
+                runtimeService.setVariable(processInstanceId,userListDesc,userList);
+                taskService.counterSignAddTask(userId,executionEntity,currTask);
                 //初始化新任务,preTask先为null，后面修改
                 flowTaskTool.initTask(flowInstance, null,currTask.getTaskDefinitionKey());
             }

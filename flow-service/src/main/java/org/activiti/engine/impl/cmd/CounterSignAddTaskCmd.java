@@ -74,7 +74,7 @@ public class CounterSignAddTaskCmd implements Command<Void>, Serializable {
 		// newTask.setLocalizedDescription(currTask.getl);
 		// newTask.setLocalizedName(currTask.get);
 		newTask.setName(currTask.getName());
-		newTask.setOwner(userId);
+//		newTask.setOwner(userId);
 		newTask.setParentTaskId(currTask.getParentTaskId());
 		newTask.setPriority(currTask.getPriority());
 		newTask.setTenantId(currTask.getTenantId());
