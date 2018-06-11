@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.core.entity.ITenant;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -27,7 +28,7 @@ import java.util.Set;
 @Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable {
+public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable ,ITenant {
 
     /**
      * 乐观锁-版本
@@ -94,6 +95,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "def_json",columnDefinition="CLOB")
     private String defJson;
+
+
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
 //    /**
 //     * 流程BPMN文本
@@ -468,5 +476,16 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setEndBeforeCallServiceUrlName(String endBeforeCallServiceUrlName) {
         this.endBeforeCallServiceUrlName = endBeforeCallServiceUrlName;
+    }
+
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 }

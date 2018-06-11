@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.ecmp.core.entity.ITenant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -30,7 +31,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "flow_instance", catalog = "ecmp_flow")
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
+public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
 	/**
 	 * 乐观锁-版本
@@ -181,6 +182,23 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity {
 	private String apiBaseAddressAbsolute;
 
 
+
+	/**
+	 * 租户代码
+	 */
+	@Column(name = "tenant_code", length = 10)
+	private String tenantCode;
+
+
+	@Override
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	@Override
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
+	}
 
 	public FlowInstance() {
 	}

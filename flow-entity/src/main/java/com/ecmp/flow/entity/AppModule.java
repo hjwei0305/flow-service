@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import com.ecmp.core.entity.ICodeUnique;
 import com.ecmp.core.entity.IRank;
+import com.ecmp.core.entity.ITenant;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
@@ -37,7 +38,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AppModule extends BaseAuditableEntity
-        implements ICodeUnique, IRank {
+        implements ICodeUnique, IRank ,ITenant {
 
     /**
      * 名称
@@ -69,6 +70,13 @@ public class AppModule extends BaseAuditableEntity
      */
     @Column(name = "api_base_address")
     private String apiBaseAddress;
+
+
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
     /**
      * 排序号
@@ -122,5 +130,15 @@ public class AppModule extends BaseAuditableEntity
 
     public void setApiBaseAddress(String apiBaseAddress) {
         this.apiBaseAddress = apiBaseAddress;
+    }
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 }

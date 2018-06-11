@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.ecmp.core.entity.ITenant;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -28,7 +29,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
+public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
 	/**
 	 * 乐观锁-版本
@@ -126,6 +127,25 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity {
 	 */
 	@Transient
 	private FlowDefVersion currentFlowDefVersion;
+
+
+	/**
+	 * 租户代码
+	 */
+	@Column(name = "tenant_code", length = 10)
+	private String tenantCode;
+
+
+
+	@Override
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	@Override
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
+	}
 
 	public FlowDefination() {
 	}

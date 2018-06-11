@@ -2,6 +2,7 @@ package com.ecmp.flow.entity;
 
 import javax.persistence.*;
 
+import com.ecmp.core.entity.ITenant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -24,7 +25,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_history", catalog = "ecmp_flow")
-public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  implements Cloneable{
+public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  implements Cloneable,ITenant {
 
 	/**
 	 * 所属流程实例
@@ -70,6 +71,13 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 	@Column(name = "depict")
 	private String depict;
 
+
+
+	/**
+	 * 租户代码
+	 */
+	@Column(name = "tenant_code", length = 10)
+	private String tenantCode;
 
 	/**
 	 * 流程任务引擎实际开始时间，
@@ -620,5 +628,15 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 
 	public void setApiBaseAddressAbsolute(String apiBaseAddressAbsolute) {
 		this.apiBaseAddressAbsolute = apiBaseAddressAbsolute;
+	}
+
+	@Override
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	@Override
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
 	}
 }

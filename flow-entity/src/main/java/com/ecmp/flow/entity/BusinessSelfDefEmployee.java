@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.core.entity.ITenant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -28,7 +29,7 @@ import javax.persistence.Version;
 @Entity(name = "business_model_selfDefEmployee")
 @DynamicInsert
 @DynamicUpdate
-public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableEntity {
+public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
     /**
      * 乐观锁-版本
@@ -55,7 +56,22 @@ public class BusinessSelfDefEmployee extends com.ecmp.core.entity.BaseAuditableE
     @Column(length = 80,name = "employee_name")
     private String employeeName;
 
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
+    }
 
     public String getBusinessModuleId() {
         return businessModuleId;

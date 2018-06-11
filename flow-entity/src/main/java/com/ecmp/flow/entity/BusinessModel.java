@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.core.entity.ITenant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,7 +30,7 @@ import java.util.Set;
 @DynamicUpdate
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
+public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
     /**
      * 乐观锁-版本
@@ -139,6 +140,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(length = 6000,name = "look_url")
     @Lob
     private String lookUrl;
+
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
     /**
      * 拥有的流程类型
@@ -337,5 +344,16 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity {
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 }

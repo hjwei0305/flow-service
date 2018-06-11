@@ -3,6 +3,7 @@ package com.ecmp.flow.entity;
 
 import javax.persistence.*;
 
+import com.ecmp.core.entity.ITenant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -26,7 +27,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "flow_task", catalog = "ecmp_flow")
-public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
+public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implements ITenant {
 
     /**
      * 表单相对路径
@@ -313,6 +314,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
      */
     @Column(name = "trust_owner_taskId")
     private String trustOwnerTaskId;
+
+
+
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
     public FlowTask() {
     }
@@ -780,5 +789,15 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity {
 
     public void setTrustOwnerTaskId(String trustOwnerTaskId) {
         this.trustOwnerTaskId = trustOwnerTaskId;
+    }
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 }

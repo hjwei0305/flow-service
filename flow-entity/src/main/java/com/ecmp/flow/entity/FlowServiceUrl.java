@@ -1,5 +1,6 @@
 package com.ecmp.flow.entity;
 
+import com.ecmp.core.entity.ITenant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -29,7 +30,7 @@ import javax.persistence.*;
 @DynamicUpdate
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity {
+public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity  implements ITenant {
 
     /**
      * 乐观锁-版本
@@ -70,7 +71,22 @@ public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     @JoinColumn(name = "business_model_id")
     private BusinessModel businessModel;
 
+    /**
+     * 租户代码
+     */
+    @Column(name = "tenant_code", length = 10)
+    private String tenantCode;
 
+
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
+    }
 
     public String getName() {
         return name;
