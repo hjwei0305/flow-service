@@ -1422,18 +1422,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
                 //判断是否是并行会签
-                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
-
-
+               Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+                if(isSequential==false){
+                    runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
+                }
                 String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
                 List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
                               userList.add(userId);
                 runtimeService.setVariable(processInstanceId,userListDesc,userList);
-                taskService.counterSignAddTask(userId,executionEntity,currTask);
+
                 //初始化新任务,preTask先为null，后面修改
 //                flowTaskTool.initTask(flowInstance, null,currTask.getTaskDefinitionKey());
+                if(isSequential==false){
+                    taskService.counterSignAddTask(userId,executionEntity,currTask);
+                    flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId);
+                }
 
-                flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId);
 
 
             }
