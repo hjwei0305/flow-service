@@ -23,44 +23,9 @@ import java.util.Set;
 
 import org.activiti.engine.ActivitiIllegalArgumentException;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.activiti.engine.impl.cmd.AddCommentCmd;
-import org.activiti.engine.impl.cmd.AddIdentityLinkCmd;
-import org.activiti.engine.impl.cmd.CallBackTaskCmd;
-import org.activiti.engine.impl.cmd.ClaimTaskCmd;
-import org.activiti.engine.impl.cmd.CompleteTaskCmd;
-import org.activiti.engine.impl.cmd.CreateAttachmentCmd;
-import org.activiti.engine.impl.cmd.DelegateTaskCmd;
-import org.activiti.engine.impl.cmd.DeleteAttachmentCmd;
-import org.activiti.engine.impl.cmd.DeleteCommentCmd;
-import org.activiti.engine.impl.cmd.DeleteIdentityLinkCmd;
-import org.activiti.engine.impl.cmd.DeleteRuningTaskCmd;
-import org.activiti.engine.impl.cmd.DeleteTaskCmd;
-import org.activiti.engine.impl.cmd.GetAttachmentCmd;
-import org.activiti.engine.impl.cmd.GetAttachmentContentCmd;
-import org.activiti.engine.impl.cmd.GetCommentCmd;
-import org.activiti.engine.impl.cmd.GetIdentityLinksForTaskCmd;
-import org.activiti.engine.impl.cmd.GetProcessInstanceAttachmentsCmd;
-import org.activiti.engine.impl.cmd.GetProcessInstanceCommentsCmd;
-import org.activiti.engine.impl.cmd.GetSubTasksCmd;
-import org.activiti.engine.impl.cmd.GetTaskAttachmentsCmd;
-import org.activiti.engine.impl.cmd.GetTaskCommentsByTypeCmd;
-import org.activiti.engine.impl.cmd.GetTaskCommentsCmd;
-import org.activiti.engine.impl.cmd.GetTaskEventCmd;
-import org.activiti.engine.impl.cmd.GetTaskEventsCmd;
-import org.activiti.engine.impl.cmd.GetTaskVariableCmd;
-import org.activiti.engine.impl.cmd.GetTaskVariablesCmd;
-import org.activiti.engine.impl.cmd.GetTasksLocalVariablesCmd;
-import org.activiti.engine.impl.cmd.GetTypeCommentsCmd;
-import org.activiti.engine.impl.cmd.HasTaskVariableCmd;
-import org.activiti.engine.impl.cmd.NewTaskCmd;
-import org.activiti.engine.impl.cmd.RemoveTaskVariablesCmd;
-import org.activiti.engine.impl.cmd.ResolveTaskCmd;
-import org.activiti.engine.impl.cmd.SaveAttachmentCmd;
-import org.activiti.engine.impl.cmd.SaveTaskCmd;
-import org.activiti.engine.impl.cmd.SetTaskDueDateCmd;
-import org.activiti.engine.impl.cmd.SetTaskPriorityCmd;
-import org.activiti.engine.impl.cmd.SetTaskVariablesCmd;
+import org.activiti.engine.impl.cmd.*;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.Execution;
@@ -107,6 +72,14 @@ public class TaskServiceImpl extends ServiceImpl implements TaskService {
   public void callBackTask(Task task,Execution executionEntity) {
 	    commandExecutor.execute(new  CallBackTaskCmd(task,executionEntity));
 	  }
+  /**
+   * 自定义添加，会签加签
+   * @param executionOld  参考执行对象
+   * @param userId  加签人
+   */
+  public void counterSignAddTask(String userId, Execution executionOld,HistoricTaskInstance currTask){
+    commandExecutor.execute(new CounterSignAddTaskCmd(userId, executionOld,currTask));
+  }
   
   public void deleteTask(String taskId) {
     commandExecutor.execute(new DeleteTaskCmd(taskId, null, false));

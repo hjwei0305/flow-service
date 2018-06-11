@@ -2034,7 +2034,6 @@ public class FlowTaskTool {
             throw new FlowException("orgId is null!");
         }
         Map<String,Object> params = new HashMap();
-        params.put("nodeId",nodeId);
         params.put("includeSelf",true);
         String url = Constants.getBasicOrgFindparentnodesUrl();
         List<Organization> organizationsList= ApiClient.getEntityViaProxy(url,new GenericType<List<Organization>>() {},params);

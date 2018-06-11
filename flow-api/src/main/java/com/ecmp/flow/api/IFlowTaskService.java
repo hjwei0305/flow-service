@@ -435,7 +435,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 会签任务加签
-     * @param flowInstanceId 流程实例ID
+     * @param actInstanceId 流程实例实际ID
      * @param  taskActKey 任务key
      * @param  userId 用户id
      * @return 操作结果
@@ -443,7 +443,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("counterSignAdd")
     @ApiOperation(value = "会签加签",notes = "测试")
-    public OperateResult counterSignAdd(@QueryParam("flowInstanceId") String flowInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
+    public OperateResult counterSignAdd(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
 
 
     /**

@@ -12,10 +12,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.FlowTaskTool;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
@@ -29,16 +26,16 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.el.UelExpressionCondition;
-import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.activiti.engine.impl.persistence.entity.VariableInstance;
+import org.activiti.engine.impl.persistence.entity.*;
 import org.activiti.engine.impl.pvm.PvmActivity;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.activiti.engine.impl.pvm.process.ProcessElementImpl;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -364,11 +361,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (definition == null) {
                     logger.error(ContextUtil.getMessage("10003"));
                 }
-                //取得当前活动定义节点
-                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
-                        .findActivity(currTask.getTaskDefinitionKey());
-
-                PvmActivity destinationActivity = null;
+//                //取得当前活动定义节点
+//                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+//                        .findActivity(currTask.getTaskDefinitionKey());
+//
+//                PvmActivity destinationActivity = null;
                 if(counterDecision<=((counterSignAgree/(instanceOfNumbers+0.0))*100)){//获取通过节点
                     variables.put("approveResult",true);
                 }
@@ -1074,6 +1071,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 int count = ((Number) res[0]).intValue();
                 String flowDefinationId = res[1] + "";
                 FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                if(flowDefination==null){
+                    continue;
+                }
                 BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                 Integer oldCount = businessModelCountMap.get(businessModel);
                 if (oldCount == null) {
@@ -1385,8 +1385,51 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public OperateResult counterSignAdd(String flowInstanceId,String taskActKey,String userId) throws Exception{
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public OperateResult counterSignAdd(String actInstanceId,String taskActKey,String userId) throws Exception{
+
         OperateResult result =  null;
+        List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
+        if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            FlowTask flowTaskTemp = flowTaskList.get(0);
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
+                    .singleResult();
+            // 取得流程定义
+            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                    .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+            if (definition == null) {
+                logger.error(ContextUtil.getMessage("10003"));
+                return OperateResult.operationFailure("10003");//流程定义未找到找到");
+            }
+            FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
+            String taskJsonDef = flowTaskTemp.getTaskJsonDef();
+            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+            String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+            if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
+                String executionId = currTask.getExecutionId();
+                Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
+//                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
+//                        .findActivity(currTask.getTaskDefinitionKey());
+                ExecutionEntity executionEntity = (ExecutionEntity) execution;
+
+                taskService.counterSignAddTask(userId,executionEntity,currTask);
+
+
+                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+//                //完成会签的次数
+//                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+                //总循环次数
+                Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
+                Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+
+                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
+                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
+
+                //初始化新任务,preTask先为null，后面修改
+                flowTaskTool.initTask(flowInstance, null,currTask.getTaskDefinitionKey());
+            }
+        }
         return result;
     }
 

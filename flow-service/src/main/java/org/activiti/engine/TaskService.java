@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.query.NativeQuery;
@@ -488,4 +489,11 @@ public interface TaskService {
    * @param b
    */
   public void deleteRuningTask(String taskId, boolean b) ;
+
+  /**
+   * 自定义添加，会签加签
+   * @param executionOld  参考执行对象
+   * @param userId  加签人
+   */
+  public void counterSignAddTask(String userId, Execution executionOld,HistoricTaskInstance currTask);
 }
