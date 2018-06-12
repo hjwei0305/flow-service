@@ -33,7 +33,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public interface IAppModuleService extends IBaseEntityService<AppModule>,IFindAllService<AppModule> {
     /**
-     * 获取分页数据
+     * 获取当前用户权限范围所有
      *
      * @return 实体清单
      */

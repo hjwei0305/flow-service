@@ -10,7 +10,7 @@ import javax.persistence.QueryHint;
 import java.util.List;
 
 @Repository
-public interface BusinessModelDao extends BaseEntityDao<BusinessModel> {
+public interface BusinessModelDao extends BaseEntityDao<BusinessModel>,CustomBusinessModelDao {
     /**
      * 根据应用模块的id来查询业务实体
      *

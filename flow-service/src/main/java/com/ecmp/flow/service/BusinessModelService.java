@@ -142,4 +142,29 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         PageResult<BusinessModel> result = businessModelDao.findByPage(searchConfig);
         return result;
     }
+
+    public  List<BusinessModel> findAllByAuth(){
+        List<BusinessModel> result=null;
+        List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
+        List<String > appModuleCodeList = null;
+        try {
+            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
+            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
+            }, null);
+            if(appModuleList!=null && !appModuleList.isEmpty()){
+                appModuleCodeList = new ArrayList<String>();
+                for(com.ecmp.flow.basic.vo.AppModule appModule:appModuleList){
+                    appModuleCodeList.add(appModule.getCode());
+                }
+            }
+            if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
+                result = businessModelDao.findByAppModuleCodes(appModuleCodeList);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            result = businessModelDao.findAll();
+        }
+        return result;
+    }
 }

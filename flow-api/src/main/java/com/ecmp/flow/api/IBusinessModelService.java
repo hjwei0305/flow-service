@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -82,5 +83,17 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取业务实体数据", notes = "测试 获取业务实体数据")
     public BusinessModel findByClassName(@QueryParam("classNmae") String classNmae);
+
+    /**
+     * 获取当前用户权限范围所有
+     *
+     * @return 实体清单
+     */
+    @GET
+    @Path("findAllByAuth")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过当前用户筛选有权限的数据", notes = "通过当前用户筛选有权限的数据")
+    public List<BusinessModel> findAllByAuth();
 
 }
