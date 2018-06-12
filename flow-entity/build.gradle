@@ -46,10 +46,10 @@ jar {
 //     url = "$flyway_url"
 //     user = "$flyway_user"
 //     password = "$flyway_password"
-// 
+//
 //     //flyway发布版本记录的表名称
 //     table = 'flyway_version'
-// 
+//
 //     // 默认脚本存放路径：/src/mian/resources/db/migration
 //     //locations = ["filesystem:${projectDir}/db-migrate/db/migration"]
 //     // 脚本文件前缀，默认V

@@ -1433,7 +1433,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 //初始化新任务,preTask先为null，后面修改
 //                flowTaskTool.initTask(flowInstance, null,currTask.getTaskDefinitionKey());
-                if(isSequential==false){
+                if(isSequential==false){//并行会签，需要立即初始化执行人
                     taskService.counterSignAddTask(userId,executionEntity,currTask);
                     flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId);
                 }

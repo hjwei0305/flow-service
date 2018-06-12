@@ -240,6 +240,19 @@ public class Constants extends ConfigurableContants {
 
 
 	/**
+	 * 获取当前用户所拥有的应用模块权限url
+	 * @return
+	 */
+	public static String getBasicTenantAppModuleUrl() {
+		String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.TENANTAPPMODULE.FINDTENANTAPPMODULES");
+		if(StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)){
+			BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL=getBasicServiceUrl() + getProperty(
+					"basic.tenantAppModule.findTenantAppModules", "/tenantAppModule/getTenantAppModules");
+		}
+		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
+	}
+
+	/**
 	 * 匿名用户
 	 */
 	public final static String ANONYMOUS="anonymous";
