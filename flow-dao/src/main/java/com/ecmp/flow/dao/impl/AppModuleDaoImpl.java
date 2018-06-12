@@ -37,7 +37,7 @@ public class AppModuleDaoImpl extends BaseEntityDaoImpl<AppModule> implements Cu
         super(AppModule.class, entityManager);
     }
     public List<AppModule> findByCodes(List<String> codeList){
-        TypedQuery<AppModule> appModuleQuery = entityManager.createQuery("select ft.id from com.ecmp.flow.entity.AppModule ft where code in :codeList  order by ft.lastEditedDate desc", AppModule.class);
+        TypedQuery<AppModule> appModuleQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.AppModule ft where code in :codeList  order by ft.lastEditedDate desc", AppModule.class);
         appModuleQuery.setParameter("codeList",codeList);
         List<AppModule> AppModuleList = appModuleQuery.getResultList();
         return AppModuleList;
