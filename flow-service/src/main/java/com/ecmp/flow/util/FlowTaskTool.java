@@ -1219,10 +1219,6 @@ public class FlowTaskTool {
             String workPageUrlId = (String)normalInfo.get("id");
             workPageUrl = workPageUrlDao.findOne(workPageUrlId);
             flowTask.setWorkPageUrl(workPageUrl);
-//            String appModuleId = workPageUrl.getAppModuleId();
-//            AppModule appModule = appModuleDao.findOne(appModuleId);
-//            String taskFormUrl = appModule.getWebBaseAddress()+workPageUrl.getUrl();
-//            flowTask.setTaskFormUrl(taskFormUrl);
         }
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);
@@ -1305,7 +1301,7 @@ public class FlowTaskTool {
      * @param flowInstance
      * @param actTaskDefKeyCurrent
      */
-    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId) {
+    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId,String preId) {
         List<Task> taskList = null;
         String actProcessInstanceId = flowInstance.getActInstanceId();
         if(StringUtils.isNotEmpty(actTaskDefKeyCurrent)){
@@ -1327,6 +1323,7 @@ public class FlowTaskTool {
                     Executor executor = flowCommonUtil.getBasicExecutor(userId);
                     if (executor != null) {
                         FlowTask flowTask = new FlowTask();
+                        flowTask.setPreId(preId);
                         flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1380,7 +1377,8 @@ public class FlowTaskTool {
             taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
         }
         if (taskList != null && !taskList.isEmpty()) {
-//            Date currentDate = null;
+            Boolean allowAddSign = null;//允许加签
+            Boolean allowSubtractSign = null;//允许减签
             String flowName = null;
             Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
@@ -1389,10 +1387,18 @@ public class FlowTaskTool {
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 String nodeType = (String)currentNode.get("nodeType");
                 if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
+
                     FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
                     if(tempFlowTask!=null){
                         continue;
                     }
+                    try {
+                        allowAddSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowAddSign");
+                        allowSubtractSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowSubtractSign");
+                    }catch (Exception eSign){
+                        logger.error(eSign.getMessage());
+                    }
+
                 }else{
                     String taskActKey = task.getTaskDefinitionKey();
                     Integer flowTaskNow =  flowTaskDao.findCountByActTaskDefKeyAndActInstanceId(taskActKey,flowInstance.getActInstanceId());
@@ -1407,13 +1413,11 @@ public class FlowTaskTool {
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
-//                        Map<String,Object> params = new HashMap();
-//                        params.put("employeeIds",java.util.Arrays.asList(userId));
-//                        String url = com.ecmp.flow.common.util.Constants.BASIC_SERVICE_URL+ com.ecmp.flow.common.util.Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//                        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         Executor executor = flowCommonUtil.getBasicExecutor(userId);
                         if(executor!=null){
                             FlowTask flowTask = new FlowTask();
+                            flowTask.setAllowAddSign(allowAddSign);
+                            flowTask.setAllowSubtractSign(allowSubtractSign);
                             flowTask.setTenantCode(ContextUtil.getTenantCode());
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1437,7 +1441,6 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask,preTask,currentNode);
                             flowTaskDao.save(flowTask);
-//                            currentDate = flowTask.getCreatedDate();
                         }
                     }
                 }else{
@@ -1496,6 +1499,8 @@ public class FlowTaskTool {
 
                             if (executor != null ) {
                                 FlowTask flowTask = new FlowTask();
+                                flowTask.setAllowAddSign(allowAddSign);
+                                flowTask.setAllowSubtractSign(allowSubtractSign);
                                 flowTask.setTenantCode(ContextUtil.getTenantCode());
                                 flowTask.setTaskJsonDef(currentNode.toString());
                                 flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());

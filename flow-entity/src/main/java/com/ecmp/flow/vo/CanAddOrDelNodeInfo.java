@@ -17,7 +17,7 @@ import java.io.Serializable;
  * *************************************************************************************************
  */
 public class CanAddOrDelNodeInfo  implements Serializable {
-    private String flowInstanceId;//流程实例Id
+    private String actInstanceId;//流程实例Id
     private String nodeKey;//流程节点定义key
     private String nodeName;//流程节点名称==taskName
     private String businessId;//业务单据id
@@ -26,13 +26,27 @@ public class CanAddOrDelNodeInfo  implements Serializable {
     private String flowName;//流程名称
     private String flowDefKey;//流程定义key
 
+    public CanAddOrDelNodeInfo(){}
 
-    public String getFlowInstanceId() {
-        return flowInstanceId;
+    public CanAddOrDelNodeInfo(String actInstanceId,String nodeKey,String nodeName,String businessId
+    ,String businessName,String businessModelRemark,String flowName,String flowDefKey){
+        this.actInstanceId = actInstanceId;
+        this.nodeKey = nodeKey;
+        this.nodeName = nodeName;
+        this.businessId = businessId;
+        this.businessName = businessName;
+        this.businessModelRemark = businessModelRemark;
+        this.flowName = flowName;
+        this.flowDefKey = flowDefKey;
     }
 
-    public void setFlowInstanceId(String flowInstanceId) {
-        this.flowInstanceId = flowInstanceId;
+
+    public String getActInstanceId() {
+        return actInstanceId;
+    }
+
+    public void setActInstanceId(String actInstanceId) {
+        this.actInstanceId = actInstanceId;
     }
 
     public String getNodeKey() {
@@ -90,4 +104,5 @@ public class CanAddOrDelNodeInfo  implements Serializable {
     public void setFlowDefKey(String flowDefKey) {
         this.flowDefKey = flowDefKey;
     }
+
 }

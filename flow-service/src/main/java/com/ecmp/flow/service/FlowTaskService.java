@@ -1409,17 +1409,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
                 String executionId = currTask.getExecutionId();
                 Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-//                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
-//                        .findActivity(currTask.getTaskDefinitionKey());
                 ExecutionEntity executionEntity = (ExecutionEntity) execution;
                 String  processInstanceId = currTask.getProcessInstanceId();
                 Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
-//                //完成会签的次数
-//                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 //总循环次数
                 Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
                 Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-
                 runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
                 //判断是否是并行会签
                Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
@@ -1430,16 +1425,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
                               userList.add(userId);
                 runtimeService.setVariable(processInstanceId,userListDesc,userList);
-
-                //初始化新任务,preTask先为null，后面修改
-//                flowTaskTool.initTask(flowInstance, null,currTask.getTaskDefinitionKey());
                 if(isSequential==false){//并行会签，需要立即初始化执行人
                     taskService.counterSignAddTask(userId,executionEntity,currTask);
-                    flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId);
+                    String preId = flowTaskTemp.getPreId();
+                    flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
                 }
-
-
-
             }
         }
         return result;
@@ -1477,8 +1467,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public List<CanAddOrDelNodeInfo> getAllCanAddOrDelNodeInfoList(String businessModelId) throws Exception{
-
-        return null;
+        List<CanAddOrDelNodeInfo> result = new ArrayList<CanAddOrDelNodeInfo>();
+        List<CanAddOrDelNodeInfo>  resultDai =  flowTaskDao.findByAllowAddSign(ContextUtil.getUserId());
+        List<CanAddOrDelNodeInfo>  resultStart = flowTaskDao.findByAllowAddSignStart(ContextUtil.getUserId());
+        result.addAll(resultStart);
+        result.addAll(resultDai);
+//        //去重复
+//        if(!result.isEmpty()){
+//            HashMap<String,CanAddOrDelNodeInfo> tempMap= new HashMap<String,CanAddOrDelNodeInfo>();
+//            for(CanAddOrDelNodeInfo canAddOrDelNodeInfo:result){
+//                tempMap.put(canAddOrDelNodeInfo.getActInstanceId()+canAddOrDelNodeInfo.getNodeKey(),canAddOrDelNodeInfo);
+//            }
+//            result.clear();
+//            result.addAll(tempMap.values());
+//        }
+        return result;
     }
 }
 

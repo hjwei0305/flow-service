@@ -315,6 +315,18 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     @Column(name = "trust_owner_taskId")
     private String trustOwnerTaskId;
 
+    /**
+     * 允许加签
+     */
+    @Column(name = "allow_add_sign")
+    private Boolean allowAddSign;
+
+
+    /**
+     * 允许减签
+     */
+    @Column(name = "allow_subtract_sign")
+    private Boolean allowSubtractSign;//允许减签
 
 
     /**
@@ -799,5 +811,21 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public Boolean getAllowAddSign() {
+        return allowAddSign;
+    }
+
+    public void setAllowAddSign(Boolean allowAddSign) {
+        this.allowAddSign = allowAddSign;
+    }
+
+    public Boolean getAllowSubtractSign() {
+        return allowSubtractSign;
+    }
+
+    public void setAllowSubtractSign(Boolean allowSubtractSign) {
+        this.allowSubtractSign = allowSubtractSign;
     }
 }
