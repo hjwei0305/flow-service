@@ -22,5 +22,5 @@ import org.springframework.stereotype.Repository;
  * </p>
  */
 @Repository
-public interface AppModuleDao extends BaseEntityDao<AppModule> {
+public interface AppModuleDao extends BaseEntityDao<AppModule>,CustomAppModuleDao{
 }

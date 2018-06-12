@@ -1,21 +1,20 @@
-package com.ecmp.flow.api;
+package com.ecmp.flow.dao;
 
-import com.ecmp.core.api.IBaseEntityService;
-import com.ecmp.core.api.IFindAllService;
+import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.AppModule;
-import io.swagger.annotations.Api;
+import com.ecmp.flow.entity.FlowHistory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
  * <p>
  * *************************************************************************************************
  * </p><p>
- * 实现功能：应用模块管理
+ * 实现功能：应用模块
  * </p><p>
  * ------------------------------------------------------------------------------------------------
  * </p><p>
@@ -28,10 +27,8 @@ import java.util.List;
  * *************************************************************************************************
  * </p>
  */
-@Path("appModule")
-@Api(value = "IAppModuleService 应用模块的服务接口")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public interface IAppModuleService extends IBaseEntityService<AppModule>,IFindAllService<AppModule> {
-    public List<AppModule> findAllByAuth();
+@Repository
+public interface CustomAppModuleDao {
+    @Transactional(readOnly = true)
+    public List<AppModule> findByCodes(List<String> codeList);
 }
