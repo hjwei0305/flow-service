@@ -12,10 +12,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.FlowTaskTool;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
@@ -85,8 +82,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowHistoryDao flowHistoryDao;
 
-//    @Autowired
-//    private FlowVariableDao flowVariableDao;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     @Autowired
     private FlowExecutorConfigDao  flowExecutorConfigDao;
@@ -1389,8 +1386,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult counterSignAdd(String actInstanceId,String taskActKey,String userId) throws Exception{
+        //检查用户是否存在
+        Executor executor = null;
+        try{
+            flowCommonUtil.getBasicExecutor(userId);
+        }catch (java.lang.IllegalArgumentException e){
+            logger.error(e.getMessage());
+        }
+        if(executor==null){
+            return OperateResult.operationFailure("加签的用户信息不存在");
+        }
         OperateResult result =  null;
         List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
@@ -1443,7 +1450,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Executor> getCounterSignExecutorList(String actInstanceId, String taskActKey) throws Exception{
         List<Executor>  result =  null;
         List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
@@ -1504,7 +1510,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      * @throws Exception
      */
+    @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult counterSignDel(String actInstanceId,String taskActKey,String userId) throws Exception{
+        //检查用户是否存在
+        Executor executor = null;
+        try{
+            flowCommonUtil.getBasicExecutor(userId);
+        }catch (java.lang.IllegalArgumentException e){
+            logger.error(e.getMessage());
+        }
+        if(executor==null){
+            return OperateResult.operationFailure("减签的用户信息不存在");
+        }
         OperateResult result =  null;
         List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
         if(flowTaskList!=null && !flowTaskList.isEmpty()){
@@ -1538,15 +1555,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if(completeCounter+1==instanceOfNumbers){//最后一个任务
                          return OperateResult.operationFailure("任务已经到达最后一位执行人，不允许减签");
                  }
-                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
                 //判断是否是并行会签
                 Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
-                if(isSequential==false){
-                    Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-                    runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
-                }
-                userList.remove(userId);
-                runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
 
                 List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey,actInstanceId,userId);
                 if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
@@ -1562,6 +1572,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         return OperateResult.operationFailure("串行会签不允许对当前在线的任务进行直接减签操作，减签失败！");
                     }
                 }
+                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
+                if(isSequential==false){
+                    Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                    runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
+                }
+                userList.remove(userId);
+                runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
                 result=OperateResult.operationSuccess();
             }else{
                 result = OperateResult.operationFailure("非会签节点，无法减签！");
