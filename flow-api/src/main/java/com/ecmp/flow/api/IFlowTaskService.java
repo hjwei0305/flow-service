@@ -447,23 +447,32 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 会签任务减签
-     * @param taskId 任务ID
+     * 会签任务加签
+     * @param actInstanceId 流程实例实际ID
+     * @param  taskActKey 任务key
+     * @param  userId 用户id
      * @return 操作结果
      */
     @POST
     @Path("counterSignDel")
     @ApiOperation(value = "会签减签",notes = "测试")
-    public OperateResult counterSignDel(@QueryParam("taskId") String taskId) throws Exception;
+    OperateResult counterSignDel(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
 
     /**
-     * @param businessModelId 业务实体代码，为空查询全部
      * @return 操作结果
      */
     @GET
-    @Path("getAllCanAddOrDelNodeInfoList")
+    @Path("getAllCanAddNodeInfoList")
+    @ApiOperation(value = "获取当前用户所有可执行会签加签的操作节点列表",notes = "测试")
+    public List<CanAddOrDelNodeInfo> getAllCanAddNodeInfoList() throws Exception;
+
+    /**
+     * @return 操作结果
+     */
+    @GET
+    @Path("getAllCanDelNodeInfoList")
     @ApiOperation(value = "获取当前用户所有可执行会签减签的操作节点列表",notes = "测试")
-    public List<CanAddOrDelNodeInfo> getAllCanAddOrDelNodeInfoList(@QueryParam("businessModelId") String businessModelId) throws Exception;
+    public List<CanAddOrDelNodeInfo> getAllCanDelNodeInfoList() throws Exception;
 
     /**
      * 委托任务完成后返回给委托人

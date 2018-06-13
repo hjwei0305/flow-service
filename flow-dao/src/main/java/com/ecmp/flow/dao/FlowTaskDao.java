@@ -91,32 +91,22 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowAddSign  = true and  fh.executorId = :executorId")
     public List<CanAddOrDelNodeInfo> findByAllowAddSign(@Param("executorId") String executorId);
 
-
     /**
-     * 查询可以减签的待办
+     * 查询可以减签的待办-针对启动
      *
      * @return
      */
-    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.allowSubtractSign  = true")
-    public List<FlowTask> findByAllowSubtractSign();
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft where ft.allowSubtractSign  = true and (ft.preId is null and ft.flowInstance.creatorId = :executorId)")
+    public List<CanAddOrDelNodeInfo> findByAllowSubtractSignStart(@Param("executorId") String executorId);
 
-//    /**
-//     * 根据业务实体类型id，业务单据id，获取所有业务执行的待办，包括撤销之前的历史任务
-//     * @param businessModelId
-//     * @param businessId
-//     * @return
-//     */
-//    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-//    public List<FlowTask> findAllByBusinessModelIdAndBuId(String businessModelId,String businessId);
-//
-//    /**
-//     * 根据业务实体类型id，业务单据id，获取最新流程实体执行的待办，不包括撤销之前的历史任务
-//     * @param businessModelId
-//     * @param businessId
-//     * @return
-//     */
-//    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id in(select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-//    public List<FlowTask> findLastByBusinessModelIdAndBuId(String businessModelId,String businessId);
+    /**
+     * 查询可以减签的待办-针对非启动
+     *
+     * @return
+     */
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowSubtractSign  = true and  fh.executorId = :executorId")
+    public List<CanAddOrDelNodeInfo> findByAllowSubtractSign(@Param("executorId") String executorId);
+
 
 
 }
