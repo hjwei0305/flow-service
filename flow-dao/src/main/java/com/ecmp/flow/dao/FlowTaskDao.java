@@ -30,13 +30,24 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     public FlowTask findByActTaskId(String actTaskId);
 
     /**
-     * 根据流程实例id查询待办
+     * 根据流程实例id，节点key查询待办
      *
      * @param actInstanceId
      * @return
      */
     @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
     public List<FlowTask> findByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey") String actTaskDefKey, @Param("actInstanceId") String actInstanceId);
+
+
+    /**
+     * 通过实例id、节点key、执行人筛选任务
+     * @param actTaskDefKey
+     * @param actInstanceId
+     * @param executorId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey and ft.executorId = :executorId")
+    public List<FlowTask> findByActTaskDefKeyAndActInstanceIdAndExecutorId(@Param("actTaskDefKey") String actTaskDefKey, @Param("actInstanceId") String actInstanceId, @Param("executorId") String executorId);
 
 
     /**

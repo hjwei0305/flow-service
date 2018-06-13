@@ -982,6 +982,7 @@ public class FlowTaskTool {
                 flowHistoryNew.setActEndTime(now);
                 flowHistoryNew.setDepict("【被撤回】" + opinion);
                 flowHistoryNew.setActDurationInMillis(now.getTime() - flowHistory.getActEndTime().getTime());
+                flowHistoryNew.setTenantCode(ContextUtil.getTenantCode());
                 flowHistoryDao.save(flowHistoryNew);
             }
             //初始化回退后的新任务
@@ -1213,6 +1214,7 @@ public class FlowTaskTool {
         Boolean canReject = null;
         Boolean canSuspension = null;
         WorkPageUrl workPageUrl =null;
+        flowTask.setTenantCode(ContextUtil.getTenantCode());
         if(normalInfo!=null && !normalInfo.isEmpty() ){
             canReject = normalInfo.get("allowReject")!=null?(Boolean)normalInfo.get("allowReject"):null;
             canSuspension =normalInfo.get("allowTerminate")!=null?(Boolean) normalInfo.get("allowTerminate"):null;
@@ -2071,7 +2073,7 @@ public class FlowTaskTool {
             actWorkTimeInMillis = System.currentTimeMillis()-loadOverTime;
             flowHistory.setActWorkTimeInMillis(actWorkTimeInMillis);
         }
-
+        flowHistory.setTenantCode(ContextUtil.getTenantCode());
         return flowHistory;
     }
 

@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
@@ -483,5 +484,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("taskTrustToReturn")
     @ApiOperation(value = "委托任务完成后返回给委托人",notes = "测试")
     public OperateResult taskTrustToReturn(@QueryParam("taskId") String taskId,@QueryParam("opinion") String opinion) throws Exception;
+
+    /**
+     *
+     * @param actInstanceId 流程实例id
+     * @param taskActKey 节点定义key
+     * @return 执行人列表
+     * @throws Exception
+     */
+    @GET
+    @Path("getAllCanDelNodeInfoList")
+    @ApiOperation(value = "通过当前流程实例和对应节点key获取会签执行人列表",notes = "测试")
+    public List<Executor> getCounterSignExecutorList(String actInstanceId, String taskActKey) throws Exception;
 
 }
