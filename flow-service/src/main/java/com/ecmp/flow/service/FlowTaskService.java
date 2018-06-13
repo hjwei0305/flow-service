@@ -1519,7 +1519,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 logger.error(ContextUtil.getMessage("10003"));
                 return OperateResult.operationFailure("10003");//流程定义未找到找到");
             }
-            FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
             String taskJsonDef = flowTaskTemp.getTaskJsonDef();
             JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
             String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
@@ -1531,16 +1530,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return OperateResult.operationFailure("当前任务节点没有该执行人，减签失败");
                 }
                 String executionId = currTask.getExecutionId();
-                Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-                ExecutionEntity executionEntity = (ExecutionEntity) execution;
-
                 Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
                 //总循环次数
                 Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
                 //完成会签的次数
                 Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                 if(completeCounter+1==instanceOfNumbers){//最后一个任务
-                         return OperateResult.operationFailure("已经到达最后一位执行人，不允许减签");
+                         return OperateResult.operationFailure("任务已经到达最后一位执行人，不允许减签");
                  }
                 runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
                 //判断是否是并行会签
@@ -1553,15 +1549,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
 
                 List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey,actInstanceId,userId);
-                if(flowTaskListCurrent!=null && flowTaskListCurrent.isEmpty()){
-                       if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
-                            for(FlowTask flowTask : flowTaskListCurrent){
-                                taskService.deleteRuningTask(flowTask.getId(),true);
-                            }
+                if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
+                    if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
+                        for(FlowTask flowTask : flowTaskListCurrent){
+                            taskService.deleteRuningTask(flowTask.getId(),true);
                         }
-                }else{
-                        return OperateResult.operationFailure("当前任务节点该执行人已执行，减签失败");
+                    }else{
+                        return OperateResult.operationFailure("当前任务节点该执行人已执行，减签失败！");
+                    }
+                }else{//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
+                    if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
+                        return OperateResult.operationFailure("串行会签不允许对当前在线的任务进行直接减签操作，减签失败！");
+                    }
                 }
+                result=OperateResult.operationSuccess();
             }else{
                 result = OperateResult.operationFailure("非会签节点，无法减签！");
             }
