@@ -493,7 +493,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @throws Exception
      */
     @GET
-    @Path("getAllCanDelNodeInfoList")
+    @Path("getCounterSignExecutorList")
     @ApiOperation(value = "通过当前流程实例和对应节点key获取会签执行人列表",notes = "测试")
     public List<Executor> getCounterSignExecutorList(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey) throws Exception;
 
