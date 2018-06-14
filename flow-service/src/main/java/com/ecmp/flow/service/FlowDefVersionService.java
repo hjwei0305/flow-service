@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefVersionService;
@@ -149,16 +150,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
         Boolean canAsSubProcess = definition.getSubProcess();
-//        if(definition.getId()!=null){
-//            flowDefination = flowDefinationDao.findOne(definition.getId());
-//        }
-        //通过key来查找对应的流程定义是否已经存在
-//        if(flowDefination == null){
-            flowDefination = flowDefinationDao.findByDefKey(process.getId());
-//            if(flowDefination!=null){
-//                return  OperateResultWithData.operationFailure("10028");
-//            }
-//        }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew =true;
@@ -166,8 +157,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 //            preInsert(flowDefination);
 
             flowDefination = new FlowDefination();
+            flowDefination.setTenantCode(ContextUtil.getTenantCode());
             entity = new FlowDefVersion();
-
+            entity.setTenantCode(ContextUtil.getTenantCode());
             flowDefination.setName(process.getName());
             flowDefination.setDefKey(process.getId());
             if(process.getStartUEL()!=null){
@@ -348,18 +340,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             this.delete(id);
         }
     }
-//    /**
-//     * 主键删除
-//     *
-//     * @param id 主键
-//     * @return 返回操作结果对象
-//     */
-//    public OperateResult deleteById(String id) {
-//        FlowDefVersion entity = flowDefVersionDao.findOne(id);
-//        return this.delete(entity);
-//    }
-
-
 
     /**
      *使用部署ID，删除流程引擎数据定义
@@ -383,36 +363,5 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     .deleteDeployment(deploymentId);
         }
     }
-//    public FlowDefVersion save(FlowDefVersion entity) {
-//        //        entity.setLastVersionId(0);
-//        FlowDefination flowDefination = entity.getFlowDefination();
-//        if(flowDefination == null){ //流程版本必须指定流程定义
-//            return null;
-//        }
-//        flowDefination = flowDefinationDao.findOne(flowDefination.getId());
-//        if (entity.isNew()) {
-//            preInsert(entity);
-//        } else {
-//            preUpdate(entity);
-//            entity.setId(null);//更改时默认版本向上加+,重新建立一条版本数据
-//            entity.setVersionCode(entity.getVersionCode()+1);
-//        }
-//
-//        if(flowDefination!=null){
-//            entity.setFlowDefination(flowDefination);
-//            flowDefVersionDao.save(entity);
-//            flowDefination.setLastVersionId(entity.getId());
-//            flowDefinationDao.save(flowDefination);
-//        }
-//        logger.debug("Saved FlowDefVersion id is {}", entity.getId());
-//        return entity;
-//    }
-
-
-//    public FlowDefVersion findLastByDef(FlowDefination flowDefination){
-//        FlowDefVersion flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(flowDefination.getId(),flowDefination.getl);
-//        return
-//    }
-
 
 }

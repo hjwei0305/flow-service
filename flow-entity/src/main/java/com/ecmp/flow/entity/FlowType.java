@@ -1,6 +1,5 @@
 package com.ecmp.flow.entity;
 
-import com.ecmp.core.entity.ITenant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -8,11 +7,9 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.util.HashSet;
+import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import javax.persistence.*;
 
 
 /**
@@ -35,6 +32,8 @@ import javax.persistence.*;
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
+
+    public FlowType(){}
 
     /**
      * 乐观锁-版本
