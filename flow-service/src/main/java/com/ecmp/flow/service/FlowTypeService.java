@@ -8,7 +8,6 @@ import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowTypeService;
 import com.ecmp.flow.basic.vo.AppModule;
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.GenericType;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
