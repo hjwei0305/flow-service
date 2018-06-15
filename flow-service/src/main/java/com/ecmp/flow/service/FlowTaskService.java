@@ -1589,8 +1589,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务已经到达最后一位执行人，减签失败;");
                                 return OperateResult.operationFailure(resultDec.toString());
                             }
+
+
+
                             //判断是否是并行会签
                             Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+
+                            runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
+                            if(isSequential==false){
+                                Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
+                            }
+                            userList.remove(userId);
+                            runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
 
                             List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey,actInstanceId,userId);
                             if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
@@ -1611,13 +1622,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     continue;
                                 }
                             }
-                            runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
-                            if(isSequential==false){
-                                Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-                                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
-                            }
-                            userList.remove(userId);
-                            runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
+
                             resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成;");
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,的减签操作执行成;");
                         }else{
