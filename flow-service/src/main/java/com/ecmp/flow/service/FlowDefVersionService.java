@@ -150,6 +150,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
         Boolean canAsSubProcess = definition.getSubProcess();
+        flowDefination = flowDefinationDao.findByDefKey(process.getId());
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew =true;
