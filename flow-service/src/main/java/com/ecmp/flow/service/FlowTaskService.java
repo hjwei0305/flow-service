@@ -1503,13 +1503,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 String preId = flowTaskTemp.getPreId();
                                 flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
                             }
-                            resultDec.append("id='"+userId+"'的加签操作执行成功！;");
+                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的加签操作执行成功;");
+                            logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的加签操作执行成功;");
                         }else{
-                            resultDec.append("id='"+userId+"'的执行节点为非会签节点，无法加签！;");
+                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的执行节点为非会签节点，无法加签;");
+                            logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的执行节点为非会签节点，无法加签;");
                             return OperateResult.operationFailure(resultDec.toString());
                         }
                     }else{
-                        resultDec.append("id='"+userId+"'的用户,任务可能已经执行完，无法加签！;");
+                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法加签;");
+                        logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务可能已经执行完，无法加签;");
                     }
                 }
             }else{
@@ -1571,7 +1574,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
                             List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
                             if(!userList.contains(userId)){
-                                resultDec.append("当前任务节点没有id='"+userId+"'的执行人，减签失败;");
+                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,在当前任务节点找不到，减签失败;");
+                                logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,在当前任务节点找不到，减签失败;");
                                 continue;
                             }
                             String executionId = currTask.getExecutionId();
@@ -1581,7 +1585,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             //完成会签的次数
                             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                             if(completeCounter+1==instanceOfNumbers){//最后一个任务
-                                resultDec.append("任务已经到达最后一位执行人，id='"+userId+"'不允许减签;");
+                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务已经到达最后一位执行人，减签失败;");
+                                logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务已经到达最后一位执行人，减签失败;");
                                 return OperateResult.operationFailure(resultDec.toString());
                             }
                             //判断是否是并行会签
@@ -1595,12 +1600,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         flowTaskDao.delete(flowTask);
                                     }
                                 }else{
-                                    resultDec.append("当前任务节点id='"+userId+"'的执行人已执行，减签失败;");
+                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,当前任务节点已执行，减签失败;");
+                                    logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,当前任务节点已执行，减签失败;");
                                     continue;
                                 }
                             }else{//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
                                 if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
-                                    resultDec.append("串行会签不允许对当前在线的执行人id='"+userId+"'的任务进行直接减签操作，减签失败！");
+                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
+                                    logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
                                 }
                             }
@@ -1611,13 +1618,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                             userList.remove(userId);
                             runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
-                            resultDec.append("id='"+userId+"'的减签操作执行成功！;");
+                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成;");
+                            logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,的减签操作执行成;");
                         }else{
-                            resultDec.append("id='"+userId+"'的执行节点为非会签节点，无法减签！;");
+                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,执行节点为非会签节点，无法减签;");
+                            logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,执行节点为非会签节点，无法减签;");
                             return OperateResult.operationFailure(resultDec.toString());
                         }
                     }else {
-                        resultDec.append("id='"+userId+"'的任务可能已经执行完，无法减签！;");
+                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法减签;");
+                        logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务可能已经执行完，无法减签;");
                     }
                 }
             }else {
@@ -1634,6 +1644,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<CanAddOrDelNodeInfo>  resultStart = flowTaskDao.findByAllowAddSignStart(ContextUtil.getUserId());
         result.addAll(resultStart);
         result.addAll(resultDai);
+        Map<String,CanAddOrDelNodeInfo> tempMap = new HashMap<String,CanAddOrDelNodeInfo>();
+        for(CanAddOrDelNodeInfo c:result){
+            tempMap.put(c.getActInstanceId()+c.getNodeKey(),c);
+        }
+        result.clear();
+        result.addAll(tempMap.values());
         return result;
     }
 
@@ -1643,6 +1659,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<CanAddOrDelNodeInfo>  resultStart = flowTaskDao.findByAllowSubtractSignStart(ContextUtil.getUserId());
         result.addAll(resultStart);
         result.addAll(resultDai);
+        Map<String,CanAddOrDelNodeInfo> tempMap = new HashMap<String,CanAddOrDelNodeInfo>();
+        for(CanAddOrDelNodeInfo c:result){
+            tempMap.put(c.getActInstanceId()+c.getNodeKey(),c);
+        }
+        result.clear();
+        result.addAll(tempMap.values());
         return result;
     }
 }
