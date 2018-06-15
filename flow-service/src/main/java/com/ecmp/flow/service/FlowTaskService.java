@@ -1562,7 +1562,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
                     if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
                         for(FlowTask flowTask : flowTaskListCurrent){
-                            taskService.deleteRuningTask(flowTask.getId(),true);
+                            taskService.deleteRuningTask(flowTask.getActTaskId(),true);
+                            flowTaskDao.delete(flowTask);
                         }
                     }else{
                         return OperateResult.operationFailure("当前任务节点该执行人已执行，减签失败！");
