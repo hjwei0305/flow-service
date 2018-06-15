@@ -1590,8 +1590,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 return OperateResult.operationFailure(resultDec.toString());
                             }
 
-
-
                             //判断是否是并行会签
                             Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
 
@@ -1619,18 +1617,38 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
-                                }else{
-                                    runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
-                                    if(isSequential==false){
-                                        Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-                                        runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
-                                    }
-                                    userList.remove(userId);
-                                    runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
+                                }else {
+                                   List<FlowHistory> flowHistoryList = flowHistoryDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
+                                   boolean canDel = true;
+                                   if(flowHistoryList !=null && !flowHistoryList.isEmpty()){
+                                       while(flowHistoryList.size()>userList.size()){
+                                           for(int index=0;index<userList.size();index++){
+                                               flowHistoryList.remove(index);
+                                           }
+                                       }
+                                       for(FlowHistory flowHistory:flowHistoryList){
+                                           if(userId.equals(flowHistory.getExecutorId())){
+                                               canDel = false;
+                                               break;
+                                           }
+                                       }
+                                   }
+                                   if(canDel){
+                                       runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
+                                       if(isSequential==false){
+                                           Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                                           runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
+                                       }
+                                       userList.remove(userId);
+                                       runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
+                                   }else{
+                                       resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,发现已经执行，减签操作执行失败;");
+                                       logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,发现已经执行，减签操作执行失败;");
+                                   }
                                 }
                             }
 
-                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成;");
+                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成功;");
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,的减签操作执行成;");
                         }else{
                             resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,执行节点为非会签节点，无法减签;");

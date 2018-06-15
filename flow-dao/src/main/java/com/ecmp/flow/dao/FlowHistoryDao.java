@@ -56,6 +56,6 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>,CustomFlowHis
      * @param actInstanceId
      * @return
      */
-    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey")
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey order by ft.createdDate desc")
     public  Integer findCountByActTaskDefKeyAndActInstanceId(@Param("actTaskDefKey")String actTaskDefKey,@Param("actInstanceId")String actInstanceId);
 }
