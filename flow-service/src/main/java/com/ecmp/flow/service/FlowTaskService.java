@@ -1386,69 +1386,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResult counterSignAdd(String actInstanceId,String taskActKey,String userId) throws Exception{
-        //检查用户是否存在
-        Executor executor = null;
-        try{
-            executor=  flowCommonUtil.getBasicExecutor(userId);
-        }catch (java.lang.IllegalArgumentException e){
-            logger.error(e.getMessage());
-        }
-        if(executor==null){
-            return OperateResult.operationFailure("加签的用户信息不存在");
-        }
-        OperateResult result =  null;
-        List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
-        if(flowTaskList!=null && !flowTaskList.isEmpty()){
-            FlowTask flowTaskTemp = flowTaskList.get(0);
-            // 取得当前任务
-            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
-                    .singleResult();
-            // 取得流程定义
-            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
-            if (definition == null) {
-                logger.error(ContextUtil.getMessage("10003"));
-                return OperateResult.operationFailure("10003");//流程定义未找到找到");
-            }
-            FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
-            String taskJsonDef = flowTaskTemp.getTaskJsonDef();
-            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-            String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
-            if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
-                String executionId = currTask.getExecutionId();
-                Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-                ExecutionEntity executionEntity = (ExecutionEntity) execution;
-                String  processInstanceId = currTask.getProcessInstanceId();
-                Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
-                //总循环次数
-                Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
-                //判断是否是并行会签
-               Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
-               if(isSequential==false){
-                    Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-                    runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
-                }
-                String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
-                List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
-                              userList.add(userId);
-                runtimeService.setVariable(processInstanceId,userListDesc,userList);
-                if(isSequential==false){//并行会签，需要立即初始化执行人
-                    taskService.counterSignAddTask(userId,executionEntity,currTask);
-                    String preId = flowTaskTemp.getPreId();
-                    flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
-                }
-                result = OperateResult.operationSuccess();
-            }else{
-                result = OperateResult.operationFailure("非会签节点，无法加签！");
-            }
-        }else{
-            result = OperateResult.operationFailure("任务可能已经执行完，无法加签！");
-        }
-        return result;
-    }
 
     public List<Executor> getCounterSignExecutorList(String actInstanceId, String taskActKey) throws Exception{
         List<Executor>  result =  null;
@@ -1502,91 +1439,192 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResult counterSignAdd(String actInstanceId,String taskActKey,String userIds) throws Exception{
+
+        String[] userIdArray = null;
+        StringBuffer resultDec = new StringBuffer();
+        OperateResult result =  null;
+        if(StringUtils.isNotEmpty(userIds)){
+            userIdArray = userIds.split(",");
+            if(userIdArray!=null && userIdArray.length>0){
+                for(String userId:userIdArray){
+                    //检查用户是否存在
+                    Executor executor = null;
+                    try{
+                        executor=  flowCommonUtil.getBasicExecutor(userId);
+                    }catch (java.lang.IllegalArgumentException e){
+                        logger.error(e.getMessage());
+                    }
+                    if(executor==null){
+                        resultDec.append("加签id='"+userId+"'的用户信息不存在;");
+                        continue;
+                    }
+                    List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
+                    if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                        FlowTask flowTaskTemp = flowTaskList.get(0);
+                        // 取得当前任务
+                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
+                                .singleResult();
+                        // 取得流程定义
+                        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                                .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+                        if (definition == null) {
+                            logger.error(ContextUtil.getMessage("10003"));
+                            return OperateResult.operationFailure("10003");//流程定义未找到找到");
+                        }
+                        FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
+                        String taskJsonDef = flowTaskTemp.getTaskJsonDef();
+                        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                        String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+                        if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
+                            String executionId = currTask.getExecutionId();
+                            Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
+                            ExecutionEntity executionEntity = (ExecutionEntity) execution;
+                            String  processInstanceId = currTask.getProcessInstanceId();
+                            Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
+                            //总循环次数
+                            Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
+                            runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers+1));
+                            //判断是否是并行会签
+                            Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+                            if(isSequential==false){
+                                Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers+1));
+                            }
+                            String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
+                            List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
+                            userList.add(userId);
+                            runtimeService.setVariable(processInstanceId,userListDesc,userList);
+                            if(isSequential==false){//并行会签，需要立即初始化执行人
+                                taskService.counterSignAddTask(userId,executionEntity,currTask);
+                                String preId = flowTaskTemp.getPreId();
+                                flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
+                            }
+                            resultDec.append("id='"+userId+"'的加签操作执行成功！;");
+                        }else{
+                            resultDec.append("id='"+userId+"'的执行节点为非会签节点，无法加签！;");
+                            return OperateResult.operationFailure(resultDec.toString());
+                        }
+                    }else{
+                        resultDec.append("id='"+userId+"'的用户,任务可能已经执行完，无法加签！;");
+                    }
+                }
+            }else{
+                return OperateResult.operationFailure("执行人列表不能为空！");
+            }
+        }else {
+            return OperateResult.operationFailure("执行人列表不能为空！");
+        }
+        result = OperateResult.operationSuccess(resultDec.toString());
+        return result;
+    }
+
     /**
      *
      * @param actInstanceId  流程实例id
      * @param taskActKey  节点key
-     * @param userId   被减签的人
+     * @param userIds   被减签的人
      * @return
      * @throws Exception
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResult counterSignDel(String actInstanceId,String taskActKey,String userId) throws Exception{
-        //检查用户是否存在
-        Executor executor = null;
-        try{
-            executor= flowCommonUtil.getBasicExecutor(userId);
-        }catch (java.lang.IllegalArgumentException e){
-            logger.error(e.getMessage());
-        }
-        if(executor==null){
-            return OperateResult.operationFailure("减签的用户信息不存在");
-        }
+    public OperateResult counterSignDel(String actInstanceId,String taskActKey,String userIds) throws Exception{
+        String[] userIdArray = null;
+        StringBuffer resultDec = new StringBuffer();
         OperateResult result =  null;
-        List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
-        if(flowTaskList!=null && !flowTaskList.isEmpty()){
-            FlowTask flowTaskTemp = flowTaskList.get(0);
-            // 取得当前任务
-            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
-                    .singleResult();
-            // 取得流程定义
-            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
-            if (definition == null) {
-                logger.error(ContextUtil.getMessage("10003"));
-                return OperateResult.operationFailure("10003");//流程定义未找到找到");
-            }
-            String taskJsonDef = flowTaskTemp.getTaskJsonDef();
-            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-            String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
-            if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
-                String  processInstanceId = currTask.getProcessInstanceId();
-                String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
-                List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
-                if(!userList.contains(userId)){
-                    return OperateResult.operationFailure("当前任务节点没有该执行人，减签失败");
-                }
-                String executionId = currTask.getExecutionId();
-                Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
-                //总循环次数
-                Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
-                //完成会签的次数
-                Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
-                if(completeCounter+1==instanceOfNumbers){//最后一个任务
-                         return OperateResult.operationFailure("任务已经到达最后一位执行人，不允许减签");
-                 }
-                //判断是否是并行会签
-                Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
-
-                List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey,actInstanceId,userId);
-                if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
-                    if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
-                        for(FlowTask flowTask : flowTaskListCurrent){
-                            taskService.deleteRuningTask(flowTask.getActTaskId(),true);
-                            flowTaskDao.delete(flowTask);
+        if(StringUtils.isNotEmpty(userIds)){
+            userIdArray = userIds.split(",");
+            if(userIdArray!=null && userIdArray.length>0){
+                for(String userId:userIdArray){
+                    //检查用户是否存在
+                    Executor executor = null;
+                    try{
+                        executor= flowCommonUtil.getBasicExecutor(userId);
+                    }catch (java.lang.IllegalArgumentException e){
+                        logger.error(e.getMessage());
+                    }
+                    if(executor==null){
+                        resultDec.append("id='"+userId+"'减签的用户信息不存在;");
+                        continue;
+                    }
+                    List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
+                    if(flowTaskList!=null && !flowTaskList.isEmpty()){
+                        FlowTask flowTaskTemp = flowTaskList.get(0);
+                        // 取得当前任务
+                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
+                                .singleResult();
+                        // 取得流程定义
+                        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                                .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+                        if (definition == null) {
+                            logger.error(ContextUtil.getMessage("10003"));
+                            return OperateResult.operationFailure("10003");//流程定义未找到找到");
                         }
-                    }else{
-                        return OperateResult.operationFailure("当前任务节点该执行人已执行，减签失败！");
-                    }
-                }else{//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
-                    if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
-                        return OperateResult.operationFailure("串行会签不允许对当前在线的任务进行直接减签操作，减签失败！");
+                        String taskJsonDef = flowTaskTemp.getTaskJsonDef();
+                        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                        String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+                        if("CounterSign".equalsIgnoreCase(nodeType)){//会签任务做处理判断
+                            String  processInstanceId = currTask.getProcessInstanceId();
+                            String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
+                            List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
+                            if(!userList.contains(userId)){
+                                resultDec.append("当前任务节点没有id='"+userId+"'的执行人，减签失败;");
+                                continue;
+                            }
+                            String executionId = currTask.getExecutionId();
+                            Map<String, VariableInstance>   processVariables= runtimeService.getVariableInstances(executionId);
+                            //总循环次数
+                            Integer instanceOfNumbers=(Integer)processVariables.get("nrOfInstances").getValue();
+                            //完成会签的次数
+                            Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
+                            if(completeCounter+1==instanceOfNumbers){//最后一个任务
+                                resultDec.append("任务已经到达最后一位执行人，id='"+userId+"'不允许减签;");
+                                return OperateResult.operationFailure(resultDec.toString());
+                            }
+                            //判断是否是并行会签
+                            Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+
+                            List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey,actInstanceId,userId);
+                            if(isSequential==false) {//并行会签，需要清空对应的执行人任务信息
+                                if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
+                                    for(FlowTask flowTask : flowTaskListCurrent){
+                                        taskService.deleteRuningTask(flowTask.getActTaskId(),true);
+                                        flowTaskDao.delete(flowTask);
+                                    }
+                                }else{
+                                    resultDec.append("当前任务节点id='"+userId+"'的执行人已执行，减签失败;");
+                                    continue;
+                                }
+                            }else{//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
+                                if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
+                                    resultDec.append("串行会签不允许对当前在线的执行人id='"+userId+"'的任务进行直接减签操作，减签失败！");
+                                    continue;
+                                }
+                            }
+                            runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
+                            if(isSequential==false){
+                                Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
+                                runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
+                            }
+                            userList.remove(userId);
+                            runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
+                            resultDec.append("id='"+userId+"'的减签操作执行成功！;");
+                        }else{
+                            resultDec.append("id='"+userId+"'的执行节点为非会签节点，无法减签！;");
+                            return OperateResult.operationFailure(resultDec.toString());
+                        }
+                    }else {
+                        resultDec.append("id='"+userId+"'的任务可能已经执行完，无法减签！;");
                     }
                 }
-                runtimeService.setVariable(executionId,"nrOfInstances",(instanceOfNumbers-1));
-                if(isSequential==false){
-                    Integer nrOfActiveInstancesNumbers=(Integer)processVariables.get("nrOfActiveInstances").getValue();
-                    runtimeService.setVariable(executionId,"nrOfActiveInstances",(nrOfActiveInstancesNumbers-1));
-                }
-                userList.remove(userId);
-                runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
-                result=OperateResult.operationSuccess();
-            }else{
-                result = OperateResult.operationFailure("非会签节点，无法减签！");
+            }else {
+                return OperateResult.operationFailure("执行人列表不能为空！");
             }
-        }else {
-            result = OperateResult.operationFailure("任务可能已经执行完，无法减签！");
         }
+        result = OperateResult.operationSuccess(resultDec.toString());
         return result;
     }
 

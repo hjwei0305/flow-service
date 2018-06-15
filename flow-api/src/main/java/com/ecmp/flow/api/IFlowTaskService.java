@@ -438,26 +438,26 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * 会签任务加签
      * @param actInstanceId 流程实例实际ID
      * @param  taskActKey 任务key
-     * @param  userId 用户id
+     * @param  userIds 用户id,以“，”分割
      * @return 操作结果
      */
     @POST
     @Path("counterSignAdd")
     @ApiOperation(value = "会签加签",notes = "测试")
-    public OperateResult counterSignAdd(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
+    public OperateResult counterSignAdd(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userIds")String userIds) throws Exception;
 
 
     /**
      * 会签任务加签
      * @param actInstanceId 流程实例实际ID
      * @param  taskActKey 任务key
-     * @param  userId 用户id
+     * @param  userIds 用户id,以“，”分割
      * @return 操作结果
      */
     @POST
     @Path("counterSignDel")
     @ApiOperation(value = "会签减签",notes = "测试")
-    OperateResult counterSignDel(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userId")String userId) throws Exception;
+    OperateResult counterSignDel(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userIds")String userIds) throws Exception;
 
     /**
      * @return 操作结果
