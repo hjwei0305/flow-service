@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 
@@ -30,6 +31,7 @@ public class DefaultBusinessModel3 extends AbstractBusinessModel{
     /**
      * 单价
      */
+    @Column(name = "unit_price")
     private double unitPrice=0;
 
     /**
@@ -45,6 +47,7 @@ public class DefaultBusinessModel3 extends AbstractBusinessModel{
     /**
      * 申请说明
      */
+    @Column(name = "apply_caption")
     private  String applyCaption;
 
     public double getUnitPrice() {

@@ -53,7 +53,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     /**
      * 当前流程状态
      */
-    @Column(name = "flowStatus",length = 10,nullable = false)
+    @Column(name = "flow_status",length = 10,nullable = false)
     private FlowStatus flowStatus=FlowStatus.INIT;
 
     /**
@@ -65,25 +65,25 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     /**
      * 组织机构代码
      */
-    @Column(name = "orgCode",length = 20)
+    @Column(name = "org_code",length = 20)
     private String orgCode;
 
     /**
      * 组织机构Id
      */
-    @Column(name = "orgId",length = 36)
+    @Column(name = "org_id",length = 36)
     private String orgId;
 
     /**
      * 组织机构名称
      */
-    @Column(name = "orgName",length = 80)
+    @Column(name = "org_name",length = 80)
     private String orgName;
 
     /**
      * 组织机构层级路径
      */
-    @Column(name = "orgPath",length = 500)
+    @Column(name = "org_path",length = 500)
     private String orgPath;
 
     /**
@@ -95,7 +95,7 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     /**
      * 工作说明
      */
-    @Column(name = "workCaption",length = 1000,nullable = false)
+    @Column(name = "work_caption",length = 1000,nullable = false)
     @Lob
     private  String workCaption;
 

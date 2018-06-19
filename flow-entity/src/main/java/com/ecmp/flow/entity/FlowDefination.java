@@ -86,7 +86,7 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity imp
 	/**
 	 * 当前流程定义状态
 	 */
-	@Column(name = "flowDefinationStatus",length = 2,nullable = false)
+	@Column(name = "flow_defination_status",length = 2,nullable = false)
 	private FlowDefinationStatus flowDefinationStatus;
 
 	/**

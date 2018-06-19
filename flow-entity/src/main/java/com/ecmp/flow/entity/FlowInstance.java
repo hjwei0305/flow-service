@@ -75,7 +75,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	/**
 	 * 业务摘要(工作说明)
 	 */
-	@Column(name = "businessModelRemark")
+	@Column(name = "business_model_remark")
 	private String businessModelRemark;
 
 //	/**
@@ -135,7 +135,7 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	/**
 	 * 是否是手动结束（发起人手动终止任务的情况）
 	 */
-	@Column(name = "manuallyEnd")
+	@Column(name = "manually_end")
 	private Boolean manuallyEnd=false;
 
 
