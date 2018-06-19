@@ -27,7 +27,7 @@ import javax.sql.DataSource;
  * @version 1.0.1 2017/7/24 16:32
  */
 @Configuration
-@DependsOn("ecmp-service")
+//@DependsOn("ecmp-service")
 public class ActivityConfig {
 
     @Autowired

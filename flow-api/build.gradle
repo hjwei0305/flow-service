@@ -9,21 +9,16 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-entity')
-    /* 强制指定版本策略设置*/
-//    compile group:'javax.ws.rs',name:'javax.ws.rs-api',version:'2.+',force:true
     compile (
+            "com.ecmp:core-api:$ecmp_version"
 //            "com.ecmp:ecmp-context:$context_version",
-            "com.ecmp:core-api:$core_version"
-//            "org.apache.cxf:cxf-rt-rs-service-description-swagger:$cxf_version"
     )
-    /*testCompile(
-            "junit:junit:$junit_version"
-    )*/
 }
 
 jar {
     manifest {
-        attributes("Implementation-Title": "$project.name")
+        attributes("Manifest-Version": "$project.version")
+        attributes("Extension-Name": "ECMP-$project.name")
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
 }

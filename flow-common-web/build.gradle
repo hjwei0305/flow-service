@@ -9,17 +9,18 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-api')
-    compile(
-            "com.ecmp:core-web:$core_version",
-//            "com.ecmp:config-util-apiclient:$config_version",
-//            "com.ecmp:basic-api:$basic_version"
-//            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
-    )
+//    compile(
+////            "com.ecmp:core-web:$core_version",
+////            "com.ecmp:config-util-apiclient:$config_version",
+////            "com.ecmp:basic-api:$basic_version"
+////            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
+//    )
     /* 强制指定版本策略设置*/
 //    compile group:'javax.ws.rs',name:'javax.ws.rs-api',version:'2.+',force:true
     compile (
             "com.ecmp:ecmp-context:$context_version",
-            "com.ecmp:core-api:$core_version"
+            "com.ecmp:core-api:$core_version",
+           "com.ecmp:core-web:2.+",
 //            "org.apache.cxf:cxf-rt-rs-service-description-swagger:$cxf_version"
     )
     /*testCompile(
