@@ -35,17 +35,17 @@ import java.util.List;
 @Api(value = "IFlowTypeService 流程类型服务API接口")
 public interface IFlowTypeService extends IBaseService<FlowType, String> {
 
-    /**
-     * 保存一个实体
-     * @param flowType 实体
-     * @return 保存后的实体
-     */
-    @POST
-    @Path("save")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
-    OperateResultWithData<FlowType> save(FlowType flowType);
+//    /**
+//     * 保存一个实体
+//     * @param flowType 实体
+//     * @return 保存后的实体
+//     */
+//    @POST
+//    @Path("save")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+//    OperateResultWithData<FlowType> save(FlowType flowType);
 
     /**
      * 获取分页数据

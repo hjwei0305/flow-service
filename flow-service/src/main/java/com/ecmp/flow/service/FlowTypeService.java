@@ -51,6 +51,7 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
         return flowTypeDao.findByBusinessModelId(businessModelId);
     }
 
+    @Override
     public OperateResultWithData<FlowType> save(FlowType flowType){
         OperateResultWithData<FlowType> resultWithData = null;
         resultWithData = super.save(flowType);

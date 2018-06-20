@@ -62,48 +62,11 @@ dependencies {
     )
 }
 
-jar {
-    manifest {
-        attributes("Manifest-Version": "$project.version")
-        attributes("Extension-Name": "ECMP-$project.name")
-        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
-    }
-    enabled = true
-}
-
-/////////////////////////////////////上传Maven仓库////////////////////////////////////////
-//打包源代码
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-//如果希望gradle install，安装到.m2本地仓库，参考下面的内容
-install {
-    repositories.mavenInstaller {
-        pom.version = "$project.version"
-        pom.artifactId = "$project.name"
-        pom.groupId = "$project.group"
-    }
-}
-
-////上传到nexus
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: MAVEN_REPO_URL) {
-//                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
-//            }
-//            pom.version = "$project.version"
-//            pom.artifactId = "$project.name"
-//            pom.groupId = "$project.group"
-//        }
+//jar {
+//    manifest {
+//        attributes("Manifest-Version": "$project.version")
+//        attributes("Extension-Name": "ECMP-$project.name")
+//        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
 //    }
-//    return 'Success'
+//    //enabled = true
 //}
-
-// gradle upload
