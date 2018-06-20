@@ -185,14 +185,14 @@ public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  impl
 	/**
 	 * 是否允许撤销任务
 	 */
-	@Column(name = "canCancel")
+	@Column(name = "can_cancel")
 	private Boolean canCancel;
 
 
 	/**
 	 * 任务定义JSON
 	 */
-	@Column(name = "taskJsonDef")
+	@Column(name = "task_json_def")
 	@Lob
 	private String taskJsonDef;
 
