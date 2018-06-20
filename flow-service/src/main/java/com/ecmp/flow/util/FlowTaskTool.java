@@ -1399,9 +1399,9 @@ public class FlowTaskTool {
                     Boolean isSequential = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
                     if(isSequential && preTask!=null){
                         // 取得当前任务
-                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(actTaskDefKey)
-                                .singleResult();
-                        String executionId = currTask.getExecutionId();
+//                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(task.getId())
+//                                .singleResult();
+                        String executionId = task.getExecutionId();
                         Integer nrOfCompletedInstances = (Integer)runtimeService.getVariable(executionId,"nrOfCompletedInstances");
                         if(nrOfCompletedInstances>1){
                            FlowHistory flowHistory = flowHistoryDao.findOne(preTask.getPreId());
