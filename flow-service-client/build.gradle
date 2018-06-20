@@ -59,19 +59,21 @@ install {
     }
 }
 
-//上传到nexus
+////上传到nexus
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            repository(url: MAVEN_REPO_URL) {
+//                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+//            }
+//            pom.version = "$project.version"
+//            pom.artifactId = "$project.name"
+//            pom.groupId = "$project.group"
+//        }
+//    }
+//    return 'Success'
+//}
+//跳过上传任务
 uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: MAVEN_REPO_URL) {
-                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
-            }
-            pom.version = "$project.version"
-            pom.artifactId = "$project.name"
-            pom.groupId = "$project.group"
-        }
-    }
-    return 'Success'
+    enabled = false
 }
-
-// gradle upload
