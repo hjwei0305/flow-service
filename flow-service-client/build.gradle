@@ -18,7 +18,7 @@ dependencies {
     /* 强制指定版本策略设置*/
 //    compile group:'javax.ws.rs',name:'javax.ws.rs-api',version:'2.+',force:true
     compile(
-            "org.springframework.boot:spring-boot-starter",
+//            "org.springframework.boot:spring-boot-starter",
             "com.ecmp:jpa-ecmp-spring-boot-starter:$ecmp_version"
     )
     compile (
