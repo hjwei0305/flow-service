@@ -241,19 +241,19 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     /**
      * 是否允许驳回
      */
-    @Column(name = "canReject")
+    @Column(name = "can_reject")
     private Boolean canReject;
 
     /**
      * 是否允许流程中止（退出流程）
      */
-    @Column(name = "canSuspension")
+    @Column(name = "can_suspension")
     private Boolean canSuspension;
 
     /**
      * 任务定义JSON
      */
-    @Column(name = "taskJsonDef")
+    @Column(name = "task_json_def")
     @Lob
     private String taskJsonDef;
 
@@ -266,7 +266,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     /**
      * 额定工时（分钟）
      */
-    @Column(name = "executeTime")
+    @Column(name = "execute_time")
     private Integer executeTime;
 
 
@@ -312,7 +312,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     /**
      * 被委托的任务id
      */
-    @Column(name = "trust_owner_taskId")
+    @Column(name = "trust_owner_task_id")
     private String trustOwnerTaskId;
 
     /**
