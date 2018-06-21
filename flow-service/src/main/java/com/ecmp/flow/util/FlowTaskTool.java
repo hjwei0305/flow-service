@@ -1389,10 +1389,14 @@ public class FlowTaskTool {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 String nodeType = (String)currentNode.get("nodeType");
-//                Integer  executeDay = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeDay");
-//                Integer  executeHour = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeHour");
-//                Integer  executeMinute = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeMinute");
-//                executeTime = executeMinute + executeHour*60 +  executeDay*24*60;
+                try {
+                    Integer executeDay = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeDay");
+                    Integer executeHour = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeHour");
+                    Integer executeMinute = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeMinute");
+                    executeTime = executeMinute + executeHour * 60 + executeDay * 24 * 60;
+                }catch (Exception eSign){
+                    logger.error(eSign.getMessage());
+                }
 
                 if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
 
