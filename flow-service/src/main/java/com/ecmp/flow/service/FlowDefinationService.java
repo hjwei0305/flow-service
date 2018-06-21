@@ -504,6 +504,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId,true);
+            String orgId = (String) businessV.get(Constants.ORG_ID);
+            if(StringUtils.isEmpty(orgId)){
+                return OperateResultWithData.operationFailure("条件表达式获取，orgId未指定错误！");
+            }
             if(flowStartVO.getVariables()==null || flowStartVO.getVariables().isEmpty()){
                 flowStartVO.setVariables(businessV);
             }
@@ -530,7 +534,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (flowTypeList != null && !flowTypeList.isEmpty()) {
                 flowTypeListVO = new ArrayList<>();
                 flowStartResultVO.setFlowTypeList(flowTypeListVO);
-                String orgId = (String) businessV.get(Constants.ORG_ID);
+
                 orgParentCodeList = flowTaskTool.getParentOrgCodes(orgId);
                 for (FlowType flowTypeTemp : flowTypeList) {
                     FlowDefination  flowDefinationTemp = this.flowDefLuYou(businessV, flowTypeTemp, orgParentCodeList, 0);
@@ -538,7 +542,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         StartFlowTypeVO startFlowTypeVO = new StartFlowTypeVO();
                         startFlowTypeVO.setId(flowTypeTemp.getId());
                         startFlowTypeVO.setName(flowTypeTemp.getName());
-//                        flowTypeTemp.getFlowDefinations().add(flowDefinationTemp);
                         startFlowTypeVO.setFlowDefKey(flowDefinationTemp.getDefKey());
                         startFlowTypeVO.setFlowDefName(flowDefinationTemp.getName());
                         flowTypeListVO.add(startFlowTypeVO);
@@ -547,12 +550,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         }
                     }
                 }
-//                for (FlowType flowTypeTemp : flowTypeList) {
-//                    if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
-//                        finalFlowDefination = (FlowDefination) flowTypeTemp.getFlowDefinations().toArray()[0];
-//                        break;
-//                    }
-//                }
             } else {
                 flowStartResultVO = null;
             }
@@ -561,21 +558,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowStartResultVO.setNodeInfoList(nodeInfoList);
             }
         }
-//
-//        if (flowTypeList != null && !flowTypeList.isEmpty()) {
-//            for (FlowType flowTypeTemp : flowTypeList) {
-//                Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
-//                if (flowDefinationSet != null && !flowDefinationSet.isEmpty()) {
-//                    for (FlowDefination flowDefination : flowDefinationSet) {
-//                        flowDefination.setFlowType(null);
-//                    }
-//                }
-//            }
-//        }
+
         }catch (FlowException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultWithData = OperateResultWithData.operationFailure(e.getMessage());
-//            throw  e;
         }
         return resultWithData;
     }
