@@ -1381,6 +1381,7 @@ public class FlowTaskTool {
         if (taskList != null && !taskList.isEmpty()) {
             Boolean allowAddSign = null;//允许加签
             Boolean allowSubtractSign = null;//允许减签
+            Integer executeTime=0; //额定工时
             String flowName = null;
             Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
@@ -1388,6 +1389,11 @@ public class FlowTaskTool {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 String nodeType = (String)currentNode.get("nodeType");
+                Integer  executeDay = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeDay");
+                Integer  executeHour = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeHour");
+                Integer  executeMinute = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeMinute");
+                executeTime = executeMinute + executeHour*60 +  executeDay*24*60;
+
                 if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
 
                     FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
@@ -1436,6 +1442,7 @@ public class FlowTaskTool {
                             FlowTask flowTask = new FlowTask();
                             flowTask.setAllowAddSign(allowAddSign);
                             flowTask.setAllowSubtractSign(allowSubtractSign);
+                            flowTask.setExecuteTime(executeTime);
                             flowTask.setTenantCode(ContextUtil.getTenantCode());
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1503,6 +1510,7 @@ public class FlowTaskTool {
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                             flowTask.setActTaskDefKey(actTaskDefKey);
+                            flowTask.setExecuteTime(executeTime);
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
                             flowTask.setActTaskId(task.getId());
@@ -1523,6 +1531,7 @@ public class FlowTaskTool {
                                 flowTask.setTaskJsonDef(currentNode.toString());
                                 flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                                 flowTask.setActTaskDefKey(actTaskDefKey);
+                                flowTask.setExecuteTime(executeTime);
                                 flowTask.setFlowName(flowName);
                                 flowTask.setTaskName(task.getName());
                                 flowTask.setActTaskId(task.getId());
