@@ -18,6 +18,7 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.SessionUser;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -1097,6 +1098,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return voList;
     }
 
+
+    public PageResult<FlowTask> findAllByTenant(String  appModuleId,String businessModelId,String flowTypeId, Search searchConfig) {
+            return flowTaskDao.findByPageByTenant(appModuleId, businessModelId,flowTypeId, searchConfig);
+    }
+
     public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         if(StringUtils.isNotEmpty(businessModelId)){
@@ -1306,6 +1312,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
        return result;
     }
     public OperateResult taskTurnToDo(String taskId,String userId){
+        SessionUser sessionUser = ContextUtil.getSessionUser();
         OperateResult result =  null;
         FlowTask flowTask = flowTaskDao.findOne(taskId);
         if(flowTask!=null){
@@ -1331,7 +1338,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setOwnerAccount(executor.getCode());
                 newFlowTask.setPreId(flowHistory.getId());
                 newFlowTask.setTrustState(0);
-                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
+                newFlowTask.setDepict("【由：“"+sessionUser.getUserName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
                 taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
                 flowHistoryDao.save(flowHistory);
                 flowTaskDao.delete(flowTask);

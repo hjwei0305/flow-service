@@ -42,6 +42,61 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
     String hqlQueryOrder="   order by ft.priority desc,ft.createdDate asc ";
 
+
+    public PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig) {
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
+        String  quickSearchValue = searchConfig.getQuickSearchValue();
+
+        String hqlCount ="select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
+        String hqlQuery = "select ft          from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
+
+       if(StringUtils.isNotEmpty(flowTypeId)&&!"".equals(flowTypeId)){
+           hqlCount += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.id  = '"+flowTypeId+"' ))";
+           hqlQuery += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.id  = '"+flowTypeId+"' ))";
+       }else if(StringUtils.isNotEmpty(businessModelId)&&!"".equals(businessModelId)){
+           hqlCount += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = '"+businessModelId+"' ) )";
+           hqlQuery += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = '"+businessModelId+"' ) )";
+       }else if(StringUtils.isNotEmpty(appModuleId)&&!"".equals(appModuleId)){
+           hqlCount += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule.id='"+appModuleId+"'   )) )";
+           hqlQuery += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule.id='"+appModuleId+"'   )) )";
+       }
+
+        if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for(String s:quickSearchProperties){
+                if(first){
+                    extraHql.append("  ft."+s+" like '%"+quickSearchValue+"%'");
+                    first = false;
+                }else {
+                    extraHql.append(" or  ft."+s+" like '%"+quickSearchValue+"%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount+=extraHql.toString();
+            hqlQuery+=extraHql.toString();
+        }
+        hqlQuery+=hqlQueryOrder;
+        TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
+        query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
+        query.setMaxResults( pageInfo.getRows() );
+        List<FlowTask>  result = query.getResultList();
+        initFlowTaskAppModule(result);
+        PageResult<FlowTask> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue()+pageInfo.getRows()-1)/pageInfo.getRows());
+
+        return pageResult;
+    }
+
+
+
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();

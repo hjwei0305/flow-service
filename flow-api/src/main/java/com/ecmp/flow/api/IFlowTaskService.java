@@ -280,6 +280,21 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
     public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval")Boolean batchApproval);
 
+
+    /**
+     * 获取待办信息（租户管理员）
+     * @param appModuleId 应用模块id
+     * @param businessModelId 业务实体id
+     * @param flowTypeId 流程类型id
+     * @return 待办汇总信息
+     */
+    @POST
+    @Path("findAllByTenant")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办信息（租户管理员）",notes = "测试")
+    public PageResult<FlowTask> findAllByTenant(@QueryParam("appModuleId") String appModuleId,@QueryParam("businessModelId") String businessModelId,@QueryParam("flowTypeId") String flowTypeId, Search searchConfig);
+
     /**
      * 获取待办汇总信息
      * @param businessModelId 业务实体id
