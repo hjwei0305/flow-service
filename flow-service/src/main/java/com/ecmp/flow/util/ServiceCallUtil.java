@@ -122,7 +122,7 @@ public class ServiceCallUtil {
                         }else {
                             message+=resultAy.toString();
                         }
-                        LogUtil.addExceptionLog(message);
+                        LogUtil.bizLog(message);
                     }
                 }).start();
             }else {

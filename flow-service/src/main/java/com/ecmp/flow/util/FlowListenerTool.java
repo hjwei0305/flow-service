@@ -268,7 +268,7 @@ public class FlowListenerTool {
                             new Thread(new Runnable() {//模拟异步
                                 @Override
                                 public void run() {
-                                    LogUtil.addExceptionLog("businessKey="+businessKey+";endSign="+endSign+";"+flowOperateResult.toString());
+                                    LogUtil.bizLog("businessKey="+businessKey+";endSign="+endSign+";"+flowOperateResult.toString());
                                 }
                             }).start();
                         }
@@ -398,7 +398,7 @@ public class FlowListenerTool {
             new Thread(new Runnable() {//模拟异步
                 @Override
                 public void run() {
-                    LogUtil.addExceptionLog(e.getMessage());
+                    LogUtil.bizLog(e.getMessage());
                 }
             }).start();
         }
