@@ -42,4 +42,6 @@ public interface FlowDefVersionDao extends BaseEntityDao<FlowDefVersion> {
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.defKey  = :defKey and fv.versionCode = :versionCode")
     public FlowDefVersion findByKeyAndVersionCode(@Param("defKey")String defKey,@Param("versionCode")Integer versionCode);
 
+    @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.id  = :id")
+    public FlowDefVersion findByIdNoF(@Param("id")String id);
     }

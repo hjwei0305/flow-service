@@ -75,7 +75,7 @@ public class FlowCommonUtil implements Serializable {
 
     @Cacheable(value = "FLowGetLastFlowDefVersion", key = "'FLowGetLastFlowDefVersion_' + #versionId")
     public FlowDefVersion getLastFlowDefVersion(String versionId ){
-        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(versionId);
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findByIdNoF(versionId);
         return flowDefVersion;
     }
 
