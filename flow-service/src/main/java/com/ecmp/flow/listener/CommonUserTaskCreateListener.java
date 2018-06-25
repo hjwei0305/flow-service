@@ -77,7 +77,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             new Thread(new Runnable() {//模拟异步
                 @Override
                 public void run() {
-                    LogUtil.addExceptionLog(e.getMessage());
+                    LogUtil.bizLog(e.getMessage());
                 }
             }).start();
             throw new FlowException(e.getMessage());

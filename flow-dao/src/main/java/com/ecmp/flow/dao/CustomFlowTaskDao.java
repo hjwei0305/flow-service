@@ -5,7 +5,6 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.FlowTask;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -37,5 +36,8 @@ public interface CustomFlowTaskDao {
 
     @Transactional(readOnly = true)
     public Long findCountByExecutorId(String executorId, Search searchConfig);
+
+    @Transactional(readOnly = true)
+    public PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig);
 
 }
