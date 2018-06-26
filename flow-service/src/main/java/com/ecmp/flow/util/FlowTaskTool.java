@@ -1406,11 +1406,9 @@ public class FlowTaskTool {
                     }
                     //串行会签，将上一步执行历史，换成真实的上一步执行节点信息
                     //判断是否是串行会签
-                    Boolean isSequential = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
-                    if(isSequential && preTask!=null){
-                        // 取得当前任务
-//                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(task.getId())
-//                                .singleResult();
+                    try{
+                      Boolean isSequential = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+                      if(isSequential && preTask!=null){
                         String executionId = task.getExecutionId();
                         Integer nrOfCompletedInstances = (Integer)runtimeService.getVariable(executionId,"nrOfCompletedInstances");
                         if(nrOfCompletedInstances>1){
@@ -1419,6 +1417,9 @@ public class FlowTaskTool {
                                preTask = flowHistory;
                            }
                         }
+                      }
+                    }catch (Exception e){
+                        logger.error(e.getMessage());
                     }
                     try {
                         allowAddSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowAddSign");
