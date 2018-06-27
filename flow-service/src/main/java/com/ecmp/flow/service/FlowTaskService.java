@@ -809,13 +809,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                                     String path = flowExecutorConfig.getUrl();
                                     AppModule appModule= flowExecutorConfig.getBusinessModel().getAppModule();
-                                    String appModuleCode = appModule.getCode();
-                                    Map<String, String>  params = new HashMap<String,String>();;
-                                    String param = flowExecutorConfig.getParam();
+                                    String appModuleCode = appModule.getApiBaseAddress();
+//                                    Map<String, String>  params = new HashMap<String,String>();;
+//                                    String param = flowExecutorConfig.getParam();
+//                                    String businessId = flowTask.getFlowInstance().getBusinessId();
+//                                    params.put("businessId",businessId);
+//                                    params.put("paramJson",param);
+//                                    employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
+
                                     String businessId = flowTask.getFlowInstance().getBusinessId();
-                                    params.put("businessId",businessId);
-                                    params.put("paramJson",param);
-                                    employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params);
+                                    String param = flowExecutorConfig.getParam();
+                                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                                    flowInvokeParams.setId(businessId);
+//                                    flowInvokeParams.setOrgId(""+flowStartVO.getVariables().get("orgId"));
+                                    flowInvokeParams.setJsonParam(param);
+                                    employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+                                    }, flowInvokeParams);
                                 }else{
                                     employees=flowTaskTool.getExecutors(userType, ids);
                                 }
