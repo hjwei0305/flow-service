@@ -97,7 +97,7 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     }
 
     /**
-     * 主键删除
+     * 主键删除判断
      *
      * @param id 主键
      * @return 返回操作结果对象
