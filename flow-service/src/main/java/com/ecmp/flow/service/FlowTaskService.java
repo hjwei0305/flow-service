@@ -586,7 +586,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception{
+     OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception{
         OperateResult result = OperateResult.operationSuccess("10015");
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
