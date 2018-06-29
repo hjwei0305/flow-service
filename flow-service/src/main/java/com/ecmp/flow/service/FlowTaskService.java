@@ -11,6 +11,7 @@ import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -51,6 +52,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -1711,6 +1713,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         result.clear();
         result.addAll(tempMap.values());
+        return result;
+    }
+
+    public OperateResult reminding(){
+        OperateResult result = null;
+        List<FlowTaskExecutorIdAndCount> executorIdAndCountList = flowTaskDao.findAllExecutorIdAndCount();
+        if(executorIdAndCountList!=null && !executorIdAndCountList.isEmpty()){
+            Map<String,Integer>  executorIdAndCountMap = executorIdAndCountList.stream().collect(Collectors.toMap(FlowTaskExecutorIdAndCount::getExecutorId, FlowTaskExecutorIdAndCount::getCount));
+            //调用basic个人基本信息
+        }
         return result;
     }
 }

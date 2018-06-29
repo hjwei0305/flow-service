@@ -38,6 +38,7 @@ public class NodeInfo implements Serializable{
 	private String flowDefVersionId;//流程定义版本id
 	private String flowDefVersionName;//流程定义版本name
 	private String flowTaskId;//任务id
+	private Boolean allowChooseInstancy;//是否允许选择任务紧急状态
 
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
@@ -184,5 +185,13 @@ public class NodeInfo implements Serializable{
 
 	public void setPreLineCode(String preLineCode) {
 		this.preLineCode = preLineCode;
+	}
+
+	public Boolean getAllowChooseInstancy() {
+		return allowChooseInstancy;
+	}
+
+	public void setAllowChooseInstancy(Boolean allowChooseInstancy) {
+		this.allowChooseInstancy = allowChooseInstancy;
 	}
 }

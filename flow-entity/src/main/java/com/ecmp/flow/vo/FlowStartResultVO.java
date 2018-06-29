@@ -28,6 +28,8 @@ public class FlowStartResultVO implements Serializable{
 
     private Boolean checkStartResult=true;
 
+    private Boolean allowChooseInstancy;//是否允许选择任务紧急状态
+
     /**
      * 额外参数
      */
@@ -64,6 +66,14 @@ public class FlowStartResultVO implements Serializable{
 
     public void setCheckStartResult(Boolean checkStartResult) {
         this.checkStartResult = checkStartResult;
+    }
+
+    public Boolean getAllowChooseInstancy() {
+        return allowChooseInstancy;
+    }
+
+    public void setAllowChooseInstancy(Boolean allowChooseInstancy) {
+        this.allowChooseInstancy = allowChooseInstancy;
     }
 }
 

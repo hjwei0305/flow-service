@@ -45,6 +45,12 @@ public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultB
         return customeInt;
     }
 
+    @Override
+    @ConditionAnnotaion(name="额外属性",canSee = false)
+    public int getPriority() {
+        return super.getPriority();
+    }
+
     public void setCustomeInt(Integer customeInt) {
         this.customeInt = customeInt;
     }

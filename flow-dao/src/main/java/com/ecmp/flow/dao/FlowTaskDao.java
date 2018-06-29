@@ -1,6 +1,7 @@
 package com.ecmp.flow.dao;
 
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.CanAddOrDelNodeInfo;
 import org.springframework.data.jpa.repository.Modifying;
@@ -119,5 +120,6 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     public List<CanAddOrDelNodeInfo> findByAllowSubtractSign(@Param("executorId") String executorId);
 
 
-
+    @Query("select new FlowTaskExecutorIdAndCount(ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId")
+    public List<FlowTaskExecutorIdAndCount> findAllExecutorIdAndCount();
 }

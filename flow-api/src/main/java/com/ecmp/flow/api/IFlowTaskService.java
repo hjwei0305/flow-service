@@ -512,4 +512,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "通过当前流程实例和对应节点key获取会签执行人列表",notes = "测试")
     public List<Executor> getCounterSignExecutorList(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey) throws Exception;
 
+    @POST
+    @Path("reminding")
+    @ApiOperation(value = "催办提醒定时任务接口",notes = "测试")
+    public OperateResult reminding();
 }
