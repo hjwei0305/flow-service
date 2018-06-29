@@ -20,7 +20,7 @@ public class FlowTaskExecutorIdAndCount implements Serializable {
 
     public FlowTaskExecutorIdAndCount(){}
 
-    public FlowTaskExecutorIdAndCount(String executorId,int count){
+    public FlowTaskExecutorIdAndCount(String executorId,long count){
         this.executorId = executorId;
         this.count = count;
     }
