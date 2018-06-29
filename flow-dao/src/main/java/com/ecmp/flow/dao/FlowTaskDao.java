@@ -120,6 +120,6 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     public List<CanAddOrDelNodeInfo> findByAllowSubtractSign(@Param("executorId") String executorId);
 
 
-    @Query("select new FlowTaskExecutorIdAndCount(ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId")
+    @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId")
     public List<FlowTaskExecutorIdAndCount> findAllExecutorIdAndCount();
 }

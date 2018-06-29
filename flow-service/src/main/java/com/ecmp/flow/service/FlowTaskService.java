@@ -1720,7 +1720,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         OperateResult result = null;
         List<FlowTaskExecutorIdAndCount> executorIdAndCountList = flowTaskDao.findAllExecutorIdAndCount();
         if(executorIdAndCountList!=null && !executorIdAndCountList.isEmpty()){
-            Map<String,Integer>  executorIdAndCountMap = executorIdAndCountList.stream().collect(Collectors.toMap(FlowTaskExecutorIdAndCount::getExecutorId, FlowTaskExecutorIdAndCount::getCount));
+            Map<String,Long>  executorIdAndCountMap = executorIdAndCountList.stream().collect(Collectors.toMap(FlowTaskExecutorIdAndCount::getExecutorId, FlowTaskExecutorIdAndCount::getCount));
             //调用basic个人基本信息
         }
         return result;
