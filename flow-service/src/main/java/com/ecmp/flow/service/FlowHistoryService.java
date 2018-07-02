@@ -2,11 +2,9 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
@@ -86,4 +84,14 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             return flowHistoryDao.findByPage(userId, searchConfig);
         }
     }
+
+    public PageResult<FlowHistory> findByBusinessModelCode(String businessModelCode, Search searchConfig) {
+        String userId = ContextUtil.getUserId();
+        if(StringUtils.isNotEmpty(businessModelCode)){
+            return flowHistoryDao.findByPageByBusinessModelCode(businessModelCode, userId, searchConfig);
+        }else{
+            return flowHistoryDao.findByPage(userId, searchConfig);
+        }
+    }
+
 }
