@@ -93,7 +93,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Path("findByBusinessModelId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    @ApiOperation(value = "业务实体ID获取待办汇总信息",notes = "测试")
     public PageResult<FlowHistory> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
     /**
@@ -106,7 +106,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Path("findByBusinessModelCode")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    @ApiOperation(value = "通过业务实体代码获取待办汇总信息",notes = "测试")
     public PageResult<FlowHistory> findByBusinessModelCode(@QueryParam("businessModelCode") String businessModelCode, Search searchConfig);
 
 }
