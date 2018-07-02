@@ -1351,6 +1351,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setTrustState(0);
                 newFlowTask.setDepict("【由：“"+sessionUser.getUserName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
                 taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
+
+
+                // 取得当前任务
+                HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                        .singleResult();
+                String taskJsonDef = newFlowTask.getTaskJsonDef();
+                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                String nodeType = taskJsonDefObj.get("nodeType")+"";//会签
+                if("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务替换执行人集合
+                    String  processInstanceId = currTask.getProcessInstanceId();
+                    String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
+                    List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
+                    Collections.replaceAll(userList,flowTask.getExecutorId(),userId);
+                    runtimeService.setVariableLocal(processInstanceId,userListDesc,userList);
+                }
                 flowHistoryDao.save(flowHistory);
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
@@ -1464,6 +1479,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         String[] userIdArray = null;
         StringBuffer resultDec = new StringBuffer();
+        StringBuffer resultDecTrue = new StringBuffer();
+        StringBuffer resultDecFalseOne = new StringBuffer();
+        StringBuffer resultDecFalseTwo = new StringBuffer();
+        StringBuffer resultDecFalseThree = new StringBuffer();
         OperateResult result =  null;
         if(StringUtils.isNotEmpty(userIds)){
             userIdArray = userIds.split(",");
@@ -1477,7 +1496,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         logger.error(e.getMessage());
                     }
                     if(executor==null){
-                        resultDec.append("加签id='"+userId+"'的用户信息不存在;");
+//                        resultDec.append("加签id='"+userId+"'的用户信息不存在;");
+                        if(resultDecFalseOne.length()>0){
+                            resultDecFalseOne.append("【ID='"+userId+"'】");
+                        }else{
+                            resultDecFalseOne.append("<br/>【ID='"+userId+"'】");
+                        }
                         continue;
                     }
                     List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
@@ -1521,16 +1545,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 String preId = flowTaskTemp.getPreId();
                                 flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
                             }
-                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的加签操作执行成功;");
+//                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的加签操作执行成功;");
+                            resultDecTrue.append("【"+executor.getName()+"-"+executor.getCode()+"】");
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的加签操作执行成功;");
+                            continue;
                         }else{
-                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的执行节点为非会签节点，无法加签;");
+//                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的执行节点为非会签节点，无法加签;");
+                            if(resultDecFalseTwo.length()>0){
+                                resultDecFalseTwo.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                            }else{
+                                resultDecFalseTwo.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                            }
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的执行节点为非会签节点，无法加签;");
-                            return OperateResult.operationFailure(resultDec.toString());
+//                            return OperateResult.operationFailure(resultDec.toString());
+                            continue;
                         }
                     }else{
-                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法加签;");
+//                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法加签;");
+                        if(resultDecFalseThree.length()>0){
+                            resultDecFalseThree.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                        }else{
+                            resultDecFalseThree.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                        }
                         logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务可能已经执行完，无法加签;");
+                        continue;
                     }
                 }
             }else{
@@ -1539,7 +1577,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }else {
             return OperateResult.operationFailure("执行人列表不能为空！");
         }
-        result = OperateResult.operationSuccess(resultDec.toString());
+        if(resultDecTrue.length()>0){
+            resultDecTrue.append("加签成功！");
+        }
+        if(resultDecFalseOne.length()>0){
+            resultDecFalseOne.append("用户信息不存在,加签失败！");
+        }
+        if(resultDecFalseTwo.length()>0){
+            resultDecFalseTwo.append("非会签节点，加签失败！");
+        }
+        if(resultDecFalseThree.length()>0){
+            resultDecFalseThree.append("任务可能已经执行完，加签失败！");
+        }
+        resultDec.append(resultDecTrue).append(resultDecFalseOne).append(resultDecFalseTwo).append(resultDecFalseThree);
+        if(resultDecTrue.length()>0){
+            result = OperateResult.operationSuccess(resultDec.toString());
+        }else{
+            result = OperateResult.operationFailure(resultDec.toString());
+        }
         return result;
     }
 
@@ -1555,6 +1610,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResult counterSignDel(String actInstanceId,String taskActKey,String userIds) throws Exception{
         String[] userIdArray = null;
         StringBuffer resultDec = new StringBuffer();
+        StringBuffer resultDecTrue = new StringBuffer();
+        StringBuffer resultDecFalseOne = new StringBuffer();
+        StringBuffer resultDecFalseTwo = new StringBuffer();
+        StringBuffer resultDecFalseThree = new StringBuffer();
+        StringBuffer resultDecFalseFour = new StringBuffer();
+        StringBuffer resultDecFalseFive = new StringBuffer();
+        StringBuffer resultDecFalseSix = new StringBuffer();
+        StringBuffer resultDecFalseSeven = new StringBuffer();
+        StringBuffer resultDecFalseEight = new StringBuffer();
+
         OperateResult result =  null;
         if(StringUtils.isNotEmpty(userIds)){
             userIdArray = userIds.split(",");
@@ -1568,7 +1633,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         logger.error(e.getMessage());
                     }
                     if(executor==null){
-                        resultDec.append("id='"+userId+"'减签的用户信息不存在;");
+//                        resultDec.append("减签id='"+userId+"'的用户信息不存在;");
+                        if(resultDecFalseOne.length()>0){
+                            resultDecFalseOne.append("【ID='"+userId+"'】");
+                        }else{
+                            resultDecFalseOne.append("<br/>【ID='"+userId+"'】");
+                        }
                         continue;
                     }
                     List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey,actInstanceId);
@@ -1592,7 +1662,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             String userListDesc = currTask.getTaskDefinitionKey()+"_List_CounterSign";
                             List<String> userList = (List<String> )runtimeService.getVariableLocal(processInstanceId,userListDesc);
                             if(!userList.contains(userId)){
-                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,在当前任务节点找不到，减签失败;");
+//                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,在当前任务节点找不到，减签失败;");
+                                if(resultDecFalseTwo.length()>0){
+                                    resultDecFalseTwo.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                                }else{
+                                    resultDecFalseTwo.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                                }
                                 logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,在当前任务节点找不到，减签失败;");
                                 continue;
                             }
@@ -1603,9 +1678,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             //完成会签的次数
                             Integer completeCounter=(Integer)processVariables.get("nrOfCompletedInstances").getValue();
                             if(completeCounter+1==instanceOfNumbers){//最后一个任务
-                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务已经到达最后一位执行人，减签失败;");
+//                                resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务已经到达最后一位执行人，减签失败;");
+                                if(resultDecFalseThree.length()>0){
+                                    resultDecFalseThree.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                                }else{
+                                    resultDecFalseThree.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                                }
                                 logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务已经到达最后一位执行人，减签失败;");
-                                return OperateResult.operationFailure(resultDec.toString());
+//                                return OperateResult.operationFailure(resultDec.toString());
+                                continue;
                             }
 
                             //判断是否是并行会签
@@ -1626,13 +1707,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         flowTaskDao.delete(flowTask);
                                     }
                                 }else{
-                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,当前任务节点已执行，减签失败;");
+//                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,当前任务节点已执行，减签失败;");
+                                    if(resultDecFalseFour.length()>0){
+                                        resultDecFalseFour.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                                    }else{
+                                        resultDecFalseFour.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                                    }
                                     logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,当前任务节点已执行，减签失败;");
                                     continue;
                                 }
                             }else{//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
                                 if(flowTaskListCurrent!=null && !flowTaskListCurrent.isEmpty()){
-                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
+//                                    resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
+                                    if(resultDecFalseFive.length()>0){
+                                        resultDecFalseFive.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                                    }else{
+                                        resultDecFalseFive.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                                    }
                                     logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
                                 }else {
@@ -1660,29 +1751,83 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                        userList.remove(userId);
                                        runtimeService.setVariable(processInstanceId,userListDesc,userList);//回写减签后的执行人列表
                                    }else{
-                                       resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,发现已经执行，减签操作执行失败;");
+//                                       resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,发现已经执行，减签操作执行失败;");
+                                       if(resultDecFalseSix.length()>0){
+                                           resultDecFalseSix.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                                       }else {
+                                           resultDecFalseSix.append("<br/>【" + executor.getName() + "-" + executor.getCode() + "】");
+                                       }
                                        logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,发现已经执行，减签操作执行失败;");
+                                       continue;
                                    }
                                 }
                             }
 
-                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成功;");
+//                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,的减签操作执行成功;");
+                            resultDecTrue.append("【"+executor.getName()+"-"+executor.getCode()+"】");
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,的减签操作执行成;");
                         }else{
-                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,执行节点为非会签节点，无法减签;");
+//                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,执行节点为非会签节点，无法减签;");
+                            if(resultDecFalseSeven.length()>0){
+                                resultDecFalseSeven.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                            }else{
+                                resultDecFalseSeven.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                            }
                             logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,执行节点为非会签节点，无法减签;");
-                            return OperateResult.operationFailure(resultDec.toString());
+//                            return OperateResult.operationFailure(resultDec.toString());
+                            continue;
                         }
                     }else {
-                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法减签;");
+//                        resultDec.append(executor.getName()+"【"+executor.getCode()+"】的用户,任务可能已经执行完，无法减签;");
+                        if(resultDecFalseEight.length()>0){
+                            resultDecFalseEight.append("【"+executor.getName()+"-"+executor.getCode()+"】");
+                        }else{
+                            resultDecFalseEight.append("<br/>【"+executor.getName()+"-"+executor.getCode()+"】");
+                        }
                         logger.info(executor.getName()+"【"+executor.getCode()+"】,id='"+executor.getId()+"'的用户,任务可能已经执行完，无法减签;");
+                        continue;
                     }
                 }
             }else {
                 return OperateResult.operationFailure("执行人列表不能为空！");
             }
         }
-        result = OperateResult.operationSuccess(resultDec.toString());
+
+        if(resultDecTrue.length()>0){
+            resultDecTrue.append("减签成功！");
+        }
+        if(resultDecFalseOne.length()>0){
+            resultDecFalseOne.append("用户信息不存在，减签失败！");
+        }
+        if(resultDecFalseTwo.length()>0){
+            resultDecFalseTwo.append("当前任务节点找不到，减签失败！");
+        }
+        if(resultDecFalseThree.length()>0){
+            resultDecFalseThree.append("到达最后一位执行人，减签失败！");
+        }
+        if(resultDecFalseFour.length()>0){
+            resultDecFalseFour.append("当前任务节点已执行，减签失败！");
+        }
+        if(resultDecFalseFive.length()>0){
+            resultDecFalseFive.append("串行会签不能对当前执行人进行减签，减签失败！");
+        }
+        if(resultDecFalseSix.length()>0){
+            resultDecFalseSix.append("发现已经执行，减签失败！");
+        }
+        if(resultDecFalseSeven.length()>0){
+            resultDecFalseSeven.append("非会签节点，减签失败！");
+        }
+        if(resultDecFalseEight.length()>0){
+            resultDecFalseEight.append("任务可能已经执行完，减签失败！");
+        }
+        resultDec.append(resultDecTrue).append(resultDecFalseOne).append(resultDecFalseTwo)
+                .append(resultDecFalseThree).append(resultDecFalseFour).append(resultDecFalseFive)
+                .append(resultDecFalseSix).append(resultDecFalseSeven).append(resultDecFalseEight);
+        if(resultDecTrue.length()>0){
+            result = OperateResult.operationSuccess(resultDec.toString());
+        }else{
+            result = OperateResult.operationFailure(resultDec.toString());
+        }
         return result;
     }
 
