@@ -92,7 +92,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      *
      * @return
      */
-    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft where ft.allowAddSign  = true and (ft.preId is null and ft.flowInstance.creatorId = :executorId)")
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessCode,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft where ft.allowAddSign  = true and (ft.preId is null and ft.flowInstance.creatorId = :executorId)")
     public List<CanAddOrDelNodeInfo> findByAllowAddSignStart(@Param("executorId") String executorId);
 
     /**
@@ -100,7 +100,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      *
      * @return
      */
-    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowAddSign  = true and  fh.executorId = :executorId")
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessCode,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowAddSign  = true and  fh.executorId = :executorId")
     public List<CanAddOrDelNodeInfo> findByAllowAddSign(@Param("executorId") String executorId);
 
     /**
@@ -108,7 +108,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      *
      * @return
      */
-    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft where ft.allowSubtractSign  = true and (ft.preId is null and ft.flowInstance.creatorId = :executorId)")
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessCode,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft where ft.allowSubtractSign  = true and (ft.preId is null and ft.flowInstance.creatorId = :executorId)")
     public List<CanAddOrDelNodeInfo> findByAllowSubtractSignStart(@Param("executorId") String executorId);
 
     /**
@@ -116,7 +116,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      *
      * @return
      */
-    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowSubtractSign  = true and  fh.executorId = :executorId")
+    @Query("select  new com.ecmp.flow.vo.CanAddOrDelNodeInfo( ft.flowInstance.actInstanceId,ft.actTaskDefKey,ft.taskName,ft.flowInstance.businessId,ft.flowInstance.businessCode,ft.flowInstance.businessName,ft.flowInstance.businessModelRemark,ft.flowInstance.flowName,ft.flowInstance.flowDefVersion.defKey) from FlowTask ft inner join  FlowHistory fh on ft.preId = fh.id where ft.allowSubtractSign  = true and  fh.executorId = :executorId")
     public List<CanAddOrDelNodeInfo> findByAllowSubtractSign(@Param("executorId") String executorId);
 
 

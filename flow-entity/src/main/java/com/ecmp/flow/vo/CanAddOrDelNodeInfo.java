@@ -21,6 +21,7 @@ public class CanAddOrDelNodeInfo  implements Serializable {
     private String nodeKey;//流程节点定义key
     private String nodeName;//流程节点名称==taskName
     private String businessId;//业务单据id
+    private String businessCode;//业务单据编号
     private String businessName;//业务单据名称
     private String businessModelRemark;//业务摘要(工作说明)
     private String flowName;//流程名称
@@ -28,18 +29,27 @@ public class CanAddOrDelNodeInfo  implements Serializable {
 
     public CanAddOrDelNodeInfo(){}
 
-    public CanAddOrDelNodeInfo(String actInstanceId,String nodeKey,String nodeName,String businessId
-    ,String businessName,String businessModelRemark,String flowName,String flowDefKey){
+    public CanAddOrDelNodeInfo(String actInstanceId,String nodeKey,String nodeName,String businessId,String businessCode
+    ,String businessName, String businessModelRemark,String flowName,String flowDefKey){
         this.actInstanceId = actInstanceId;
         this.nodeKey = nodeKey;
         this.nodeName = nodeName;
         this.businessId = businessId;
+        this.businessCode = businessCode;
         this.businessName = businessName;
         this.businessModelRemark = businessModelRemark;
         this.flowName = flowName;
         this.flowDefKey = flowDefKey;
     }
 
+
+    public String getBusinessCode() {
+        return businessCode;
+    }
+
+    public void setBusinessCode(String businessCode) {
+        this.businessCode = businessCode;
+    }
 
     public String getActInstanceId() {
         return actInstanceId;
