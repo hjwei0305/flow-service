@@ -1515,7 +1515,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
                         if (definition == null) {
                             logger.error(ContextUtil.getMessage("10003"));
-                            return OperateResult.operationFailure("10003");//流程定义未找到找到");
+                            return OperateResult.operationFailure("10003");//流程定义未找到");
                         }
                         FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
                         String taskJsonDef = flowTaskTemp.getTaskJsonDef();

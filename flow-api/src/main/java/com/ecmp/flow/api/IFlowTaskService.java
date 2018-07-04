@@ -463,7 +463,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 会签任务加签
+     * 会签减签
      * @param actInstanceId 流程实例实际ID
      * @param  taskActKey 任务key
      * @param  userIds 用户id,以“，”分割

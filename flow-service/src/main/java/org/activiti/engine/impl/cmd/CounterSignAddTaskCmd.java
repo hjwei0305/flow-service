@@ -88,6 +88,7 @@ public class CounterSignAddTaskCmd implements Command<Void>, Serializable {
 		this.task = newTask;
 //    if (task.getRevision()==0) {
 		executionEntityNew.setActive(true);
+		executionEntityNew.setConcurrent(true);
 		executionEntityNew.setScope(false);
 //		executionEntityNew.update();
          task.insert(executionEntityNew);
