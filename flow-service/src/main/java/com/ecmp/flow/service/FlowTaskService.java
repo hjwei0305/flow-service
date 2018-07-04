@@ -1542,8 +1542,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             runtimeService.setVariable(processInstanceId,userListDesc,userList);
                             if(isSequential==false){//并行会签，需要立即初始化执行人
                                 taskService.counterSignAddTask(userId,executionEntity,currTask);
-                                String preId = flowTaskTemp.getPreId();
-                                flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, preId);
+//                                String preId = flowTaskTemp.getPreId();
+                                flowTaskTool.initCounterSignAddTask(flowInstance,currTask.getTaskDefinitionKey(),userId, flowTaskTemp);
                             }
 //                            resultDec.append(executor.getName()+"【"+executor.getCode()+"】的加签操作执行成功;");
                             resultDecTrue.append("【"+executor.getName()+"-"+executor.getCode()+"】");
