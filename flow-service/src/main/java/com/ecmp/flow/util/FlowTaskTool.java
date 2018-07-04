@@ -1303,7 +1303,7 @@ public class FlowTaskTool {
      * @param flowInstance
      * @param actTaskDefKeyCurrent
      */
-    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId,String preId) {
+    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId,FlowTask flowTaskTemp) {
         List<Task> taskList = null;
         String actProcessInstanceId = flowInstance.getActInstanceId();
         if(StringUtils.isNotEmpty(actTaskDefKeyCurrent)){
@@ -1325,7 +1325,7 @@ public class FlowTaskTool {
                     Executor executor = flowCommonUtil.getBasicExecutor(userId);
                     if (executor != null) {
                         FlowTask flowTask = new FlowTask();
-                        flowTask.setPreId(preId);
+                        flowTask.setPreId(flowTaskTemp.getPreId());
                         flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1338,6 +1338,9 @@ public class FlowTaskTool {
                         flowTask.setExecutorId(executor.getId());
                         flowTask.setExecutorName(executor.getName());
                         flowTask.setActType("candidate");
+                        flowTask.setExecuteTime(flowTaskTemp.getExecuteTime());
+                        flowTask.setAllowAddSign(flowTaskTemp.getAllowAddSign());
+                        flowTask.setAllowSubtractSign(flowTaskTemp.getAllowSubtractSign());
                         if (StringUtils.isEmpty(task.getDescription())) {
                             flowTask.setDepict("加签的任务");
                         } else {
@@ -1411,7 +1414,7 @@ public class FlowTaskTool {
                       if(isSequential && preTask!=null){
                         String executionId = task.getExecutionId();
                         Integer nrOfCompletedInstances = (Integer)runtimeService.getVariable(executionId,"nrOfCompletedInstances");
-                        if(nrOfCompletedInstances>1){
+                        if(nrOfCompletedInstances>=1){
                            FlowHistory flowHistory = flowHistoryDao.findOne(preTask.getPreId());
                            if(flowHistory!=null){
                                preTask = flowHistory;
