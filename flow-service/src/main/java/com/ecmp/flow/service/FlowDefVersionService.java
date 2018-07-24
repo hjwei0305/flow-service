@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.xml.bind.JAXBException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * *************************************************************************************************
@@ -300,9 +301,18 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             operateResult = OperateResultWithData.operationSuccess("core_00002");
         }
         operateResult.setData(entity);
+        clearFlowDefVersion();
         return operateResult;
     }
-
+    private void clearFlowDefVersion(){
+        String pattern = "FLowGetLastFlowDefVersion_*";
+        if(redisTemplate!=null){
+            Set<String> keys = redisTemplate.keys(pattern);
+            if (keys!=null&&!keys.isEmpty()){
+                redisTemplate.delete(keys);
+            }
+        }
+    }
     /**
      * 数据删除操作
      * 清除有关联的流程版本及对应的流程引擎数据
