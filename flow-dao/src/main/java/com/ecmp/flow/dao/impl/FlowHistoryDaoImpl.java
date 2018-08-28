@@ -6,11 +6,8 @@ import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
-import com.ecmp.flow.dao.CustomFlowHistoryDao;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -127,31 +124,24 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             for(FlowHistory flowHistory:result){
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
-                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
-                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                if(StringUtils.isNotEmpty(apiBaseAddress)){
+                    flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
+                    String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
+                    if(tempWebApiBaseAddress!=null && tempWebApiBaseAddress.length>0){
+                        apiBaseAddress = tempWebApiBaseAddress[tempWebApiBaseAddress.length-1];
+                        flowHistory.setApiBaseAddress("/"+apiBaseAddress+"/");
+                    }
+                }
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                 String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
-                flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
-                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
-                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                flowHistory.setApiBaseAddress(apiBaseAddress);
-                flowHistory.setWebBaseAddress(webBaseAddress);
-//                WorkPageUrl workPageUrl = flowHistory.getWorkPageUrl();
-//                flowHistory.setCompleteTaskServiceUrl(flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl());
-//                if(workPageUrl!=null){
-//                    flowHistory.setTaskFormUrl(flowHistory.getWebBaseAddressAbsolute()+workPageUrl.getUrl());
-//                    flowHistory.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
-//                    String appModuleId = workPageUrl.getAppModuleId();
-//                    AppModule appModule = appModuleDao.findOne(appModuleId);
-//                    if(appModule!=flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()){
-//                        webBaseAddress = appModule.getWebBaseAddress();
-//                        flowHistory.setTaskFormUrl(webBaseAddress+workPageUrl.getUrl());
-//                        webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
-//                        webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-//                        flowHistory.setTaskFormUrlXiangDui(webBaseAddress+workPageUrl.getUrl());
-//                    }
-//                }
+                if(StringUtils.isNotEmpty(webBaseAddress)){
+                    flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
+                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
+                        flowHistory.setWebBaseAddress("/"+webBaseAddress+"/");
+                    }
+                }
             }
         }
         return result;
@@ -198,3 +188,5 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     }
 
 }
+
+
