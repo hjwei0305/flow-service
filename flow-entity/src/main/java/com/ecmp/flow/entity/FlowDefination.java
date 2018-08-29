@@ -26,7 +26,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_defination", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
+@Table(name = "flow_defination", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
