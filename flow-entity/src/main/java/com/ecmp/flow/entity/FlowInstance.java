@@ -28,7 +28,7 @@ import org.hibernate.annotations.GenericGenerator;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_instance", catalog = "ecmp_flow")
+@Table(name = "flow_instance")
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {

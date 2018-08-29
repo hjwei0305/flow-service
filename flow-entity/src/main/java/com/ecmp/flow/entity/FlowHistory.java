@@ -24,7 +24,7 @@ import java.util.Date;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_history", catalog = "ecmp_flow")
+@Table(name = "flow_history")
 public class FlowHistory  extends com.ecmp.core.entity.BaseAuditableEntity  implements Cloneable,ITenant {
 
 	/**
