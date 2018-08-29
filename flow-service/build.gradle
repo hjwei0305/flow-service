@@ -26,7 +26,7 @@ dependencies {
     compile(
             "org.springframework.boot:spring-boot-starter",
             "org.springframework.boot:spring-boot-starter-web",
-            "com.ecmp:service-ecmp-spring-boot-starter:$ecmp_version",
+            "com.ecmp:cxf-service-ecmp-spring-boot-starter:$ecmp_version",
 
 
             //整合activiti所需要的jar
