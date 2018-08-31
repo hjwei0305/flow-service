@@ -12,6 +12,8 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
@@ -32,6 +34,7 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ServiceCallUtil {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceCallUtil.class);
     public static FlowOperateResult callService(String serviceUrlId,String businessId,String... args){
         FlowOperateResult result = null;
         if(!StringUtils.isEmpty(serviceUrlId)){
@@ -108,23 +111,25 @@ public class ServiceCallUtil {
                     }, params);
                 }catch (Exception e){
                     exceptionMessage="Flow call Service exception:"+e.getMessage();
-                    result = new FlowOperateResult(false,exceptionMessage);
-                }
-                String exceptionMessageFinal = exceptionMessage;
-                FlowOperateResult resultAy = result;
-                new Thread(new Runnable() {//模拟异步,上传调用日志
-                    @Override
-                    public void run() {
-                        String paramsStr = JsonUtils.toJson(params);
-                        String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = ";
-                        if(StringUtils.isNotEmpty(exceptionMessageFinal)){
-                            message+=exceptionMessageFinal;
-                        }else {
-                            message+=resultAy.toString();
+                    result = new FlowOperateResult(false,"服务调用异常，请联系管理员！");
+                }finally {
+                    String exceptionMessageFinal = exceptionMessage;
+                    FlowOperateResult resultAy = result;
+                    new Thread(new Runnable() {//模拟异步,上传调用日志
+                        @Override
+                        public void run() {
+                            String paramsStr = JsonUtils.toJson(params);
+                            String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = ";
+                            if(StringUtils.isNotEmpty(exceptionMessageFinal)){
+                                message+=exceptionMessageFinal;
+                            }else {
+                                message+=resultAy.toString();
+                            }
+                            LogUtil.bizLog(message);
                         }
-                        LogUtil.bizLog(message);
-                    }
-                }).start();
+                    }).start();
+                }
+
             }else {
                 throw new FlowException("serviceUrlId='"+serviceUrlId+"'s service object can't be found!");
             }

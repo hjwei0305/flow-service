@@ -7,8 +7,13 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +34,8 @@ import java.util.*;
  */
 public class ExpressionUtil {
 
+     private static final Logger logger = LoggerFactory.getLogger(ExpressionUtil.class);
+
      public static AppModule getAppModule(BusinessModel businessModel){
          AppModule appModule = businessModel.getAppModule();
         return appModule;
@@ -47,7 +54,19 @@ public class ExpressionUtil {
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
-        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+        String messageLog = "开始调用‘获取条件表达式的属性描述’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> pvs = null;
+        try {
+            pvs = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
+            }, params);
+            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+        }catch (Exception e){
+            messageLog+="调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
+        }
         return pvs;
     }
 
@@ -66,7 +85,18 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
         params.put(Constants.ALL,all);
-        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+        String messageLog = "开始调用‘获取条件表达式的属性值对’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> pvs = null;
+        try {
+            pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+        }catch (Exception e){
+            messageLog+="调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
+        }
         return pvs;
     }
 
@@ -83,7 +113,18 @@ public class ExpressionUtil {
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+        String messageLog = "开始调用‘检证表达式语法是否合法’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> pvs = null;
+        try {
+            pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+        }catch (Exception e){
+            messageLog+="调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
+        }
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
@@ -104,7 +145,18 @@ public class ExpressionUtil {
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
-        Map<String,Object> pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+        String messageLog = "开始调用‘直接获取表达式验证结果’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> pvs = null;
+        try {
+            pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+        }catch (Exception e){
+            messageLog+="调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
+        }
         result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
@@ -126,8 +178,33 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
         params.put(Constants.STATUS,status);
-        result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
+        String messageLog = "开始调用‘重置单据状态’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+
+        try {
+            result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
+            messageLog+=",result=" + result;
+        }catch (Exception e){
+            messageLog+="调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
+        }
         return result;
+    }
+
+
+    /**
+     * 模拟异步,上传调用日志
+     * @param message
+     */
+     static void asyncUploadLog(String message){
+        new Thread(new Runnable() {//模拟异步,上传调用日志
+            @Override
+            public void run() {
+                LogUtil.bizLog(message);
+            }
+        }).start();
     }
 
 }
