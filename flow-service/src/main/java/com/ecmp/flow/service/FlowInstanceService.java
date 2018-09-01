@@ -890,7 +890,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     String[]  tempWebBaseAddress = webBaseAddress.split("/");
                     if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
                         webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
-                        flowInstance.setWebBaseAddress(webBaseAddress);
+                        flowInstance.setWebBaseAddress("/"+webBaseAddress);
                     }
                 }
 
