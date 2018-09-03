@@ -11,6 +11,8 @@ import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -94,16 +96,27 @@ public class EndEventCompleteListener implements ExecutionListener {
                 flowInstanceDao.save(flowInstance);
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
-                Map<String, Object> params = new HashMap<String,Object>();;
+                Map<String, Object> params = new HashMap<String,Object>();
                 params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
                 params.put(Constants.ID,flowInstance.getBusinessId());
                 params.put(Constants.STATUS,FlowStatus.COMPLETED);
+
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = apiBaseAddress+"/"+businessModel.getConditonStatusRest();
-                Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-                if(!result){
-                    throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!
+                String messageLog = "结束流程开始调用‘重置表单状态’接口，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+                try {
+                    Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                    messageLog+=",【result=" + result +"】";
+                    if(!result){
+                        throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!
+                    }
+                }catch (Exception e){
+                    messageLog+="重置表单状态调用异常："+e.getMessage();
+                    throw e;
+                }finally {
+                    logger.info(messageLog);
+                    asyncUploadLog(messageLog);
                 }
                 if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();
@@ -124,5 +137,18 @@ public class EndEventCompleteListener implements ExecutionListener {
                 }
             }
         }
+    }
+
+    /**
+     * 模拟异步,上传调用日志
+     * @param message
+     */
+    static void asyncUploadLog(String message){
+        new Thread(new Runnable() {//模拟异步,上传调用日志
+            @Override
+            public void run() {
+                LogUtil.bizLog(message);
+            }
+        }).start();
     }
 }

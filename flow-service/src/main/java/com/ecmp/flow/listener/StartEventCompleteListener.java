@@ -10,6 +10,8 @@ import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -225,11 +227,23 @@ public class StartEventCompleteListener implements ExecutionListener {
         String apiBaseAddressConfig = appModule.getApiBaseAddress();
         String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String url = apiBaseAddress +"/"+businessModel.getConditonStatusRest();
-        Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-        if(!result){
-            String message = ContextUtil.getMessage("10042");
-            throw new FlowException(message);//流程启动-调用重置表单服务失败！
+        String messageLog = "启动流程-开始调用‘重置表单状态’接口，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        try {
+            Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+            messageLog+=",【result=" + result +"】";
+            if(!result){
+                String message = ContextUtil.getMessage("10042");
+                throw new FlowException(message);//流程启动-调用重置表单服务失败！
+            }
+        }catch (Exception e){
+            messageLog+="重置表单状态调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            logger.info(messageLog);
+            asyncUploadLog(messageLog);
         }
+
+
     }
 
     /**
@@ -269,5 +283,17 @@ public class StartEventCompleteListener implements ExecutionListener {
             }
         }
         return result;
+    }
+    /**
+     * 模拟异步,上传调用日志
+     * @param message
+     */
+    static void asyncUploadLog(String message){
+        new Thread(new Runnable() {//模拟异步,上传调用日志
+            @Override
+            public void run() {
+                LogUtil.bizLog(message);
+            }
+        }).start();
     }
 }

@@ -59,7 +59,7 @@ public class ExpressionUtil {
         try {
             pvs = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
             }, params);
-            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
         }catch (Exception e){
             messageLog+="调用异常："+e.getMessage();
             throw e;
@@ -89,7 +89,7 @@ public class ExpressionUtil {
         Map<String,Object> pvs = null;
         try {
             pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
         }catch (Exception e){
             messageLog+="调用异常："+e.getMessage();
             throw e;
@@ -117,7 +117,7 @@ public class ExpressionUtil {
         Map<String,Object> pvs = null;
         try {
             pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
         }catch (Exception e){
             messageLog+="调用异常："+e.getMessage();
             throw e;
@@ -149,7 +149,7 @@ public class ExpressionUtil {
         Map<String,Object> pvs = null;
         try {
             pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",result=" + pvs==null?null:JsonUtils.toJson(pvs);
+            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
         }catch (Exception e){
             messageLog+="调用异常："+e.getMessage();
             throw e;
@@ -182,7 +182,7 @@ public class ExpressionUtil {
 
         try {
             result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
-            messageLog+=",result=" + result;
+            messageLog+=",【result=" + result+"】";
         }catch (Exception e){
             messageLog+="调用异常："+e.getMessage();
             throw e;
