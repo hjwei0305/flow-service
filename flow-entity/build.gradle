@@ -32,9 +32,13 @@ dependencies {
 }
 
 jar {
+    enabled = true
+
     manifest {
-        attributes("Manifest-Version": "$project.version")
-        attributes("Extension-Name": "ECMP-$project.name")
+        attributes("Manifest-Version": "1.0")
+        attributes("Created-By": "Gradle")
+        attributes("Implementation-Title": "ECMP-$project.name")
+        attributes("Implementation-Version": "$project.version")
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
 }

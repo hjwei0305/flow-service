@@ -25,7 +25,7 @@ import java.util.Set;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_def_version", catalog = "ecmp_flow", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
+@Table(name = "flow_def_version",  uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable ,ITenant {

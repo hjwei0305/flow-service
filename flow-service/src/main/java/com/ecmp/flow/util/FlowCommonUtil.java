@@ -43,7 +43,7 @@ public class FlowCommonUtil implements Serializable {
     @Autowired(required = false)
     protected RedisTemplate<String, Object> redisTemplate;
 
-    @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
+//    @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
     public Definition flowDefinition(FlowDefVersion flowDefVersion ){
         String defObjStr = flowDefVersion.getDefJson();
         JSONObject defObj = JSONObject.fromObject(defObjStr);
@@ -51,7 +51,7 @@ public class FlowCommonUtil implements Serializable {
         return definition;
     }
 
-    @Cacheable(value = "FLowGetBasicExecutor", key = "'FLowGetBasicExecutor_' + #userId")
+//    @Cacheable(value = "FLowGetBasicExecutor", key = "'FLowGetBasicExecutor_' + #userId")
     public Executor getBasicExecutor(String userId) {
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",java.util.Arrays.asList(userId));
@@ -64,7 +64,7 @@ public class FlowCommonUtil implements Serializable {
         return executor;
     }
 
-    @Cacheable(value = "FLowGetBasicExecutors")
+//    @Cacheable(value = "FLowGetBasicExecutors")
     public List<Executor> getBasicExecutors(List<String> userIds) {
         Map<String,Object> params = new HashMap();
         params.put("employeeIds",userIds);
@@ -73,7 +73,7 @@ public class FlowCommonUtil implements Serializable {
         return employees;
     }
 
-    @Cacheable(value = "FLowGetLastFlowDefVersion", key = "'FLowGetLastFlowDefVersion_' + #versionId")
+//    @Cacheable(value = "FLowGetLastFlowDefVersion", key = "'FLowGetLastFlowDefVersion_' + #versionId")
     public FlowDefVersion getLastFlowDefVersion(String versionId ){
         FlowDefVersion flowDefVersion = flowDefVersionDao.findByIdNoF(versionId);
         return flowDefVersion;

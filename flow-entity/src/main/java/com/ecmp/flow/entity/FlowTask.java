@@ -26,7 +26,7 @@ import java.util.Date;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_task", catalog = "ecmp_flow")
+@Table(name = "flow_task")
 public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implements ITenant {
 
     /**
