@@ -24,8 +24,8 @@ dependencies {
     compile project(':flow-api')
     compile project(':flow-service-client')
     compile(
-            "org.springframework.boot:spring-boot-starter",
-            "com.ecmp:service-ecmp-spring-boot-starter:$ecmp_version",
+            "org.springframework.boot:spring-boot-starter-web",
+            "com.ecmp:cxf-service-ecmp-spring-boot-starter:$ecmp_version",
 
 
             //整合activiti所需要的jar
