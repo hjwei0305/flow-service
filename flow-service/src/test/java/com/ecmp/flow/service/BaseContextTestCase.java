@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.MonitorService;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import org.junit.Before;
@@ -30,13 +31,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class BaseContextTestCase extends AbstractJUnit4SpringContextTests {
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private MonitorService monitorService;
 
     @Before
-    public void setUp() throws Exception {
-        logger.debug(ContextUtil.mockUser().toString());
+    public void setUp() {
+        LogUtil.debug(ContextUtil.mockUser().toString());
     }
 
     @Test
