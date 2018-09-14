@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.service.MonitorService;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ public class BaseContextTestCase extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void health(){
-        String[] result = monitorService.health();
-        System.out.println(JsonUtils.toJson(result));
+        ResponseData result = monitorService.health();
+        System.out.println("monitor health:" + JsonUtils.toJson(result));
     }
 }
