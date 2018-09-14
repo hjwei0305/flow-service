@@ -117,7 +117,7 @@ public class MessageSendThread implements Runnable {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
-                                Map<String, String> contentTemplateParams = getParamsMap();
+                                Map<String, Object> contentTemplateParams = getParamsMap();
                                 contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
                                 message.setContentTemplateParams(contentTemplateParams);
                                 message.setContentTemplateCode(contentTemplateCode);//模板代码
@@ -145,7 +145,7 @@ public class MessageSendThread implements Runnable {
                               List<String> receiverIds = new ArrayList<String>();
                               receiverIds.add(startUserId);//流程启动人
                               message.setReceiverIds(receiverIds);
-                              Map<String, String> contentTemplateParams = getParamsMap();
+                              Map<String, Object> contentTemplateParams = getParamsMap();
                               contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
                               message.setContentTemplateParams(contentTemplateParams);
                               message.setContentTemplateCode(contentTemplateCode);//模板代码
@@ -192,7 +192,7 @@ public class MessageSendThread implements Runnable {
                                   String senderId = ContextUtil.getUserId();
                                   message.setSenderId(senderId);
                                   message.setReceiverIds(receiverIds);
-                                  Map<String, String> contentTemplateParams = getParamsMap();
+                                  Map<String, Object> contentTemplateParams = getParamsMap();
                                   contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
                                   message.setContentTemplateParams(contentTemplateParams);
                                   message.setContentTemplateCode(contentTemplateCode);//模板代码
@@ -226,8 +226,8 @@ public class MessageSendThread implements Runnable {
             }
         }).start();
     }
-    private Map<String, String> getParamsMap(){
-        Map<String, String> contentTemplateParams = new HashMap<String, String>();
+    private Map<String, Object> getParamsMap(){
+        Map<String, Object> contentTemplateParams = new HashMap<>();
         String workCaption = (String) execution.getVariable("workCaption");
         String businessName = (String) execution.getVariable("name");
         String businessCode = (String) execution.getVariable("businessCode");

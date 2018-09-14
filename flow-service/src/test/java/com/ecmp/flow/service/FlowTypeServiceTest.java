@@ -1,6 +1,5 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.flow.BasicContextTestCase;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResultWithData;
@@ -9,13 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
-
 /**
  * @author 马超(Vision.Mac)
  * @version 1.0.1 2018/6/14 9:51
  */
-public class FlowTypeServiceTest extends BasicContextTestCase {
+public class FlowTypeServiceTest extends BaseContextTestCase {
 
     @Autowired
     private BusinessModelService businessModelService;
