@@ -853,7 +853,8 @@ public class FlowTaskTool {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
-        OperateResult result = OperateResult.operationSuccess("core_00003");
+        // 流程成功撤回！
+        OperateResult result = OperateResult.operationSuccess("10064");
         String taskId = flowHistory.getActHistoryId();
         try {
             Map<String, Object> variables;

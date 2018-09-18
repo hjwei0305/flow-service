@@ -80,9 +80,11 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                         throw  e;
                     }
                 }
-                return OperateResult.operationSuccess("core_00003");
+                // 业务实体删除成功！
+                return OperateResult.operationSuccess("10057");
             } else {
-                return OperateResult.operationWarning("core_00004");
+                // 业务实体{0}不存在！
+                return OperateResult.operationWarning("10058", id);
             }
         }
         clearFlowDefVersion();

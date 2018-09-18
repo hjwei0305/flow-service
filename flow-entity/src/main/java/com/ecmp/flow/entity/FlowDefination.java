@@ -98,13 +98,13 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity imp
 	/**
 	 * 组织机构id
 	 */
-	@Column(name="basic_org_id")
+	@Column(name="org_id")
 	private String orgId;
 
 	/**
 	 * 组织机构代码
 	 */
-	@Column(name="basic_org_code")
+	@Column(name="org_code")
 	private String orgCode;
 
 	/**

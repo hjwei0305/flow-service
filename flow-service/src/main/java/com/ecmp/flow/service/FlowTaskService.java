@@ -107,6 +107,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private FlowDefinationDao flowDefinationDao;
 
     @Autowired
+    private BusinessModelDao businessModelDao;
+
+    @Autowired
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
@@ -520,10 +523,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
-        OperateResult result = OperateResult.operationSuccess("core_00003");
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
-        result = flowTaskTool.taskRollBack(flowHistory, opinion);
-        return result;
+        return flowTaskTool.taskRollBack(flowHistory, opinion);
     }
 
     /**
@@ -1054,19 +1055,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 查询当前用户待办业务单据汇总信息
-     *
-     * @return
+     * @param appSign 应用标识
+     * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findTaskSumHeader() {
-        return this.findCommonTaskSumHeader(false);
+    public List<TodoBusinessSummaryVO> findTaskSumHeader(String appSign) {
+        return this.findCommonTaskSumHeader(false, appSign);
     }
 
     /**
      * 查询当前用户待办业务单据汇总信息,只有批量审批
-     *
+     * @param appSign 应用标识
      * @return
      */
-    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(Boolean batchApproval) {
+    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(Boolean batchApproval, String appSign) {
         List<TodoBusinessSummaryVO> voList = null;
         String userID = ContextUtil.getUserId();
         List groupResultList = null;
@@ -1087,15 +1088,26 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if(flowDefination==null){
                     continue;
                 }
-                BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                Integer oldCount = businessModelCountMap.get(businessModel);
-                if (oldCount == null) {
-                    oldCount = 0;
+                // 获取业务类型
+                BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
+                // 限制应用标识
+                boolean canAdd = true;
+                if (!StringUtils.isBlank(appSign)){
+                    // 判断应用模块代码是否以应用标识开头,不是就不添加
+                    if (!businessModel.getAppModule().getCode().startsWith(appSign)){
+                        canAdd = false;
+                    }
                 }
-                businessModelCountMap.put(businessModel, oldCount + count);
+                if (canAdd){
+                    Integer oldCount = businessModelCountMap.get(businessModel);
+                    if (oldCount == null) {
+                        oldCount = 0;
+                    }
+                    businessModelCountMap.put(businessModel, oldCount + count);
+                }
             }
         }
-        if (businessModelCountMap != null && !businessModelCountMap.isEmpty()) {
+        if (!businessModelCountMap.isEmpty()) {
             voList = new ArrayList<TodoBusinessSummaryVO>();
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
@@ -1114,12 +1126,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return flowTaskDao.findByPageByTenant(appModuleId, businessModelId,flowTypeId, searchConfig);
     }
 
-    public PageResult<FlowTask> findByBusinessModelId(String businessModelId, Search searchConfig) {
+    public PageResult<FlowTask> findByBusinessModelId(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         if(StringUtils.isNotEmpty(businessModelId)){
             return flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
         }else{
-            return flowTaskDao.findByPage(userId, searchConfig);
+            return flowTaskDao.findByPage(userId, appSign, searchConfig);
         }
     }
 
@@ -1141,7 +1153,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
     }
-    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, Search searchConfig) {
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         Long allCount = flowTaskDao.findCountByExecutorId(userId, searchConfig);
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
@@ -1150,7 +1162,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if(StringUtils.isNotEmpty(businessModelId)){
            pageResult = flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
         }else{
-            pageResult = flowTaskDao.findByPage(userId, searchConfig);
+            pageResult = flowTaskDao.findByPage(userId, appSign, searchConfig);
         }
         resultVO.setRows(pageResult.getRows());
         resultVO.setRecords(pageResult.getRecords());

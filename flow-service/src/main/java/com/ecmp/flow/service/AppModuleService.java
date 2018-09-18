@@ -67,9 +67,9 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
         boolean isNew = isNew(entity);
         if (isNew) {
             // 创建前设置租户代码
-            if (entity instanceof ITenant){
-                ITenant tenantEntity = (ITenant)entity;
-                if (StringUtils.isBlank(tenantEntity.getTenantCode())){
+            if (entity instanceof ITenant) {
+                ITenant tenantEntity = (ITenant) entity;
+                if (StringUtils.isBlank(tenantEntity.getTenantCode())) {
                     tenantEntity.setTenantCode(ContextUtil.getTenantCode());
                 }
             }
@@ -82,74 +82,71 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
             if (logger.isDebugEnabled()) {
                 logger.debug("Saved entity id is {}", entity.getId());
             }
-            if (isNew) {
-                operateResultWithData = OperateResultWithData.operationSuccessWithData(saveEntity, "core_00001");
-            } else {
-                operateResultWithData = OperateResultWithData.operationSuccessWithData(saveEntity, "core_00002");
-            }
+            // 应用模块保存成功！
+            operateResultWithData = OperateResultWithData.operationSuccessWithData(saveEntity, "10055");
         }
         clearFlowDefVersion();
         return operateResultWithData;
     }
 
-    private void clearFlowDefVersion(){
+    private void clearFlowDefVersion() {
         String pattern = "FLowGetLastFlowDefVersion_*";
-        if(redisTemplate!=null){
+        if (redisTemplate != null) {
             Set<String> keys = redisTemplate.keys(pattern);
-            if (keys!=null&&!keys.isEmpty()){
+            if (keys != null && !keys.isEmpty()) {
                 redisTemplate.delete(keys);
             }
         }
     }
 
-    public PageResult<AppModule> findByPage(Search searchConfig){
+    public PageResult<AppModule> findByPage(Search searchConfig) {
         List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
-        List<String > appModuleCodeList = null;
+        List<String> appModuleCodeList = null;
         try {
             String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
             appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
             }, null);
-            if(appModuleList!=null && !appModuleList.isEmpty()){
+            if (appModuleList != null && !appModuleList.isEmpty()) {
                 appModuleCodeList = new ArrayList<String>();
-                for(com.ecmp.flow.basic.vo.AppModule appModule:appModuleList){
+                for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
                     appModuleCodeList.add(appModule.getCode());
                 }
             }
-            if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
-                SearchFilter searchFilter =   new SearchFilter("code", appModuleCodeList, SearchFilter.Operator.IN);
+            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+                SearchFilter searchFilter = new SearchFilter("code", appModuleCodeList, SearchFilter.Operator.IN);
                 searchConfig.addFilter(searchFilter);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         PageResult<AppModule> result = appModuleDao.findByPage(searchConfig);
         return result;
     }
 
-    public  List<AppModule> findAllByAuth(){
-        List<AppModule> result=null;
+    public List<AppModule> findAllByAuth() {
+        List<AppModule> result = null;
         List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
-        List<String > appModuleCodeList = null;
+        List<String> appModuleCodeList = null;
         try {
             String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
             appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
             }, null);
-            if(appModuleList!=null && !appModuleList.isEmpty()){
+            if (appModuleList != null && !appModuleList.isEmpty()) {
                 appModuleCodeList = new ArrayList<String>();
-                for(com.ecmp.flow.basic.vo.AppModule appModule:appModuleList){
+                for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
                     appModuleCodeList.add(appModule.getCode());
                 }
             }
-            if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
+            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
                 result = appModuleDao.findByCodes(appModuleCodeList);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             result = appModuleDao.findAll();
         }
-       return result;
+        return result;
     }
 
 }
