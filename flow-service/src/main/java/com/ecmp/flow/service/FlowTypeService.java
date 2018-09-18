@@ -118,9 +118,11 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
                         throw  e;
                     }
                 }
-                return OperateResult.operationSuccess("core_00003");
+                // 流程类型删除成功！
+                return OperateResult.operationSuccess("10062");
             } else {
-                return OperateResult.operationWarning("core_00004");
+                // 流程类型{0}不存在！
+                return OperateResult.operationWarning("10063");
             }
         }
         clearFlowDefVersion();
