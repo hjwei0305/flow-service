@@ -45,6 +45,7 @@ public class FlowTaskCompleteWebVO implements Serializable{
      */
    private String callActivityPath;
 
+    private Boolean instancyStatus;
 
     public String getNodeId() {
         return nodeId;
@@ -84,5 +85,13 @@ public class FlowTaskCompleteWebVO implements Serializable{
 
     public void setCallActivityPath(String callActivityPath) {
         this.callActivityPath = callActivityPath;
+    }
+
+    public Boolean getInstancyStatus() {
+        return instancyStatus;
+    }
+
+    public void setInstancyStatus(Boolean instancyStatus) {
+        this.instancyStatus = instancyStatus;
     }
 }
