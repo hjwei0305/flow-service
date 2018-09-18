@@ -101,8 +101,20 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
         String  quickSearchValue = searchConfig.getQuickSearchValue();
-        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and (ft.trustState !=1  or ft.trustState is null ) and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
-        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and (ft.trustState !=1  or ft.trustState is null ) and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id  in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  = :executorId " +
+                "and (ft.trustState !=1  or ft.trustState is null ) " +
+                "and ft.flowDefinitionId " +
+                "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  = :executorId " +
+                "and (ft.trustState !=1  or ft.trustState is null ) " +
+                "and ft.flowDefinitionId " +
+                "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                "in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
                StringBuffer extraHql = new StringBuffer(" and (");
                boolean first = true;
@@ -198,12 +210,16 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
        return result;
     }
 
-    public PageResult<FlowTask> findByPage(String executorId, Search searchConfig){
+    public PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig){
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
         String  quickSearchValue = searchConfig.getQuickSearchValue();
-        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and (ft.trustState !=1  or ft.trustState is null ) ";
-        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and (ft.trustState !=1  or ft.trustState is null ) ";
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  = :executorId " +
+                "and (ft.trustState !=1  or ft.trustState is null) ";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  = :executorId " +
+                "and (ft.trustState !=1  or ft.trustState is null) ";
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
@@ -219,13 +235,28 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
+        // 限制应用标识
+        if (!StringUtils.isBlank(appSign)){
+            String appSignSql = "and ft.flowDefinitionId " +
+                    "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                    "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                    "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule like :appSign)))";
+            hqlCount+=appSignSql;
+            hqlQuery+=appSignSql;
+        }
         hqlQuery+=hqlQueryOrder;
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
+        if (!StringUtils.isBlank(appSign)){
+            queryTotal.setParameter("appSign", appSign+"%");
+        }
         Long total = queryTotal.getSingleResult();
 
         TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
         query.setParameter("executorId",executorId);
+        if (!StringUtils.isBlank(appSign)){
+            query.setParameter("appSign", appSign+"%");
+        }
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowTask>  result = query.getResultList();
