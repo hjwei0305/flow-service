@@ -57,7 +57,17 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     @Override
     public OperateResultWithData<FlowType> save(FlowType flowType){
         OperateResultWithData<FlowType> resultWithData = null;
-        resultWithData = super.save(flowType);
+        try {
+            resultWithData = super.save(flowType);
+        }catch (org.springframework.dao.DataIntegrityViolationException e){
+            e.printStackTrace();
+            SQLException sqlException = (SQLException)e.getCause().getCause();
+            if(sqlException!=null && "23000".equals(sqlException.getSQLState())){
+                return OperateResultWithData.operationFailure("10028");
+            }else {
+                throw  e;
+            }
+        }
         clearFlowDefVersion();
         return resultWithData;
     }
