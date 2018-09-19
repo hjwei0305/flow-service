@@ -240,7 +240,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             String appSignSql = "and ft.flowDefinitionId " +
                     "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
                     "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
-                    "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule like :appSign)))";
+                    "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule.code like :appSign)))";
             hqlCount+=appSignSql;
             hqlQuery+=appSignSql;
         }
