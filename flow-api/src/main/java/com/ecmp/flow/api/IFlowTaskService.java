@@ -521,4 +521,15 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("reminding")
     @ApiOperation(value = "催办提醒定时任务接口",notes = "测试")
     public OperateResult reminding();
+
+    /**
+     * 获取指定用户的待办工作数量
+     * @param executorId 执行人用户Id
+     * @param searchConfig 查询参数
+     * @return 待办工作的数量
+     */
+    @POST
+    @Path("findCountByExecutorId")
+    @ApiOperation(value = "获取指定用户的待办工作数量", notes = "通过执行人的用户Id获取待办工作数量，可以通过查询条件过滤")
+    int findCountByExecutorId(@QueryParam("executorId") String executorId, Search searchConfig);
 }

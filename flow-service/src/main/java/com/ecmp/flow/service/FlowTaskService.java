@@ -1882,5 +1882,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
+
+    /**
+     * 获取指定用户的待办工作数量
+     *
+     * @param executorId   执行人用户Id
+     * @param searchConfig 查询参数
+     * @return 待办工作的数量
+     */
+    @Override
+    public int findCountByExecutorId(String executorId, Search searchConfig) {
+        Long count = flowTaskDao.findCountByExecutorId(executorId, searchConfig);
+        return count.intValue();
+    }
 }
 
