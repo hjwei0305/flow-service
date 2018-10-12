@@ -7,6 +7,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.WorkPageUrl;
@@ -223,7 +224,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
         flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
         if (workPageUrl != null) {
-            flowTask.setTaskFormUrl(flowTask.getWebBaseAddressAbsolute() + "/" + workPageUrl.getUrl());
+            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(ContextUtil.getGlobalProperty(webBaseAddressConfig), workPageUrl.getUrl()));
             String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
             taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
             flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
