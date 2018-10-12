@@ -532,4 +532,15 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("findCountByExecutorId")
     @ApiOperation(value = "获取指定用户的待办工作数量", notes = "通过执行人的用户Id获取待办工作数量，可以通过查询条件过滤")
     int findCountByExecutorId(@QueryParam("executorId") String executorId, Search searchConfig);
+
+    /**
+     * 通过Id获取一个待办任务(设置了办理任务URL)
+     *
+     * @param taskId 待办任务Id
+     * @return 待办任务
+     */
+    @GET
+    @Path("findTaskById")
+    @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
+    FlowTask findTaskById(String taskId);
 }

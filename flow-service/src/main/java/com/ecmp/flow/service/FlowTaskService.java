@@ -1895,5 +1895,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Long count = flowTaskDao.findCountByExecutorId(executorId, searchConfig);
         return count.intValue();
     }
+
+    /**
+     * 通过Id获取一个待办任务(设置了办理任务URL)
+     *
+     * @param taskId 待办任务Id
+     * @return 待办任务
+     */
+    @Override
+    public FlowTask findTaskById(String taskId) {
+        return flowTaskDao.findTaskById(taskId);
+    }
 }
 
