@@ -542,5 +542,5 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @GET
     @Path("findTaskById")
     @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
-    FlowTask findTaskById(String taskId);
+    FlowTask findTaskById(@QueryParam("taskId") String taskId);
 }
