@@ -100,8 +100,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String actInstanceId = entity.getActInstanceId();
         this.deleteActiviti(actInstanceId,null);
         flowInstanceDao.delete(entity);
-        // 流程实例删除成功！
-        OperateResult result =  OperateResult.operationSuccess("10061");
+        OperateResult result =  OperateResult.operationSuccess("core_00003");
         return result;
     }
     /**
@@ -657,7 +656,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResultWithData<FlowTask> result =  null;
         String actTaskId = historicTaskInstance.getId();
             Map<String,Object> params = new HashMap();
-            params.put("employeeIds",java.util.Arrays.asList(userId));
+            params.put("employeeIds",Arrays.asList(userId));
             String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
             List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if(employees!=null && !employees.isEmpty()){

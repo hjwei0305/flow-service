@@ -80,11 +80,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                         throw  e;
                     }
                 }
-                // 业务实体删除成功！
-                return OperateResult.operationSuccess("10057");
+                return OperateResult.operationSuccess("core_00003");
             } else {
-                // 业务实体{0}不存在！
-                return OperateResult.operationWarning("10058", id);
+                return OperateResult.operationWarning("core_00004");
             }
         }
         clearFlowDefVersion();
@@ -147,15 +145,15 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     public  List<BusinessModel> findAllByAuth(){
         List<BusinessModel> result=null;
-        List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
+        List<AppModule> appModuleList = null;
         List<String > appModuleCodeList = null;
         try {
             String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
+            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<AppModule>>() {
             }, null);
             if(appModuleList!=null && !appModuleList.isEmpty()){
                 appModuleCodeList = new ArrayList<String>();
-                for(com.ecmp.flow.basic.vo.AppModule appModule:appModuleList){
+                for(AppModule appModule:appModuleList){
                     appModuleCodeList.add(appModule.getCode());
                 }
             }
