@@ -8,6 +8,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.basic.vo.UserEmailAlert;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
