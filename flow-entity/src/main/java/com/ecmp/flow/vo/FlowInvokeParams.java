@@ -30,7 +30,6 @@ public class FlowInvokeParams implements Serializable{
     private List<String> positionIds;//岗位代码集合
     private String jsonParam;//其他json格式参数
     private Map<String,List<String>> nextNodeUserInfo;//下一步操作用户信息,key为节点代码（如没有配置，指定为默认id）,下一步选择的用户id集合
-
     public String getId() {
         return id;
     }

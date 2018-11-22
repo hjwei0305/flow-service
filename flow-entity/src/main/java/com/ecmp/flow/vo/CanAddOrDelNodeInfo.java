@@ -30,7 +30,7 @@ public class CanAddOrDelNodeInfo  implements Serializable {
     public CanAddOrDelNodeInfo(){}
 
     public CanAddOrDelNodeInfo(String actInstanceId,String nodeKey,String nodeName,String businessId,String businessCode
-    ,String businessName, String businessModelRemark,String flowName,String flowDefKey){
+    ,String businessName,String businessModelRemark,String flowName,String flowDefKey){
         this.actInstanceId = actInstanceId;
         this.nodeKey = nodeKey;
         this.nodeName = nodeName;
@@ -41,7 +41,6 @@ public class CanAddOrDelNodeInfo  implements Serializable {
         this.flowName = flowName;
         this.flowDefKey = flowDefKey;
     }
-
 
     public String getBusinessCode() {
         return businessCode;
