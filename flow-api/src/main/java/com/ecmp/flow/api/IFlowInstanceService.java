@@ -118,7 +118,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例流程历史记录", notes = "测试")
-    public List<FlowHistory>  findLastByBusinessId(@PathParam("businessId")String businessId);
+    public List<FlowHistory>  findLastByBusinessId(@PathParam("businessId") String businessId);
 
 
     /**
@@ -131,7 +131,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例", notes = "测试")
-    public FlowInstance  findLastInstanceByBusinessId(@PathParam("businessId")String businessId);
+    public FlowInstance  findLastInstanceByBusinessId(@PathParam("businessId") String businessId);
 
     /**
      * 通过业务单据id获取单据最近一次流程实例
@@ -143,7 +143,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次待办列表", notes = "测试")
-    public List<FlowTask>  findCurrentTaskByBusinessId(@PathParam("businessId")String businessId);
+    public List<FlowTask>  findCurrentTaskByBusinessId(@PathParam("businessId") String businessId);
 
 
     /**
@@ -156,7 +156,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取最新流程实例待办任务id列表", notes = "测试")
-    public Set<String>  getLastNodeIdsByBusinessId(@PathParam("businessId")String businessId);
+    public Set<String>  getLastNodeIdsByBusinessId(@PathParam("businessId") String businessId);
 
     /**
      * 通过单据id，获取流程实例及关联待办及任务历史
@@ -168,7 +168,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "测试")
-    public List<ProcessTrackVO> getProcessTrackVO(@PathParam("businessId")String businessId);
+    public List<ProcessTrackVO> getProcessTrackVO(@PathParam("businessId") String businessId);
 
     /**
      * 通过流程实例id，获取流程实例及关联待办及任务历史
@@ -180,7 +180,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过实例id，获取流程实例及关联待办及任务历史", notes = "测试")
-    public List<ProcessTrackVO> getProcessTrackVOById(@PathParam("instanceId")String instanceId);
+    public List<ProcessTrackVO> getProcessTrackVOById(@PathParam("instanceId") String instanceId);
 
 
     /**
@@ -193,7 +193,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "主要用于流程图跟踪")
-    public List<String>  nodeHistoryIds(@PathParam("id")String id);
+    public List<String>  nodeHistoryIds(@PathParam("id") String id);
 
 
     /**
@@ -246,7 +246,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
-    public OperateResult endByBusinessId(@PathParam("businessId")String businessId);
+    public OperateResult endByBusinessId(@PathParam("businessId") String businessId);
 
 
     /**
@@ -262,7 +262,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
-    public OperateResult signalByBusinessId(@QueryParam("businessId")String businessId,@QueryParam("receiveTaskActDefId")String receiveTaskActDefId,Map<String,Object> v);
+    public OperateResult signalByBusinessId(@QueryParam("businessId") String businessId, @QueryParam("receiveTaskActDefId") String receiveTaskActDefId, Map<String, Object> v);
 
 
     /**
@@ -276,7 +276,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "终止流程实例", notes = "终止")
-    public OperateResult endForce(@PathParam("id")String id);
+    public OperateResult endForce(@PathParam("id") String id);
 
     /**
      * 工作池任务确定执行人
@@ -291,7 +291,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "工作池任务确定执行人", notes = "工作池任务确定执行人")
-    public OperateResult signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId,Map<String,Object> v);
+    public OperateResult signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId, @QueryParam("poolTaskActDefId") String poolTaskActDefId, @QueryParam("userId") String userId, Map<String, Object> v);
 
     /**
      * 工作池任务确定执行人并完成任务
@@ -306,7 +306,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "工作池任务确定执行人并完成任务", notes = "说明")
-    public OperateResultWithData<FlowStatus> completePoolTask(@QueryParam("businessId") String businessId,@QueryParam("poolTaskActDefId") String poolTaskActDefId,@QueryParam("userId")String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
+    public OperateResultWithData<FlowStatus> completePoolTask(@QueryParam("businessId") String businessId, @QueryParam("poolTaskActDefId") String poolTaskActDefId, @QueryParam("userId") String userId, FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
 
 
     /**
@@ -320,7 +320,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务", notes = "说明")
-    public FlowTask  findTaskByBusinessIdAndActTaskKey(@QueryParam("businessId")String businessId,@QueryParam("taskActDefId")String taskActDefId);
+    public FlowTask  findTaskByBusinessIdAndActTaskKey(@QueryParam("businessId") String businessId, @QueryParam("taskActDefId") String taskActDefId);
 
     /**
      * 通过业务单据id,流程节点定义key获取任务
@@ -333,5 +333,5 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务VO对象", notes = "说明")
-    public FlowTaskVO findTaskVOByBusinessIdAndActTaskKey(@QueryParam("businessId")String businessId, @QueryParam("taskActDefId")String taskActDefId);
+    public FlowTaskVO findTaskVOByBusinessIdAndActTaskKey(@QueryParam("businessId") String businessId, @QueryParam("taskActDefId") String taskActDefId);
 }

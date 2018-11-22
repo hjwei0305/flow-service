@@ -103,7 +103,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体,附加启动ID",notes = "测试")
-    public FlowInstance startById(@PathParam("id") String id,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id") String id, @PathParam("businessKey") String businessKey, Map<String, Object> variables);
 
     /**
      * 通过ID启动流程实体
@@ -118,7 +118,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过ID启动流程实体",notes = "测试")
-    public FlowInstance startById(@PathParam("id")String id,@PathParam("startUserId")String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startById(@PathParam("id") String id, @PathParam("startUserId") String startUserId, @PathParam("businessKey") String businessKey, Map<String, Object> variables);
 
     /**
      * 通过Key启动流程实体
@@ -132,7 +132,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体",notes = "测试")
-    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key, @PathParam("businessKey") String businessKey, Map<String, Object> variables);
 
     /**
      * 通过Key启动流程实体
@@ -147,7 +147,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
-    public FlowInstance startByKey(@PathParam("key") String key,@PathParam("startUserId") String startUserId,@PathParam("businessKey")String businessKey, Map<String, Object> variables);
+    public FlowInstance startByKey(@PathParam("key") String key, @PathParam("startUserId") String startUserId, @PathParam("businessKey") String businessKey, Map<String, Object> variables);
 
 
 
@@ -201,7 +201,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
-    public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id,@PathParam("status") FlowDefinationStatus status);
+    public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id, @PathParam("status") FlowDefinationStatus status);
 
 
     /**
@@ -221,7 +221,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "验证UEL表达式是否正常",notes = "验证UEL表达式是否正常")
-    public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId,@QueryParam("expression")String expression)  throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+    public OperateResultWithData<FlowDefination> validateExpression(@QueryParam("flowTypeId") String flowTypeId, @QueryParam("expression") String expression)  throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
             InvocationTargetException;
 
     /**
@@ -241,5 +241,5 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "test",notes = "test")
-    public void testStart(@QueryParam("flowKey") String flowKey,@QueryParam("businessKey")String businessKey);
+    public void testStart(@QueryParam("flowKey") String flowKey, @QueryParam("businessKey") String businessKey);
 }

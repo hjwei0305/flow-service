@@ -69,7 +69,7 @@ public interface IBusinessWorkPageUrlService extends IBaseService<BusinessWorkPa
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存设置的工作界面",notes = "测试")
-    public void saveBusinessWorkPageUrlByIds(@PathParam("id")String id, String selectWorkPageIds);
+    public void saveBusinessWorkPageUrlByIds(@PathParam("id") String id, String selectWorkPageIds);
 
 
 }

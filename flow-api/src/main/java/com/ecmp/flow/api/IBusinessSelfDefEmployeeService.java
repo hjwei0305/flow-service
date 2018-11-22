@@ -70,7 +70,7 @@ public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSe
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
-    List<BusinessSelfDefEmployee > findByBusinessModelId(@PathParam("businessModelId")String businessModelId);
+    List<BusinessSelfDefEmployee > findByBusinessModelId(@PathParam("businessModelId") String businessModelId);
 
     /**
      * 保存设置的执行人
@@ -82,6 +82,6 @@ public interface IBusinessSelfDefEmployeeService extends IBaseService<BusinessSe
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "保存设置的自由执行人",notes = "测试")
-    public void saveCustomExecutor(@PathParam("businessModelId")String businessModelId,String selectedCustomExecutorIds);
+    public void saveCustomExecutor(@PathParam("businessModelId") String businessModelId, String selectedCustomExecutorIds);
 
 }

@@ -52,7 +52,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "签收任务",notes = "测试")
-    public OperateResult claim(@PathParam("id") String id, @PathParam("userId")String userId);
+    public OperateResult claim(@PathParam("id") String id, @PathParam("userId") String userId);
 
 //    /**
 //     * 完成任务
@@ -105,7 +105,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
-    public  OperateResult rollBackTo(@PathParam("id")String id,String opinion) throws CloneNotSupportedException;
+    public  OperateResult rollBackTo(@PathParam("id") String id, String opinion) throws CloneNotSupportedException;
 
     /**
      * 驳回任务（动态驳回）
@@ -119,7 +119,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "驳回任务（动态驳回）",notes = "测试")
-    public OperateResult taskReject(@PathParam("id")String id,@PathParam("opinion")String opinion, Map<String, Object> variables) throws  Exception;
+    public OperateResult taskReject(@PathParam("id") String id, @PathParam("opinion") String opinion, Map<String, Object> variables) throws  Exception;
 
     /**
      * 获取分页数据
@@ -158,7 +158,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
-    public List<NodeInfo> findNextNodes(@PathParam("id")String id, @PathParam("businessId")String businessId) throws NoSuchMethodException;
+    public List<NodeInfo> findNextNodes(@PathParam("id") String id, @PathParam("businessId") String businessId) throws NoSuchMethodException;
 
     /**
      * 根据流程实例ID查询待办
@@ -183,7 +183,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择下一步执行的节点信息",notes = "测试")
-    public List<NodeInfo> findNextNodes(@PathParam("id")String id) throws NoSuchMethodException;
+    public List<NodeInfo> findNextNodes(@PathParam("id") String id) throws NoSuchMethodException;
 
 
 //    /**
@@ -212,7 +212,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "只通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id) throws NoSuchMethodException;
+    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id") String id) throws NoSuchMethodException;
 
 
     /**
@@ -228,7 +228,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务ID选择下一步执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id")String id,@PathParam("approved")String approved,List<String> includeNodeIds) throws NoSuchMethodException;
+    public List<NodeInfo> findNexNodesWithUserSet(@PathParam("id") String id, @PathParam("approved") String approved, List<String> includeNodeIds) throws NoSuchMethodException;
 
 
     /**
@@ -255,11 +255,10 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择当前流程抬头信息",notes = "测试")
-   public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id")String id);
+   public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id") String id);
 
     /**
      * 获取待办汇总信息
-     * @param appSign 应用标识
      * @return 待办汇总信息
      */
     @GET
@@ -267,13 +266,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
-    public List<TodoBusinessSummaryVO> findTaskSumHeader(@QueryParam("appSign") String appSign);
+    public List<TodoBusinessSummaryVO> findTaskSumHeader();
 
 
     /**
      * 获取待办汇总信息-可批量审批
-     * @param batchApproval 是批量审批
-     * @param appSign 应用标识
      * @return 待办汇总信息
      */
     @GET
@@ -281,7 +278,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
-    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval")Boolean batchApproval, @QueryParam("appSign") String appSign);
+    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval") Boolean batchApproval);
 
 
     /**
@@ -296,12 +293,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办信息（租户管理员）",notes = "测试")
-    public PageResult<FlowTask> findAllByTenant(@QueryParam("appModuleId") String appModuleId,@QueryParam("businessModelId") String businessModelId,@QueryParam("flowTypeId") String flowTypeId, Search searchConfig);
+    public PageResult<FlowTask> findAllByTenant(@QueryParam("appModuleId") String appModuleId, @QueryParam("businessModelId") String businessModelId, @QueryParam("flowTypeId") String flowTypeId, Search searchConfig);
 
     /**
      * 获取待办汇总信息
      * @param businessModelId 业务实体id
-     * @param appSign 应用标识
      * @param searchConfig 查询条件
      * @return 待办汇总信息
      */
@@ -310,7 +306,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
-    public PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
+    public PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
     /**
@@ -336,14 +332,13 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
-    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(@QueryParam("businessModelId")String businessModelId,Search searchConfig);
+    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
     /**
      * 获取可批量审批待办信息
      * @param searchConfig 查询条件
      * @param businessModelId 为空查询全部
-     * @param appSign 应用标识
      * @return 可批量审批待办信息
      */
     @POST
@@ -351,7 +346,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办信息",notes = "测试")
-    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
 //    @POST
@@ -400,7 +395,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务",notes = "测试")
-    public OperateResultWithData getSelectedNodesInfo(@QueryParam("taskId") String taskId,@QueryParam("approved") String approved, @QueryParam("includeNodeIdsStr") String includeNodeIdsStr) throws NoSuchMethodException;
+    public OperateResultWithData getSelectedNodesInfo(@QueryParam("taskId") String taskId, @QueryParam("approved") String approved, @QueryParam("includeNodeIdsStr") String includeNodeIdsStr) throws NoSuchMethodException;
 
 
     /**
@@ -415,7 +410,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息)",notes = "测试")
-    public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(@QueryParam("taskIds")String taskIds)  throws NoSuchMethodException;
+    public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(@QueryParam("taskIds") String taskIds)  throws NoSuchMethodException;
 
     /**
      * 通过任务IDs选择下一步带用户信息的执行的节点信息
@@ -429,7 +424,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息与版本分组)",notes = "测试")
-    public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds")String taskIds)  throws NoSuchMethodException;
+    public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds)  throws NoSuchMethodException;
 
 
     /**
@@ -441,7 +436,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("taskTurnToDo")
     @ApiOperation(value = "将任务转办给指定用户",notes = "测试")
-    public OperateResult taskTurnToDo(@QueryParam("taskId") String taskId,@QueryParam("userId") String userId);
+    public OperateResult taskTurnToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId);
 
     /**
      * 将任务委托给指定用户
@@ -452,7 +447,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("taskTrustToDo")
     @ApiOperation(value = "将任务委托给指定用户",notes = "测试")
-    public OperateResult taskTrustToDo(@QueryParam("taskId") String taskId,@QueryParam("userId") String userId) throws Exception;
+    public OperateResult taskTrustToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId) throws Exception;
 
     /**
      * 会签任务加签
@@ -464,11 +459,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("counterSignAdd")
     @ApiOperation(value = "会签加签",notes = "测试")
-    public OperateResult counterSignAdd(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userIds")String userIds) throws Exception;
+    public OperateResult counterSignAdd(@QueryParam("actInstanceId") String actInstanceId, @QueryParam("taskActKey") String taskActKey, @QueryParam("userIds") String userIds) throws Exception;
 
 
     /**
-     * 会签减签
+     * 会签任务加签
      * @param actInstanceId 流程实例实际ID
      * @param  taskActKey 任务key
      * @param  userIds 用户id,以“，”分割
@@ -477,7 +472,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("counterSignDel")
     @ApiOperation(value = "会签减签",notes = "测试")
-    OperateResult counterSignDel(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey,@QueryParam("userIds")String userIds) throws Exception;
+    OperateResult counterSignDel(@QueryParam("actInstanceId") String actInstanceId, @QueryParam("taskActKey") String taskActKey, @QueryParam("userIds") String userIds) throws Exception;
 
     /**
      * @return 操作结果
@@ -503,7 +498,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @POST
     @Path("taskTrustToReturn")
     @ApiOperation(value = "委托任务完成后返回给委托人",notes = "测试")
-    public OperateResult taskTrustToReturn(@QueryParam("taskId") String taskId,@QueryParam("opinion") String opinion) throws Exception;
+    public OperateResult taskTrustToReturn(@QueryParam("taskId") String taskId, @QueryParam("opinion") String opinion) throws Exception;
 
     /**
      *
@@ -515,32 +510,10 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @GET
     @Path("getCounterSignExecutorList")
     @ApiOperation(value = "通过当前流程实例和对应节点key获取会签执行人列表",notes = "测试")
-    public List<Executor> getCounterSignExecutorList(@QueryParam("actInstanceId") String actInstanceId,@QueryParam("taskActKey") String taskActKey) throws Exception;
+    public List<Executor> getCounterSignExecutorList(@QueryParam("actInstanceId") String actInstanceId, @QueryParam("taskActKey") String taskActKey) throws Exception;
 
     @POST
     @Path("reminding")
     @ApiOperation(value = "催办提醒定时任务接口",notes = "测试")
     public OperateResult reminding();
-
-    /**
-     * 获取指定用户的待办工作数量
-     * @param executorId 执行人用户Id
-     * @param searchConfig 查询参数
-     * @return 待办工作的数量
-     */
-    @POST
-    @Path("findCountByExecutorId")
-    @ApiOperation(value = "获取指定用户的待办工作数量", notes = "通过执行人的用户Id获取待办工作数量，可以通过查询条件过滤")
-    int findCountByExecutorId(@QueryParam("executorId") String executorId, Search searchConfig);
-
-    /**
-     * 通过Id获取一个待办任务(设置了办理任务URL)
-     *
-     * @param taskId 待办任务Id
-     * @return 待办任务
-     */
-    @GET
-    @Path("findTaskById")
-    @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
-    FlowTask findTaskById(@QueryParam("taskId") String taskId);
 }

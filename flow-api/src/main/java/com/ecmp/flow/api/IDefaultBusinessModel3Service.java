@@ -47,6 +47,6 @@ public interface IDefaultBusinessModel3Service extends IBaseEntityService<Defaul
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据组织Id获取excutor",notes = "测试 根据组织Id获取excutor")
-    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId, @QueryParam("paramJson")String paramJson);
+    public List<Executor> getPersonToExecutorConfig(@QueryParam("businessId") String businessId, @QueryParam("paramJson") String paramJson);
 
 }

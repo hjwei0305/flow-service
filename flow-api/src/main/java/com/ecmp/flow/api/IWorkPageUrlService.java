@@ -83,7 +83,7 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查看对应业务实体已选中的工作界面",notes = "测试")
-    public List<WorkPageUrl> findSelectEdByAppModuleId(@PathParam("appModuleId")String appModuleId,@PathParam("businessModelId")String businessModelId);
+    public List<WorkPageUrl> findSelectEdByAppModuleId(@PathParam("appModuleId") String appModuleId, @PathParam("businessModelId") String businessModelId);
 
     /**
      * 查看对应业务实体未选中的工作界面
@@ -96,7 +96,7 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查看对应业务实体未选中的工作界面",notes = "测试")
-    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@PathParam("appModuleId")String appModuleId,@PathParam("businessModelId")String businessModelId);
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(@PathParam("appModuleId") String appModuleId, @PathParam("businessModelId") String businessModelId);
 
 
     /**
@@ -122,5 +122,5 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体ID查看业务实体已选中的工作界面",notes = "测试")
-    public List<WorkPageUrl> findSelectEdByBusinessModelId(@QueryParam("businessModelId")String businessModelId);
+    public List<WorkPageUrl> findSelectEdByBusinessModelId(@QueryParam("businessModelId") String businessModelId);
 }

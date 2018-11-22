@@ -64,7 +64,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public String  changeCompletedDepict(@QueryParam("id") String id,@QueryParam("paramJson") String paramJson);
+    public String  changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
 
     /**
      * 测试自定义执行人选择
@@ -90,7 +90,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
  @Produces(MediaType.APPLICATION_JSON)
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "测试ReceiveCall",notes = "测试ReceiveCall")
- public boolean testReceiveCall(@QueryParam("id")String id,@QueryParam("paramJson")String changeText);
+ public boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
 
 //
 // /**
@@ -163,7 +163,7 @@ public boolean checkStartFlow(@QueryParam("id") String id);
  @Produces(MediaType.APPLICATION_JSON)
  @Consumes(MediaType.APPLICATION_JSON)
  @ApiOperation(value = "testPJoin",notes = "testPJoin")
- public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
+ public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
 
  @POST
  @Path("testPoolTaskComplete")
