@@ -23,5 +23,5 @@ public interface BusinessWorkPageUrlDao extends BaseEntityDao<BusinessWorkPageUr
     @Transactional(Transactional.TxType.REQUIRED)
     @Modifying
     @Query("delete from com.ecmp.flow.entity.BusinessWorkPageUrl b where b.businessModuleId = :businessModuleId")
-    public void deleteBybusinessModuleId(@Param("businessModuleId")String businessModuleId);
+    public void deleteBybusinessModuleId(@Param("businessModuleId") String businessModuleId);
 }

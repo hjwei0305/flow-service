@@ -28,13 +28,6 @@ public interface CustomFlowHistoryDao {
 
 
     /**
-     * 通过业务实体类型code,基于动态组合条件对象和分页(含排序)对象查询数据集合
-     */
-    @Transactional(readOnly = true)
-    public PageResult<FlowHistory> findByPageByBusinessModelCode(String businessModelCode, String executorAccount, Search searchConfig);
-
-
-    /**
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)

@@ -31,4 +31,6 @@ import java.util.List;
 public interface CustomAppModuleDao {
     @Transactional(readOnly = true)
     public List<AppModule> findByCodes(List<String> codeList);
+
+//    public void clearLevel2Cache();
 }

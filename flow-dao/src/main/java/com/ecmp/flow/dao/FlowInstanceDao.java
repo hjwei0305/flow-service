@@ -16,7 +16,7 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
 
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.actInstanceId = :actInstanceId")
-    public  FlowInstance findByActInstanceId(@Param("actInstanceId")String actInstanceId);
+    public  FlowInstance findByActInstanceId(@Param("actInstanceId") String actInstanceId);
 //    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     public  List<FlowInstance> findByBusinessId(String businessId);
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
@@ -24,7 +24,7 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
 
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc")
-    public List<FlowInstance> findByBusinessIdOrder(@Param("businessId")String businessId);
+    public List<FlowInstance> findByBusinessIdOrder(@Param("businessId") String businessId);
 
 
     /**
@@ -34,13 +34,11 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
      */
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended ")
-    public List<FlowInstance> findByCreatorId(@Param("creatorId")String creatorId,@Param("ended")Boolean ended);
+    public List<FlowInstance> findByCreatorId(@Param("creatorId") String creatorId, @Param("ended") Boolean ended);
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     public  List<FlowInstance> findByFlowDefVersionId(String flowDefVersionId);
 
     @Query("select fv from com.ecmp.flow.entity.FlowInstance fv where fv.id  = :id")
-    public FlowInstance findByIdNoF(@Param("id")String id);
-
-
+    public FlowInstance findByIdNoF(@Param("id") String id);
 
 }

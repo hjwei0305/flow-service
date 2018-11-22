@@ -122,4 +122,10 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
 
     @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId")
     public List<FlowTaskExecutorIdAndCount> findAllExecutorIdAndCount();
+
+//    @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.flowDefinitionId,ft.flowName,ft.taskKey,ft.taskName,ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId,ft.flowDefinitionId,ft.taskKey")
+//    public List<FlowTaskExecutorIdAndCount> findAllExecutorIdTaskKeyAndCount();
+
+    @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.executorId,ft.executorName,ft.flowDefinitionId,ft.flowName,ft.actTaskDefKey,ft.taskName,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId group by ft.executorId,ft.executorName,ft.flowDefinitionId,ft.flowName,ft.actTaskDefKey,ft.taskName")
+    public List<FlowTaskExecutorIdAndCount> findAllTaskKeyAndCountByExecutorId(@Param("executorId") String executorId);
 }

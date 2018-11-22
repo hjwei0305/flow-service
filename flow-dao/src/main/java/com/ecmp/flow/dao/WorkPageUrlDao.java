@@ -31,7 +31,7 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      */
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where  w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
-    List<com.ecmp.flow.entity.WorkPageUrl> findSelectEdByBusinessModelId(@Param("businessModelId")String businessModelId);
+    List<WorkPageUrl> findSelectEdByBusinessModelId(@Param("businessModelId") String businessModelId);
 
 
     /**
@@ -42,7 +42,7 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      */
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
-    List<com.ecmp.flow.entity.WorkPageUrl> findSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
+    List<WorkPageUrl> findSelectEd(@Param("appModuleId") String appModuleId, @Param("businessModelId") String businessModelId);
 
 
     /**
@@ -53,7 +53,7 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      */
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.appModuleId  = :appModuleId and w.id not in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = :businessModelId) ")
-    List<com.ecmp.flow.entity.WorkPageUrl> findNotSelectEd(@Param("appModuleId")String appModuleId,@Param("businessModelId")String businessModelId);
+    List<WorkPageUrl> findNotSelectEd(@Param("appModuleId") String appModuleId, @Param("businessModelId") String businessModelId);
 
 
     /**
@@ -63,5 +63,5 @@ public interface WorkPageUrlDao extends BaseEntityDao<WorkPageUrl> {
      */
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select w from com.ecmp.flow.entity.WorkPageUrl w where w.id  in( select workPageUrlId  from com.ecmp.flow.entity.BusinessWorkPageUrl where businessModuleId = (select t.businessModel.id from com.ecmp.flow.entity.FlowType t  where t.id = :flowTypeId)) ")
-    List<com.ecmp.flow.entity.WorkPageUrl> findByFlowTypeId(@Param("flowTypeId")String flowTypeId);
+    List<WorkPageUrl> findByFlowTypeId(@Param("flowTypeId") String flowTypeId);
 }

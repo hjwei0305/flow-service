@@ -42,4 +42,7 @@ public class AppModuleDaoImpl extends BaseEntityDaoImpl<AppModule> implements Cu
         List<AppModule> AppModuleList = appModuleQuery.getResultList();
         return AppModuleList;
     }
+//    public void clearLevel2Cache(){
+////        entityManager.getEntityManagerFactory().getCache().evictAll();
+//    }
 }

@@ -6,8 +6,11 @@ import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
+import com.ecmp.flow.dao.CustomFlowHistoryDao;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -58,32 +61,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
 
         return pageResult;
     }
-
-
-    public PageResult<FlowHistory> findByPageByBusinessModelCode(String businessModelCode,String executorAccount, Search searchConfig) {
-        PageInfo pageInfo = searchConfig.getPageInfo();
-
-        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.className = :businessModelCode)) ) ", Integer.class);
-        queryTotal.setParameter("executorAccount",executorAccount);
-        queryTotal.setParameter("businessModelCode",businessModelCode);
-        Integer total = queryTotal.getSingleResult();
-
-        TypedQuery<FlowHistory> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.className = :businessModelCode)) ) order by ft.lastEditedDate desc", FlowHistory.class);
-        query.setParameter("executorAccount",executorAccount);
-        query.setParameter("businessModelCode",businessModelCode);
-        query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
-        query.setMaxResults( pageInfo.getRows() );
-        List<FlowHistory>  result = query.getResultList();
-        initFlowTaskAppModule(result);
-        PageResult<FlowHistory> pageResult = new PageResult<>();
-        pageResult.setPage(pageInfo.getPage());
-        pageResult.setRows(result);
-        pageResult.setRecords(result.size());
-        pageResult.setTotal(total);
-
-        return pageResult;
-    }
-
     public List<FlowHistory> findLastByBusinessId(String businessId){
         TypedQuery<FlowInstance> instanceQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc", FlowInstance.class);
         instanceQuery.setParameter("businessId",businessId);
@@ -188,5 +165,3 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     }
 
 }
-
-
