@@ -29,6 +29,7 @@ public class FlowInvokeParams implements Serializable{
     private List<String> orgDimensionCodes;//组织维度代码集合
     private List<String> positionIds;//岗位代码集合
     private String jsonParam;//其他json格式参数
+    private Map<String,List<String>> nextNodeUserInfo;//下一步操作用户信息,key为节点代码（如没有配置，指定为默认id）,下一步选择的用户id集合
 
     public String getId() {
         return id;
@@ -124,5 +125,13 @@ public class FlowInvokeParams implements Serializable{
 
     public void setJsonParam(String jsonParam) {
         this.jsonParam = jsonParam;
+    }
+
+    public Map<String, List<String>> getNextNodeUserInfo() {
+        return nextNodeUserInfo;
+    }
+
+    public void setNextNodeUserInfo(Map<String, List<String>> nextNodeUserInfo) {
+        this.nextNodeUserInfo = nextNodeUserInfo;
     }
 }
