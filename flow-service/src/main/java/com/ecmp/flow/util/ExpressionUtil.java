@@ -202,7 +202,7 @@ public class ExpressionUtil {
         new Thread(new Runnable() {//模拟异步,上传调用日志
             @Override
             public void run() {
-                LogUtil.addExceptionLog(message);
+                LogUtil.bizLog(message);
             }
         }).start();
     }
