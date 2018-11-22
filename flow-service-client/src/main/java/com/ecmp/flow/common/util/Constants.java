@@ -252,6 +252,35 @@ public class Constants extends ConfigurableContants {
 		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
 	}
 
+
+	/**
+	 * 查询用户个人邮件提醒信息url
+	 * @return
+	 */
+	public static String getUserEmailAlertFindByUserIdsUrl() {
+		String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.USEREMAILALERT.FINDBYUSERIDS");
+		if(StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)){
+			BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL=getBasicServiceUrl() + getProperty(
+					"basic.userEmailAlert.findByUserIds", "/userEmailAlert/findByUserIds");
+		}
+		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
+	}
+
+
+
+	/**
+	 * 更新用户的最后一次提醒时间url
+	 * @return
+	 */
+	public static String getUsderEmailAlertUpdateLastTimesUrl() {
+		String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.USEREMAILALERT.UPDATELASTTIMES");
+		if(StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)){
+			BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL=getBasicServiceUrl() + getProperty(
+					"basic.userEmailAlert.updateLastTimes", "/userEmailAlert/updateLastTimes");
+		}
+		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
+	}
+
 	/**
 	 * 匿名用户
 	 */
