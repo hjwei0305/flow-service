@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.ServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -68,7 +65,9 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowStartVO.setBusinessKey(businessKey);
             flowStartVO.setBusinessModelCode(businessModelCode);
             flowStartVO.setFlowTypeId(typeId);
-           flowStartVO.setFlowDefKey(flowDefKey);
+            flowStartVO.setFlowDefKey(flowDefKey);
+            Map<String, Object> variables = new HashMap<String, Object>();
+            flowStartVO.setVariables(variables);
             if (StringUtils.isNotEmpty(taskList)) {
                 if("anonymous".equalsIgnoreCase(taskList)){
                     flowStartVO.setPoolTask(true);
@@ -77,15 +76,22 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
                 if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                    Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                    Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
+                        allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
+                        String[] idArray = f.getUserIds().split(",");
                         if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
                             userMap.put(f.getUserVarName(), f.getUserIds());
                         } else {
-                            String[] idArray = f.getUserIds().split(",");
                             userMap.put(f.getUserVarName(), idArray);
                         }
+                        List<String> userList = Arrays.asList(idArray);
+                        selectedNodesUserMap.put(f.getNodeId(),userList);
                     }
+                    variables.put("selectedNodesUserMap",selectedNodesUserMap);
+                    variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
                 }
                 }
             }
@@ -153,7 +159,10 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             Map<String,String> selectedNodesMap = new HashMap<>();
             Map<String, Object> v = new HashMap<String, Object>();
             if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
                 for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                    allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
                     String flowTaskType = f.getFlowTaskType();
                     String callActivityPath = f.getCallActivityPath();
                     if (StringUtils.isNotEmpty(callActivityPath)) {
@@ -173,16 +182,22 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                             String[] idArray = f.getUserIds().split(",");
                             v.put(callActivityPath+"/"+f.getUserVarName(), idArray);
                         }
+                        //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                     }else {
                         selectedNodesMap.put(f.getNodeId(),f.getNodeId());
+                        String[] idArray = f.getUserIds().split(",");
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             v.put(f.getUserVarName(), f.getUserIds());
                         } else if(!"poolTask".equalsIgnoreCase(flowTaskType)){
-                            String[] idArray = f.getUserIds().split(",");
+
                             v.put(f.getUserVarName(), idArray);
                         }
+                        List<String> userList = Arrays.asList(idArray);
+                        selectedNodesUserMap.put(f.getNodeId(),userList);
                     }
                 }
+                v.put("allowChooseInstancyMap",allowChooseInstancyMap);
+                v.put("selectedNodesUserMap",selectedNodesUserMap);
             } else {
                 if (StringUtils.isNotEmpty(endEventId)) {
                     selectedNodesMap.put(endEventId,endEventId);
@@ -276,7 +291,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
-            includeNodeIds = java.util.Arrays.asList(includeNodeIdsStringArray);
+            includeNodeIds = Arrays.asList(includeNodeIdsStringArray);
         }
         if(StringUtils.isEmpty(approved)){
             approved="APPROVED";
