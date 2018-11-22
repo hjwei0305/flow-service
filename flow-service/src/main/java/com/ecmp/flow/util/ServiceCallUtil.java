@@ -42,8 +42,8 @@ public class ServiceCallUtil {
             FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao)applicationContext.getBean(Constants.FLOW_SERVICE_URL_DAO);
             FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(serviceUrlId);
             if(flowServiceUrl != null){
-              String  clientUrl = flowServiceUrl.getUrl();
-              AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
+                String  clientUrl = flowServiceUrl.getUrl();
+                AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
 
                 Map<String,String> paramMap = new HashMap<String,String>();
                 FlowInvokeParams params = new FlowInvokeParams();
@@ -95,6 +95,11 @@ public class ServiceCallUtil {
                             String  opinion = jsonObject.get(Constants.OPINION)+"";
                             paramMap.put(Constants.OPINION,opinion);
                         }
+                        if(jsonObject.has("selectedNodesUserMap")){
+                            JSONObject itemJSONObj = jsonObject.getJSONObject("selectedNodesUserMap");
+                            Map<String, List<String>> itemMap = (Map<String, List<String>>) JSONObject.toBean(itemJSONObj, Map.class);
+                            params.setNextNodeUserInfo(itemMap);
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                         throw e;
@@ -134,6 +139,6 @@ public class ServiceCallUtil {
                 throw new FlowException("serviceUrlId='"+serviceUrlId+"'s service object can't be found!");
             }
         }
-         return result;
+        return result;
     }
 }

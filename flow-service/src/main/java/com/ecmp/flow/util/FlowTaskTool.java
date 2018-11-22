@@ -124,12 +124,12 @@ public class FlowTaskTool {
     public  boolean checkGateway(FlowTask flowTask) {
         boolean result = false;
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
-            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             String busType = nextNode.getString("busType");
             if ("ManualExclusiveGateway".equalsIgnoreCase(busType) ||  //人工排他网关
                     "exclusiveGateway".equalsIgnoreCase(busType) ||  //排他网关
@@ -151,12 +151,12 @@ public class FlowTaskTool {
     public   boolean checkManualExclusiveGateway(FlowTask flowTask) {
         boolean result = false;
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
-            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             try{
                   if ("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
                        result = true;
@@ -178,12 +178,12 @@ public class FlowTaskTool {
     public   boolean checkSystemExclusiveGateway(FlowTask flowTask) {
         boolean result = false;
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         JSONArray targetNodes = currentNode.getJSONArray("target");
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
-            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             String busType = null;
             try {
                 busType = nextNode.getString("busType");
@@ -207,7 +207,7 @@ public class FlowTaskTool {
     public   boolean checkManualExclusiveGateway(FlowTask flowTask, String manualExclusiveGatewayId) {
         boolean result = false;
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(manualExclusiveGatewayId);
+        JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(manualExclusiveGatewayId);
         if ("ManualExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
             result = true;
         }
@@ -222,7 +222,7 @@ public class FlowTaskTool {
      */
     public   List<NodeInfo> selectNextAllNodesWithGateWay(FlowTask flowTask, PvmActivity currActivity, Map<String, Object> v, List<String> includeNodeIds) throws NoSuchMethodException, SecurityException {
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         String nodeType = currentNode.get("nodeType") + "";
 
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<PvmActivity, List>();
@@ -664,7 +664,7 @@ public class FlowTaskTool {
         }
 
         Definition   definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(tempActivity.getId());
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(tempActivity.getId());
         String nodeType = currentNode.get("nodeType") + "";
 //        tempNodeInfo.setCurrentTaskType(nodeType);
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
@@ -853,8 +853,7 @@ public class FlowTaskTool {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
-        // 流程成功撤回！
-        OperateResult result = OperateResult.operationSuccess("10064");
+        OperateResult result = OperateResult.operationSuccess("core_00003");
         String taskId = flowHistory.getActHistoryId();
         try {
             Map<String, Object> variables;
@@ -987,7 +986,7 @@ public class FlowTaskTool {
                 flowHistoryDao.save(flowHistoryNew);
             }
             //初始化回退后的新任务
-            initTask(flowHistory.getFlowInstance(), flowHistory,currTask.getTaskDefinitionKey());
+            initTask(flowHistory.getFlowInstance(), flowHistory,currTask.getTaskDefinitionKey(),null);
             return result;
         } catch(FlowException flowE){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1210,8 +1209,8 @@ public class FlowTaskTool {
         return result;
     }
 
-    private void taskPropertityInit( FlowTask flowTask,FlowHistory preTask,net.sf.json.JSONObject currentNode){
-        net.sf.json.JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+    private void taskPropertityInit( FlowTask flowTask,FlowHistory preTask,JSONObject currentNode,Map<String, Object> variables){
+        JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
         Boolean canReject = null;
         Boolean canSuspension = null;
         WorkPageUrl workPageUrl =null;
@@ -1223,6 +1222,19 @@ public class FlowTaskTool {
             workPageUrl = workPageUrlDao.findOne(workPageUrlId);
             flowTask.setWorkPageUrl(workPageUrl);
         }
+        try{
+        if(variables!=null && variables.get("allowChooseInstancyMap") != null){
+            Map<String,Boolean> allowChooseInstancyMap = (Map<String,Boolean>)variables.get("allowChooseInstancyMap");
+            if(allowChooseInstancyMap!=null && !allowChooseInstancyMap.isEmpty()){//判断是否定义了紧急处理
+                Boolean allowChooseInstancy = allowChooseInstancyMap.get(flowTask.getActTaskDefKey());
+                if(allowChooseInstancy!=null && allowChooseInstancy==true){
+                    flowTask.setPriority(3);
+                }
+            }
+        }}catch (Exception e){
+            logger.error("allowChooseInstancyMap解析错误！"+e.getMessage());
+        }
+
         flowTask.setCanReject(canReject);
         flowTask.setCanSuspension(canSuspension);
         if (preTask != null) {//初始化上一步的执行历史信息
@@ -1246,8 +1258,8 @@ public class FlowTaskTool {
             }
             if("CounterSign".equalsIgnoreCase(nodeType)||"Approve".equalsIgnoreCase(nodeType)){//能否批量审批
 //                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                net.sf.json.JSONObject executor=null;
-                net.sf.json.JSONArray executorList=null;//针对两个条件以上的情况
+                JSONObject executor=null;
+                JSONArray executorList=null;//针对两个条件以上的情况
                 if(currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)){
                     try {
                         executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
@@ -1304,7 +1316,7 @@ public class FlowTaskTool {
      * @param flowInstance
      * @param actTaskDefKeyCurrent
      */
-    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId,FlowTask flowTaskTemp) {
+    public  void initCounterSignAddTask(FlowInstance flowInstance,String actTaskDefKeyCurrent,String userId,String preId) {
         List<Task> taskList = null;
         String actProcessInstanceId = flowInstance.getActInstanceId();
         if(StringUtils.isNotEmpty(actTaskDefKeyCurrent)){
@@ -1317,7 +1329,7 @@ public class FlowTaskTool {
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
-                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
                 if(tempFlowTask!=null){
                     continue;
@@ -1326,7 +1338,7 @@ public class FlowTaskTool {
                     Executor executor = flowCommonUtil.getBasicExecutor(userId);
                     if (executor != null) {
                         FlowTask flowTask = new FlowTask();
-                        flowTask.setPreId(flowTaskTemp.getPreId());
+                        flowTask.setPreId(preId);
                         flowTask.setTaskJsonDef(currentNode.toString());
                         flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                         flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1339,9 +1351,6 @@ public class FlowTaskTool {
                         flowTask.setExecutorId(executor.getId());
                         flowTask.setExecutorName(executor.getName());
                         flowTask.setActType("candidate");
-                        flowTask.setExecuteTime(flowTaskTemp.getExecuteTime());
-                        flowTask.setAllowAddSign(flowTaskTemp.getAllowAddSign());
-                        flowTask.setAllowSubtractSign(flowTaskTemp.getAllowSubtractSign());
                         if (StringUtils.isEmpty(task.getDescription())) {
                             flowTask.setDepict("加签的任务");
                         } else {
@@ -1350,7 +1359,7 @@ public class FlowTaskTool {
                         flowTask.setTaskStatus(TaskStatus.INIT.toString());
                         flowTask.setPriority(0);
                         flowTask.setFlowInstance(flowInstance);
-                        taskPropertityInit(flowTask, null, currentNode);
+                        taskPropertityInit(flowTask, null, currentNode,null);
                         flowTaskDao.save(flowTask);
                     }
                 }
@@ -1364,7 +1373,7 @@ public class FlowTaskTool {
      * @param flowInstance
      * @param actTaskDefKeyCurrent
      */
-    public  void initTask(FlowInstance flowInstance,  FlowHistory preTask,String actTaskDefKeyCurrent) {
+    public  void initTask(FlowInstance flowInstance,  FlowHistory preTask,String actTaskDefKeyCurrent,Map<String, Object> variables) {
 
         if(flowInstance == null || flowInstance.isEnded()){
             return;
@@ -1377,7 +1386,7 @@ public class FlowTaskTool {
             List<FlowInstance> flowInstanceSonList = flowInstanceDao.findByParentId(flowInstance.getId());
             if (flowInstanceSonList != null && !flowInstanceSonList.isEmpty()) {//初始化子流程的任务
                 for (FlowInstance son : flowInstanceSonList) {
-                    initTask(son, preTask,null);
+                    initTask(son, preTask,null,variables);
                 }
             }
             taskList = taskService.createTaskQuery().processInstanceId(actProcessInstanceId).active().list();
@@ -1385,23 +1394,13 @@ public class FlowTaskTool {
         if (taskList != null && !taskList.isEmpty()) {
             Boolean allowAddSign = null;//允许加签
             Boolean allowSubtractSign = null;//允许减签
-            Integer executeTime=0; //额定工时
             String flowName = null;
             Definition   definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
-                net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 String nodeType = (String)currentNode.get("nodeType");
-                try {
-                    Integer executeDay = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeDay");
-                    Integer executeHour = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeHour");
-                    Integer executeMinute = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeMinute");
-                    executeTime = executeMinute + executeHour * 60 + executeDay * 24 * 60;
-                }catch (Exception eSign){
-                    logger.error(eSign.getMessage());
-                }
-
                 if(("CounterSign".equalsIgnoreCase(nodeType)||"ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType))){
 
                     FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
@@ -1413,9 +1412,12 @@ public class FlowTaskTool {
                     try{
                       Boolean isSequential = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
                       if(isSequential && preTask!=null){
-                        String executionId = task.getExecutionId();
+                        // 取得当前任务
+                        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(actTaskDefKey)
+                                .singleResult();
+                        String executionId = currTask.getExecutionId();
                         Integer nrOfCompletedInstances = (Integer)runtimeService.getVariable(executionId,"nrOfCompletedInstances");
-                        if(nrOfCompletedInstances>=1){
+                        if(nrOfCompletedInstances>1){
                            FlowHistory flowHistory = flowHistoryDao.findOne(preTask.getPreId());
                            if(flowHistory!=null){
                                preTask = flowHistory;
@@ -1451,7 +1453,6 @@ public class FlowTaskTool {
                             FlowTask flowTask = new FlowTask();
                             flowTask.setAllowAddSign(allowAddSign);
                             flowTask.setAllowSubtractSign(allowSubtractSign);
-                            flowTask.setExecuteTime(executeTime);
                             flowTask.setTenantCode(ContextUtil.getTenantCode());
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
@@ -1473,7 +1474,7 @@ public class FlowTaskTool {
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
-                            taskPropertityInit(flowTask,preTask,currentNode);
+                            taskPropertityInit(flowTask,preTask,currentNode,variables);
                             flowTaskDao.save(flowTask);
                         }
                     }
@@ -1519,7 +1520,6 @@ public class FlowTaskTool {
                             flowTask.setTaskJsonDef(currentNode.toString());
                             flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                             flowTask.setActTaskDefKey(actTaskDefKey);
-                            flowTask.setExecuteTime(executeTime);
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
                             flowTask.setActTaskId(task.getId());
@@ -1528,7 +1528,7 @@ public class FlowTaskTool {
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
-                            taskPropertityInit(flowTask,preTask,currentNode);
+                            taskPropertityInit(flowTask,preTask,currentNode,variables);
                             flowTaskDao.save(flowTask);
                         }else{
 
@@ -1540,7 +1540,6 @@ public class FlowTaskTool {
                                 flowTask.setTaskJsonDef(currentNode.toString());
                                 flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                                 flowTask.setActTaskDefKey(actTaskDefKey);
-                                flowTask.setExecuteTime(executeTime);
                                 flowTask.setFlowName(flowName);
                                 flowTask.setTaskName(task.getName());
                                 flowTask.setActTaskId(task.getId());
@@ -1555,7 +1554,7 @@ public class FlowTaskTool {
                                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
                                 flowTask.setPriority(0);
                                 flowTask.setFlowInstance(flowInstance);
-                                taskPropertityInit(flowTask,preTask,currentNode);
+                                taskPropertityInit(flowTask,preTask,currentNode,variables);
                                 flowTaskDao.save(flowTask);
 //                            currentDate = flowTask.getCreatedDate();
                             }else{
@@ -1748,8 +1747,8 @@ public class FlowTaskTool {
     public List<NodeInfo> getCallActivityNodeInfo(FlowTask flowTask,String currNodeId, List<NodeInfo> result){
         FlowInstance flowInstance = flowTask.getFlowInstance();
         Definition definitionP =  flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
-        net.sf.json.JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
-        net.sf.json.JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
+        JSONObject normal = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
         String currentVersionId = (String)normal.get("currentVersionId");
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(currentVersionId);
         if(flowDefVersion!=null && flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate){
@@ -1757,7 +1756,7 @@ public class FlowTaskTool {
             List<StartEvent> startEventList = definitionSon.getProcess().getStartEvent();
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
-                net.sf.json.JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
+                JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
                 FlowStartVO flowStartVO = new FlowStartVO();
                 flowStartVO.setBusinessKey(flowInstance.getBusinessId());
                 try {
@@ -1978,17 +1977,17 @@ public class FlowTaskTool {
     }
     public List<Executor> getExecutors(String userType, String ids){
         String[] idsShuZhu = ids.split(",");
-        List<String> idList = java.util.Arrays.asList(idsShuZhu);
+        List<String> idList = Arrays.asList(idsShuZhu);
         List<Executor> employees = null;
         if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
             Map<String,Object> params = new HashMap();
             params.put("positionIds",idList);
-            String url = com.ecmp.flow.common.util.Constants.getBasicPositionGetexecutorsbypositionidsUrl();
+            String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
             Map<String,Object> params = new HashMap();
             params.put("posCateIds",idList);
-            String url = com.ecmp.flow.common.util.Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
+            String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
@@ -1996,7 +1995,7 @@ public class FlowTaskTool {
     }
 
 
-    private boolean checkNextNodesCanAprool(FlowTask flowTask,net.sf.json.JSONObject currentNode ){
+    private boolean checkNextNodesCanAprool(FlowTask flowTask,JSONObject currentNode ){
         boolean result = true;
 //        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
 //        JSONObject defObj = JSONObject.fromObject(defObjStr);
@@ -2026,7 +2025,7 @@ public class FlowTaskTool {
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
-            net.sf.json.JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             try{
                 if(nextNode.has("busType")){
                     String busType = nextNode.getString("busType");
@@ -2043,7 +2042,7 @@ public class FlowTaskTool {
                 }
 
                 if( nextNode.getJSONObject("nodeConfig").has("executor")){
-                    net.sf.json.JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                    JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
                     String userType = (String) executor.get("userType");
                     if("StartUser".equalsIgnoreCase(userType)||"Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType))
                     {
@@ -2131,7 +2130,7 @@ public class FlowTaskTool {
 
 //    @Cacheable(value = "FLowGetParentCodes", key = "'FLowOrgParentCodes_' + #nodeId")
     public List<String> getParentOrgCodes(String nodeId){
-        if(org.apache.commons.lang.StringUtils.isEmpty(nodeId)){
+        if(StringUtils.isEmpty(nodeId)){
             throw new FlowException("orgId is null!");
         }
         Map<String,Object> params = new HashMap();

@@ -97,7 +97,7 @@ public class FlowListenerTool {
                 String flowDefJsonP = parentFlowInstance.getFlowDefVersion().getDefJson();
                 JSONObject defObjP = JSONObject.fromObject(flowDefJsonP);
                 Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
-                net.sf.json.JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(activityId);
+                JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(activityId);
                 flowTaskTemp.setTaskJsonDef(currentNodeP.toString());
                 results = flowTaskService.findNexNodesWithUserSet( flowTaskTemp);
             }
@@ -205,7 +205,7 @@ public class FlowListenerTool {
                 if(nowTime.after(startTreadTime)){
                     service.shutdown();
                 }
-                flowTaskTool.initTask(flowInstance,flowHistory,null);
+                flowTaskTool.initTask(flowInstance,flowHistory,null,null);
             }
         };
         // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
@@ -268,7 +268,7 @@ public class FlowListenerTool {
                             new Thread(new Runnable() {//模拟异步
                                 @Override
                                 public void run() {
-                                    LogUtil.bizLog("businessKey="+businessKey+";endSign="+endSign+";"+flowOperateResult.toString());
+                                    LogUtil.addExceptionLog("businessKey="+businessKey+";endSign="+endSign+";"+flowOperateResult.toString());
                                 }
                             }).start();
                         }
@@ -318,7 +318,30 @@ public class FlowListenerTool {
                     return;
                 }
             }
+            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
+            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
+            String flowDefJson = flowDefVersion.getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+
             Map<String,Object> tempV = delegateTask.getVariables();
+            Map<String,List<String>> selectedNodesUserMap = (Map<String, List<String>>) tempV.get("selectedNodesUserMap");
+            Map<String,List<String>> selectedNodesUserMapNew = new HashMap<>();
+            if(selectedNodesUserMap!=null && !selectedNodesUserMap.isEmpty()){//如果配置了自定义code，则进行替换
+               for(Map.Entry<String,List<String>> temp:selectedNodesUserMap.entrySet()){
+                  String actTaskDefKey = temp.getKey();
+                  JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                  JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+                   if(normalInfo!=null && !normalInfo.isEmpty() ){
+                      String nodeCode = normalInfo.get("nodeCode")!=null?(String)normalInfo.get("nodeCode"):null;
+                      if(StringUtils.isEmpty(nodeCode)){
+                          nodeCode = actTaskDefKey;
+                      }
+                       selectedNodesUserMapNew.put(nodeCode,temp.getValue());
+                   }
+               }
+                tempV.put("selectedNodesUserMap",selectedNodesUserMapNew);
+            }
             String param = JsonUtils.toJson(tempV);
             if(async){
                 new Thread(new Runnable() {//模拟异步
@@ -353,8 +376,8 @@ public class FlowListenerTool {
                     if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
 //                            String actProcessInstanceId = delegateTask.getProcessInstanceId();
 //                            FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
-                            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-                            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
+//                            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
+//                            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
                             AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
                             new Thread(){
                                 public void run(){
@@ -398,7 +421,7 @@ public class FlowListenerTool {
             new Thread(new Runnable() {//模拟异步
                 @Override
                 public void run() {
-                    LogUtil.bizLog(e.getMessage());
+                    LogUtil.addExceptionLog(e.getMessage());
                 }
             }).start();
         }

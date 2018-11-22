@@ -34,10 +34,10 @@ import java.util.*;
  */
 public class ExpressionUtil {
 
-     private static final Logger logger = LoggerFactory.getLogger(ExpressionUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExpressionUtil.class);
 
-     public static AppModule getAppModule(BusinessModel businessModel){
-         AppModule appModule = businessModel.getAppModule();
+    public static AppModule getAppModule(BusinessModel businessModel){
+        AppModule appModule = businessModel.getAppModule();
         return appModule;
     }
     /**
@@ -198,11 +198,11 @@ public class ExpressionUtil {
      * 模拟异步,上传调用日志
      * @param message
      */
-     static void asyncUploadLog(String message){
+    static void asyncUploadLog(String message){
         new Thread(new Runnable() {//模拟异步,上传调用日志
             @Override
             public void run() {
-                LogUtil.bizLog(message);
+                LogUtil.addExceptionLog(message);
             }
         }).start();
     }
