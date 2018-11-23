@@ -24,22 +24,28 @@ public interface CustomFlowTaskDao {
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
+    PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
 
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPage(String executorId, Search searchConfig);
+    PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig);
 
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPageCanBatchApproval(String executorId, Search searchConfig);
+    PageResult<FlowTask> findByPageCanBatchApproval(String executorId, Search searchConfig);
 
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
+    PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
 
     @Transactional(readOnly = true)
-    public Long findCountByExecutorId(String executorId, Search searchConfig);
+    Long findCountByExecutorId(String executorId, Search searchConfig);
 
     @Transactional(readOnly = true)
-    public PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig);
+    PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig);
 
-
+    /**
+     * 通过Id获取一个待办任务(设置了办理任务URL)
+     * @param taskId 待办任务Id
+     * @return 待办任务
+     */
+    @Transactional(readOnly = true)
+    FlowTask findTaskById(String taskId);
 }

@@ -100,8 +100,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String actInstanceId = entity.getActInstanceId();
         this.deleteActiviti(actInstanceId,null);
         flowInstanceDao.delete(entity);
-        OperateResult result =  OperateResult.operationSuccess("core_00003");
-        return result;
+        // 流程实例删除成功！
+        return OperateResult.operationSuccess("10061");
     }
     /**
      * 通过ID批量删除

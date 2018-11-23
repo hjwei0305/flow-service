@@ -259,6 +259,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 获取待办汇总信息
+     * @param appSign 应用标识
      * @return 待办汇总信息
      */
     @GET
@@ -266,11 +267,13 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
-    public List<TodoBusinessSummaryVO> findTaskSumHeader();
+    public List<TodoBusinessSummaryVO> findTaskSumHeader(@QueryParam("appSign") String appSign);
 
 
     /**
      * 获取待办汇总信息-可批量审批
+     * @param batchApproval 是批量审批
+     * @param appSign 应用标识
      * @return 待办汇总信息
      */
     @GET
@@ -278,7 +281,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
-    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval") Boolean batchApproval);
+    public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval") Boolean batchApproval, @QueryParam("appSign") String appSign);
 
 
     /**
@@ -298,6 +301,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     /**
      * 获取待办汇总信息
      * @param businessModelId 业务实体id
+     * @param appSign 应用标识
      * @param searchConfig 查询条件
      * @return 待办汇总信息
      */
@@ -306,7 +310,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
-    public PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+    public PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
 
 
     /**
@@ -339,6 +343,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * 获取可批量审批待办信息
      * @param searchConfig 查询条件
      * @param businessModelId 为空查询全部
+     * @param appSign 应用标识
      * @return 可批量审批待办信息
      */
     @POST
@@ -346,7 +351,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办信息",notes = "测试")
-    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
 
 
 //    @POST
@@ -516,4 +521,26 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("reminding")
     @ApiOperation(value = "催办提醒定时任务接口",notes = "测试")
     public OperateResult reminding();
+
+    /**
+     * 获取指定用户的待办工作数量
+     * @param executorId 执行人用户Id
+     * @param searchConfig 查询参数
+     * @return 待办工作的数量
+     */
+    @POST
+    @Path("findCountByExecutorId")
+    @ApiOperation(value = "获取指定用户的待办工作数量", notes = "通过执行人的用户Id获取待办工作数量，可以通过查询条件过滤")
+    int findCountByExecutorId(@QueryParam("executorId") String executorId, Search searchConfig);
+
+    /**
+     * 通过Id获取一个待办任务(设置了办理任务URL)
+     *
+     * @param taskId 待办任务Id
+     * @return 待办任务
+     */
+    @GET
+    @Path("findTaskById")
+    @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
+    FlowTask findTaskById(@QueryParam("taskId") String taskId);
 }
