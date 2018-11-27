@@ -482,7 +482,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             }
             String changeText = "after";
             if(flowInvokeParams.getNextNodeUserInfo()!=null){
-                changeText+=flowInvokeParams.getNextNodeUserInfo().get(0).get(0);
+                Map<String,List<String>>  map= flowInvokeParams.getNextNodeUserInfo();
+                Set       set       =       map.entrySet();
+                Iterator   iterator =       set.iterator();
+                while (iterator.hasNext()){
+                    Map.Entry mapentry =(Map.Entry)iterator.next();
+                    changeText+=mapentry.getKey()+"/"+mapentry.getValue();
+                }
+//                changeText+=flowInvokeParams.getNextNodeUserInfo().get(0).get(0);
             }
             entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
             defaultBusinessModelDao.save(entity);
