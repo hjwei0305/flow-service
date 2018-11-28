@@ -56,7 +56,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
     @RequestMapping(value = "startFlow")
     @ResponseBody
     @IgnoreCheckAuth
-    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String flowDefKey,String taskList) throws NoSuchMethodException, SecurityException{
+    public OperateStatus startFlow(String businessModelCode, String businessKey,String opinion, String typeId,String flowDefKey,String taskList,String anonymousNodeId) throws NoSuchMethodException, SecurityException{
         OperateStatus operateStatus = null;
            List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
             IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
@@ -68,61 +68,38 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowStartVO.setFlowDefKey(flowDefKey);
             Map<String, Object> variables = new HashMap<String, Object>();
             flowStartVO.setVariables(variables);
-//            if (StringUtils.isNotEmpty(taskList)) {
-//                if("anonymous".equalsIgnoreCase(taskList)){
-//                    flowStartVO.setPoolTask(true);
-//                    userMap.put("anonymous","anonymous");
-//                }else{
-//                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-//                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
-//                if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
-//                    Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
-//                    Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-//                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-//                        String flowTaskType = f.getFlowTaskType();
-//                        allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
-//                        String[] idArray = f.getUserIds().split(",");
-//                        if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
-//                            userMap.put(f.getUserVarName(), f.getUserIds());
-//                        } else {
-//                            userMap.put(f.getUserVarName(), idArray);
-//                        }
-//                        List<String> userList = Arrays.asList(idArray);
-//                        selectedNodesUserMap.put(f.getNodeId(),userList);
-//                    }
-//                    variables.put("selectedNodesUserMap",selectedNodesUserMap);
-//                    variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
-//                }
-//                }
-//            }
-        if (StringUtils.isNotEmpty(taskList)) {
-            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
-            if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
-                Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
-                Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                    allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
+            if (StringUtils.isNotEmpty(taskList)) {
+                if("anonymous".equalsIgnoreCase(taskList)){
+                    flowStartVO.setPoolTask(true);
+                    userMap.put("anonymous","anonymous");
+                    Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
                     List<String> userList = new ArrayList<String>();
-                    if("anonymous".equalsIgnoreCase(taskList)){
-                        flowStartVO.setPoolTask(true);
-                        userMap.put("anonymous","anonymous");
-                    }else{
-                        String[] idArray = f.getUserIds().split(",");
+                    selectedNodesUserMap.put(anonymousNodeId,userList);
+                    variables.put("selectedNodesUserMap",selectedNodesUserMap);
+                }else{
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+                if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                    Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                    Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
+                        allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
+                        String[] idArray = f.getUserIds().split(",");
                         if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
                             userMap.put(f.getUserVarName(), f.getUserIds());
                         } else {
                             userMap.put(f.getUserVarName(), idArray);
                         }
-                        userList = Arrays.asList(idArray);
+                        List<String> userList = Arrays.asList(idArray);
+                        selectedNodesUserMap.put(f.getNodeId(),userList);
                     }
-                    selectedNodesUserMap.put(f.getNodeId(),userList);
+                    variables.put("selectedNodesUserMap",selectedNodesUserMap);
+                    variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
                 }
-                variables.put("selectedNodesUserMap",selectedNodesUserMap);
-                variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
+                }
             }
-        }
+
         flowStartVO.setUserMap(userMap);
         OperateResultWithData<FlowStartResultVO> operateResultWithData = proxy.startByVO(flowStartVO);
         if(operateResultWithData.successful()){
