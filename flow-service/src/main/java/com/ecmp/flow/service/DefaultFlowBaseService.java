@@ -1,9 +1,7 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
-import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
@@ -267,8 +265,7 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
     @Override
     public ResponseData  nextNodesInfoWithUser(String taskId)throws NoSuchMethodException{
         ResponseData responseData = new ResponseData();
-        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        List<NodeInfo> nodeInfoList = proxy.findNexNodesWithUserSet(taskId);
+        List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             responseData.setSuccess(true);
             responseData.setMessage("成功");
@@ -284,8 +281,7 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
     @Override
     public ResponseData getApprovalHeaderInfo(String taskId){
         ResponseData responseData = new ResponseData();
-        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        ApprovalHeaderVO approvalHeaderVO = proxy.getApprovalHeaderVO(taskId);
+        ApprovalHeaderVO approvalHeaderVO = flowTaskService.getApprovalHeaderVO(taskId);
         if (approvalHeaderVO != null) {
             responseData.setSuccess(true);
             responseData.setMessage("成功");
