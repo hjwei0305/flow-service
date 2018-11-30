@@ -51,6 +51,18 @@ public interface IFlowExecutorConfigService extends IBaseService<FlowExecutorCon
     OperateResultWithData<FlowExecutorConfig> save(FlowExecutorConfig flowExecutorConfig);
 
     /**
+     * 保存一个实体(并验证code的唯一性)
+     * @param flowExecutorConfig 实体
+     * @return 保存后的实体
+     */
+    @POST
+    @Path("saveValidateCode")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    OperateResultWithData<FlowExecutorConfig> saveValidateCode(FlowExecutorConfig flowExecutorConfig);
+
+    /**
      * 获取分页数据
      *
      * @return 实体清单

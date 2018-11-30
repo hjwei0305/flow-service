@@ -8,6 +8,7 @@ import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowExecutorConfigDao;
 import com.ecmp.flow.entity.FlowExecutorConfig;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.vo.OperateResultWithData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,4 +36,17 @@ public class FlowExecutorConfigService extends BaseEntityService<FlowExecutorCon
     protected BaseEntityDao<FlowExecutorConfig> getDao() {
         return this.flowExecutorConfigDao;
     }
+
+
+    @Override
+    public OperateResultWithData<FlowExecutorConfig> saveValidateCode(FlowExecutorConfig flowExecutorConfig){
+        FlowExecutorConfig  bean =  flowExecutorConfigDao.findByProperty("code",flowExecutorConfig.getCode());
+        if(bean!=null&&!bean.getId().equals(flowExecutorConfig.getId())){
+            return  OperateResultWithData.operationFailure("操作失败：代码已存在！");
+        }
+        flowExecutorConfigDao.save(flowExecutorConfig);
+        return OperateResultWithData.operationSuccessWithData(flowExecutorConfig);
+    }
+
+
 }
