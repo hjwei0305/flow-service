@@ -65,7 +65,7 @@ public class Executor implements Serializable {
     /**
      * 备注
      */
-    private String Remark;
+    private String remark;
 
     public String getId() {
         return id;
@@ -92,11 +92,11 @@ public class Executor implements Serializable {
     }
 
     public String getRemark() {
-        return Remark;
+        return remark;
     }
 
     public void setRemark(String remark) {
-        Remark = remark;
+        this.remark = remark;
     }
 
     public String getOrganizationId() {
