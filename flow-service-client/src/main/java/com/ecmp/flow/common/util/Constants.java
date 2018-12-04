@@ -189,6 +189,18 @@ public class Constants extends ConfigurableContants {
 	}
 
 	/**
+	 * 根据用户的id列表获取执行人
+	 */
+	public static String getBasicUserGetExecutorsbyUseridsUrl() {
+		String BASIC_USER_GETEXECUTORSBYUSERIDS_URL = ContextUtil.getGlobalProperty("BASIC.USER.GETEXECUTORSBYUSERIDS");
+		if(StringUtils.isEmpty(BASIC_USER_GETEXECUTORSBYUSERIDS_URL)){
+			BASIC_USER_GETEXECUTORSBYUSERIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.user.getExecutorsByUserIds", "/user/getExecutorsByUserIds");
+		}
+		return BASIC_USER_GETEXECUTORSBYUSERIDS_URL;
+	}
+
+	/**
 	 * 根据企业员工的id列表获取执行人
 	 */
 	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
