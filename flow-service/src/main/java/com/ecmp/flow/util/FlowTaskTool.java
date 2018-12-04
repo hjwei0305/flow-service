@@ -1336,7 +1336,8 @@ public class FlowTaskTool {
                     continue;
                 }
                 if(StringUtils.isNotEmpty(userId)) {
-                    Executor executor = flowCommonUtil.getBasicExecutor(userId);
+//                    Executor executor = flowCommonUtil.getBasicExecutor(userId);
+                    Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                     if (executor != null) {
                         FlowTask flowTask = new FlowTask();
                         flowTask.setPreId(preId);
@@ -1449,7 +1450,8 @@ public class FlowTaskTool {
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String  userId = runtimeService.getVariable(executionId,variableName)+"";//使用执行对象Id和流程变量名称，获取值
                     if(StringUtils.isNotEmpty(userId)){
-                        Executor executor = flowCommonUtil.getBasicExecutor(userId);
+//                        Executor executor = flowCommonUtil.getBasicExecutor(userId);
+                        Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                         if(executor!=null){
                             FlowTask flowTask = new FlowTask();
                             flowTask.setAllowAddSign(allowAddSign);
@@ -1490,7 +1492,8 @@ public class FlowTaskTool {
                         }
                         Executor executor = null;
                         if(!Constants.ANONYMOUS.equalsIgnoreCase(identityLink.getUserId())){
-                            executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
+//                            executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
+                            executor = flowCommonUtil.getBasicUserExecutor(identityLink.getUserId());
                         }
                         if("poolTask".equalsIgnoreCase(nodeType) && executor==null){
                             FlowTask flowTask = new FlowTask();
@@ -1501,7 +1504,8 @@ public class FlowTaskTool {
                                 userId =  (String) processVariables.get(Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey).getValue();//是否直接返回了执行人
                             }
                             if(StringUtils.isNotEmpty(userId)){
-                                 executor = flowCommonUtil.getBasicExecutor(userId);
+//                                 executor = flowCommonUtil.getBasicExecutor(userId);
+                                executor = flowCommonUtil.getBasicUserExecutor(userId);
                             }
                             if(executor==null){
                                 flowTask.setOwnerAccount(Constants.ANONYMOUS);

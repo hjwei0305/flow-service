@@ -656,7 +656,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            params.put("employeeIds",java.util.Arrays.asList(startUserId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 //            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+
+            List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -674,7 +676,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            params.put("employeeIds",java.util.Arrays.asList(startUserId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 //            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+
+            List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -695,7 +699,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isEmpty(startUserId)) {
                     startUserId = ContextUtil.getSessionUser().getUserId();
                 }
-                employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+//                employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+                employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             } else {
                 String selfDefId = executor.get("selfDefId") + "";
                 if (StringUtils.isNotEmpty(ids)) {
@@ -957,7 +962,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            params.put("employeeIds",java.util.Arrays.asList(startUserId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 //            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+
+//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+            List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -979,7 +986,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            params.put("employeeIds",java.util.Arrays.asList(startUserId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 //            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+
+//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
+            List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);

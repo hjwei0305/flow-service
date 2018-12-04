@@ -1513,7 +1513,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     //检查用户是否存在
                     Executor executor = null;
                     try{
-                        executor=  flowCommonUtil.getBasicExecutor(userId);
+//                        executor=  flowCommonUtil.getBasicExecutor(userId);
+                        executor=  flowCommonUtil.getBasicUserExecutor(userId);
                     }catch (IllegalArgumentException e){
                         logger.error(e.getMessage());
                     }
@@ -1650,7 +1651,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     //检查用户是否存在
                     Executor executor = null;
                     try{
-                        executor= flowCommonUtil.getBasicExecutor(userId);
+//                        executor= flowCommonUtil.getBasicExecutor(userId);
+                        executor= flowCommonUtil.getBasicUserExecutor(userId);
                     }catch (IllegalArgumentException e){
                         logger.error(e.getMessage());
                     }
