@@ -51,6 +51,26 @@ public class FlowCommonUtil implements Serializable {
         return definition;
     }
 
+    public Executor getBasicUserExecutor(String userId) {
+        Map<String,Object> params = new HashMap();
+        params.put("userIds",java.util.Arrays.asList(userId));
+        String url = com.ecmp.flow.common.util.Constants.getBasicUserGetExecutorsbyUseridsUrl();
+        List<Executor> users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        Executor executor = null;
+        if(users!=null && !users.isEmpty()){
+            executor = users.get(0);
+        }
+        return executor;
+    }
+
+    public List<Executor> getBasicUserExecutors(List<String> userIds) {
+        Map<String,Object> params = new HashMap();
+        params.put("userIds",userIds);
+        String url = com.ecmp.flow.common.util.Constants.getBasicUserGetExecutorsbyUseridsUrl();
+        List<Executor> users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        return users;
+    }
+
 //    @Cacheable(value = "FLowGetBasicExecutor", key = "'FLowGetBasicExecutor_' + #userId")
     public Executor getBasicExecutor(String userId) {
         Map<String,Object> params = new HashMap();
