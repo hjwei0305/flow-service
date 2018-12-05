@@ -208,6 +208,8 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 if (StringUtils.isNotEmpty(endEventId)) {
                     selectedNodesMap.put(endEventId,endEventId);
                 }
+                Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+                v.put("selectedNodesUserMap",selectedNodesUserMap);
             }
             if (manualSelected) {
                 flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
