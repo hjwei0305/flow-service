@@ -208,8 +208,10 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 if (StringUtils.isNotEmpty(endEventId)) {
                     selectedNodesMap.put(endEventId,endEventId);
                 }
+                Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
                 Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
                 v.put("selectedNodesUserMap",selectedNodesUserMap);
+                v.put("allowChooseInstancyMap",allowChooseInstancyMap);
             }
             if (manualSelected) {
                 flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
