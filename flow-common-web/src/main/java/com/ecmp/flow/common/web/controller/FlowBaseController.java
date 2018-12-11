@@ -112,8 +112,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                             @Override
                             public void run() {
                                 IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-                                ResponseData responseData= flowTaskService.pushTaskToBusinessModel(businessModelCode,businessKey);
-                                System.out.println("推送待办：Success["+responseData.getSuccess()+"]Message["+responseData.getMessage()+"]");
+                                flowTaskService.pushTaskToBusinessModel(businessModelCode,businessKey);
                             }
                         }).start();
                     }
@@ -235,13 +234,12 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
-            if(operateResult.successful()){
+            if(operateResult.successful()&&StringUtils.isEmpty(endEventId)){ //处理成功并且不是结束节点调用
                 new Thread(new Runnable() {//异步推送待办
                     @Override
                     public void run() {
                         IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-                        ResponseData responseData= flowTaskService.pushTaskToBusinessModel(null,businessId);
-                        System.out.println("推送待办：Success["+responseData.getSuccess()+"]Message["+responseData.getMessage()+"]");
+                        flowTaskService.pushTaskToBusinessModel(null,businessId);
                     }
                 }).start();
             }

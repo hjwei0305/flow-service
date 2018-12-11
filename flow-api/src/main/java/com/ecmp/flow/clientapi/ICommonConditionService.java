@@ -131,5 +131,10 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "推送待办",notes = "推送待办")
-    public ResponseData pushTasksToDo(List<FlowTask> list);
+    default public ResponseData pushTasksToDo(List<FlowTask> list){
+        ResponseData responseData =new ResponseData();
+        responseData.setSuccess(true);
+        responseData.setMessage("推送成功！");
+        return responseData;
+    };
 }
