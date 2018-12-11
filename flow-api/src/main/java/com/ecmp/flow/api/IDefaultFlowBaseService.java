@@ -2,12 +2,14 @@ package com.ecmp.flow.api;
 
 
 import com.ecmp.annotation.IgnoreCheckAuth;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -194,8 +196,17 @@ public interface IDefaultFlowBaseService {
 
 
 
-
-
+    /**
+     * 通过业务单据Id获取待办任务（中泰要求新增的功能:不包含子流程信息）
+     *
+     * @param businessId 业务单据id
+     * @return  待办任务集合
+     */
+    @POST
+    @Path("findTasksByBusinessId")
+    @ApiOperation(value = "获取待办任务", notes = "通过业务单据Id获取待办任务（不包含子流程）")
+    @IgnoreCheckAuth
+    ResponseData findTasksByBusinessId(@QueryParam("businessId") String businessId);
 
 
 }
