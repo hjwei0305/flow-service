@@ -95,9 +95,9 @@ public interface IDefaultFlowBaseService {
                               @QueryParam("opinion")String opinion,
                               @QueryParam("taskList")String taskList,
                               @QueryParam("endEventId")String endEventId,
-                              boolean manualSelected,
+                              @QueryParam("manualSelected")boolean manualSelected,
                               @QueryParam("approved")String approved,
-                              Long loadOverTime) throws Exception;
+                              @QueryParam("loadOverTime")Long loadOverTime) throws Exception;
 
     /**
      * 回退（撤销）任务
