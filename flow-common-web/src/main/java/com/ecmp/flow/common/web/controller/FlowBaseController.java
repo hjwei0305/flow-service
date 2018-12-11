@@ -16,6 +16,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -106,8 +107,19 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if(flowStartResultVO!=null){
                 if (flowStartResultVO.getCheckStartResult()) {
+                    if(flowStartResultVO.getFlowTypeList()==null&&flowStartResultVO.getNodeInfoList()==null){//真正启动流程
+                        new Thread(new Runnable() {//异步推送待办
+                            @Override
+                            public void run() {
+                                IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
+                                ResponseData responseData= flowTaskService.pushTaskToBusinessModel(businessModelCode,businessKey);
+                                System.out.println("推送待办：Success["+responseData.getSuccess()+"]Message["+responseData.getMessage()+"]");
+                            }
+                        }).start();
+                    }
                     operateStatus = new OperateStatus(true, "成功");
                     operateStatus.setData(flowStartResultVO);
+
                 }else {
                     operateStatus=  new OperateStatus(false, "启动流程失败,启动检查服务返回false!");
                 }
@@ -223,6 +235,16 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             flowTaskCompleteVO.setVariables(v);
             IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
             OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
+            if(operateResult.successful()){
+                new Thread(new Runnable() {//异步推送待办
+                    @Override
+                    public void run() {
+                        IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
+                        ResponseData responseData= flowTaskService.pushTaskToBusinessModel(null,businessId);
+                        System.out.println("推送待办：Success["+responseData.getSuccess()+"]Message["+responseData.getMessage()+"]");
+                    }
+                }).start();
+            }
             OperateStatus operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
 
         return operateStatus;
