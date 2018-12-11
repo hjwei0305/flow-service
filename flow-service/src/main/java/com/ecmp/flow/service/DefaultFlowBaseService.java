@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -294,9 +295,17 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
     }
 
 
-
-
-
+    /**
+     * 通过业务单据Id获取待办任务
+     *
+     * @param businessId 业务单据id
+     * @return  待办任务集合
+     */
+    @Override
+    public ResponseData findTasksByBusinessId(String businessId) {
+        ResponseData responseData =  flowTaskService.findTasksByBusinessId(businessId);
+        return  responseData;
+    }
 
 
 

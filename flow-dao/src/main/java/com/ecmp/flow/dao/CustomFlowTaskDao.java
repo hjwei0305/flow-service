@@ -48,4 +48,13 @@ public interface CustomFlowTaskDao {
      */
     @Transactional(readOnly = true)
     FlowTask findTaskById(String taskId);
+
+    /**
+     * 完成待办任务的URL设置
+     *
+     * @param flowTasks 待办任务清单
+     * @return 待办任务
+     */
+    @Transactional(readOnly = true)
+    void initFlowTasks(List<FlowTask> flowTasks);
 }

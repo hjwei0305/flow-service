@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.vo.ResponseData;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,4 +38,14 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
         Assert.assertNotNull(flowTask);
         System.out.println(ApiJsonUtils.toJson(flowTask));
     }
+
+    @Test
+    public void findTasksByBusinessId(){
+        String id = "A966DAE3-F8FB-11E8-A118-0242C0A84405";
+        ResponseData responseData = service.findTasksByBusinessId(id);
+        Assert.assertNotNull(responseData);
+        System.out.println(ApiJsonUtils.toJson(responseData));
+    }
+
+
 }

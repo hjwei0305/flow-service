@@ -28,6 +28,15 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
 
 
     /**
+     * 通过业务单据id查询没有结束并且没有挂起的流程实例
+     * @param businessId  业务单据id
+     * @return  流程实例集合
+     */
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.suspended=false  and ft.ended=false  and  ft.businessId = :businessId  order by ft.lastEditedDate desc")
+    public List<FlowInstance> findNoEndByBusinessIdOrder(@Param("businessId") String businessId);
+
+    /**
      * 根据启动人id查询流程实例
      * @param creatorId
      * @return

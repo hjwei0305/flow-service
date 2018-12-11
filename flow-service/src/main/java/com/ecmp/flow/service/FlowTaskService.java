@@ -18,11 +18,14 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
 import com.ecmp.notity.entity.NotifyType;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import com.ecmp.vo.SessionUser;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -54,6 +57,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -124,6 +128,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Autowired
     private FlowInstanceService flowInstanceService;
+
+    @Autowired
+    private BusinessModelService  businessModelService;
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
@@ -2005,5 +2012,102 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public FlowTask findTaskById(String taskId) {
         return flowTaskDao.findTaskById(taskId);
     }
+
+
+    /**
+     * 通过业务单据Id获取待办任务
+     *
+     * @param businessId 业务单据id
+     * @return  待办任务集合
+     */
+    public ResponseData findTasksByBusinessId(String businessId) {
+        ResponseData responseData = new ResponseData();
+        if(StringUtils.isEmpty(businessId)){
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+           return responseData;
+        }
+        List<FlowTask>  list=new ArrayList<FlowTask>();
+        //通过业务单据id查询没有结束并且没有挂起的流程实例
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+        if(flowInstanceList!=null&&flowInstanceList.size()>0){
+            for(FlowInstance  instance: flowInstanceList){
+                //根据流程实例id查询待办
+                List<FlowTask>  addList =  flowTaskDao.findByInstanceId(instance.getId());
+                //完成待办任务的URL设置
+                flowTaskDao.initFlowTasks(addList);
+                list.addAll(addList);
+            }
+        }
+        responseData.setSuccess(true);
+        responseData.setData(list);
+        return responseData;
+    }
+
+
+    @Override
+    public ResponseData pushTaskToBusinessModel(String businessModelCode,String businessId){
+          ResponseData responseData = new ResponseData();
+          if(StringUtils.isEmpty(businessId)){
+              responseData.setSuccess(false);
+              responseData.setMessage("参数不能为空！");
+              return responseData;
+          }
+
+
+
+         BusinessModel   businessModel = null;
+         if(StringUtils.isEmpty(businessModelCode)){
+             //通过业务单据id查询没有结束并且没有挂起的流程实例
+             List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+             if(flowInstanceList!=null&&flowInstanceList.size()>0){
+                 businessModel =
+                         flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+             }
+         }else{
+             businessModel = businessModelService.findByClassName(businessModelCode);
+         }
+         if(businessModel==null){
+             responseData.setSuccess(false);
+             responseData.setMessage("获取业务模块失败！");
+             return responseData;
+         }
+         String pushMsgUrl=businessModel.getPushMsgUrl();
+         if(StringUtils.isNotEmpty(pushMsgUrl)){
+             //根据业务id查询待办
+             responseData = this.findTasksByBusinessId(businessId);
+             if(responseData.notSuccessful()){
+                 return responseData;
+             }
+             List<FlowTask>  list =(List<FlowTask>)responseData.getData();
+             if(list!=null&&list.size()>0){
+                 String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
+                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                 String clientApiUrl = clientApiBaseUrl + pushMsgUrl;
+                 String messageLog = "开始调用‘推送待办’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(list);
+                 try {
+                     responseData = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData>() {
+                     }, list);
+                     messageLog +="-返回结果Success["+responseData.getSuccess()
+                             +"]Message["+responseData.getMessage()+"]";
+                     LogUtil.bizLog(messageLog);
+                     return responseData;
+                 }catch (Exception e){
+                     messageLog+="-重置表单状态调用异常："+e.getMessage();
+                     LogUtil.error(messageLog);
+                 }
+             }else{
+                 responseData.setSuccess(false);
+                 responseData.setMessage("未查询到待办任务！");
+                 return  responseData;
+             }
+         }
+         responseData.setSuccess(true);
+         responseData.setMessage("不需要推送待办！");
+         return  responseData;
+    }
+
+
+
 }
 

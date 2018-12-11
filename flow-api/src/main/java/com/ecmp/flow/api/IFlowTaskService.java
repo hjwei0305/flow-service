@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
@@ -9,6 +10,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -543,4 +545,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("findTaskById")
     @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
     FlowTask findTaskById(@QueryParam("taskId") String taskId);
+
+
+
+    /**
+     * 通过业务模块code和业务模块id推送待办到业务模块
+     *
+     * @param businessModelCode 业务单据modelCode（非必填）
+     * @param businessId 业务单据id（必填）
+     * @return
+     */
+    @POST
+    @Path("pushTaskToBusinessModel")
+    @ApiOperation(value = "推送待办到业务模块", notes = "通过业务模块code和业务模块id推送待办到业务模块")
+    @IgnoreCheckAuth
+    ResponseData pushTaskToBusinessModel(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId);
 }

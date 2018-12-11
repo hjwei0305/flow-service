@@ -175,7 +175,8 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
      * @param flowTasks 待办任务清单
      * @return 待办任务
      */
-    private void initFlowTasks(List<FlowTask> flowTasks) {
+    @Override
+    public void initFlowTasks(List<FlowTask> flowTasks) {
         if (CollectionUtils.isEmpty(flowTasks)) {
             return;
         }
