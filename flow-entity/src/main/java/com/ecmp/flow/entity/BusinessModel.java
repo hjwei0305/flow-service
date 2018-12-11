@@ -148,12 +148,26 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     private String tenantCode;
 
     /**
+     * 推送待办接口地址
+     */
+    @Column(name = "push_msg_url", length = 255)
+    private String  pushMsgUrl;
+
+    /**
      * 拥有的流程类型
      */
     @Transient
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "businessModel")
     private Set<FlowType> flowTypes = new HashSet<FlowType>();
 
+
+    public String getPushMsgUrl() {
+        return pushMsgUrl;
+    }
+
+    public void setPushMsgUrl(String pushMsgUrl) {
+        this.pushMsgUrl = pushMsgUrl;
+    }
 
     public String getName() {
         return name;
