@@ -1,12 +1,15 @@
 package com.ecmp.flow.clientapi;
 
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,4 +119,17 @@ public interface ICommonConditionService {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码,业务ID获取POJO属性键值对",notes = "测试")
     public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
+
+
+
+    /**
+     * 推送待办
+     * @param  list 待办信息
+     */
+    @POST
+    @Path("pushTasksToDo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "推送待办",notes = "推送待办")
+    public ResponseData pushTasksToDo(List<FlowTask> list);
 }

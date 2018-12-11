@@ -8,8 +8,10 @@ import com.ecmp.flow.clientapi.ICommonConditionService;
 import com.ecmp.flow.common.util.BusinessUtil;
 import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.IBusinessFlowEntity;
 import com.ecmp.flow.entity.IConditionPojo;
+import com.ecmp.vo.ResponseData;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -171,4 +174,13 @@ public class CommonConditionService implements ICommonConditionService {
             throw new RuntimeException("className is null!");
         }
     }
+
+    public ResponseData pushTasksToDo(List<FlowTask> list){
+        ResponseData responseData =new ResponseData();
+        responseData.setSuccess(true);
+        responseData.setMessage("推送成功！");
+        return responseData;
+    }
+
+
 }
