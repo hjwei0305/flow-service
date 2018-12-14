@@ -1,8 +1,11 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.Search;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowTaskPageResultVO;
 import com.ecmp.vo.ResponseData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,6 +49,18 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
         Assert.assertNotNull(responseData);
         System.out.println(ApiJsonUtils.toJson(responseData));
     }
+
+    @Test
+    public void findByBusinessModelIdWithAllCountOfPhone(){
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        FlowTaskPageResultVO<FlowTask> responseData =
+                proxy.findByBusinessModelIdWithAllCountOfPhone("","","",1,15,"");
+        Assert.assertNotNull(responseData);
+        System.out.println(ApiJsonUtils.toJson(responseData));
+    }
+
+
+
 
 
 }

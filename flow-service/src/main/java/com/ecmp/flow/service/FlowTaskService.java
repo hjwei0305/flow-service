@@ -3,8 +3,10 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
@@ -1169,6 +1171,39 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
     }
+
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCountOfPhone(String businessModelId,String property,
+            String direction,int page,int rows,String quickValue){
+            Search search = new Search();
+            search.addQuickSearchProperty("flowName");
+            search.addQuickSearchProperty("taskName");
+            search.addQuickSearchProperty("flowInstance.businessCode");
+            search.addQuickSearchProperty("flowInstance.businessModelRemark");
+            search.addQuickSearchProperty("creatorName");
+            search.setQuickSearchValue(quickValue);
+
+            PageInfo  pageInfo =new PageInfo();
+            pageInfo.setPage(page);
+            pageInfo.setRows(rows);
+            search.setPageInfo(pageInfo);
+
+            SearchOrder  searchOrder;
+            if(StringUtils.isNotEmpty(property)&&StringUtils.isNotEmpty(direction)){
+                if(SearchOrder.Direction.ASC.equals(direction)){
+                    searchOrder =new SearchOrder(property,SearchOrder.Direction.ASC);
+                }else{
+                    searchOrder =new SearchOrder(property,SearchOrder.Direction.DESC);
+                }
+            }else{
+                searchOrder =new SearchOrder("createdDate",SearchOrder.Direction.ASC);
+            }
+            List<SearchOrder> list =new ArrayList<SearchOrder>();
+            list.add(searchOrder);
+            search.setSortOrders(list);
+
+          return findByBusinessModelIdWithAllCount(businessModelId,"",search);
+    }
+
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();

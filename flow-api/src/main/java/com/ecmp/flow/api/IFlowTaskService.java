@@ -356,6 +356,30 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
 
 
+    /**
+     * 获取可批量审批待办信息(移动端专用)
+     * @param businessModelId 为空查询全部
+     * @param property 需要排序的字段
+     * @param direction 排序规则
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByBusinessModelIdWithAllCountOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办信息(移动端专用)",notes = "获取待办信息(移动端专用)")
+    FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCountOfPhone(
+            @QueryParam("businessModelId") String businessModelId,
+            @QueryParam("property") String property,
+            @QueryParam("direction") String direction,
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue);
+
+
 //    @POST
 //    @Path("findByModelEntity")
 //    @Produces(MediaType.APPLICATION_JSON)
