@@ -1,7 +1,10 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
+import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
@@ -41,70 +44,80 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
     @Override
     public  ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                            String typeId, String flowDefKey, String taskList, String anonymousNodeId)throws NoSuchMethodException, SecurityException{
-          ResponseData responseData = new  ResponseData();
-          List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-          Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
-          FlowStartVO flowStartVO = new FlowStartVO();
-          flowStartVO.setBusinessKey(businessKey);
-          flowStartVO.setBusinessModelCode(businessModelCode);
-          flowStartVO.setFlowTypeId(typeId);
-          flowStartVO.setFlowDefKey(flowDefKey);
-          Map<String, Object> variables = new HashMap<String, Object>();
-          flowStartVO.setVariables(variables);
-          if (StringUtils.isNotEmpty(taskList)) {
-              if("anonymous".equalsIgnoreCase(taskList)){
-                  flowStartVO.setPoolTask(true);
-                  userMap.put("anonymous","anonymous");
-                  Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                  List<String> userList = new ArrayList<String>();
-                  selectedNodesUserMap.put(anonymousNodeId,userList);
-                  variables.put("selectedNodesUserMap",selectedNodesUserMap);
-              }else{
-                  JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-                  flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
-                  if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
-                      Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
-                      Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                      for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                          String flowTaskType = f.getFlowTaskType();
-                          allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
-                          String[] idArray = f.getUserIds().split(",");
-                          if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
-                              userMap.put(f.getUserVarName(), f.getUserIds());
-                          } else {
-                              userMap.put(f.getUserVarName(), idArray);
-                          }
-                          List<String> userList = Arrays.asList(idArray);
-                          selectedNodesUserMap.put(f.getNodeId(),userList);
-                      }
-                      variables.put("selectedNodesUserMap",selectedNodesUserMap);
-                      variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
-                  }
-              }
-          }
+        ResponseData responseData = new  ResponseData();
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+        FlowStartVO flowStartVO = new FlowStartVO();
+        flowStartVO.setBusinessKey(businessKey);
+        flowStartVO.setBusinessModelCode(businessModelCode);
+        flowStartVO.setFlowTypeId(typeId);
+        flowStartVO.setFlowDefKey(flowDefKey);
+        Map<String, Object> variables = new HashMap<String, Object>();
+        flowStartVO.setVariables(variables);
+        if (StringUtils.isNotEmpty(taskList)) {
+            if("anonymous".equalsIgnoreCase(taskList)){
+                flowStartVO.setPoolTask(true);
+                userMap.put("anonymous","anonymous");
+                Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+                List<String> userList = new ArrayList<String>();
+                selectedNodesUserMap.put(anonymousNodeId,userList);
+                variables.put("selectedNodesUserMap",selectedNodesUserMap);
+            }else{
+                JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+                if(flowTaskCompleteList!=null && !flowTaskCompleteList.isEmpty()){
+                    Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                    Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        String flowTaskType = f.getFlowTaskType();
+                        allowChooseInstancyMap.put(f.getNodeId(),f.getInstancyStatus());
+                        String[] idArray = f.getUserIds().split(",");
+                        if ("common".equalsIgnoreCase(flowTaskType)||"approve".equalsIgnoreCase(flowTaskType)) {
+                            userMap.put(f.getUserVarName(), f.getUserIds());
+                        } else {
+                            userMap.put(f.getUserVarName(), idArray);
+                        }
+                        List<String> userList = Arrays.asList(idArray);
+                        selectedNodesUserMap.put(f.getNodeId(),userList);
+                    }
+                    variables.put("selectedNodesUserMap",selectedNodesUserMap);
+                    variables.put("allowChooseInstancyMap",allowChooseInstancyMap);
+                }
+            }
+        }
 
-          flowStartVO.setUserMap(userMap);
-          OperateResultWithData<FlowStartResultVO> operateResultWithData = flowDefinationService.startByVO(flowStartVO);
-          if(operateResultWithData.successful()){
-              FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
-              if(flowStartResultVO!=null){
-                  if (flowStartResultVO.getCheckStartResult()) {
-                      responseData.setMessage("成功");
-                      responseData.setData(flowStartResultVO);
-                  }else {
-                      responseData.setSuccess(false);
-                      responseData.setMessage("启动流程失败,启动检查服务返回false!");
-                  }
-              }
-              else {
-                  responseData.setSuccess(false);
-                  responseData.setMessage("启动流程失败");
-              }
-          }else {
-              responseData.setSuccess(false);
-              responseData.setMessage(operateResultWithData.getMessage());
-          }
-          return responseData;
+        flowStartVO.setUserMap(userMap);
+        OperateResultWithData<FlowStartResultVO> operateResultWithData = flowDefinationService.startByVO(flowStartVO);
+        if(operateResultWithData.successful()){
+            FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
+            if(flowStartResultVO!=null){
+                if (flowStartResultVO.getCheckStartResult()) {
+                    if(flowStartResultVO.getFlowTypeList()==null&&flowStartResultVO.getNodeInfoList()==null){//真正启动流程
+                        new Thread(new Runnable() {//异步推送待办
+                            @Override
+                            public void run() {
+                                flowTaskService.pushTaskToBusinessModel(businessModelCode,businessKey);
+                            }
+                        }).start();
+                    }
+                    responseData.setMessage("成功");
+                    responseData.setData(flowStartResultVO);
+
+                }else {
+                    responseData.setSuccess(false);
+                    responseData.setMessage("启动流程失败,启动检查服务返回false!");
+                }
+            }
+            else {
+                responseData.setSuccess(false);
+                responseData.setMessage("启动流程失败");
+            }
+        }else {
+            responseData.setSuccess(false);
+            responseData.setMessage(operateResultWithData.getMessage());
+        }
+
+        return responseData;
   }
 
 
@@ -177,6 +190,10 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
             if (StringUtils.isNotEmpty(endEventId)) {
                 selectedNodesMap.put(endEventId,endEventId);
             }
+            Map<String,Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+            Map<String,List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+            v.put("selectedNodesUserMap",selectedNodesUserMap);
+            v.put("allowChooseInstancyMap",allowChooseInstancyMap);
         }
         if (manualSelected) {
             flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
@@ -187,6 +204,14 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
+        if(operateResult.successful()&&StringUtils.isEmpty(endEventId)){ //处理成功并且不是结束节点调用
+            new Thread(new Runnable() {//异步推送待办
+                @Override
+                public void run() {
+                    flowTaskService.pushTaskToBusinessModel(null,businessId);
+                }
+            }).start();
+        }
         ResponseData responseData  = new ResponseData();
         responseData.setSuccess(operateResult.successful());
         responseData.setMessage(operateResult.getMessage());
