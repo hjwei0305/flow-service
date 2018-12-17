@@ -46,6 +46,7 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
                            String typeId, String flowDefKey, String taskList, String anonymousNodeId)throws NoSuchMethodException, SecurityException{
         ResponseData responseData = new  ResponseData();
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        IFlowDefinationService proxy = ApiClient.createProxy(IFlowDefinationService.class);
         Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
         FlowStartVO flowStartVO = new FlowStartVO();
         flowStartVO.setBusinessKey(businessKey);
@@ -87,7 +88,7 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
         }
 
         flowStartVO.setUserMap(userMap);
-        OperateResultWithData<FlowStartResultVO> operateResultWithData = flowDefinationService.startByVO(flowStartVO);
+        OperateResultWithData<FlowStartResultVO> operateResultWithData = proxy.startByVO(flowStartVO);
         if(operateResultWithData.successful()){
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if(flowStartResultVO!=null){
@@ -203,7 +204,8 @@ public class DefaultFlowBaseService  implements IDefaultFlowBaseService {
         }
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
         flowTaskCompleteVO.setVariables(v);
-        OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
+        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+        OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
         if(operateResult.successful()&&StringUtils.isEmpty(endEventId)){ //处理成功并且不是结束节点调用
             new Thread(new Runnable() {//异步推送待办
                 @Override
