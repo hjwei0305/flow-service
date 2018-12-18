@@ -608,10 +608,10 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
         this.executeTime = executeTime;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
+//    @Override
+//    public int hashCode() {
+//        return HashCodeBuilder.reflectionHashCode(this);
+//    }
 
     @Override
     public String toString() {
@@ -643,10 +643,10 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
                 .toString();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
+//    @Override
+//    public boolean equals(Object obj) {
+//        return EqualsBuilder.reflectionEquals(this, obj);
+//    }
 
 
     @Override
