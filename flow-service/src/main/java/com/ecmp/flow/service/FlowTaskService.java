@@ -2081,65 +2081,59 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     @Override
-    public ResponseData pushTaskToBusinessModel(String businessModelCode,String businessId){
+    public void pushTaskToBusinessModel(String businessModelCode,String businessId){
           ResponseData responseData = new ResponseData();
           if(StringUtils.isEmpty(businessId)){
-              responseData.setSuccess(false);
-              responseData.setMessage("参数不能为空！");
-              return responseData;
+              LogUtil.error("推送待办-参数不能为空！");
           }
-
-
 
          BusinessModel   businessModel = null;
          if(StringUtils.isEmpty(businessModelCode)){
              //通过业务单据id查询没有结束并且没有挂起的流程实例
              List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
              if(flowInstanceList!=null&&flowInstanceList.size()>0){
-                 businessModel =
-                         flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                 businessModel = flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
              }
          }else{
-             businessModel = businessModelService.findByClassName(businessModelCode);
+                 businessModel = businessModelService.findByClassName(businessModelCode);
          }
          if(businessModel==null){
-             responseData.setSuccess(false);
-             responseData.setMessage("获取业务模块失败！");
-             return responseData;
+             LogUtil.error("推送待办-获取业务模块失败！");
          }
-         String pushMsgUrl=businessModel.getPushMsgUrl();
-         if(StringUtils.isNotEmpty(pushMsgUrl)){
-             //根据业务id查询待办
-             responseData = this.findTasksByBusinessId(businessId);
-             if(responseData.notSuccessful()){
-                 return responseData;
-             }
-             List<FlowTask>  list =(List<FlowTask>)responseData.getData();
-             if(list!=null&&list.size()>0){
-                 String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
-                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                 String clientApiUrl = clientApiBaseUrl + pushMsgUrl;
-                 String messageLog = "开始调用‘推送待办’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(list);
-                 try {
-                     responseData = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData>() {
-                     }, list);
-                     messageLog +="-返回结果Success["+responseData.getSuccess()
-                             +"]Message["+responseData.getMessage()+"]";
-                     LogUtil.bizLog(messageLog);
-                     return responseData;
-                 }catch (Exception e){
-                     messageLog+="-重置表单状态调用异常："+e.getMessage();
-                     LogUtil.error(messageLog);
-                 }
-             }else{
-                 responseData.setSuccess(false);
-                 responseData.setMessage("未查询到待办任务！");
-                 return  responseData;
-             }
-         }
-         responseData.setSuccess(true);
-         responseData.setMessage("不需要推送待办！");
-         return  responseData;
+
+        //根据业务id查询待办
+        responseData = this.findTasksByBusinessId(businessId);
+        if(responseData.notSuccessful()){
+            LogUtil.error("推送待办-查询待办失败！");
+        }
+        List<FlowTask>  list =(List<FlowTask>)responseData.getData();
+
+        if(list!=null&&list.size()>0){
+            String pushMsgUrl=businessModel.getPushMsgUrl();
+            String flowPushTaskUrl ="";
+            if(StringUtils.isNotEmpty(pushMsgUrl)){ //业务实体中是否配置了推送待办的接口地址
+                String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
+                String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                if(StringUtils.isEmpty(clientApiBaseUrl)){
+                    LogUtil.error("推送待办-配置中心获取【"+apiBaseAddressConfig+"】参数失败！");
+                }
+                flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
+            }else{//取配置中心统一推送待办地址
+                flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+            }
+
+            if(StringUtils.isNotEmpty(flowPushTaskUrl)){
+                String messageLog = "开始调用‘推送待办’接口，接口url="+flowPushTaskUrl+",参数值"+ JsonUtils.toJson(list);
+                try {
+                    ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<ResponseData>() {}, list);
+                    LogUtil.bizLog(messageLog);
+                }catch (Exception e){
+                    messageLog+="-推送待办异常："+e.getMessage();
+                    LogUtil.error(messageLog);
+                }
+            }
+
+        }
     }
 
 

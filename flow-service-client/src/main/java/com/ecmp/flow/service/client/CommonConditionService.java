@@ -175,11 +175,8 @@ public class CommonConditionService implements ICommonConditionService {
         }
     }
 
-    public ResponseData pushTasksToDo(List<FlowTask> list){
-        ResponseData responseData =new ResponseData();
-        responseData.setSuccess(true);
-        responseData.setMessage("推送成功！");
-        return responseData;
+    public String pushTasksToDo(List<FlowTask> list){
+        return "推送成功！";
     }
 
 
