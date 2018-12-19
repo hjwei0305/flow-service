@@ -23,4 +23,11 @@ public interface FlowTypeDao extends BaseEntityDao<FlowType> {
 
 //    @Cacheable(cacheNames="findOne")
 //    FlowType findOne(String id);
+
+    /**
+     * 通过业务实体类名获取流程类型
+     * @param className 业务实体类名
+     * @return 流程类型清单
+     */
+    List<FlowType> findByBusinessModel_ClassName(String className);
 }

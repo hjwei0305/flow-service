@@ -57,6 +57,9 @@ public interface IDefaultFlowBaseService {
                            @QueryParam("taskList")String taskList,
                            @QueryParam("anonymousNodeId")String anonymousNodeId)throws NoSuchMethodException, SecurityException;
 
+
+
+
     /**
      * 签收任务
      * @param taskId  任务id
