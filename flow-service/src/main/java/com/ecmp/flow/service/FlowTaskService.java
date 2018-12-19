@@ -29,6 +29,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import com.ecmp.vo.SessionUser;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -589,6 +590,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             taskService.complete(taskId, variables);
     }
 
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData rejectTaskOfPhone(String taskId, String opinion) throws Exception{
+        ResponseData responseData =new ResponseData();
+        OperateResult result = this.taskReject(taskId, opinion, null);
+        responseData.setSuccess(result.successful());
+        responseData.setMessage(result.getMessage());
+        return responseData;
+    }
+
     /**
      * 任务驳回
      *
@@ -1117,6 +1128,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return responseData;
     }
 
+
+
+    public ResponseData findTaskSumHeaderCanBatchApprovalOfPhone() {
+        ResponseData responseData = new ResponseData();
+        List<TodoBusinessSummaryVO>  result = this.findCommonTaskSumHeader(true,"");
+        responseData.setSuccess(true);
+        responseData.setMessage("操作成功!");
+        responseData.setData(result);
+        return responseData;
+    }
+
     /**
      * 查询当前用户待办业务单据汇总信息,只有批量审批
      * @param appSign 应用标识
@@ -1196,6 +1218,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         PageResult<FlowTask> flowTaskPageResult = flowTaskDao.findByPageCanBatchApproval(userId, searchConfig);
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
+    }
+
+    public PageResult<FlowTask> findByPageCanBatchApprovalOfPhone(String businessModelId, String property, String direction, int page, int rows, String quickValue){
+        Search search = new Search();
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
+        search.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo =new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        search.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder;
+        if(StringUtils.isNotEmpty(property)&&StringUtils.isNotEmpty(direction)){
+            if(SearchOrder.Direction.ASC.equals(direction)){
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.ASC);
+            }else{
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.DESC);
+            }
+        }else{
+            searchOrder =new SearchOrder("createdDate",SearchOrder.Direction.DESC);
+        }
+        List<SearchOrder> list =new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        search.setSortOrders(list);
+
+      return   this.findByPageCanBatchApprovalByBusinessModelId(businessModelId,search);
     }
 
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId,Search searchConfig){
@@ -1374,6 +1427,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return all;
     }
 
+    public ResponseData getSelectedCanBatchNodesInfoOfPhone(String taskIds)  throws NoSuchMethodException{
+        ResponseData responseData = new ResponseData();
+        List<NodeGroupByFlowVersionInfo> nodeInfoList = this.findNexNodesGroupByVersionWithUserSetCanBatch(taskIds);
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            responseData.setSuccess(true);
+            responseData.setMessage("成功");
+            responseData.setData(nodeInfoList);
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("选取的任务不存在，可能已经被处理");
+        }
+        return responseData;
+    }
+
+
     public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds)  throws NoSuchMethodException{
         List<NodeGroupByFlowVersionInfo> all = new ArrayList<NodeGroupByFlowVersionInfo>();
         List<NodeGroupInfo> nodeGroupInfoList = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
@@ -1396,6 +1464,80 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return all;
     }
+
+
+    public ResponseData  completeTaskBatchOfPhone(String flowTaskBatchCompleteWebVoStrs){
+        ResponseData responseData=new ResponseData();
+        List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = null;
+        if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
+            JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
+            if(jsonArray !=null && !jsonArray.isEmpty()){
+                flowTaskBatchCompleteWebVOList = new ArrayList<FlowTaskBatchCompleteWebVO>();
+                for(int i=0;i<jsonArray.size();i++){
+                    FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO = new FlowTaskBatchCompleteWebVO();
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    JSONArray taskIdListJsonArray = (JSONArray)jsonObject.get("taskIdList");
+                    JSONArray flowTaskCompleteListJsonArray = (JSONArray)jsonObject.get("flowTaskCompleteList");
+                    List<FlowTaskCompleteWebVO> flowTaskCompleteWebVOList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(flowTaskCompleteListJsonArray, FlowTaskCompleteWebVO.class);
+                    flowTaskBatchCompleteWebVO.setFlowTaskCompleteList(flowTaskCompleteWebVOList);
+                    List<String> taskIdList = ( List<String>) JSONArray.toCollection(taskIdListJsonArray, String.class);
+                    flowTaskBatchCompleteWebVO.setTaskIdList(taskIdList);
+                    flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO);
+                }
+
+            }
+            String opinion = "同意";
+            if(flowTaskBatchCompleteWebVOList!=null && !flowTaskBatchCompleteWebVOList.isEmpty()){
+                int total=0;//记录处理任务总数
+                StringBuffer failMessage = new StringBuffer();
+                for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO:flowTaskBatchCompleteWebVOList){
+                    FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
+                    flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
+                    flowTaskBatchCompleteVO.setOpinion(opinion);
+                    Map<String,String> selectedNodesMap = new HashMap<>();
+                    Map<String, Object> v = new HashMap<String, Object>();
+                    List<FlowTaskCompleteWebVO>   flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
+
+                    if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                        for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                            String flowTaskType = f.getFlowTaskType();
+                            selectedNodesMap.put(f.getNodeId(),f.getNodeId());
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                String userId = f.getUserIds().replaceAll(",","");
+                                v.put(f.getUserVarName(),userId);
+                            } else {
+                                String[] idArray = f.getUserIds().split(",");
+                                if(StringUtils.isNotEmpty(f.getUserVarName())){
+                                    v.put(f.getUserVarName(), idArray);
+                                }
+                            }
+                        }
+                    }
+                    v.put("approved", true);//针对会签时同意、不同意、弃权等操作
+                    flowTaskBatchCompleteVO.setVariables(v);
+                    OperateResultWithData<Integer> operateResult = this.completeBatch(flowTaskBatchCompleteVO);
+                    total+=operateResult.getData();
+                    if(operateResult.successful()){
+                    }else {
+                        failMessage.append(operateResult.getMessage()+";");
+                    }
+                }
+                if(total>0){
+                    responseData.setSuccess(true);
+                    responseData.setMessage("成功处理任务"+total+"条");
+                }else{
+                    responseData.setSuccess(false);
+                    responseData.setMessage(failMessage.toString());
+                }
+            }
+        }else {
+            responseData.setSuccess(false);
+            responseData.setMessage("参数值错误！");
+        }
+        return responseData;
+    }
+
+
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<Integer>  completeBatch(FlowTaskBatchCompleteVO flowTaskBatchCompleteVO){
        List<String> taskIdList =  flowTaskBatchCompleteVO.getTaskIdList();

@@ -17,8 +17,10 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.*;
+import com.ecmp.util.DateUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -941,8 +943,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String creatorId = ContextUtil.getUserId();
         Search search = new Search();
         SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
-        SearchFilter searchFiltereEnded = new SearchFilter("ended",creatorId, SearchFilter.Operator.EQ);
         search.addFilter(searchFilterCreatorId);
+        SearchFilter searchFiltereEnded = new SearchFilter("ended",ended, SearchFilter.Operator.EQ);
         search.addFilter(searchFiltereEnded);
         if(startDate!=null){
             SearchFilter searchFilterStartDate = new SearchFilter("startDate",startDate, SearchFilter.Operator.GE);
@@ -1040,5 +1042,28 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         results.setTotal(flowInstancePageResult.getTotal());
         return results;
     }
+
+
+
+    public ResponseData getFlowHistoryInfoOfPhone(String businessId, String instanceId){
+        List<ProcessTrackVO> result = null;
+        if(StringUtils.isNotEmpty(instanceId)){
+            result = this.getProcessTrackVOById(instanceId);
+        }else if(StringUtils.isNotEmpty(businessId)){
+            result = this.getProcessTrackVO(businessId);
+        }
+        ResponseData responseData = new ResponseData();
+        if(result==null || result.isEmpty()){
+            responseData.setSuccess(false);
+            responseData.setMessage("历史记录为空！");
+        }else{
+            responseData.setSuccess(true);
+            responseData.setMessage("操作成功！");
+            responseData.setData(result);
+        }
+        return responseData;
+    }
+
+
 
 }

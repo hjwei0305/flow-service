@@ -107,6 +107,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     public OperateResultWithData<Integer> completeBatch(FlowTaskBatchCompleteVO flowTaskBatchCompleteVO) ;
 
 
+    /**
+     * 批量处理（移动端）
+     * @param flowTaskBatchCompleteWebVoStrs
+     * @return 操作结果
+     */
+    @POST
+    @Path("completeTaskBatchOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "批量处理（移动端）",notes = "批量处理（移动端）")
+    ResponseData completeTaskBatchOfPhone(@QueryParam("flowTaskBatchCompleteWebVoStrs")String flowTaskBatchCompleteWebVoStrs) ;
+
+
 
     /**
      * 撤回到指定任务节点
@@ -149,6 +162,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "驳回任务（动态驳回）",notes = "测试")
     public OperateResult taskReject(@PathParam("id") String id, @PathParam("opinion") String opinion, Map<String, Object> variables) throws  Exception;
+
+    /**
+     * 驳回任务（移动端）
+     * @param taskId 任务id
+     * @param opinion 意见
+     * @return 操作结果
+     */
+    @POST
+    @Path("rejectTaskOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "驳回任务（移动端）",notes = "驳回任务（移动端）")
+    ResponseData rejectTaskOfPhone(@QueryParam("taskId") String taskId, @QueryParam("opinion") String opinion) throws  Exception;
 
     /**
      * 获取分页数据
@@ -323,6 +349,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息-可批量审批",notes = "测试")
     public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(@QueryParam("batchApproval") Boolean batchApproval, @QueryParam("appSign") String appSign);
 
+    /**
+     * 获取待办汇总信息-可批量审批(移动端)
+     * @return 待办汇总信息
+     */
+    @GET
+    @Path("findTaskSumHeaderCanBatchApprovalOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息-可批量审批(移动端)",notes = "测试")
+    ResponseData findTaskSumHeaderCanBatchApprovalOfPhone();
+
 
     /**
      * 获取待办信息（租户管理员）
@@ -377,6 +414,28 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
+    /**
+     * 获取可批量审批待办信息(移动端)
+     * @param property 需要排序的字段
+     * @param direction 排序规则
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByPageCanBatchApprovalOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息(移动端)",notes = "测试")
+    PageResult<FlowTask> findByPageCanBatchApprovalOfPhone(
+            @QueryParam("businessModelId") String businessModelId,
+            @QueryParam("property") String property,
+            @QueryParam("direction") String direction,
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue);
 
 
     /**
@@ -494,6 +553,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息与版本分组)",notes = "测试")
     public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds)  throws NoSuchMethodException;
+
+
+    /**
+     * 获取下一步的节点信息任务(移动端)
+     * @param taskIds 任务IDs
+     * @throws NoSuchMethodException 找不到方法异常
+     */
+    @POST
+    @Path("getSelectedCanBatchNodesInfoOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取下一步的节点信息任务(移动端)",notes = "获取下一步的节点信息任务(移动端)")
+    ResponseData getSelectedCanBatchNodesInfoOfPhone(@QueryParam("taskIds") String taskIds)  throws NoSuchMethodException;
 
 
     /**

@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -359,5 +360,21 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
             @QueryParam("startDate") Date startDate,
             @QueryParam("endDate") Date endDate,
             @QueryParam("ended") Boolean ended);
+
+    /**
+     * 历史详情(移动端)
+     * @param businessId  业务id
+     * @param instanceId  实例id
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("getFlowHistoryInfoOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "历史详情(移动端)",notes = "历史详情(移动端)")
+    ResponseData  getFlowHistoryInfoOfPhone(
+            @QueryParam("businessId") String businessId,
+            @QueryParam("instanceId") String instanceId
+    );
 
 }
