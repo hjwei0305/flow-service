@@ -941,13 +941,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String creatorId = ContextUtil.getUserId();
         Search search = new Search();
         SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
-        SearchFilter searchFilterStartDate = new SearchFilter("startDate",startDate, SearchFilter.Operator.GE);
-        SearchFilter searchFilterEndDate = new SearchFilter("endDate",endDate, SearchFilter.Operator.LE);
         SearchFilter searchFiltereEnded = new SearchFilter("ended",creatorId, SearchFilter.Operator.EQ);
         search.addFilter(searchFilterCreatorId);
-        search.addFilter(searchFilterStartDate);
-        search.addFilter(searchFilterEndDate);
         search.addFilter(searchFiltereEnded);
+        if(startDate!=null){
+            SearchFilter searchFilterStartDate = new SearchFilter("startDate",startDate, SearchFilter.Operator.GE);
+            search.addFilter(searchFilterStartDate);
+        }
+        if(endDate!=null){
+            SearchFilter searchFilterEndDate = new SearchFilter("endDate",endDate, SearchFilter.Operator.LE);
+            search.addFilter(searchFilterEndDate);
+        }
+
 
         //根据业务单据名称、业务单据号、业务工作说明快速查询
         search.addQuickSearchProperty("businessName");
