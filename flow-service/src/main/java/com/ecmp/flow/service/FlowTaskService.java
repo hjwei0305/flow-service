@@ -156,6 +156,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
+
+    /**
+     * 任务签收
+     *
+     * @param taskId     任务id
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData claimTaskOfPhone(String taskId) {
+        String userId = ContextUtil.getUserId();
+        OperateResult result =  this.claim(taskId,userId);
+        ResponseData  responseData =new ResponseData();
+        responseData.setSuccess(result.successful());
+        responseData.setMessage(result.getMessage());
+        return responseData;
+    }
+
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) throws Exception {
         String taskId = flowTaskCompleteVO.getTaskId();
@@ -538,6 +556,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
         return flowTaskTool.taskRollBack(flowHistory, opinion);
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData rollBackToOfPhone(String preTaskId, String opinion) throws CloneNotSupportedException {
+        OperateResult  res=  rollBackTo(preTaskId,opinion);
+        ResponseData  responseData = new ResponseData();
+        responseData.setSuccess(res.successful());
+        responseData.setMessage(res.getMessage());
+        return  responseData;
     }
 
     /**
@@ -1077,6 +1105,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public List<TodoBusinessSummaryVO> findTaskSumHeader(String appSign) {
         return this.findCommonTaskSumHeader(false, appSign);
+    }
+
+
+    public ResponseData findTaskSumHeaderOfPhone() {
+        List<TodoBusinessSummaryVO> list =   this.findTaskSumHeader("");
+        ResponseData responseData =new ResponseData();
+        responseData.setSuccess(true);
+        responseData.setMessage("成功");
+        responseData.setData(list);
+        return responseData;
     }
 
     /**

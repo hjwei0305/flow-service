@@ -96,4 +96,32 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public PageResult<FlowHistory> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
+
+
+    /**
+     * 获取已办汇总信息（移动端专用）
+     * @param businessModelId 业务实体id
+     * @param property 需要排序的字段
+     * @param direction 排序规则
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @return 待办汇总信息
+     */
+    @POST
+    @Path("findByBusinessModelIdOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取已办汇总信息（移动端专用）",notes = "获取已办汇总信息（移动端专用）")
+    PageResult<FlowHistory> findByBusinessModelIdOfPhone(
+            @QueryParam("businessModelId") String businessModelId,
+            @QueryParam("property") String property,
+            @QueryParam("direction") String direction,
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue);
+
+
+
+
 }

@@ -56,6 +56,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "签收任务",notes = "测试")
     public OperateResult claim(@PathParam("id") String id, @PathParam("userId") String userId);
 
+
+    /**
+     * 任务签收（移动端专用）
+     * @param taskId 任务id
+     * @return 操作结果
+     */
+    @POST
+    @Path("claimTaskOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "任务签收（移动端专用）",notes = "任务签收（移动端专用）")
+    ResponseData claimTaskOfPhone(@QueryParam("taskId") String taskId);
+
 //    /**
 //     * 完成任务
 //     * @param id 任务id
@@ -108,6 +121,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务",notes = "测试")
     public  OperateResult rollBackTo(@PathParam("id") String id, String opinion) throws CloneNotSupportedException;
+
+    /**
+     * 撤回到指定任务节点(移动端专用)
+     * @param preTaskId 任务id
+     * @param opinion 意见
+     * @throws CloneNotSupportedException 不能复制对象
+     * @return 操作结果
+     */
+    @POST
+    @Path("rollBackToOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "撤回任务(移动端专用)",notes = "撤回任务(移动端专用)")
+    ResponseData rollBackToOfPhone(@QueryParam("preTaskId") String preTaskId, @QueryParam("opinion")String opinion) throws CloneNotSupportedException;
 
     /**
      * 驳回任务（动态驳回）
@@ -271,6 +298,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办汇总信息",notes = "测试")
     public List<TodoBusinessSummaryVO> findTaskSumHeader(@QueryParam("appSign") String appSign);
 
+
+    /**
+     * 获取待办汇总信息(移动端专用)
+     * @return 待办汇总信息
+     */
+    @GET
+    @Path("findTaskSumHeaderOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取待办汇总信息(移动端专用)",notes = "测试")
+    ResponseData findTaskSumHeaderOfPhone();
 
     /**
      * 获取待办汇总信息-可批量审批

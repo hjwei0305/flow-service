@@ -3,8 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.dao.jpa.BaseDao;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
+import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
@@ -14,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.QueryParam;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,4 +87,42 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             return flowHistoryDao.findByPage(userId, searchConfig);
         }
     }
+
+    public PageResult<FlowHistory> findByBusinessModelIdOfPhone(String businessModelId, String property, String direction,
+                                                                 int page, int rows, String quickValue) {
+        Search searchConfig = new Search();
+        String userId = ContextUtil.getUserId();
+        searchConfig.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.EQ));
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        searchConfig.addQuickSearchProperty("flowName");
+        searchConfig.addQuickSearchProperty("flowTaskName");
+        searchConfig.addQuickSearchProperty("flowInstance.businessCode");
+        searchConfig.addQuickSearchProperty("flowInstance.businessModelRemark");
+        searchConfig.addQuickSearchProperty("creatorName");
+        searchConfig.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo =new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        searchConfig.setPageInfo(pageInfo);
+
+        SearchOrder  searchOrder;
+        if(StringUtils.isNotEmpty(property)&&StringUtils.isNotEmpty(direction)){
+            if(SearchOrder.Direction.ASC.equals(direction)){
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.ASC);
+            }else{
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.DESC);
+            }
+        }else{
+            searchOrder =new SearchOrder("createdDate",SearchOrder.Direction.ASC);
+        }
+        List<SearchOrder> list =new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        searchConfig.setSortOrders(list);
+
+        return  this.findByBusinessModelId(businessModelId,searchConfig);
+    }
+
+
+
 }

@@ -7,9 +7,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.FlowTaskVO;
-import com.ecmp.flow.vo.ProcessTrackVO;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
@@ -17,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -334,4 +333,31 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id,流程节点定义key获取任务VO对象", notes = "说明")
     public FlowTaskVO findTaskVOByBusinessIdAndActTaskKey(@QueryParam("businessId") String businessId, @QueryParam("taskActDefId") String taskActDefId);
+
+
+
+    /**
+     * 获取我的单据（已办/待办）
+     * @param property 需要排序的字段
+     * @param direction 排序规则
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("getMyBillsOfPhone")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取我的单据(移动端专用)",notes = "获取我的单据(移动端专用)")
+    PageResult<MyBillVO> getMyBillsOfPhone(
+            @QueryParam("property") String property,
+            @QueryParam("direction") String direction,
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue,
+            @QueryParam("startDate") Date startDate,
+            @QueryParam("endDate") Date endDate,
+            @QueryParam("ended") Boolean ended);
+
 }

@@ -3,8 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
+import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.basic.vo.Executor;
@@ -17,10 +16,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
-import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.FlowTaskVO;
-import com.ecmp.flow.vo.ProcessTrackVO;
+import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.activiti.engine.HistoryService;
@@ -937,6 +933,107 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             throw new FlowException(message);
         }
         return callBeforeEndResult;
+    }
+
+
+    public  PageResult<MyBillVO> getMyBillsOfPhone(String property, String direction, int page, int rows,
+                                           String quickValue, Date startDate, Date endDate, Boolean ended){
+        String creatorId = ContextUtil.getUserId();
+        Search search = new Search();
+        SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
+        SearchFilter searchFilterStartDate = new SearchFilter("startDate",startDate, SearchFilter.Operator.GE);
+        SearchFilter searchFilterEndDate = new SearchFilter("endDate",endDate, SearchFilter.Operator.LE);
+        SearchFilter searchFiltereEnded = new SearchFilter("ended",creatorId, SearchFilter.Operator.EQ);
+        search.addFilter(searchFilterCreatorId);
+        search.addFilter(searchFilterStartDate);
+        search.addFilter(searchFilterEndDate);
+        search.addFilter(searchFiltereEnded);
+
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        search.addQuickSearchProperty("businessName");
+        search.addQuickSearchProperty("businessCode");
+        search.addQuickSearchProperty("businessModelRemark");
+        search.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo =new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        search.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder;
+        if(StringUtils.isNotEmpty(property)&&StringUtils.isNotEmpty(direction)){
+            if(SearchOrder.Direction.ASC.equals(direction)){
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.ASC);
+            }else{
+                searchOrder =new SearchOrder(property,SearchOrder.Direction.DESC);
+            }
+        }else{
+            searchOrder =new SearchOrder("createdDate",SearchOrder.Direction.DESC);
+        }
+        List<SearchOrder> list =new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        search.setSortOrders(list);
+
+
+        PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
+        List<FlowInstance>  flowInstanceList = flowInstancePageResult.getRows();
+        PageResult<MyBillVO> results  = new PageResult<MyBillVO>();
+        ArrayList<MyBillVO> data=new ArrayList<MyBillVO>();
+        if(flowInstanceList!=null && !flowInstanceList.isEmpty()){
+            List<String> flowInstanceIds = new ArrayList<String>();
+            for(FlowInstance f:flowInstanceList){
+                FlowInstance parent = f.getParent();
+                if(parent!=null){
+                    flowInstancePageResult.setRecords( flowInstancePageResult.getRecords()-1);
+                    //flowInstancePageResult.setTotal( flowInstancePageResult.getRecords()-1);
+                    //flowInstancePageResult.setPage(flowInstancePageResult.getPage()-1);
+                    continue;
+                }
+                flowInstanceIds.add(f.getId());
+                MyBillVO  myBillVO = new MyBillVO();
+                myBillVO.setBusinessCode(f.getBusinessCode());
+                myBillVO.setBusinessId(f.getBusinessId());
+                myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
+                myBillVO.setBusinessName(f.getBusinessName());
+                myBillVO.setCreatedDate(f.getCreatedDate());
+                myBillVO.setCreatorAccount(f.getCreatorAccount());
+                myBillVO.setCreatorName(f.getCreatorName());
+                myBillVO.setCreatorId(f.getCreatorId());
+                myBillVO.setFlowName(f.getFlowName());
+                String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+                String businessDetailServiceUrl =  f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                if(StringUtils.isEmpty(lookUrl)){
+                    lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                }
+                if(StringUtils.isEmpty(businessDetailServiceUrl)){
+                    businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                }
+                myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+                myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+                myBillVO.setLookUrl(lookUrl);
+                myBillVO.setEndDate(f.getEndDate());
+                myBillVO.setFlowInstanceId(f.getId());
+                myBillVO.setWebBaseAddress(f.getWebBaseAddress());
+                myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
+                myBillVO.setApiBaseAddress(f.getApiBaseAddress());
+                myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
+//                Boolean canEnd = proxy.checkCanEnd(f.getId());
+//                myBillVO.setCanManuallyEnd(canEnd);
+                data.add(myBillVO);
+            }
+
+            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
+            if(canEnds!=null && !canEnds.isEmpty()){
+                for(int i=0;i<canEnds.size();i++){
+                    data.get(i).setCanManuallyEnd(canEnds.get(i));
+                }
+            }
+        }
+        results.setRows(data);
+        results.setRecords(flowInstancePageResult.getRecords());
+        results.setPage(flowInstancePageResult.getPage());
+        results.setTotal(flowInstancePageResult.getTotal());
+        return results;
     }
 
 }
