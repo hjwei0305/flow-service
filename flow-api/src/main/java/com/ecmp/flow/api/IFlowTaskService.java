@@ -329,7 +329,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * 获取待办汇总信息(移动端专用)
      * @return 待办汇总信息
      */
-    @GET
+    @POST
     @Path("findTaskSumHeaderOfPhone")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

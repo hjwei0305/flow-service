@@ -1124,6 +1124,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         ResponseData responseData =new ResponseData();
         responseData.setSuccess(true);
         responseData.setMessage("成功");
+        if(list==null){
+            list =new ArrayList<TodoBusinessSummaryVO>();
+        }
         responseData.setData(list);
         return responseData;
     }
@@ -1135,6 +1138,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<TodoBusinessSummaryVO>  result = this.findCommonTaskSumHeader(true,"");
         responseData.setSuccess(true);
         responseData.setMessage("操作成功!");
+        if(result==null){
+            result = new ArrayList<TodoBusinessSummaryVO>();
+        }
         responseData.setData(result);
         return responseData;
     }

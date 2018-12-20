@@ -939,19 +939,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
 
     public  PageResult<MyBillVO> getMyBillsOfPhone(String property, String direction, int page, int rows,
-                                           String quickValue, Date startDate, Date endDate, Boolean ended){
+                                           String quickValue, String startDate, String endDate, boolean ended){
         String creatorId = ContextUtil.getUserId();
         Search search = new Search();
         SearchFilter searchFilterCreatorId = new SearchFilter("creatorId",creatorId, SearchFilter.Operator.EQ);
         search.addFilter(searchFilterCreatorId);
         SearchFilter searchFiltereEnded = new SearchFilter("ended",ended, SearchFilter.Operator.EQ);
         search.addFilter(searchFiltereEnded);
-        if(startDate!=null){
-            SearchFilter searchFilterStartDate = new SearchFilter("startDate",startDate, SearchFilter.Operator.GE);
+        if(StringUtils.isNotEmpty(startDate)){
+            SearchFilter searchFilterStartDate = new SearchFilter("startDate",DateUtils.parseDate(startDate), SearchFilter.Operator.GE);
             search.addFilter(searchFilterStartDate);
         }
-        if(endDate!=null){
-            SearchFilter searchFilterEndDate = new SearchFilter("endDate",endDate, SearchFilter.Operator.LE);
+        if(StringUtils.isNotEmpty(endDate)){
+            SearchFilter searchFilterEndDate = new SearchFilter("endDate",DateUtils.parseDate(endDate), SearchFilter.Operator.LE);
             search.addFilter(searchFilterEndDate);
         }
 

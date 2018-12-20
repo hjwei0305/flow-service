@@ -357,9 +357,9 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
             @QueryParam("page") int page,
             @QueryParam("rows") int rows,
             @QueryParam("quickValue") String quickValue,
-            @QueryParam("startDate") Date startDate,
-            @QueryParam("endDate") Date endDate,
-            @QueryParam("ended") Boolean ended);
+            @QueryParam("startDate") String startDate,
+            @QueryParam("endDate") String endDate,
+            @QueryParam("ended") boolean ended);
 
     /**
      * 历史详情(移动端)
