@@ -901,6 +901,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         String selfDefId = null;
                         List<String> orgDimensionCodes = null;//组织维度代码集合
                         List<String> positionIds = null;//岗位代码集合
+                        List<String> orgIds= null; //组织机构id集合
+                        List<String> positionTypesIds = null;//岗位类别id集合
                         for(Object executorObject:executorList.toArray()){
                             JSONObject executorTemp = (JSONObject) executorObject;
                             String userType = executorTemp.get("userType") + "";
@@ -917,6 +919,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 positionIds = tempList;
                             }else if("OrganizationDimension".equalsIgnoreCase(userType)){
                                 orgDimensionCodes = tempList;
+                            } else if("PositionType".equalsIgnoreCase(userType)){
+                                positionTypesIds = tempList;
+                            } else if("Org".equalsIgnoreCase(userType)){
+                                orgIds = tempList;
                             }
                         }
                         // 取得当前任务
@@ -942,15 +948,25 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                             }, flowInvokeParams);
                         }else{
-                            String path =  Constants.getBasicPositionGetExecutorsUrl();
-                            Map<String,Object> params = new HashMap();
-                            params.put("orgId",currentOrgId);
-                            params.put("orgDimIds",orgDimensionCodes);
-                            params.put("positionIds",positionIds);
-//                params.put("orgId","0");
-//                params.put("orgDimIds",java.util.Arrays.asList("1"));
-//                params.put("positionIds",java.util.Arrays.asList("1"));
-                            employees=ApiClient.getEntityViaProxy(path,new GenericType<List<Executor>>() {},params);
+                            String path;
+                            Map<String, Object> params = new HashMap();
+                            if(positionTypesIds!=null&&orgIds!=null){ //新增根据（岗位类别+组织机构）获得执行人
+                                path = Constants.getExecutorsByPostCatAndOrgUrl();
+                                params.put("orgIds", orgIds);
+                                params.put("postCatIds", positionTypesIds);
+                            }else{
+                                path = Constants.getBasicPositionGetExecutorsUrl();
+                                params.put("orgId", currentOrgId);
+                                params.put("orgDimIds", orgDimensionCodes);
+                                params.put("positionIds", positionIds);
+                            }
+                            String messageLog = "开始调用‘获取执行人’接口，接口url="+path+",参数值"+ JsonUtils.toJson(params);
+                            try {
+                                employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
+                            }catch (Exception e){
+                                messageLog+="-获取执行人异常："+e.getMessage();
+                                LogUtil.error(messageLog);
+                            }
                         }
                         if (employees != null && !employees.isEmpty()) {
                             employeeSet.addAll(employees);
