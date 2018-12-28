@@ -153,6 +153,19 @@ public class Constants extends ConfigurableContants {
 	}
 
 	/**
+	 * 通过岗位类别ids和组织机构ids获取执行人
+	 * @return
+	 */
+	public static String getExecutorsByPostCatAndOrgUrl(){
+		String  BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATANDORG.GETEXECUTORS");
+		if(StringUtils.isEmpty(BASIC_POSITONCATANDORG_GETEXECUTORS_URL)){
+			BASIC_POSITONCATANDORG_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
+					"basic.positionCatAndOrg.getExecutors", "/employee/getExecutorsByPostCatAndOrg");
+		}
+		return BASIC_POSITONCATANDORG_GETEXECUTORS_URL;
+	}
+
+	/**
 	 * 通过岗位ids、组织维度ids和组织机构id来获取执行人
 	 */
 	public static String getBasicPositionGetExecutorsUrl() {
