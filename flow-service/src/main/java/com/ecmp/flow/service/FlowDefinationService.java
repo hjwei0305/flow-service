@@ -568,15 +568,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowStartResultVO = null;
                 }
                 if (finalFlowDefination != null) {
+                    List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                     //固化流程字段不为空（兼容以前版本），并且选择了固化流程,提供流程定义的id
                     if(finalFlowDefination.getSolidifyFlow()!=null&&finalFlowDefination.getSolidifyFlow()==true){
                         flowStartResultVO.setSolidifyFlow(true);
+                        nodeInfoList.get(0).setExecutorSet(null);//固化流程不需要下一节点人员
                         flowStartResultVO.setFlowDefinationId(finalFlowDefination.getId());
                     }else{
-                        List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                         flowStartResultVO.setSolidifyFlow(false);
-                        flowStartResultVO.setNodeInfoList(nodeInfoList);
                     }
+                    flowStartResultVO.setNodeInfoList(nodeInfoList);
                 }
             }
 //
