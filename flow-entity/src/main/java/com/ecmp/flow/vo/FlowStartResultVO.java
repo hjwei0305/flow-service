@@ -30,11 +30,31 @@ public class FlowStartResultVO implements Serializable{
 
     private Boolean allowChooseInstancy;//是否允许选择任务紧急状态
 
+    private Boolean solidifyFlow;//是否为固化流程
+
+    private String flowDefinationId;//固化流程需要这个参数调用流程图
+
     /**
      * 额外参数
      */
     private Map<String, Object> variables;
 
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
+    }
+
+    public String getFlowDefinationId() {
+        return flowDefinationId;
+    }
+
+    public void setFlowDefinationId(String flowDefinationId) {
+        this.flowDefinationId = flowDefinationId;
+    }
 
     public List<StartFlowTypeVO> getFlowTypeList() {
         return flowTypeList;
