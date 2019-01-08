@@ -145,6 +145,12 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Column(name="sub_process")
     private Boolean subProcess;
 
+    /**
+     * 是否为固化流程
+     */
+    @Column(name="solidify_flow")
+    private Boolean solidifyFlow;
+
 
     /**
      * 启动时调用检查服务，同步
@@ -357,6 +363,15 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setSubProcess(Boolean subProcess) {
         this.subProcess = subProcess;
+    }
+
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
     }
 
     public String getStartCheckServiceUrlId() {

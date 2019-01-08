@@ -98,6 +98,20 @@ public class Definition implements Serializable {
     @XmlTransient
     private Boolean subProcess;
 
+    /**
+     * 是否为固化流程
+     */
+    @XmlTransient
+    private Boolean solidifyFlow;
+
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
+    }
 
     public Process getProcess() {
         return process;

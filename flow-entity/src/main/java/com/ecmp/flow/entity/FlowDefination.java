@@ -121,6 +121,12 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity imp
 	@Column(name="sub_process")
 	private Boolean subProcess;
 
+	/**
+	 * 是否为固化流程
+	 */
+	@Column(name="solidify_flow")
+	private Boolean solidifyFlow;
+
 
 	/**
 	 * 当前对应的流程版本
@@ -290,6 +296,14 @@ public class FlowDefination extends com.ecmp.core.entity.BaseAuditableEntity imp
 
 	public void setSubProcess(Boolean subProcess) {
 		this.subProcess = subProcess;
+	}
+
+	public Boolean getSolidifyFlow() {
+		return solidifyFlow;
+	}
+
+	public void setSolidifyFlow(Boolean solidifyFlow) {
+		this.solidifyFlow = solidifyFlow;
 	}
 
 	@Override
