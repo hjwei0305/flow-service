@@ -732,7 +732,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }
                     } else {
-                        employees = flowTaskTool.getExecutors(userType, ids);
+                        employees = flowTaskTool.getExecutors(userType, ids,"" + flowStartVO.getVariables().get("orgId"));
                     }
                 }
             }

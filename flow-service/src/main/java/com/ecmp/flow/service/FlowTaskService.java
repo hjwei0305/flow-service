@@ -892,7 +892,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                                     }, flowInvokeParams);
                                 }else{
-                                    employees=flowTaskTool.getExecutors(userType, ids);
+                                    HistoricTaskInstance currTask = historyService
+                                            .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                                            .singleResult();
+                                    String executionId = currTask.getExecutionId();
+                                    Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+                                    String currentOrgId = processVariables.get("orgId").getValue()+"";
+                                    employees=flowTaskTool.getExecutors(userType, ids , currentOrgId);
                                 }
                             }
                         }
@@ -2341,6 +2347,99 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
         }
+    }
+
+
+    @Override
+    public ResponseData  getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos,String businessModelCode,String businessId){
+        ResponseData  responseData =new ResponseData();
+        if(requestExecutorsVos==null||requestExecutorsVos.size()==0||StringUtils.isEmpty(businessModelCode)||StringUtils.isEmpty(businessId)){
+            return this.writeErrorLogAndReturnData(null,"请求参数不能为空！");
+        }
+
+        String orgId = null;
+        try{
+            BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
+            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            orgId = (String) businessV.get(Constants.ORG_ID);
+            if(StringUtils.isEmpty(orgId)){
+                return this.writeErrorLogAndReturnData(null,"业务单据组织机构为空！");
+            }
+        }catch (Exception e){
+            return this.writeErrorLogAndReturnData(e,"获取业务单据组织机构失败！");
+        }
+
+        List<Executor> executors = null;
+        if(requestExecutorsVos.size()==1){ //流程发起人、指定岗位、指定岗位类别
+            String userType=requestExecutorsVos.get(0).getUserType();
+            if("StartUser".equalsIgnoreCase(userType)){ //流程发起人
+                String   startUserId =  ContextUtil.getSessionUser().getUserId();
+                try{
+                    executors = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+                }catch (Exception e){
+                    return this.writeErrorLogAndReturnData(e,"获取流程发起人接口调用失败！");
+                }
+            }else if("Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType)){ //指定岗位
+                String  ids = requestExecutorsVos.get(0).getIds();
+                try{
+                    executors = flowTaskTool.getExecutors(userType, ids , orgId);
+                }catch (Exception e){
+                    String errorMsg="";
+                    if("Position".equalsIgnoreCase(userType)){
+                        errorMsg="岗位执行人";
+                    }else if("PositionType".equalsIgnoreCase(userType)){
+                        errorMsg="岗位类别执行人";
+                    }
+                    return this.writeErrorLogAndReturnData(e,"获取"+errorMsg+"接口调用失败！");
+                }
+            }else if("SelfDefinition".equalsIgnoreCase(userType)){ //自定义执行人
+                String selfDefId = requestExecutorsVos.get(0).getIds();
+                if (StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)) {
+                    try{
+                        FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                        String path = flowExecutorConfig.getUrl();
+                        AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                        String appModuleCode = appModule.getApiBaseAddress();
+                        String param = flowExecutorConfig.getParam();
+                        FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                        flowInvokeParams.setId(businessId);
+                        flowInvokeParams.setOrgId("" + orgId);
+                        flowInvokeParams.setJsonParam(param);
+                        executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {}, flowInvokeParams);
+                    }catch (Exception e){
+                        return this.writeErrorLogAndReturnData(e,"获取自定义执行人接口调用失败！");
+                    }
+                }else{
+                    return this.writeErrorLogAndReturnData(null,"自定义执行人参数为空！");
+                }
+            }
+
+
+
+        }else if(requestExecutorsVos.size()==2){ //
+
+
+        }else if(requestExecutorsVos.size()==3){ //
+
+
+        }
+
+
+
+
+
+        return  responseData;
+    }
+
+
+    public ResponseData writeErrorLogAndReturnData(Exception e,String msg){
+        if (e!=null) {
+            LogUtil.error(e.getMessage());
+        }
+        ResponseData responseData = new ResponseData();
+        responseData.setSuccess(false);
+        responseData.setMessage(msg);
+        return  responseData;
     }
 
 
