@@ -144,13 +144,21 @@ public class Constants extends ConfigurableContants {
 	 * 根据岗位类别的id列表获取执行人
 	 */
 	public static String getBasicPositionGetexecutorsbyposcateidsUrl() {
-		String BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATEIDS");
-		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL)){
-			BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.getExecutorsByPosCateIds", "/position/getExecutorsByPosCateIds");
+//		String BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATEIDS");
+//		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL)){
+//			BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL=getBasicServiceUrl() + getProperty(
+//					"basic.position.getExecutorsByPosCateIds", "/position/getExecutorsByPosCateIds");
+//		}
+//		return BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL;
+		//根据单据的orgId查找最近的符合岗位类别的人员
+		String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATANDORGROOT");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL)){
+			BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutorsByPostCatAndOrgToRoot", "/position/getExecutorsByPostCatAndOrgToRoot");
 		}
-		return BASIC_POSITION_GETEXECUTORSBYPOSCATEIDS_URL;
+		return BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL;
 	}
+
 
 	/**
 	 * 通过岗位类别ids和组织机构ids获取执行人

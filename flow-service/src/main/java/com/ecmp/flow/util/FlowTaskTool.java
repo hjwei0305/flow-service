@@ -1981,7 +1981,7 @@ public class FlowTaskTool {
         }
         return  result;
     }
-    public List<Executor> getExecutors(String userType, String ids){
+    public List<Executor> getExecutors(String userType, String ids ,String orgId){
         String[] idsShuZhu = ids.split(",");
         List<String> idList = Arrays.asList(idsShuZhu);
         List<Executor> employees = null;
@@ -1992,7 +1992,8 @@ public class FlowTaskTool {
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
             Map<String,Object> params = new HashMap();
-            params.put("posCateIds",idList);
+            params.put("postCatIds",idList);
+            params.put("orgId",orgId);
             String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
             employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }  else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
