@@ -2370,7 +2370,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         List<Executor> executors = null;
-        if(requestExecutorsVos.size()==1){ //流程发起人、指定岗位、指定岗位类别
+        if(requestExecutorsVos.size()==1){ //流程发起人、指定岗位、指定岗位类别、自定义执行人、任意执行人
             String userType=requestExecutorsVos.get(0).getUserType();
             if("StartUser".equalsIgnoreCase(userType)){ //流程发起人
                 String   startUserId =  ContextUtil.getSessionUser().getUserId();
@@ -2412,22 +2412,72 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }else{
                     return this.writeErrorLogAndReturnData(null,"自定义执行人参数为空！");
                 }
+            }else if("AnyOne".equalsIgnoreCase(userType)){ //任意执行人
+
+            }
+        }else if(requestExecutorsVos.size()>1){ //岗位+组织维度、
+            String selfDefId = null; //自定义执行人id
+            List<String> positionIds = null;//岗位代码集合
+            List<String> orgDimensionCodes = null;//组织维度代码集合
+            List<String> orgIds= null; //组织机构id集合
+            List<String> positionTypesIds = null;//岗位类别id集合
+            for(RequestExecutorsVo  executorsVo:requestExecutorsVos){
+                String ids =executorsVo.getIds();
+                List<String> tempList = null;
+                if (StringUtils.isNotEmpty(ids)) {
+                    String[] idsShuZhu = ids.split(",");
+                    tempList = Arrays.asList(idsShuZhu);
+                }
+                if ("SelfDefinition".equalsIgnoreCase(executorsVo.getUserType())) {//通过业务ID获取自定义用户
+                    selfDefId = tempList.toString();
+                } else if ("Position".equalsIgnoreCase(executorsVo.getUserType())) {
+                    positionIds = tempList;
+                } else if ("OrganizationDimension".equalsIgnoreCase(executorsVo.getUserType())) {
+                    orgDimensionCodes = tempList;
+                } else if("PositionType".equalsIgnoreCase(executorsVo.getUserType())){
+                    positionTypesIds = tempList;
+                } else if("Org".equalsIgnoreCase(executorsVo.getUserType())){
+                    orgIds = tempList;
+                }
             }
 
-
-
-        }else if(requestExecutorsVos.size()==2){ //
-
-
-        }else if(requestExecutorsVos.size()==3){ //
-
-
+            if (StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)) {
+                FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                String path = flowExecutorConfig.getUrl();
+                AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                String appModuleCode = appModule.getApiBaseAddress();
+                String param = flowExecutorConfig.getParam();
+                FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                flowInvokeParams.setId(businessId);
+                flowInvokeParams.setOrgId("" + orgId);
+                flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
+                flowInvokeParams.setPositionIds(positionIds);
+                flowInvokeParams.setJsonParam(param);
+                executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+                }, flowInvokeParams);
+            } else {
+                String path;
+                Map<String, Object> params = new HashMap();
+                if(positionTypesIds!=null&&orgIds!=null){ //新增根据（岗位类别+组织机构）获得执行人
+                    path = Constants.getExecutorsByPostCatAndOrgUrl();
+                    params.put("orgIds", orgIds);
+                    params.put("postCatIds", positionTypesIds);
+                }else{
+                    path = Constants.getBasicPositionGetExecutorsUrl();
+                    params.put("orgId", ""+orgId);
+                    params.put("orgDimIds", orgDimensionCodes);
+                    params.put("positionIds", positionIds);
+                }
+                String messageLog = "开始调用‘获取执行人’接口，接口url="+path+",参数值"+ JsonUtils.toJson(params);
+                try {
+                    executors = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
+                }catch (Exception e){
+                    messageLog+="-获取执行人异常："+e.getMessage();
+                    LogUtil.error(messageLog);
+                }
+            }
         }
-
-
-
-
-
+        responseData.setData(executors);
         return  responseData;
     }
 
