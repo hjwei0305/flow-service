@@ -694,4 +694,12 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "推送待办到业务模块", notes = "通过业务模块code和业务模块id推送待办到业务模块")
     @IgnoreCheckAuth
     void pushTaskToBusinessModel(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId);
+
+
+    @POST
+    @Path("getExecutorsByRequestExecutorsVo")
+    @ApiOperation(value = "获取执行人", notes = "通过执行人参数VO获取执行人")
+    ResponseData  getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos,@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId);
+
+
 }
