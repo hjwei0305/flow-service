@@ -2377,7 +2377,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 try{
                     executors = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
                 }catch (Exception e){
-                    return this.writeErrorLogAndReturnData(e,"获取流程发起人接口调用失败！");
+                    return this.writeErrorLogAndReturnData(e,"获取【流程发起人】接口调用失败！");
                 }
             }else if("Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType)){ //指定岗位
                 String  ids = requestExecutorsVos.get(0).getIds();
@@ -2386,9 +2386,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }catch (Exception e){
                     String errorMsg="";
                     if("Position".equalsIgnoreCase(userType)){
-                        errorMsg="岗位执行人";
+                        errorMsg="【岗位】执行人";
                     }else if("PositionType".equalsIgnoreCase(userType)){
-                        errorMsg="岗位类别执行人";
+                        errorMsg="【岗位类别】执行人";
                     }
                     return this.writeErrorLogAndReturnData(e,"获取"+errorMsg+"接口调用失败！");
                 }
@@ -2407,7 +2407,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         flowInvokeParams.setJsonParam(param);
                         executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {}, flowInvokeParams);
                     }catch (Exception e){
-                        return this.writeErrorLogAndReturnData(e,"获取自定义执行人接口调用失败！");
+                        return this.writeErrorLogAndReturnData(e,"获取【自定义执行人】接口调用失败！");
                     }
                 }else{
                     return this.writeErrorLogAndReturnData(null,"自定义执行人参数为空！");
@@ -2415,7 +2415,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }else if("AnyOne".equalsIgnoreCase(userType)){ //任意执行人
 
             }
-        }else if(requestExecutorsVos.size()>1){ //岗位+组织维度、
+        }else if(requestExecutorsVos.size()>1){ //岗位+组织维度、岗位+组织维度+自定义执行人、岗位类别+组织机构
             String selfDefId = null; //自定义执行人id
             List<String> positionIds = null;//岗位代码集合
             List<String> orgDimensionCodes = null;//组织维度代码集合
@@ -2453,27 +2453,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setPositionIds(positionIds);
                 flowInvokeParams.setJsonParam(param);
-                executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-                }, flowInvokeParams);
+                try{
+                    executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {}, flowInvokeParams);
+                }catch (Exception e){
+                    return this.writeErrorLogAndReturnData(e,"获取【岗位+组织维度+自定义执行人】接口调用失败！");
+                }
             } else {
                 String path;
                 Map<String, Object> params = new HashMap();
+                String errorMes="";
                 if(positionTypesIds!=null&&orgIds!=null){ //新增根据（岗位类别+组织机构）获得执行人
                     path = Constants.getExecutorsByPostCatAndOrgUrl();
                     params.put("orgIds", orgIds);
                     params.put("postCatIds", positionTypesIds);
-                }else{
+                    errorMes="【岗位类别+组织机构】";
+                }else{ //岗位+组织维度
                     path = Constants.getBasicPositionGetExecutorsUrl();
                     params.put("orgId", ""+orgId);
                     params.put("orgDimIds", orgDimensionCodes);
                     params.put("positionIds", positionIds);
+                    errorMes="【岗位+组织维度】";
                 }
-                String messageLog = "开始调用‘获取执行人’接口，接口url="+path+",参数值"+ JsonUtils.toJson(params);
                 try {
                     executors = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
                 }catch (Exception e){
-                    messageLog+="-获取执行人异常："+e.getMessage();
-                    LogUtil.error(messageLog);
+                    return this.writeErrorLogAndReturnData(e,"获取"+errorMes+"执行人接口调用失败！");
                 }
             }
         }
