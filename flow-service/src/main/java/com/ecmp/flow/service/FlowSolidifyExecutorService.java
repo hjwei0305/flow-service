@@ -1,18 +1,23 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
 import com.ecmp.flow.entity.FlowSolidifyExecutor;
 import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
+import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -42,7 +47,7 @@ public class FlowSolidifyExecutorService  extends BaseEntityService<FlowSolidify
         }
        //新启动流程时，清除以前的数据
        List<FlowSolidifyExecutor>  list= flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
-        if(list!=null||list.size()>0){
+        if(list!=null&&list.size()>0){
            list.forEach(bean->flowSolidifyExecutorDao.delete(bean));
        }
 
@@ -59,6 +64,31 @@ public class FlowSolidifyExecutorService  extends BaseEntityService<FlowSolidify
        }catch (Exception e){
            return this.writeErrorLogAndReturnData(e,"节点信息、紧急状态、执行人不能为空！");
        }
+        return  responseData;
+    }
+
+    /**
+     * 给FlowTaskCompleteWebVO设置执行人和紧急状态
+     * @param list  FlowTaskCompleteWebVO集合
+     * @param businessId  业务表单id
+     * @return
+     */
+    public ResponseData setInstancyAndIdsByTaskList(List<FlowTaskCompleteWebVO> list,String businessId){
+        ResponseData   responseData  = new ResponseData();
+        if(list==null||list.size()==0||StringUtils.isEmpty(businessId)){
+            return this.writeErrorLogAndReturnData(null,"参数不能为空！");
+        }
+
+        list.forEach(bean->{
+            Search search =new Search();
+            search.addFilter(new SearchFilter("businessId", businessId));
+            search.addFilter(new SearchFilter("actTaskDefKey", bean.getNodeId()));
+            flowSolidifyExecutorDao.findByFilters(search);
+        });
+
+
+
+
         return  responseData;
     }
 

@@ -4,11 +4,13 @@ package com.ecmp.flow.api;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowSolidifyExecutor;
 import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
+import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("flowSolidifyExecutor")
@@ -23,8 +25,23 @@ public interface IFlowSolidifyExecutorService  extends IBaseService<FlowSolidify
      */
     @POST
     @Path("saveByExecutorVoList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过执行人VO集合保存固化流程的执行人信息",notes = "通过执行人VO集合保存固化流程的执行人信息")
     ResponseData saveByExecutorVoList(List<FlowSolidifyExecutorVO> executorVoList, @QueryParam("businessModelCode") String businessModelCode, @QueryParam("businessId") String businessId);
 
+
+    /**
+     * 给FlowTaskCompleteWebVO设置执行人和紧急状态
+     * @param list  FlowTaskCompleteWebVO集合
+     * @param businessId  业务表单id
+     * @return
+     */
+    @POST
+    @Path("setInstancyAndIdsByTaskList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "给FlowTaskCompleteWebVO设置执行人和紧急状态",notes = "给FlowTaskCompleteWebVO设置执行人和紧急状态")
+    ResponseData setInstancyAndIdsByTaskList(List<FlowTaskCompleteWebVO> list, @QueryParam("businessId") String businessId);
 
 }
