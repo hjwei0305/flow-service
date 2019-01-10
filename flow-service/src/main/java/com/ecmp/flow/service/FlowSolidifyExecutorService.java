@@ -40,7 +40,13 @@ public class FlowSolidifyExecutorService  extends BaseEntityService<FlowSolidify
         if(executorVoList==null||executorVoList.size()==0|| StringUtils.isEmpty(businessModelCode)||StringUtils.isEmpty(businessId)){
             return this.writeErrorLogAndReturnData(null,"请求参数不能为空！");
         }
-       try{
+       //新启动流程时，清除以前的数据
+       List<FlowSolidifyExecutor>  list= flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
+        if(list!=null||list.size()>0){
+           list.forEach(bean->flowSolidifyExecutorDao.delete(bean));
+       }
+
+        try{
            executorVoList.forEach(executorVo->{
                FlowSolidifyExecutor bean =new FlowSolidifyExecutor();
                bean.setBusinessCode(businessModelCode);
