@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2019/1/10 13:49:08                           */
+/* Created on:     2019/1/10 14:49:26                           */
 /*==============================================================*/
 
 
@@ -13,9 +13,9 @@ create table flow_solidify_executor
    business_code        varchar(255) not null comment '业务类全路径',
    business_id          varchar(36) not null comment '业务类主键',
    flow_instance_id     varchar(36) comment '关联流程实例',
-   act_task_def_key     varchar(50) comment '任务定义KEY',
-   instancy_status      boolean comment '是否紧急',
-   executor_ids         varchar(1000) comment '执行人ids',
+   act_task_def_key     varchar(50) not null comment '任务定义KEY',
+   instancy_status      boolean not null comment '是否紧急',
+   executor_ids         varchar(1000) not null comment '执行人ids',
    before_task_def_key  varchar(50) comment '上一节点任务key',
    task_order           int comment '逻辑任务执行顺序',
    tenant_code          varchar(10) comment '租户代码',
