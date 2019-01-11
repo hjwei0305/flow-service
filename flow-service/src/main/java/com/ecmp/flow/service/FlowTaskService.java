@@ -124,6 +124,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
+    private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
+
+    @Autowired
     private HistoryService historyService;
 
     @Autowired
@@ -1057,6 +1060,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setBusinessCode(flowTask.getFlowInstance().getBusinessCode());
         result.setCreateUser(flowTask.getFlowInstance().getCreatorName());
         result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
+        //判断是否是固化流程
+        if(flowTask.getFlowInstance().getFlowDefVersion().getSolidifyFlow()==null
+                ||flowTask.getFlowInstance().getFlowDefVersion().getSolidifyFlow()==false){
+            result.setSolidifyFlow(false);
+        }else{
+            result.setSolidifyFlow(true);
+        }
 
         String defJson = flowTask.getTaskJsonDef();
         JSONObject defObj = JSONObject.fromObject(defJson);

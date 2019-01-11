@@ -57,6 +57,19 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private String currentNodeDefaultOpinion;
 
+    /**
+     * 是否为固化流程
+     */
+    private Boolean solidifyFlow;
+
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
+    }
 
     public String getBusinessId() {
         return businessId;
