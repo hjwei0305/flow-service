@@ -75,6 +75,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                             return solidifyData;
                         }
                         flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
+                        JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
+                        flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
                     }
                     Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
                     Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
