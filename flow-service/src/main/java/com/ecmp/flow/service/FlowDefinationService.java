@@ -732,7 +732,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }
                     } else {
-                        employees = flowTaskTool.getExecutors(userType, ids,"" + flowStartVO.getVariables().get("orgId"));
+                        if("PositionType".equalsIgnoreCase(userType)){
+                            String startUserId = flowStartVO.getStartUserId();
+                            if (StringUtils.isEmpty(startUserId)) {
+                                startUserId = ContextUtil.getSessionUser().getUserId();
+                            }
+                           List<Executor>  startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+                           if(startUser!=null&&startUser.size()>0){
+                               employees = flowTaskTool.getExecutors(userType, ids,startUser.get(0).getOrganizationId());
+                           }
+                        }else{
+                            employees = flowTaskTool.getExecutors(userType, ids,null);
+                        }
+
                     }
                 }
             }

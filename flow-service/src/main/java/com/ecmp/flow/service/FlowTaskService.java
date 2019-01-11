@@ -892,13 +892,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                                     }, flowInvokeParams);
                                 }else{
-                                    HistoricTaskInstance currTask = historyService
-                                            .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                                            .singleResult();
-                                    String executionId = currTask.getExecutionId();
-                                    Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
-                                    String currentOrgId = processVariables.get("orgId").getValue()+"";
-                                    employees=flowTaskTool.getExecutors(userType, ids , currentOrgId);
+                                    if("PositionType".equalsIgnoreCase(userType)){
+                                        FlowInstance flowInstance = flowTask.getFlowInstance();
+                                        while(flowInstance.getParent() != null){ //以父流程的启动人为准
+                                            flowInstance = flowInstance.getParent();
+                                        }
+                                        String startUserId = null;
+                                        HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowInstance.getActInstanceId()).singleResult();
+                                        if(historicProcessInstance==null){//当第一个任务为服务任务的时候存在为空的情况发生
+                                            startUserId = ContextUtil.getUserId();
+                                        }else{
+                                            startUserId = historicProcessInstance.getStartUserId();
+                                        }
+                                        Map<String,Object> params = new HashMap();
+                                        params.put("employeeIds",Arrays.asList(startUserId));
+                                        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+                                        List<Executor> startUser =ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                                        if(startUser!=null&&startUser.size()>0){  //岗位类别需要流程发起人的组织机构id
+                                            employees=flowTaskTool.getExecutors(userType, ids , startUser.get(0).getOrganizationId());
+                                        }
+                                    }else{
+                                        employees=flowTaskTool.getExecutors(userType, ids , null);
+                                    }
                                 }
                             }
                         }
@@ -2379,18 +2394,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }catch (Exception e){
                     return this.writeErrorLogAndReturnData(e,"获取【流程发起人】接口调用失败！");
                 }
-            }else if("Position".equalsIgnoreCase(userType)||"PositionType".equalsIgnoreCase(userType)){ //指定岗位
+            }else if("Position".equalsIgnoreCase(userType)){//指定岗位
                 String  ids = requestExecutorsVos.get(0).getIds();
                 try{
-                    executors = flowTaskTool.getExecutors(userType, ids , orgId);
+                    executors = flowTaskTool.getExecutors(userType, ids , null);
                 }catch (Exception e){
-                    String errorMsg="";
-                    if("Position".equalsIgnoreCase(userType)){
-                        errorMsg="【岗位】执行人";
-                    }else if("PositionType".equalsIgnoreCase(userType)){
-                        errorMsg="【岗位类别】执行人";
+                    return this.writeErrorLogAndReturnData(e,"获取【岗位】执行人接口调用失败！");
+                }
+            }else if("PositionType".equalsIgnoreCase(userType)){ //指定岗位类别
+                String  ids = requestExecutorsVos.get(0).getIds();
+                String   startUserId =  ContextUtil.getSessionUser().getUserId();
+                List<Executor> startUser = null;
+                try{
+                    startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+                }catch (Exception e){
+                    return this.writeErrorLogAndReturnData(e,"获取【流程发起人】接口调用失败！");
+                }
+                try{
+                    if(startUser!=null&&startUser.size()>0){
+                        executors = flowTaskTool.getExecutors(userType, ids , startUser.get(0).getOrganizationId());
                     }
-                    return this.writeErrorLogAndReturnData(e,"获取"+errorMsg+"接口调用失败！");
+                }catch (Exception e){
+                    return this.writeErrorLogAndReturnData(e,"获取【岗位类别】执行人接口调用失败！");
                 }
             }else if("SelfDefinition".equalsIgnoreCase(userType)){ //自定义执行人
                 String selfDefId = requestExecutorsVos.get(0).getIds();
