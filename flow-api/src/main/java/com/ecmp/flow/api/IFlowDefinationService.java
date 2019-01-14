@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -159,6 +160,19 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID",notes = "测试")
     public FlowDefVersion getFlowDefVersion(@PathParam("id") String id, @PathParam("versionCode") Integer versionCode);
+
+
+    /**
+     * 重置流程图位置
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("getFlowDefVersion/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程定义key重置流程图位置",notes = "测试")
+    ResponseData  resetPosition(@PathParam("id") String id);
 
 
 //    /**

@@ -1143,6 +1143,21 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowDefVersion;
     }
 
+    public ResponseData resetPosition(String id) {
+        ResponseData  responseData  = new ResponseData();
+        FlowDefination flowDefination = flowDefinationDao.findOne(id);
+        if(flowDefination==null){
+            return  this.writeErrorLogAndReturnData(null,"未找到流程定义！");
+        }
+        FlowDefVersion  flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+
+
+
+        return responseData;
+    }
+
+
+
     /**
      * 使用部署ID，删除流程引擎数据定义
      *
@@ -1434,5 +1449,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessKey);
         defaultBusinessModel.setFlowStatus(FlowStatus.INPROCESS);
         defaultBusinessModelDao.save(defaultBusinessModel);
+    }
+
+    public ResponseData writeErrorLogAndReturnData(Exception e,String msg){
+        if (e!=null) {
+            LogUtil.error(e.getMessage());
+        }
+        ResponseData responseData = new ResponseData();
+        responseData.setSuccess(false);
+        responseData.setMessage(msg);
+        return  responseData;
     }
 }
