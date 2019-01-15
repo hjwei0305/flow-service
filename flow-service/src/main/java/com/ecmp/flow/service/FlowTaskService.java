@@ -124,9 +124,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-    private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
-
-    @Autowired
     private HistoryService historyService;
 
     @Autowired
