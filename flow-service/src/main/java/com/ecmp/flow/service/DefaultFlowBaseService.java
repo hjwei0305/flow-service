@@ -146,6 +146,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId,
                                      boolean manualSelected, String approved, Long loadOverTime) throws Exception {
+        ResponseData responseData = new ResponseData();
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -157,6 +158,19 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         Map<String, String> selectedNodesMap = new HashMap<>();
         Map<String, Object> v = new HashMap<String, Object>();
         if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+
+            //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
+            if (StringUtils.isEmpty(flowTaskCompleteList.get(0).getUserIds())) {
+                IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
+                ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
+                if (solidifyData.getSuccess() == false) {
+                    return solidifyData;
+                }
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
+                JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+            }
+
             Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
             Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
             for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
@@ -224,7 +238,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 }
             }).start();
         }
-        ResponseData responseData = new ResponseData();
         responseData.setSuccess(operateResult.successful());
         responseData.setMessage(operateResult.getMessage());
         return responseData;

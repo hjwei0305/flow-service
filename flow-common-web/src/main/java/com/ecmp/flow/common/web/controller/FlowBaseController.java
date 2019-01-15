@@ -172,6 +172,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
     @ResponseBody
     @IgnoreCheckAuth
     public OperateStatus completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId, boolean manualSelected, String approved, Long loadOverTime) throws Exception {
+        OperateStatus operateStatus = null;
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -183,6 +184,20 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
         Map<String, String> selectedNodesMap = new HashMap<>();
         Map<String, Object> v = new HashMap<String, Object>();
         if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+
+             //如果是固化流程提交，设置参数里面的紧急状态和执行人列表
+            if(StringUtils.isEmpty(flowTaskCompleteList.get(0).getUserIds())){
+                IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
+                ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
+                if (solidifyData.getSuccess() == false) {
+                    operateStatus = new OperateStatus(false, solidifyData.getMessage());
+                    return operateStatus;
+                }
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
+                JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+            }
+
             Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
             Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
             for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
@@ -251,7 +266,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 }
             }).start();
         }
-        OperateStatus operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
+        operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
 
         return operateStatus;
     }
