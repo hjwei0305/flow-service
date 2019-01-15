@@ -138,6 +138,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private BusinessModelService  businessModelService;
 
+    @Autowired
+    private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
+
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
     /**
@@ -516,6 +519,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (instance == null || instance.isEnded()) {
             result.setData(FlowStatus.COMPLETED);//任务结束
             flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
+            flowSolidifyExecutorDao.deleteByBusinessId(flowInstance.getBusinessId());//查看是否为固化流程（如果是固化流程删除固化执行人列表）
         }
         return result;
     }

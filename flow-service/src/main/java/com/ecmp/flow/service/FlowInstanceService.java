@@ -11,6 +11,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
+import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
@@ -39,7 +40,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 
@@ -89,7 +89,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private FlowTaskService flowTaskService;
 
     @Autowired
-    private FlowSolidifyExecutorService flowSolidifyExecutorService;
+    private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
 
     /**
      * 撤销流程实例
@@ -839,7 +839,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                     ExpressionUtil.resetState(businessModel, businessId, status);
                     //查看是否为固化流程（如果是固化流程删除固化执行人列表）
-                    flowSolidifyExecutorService.deleteByBusinessId(businessId);
+                    flowSolidifyExecutorDao.deleteByBusinessId(businessId);
                     //结束后触发
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);

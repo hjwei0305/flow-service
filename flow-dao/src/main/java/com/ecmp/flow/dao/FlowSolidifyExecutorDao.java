@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FlowSolidifyExecutorDao  extends BaseEntityDao<FlowSolidifyExecutor> {
 
+    public long deleteByBusinessId(String actTaskId);
 
 
 }

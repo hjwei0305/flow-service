@@ -105,10 +105,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         if(StringUtils.isEmpty(businessId)){
             return this.writeErrorLogAndReturnData(null, "参数不能为空！");
         }
-        List<FlowSolidifyExecutor>  list =  flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
-        if(list!=null&&list.size()>0){
-            flowSolidifyExecutorDao.deleteAll(list);
-        }
+        flowSolidifyExecutorDao.deleteByBusinessId(businessId);
         return  responseData;
     }
 
