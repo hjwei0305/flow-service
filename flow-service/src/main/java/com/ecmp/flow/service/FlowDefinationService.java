@@ -5,6 +5,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
+import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
@@ -15,6 +16,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
+import com.ecmp.flow.vo.bpmn.Process;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
@@ -112,6 +114,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Autowired
     private DefaultBusinessModelDao defaultBusinessModelDao;
+
+    @Autowired
+    private FlowDefVersionService flowDefVersionService;
 
     /**
      * 新增修改操作
@@ -1145,14 +1150,52 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     public ResponseData resetPosition(String id) {
         ResponseData  responseData  = new ResponseData();
+        if(StringUtils.isEmpty(id)){
+            return this.writeErrorLogAndReturnData(null,"参数不能为空");
+        }
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if(flowDefination==null){
             return  this.writeErrorLogAndReturnData(null,"未找到流程定义！");
         }
         FlowDefVersion  flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+        String defJson= flowDefVersion.getDefJson();
+        JSONObject defObj  = JSONObject.fromObject(defJson);
+        Object  pocessKey = defObj.keySet().stream().filter(obj->"process".equals(obj.toString())).findFirst().orElse(null);
+        if(pocessKey==null){
+            return  this.writeErrorLogAndReturnData(null,"数据格式1存在问题，转换失败！");
+        }
+        JSONObject pocessObj = JSONObject.fromObject(defObj.get(pocessKey));
+        Object nodesKey = pocessObj.keySet().stream().filter(obj->"nodes".equals(obj.toString())).findFirst().orElse(null);
+        if(nodesKey==null){
+            return  this.writeErrorLogAndReturnData(null,"数据格式2存在问题，转换失败！");
+        }
+        JSONObject nodeObj =  JSONObject.fromObject(pocessObj.get(nodesKey));
 
+        List<Integer> xList = new ArrayList<Integer>();
+        List<Integer> yList = new ArrayList<Integer>();
+        nodeObj.keySet().forEach(obj->{
+            JSONObject  positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            FlowNodeVO node  =(FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
+            xList.add(node.getX());
+            yList.add(node.getY());
+        });
+        Integer   xMin = Collections.min(xList);
+        Integer   yMin = Collections.min(yList);
 
+        nodeObj.keySet().forEach(obj->{
+            JSONObject  positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            FlowNodeVO node  =(FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
+            node.setX(node.getX()-xMin);
+            node.setY(node.getY()-yMin);
+            nodeObj.put(obj,new JSONObject().fromObject(node).toString());
+        });
+        pocessObj.put(nodesKey,nodeObj);
+        defObj.put(pocessKey,pocessObj);
+        String newDefJson = new JSONObject().fromObject(defObj).toString();
+        flowDefVersion.setDefJson(newDefJson);
+        flowDefVersionDao.save(flowDefVersion);
 
+        responseData.setMessage("重置成功！");
         return responseData;
     }
 

@@ -23,6 +23,8 @@ import java.util.Arrays;
 public class FlowTaskServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowTaskService service;
+    @Autowired
+    private FlowDefinationService flowDefinationService;
 
     @Test
     public void findCountByExecutorId(){
@@ -52,11 +54,12 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void findByBusinessModelIdWithAllCountOfPhone(){
-        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
-        FlowTaskPageResultVO<FlowTask> responseData =
-                proxy.findByBusinessModelIdWithAllCountOfPhone("","","",1,15,"");
-        Assert.assertNotNull(responseData);
-        System.out.println(ApiJsonUtils.toJson(responseData));
+//        IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
+//        FlowTaskPageResultVO<FlowTask> responseData =
+//                proxy.findByBusinessModelIdWithAllCountOfPhone("","","",1,15,"");
+        ResponseData aaa= flowDefinationService.resetPosition("");
+        Assert.assertNotNull(aaa);
+        System.out.println(ApiJsonUtils.toJson(aaa));
     }
 
 
