@@ -88,6 +88,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private FlowTaskService flowTaskService;
 
+    @Autowired
+    private FlowSolidifyExecutorService flowSolidifyExecutorService;
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
@@ -835,6 +838,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     FlowStatus status = FlowStatus.INIT;
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                     ExpressionUtil.resetState(businessModel, businessId, status);
+                    //查看是否为固化流程（如果是固化流程删除固化执行人列表）
+                    flowSolidifyExecutorService.deleteByBusinessId(businessId);
                     //结束后触发
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);

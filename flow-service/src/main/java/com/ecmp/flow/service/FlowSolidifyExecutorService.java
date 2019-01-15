@@ -95,6 +95,25 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     }
 
 
+    /**
+     * 通过BusinessId删除固化流程执行人列表
+     * @param businessId  业务表单id
+     * @return
+     */
+    public ResponseData  deleteByBusinessId(String businessId){
+        ResponseData responseData = new ResponseData();
+        if(StringUtils.isEmpty(businessId)){
+            return this.writeErrorLogAndReturnData(null, "参数不能为空！");
+        }
+        List<FlowSolidifyExecutor>  list =  flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
+        if(list!=null&&list.size()>0){
+            flowSolidifyExecutorDao.deleteAll(list);
+        }
+        return  responseData;
+    }
+
+
+
     public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
         if (e != null) {
             LogUtil.error(e.getMessage());
