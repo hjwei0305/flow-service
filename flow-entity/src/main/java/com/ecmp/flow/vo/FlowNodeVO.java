@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 public class FlowNodeVO implements Serializable {
 
+
+    private String id;
     /**
      * 节点类型
      */
@@ -38,6 +40,14 @@ public class FlowNodeVO implements Serializable {
      */
     private String busType;
 
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;
