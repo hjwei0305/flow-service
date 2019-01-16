@@ -49,6 +49,17 @@ public class FlowTaskCompleteWebVO implements Serializable{
    private Boolean instancyStatus;
 
 
+   private Boolean solidifyFlow;
+
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
+    }
+
     public String getNodeId() {
         return nodeId;
     }
