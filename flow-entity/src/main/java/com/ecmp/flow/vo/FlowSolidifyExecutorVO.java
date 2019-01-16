@@ -12,7 +12,7 @@ public class FlowSolidifyExecutorVO implements Serializable {
     /**
      * 是否紧急
      */
-    private Boolean instancyStatus = false;
+    private Boolean instancyStatus;
 
     /**
      * 执行人ids
