@@ -21,12 +21,12 @@ import javax.persistence.*;
 @Table(name = "flow_solidify_executor")
 public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
-     /**
-      * 所属流程实例
-      */
-     @ManyToOne(fetch = FetchType.EAGER)
-     @JoinColumn(name = "flow_instance_id")
-     private FlowInstance flowInstance;
+//     /**
+//      * 所属流程实例
+//      */
+//     @ManyToOne(fetch = FetchType.EAGER)
+//     @JoinColumn(name = "flow_instance_id")
+//     private FlowInstance flowInstance;
 
     /**
      * 业务类全路径
@@ -48,6 +48,12 @@ public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEnt
     private String  actTaskDefKey;
 
     /**
+     * 任务类型
+     */
+    @JoinColumn(name = "node_type")
+    private String nodeType;
+
+    /**
      * 是否紧急
      */
     @JoinColumn(name = "instancy_status")
@@ -59,11 +65,18 @@ public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEnt
     @JoinColumn(name = "executor_ids")
     private String  executorIds;
 
+
     /**
-     * 上一节点任务key
+     * 单签任务实际执行人
      */
-    @JoinColumn(name = "before_task_def_key")
-    private String  beforeTaskDefKey;
+    @JoinColumn(name = "true_executor_ids")
+    private String trueExecutorIds;
+
+//    /**
+//     * 上一节点任务key
+//     */
+//    @JoinColumn(name = "before_task_def_key")
+//    private String  beforeTaskDefKey;
 
     /**
      * 流程逻辑执行顺序
@@ -80,13 +93,13 @@ public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEnt
 
 
 
-    public FlowInstance getFlowInstance() {
-        return flowInstance;
-    }
-
-    public void setFlowInstance(FlowInstance flowInstance) {
-        this.flowInstance = flowInstance;
-    }
+//    public FlowInstance getFlowInstance() {
+//        return flowInstance;
+//    }
+//
+//    public void setFlowInstance(FlowInstance flowInstance) {
+//        this.flowInstance = flowInstance;
+//    }
 
     public String getBusinessCode() {
         return businessCode;
@@ -120,13 +133,13 @@ public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEnt
         this.executorIds = executorIds;
     }
 
-    public String getBeforeTaskDefKey() {
-        return beforeTaskDefKey;
-    }
-
-    public void setBeforeTaskDefKey(String beforeTaskDefKey) {
-        this.beforeTaskDefKey = beforeTaskDefKey;
-    }
+//    public String getBeforeTaskDefKey() {
+//        return beforeTaskDefKey;
+//    }
+//
+//    public void setBeforeTaskDefKey(String beforeTaskDefKey) {
+//        this.beforeTaskDefKey = beforeTaskDefKey;
+//    }
 
     public int getTaskOrder() {
         return taskOrder;
@@ -152,5 +165,21 @@ public class FlowSolidifyExecutor  extends com.ecmp.core.entity.BaseAuditableEnt
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public String getTrueExecutorIds() {
+        return trueExecutorIds;
+    }
+
+    public void setTrueExecutorIds(String trueExecutorIds) {
+        this.trueExecutorIds = trueExecutorIds;
     }
 }

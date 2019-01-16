@@ -56,6 +56,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 bean.setBusinessCode(businessModelCode);
                 bean.setBusinessId(businessId);
                 bean.setActTaskDefKey(executorVo.getActTaskDefKey());
+                bean.setNodeType(executorVo.getNodeType());
                 bean.setInstancyStatus(executorVo.getInstancyStatus());
                 bean.setExecutorIds(executorVo.getExecutorIds());
                 flowSolidifyExecutorDao.save(bean);

@@ -19,6 +19,11 @@ public class FlowSolidifyExecutorVO implements Serializable {
      */
     private String  executorIds;
 
+    /**
+     * 任务类型
+     */
+    private String nodeType;
+
 
     public String getActTaskDefKey() {
         return actTaskDefKey;
@@ -42,5 +47,13 @@ public class FlowSolidifyExecutorVO implements Serializable {
 
     public void setExecutorIds(String executorIds) {
         this.executorIds = executorIds;
+    }
+
+    public String getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
     }
 }
