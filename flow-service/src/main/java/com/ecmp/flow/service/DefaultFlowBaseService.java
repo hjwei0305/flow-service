@@ -69,7 +69,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
                     FlowTaskCompleteWebVO  firstBean = flowTaskCompleteList.get(0);
-                    if (firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
+                    if (firstBean.getSolidifyFlow()!=null&&firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
                         IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
                         ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessKey);
                         if (solidifyData.getSuccess() == false) {
@@ -162,7 +162,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
             //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
             FlowTaskCompleteWebVO  firstBean = flowTaskCompleteList.get(0);
-            if (firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
+            if (firstBean.getSolidifyFlow()!=null&&firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
                 IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
                 ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
                 if (solidifyData.getSuccess() == false) {
