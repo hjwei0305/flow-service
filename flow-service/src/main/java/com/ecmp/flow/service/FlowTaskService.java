@@ -138,6 +138,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
 
+    @Autowired
+    private FlowSolidifyExecutorService flowSolidifyExecutorService;
+
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
     /**
@@ -324,6 +327,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
         Integer reject = null;
+        Boolean manageSolidifyFlow = false;
         if (variables != null) {
             Object rejectO = variables.get("reject");
             if (rejectO != null) {
@@ -332,6 +336,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
+            }
+            Object manageSolidifyFlowO =   variables.get("manageSolidifyFlow");
+            if(manageSolidifyFlowO !=null){
+                manageSolidifyFlow =   Boolean.parseBoolean(manageSolidifyFlowO.toString());
             }
         }
         if (reject != null && reject == 1) {
@@ -467,6 +475,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 canCancel =  normalInfo.getBoolean("allowPreUndo");
             }
             FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask,historicTaskInstance,canCancel, variables);
+
+            if(manageSolidifyFlow){  //需要处理流程固化表(添加逻辑执行顺序)
+               flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId,flowTask);
+            }
 
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);

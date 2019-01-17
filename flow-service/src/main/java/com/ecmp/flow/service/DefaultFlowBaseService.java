@@ -171,6 +171,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
                 JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+                v.put("manageSolidifyFlow", true); //需要维护固化表
+            }else{
+                v.put("manageSolidifyFlow", false);
             }
 
             Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
@@ -221,6 +224,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
             v.put("selectedNodesUserMap", selectedNodesUserMap);
             v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+            v.put("manageSolidifyFlow", false); //会签未完成和结束节点不需要维护固化流程执行人列表
         }
         if (manualSelected) {
             flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);

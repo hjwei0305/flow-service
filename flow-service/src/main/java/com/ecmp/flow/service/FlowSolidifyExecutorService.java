@@ -7,6 +7,7 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
 import com.ecmp.flow.entity.FlowSolidifyExecutor;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.log.util.LogUtil;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -108,6 +111,31 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
         flowSolidifyExecutorDao.deleteByBusinessId(businessId);
         return  responseData;
+    }
+
+
+    /**
+     * 记录固化逻辑执行顺序
+     * @param businessId 表单id
+     * @param task
+     * @return
+     */
+    public void manageSolidifyFlowByBusinessIdAndTaskKey(String businessId,FlowTask task){
+      if(StringUtils.isNotEmpty(businessId)&&StringUtils.isNotEmpty(task.getActTaskDefKey())){
+          String  taskKey = task.getActTaskDefKey();
+          List<FlowSolidifyExecutor> list =  flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
+          if(list!=null&&list.size()>0){
+             int maxInt =  list.stream().mapToInt(FlowSolidifyExecutor::getTaskOrder).max().getAsInt();
+             FlowSolidifyExecutor bean =  list.stream().filter(a->taskKey.equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
+             if(bean!=null){
+                 if("SingleSign".equalsIgnoreCase(bean.getNodeType())){  //单签任务设置实际执行人
+                     bean.setTrueExecutorIds(task.getExecutorId());
+                 }
+                 bean.setTaskOrder(maxInt+1);
+                 flowSolidifyExecutorDao.save(bean);
+             }
+          }
+      }
     }
 
 
