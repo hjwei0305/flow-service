@@ -78,8 +78,8 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
                 if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
-                    FlowTaskCompleteWebVO  firstBean = flowTaskCompleteList.get(0);
-                    if (firstBean.getSolidifyFlow()!=null&&firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
+                    FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
+                    if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true && StringUtils.isEmpty(firstBean.getUserIds())) {
                         IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
                         ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessKey);
                         if (solidifyData.getSuccess() == false) {
@@ -185,9 +185,10 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
         Map<String, String> selectedNodesMap = new HashMap<>();
         Map<String, Object> v = new HashMap<String, Object>();
         if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
-             //如果是固化流程提交，设置参数里面的紧急状态和执行人列表
-            FlowTaskCompleteWebVO  firstBean = flowTaskCompleteList.get(0);
-            if (firstBean.getSolidifyFlow()!=null&&firstBean.getSolidifyFlow()==true&&StringUtils.isEmpty(firstBean.getUserIds())) {
+            //如果是固化流程提交，设置参数里面的紧急状态和执行人列表
+            FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
+            if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true
+                    && StringUtils.isEmpty(firstBean.getUserIds())) {
                 IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
                 ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
                 if (solidifyData.getSuccess() == false) {
@@ -197,6 +198,9 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
                 JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+                v.put("manageSolidifyFlow", true); //需要维护固化表
+            } else {
+                v.put("manageSolidifyFlow", false);
             }
 
             Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
@@ -247,6 +251,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
             v.put("selectedNodesUserMap", selectedNodesUserMap);
             v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+            v.put("manageSolidifyFlow", false);//会签未完成和结束节点不需要维护固化流程执行人列表
         }
         if (manualSelected) {
             flowTaskCompleteVO.setManualSelectedNode(selectedNodesMap);
