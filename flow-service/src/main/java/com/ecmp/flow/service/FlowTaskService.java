@@ -2477,7 +2477,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     tempList = Arrays.asList(idsShuZhu);
                 }
                 if ("SelfDefinition".equalsIgnoreCase(executorsVo.getUserType())) {//通过业务ID获取自定义用户
-                    selfDefId = tempList.toString();
+                    selfDefId = ids;
                 } else if ("Position".equalsIgnoreCase(executorsVo.getUserType())) {
                     positionIds = tempList;
                 } else if ("OrganizationDimension".equalsIgnoreCase(executorsVo.getUserType())) {
