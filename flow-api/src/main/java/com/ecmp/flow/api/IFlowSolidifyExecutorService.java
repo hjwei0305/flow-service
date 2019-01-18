@@ -44,4 +44,16 @@ public interface IFlowSolidifyExecutorService  extends IBaseService<FlowSolidify
     @ApiOperation(value = "给FlowTaskCompleteWebVO设置执行人和紧急状态",notes = "给FlowTaskCompleteWebVO设置执行人和紧急状态")
     ResponseData setInstancyAndIdsByTaskList(List<FlowTaskCompleteWebVO> list, @QueryParam("businessId") String businessId);
 
+
+    /**
+     * 根据表单查询需要自动执行的待办
+     * @param businessId
+     * @return
+     */
+    @POST
+    @Path("selfMotionExecuteTask")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据表单查询需要自动执行的待办",notes = "根据表单查询需要自动执行的待办")
+    void  selfMotionExecuteTask(@QueryParam("businessId")String businessId);
 }

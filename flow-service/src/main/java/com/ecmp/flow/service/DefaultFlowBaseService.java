@@ -39,6 +39,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private FlowDefinationService flowDefinationService;
     @Autowired
     private FlowTaskService flowTaskService;
+    @Autowired
+    private FlowSolidifyExecutorService flowSolidifyExecutorService;
 
 
     @Override
@@ -241,6 +243,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 @Override
                 public void run() {
                     flowTaskService.pushTaskToBusinessModel(null, businessId);
+                }
+            }).start();
+
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
                 }
             }).start();
         }

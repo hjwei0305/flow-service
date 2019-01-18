@@ -271,6 +271,15 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                     flowTaskService.pushTaskToBusinessModel(null, businessId);
                 }
             }).start();
+
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    IFlowSolidifyExecutorService SolidifyService = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
+                    SolidifyService.selfMotionExecuteTask(businessId);
+                }
+            }).start();
+
         }
         operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
 
