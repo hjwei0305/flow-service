@@ -13,6 +13,7 @@ import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -252,16 +253,16 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     }
                     //模拟下一不节点信息成功
                     if (responseData.getSuccess()) {
-                        String taskListString ;
+                        String taskListString = "";
                         String endEventId = null;
                         if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
                             taskListString = "[]";
-                        }else if("EndEvent".equalsIgnoreCase(responseData.getData().toString())){ //结束节点
+                        } else if ("EndEvent".equalsIgnoreCase(responseData.getData().toString())) { //结束节点
                             taskListString = "[]";
-                            endEventId="true";
-                        }  else {
+                            endEventId = "true";
+                        } else {
                             List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
-                            List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+                            List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<FlowTaskCompleteWebVO>();
                             nodeInfoList.forEach(nodeInfo -> {
                                 FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
                                 taskWebVO.setNodeId(nodeInfo.getId());
@@ -271,13 +272,14 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                 taskWebVO.setSolidifyFlow(true); //固化
                                 flowTaskCompleteList.add(taskWebVO);
                             });
-                            taskListString = flowTaskCompleteList.toString();
+                            JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
+                            taskListString = jsonArray.toString();
                         }
                         //自动执行待办
                         long currentTime = System.currentTimeMillis();
                         try {
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),
-                                    "同意【自动执行】", taskListString,
+                                    "同意【自动执行】", taskListString.toString(),
                                     endEventId, false, approved, currentTime);
                         } catch (Exception e) {
                             LogUtil.error("自动执行待办报错：" + e.getMessage());
