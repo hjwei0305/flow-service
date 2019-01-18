@@ -576,7 +576,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
-        return flowTaskTool.taskRollBack(flowHistory, opinion);
+        String businessId = flowHistory.getFlowInstance().getBusinessId();
+        OperateResult result = flowTaskTool.taskRollBack(flowHistory, opinion);
+        if (result.successful()) {
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
+                }
+            }).start();
+        }
+        return result;
     }
 
 
@@ -630,12 +640,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) throws Exception {
         OperateResult result = OperateResult.operationSuccess("10006");
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask == null) {
+            return OperateResult.operationFailure("10009");
+        }
+        flowTask.setDepict(opinion);
+        String businessId = flowTask.getFlowInstance().getBusinessId();
         try {
-            FlowTask flowTask = flowTaskDao.findOne(id);
-            if (flowTask == null) {
-                return OperateResult.operationFailure("10009");
-            }
-            flowTask.setDepict(opinion);
             if (flowTask != null && StringUtils.isNotEmpty(flowTask.getPreId())) {
                 FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
                 if (preFlowTask == null) {
@@ -649,6 +660,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } catch (FlowException flowE) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
+        }
+        if (result.successful()) {
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
+                }
+            }).start();
         }
         return result;
     }
