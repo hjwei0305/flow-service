@@ -961,7 +961,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
                                         List<Executor> startUser= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                                         if (startUser != null && startUser.size() > 0) {  //岗位类别需要流程发起人的组织机构id
-                                            employees = flowTaskTool.getExecutors(userType, ids, startUser.get(0).getOrganizationId());
+                                            String startOrBusinessOrgId ="";
+                                            if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
+                                                startOrBusinessOrgId = startUser.get(0).getOrganizationId();
+                                            }else{
+                                                HistoricTaskInstance currTask = historyService
+                                                        .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                                                        .singleResult();
+                                                String executionId = currTask.getExecutionId();
+                                                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
+                                                String currentOrgId = processVariables.get("orgId").getValue()+"";
+                                                startOrBusinessOrgId = currentOrgId;
+                                            }
+                                            employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
                                         }
                                     } else {
                                         employees = flowTaskTool.getExecutors(userType, ids, null);
@@ -2486,7 +2498,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 try {
                     if (startUser != null && startUser.size() > 0) {
-                        executors = flowTaskTool.getExecutors(userType, ids, startUser.get(0).getOrganizationId());
+                        String startOrBusinessOrgId ="";
+                        if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
+                            startOrBusinessOrgId = startUser.get(0).getOrganizationId();
+                        }else{
+                            startOrBusinessOrgId = orgId;
+                        }
+                        executors = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
                     }
                 } catch (Exception e) {
                     return this.writeErrorLogAndReturnData(e, "获取【岗位类别】执行人接口调用失败！");

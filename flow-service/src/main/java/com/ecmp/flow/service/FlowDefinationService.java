@@ -744,7 +744,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             }
                            List<Executor>  startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
                            if(startUser!=null&&startUser.size()>0){
-                               employees = flowTaskTool.getExecutors(userType, ids,startUser.get(0).getOrganizationId());
+                               String startOrBusinessOrgId ="";
+                               if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
+                                   startOrBusinessOrgId = startUser.get(0).getOrganizationId();
+                               }else{
+                                   startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
+                               }
+                               employees = flowTaskTool.getExecutors(userType, ids,startOrBusinessOrgId);
                            }
                         }else{
                             employees = flowTaskTool.getExecutors(userType, ids,null);
