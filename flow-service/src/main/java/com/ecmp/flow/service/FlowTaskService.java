@@ -2439,7 +2439,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
                             String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
                             try {
-                                ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<ResponseData>() {
+                                ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {
                                 }, list);
                                 LogUtil.bizLog(messageLog);
                             } catch (Exception e) {
