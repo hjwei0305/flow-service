@@ -181,7 +181,7 @@ public class CommonConditionService implements ICommonConditionService {
     public String pushTasksToDo(List<FlowTask> list){
         List<String> megList = new ArrayList<String>();
         if(list!=null&&list.size()>0){
-            list.forEach(a->megList.add("是否已处理："+a.getFinishOrUnfinished()+"id="+a.getId()));
+            list.forEach(a->megList.add("【是否已处理："+a.getTaskStatus()+"-id="+a.getId()+"】"));
         }
         LogUtil.bizLog("推动待办成功到达："+ JsonUtils.toJson(megList));
         return "推送成功！";

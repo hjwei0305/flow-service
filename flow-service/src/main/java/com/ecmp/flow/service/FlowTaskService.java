@@ -2412,12 +2412,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ResponseData responseData = this.findTasksByBusinessId(businessId);
                 if (responseData.getSuccess()) {
                     List<FlowTask> list = (List<FlowTask>) responseData.getData();
-                    list.forEach(a->a.setFinishOrUnfinished(false)); //设置待办未办
                     if (list != null && list.size() > 0) {
                          if(StringUtils.isNotEmpty(taskId)){ //已办信息
                              FlowTask flowTask  = new FlowTask();
                              flowTask.setId(taskId);
-                             flowTask.setFinishOrUnfinished(true);
+                             flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
                              list.add(flowTask);
                          }
                         String pushMsgUrl = businessModel.getPushMsgUrl();
@@ -2435,7 +2434,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
 
                         List<String> idList = new ArrayList<String>();
-                        list.forEach(a->idList.add("【是否已处理："+a.getFinishOrUnfinished()+"-id="+a.getId()+"】"));
+                        list.forEach(a->idList.add("【是否已处理："+a.getTaskStatus()+"-id="+a.getId()+"】"));
                         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
                             String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
                             try {

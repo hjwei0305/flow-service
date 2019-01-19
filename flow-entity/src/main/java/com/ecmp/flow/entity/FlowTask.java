@@ -31,12 +31,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
 
 
     /**
-     * 是否已经处理（推送待办信息时使用：yes表示已处理，falsle为未处理）
-     */
-    @Transient
-    private Boolean finishOrUnfinished = false;
-
-    /**
      * 表单相对路径
      */
     @Transient
@@ -380,13 +374,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
         this.depict = depict;
     }
 
-    public Boolean getFinishOrUnfinished() {
-        return finishOrUnfinished;
-    }
-
-    public void setFinishOrUnfinished(Boolean finishOrUnfinished) {
-        this.finishOrUnfinished = finishOrUnfinished;
-    }
 
     public FlowInstance getFlowInstance() {
         return this.flowInstance;
