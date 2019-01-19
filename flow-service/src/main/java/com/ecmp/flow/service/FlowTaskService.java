@@ -2435,7 +2435,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
 
                         List<String> idList = new ArrayList<String>();
-                        list.forEach(a->idList.add("是否已处理："+a.getFinishOrUnfinished()+"id="+a.getId()));
+                        list.forEach(a->idList.add("【是否已处理："+a.getFinishOrUnfinished()+"-id="+a.getId()+"】"));
                         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
                             String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
                             try {
