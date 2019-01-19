@@ -657,9 +657,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResultWithData<FlowTask> result =  null;
         String actTaskId = historicTaskInstance.getId();
             Map<String,Object> params = new HashMap();
-            params.put("employeeIds",Arrays.asList(userId));
-            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+//            params.put("employeeIds",Arrays.asList(userId));
+//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+             params.put("userIds",Arrays.asList(userId));
+             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+             List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if(employees!=null && !employees.isEmpty()){
 
                 Executor executor = employees.get(0);

@@ -190,8 +190,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
                 }
                 Map<String,Object> paramsV2 = new HashMap();
-                paramsV2.put("employeeIds",idList);
-                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                paramsV2.put("employeeIds",idList);
+//                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
+                paramsV2.put("userIds", idList);
+                url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
                 result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
             }
         }

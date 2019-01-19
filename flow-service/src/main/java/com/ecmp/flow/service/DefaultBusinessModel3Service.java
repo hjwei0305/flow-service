@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.GenericType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -85,9 +82,13 @@ public class DefaultBusinessModel3Service extends BaseEntityService<DefaultBusin
                 //获取执行人
 //                result = proxy.getExecutorsByEmployeeIds(idList);
                 Map<String,Object> paramsV2 = new HashMap();
-                paramsV2.put("employeeIds",idList);
-                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
+//                paramsV2.put("employeeIds",idList);
+//                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
+
+                paramsV2.put("userIds", idList);
+                url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                result= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
             }
         }
         return result;

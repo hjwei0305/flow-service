@@ -804,10 +804,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setFlowTaskType("serviceTask");
                     String startUserId = ContextUtil.getSessionUser().getUserId();
                     Map<String, Object> params = new HashMap();
-                    params.put("employeeIds", Arrays.asList(startUserId));
-                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                    }, params);
+//                    params.put("employeeIds", Arrays.asList(startUserId));
+//                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//                    }, params);
+                    params.put("userIds",Arrays.asList(startUserId));
+                    String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                    List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -819,10 +822,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setFlowTaskType("receiveTask");
                     String startUserId = ContextUtil.getSessionUser().getUserId();
                     Map<String, Object> params = new HashMap();
-                    params.put("employeeIds", Arrays.asList(startUserId));
-                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                    }, params);
+//                    params.put("employeeIds", Arrays.asList(startUserId));
+//                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//                    }, params);
+                    params.put("userIds",Arrays.asList(startUserId));
+                    String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                    List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -903,11 +909,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 startUserId = historicProcessInstance.getStartUserId();
                             }
                             Map<String, Object> params = new HashMap();
-                            params.put("employeeIds", Arrays.asList(startUserId));
-                            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                            }, params);
+//                            params.put("employeeIds", Arrays.asList(startUserId));
+//                            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//                            }, params);
 
+                            params.put("userIds",Arrays.asList(startUserId));
+                            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                            employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                         } else {
                             String selfDefId = (String) executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
@@ -944,10 +953,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                             startUserId = historicProcessInstance.getStartUserId();
                                         }
                                         Map<String, Object> params = new HashMap();
-                                        params.put("employeeIds", Arrays.asList(startUserId));
-                                        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                                        List<Executor> startUser = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                                        }, params);
+//                                        params.put("employeeIds", Arrays.asList(startUserId));
+//                                        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                                        List<Executor> startUser = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//                                        }, params);
+                                        params.put("userIds",Arrays.asList(startUserId));
+                                        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                                        List<Executor> startUser= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
                                         if (startUser != null && startUser.size() > 0) {  //岗位类别需要流程发起人的组织机构id
                                             employees = flowTaskTool.getExecutors(userType, ids, startUser.get(0).getOrganizationId());
                                         }
@@ -1673,11 +1685,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String, Object> params = new HashMap();
-            params.put("employeeIds", Arrays.asList(userId));
+//            params.put("employeeIds", Arrays.asList(userId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
+//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//            }, params);
+            params.put("userIds",Arrays.asList(userId));
+            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if (employees != null && !employees.isEmpty()) {
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
@@ -1730,11 +1745,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String, Object> params = new HashMap();
-            params.put("employeeIds", Arrays.asList(userId));
+//            params.put("employeeIds", Arrays.asList(userId));
 //            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
+//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//            }, params);
+            params.put("userIds",Arrays.asList(userId));
+            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             if (employees != null && !employees.isEmpty()) {
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
@@ -1781,10 +1799,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
                 List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
                 Map<String, Object> params = new HashMap();
-                params.put("employeeIds", userList);
-                String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                }, params);
+//                params.put("employeeIds", userList);
+//                String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
+//                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+//                }, params);
+                params.put("userIds",userList);
+                String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+                result= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
             } else {
                 throw new FlowException("非会签节点！");
             }
