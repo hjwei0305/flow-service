@@ -687,13 +687,14 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      *
      * @param businessModelCode 业务单据modelCode（非必填）
      * @param businessId 业务单据id（必填）
+     * @param taskId     当前已办ID
      * @return
      */
     @POST
     @Path("pushTaskToBusinessModel")
     @ApiOperation(value = "推送待办到业务模块", notes = "通过业务模块code和业务模块id推送待办到业务模块")
     @IgnoreCheckAuth
-    void pushTaskToBusinessModel(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId);
+    void pushTaskToBusinessModel(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId,@QueryParam("taskId") String taskId);
 
 
     @POST

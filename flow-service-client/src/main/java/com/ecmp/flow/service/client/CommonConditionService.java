@@ -11,6 +11,8 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.IBusinessFlowEntity;
 import com.ecmp.flow.entity.IConditionPojo;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -176,6 +179,11 @@ public class CommonConditionService implements ICommonConditionService {
     }
 
     public String pushTasksToDo(List<FlowTask> list){
+        List<String> megList = new ArrayList<String>();
+        if(list!=null&&list.size()>0){
+            list.forEach(a->megList.add("是否已处理："+a.getFinishOrUnfinished()+"id="+a.getId()));
+        }
+        LogUtil.bizLog("推动待办成功到达："+ JsonUtils.toJson(megList));
         return "推送成功！";
     }
 

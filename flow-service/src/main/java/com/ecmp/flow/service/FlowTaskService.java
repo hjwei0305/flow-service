@@ -2395,7 +2395,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     @Override
-    public void pushTaskToBusinessModel(String businessModelCode, String businessId) {
+    public void pushTaskToBusinessModel(String businessModelCode, String businessId,String taskId) {
         if (StringUtils.isNotEmpty(businessId)) {
             BusinessModel businessModel = null;
             if (StringUtils.isEmpty(businessModelCode)) {
@@ -2412,7 +2412,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ResponseData responseData = this.findTasksByBusinessId(businessId);
                 if (responseData.getSuccess()) {
                     List<FlowTask> list = (List<FlowTask>) responseData.getData();
+                    list.forEach(a->a.setFinishOrUnfinished(false)); //设置待办未办
                     if (list != null && list.size() > 0) {
+                         if(StringUtils.isNotEmpty(taskId)){ //已办信息
+                             FlowTask flowTask  = new FlowTask();
+                             flowTask.setId(taskId);
+                             flowTask.setFinishOrUnfinished(true);
+                             list.add(flowTask);
+                         }
                         String pushMsgUrl = businessModel.getPushMsgUrl();
                         String flowPushTaskUrl = "";
                         if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
@@ -2427,8 +2434,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
                         }
 
+                        List<String> idList = new ArrayList<String>();
+                        list.forEach(a->idList.add("是否已处理："+a.getFinishOrUnfinished()+"id="+a.getId()));
                         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
-                            String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值" + JsonUtils.toJson(list);
+                            String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
                             try {
                                 ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<ResponseData>() {
                                 }, list);

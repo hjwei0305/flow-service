@@ -111,7 +111,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         new Thread(new Runnable() {//异步推送待办
                             @Override
                             public void run() {
-                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey);
+                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
                             }
                         }).start();
                     }
@@ -242,7 +242,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             new Thread(new Runnable() {//异步推送待办
                 @Override
                 public void run() {
-                    flowTaskService.pushTaskToBusinessModel(null, businessId);
+                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
                 }
             }).start();
 

@@ -122,7 +122,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                             @Override
                             public void run() {
                                 IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey);
+                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
                             }
                         }).start();
                     }
@@ -268,7 +268,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                 @Override
                 public void run() {
                     IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-                    flowTaskService.pushTaskToBusinessModel(null, businessId);
+                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
                 }
             }).start();
 
