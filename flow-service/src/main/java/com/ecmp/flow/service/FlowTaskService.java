@@ -371,7 +371,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
             variables.putAll(v);
         }
-        flowInstance.setBusinessModelRemark(v.get("workCaption") + "");
+//        flowInstance.setBusinessModelRemark(v.get("workCaption") + "");
         String taskJsonDef = flowTask.getTaskJsonDef();
         JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
         String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
