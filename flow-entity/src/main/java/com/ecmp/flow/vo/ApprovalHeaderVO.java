@@ -62,6 +62,19 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private Boolean solidifyFlow;
 
+    /**
+     * 工作说明（包含流程启动时的附加说明）
+     */
+    private String workAndAdditionRemark;
+
+
+    public String getWorkAndAdditionRemark() {
+        return workAndAdditionRemark;
+    }
+
+    public void setWorkAndAdditionRemark(String workAndAdditionRemark) {
+        this.workAndAdditionRemark = workAndAdditionRemark;
+    }
 
     public Boolean getSolidifyFlow() {
         return solidifyFlow;
