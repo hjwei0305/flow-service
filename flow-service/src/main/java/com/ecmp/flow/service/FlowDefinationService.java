@@ -528,6 +528,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 v.putAll(userMap);
                 if(v.get("additionRemark")!=null&&StringUtils.isNotEmpty(v.get("additionRemark").toString())){
                     v.put("workCaption",v.get("workCaption").toString()+"【附加说明："+v.get("additionRemark").toString()+"】");
+                    flowStartVO.getVariables().put("workCaption",v.get("workCaption").toString()+"【附加说明："+v.get("additionRemark").toString()+"】");
                 }
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
