@@ -66,6 +66,7 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
         Map<String, Object> variables = new HashMap<String, Object>();
         flowStartVO.setVariables(variables);
         if (StringUtils.isNotEmpty(taskList)) {
+            variables.put("additionRemark",opinion);  //启动时的附加说明
             if ("anonymous".equalsIgnoreCase(taskList)) {
                 flowStartVO.setPoolTask(true);
                 userMap.put("anonymous", "anonymous");
