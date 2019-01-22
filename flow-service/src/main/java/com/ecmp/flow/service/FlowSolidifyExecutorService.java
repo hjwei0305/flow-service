@@ -133,11 +133,12 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     public void manageSolidifyFlowByBusinessIdAndTaskKey(String businessId, FlowTask task) {
         if (StringUtils.isNotEmpty(businessId) && StringUtils.isNotEmpty(task.getActTaskDefKey())) {
             String taskKey = task.getActTaskDefKey();
+            String taskUserId = task.getExecutorId();
             List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
             if (list != null && list.size() > 0) {
                 int maxInt = list.stream().mapToInt(FlowSolidifyExecutor::getTaskOrder).max().getAsInt();
                 FlowSolidifyExecutor bean = list.stream().filter(a -> taskKey.equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
-                if (bean != null) {
+                if (bean != null && bean.getExecutorIds().indexOf(taskUserId)!=-1) { //转办和委托（实际执行人不是启动时设置的人的情况）
                     if ("SingleSign".equalsIgnoreCase(bean.getNodeType())) {  //单签任务设置实际执行人
                         bean.setTrueExecutorIds(task.getExecutorId());
                     }
