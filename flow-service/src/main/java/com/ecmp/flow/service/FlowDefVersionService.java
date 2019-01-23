@@ -151,6 +151,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Boolean canAsSubProcess = definition.getSubProcess();
         Boolean canAssolidifyFlow =  definition.getSolidifyFlow();
         flowDefination = flowDefinationDao.findByDefKey(process.getId());
+        if(StringUtils.isEmpty(definition.getId())&&flowDefination!=null){  //新增的流程定义
+            return OperateResultWithData.operationFailure("流程代码重复！");
+        }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
         boolean isNew = true;
