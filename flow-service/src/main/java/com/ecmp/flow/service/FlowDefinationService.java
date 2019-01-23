@@ -526,9 +526,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
                 Map<String, Object> v = flowStartVO.getVariables();
                 v.putAll(userMap);
-                if(v.get("additionRemark")!=null&&StringUtils.isNotEmpty(v.get("additionRemark").toString())){
-                    v.put("workCaption",v.get("workCaption").toString()+"【附加说明："+v.get("additionRemark").toString()+"】");
-                    flowStartVO.getVariables().put("workCaption",v.get("workCaption").toString());
+                if (v.get("additionRemark") != null && StringUtils.isNotEmpty(v.get("additionRemark").toString()) && !"null".equalsIgnoreCase(v.get("additionRemark").toString())) {
+                    v.put("workCaption", v.get("workCaption").toString() + "【附加说明：" + v.get("additionRemark").toString() + "】");
+                    flowStartVO.getVariables().put("workCaption", v.get("workCaption").toString());
                 }
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
@@ -579,11 +579,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (finalFlowDefination != null) {
                     List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                     //固化流程字段不为空（兼容以前版本），并且选择了固化流程,提供流程定义的id
-                    if(finalFlowDefination.getSolidifyFlow()!=null&&finalFlowDefination.getSolidifyFlow()==true){
+                    if (finalFlowDefination.getSolidifyFlow() != null && finalFlowDefination.getSolidifyFlow() == true) {
                         flowStartResultVO.setSolidifyFlow(true);
                         nodeInfoList.get(0).setExecutorSet(null);//固化流程不需要下一节点人员
                         flowStartResultVO.setFlowDefinationId(finalFlowDefination.getId());
-                    }else{
+                    } else {
                         flowStartResultVO.setSolidifyFlow(false);
                     }
                     flowStartResultVO.setNodeInfoList(nodeInfoList);
@@ -741,23 +741,23 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }
                     } else {
-                        if("PositionType".equalsIgnoreCase(userType)){
+                        if ("PositionType".equalsIgnoreCase(userType)) {
                             String startUserId = flowStartVO.getStartUserId();
                             if (StringUtils.isEmpty(startUserId)) {
                                 startUserId = ContextUtil.getSessionUser().getUserId();
                             }
-                           List<Executor>  startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-                           if(startUser!=null&&startUser.size()>0){
-                               String startOrBusinessOrgId ="";
-                               if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
-                                   startOrBusinessOrgId = startUser.get(0).getOrganizationId();
-                               }else{
-                                   startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
-                               }
-                               employees = flowTaskTool.getExecutors(userType, ids,startOrBusinessOrgId);
-                           }
-                        }else{
-                            employees = flowTaskTool.getExecutors(userType, ids,null);
+                            List<Executor> startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+                            if (startUser != null && startUser.size() > 0) {
+                                String startOrBusinessOrgId = "";
+                                if (StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())) {
+                                    startOrBusinessOrgId = startUser.get(0).getOrganizationId();
+                                } else {
+                                    startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
+                                }
+                                employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
+                            }
+                        } else {
+                            employees = flowTaskTool.getExecutors(userType, ids, null);
                         }
 
                     }
@@ -773,7 +773,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String selfDefId = null;
             List<String> orgDimensionCodes = null;//组织维度代码集合
             List<String> positionIds = null;//岗位代码集合
-            List<String> orgIds= null; //组织机构id集合
+            List<String> orgIds = null; //组织机构id集合
             List<String> positionTypesIds = null;//岗位类别id集合
             for (Object executorObject : executorList.toArray()) {
                 JSONObject executorTemp = (JSONObject) executorObject;
@@ -791,9 +791,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     positionIds = tempList;
                 } else if ("OrganizationDimension".equalsIgnoreCase(userType)) {
                     orgDimensionCodes = tempList;
-                } else if("PositionType".equalsIgnoreCase(userType)){
+                } else if ("PositionType".equalsIgnoreCase(userType)) {
                     positionTypesIds = tempList;
-                } else if("Org".equalsIgnoreCase(userType)){
+                } else if ("Org".equalsIgnoreCase(userType)) {
                     orgIds = tempList;
                 }
             }
@@ -814,21 +814,22 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             } else {
                 String path;
                 Map<String, Object> params = new HashMap();
-                if(positionTypesIds!=null&&orgIds!=null){ //新增根据（岗位类别+组织机构）获得执行人
+                if (positionTypesIds != null && orgIds != null) { //新增根据（岗位类别+组织机构）获得执行人
                     path = Constants.getExecutorsByPostCatAndOrgUrl();
                     params.put("orgIds", orgIds);
                     params.put("postCatIds", positionTypesIds);
-                }else{
+                } else {
                     path = Constants.getBasicPositionGetExecutorsUrl();
                     params.put("orgId", flowStartVO.getVariables().get("orgId"));
                     params.put("orgDimIds", orgDimensionCodes);
                     params.put("positionIds", positionIds);
                 }
-                String messageLog = "开始调用‘获取执行人’接口，接口url="+path+",参数值"+ JsonUtils.toJson(params);
+                String messageLog = "开始调用‘获取执行人’接口，接口url=" + path + ",参数值" + JsonUtils.toJson(params);
                 try {
-                    employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
-                }catch (Exception e){
-                    messageLog+="-获取执行人异常："+e.getMessage();
+                    employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {
+                    }, params);
+                } catch (Exception e) {
+                    messageLog += "-获取执行人异常：" + e.getMessage();
                     LogUtil.error(messageLog);
                 }
             }
@@ -1150,8 +1151,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
         } else {
             FlowDefination flowDefination = flowDefinationDao.findOne(id);
-            if(flowDefination==null){
-                return  null;
+            if (flowDefination == null) {
+                return null;
             }
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         }
@@ -1159,48 +1160,48 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     public ResponseData resetPosition(String id) {
-        ResponseData  responseData  = new ResponseData();
-        if(StringUtils.isEmpty(id)){
-            return this.writeErrorLogAndReturnData(null,"参数不能为空");
+        ResponseData responseData = new ResponseData();
+        if (StringUtils.isEmpty(id)) {
+            return this.writeErrorLogAndReturnData(null, "参数不能为空");
         }
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
-        if(flowDefination==null){
-            return  this.writeErrorLogAndReturnData(null,"未找到流程定义！");
+        if (flowDefination == null) {
+            return this.writeErrorLogAndReturnData(null, "未找到流程定义！");
         }
-        FlowDefVersion  flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
-        String defJson= flowDefVersion.getDefJson();
-        JSONObject defObj  = JSONObject.fromObject(defJson);
-        Object  pocessKey = defObj.keySet().stream().filter(obj->"process".equals(obj.toString())).findFirst().orElse(null);
-        if(pocessKey==null){
-            return  this.writeErrorLogAndReturnData(null,"数据格式1存在问题，转换失败！");
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+        String defJson = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defJson);
+        Object pocessKey = defObj.keySet().stream().filter(obj -> "process".equals(obj.toString())).findFirst().orElse(null);
+        if (pocessKey == null) {
+            return this.writeErrorLogAndReturnData(null, "数据格式1存在问题，转换失败！");
         }
         JSONObject pocessObj = JSONObject.fromObject(defObj.get(pocessKey));
-        Object nodesKey = pocessObj.keySet().stream().filter(obj->"nodes".equals(obj.toString())).findFirst().orElse(null);
-        if(nodesKey==null){
-            return  this.writeErrorLogAndReturnData(null,"数据格式2存在问题，转换失败！");
+        Object nodesKey = pocessObj.keySet().stream().filter(obj -> "nodes".equals(obj.toString())).findFirst().orElse(null);
+        if (nodesKey == null) {
+            return this.writeErrorLogAndReturnData(null, "数据格式2存在问题，转换失败！");
         }
-        JSONObject nodeObj =  JSONObject.fromObject(pocessObj.get(nodesKey));
+        JSONObject nodeObj = JSONObject.fromObject(pocessObj.get(nodesKey));
 
         List<Integer> xList = new ArrayList<Integer>();
         List<Integer> yList = new ArrayList<Integer>();
-        nodeObj.keySet().forEach(obj->{
-            JSONObject  positionObj = JSONObject.fromObject(nodeObj.get(obj));
-            FlowNodeVO node  =(FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
+        nodeObj.keySet().forEach(obj -> {
+            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            FlowNodeVO node = (FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
             xList.add(node.getX());
             yList.add(node.getY());
         });
-        Integer   xMin = Collections.min(xList);
-        Integer   yMin = Collections.min(yList);
+        Integer xMin = Collections.min(xList);
+        Integer yMin = Collections.min(yList);
 
-        nodeObj.keySet().forEach(obj->{
-            JSONObject  positionObj = JSONObject.fromObject(nodeObj.get(obj));
-            FlowNodeVO node  =(FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
-            node.setX(node.getX()-xMin);
-            node.setY(node.getY()-yMin);
-            nodeObj.put(obj,new JSONObject().fromObject(node).toString());
+        nodeObj.keySet().forEach(obj -> {
+            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            FlowNodeVO node = (FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
+            node.setX(node.getX() - xMin);
+            node.setY(node.getY() - yMin);
+            nodeObj.put(obj, new JSONObject().fromObject(node).toString());
         });
-        pocessObj.put(nodesKey,nodeObj);
-        defObj.put(pocessKey,pocessObj);
+        pocessObj.put(nodesKey, nodeObj);
+        defObj.put(pocessKey, pocessObj);
         String newDefJson = new JSONObject().fromObject(defObj).toString();
         flowDefVersion.setDefJson(newDefJson);
         flowDefVersionDao.save(flowDefVersion);
@@ -1208,7 +1209,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         responseData.setMessage("重置成功！");
         return responseData;
     }
-
 
 
     /**
@@ -1504,13 +1504,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         defaultBusinessModelDao.save(defaultBusinessModel);
     }
 
-    public ResponseData writeErrorLogAndReturnData(Exception e,String msg){
-        if (e!=null) {
+    public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
+        if (e != null) {
             LogUtil.error(e.getMessage());
         }
         ResponseData responseData = new ResponseData();
         responseData.setSuccess(false);
         responseData.setMessage(msg);
-        return  responseData;
+        return responseData;
     }
 }
