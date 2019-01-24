@@ -2,18 +2,16 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.util.FlowTaskTool;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,10 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     @Autowired
     private FlowHistoryDao flowHistoryDao;
 
-    protected BaseEntityDao<FlowHistory> getDao(){
+    @Autowired
+    private FlowTaskTool flowTaskTool;
+
+    protected BaseEntityDao<FlowHistory> getDao() {
         return this.flowHistoryDao;
     }
 
@@ -45,32 +46,33 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     }
 
     @Override
-    public PageResult<FlowHistory> findByPageAndUser(Search searchConfig){
+    public PageResult<FlowHistory> findByPageAndUser(Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        return flowHistoryDao.findByPageByBusinessModelId(userId,searchConfig);
+        return flowHistoryDao.findByPageByBusinessModelId(userId, searchConfig);
     }
 
     @Override
-   public PageResult<FlowHistory> findByPage(Search searchConfig){
+    public PageResult<FlowHistory> findByPage(Search searchConfig) {
         PageResult<FlowHistory> result = super.findByPage(searchConfig);
-        if(result!=null){
-            List<FlowHistory>  flowHistoryList = result.getRows();
+        if (result != null) {
+            List<FlowHistory> flowHistoryList = result.getRows();
             this.initUrl(flowHistoryList);
         }
         return result;
     }
-    private List<FlowHistory> initUrl(List<FlowHistory>  result ){
-        if(result!=null && !result.isEmpty()){
-            for(FlowHistory flowHistory:result){
+
+    private List<FlowHistory> initUrl(List<FlowHistory> result) {
+        if (result != null && !result.isEmpty()) {
+            for (FlowHistory flowHistory : result) {
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
-                apiBaseAddress =  apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
-                apiBaseAddress=apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
+                apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
+                apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
                 flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
-                webBaseAddress =  webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
+                webBaseAddress = webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
                 flowHistory.setApiBaseAddress(apiBaseAddress);
                 flowHistory.setWebBaseAddress(webBaseAddress);
@@ -81,15 +83,32 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     public PageResult<FlowHistory> findByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        if(StringUtils.isNotEmpty(businessModelId)){
-            return flowHistoryDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
-        }else{
-            return flowHistoryDao.findByPage(userId, searchConfig);
+        PageResult<FlowHistory> result;
+        if (StringUtils.isNotEmpty(businessModelId)) {
+            result = flowHistoryDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
+        } else {
+            result = flowHistoryDao.findByPage(userId, searchConfig);
         }
+        if (result.getRows() != null && result.getRows().size() > 0) {
+            result.getRows().forEach(a -> {
+                //CompleteTaskView.js中撤回按钮显示的判断逻辑：
+                // (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
+                if(a.getCanCancel()!=null&&a.getCanCancel() == true
+                        &&a.getTaskStatus()!=null&&"COMPLETED".equalsIgnoreCase(a.getTaskStatus())
+                        &&a.getFlowInstance() != null&&a.getFlowInstance().isEnded()!=null&&a.getFlowInstance().isEnded() == false){
+                    Boolean boo = flowTaskTool.checkoutTaskRollBack(a);
+                    if (!boo) { //不可以显示
+                        a.setCanCancel(false);
+                    }
+                }
+            });
+        }
+        return result;
     }
 
+
     public PageResult<FlowHistory> findByBusinessModelIdOfPhone(String businessModelId, String property, String direction,
-                                                                 int page, int rows, String quickValue) {
+                                                                int page, int rows, String quickValue) {
         Search searchConfig = new Search();
         String userId = ContextUtil.getUserId();
         searchConfig.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.EQ));
@@ -101,28 +120,27 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         searchConfig.addQuickSearchProperty("creatorName");
         searchConfig.setQuickSearchValue(quickValue);
 
-        PageInfo pageInfo =new PageInfo();
+        PageInfo pageInfo = new PageInfo();
         pageInfo.setPage(page);
         pageInfo.setRows(rows);
         searchConfig.setPageInfo(pageInfo);
 
-        SearchOrder  searchOrder;
-        if(StringUtils.isNotEmpty(property)&&StringUtils.isNotEmpty(direction)){
-            if(SearchOrder.Direction.ASC.equals(direction)){
-                searchOrder =new SearchOrder(property,SearchOrder.Direction.ASC);
-            }else{
-                searchOrder =new SearchOrder(property,SearchOrder.Direction.DESC);
+        SearchOrder searchOrder;
+        if (StringUtils.isNotEmpty(property) && StringUtils.isNotEmpty(direction)) {
+            if (SearchOrder.Direction.ASC.equals(direction)) {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.ASC);
+            } else {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.DESC);
             }
-        }else{
-            searchOrder =new SearchOrder("createdDate",SearchOrder.Direction.ASC);
+        } else {
+            searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
         }
-        List<SearchOrder> list =new ArrayList<SearchOrder>();
+        List<SearchOrder> list = new ArrayList<SearchOrder>();
         list.add(searchOrder);
         searchConfig.setSortOrders(list);
 
-        return  this.findByBusinessModelId(businessModelId,searchConfig);
+        return this.findByBusinessModelId(businessModelId, searchConfig);
     }
-
 
 
 }
