@@ -5,6 +5,7 @@ import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
 import com.ecmp.flow.dao.util.PageUrlUtil;
@@ -118,6 +119,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
                 "where ft.executorId  = :executorId " +
                 "and (ft.trustState !=1  or ft.trustState is null ) " +
@@ -147,7 +149,17 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        hqlQuery += hqlQueryOrder;
+        if(sortOrders!=null&&sortOrders.size()>0){
+            hqlQuery += " order by ft.priority desc ";
+            for(int i=0;i<sortOrders.size();i++){
+                SearchOrder  searchOrder = sortOrders.get(i);
+                if(!"priority".equalsIgnoreCase(searchOrder.getProperty())){
+                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }
+            }
+        }else{
+            hqlQuery += hqlQueryOrder;
+        }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
         queryTotal.setParameter("executorId", executorId);
         queryTotal.setParameter("businessModelId", businessModelId);
@@ -246,6 +258,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
                 "where ft.executorId  = :executorId " +
                 "and (ft.trustState !=1  or ft.trustState is null) ";
@@ -276,7 +289,18 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += appSignSql;
             hqlQuery += appSignSql;
         }
-        hqlQuery += hqlQueryOrder;
+
+        if(sortOrders!=null&&sortOrders.size()>0){
+            hqlQuery += " order by ft.priority desc ";
+             for(int i=0;i<sortOrders.size();i++){
+                 SearchOrder  searchOrder = sortOrders.get(i);
+                 if(!"priority".equalsIgnoreCase(searchOrder.getProperty())){
+                     hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                 }
+             }
+        }else{
+            hqlQuery += hqlQueryOrder;
+        }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
         queryTotal.setParameter("executorId", executorId);
         if (!StringUtils.isBlank(appSign)) {
