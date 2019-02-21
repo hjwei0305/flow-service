@@ -23,7 +23,7 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
     @Test
     public void startDefaultFlow() {
         String modelCode = "com.ecmp.fsop.soms.entity.ShareOrder";
-        String entityId = "1DF5B8B4-029B-11E9-A05B-080058000005";
+        String entityId = "F1984B37-193D-11E9-B209-0242C0A8441B";
         DefaultStartParam startParam = new DefaultStartParam(modelCode, entityId);
         OperateResult result =service.startDefaultFlow(startParam);
         System.out.println(JsonUtils.toJson(result));

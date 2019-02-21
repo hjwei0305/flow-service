@@ -2045,7 +2045,7 @@ public class FlowTaskTool {
     }
 
 
-    private boolean checkNextNodesCanAprool(FlowTask flowTask, JSONObject currentNode) {
+    boolean checkNextNodesCanAprool(FlowTask flowTask, JSONObject currentNode) {
         boolean result = true;
 //        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
 //        JSONObject defObj = JSONObject.fromObject(defObjStr);
@@ -2092,15 +2092,30 @@ public class FlowTaskTool {
                 }
 
                 if (nextNode.getJSONObject("nodeConfig").has("executor")) {
-                    JSONObject executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                    String userType = (String) executor.get("userType");
-                    if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
-                    } else {
-                        return false;
+                    String executorJson = nextNode.getJSONObject("nodeConfig").getString("executor");
+                    if (StringUtils.isNotBlank(executorJson)){
+                        JSONObject executor = null;
+                        // 先判断是否为数组对象
+                        try {
+                            JSONArray executors = nextNode.getJSONObject("nodeConfig").getJSONArray("executor");
+                            executor = executors.getJSONObject(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // 再判断是否为单一对象
+                        if (Objects.isNull(executor)){
+                            executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
+                        }
+                        String userType = (String) executor.get("userType");
+                        if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
+                        } else {
+                            return false;
+                        }
                     }
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage());
+                e.printStackTrace();
                 result = false;
             }
         }
