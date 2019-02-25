@@ -5,9 +5,9 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
@@ -16,7 +16,6 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
-import com.ecmp.flow.vo.bpmn.Process;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
@@ -115,8 +114,23 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Autowired
     private DefaultBusinessModelDao defaultBusinessModelDao;
 
-    @Autowired
-    private FlowDefVersionService flowDefVersionService;
+
+    @Override
+    public ResponseData listAllOrgs() {
+        String url = Constants.getBasicOrgListallorgsUrl();
+        ResponseData responseData = new ResponseData();
+        try {
+            List<Organization> result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {
+            }, null);
+            responseData.setMessage("操作成功！");
+            responseData.setData(result);
+        } catch (Exception e) {
+            responseData.setSuccess(false);
+            responseData.setMessage("请求接口错误！");
+            LogUtil.error(e.getMessage());
+        }
+        return responseData;
+    }
 
     /**
      * 新增修改操作

@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
@@ -10,7 +11,6 @@ import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.slf4j.Logger;
@@ -20,10 +20,9 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.GenericType;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+
+import static com.ecmp.flow.api.client.util.ExpressionUtil.getAppModule;
 
 /**
  * *************************************************************************************************
@@ -47,6 +46,23 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     protected BaseEntityDao<BusinessModel> getDao(){
         return this.businessModelDao;
+    }
+
+
+    @Override
+    public Map<String, String> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException{
+        Map<String, String> result=null;
+        BusinessModel businessModel = this.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
+            String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+            String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
+            Map<String,Object> params = new HashMap();
+            params.put("businessModelCode",businessModelCode);
+            params.put("all",false);
+            result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
+        }
+        return result;
     }
 
     @Override

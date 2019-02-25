@@ -3,15 +3,14 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.vo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -62,6 +61,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
 
     /**
      * 根据应用模块id查询业务实体
+     *
      * @param appModuleId 业务模块id
      * @return 实体清单
      */
@@ -74,6 +74,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
 
     /**
      * 根据应用模块id查询业务实体
+     *
      * @param classNmae 业务模块代码
      * @return 实体对象
      */
@@ -95,5 +96,20 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过当前用户筛选有权限的数据", notes = "通过当前用户筛选有权限的数据")
     public List<BusinessModel> findAllByAuth();
+
+
+    /**
+     * 查询条件属性
+     *
+     * @param businessModelCode 业务实体代码
+     * @return 实体对象
+     * @throws ClassNotFoundException
+     */
+    @POST
+    @Path("getPropertiesForConditionPojo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询条件属性", notes = "查询条件属性")
+    Map<String, String> getPropertiesForConditionPojo(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 }
