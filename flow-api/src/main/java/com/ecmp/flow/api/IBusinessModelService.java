@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.vo.ConditionVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -110,6 +111,6 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询条件属性", notes = "查询条件属性")
-    Map<String, String> getPropertiesForConditionPojo(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+    List<ConditionVo> getPropertiesForConditionPojo(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 }

@@ -11,6 +11,8 @@ import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.vo.ConditionVo;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.slf4j.Logger;
@@ -50,8 +52,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
 
     @Override
-    public Map<String, String> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException{
+    public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException{
         Map<String, String> result=null;
+        List<ConditionVo> list =new ArrayList<ConditionVo>();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
             String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
@@ -60,9 +63,22 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             Map<String,Object> params = new HashMap();
             params.put("businessModelCode",businessModelCode);
             params.put("all",false);
-            result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
+            try{
+                result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
+            }catch (Exception e){
+                LogUtil.error(e.getMessage());
+                return list;
+            }
+            if(result!=null&&result.size()>0){
+                result.forEach((key, value) -> {
+                    ConditionVo bean =new ConditionVo();
+                    bean.setCode(key);
+                    bean.setName(value);
+                    list.add(bean);
+                });
+            }
         }
-        return result;
+        return list;
     }
 
     @Override
