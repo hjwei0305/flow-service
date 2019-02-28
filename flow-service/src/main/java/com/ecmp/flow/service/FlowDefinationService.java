@@ -540,7 +540,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
                 Map<String, Object> v = flowStartVO.getVariables();
                 v.putAll(userMap);
-                if (v.get("additionRemark") != null && StringUtils.isNotEmpty(v.get("additionRemark").toString()) && !"null".equalsIgnoreCase(v.get("additionRemark").toString().trim())) {
+                if (v.get("additionRemark") != null
+                        && StringUtils.isNotEmpty(v.get("additionRemark").toString())
+                        && !"null".equalsIgnoreCase(v.get("additionRemark").toString().trim())
+                        && !"请填写附加说明".equals(v.get("additionRemark").toString().trim())) {
                     v.put("workCaption", v.get("workCaption").toString() + "【附加说明：" + v.get("additionRemark").toString() + "】");
                     flowStartVO.getVariables().put("workCaption", v.get("workCaption").toString());
                 }
