@@ -8,6 +8,7 @@ import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
+import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
@@ -1023,6 +1024,7 @@ public class FlowTaskTool {
                 Date now = new Date();
                 flowHistoryNew.setActEndTime(now);
                 flowHistoryNew.setDepict("【被撤回】" + opinion);
+                flowHistoryNew.setFlowExecuteStatus(FlowExecuteStatus.RECALL.getCode());//撤回
                 flowHistoryNew.setActDurationInMillis(now.getTime() - flowHistory.getActEndTime().getTime());
                 flowHistoryNew.setTenantCode(ContextUtil.getTenantCode());
                 flowHistoryDao.save(flowHistoryNew);
@@ -2093,7 +2095,7 @@ public class FlowTaskTool {
 
                 if (nextNode.getJSONObject("nodeConfig").has("executor")) {
                     String executorJson = nextNode.getJSONObject("nodeConfig").getString("executor");
-                    if (StringUtils.isNotBlank(executorJson)){
+                    if (StringUtils.isNotBlank(executorJson)) {
                         JSONObject executor = null;
                         // 先判断是否为数组对象
                         try {
@@ -2103,7 +2105,7 @@ public class FlowTaskTool {
                             e.printStackTrace();
                         }
                         // 再判断是否为单一对象
-                        if (Objects.isNull(executor)){
+                        if (Objects.isNull(executor)) {
                             executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
                         }
                         String userType = (String) executor.get("userType");
@@ -2152,6 +2154,22 @@ public class FlowTaskTool {
         flowHistory.setDepict(flowTask.getDepict());
         flowHistory.setTaskStatus(flowTask.getTaskStatus());
 
+        if (TaskStatus.REJECT.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //驳回
+            flowHistory.setFlowExecuteStatus(FlowExecuteStatus.REJECT.getCode());
+        } else { //其他就是TaskStatus.COMPLETED.toString()
+            try {
+                String approved = (String) variables.get("approved");
+                if (approved == null || "null".equalsIgnoreCase(approved)) { //提交
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.SUBMIT.getCode());
+                } else if ("true".equalsIgnoreCase(approved)) { //同意
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AGREE.getCode());
+                } else if ("false".equalsIgnoreCase(approved)) {  //不同意
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.DISAGREE.getCode());
+                }
+            } catch (Exception e) {
+            }
+        }
+
         if (flowHistory.getActEndTime() == null) {
             flowHistory.setActEndTime(new Date());
         }
@@ -2170,6 +2188,7 @@ public class FlowTaskTool {
             actWorkTimeInMillis = System.currentTimeMillis() - loadOverTime;
             flowHistory.setActWorkTimeInMillis(actWorkTimeInMillis);
         }
+
         flowHistory.setTenantCode(ContextUtil.getTenantCode());
         return flowHistory;
     }

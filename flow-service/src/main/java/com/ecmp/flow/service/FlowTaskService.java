@@ -12,6 +12,7 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.UserEmailAlert;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
@@ -1712,6 +1713,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
                 flowHistory.setDepict("【被转办给：“" + executor.getName() + "”】");
+                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
 
                 newFlowTask.setId(null);
                 newFlowTask.setExecutorId(executor.getId());
@@ -1772,6 +1774,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
                 flowHistory.setDepict("【被委托给：" + executor.getName() + "】");
+                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
 
                 newFlowTask.setId(null);
                 newFlowTask.setExecutorId(executor.getId());
