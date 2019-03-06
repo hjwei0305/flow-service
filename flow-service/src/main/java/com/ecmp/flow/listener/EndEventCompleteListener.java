@@ -82,7 +82,7 @@ public class EndEventCompleteListener implements ExecutionListener {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 AppModule appModule = businessModel.getAppModule();
-                FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion(),endSign);
+                FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion(),endSign,variables);
                 if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
                     String message = "BusinessId="+flowInstance.getBusinessId()
                             +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
@@ -131,7 +131,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 }
                 try {
                     String businessId = delegateTask.getProcessBusinessKey();
-                    flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign);
+                    flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
                 }catch (Exception e){
                     logger.error(e.getMessage());
                 }

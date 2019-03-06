@@ -244,7 +244,7 @@ public class FlowListenerTool {
     }
 
 
-    public void callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign){
+    public void callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign,Map<String,Object> variables){
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
             if(StringUtils.isNotEmpty(endCallServiceUrlId)){
@@ -258,6 +258,19 @@ public class FlowListenerTool {
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String,String> params = new HashMap<String,String>();
+                    if(variables!=null){
+                        if(variables.get("approved")!=null){
+                            String approved = variables.get("approved")+"";
+                            flowInvokeParams.setAgree(Boolean.parseBoolean(approved));
+                        }
+                        if(variables.get("approveResult")!=null){
+                            String approveResult = variables.get("approveResult")+"";
+                            flowInvokeParams.setFinalAgree(Boolean.parseBoolean(approveResult));
+                        }
+                        if(variables.get("opinion")!=null){
+                            params.put("opinion",variables.get("opinion")+"");
+                        }
+                    }
                     params.put("endSign",endSign+"");
                     flowInvokeParams.setParams(params);
                     new Thread(new Runnable() {//模拟异步
@@ -284,7 +297,7 @@ public class FlowListenerTool {
      * @param flowDefVersion
      * @return
      */
-    public FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign){
+    public FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign,Map<String,Object> variables){
         FlowOperateResult result = null;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
@@ -299,6 +312,20 @@ public class FlowListenerTool {
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String,String> params = new HashMap<String,String>();
+                    if(variables!=null){
+                        if(variables.get("approved")!=null){
+                            String approved = variables.get("approved")+"";
+                            flowInvokeParams.setAgree(Boolean.parseBoolean(approved));
+                        }
+                        if(variables.get("approveResult")!=null){
+                            String approveResult = variables.get("approveResult")+"";
+                            flowInvokeParams.setFinalAgree(Boolean.parseBoolean(approveResult));
+                        }
+                        if(variables.get("opinion")!=null){
+                            params.put("opinion",variables.get("opinion")+"");
+                        }
+
+                    }
                     params.put("endSign",endSign+"");
                     flowInvokeParams.setParams(params);
                     result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);

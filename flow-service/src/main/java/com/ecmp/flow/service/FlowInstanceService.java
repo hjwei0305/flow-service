@@ -935,7 +935,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callEndServiceAndSon(son, endSign);
             }
         }
-        flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign);
+        flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign , null);
     }
 
 
@@ -956,7 +956,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
-        FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion, endSign);
+        FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion, endSign ,null);
         if (callBeforeEndResult != null && callBeforeEndResult.isSuccess() != true) {
             String message = "BusinessId=" + flowInstance.getBusinessId()
                     + ",FlowDefVersion.id=" + flowInstance.getFlowDefVersion().getId()
