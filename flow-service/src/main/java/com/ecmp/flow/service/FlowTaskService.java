@@ -144,6 +144,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
+
+    /**
+     * 查看是否需要推送任务信息到basic模块
+     * @return  true或者false，true为需要推送
+     */
+    public boolean getBooleanPushTaskToBasic(){
+        Boolean pushBasic = false;
+        String pushBasicStr = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_BASIC");
+        if(StringUtils.isNotEmpty(pushBasicStr)){
+            if("true".equalsIgnoreCase(pushBasicStr.trim())){
+                pushBasic = true;
+            }
+        }
+        return  pushBasic;
+    }
+
     /**
      * 任务签收
      *
@@ -159,6 +175,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.setActClaimTime(new Date());
         flowTask.setTaskStatus(TaskStatus.CLAIM.toString());
         flowTaskDao.save(flowTask);
+        //是否推送信息到baisc
+        Boolean pushBasic = this.getBooleanPushTaskToBasic();
+        //需要异步推送删除待办信息到basic
+        if(pushBasic){
+            List<FlowTask> alllist =  flowTaskDao.findListByProperty("actTaskId",actTaskId);
+            List<FlowTask> needDelList =  alllist.stream().filter((a)->!a.getId().equalsIgnoreCase(flowTask.getId())).collect(Collectors.toList());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    pushDelTaskToBasic(needDelList);
+                }
+            }).start();
+        }
         flowTaskDao.deleteNotClaimTask(actTaskId, id);
         OperateResult result = OperateResult.operationSuccess("10012");
         return result;
@@ -323,7 +352,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
+    public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
@@ -465,6 +494,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 .createProcessInstanceQuery()
                 .processInstanceId(historicTaskInstance.getProcessInstanceId())
                 .singleResult();
+        //是否推送信息到baisc
+        Boolean pushBasic = this.getBooleanPushTaskToBasic();
+
         if (historicTaskInstance != null) {
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
@@ -480,9 +512,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId, flowTask);
             }
 
+            //需要异步推送待办转已办信息到basic
+            if(pushBasic){
+                List<FlowTask> list =new ArrayList<FlowTask>();
+                list.add(flowTask);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushOldTaskToBasic(list);
+                    }
+                }).start();
+            }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
             if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
+                //需要异步推送删除待办信息到basic
+                if(pushBasic){
+                   List<FlowTask> alllist =  flowTaskDao.findListByProperty("actTaskId",actTaskId);
+                   List<FlowTask> needDelList =  alllist.stream().filter((a)->!a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushDelTaskToBasic(needDelList);
+                        }
+                    }).start();
+                }
                 flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
             }
             //初始化新的任务
@@ -529,6 +583,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             result.setData(FlowStatus.COMPLETED);//任务结束
             flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
             flowSolidifyExecutorDao.deleteByBusinessId(flowInstance.getBusinessId());//查看是否为固化流程（如果是固化流程删除固化执行人列表）
+            //需要异步推送归档信息到basic
+            if(pushBasic){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushEndTaskToBasic(flowTask);
+                    }
+                }).start();
+            }
         }
         return result;
     }
@@ -617,7 +680,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private void completeActiviti(String taskId, Map<String, Object> variables) throws Exception {
+    public void completeActiviti(String taskId, Map<String, Object> variables) throws Exception {
         taskService.complete(taskId, variables);
     }
 
@@ -682,7 +745,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception {
+    public OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception {
         OperateResult result = OperateResult.operationSuccess("10015");
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
@@ -1742,8 +1805,32 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
 
                 flowHistoryDao.save(flowHistory);
+                //是否推送信息到baisc
+                Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                if(pushBasic){
+                    //删除待办
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
+                    needDelList.add(flowTask);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushDelTaskToBasic(needDelList);
+                        }
+                    }).start();
+                }
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
+                if(pushBasic){
+                    //新增待办
+                    List<FlowTask> needAddList = new ArrayList<FlowTask>();
+                    needAddList.add(newFlowTask);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushNewTaskToBasic(needAddList);
+                        }
+                    }).start();
+                }
                 result = OperateResult.operationSuccess();
             } else {
                 result = OperateResult.operationFailure("10038");//执行人查询结果为空
@@ -1786,8 +1873,32 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowTask.setTrustState(1);
                 newFlowTask.setTrustState(2);
                 newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+                //是否推送信息到baisc
+                Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                if(pushBasic){
+                    //删除待办推送basic
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
+                    needDelList.add(flowTask);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushDelTaskToBasic(needDelList);
+                        }
+                    }).start();
+                }
                 flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
+                if(pushBasic){
+                    //新增待办推送basic
+                    List<FlowTask> needAddList = new ArrayList<FlowTask>();
+                    needAddList.add(newFlowTask);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushNewTaskToBasic(needAddList);
+                        }
+                    }).start();
+                }
                 result = OperateResult.operationSuccess();
             } else {
                 result = OperateResult.operationFailure("10038");//执行人查询结果为空
@@ -2396,6 +2507,87 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         responseData.setData(list);
         return responseData;
     }
+
+
+    /**
+     * 推送待办到basic模块
+     * @param taskList 需要推送的待办
+     */
+    @Override
+    public void pushNewTaskToBasic(List<FlowTask> taskList){
+        if(taskList!=null && taskList.size()>0){
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
+            String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
+            try{
+                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
+            }catch (Exception e){
+                messageLog += "-推送待办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+
+    /**
+     * 推送新的已办到basic模块
+     * @param taskList 需要推送的已办（刚执行完成的）
+     */
+    @Override
+    public void pushOldTaskToBasic(List<FlowTask> taskList){
+        if(taskList!=null && taskList.size()>0){
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
+            String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
+            try{
+                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
+            }catch (Exception e){
+                messageLog += "-推送已办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+    /**
+     * 推送需要删除的待办到basic模块
+     * @param taskList 需要删除的待办
+     */
+    @Override
+    public void pushDelTaskToBasic(List<FlowTask> taskList){
+        if(taskList!=null && taskList.size()>0){
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
+            String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
+            try{
+                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
+            }catch (Exception e){
+                messageLog += "-推送删除待办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+    /**
+     * 推送需要归档（终止）的任务到basic模块
+     * @param task 需要终止的任务
+     */
+    @Override
+    public void pushEndTaskToBasic(FlowTask task){
+        if(task!=null){
+            String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
+            String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
+            try{
+                ApiClient.postViaProxyReturnResult(url,Void.class,task);
+            }catch (Exception e){
+                messageLog += "-推送归档任务异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
 
 
     @Override

@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
+import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
@@ -13,6 +14,7 @@ import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
+import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -109,6 +111,9 @@ public class FlowTaskTool {
 
     @Autowired
     private WorkPageUrlDao workPageUrlDao;
+
+    @Autowired
+    private FlowTaskService flowTaskService;
 
     private final Logger logger = LoggerFactory.getLogger(FlowTaskTool.class);
 
@@ -1095,12 +1100,27 @@ public class FlowTaskTool {
 
             List<Task> nextTasks = taskService.createTaskQuery().processInstanceId(instance.getId())
                     .taskDefinitionKey(nextActivity.getId()).list();
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            List<FlowTask> needDelList = new ArrayList<FlowTask>();
             for (Task nextTask : nextTasks) {
                 //
                 taskService.deleteRuningTask(nextTask.getId(), false);
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
+                if(pushBasic){
+                   List<FlowTask> needDel =  flowTaskDao.findListByProperty("actTaskId",nextTask.getId());
+                   needDelList.addAll(needDel);
+                }
                 flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
+            }
+            if(pushBasic){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushDelTaskToBasic(needDelList);
+                    }
+                }).start();
             }
             if ((nextTasks != null) && (!nextTasks.isEmpty()) && (ifGageway(currActivity))) {
 
@@ -1443,6 +1463,10 @@ public class FlowTaskTool {
             String flowName = null;
             Definition definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             flowName = definition.getProcess().getName();
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+
+            List<FlowTask>  pushBasicTaskList = new ArrayList<FlowTask>();  //需要推送到basic的待办
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
@@ -1523,6 +1547,9 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
+                            if(pushBasic){
+                                pushBasicTaskList.add(flowTask);
+                            }
                         }
                     }
                 } else {
@@ -1579,6 +1606,9 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
+                            if(pushBasic){
+                                pushBasicTaskList.add(flowTask);
+                            }
                         } else {
 
                             if (executor != null) {
@@ -1605,6 +1635,9 @@ public class FlowTaskTool {
                                 flowTask.setFlowInstance(flowInstance);
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
+                                if(pushBasic){
+                                    pushBasicTaskList.add(flowTask);
+                                }
 //                            currentDate = flowTask.getCreatedDate();
                             } else {
                                 throw new RuntimeException("id=" + identityLink.getUserId() + "的用户找不到！");
@@ -1612,6 +1645,15 @@ public class FlowTaskTool {
                         }
                     }
                 }
+            }
+            //需要异步推送待办到baisc
+            if(pushBasic && pushBasicTaskList!=null && pushBasicTaskList.size()>0){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushNewTaskToBasic(pushBasicTaskList);
+                    }
+                }).start();
             }
 //            flowInstanceService.checkCanEnd(flowInstance.getId());
 //            if(currentDate!=null){

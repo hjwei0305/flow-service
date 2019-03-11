@@ -688,7 +688,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @param businessModelCode 业务单据modelCode（非必填）
      * @param businessId 业务单据id（必填）
      * @param taskId     当前已办ID
-     * @return
      */
     @POST
     @Path("pushTaskToBusinessModel")
@@ -702,5 +701,49 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取执行人", notes = "通过执行人参数VO获取执行人")
     ResponseData  getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos,@QueryParam("businessModelCode") String businessModelCode,@QueryParam("businessId") String businessId);
 
+
+    /**
+     * 推送待办到basic模块
+     *
+     * @param taskList 需要推送的待办
+     */
+    @POST
+    @Path("pushNewTaskToBasic")
+    @ApiOperation(value = "推送新生成的待办到basic模块", notes = "推送新生成的待办到basic模块")
+    @IgnoreCheckAuth
+    void pushNewTaskToBasic(List<FlowTask> taskList);
+
+    /**
+     * 推送新的已办到basic模块
+     *
+     * @param taskList 需要推送的已办（刚执行完成的）
+     */
+    @POST
+    @Path("pushOldTaskToBasic")
+    @ApiOperation(value = "推送新的已办到basic模块", notes = "推送新的已办到basic模块")
+    @IgnoreCheckAuth
+    void pushOldTaskToBasic(List<FlowTask> taskList);
+
+    /**
+     * 推送需要删除的待办到basic模块
+     *
+     * @param taskList 需要删除的待办
+     */
+    @POST
+    @Path("pushDelTaskToBasic")
+    @ApiOperation(value = "推送需要删除的待办到basic模块", notes = "推送需要删除的待办到basic模块")
+    @IgnoreCheckAuth
+    void pushDelTaskToBasic(List<FlowTask> taskList);
+
+    /**
+     * 推送需要归档（终止）的任务到basic模块
+     *
+     * @param task 需要终止的任务
+     */
+    @POST
+    @Path("pushEndTaskToBasic")
+    @ApiOperation(value = "推送需要归档（终止）的任务到basic模块", notes = "推送需要归档（终止）的任务到basic模块")
+    @IgnoreCheckAuth
+    void pushEndTaskToBasic(FlowTask task);
 
 }

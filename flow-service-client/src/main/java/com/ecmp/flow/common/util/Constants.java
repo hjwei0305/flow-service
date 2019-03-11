@@ -35,6 +35,58 @@ public class Constants extends ConfigurableContants {
 		return BASIC_SERVICE_URL;
 	}
 
+	/**
+	 * 得到推送新生产待办的接口地址
+	 * @return
+	 */
+    public static String getBasicPushNewTaskUrl(){
+		String BASIC_PUSH_NEW_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.NEWTASK");
+		if(StringUtils.isEmpty(BASIC_PUSH_NEW_TASK_URL)){
+			BASIC_PUSH_NEW_TASK_URL=getBasicServiceUrl() + getProperty(
+					"basic.push.newTask", "/task/pushNewTask");
+		}
+		return BASIC_PUSH_NEW_TASK_URL;
+	}
+
+	/**
+	 * 得到推送新执行已办的接口地址
+	 * @return
+	 */
+	public static String getBasicPushOldTaskUrl(){
+		String BASIC_PUSH_OLD_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.OLDTASK");
+		if(StringUtils.isEmpty(BASIC_PUSH_OLD_TASK_URL)){
+			BASIC_PUSH_OLD_TASK_URL=getBasicServiceUrl() + getProperty(
+					"basic.push.oldTask", "/task/pushOldTask");
+		}
+		return BASIC_PUSH_OLD_TASK_URL;
+	}
+
+	/**
+	 * 得到推送需要删除待办的接口地址
+	 * @return
+	 */
+	public static String getBasicPushDelTaskUrl(){
+		String BASIC_PUSH_DEL_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.DELTASK");
+		if(StringUtils.isEmpty(BASIC_PUSH_DEL_TASK_URL)){
+			BASIC_PUSH_DEL_TASK_URL=getBasicServiceUrl() + getProperty(
+					"basic.push.delTask", "/task/pushDelTask");
+		}
+		return BASIC_PUSH_DEL_TASK_URL;
+	}
+
+	/**
+	 * 得到推送需要归档（终止）的任务到basic模块地址
+	 * @return
+	 */
+	public static String getBasicPushEndTaskUrl(){
+		String BASIC_PUSH_END_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.ENDTASK");
+		if(StringUtils.isEmpty(BASIC_PUSH_END_TASK_URL)){
+			BASIC_PUSH_END_TASK_URL=getBasicServiceUrl() + getProperty(
+					"basic.push.endTask", "/task/pushEndTask");
+		}
+		return BASIC_PUSH_END_TASK_URL;
+	}
+
 
 	/**
 	 * 获取所有组织维度

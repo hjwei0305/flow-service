@@ -801,12 +801,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         return timeCompare(flowInstance1.getCreatedDate(), flowInstance2.getCreatedDate());
                     }
                 });
+
+                //是否推送信息到baisc
+                Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+
                 for (FlowInstance fTemp : flowInstanceList) {
                     if (fTemp.isEnded()) {
                         continue;
                     }
                     Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
                     if (flowTaskList != null && !flowTaskList.isEmpty()) {
+                        List<FlowTask> needDelList = new ArrayList<FlowTask>();
                         for (FlowTask flowTask : flowTaskList) {
                             try {
                                 FlowHistory flowHistory = new FlowHistory();
@@ -836,7 +841,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             } catch (Exception e) {
                                 logger.error(e.getMessage());
                             }
+                            if(pushBasic){//是否推送信息到baisc
+                                needDelList.add(flowTask);
+                            }
                             flowTaskDao.delete(flowTask);
+                        }
+                        if(pushBasic){  //流程终止时，异步推送需要删除待办
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    flowTaskService.pushDelTaskToBasic(needDelList);
+                                }
+                            }).start();
                         }
                     }
 
