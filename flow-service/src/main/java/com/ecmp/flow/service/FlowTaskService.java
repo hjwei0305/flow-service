@@ -60,6 +60,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import sun.rmi.runtime.Log;
 
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
@@ -1481,6 +1482,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return findByBusinessModelIdWithAllCount(businessModelId, "", search);
     }
 
+    @Override
+    public ResponseData  listFlowTaskWithAllCount(Search search,String modelId){
+        ResponseData responseData = new ResponseData();
+        try{
+            FlowTaskPageResultVO<FlowTask>  resVo = this.findByBusinessModelIdWithAllCount(modelId,"",search);
+            responseData.setData(resVo);
+        }catch (Exception e){
+            LogUtil.error(e.getMessage());
+            responseData.setSuccess(false);
+            responseData.setMessage("操作失败！");
+        }
+        return   responseData;
+    }
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();

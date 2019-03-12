@@ -439,6 +439,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
+     * 查询流程任务列表,带用户所有待办总数
+     * @param searchConfig 搜索对象
+     */
+    @POST
+    @Path("listFlowTaskWithAllCount")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询流程任务列表,带用户所有待办总数",notes = "查询流程任务列表,带用户所有待办总数")
+    ResponseData  listFlowTaskWithAllCount(Search searchConfig,@QueryParam("modelId")String modelId);
+
+
+    /**
      * 获取可批量审批待办信息
      * @param searchConfig 查询条件
      * @param businessModelId 为空查询全部
