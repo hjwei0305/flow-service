@@ -11,11 +11,13 @@ import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -311,6 +313,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择当前流程抬头信息",notes = "测试")
    public ApprovalHeaderVO getApprovalHeaderVO(@PathParam("id") String id);
+
+
+    /**
+     * 查询流程待办和任务汇总列表
+     * @return  ResponseData.data是 List<TodoBusinessSummaryVO>
+     */
+    @POST
+    @Path("listFlowTaskHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询流程待办和任务汇总列表",notes = "查询流程待办和任务汇总列表")
+    ResponseData  listFlowTaskHeader();
 
     /**
      * 获取待办汇总信息

@@ -1289,6 +1289,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskDao.findByInstanceId(instanceId);
     }
 
+
+    public ResponseData  listFlowTaskHeader(){
+        ResponseData  responseData = new ResponseData();
+        try{
+            List<TodoBusinessSummaryVO> list = this.findTaskSumHeader("");
+            responseData.setData(list);
+        }catch (Exception e){
+            LogUtil.error(e.getMessage());
+            responseData.setSuccess(false);
+            responseData.setMessage("操作失败！");
+        }
+        return  responseData;
+    }
+
     /**
      * 查询当前用户待办业务单据汇总信息
      *
