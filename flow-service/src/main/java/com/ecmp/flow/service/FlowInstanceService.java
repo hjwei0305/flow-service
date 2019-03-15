@@ -985,6 +985,65 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
+    public   PageResult<MyBillVO> getMyBills(Search search){
+        PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
+        List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
+        PageResult<MyBillVO> results = new PageResult<MyBillVO>();
+        ArrayList<MyBillVO> data = new ArrayList<MyBillVO>();
+        if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+            List<String> flowInstanceIds = new ArrayList<String>();
+            for (FlowInstance f : flowInstanceList) {
+                FlowInstance parent = f.getParent();
+                if (parent != null) {
+                    flowInstancePageResult.setRecords(flowInstancePageResult.getRecords() - 1);
+                    continue;
+                }
+                flowInstanceIds.add(f.getId());
+                MyBillVO myBillVO = new MyBillVO();
+                myBillVO.setBusinessCode(f.getBusinessCode());
+                myBillVO.setBusinessId(f.getBusinessId());
+                myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
+                myBillVO.setBusinessName(f.getBusinessName());
+                myBillVO.setCreatedDate(f.getCreatedDate());
+                myBillVO.setCreatorAccount(f.getCreatorAccount());
+                myBillVO.setCreatorName(f.getCreatorName());
+                myBillVO.setCreatorId(f.getCreatorId());
+                myBillVO.setFlowName(f.getFlowName());
+                String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+                String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                if (StringUtils.isEmpty(lookUrl)) {
+                    lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                }
+                if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                    businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                }
+                myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+                myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+                myBillVO.setLookUrl(lookUrl);
+                myBillVO.setEndDate(f.getEndDate());
+                myBillVO.setFlowInstanceId(f.getId());
+                myBillVO.setWebBaseAddress(f.getWebBaseAddress());
+                myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
+                myBillVO.setApiBaseAddress(f.getApiBaseAddress());
+                myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
+                data.add(myBillVO);
+            }
+
+            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
+            if (canEnds != null && !canEnds.isEmpty()) {
+                for (int i = 0; i < canEnds.size(); i++) {
+                    data.get(i).setCanManuallyEnd(canEnds.get(i));
+                }
+            }
+        }
+        results.setRows(data);
+        results.setRecords(flowInstancePageResult.getRecords());
+        results.setPage(flowInstancePageResult.getPage());
+        results.setTotal(flowInstancePageResult.getTotal());
+        return results;
+    }
+
+
     public PageResult<MyBillVO> getMyBillsOfPhone(String property, String direction, int page, int rows,
                                                   String quickValue, String startDate, String endDate, boolean ended) {
         String creatorId = ContextUtil.getUserId();
@@ -1028,66 +1087,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         list.add(searchOrder);
         search.setSortOrders(list);
 
-
-        PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
-        List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
-        PageResult<MyBillVO> results = new PageResult<MyBillVO>();
-        ArrayList<MyBillVO> data = new ArrayList<MyBillVO>();
-        if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
-            List<String> flowInstanceIds = new ArrayList<String>();
-            for (FlowInstance f : flowInstanceList) {
-                FlowInstance parent = f.getParent();
-                if (parent != null) {
-                    flowInstancePageResult.setRecords(flowInstancePageResult.getRecords() - 1);
-                    //flowInstancePageResult.setTotal( flowInstancePageResult.getRecords()-1);
-                    //flowInstancePageResult.setPage(flowInstancePageResult.getPage()-1);
-                    continue;
-                }
-                flowInstanceIds.add(f.getId());
-                MyBillVO myBillVO = new MyBillVO();
-                myBillVO.setBusinessCode(f.getBusinessCode());
-                myBillVO.setBusinessId(f.getBusinessId());
-                myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
-                myBillVO.setBusinessName(f.getBusinessName());
-                myBillVO.setCreatedDate(f.getCreatedDate());
-                myBillVO.setCreatorAccount(f.getCreatorAccount());
-                myBillVO.setCreatorName(f.getCreatorName());
-                myBillVO.setCreatorId(f.getCreatorId());
-                myBillVO.setFlowName(f.getFlowName());
-                String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
-                String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
-                if (StringUtils.isEmpty(lookUrl)) {
-                    lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
-                }
-                if (StringUtils.isEmpty(businessDetailServiceUrl)) {
-                    businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
-                }
-                myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
-                myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
-                myBillVO.setLookUrl(lookUrl);
-                myBillVO.setEndDate(f.getEndDate());
-                myBillVO.setFlowInstanceId(f.getId());
-                myBillVO.setWebBaseAddress(f.getWebBaseAddress());
-                myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
-                myBillVO.setApiBaseAddress(f.getApiBaseAddress());
-                myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
-//                Boolean canEnd = proxy.checkCanEnd(f.getId());
-//                myBillVO.setCanManuallyEnd(canEnd);
-                data.add(myBillVO);
-            }
-
-            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
-            if (canEnds != null && !canEnds.isEmpty()) {
-                for (int i = 0; i < canEnds.size(); i++) {
-                    data.get(i).setCanManuallyEnd(canEnds.get(i));
-                }
-            }
-        }
-        results.setRows(data);
-        results.setRecords(flowInstancePageResult.getRecords());
-        results.setPage(flowInstancePageResult.getPage());
-        results.setTotal(flowInstancePageResult.getTotal());
-        return results;
+      return  this.getMyBills(search);
     }
 
 

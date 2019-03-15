@@ -337,6 +337,19 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
 
+
+    /**
+     * 获取我的单据
+     * @param searchConfig 查询条件
+     * @return
+     */
+    @POST
+    @Path("getMyBills")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取我的单据",notes = "获取我的单据")
+    PageResult<MyBillVO> getMyBills(Search searchConfig);
+
     /**
      * 获取我的单据（已办/待办）
      * @param property 需要排序的字段
@@ -344,7 +357,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param page 当前页数
      * @param rows 每页条数
      * @param quickValue 模糊查询字段内容
-     * @return 可批量审批待办信息
+     * @return
      */
     @POST
     @Path("getMyBillsOfPhone")
