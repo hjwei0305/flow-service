@@ -8,6 +8,8 @@ import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,20 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             }
         }
         return result;
+    }
+
+    @Override
+    public ResponseData listFlowHistory(String businessModelId, Search searchConfig) {
+        ResponseData responseData = new ResponseData();
+    try{
+        PageResult<FlowHistory> pageList = this.findByBusinessModelId(businessModelId,searchConfig);
+        responseData.setData(pageList);
+    }catch (Exception e){
+        responseData.setSuccess(false);
+        responseData.setMessage(e.getMessage());
+        LogUtil.error(e.getMessage());
+    }
+        return responseData;
     }
 
     public PageResult<FlowHistory> findByBusinessModelId(String businessModelId, Search searchConfig) {

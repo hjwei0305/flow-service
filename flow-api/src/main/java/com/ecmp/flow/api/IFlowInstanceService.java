@@ -348,7 +348,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取我的单据",notes = "获取我的单据")
-    PageResult<MyBillVO> getMyBills(Search searchConfig);
+    ResponseData getMyBills(Search searchConfig);
 
     /**
      * 获取我的单据（已办/待办）

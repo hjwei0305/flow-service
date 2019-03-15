@@ -5,6 +5,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -82,6 +83,20 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     PageResult<FlowHistory> findByPageAndUser(Search searchConfig);
+
+
+    /**
+     * 获取已办信息
+     * @param businessModelId 业务实体id
+     * @param searchConfig 查询条件
+     * @return 已办汇总信息
+     */
+    @POST
+    @Path("listFlowHistory")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "已办汇总信息",notes = "已办汇总信息")
+    ResponseData listFlowHistory(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
     /**
      * 获取待办汇总信息
