@@ -2255,7 +2255,7 @@ public class FlowTaskTool {
     //    @Cacheable(value = "FLowGetParentCodes", key = "'FLowOrgParentCodes_' + #nodeId")
     public List<String> getParentOrgCodes(String nodeId) {
         if (StringUtils.isEmpty(nodeId)) {
-            throw new FlowException("orgId is null!");
+            throw new FlowException("10069");
         }
         Map<String, Object> params = new HashMap();
         params.put("includeSelf", true);
