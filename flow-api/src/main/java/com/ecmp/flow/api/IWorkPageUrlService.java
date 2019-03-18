@@ -132,7 +132,7 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
      * @param businessModelId  业务实体ID
      * @return 已选中的工作界面
      */
-    @GET
+    @POST
     @Path("listAllSelectEdByAppModuleId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
