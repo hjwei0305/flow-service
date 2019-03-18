@@ -2255,6 +2255,7 @@ public class FlowTaskTool {
     //    @Cacheable(value = "FLowGetParentCodes", key = "'FLowOrgParentCodes_' + #nodeId")
     public List<String> getParentOrgCodes(String nodeId) {
         if (StringUtils.isEmpty(nodeId)) {
+            //获取业务数据条件属性值接口【orgId未赋值】
             throw new FlowException("10069");
         }
         Map<String, Object> params = new HashMap();

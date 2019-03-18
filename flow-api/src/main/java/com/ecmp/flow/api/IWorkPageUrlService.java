@@ -5,6 +5,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -85,11 +86,25 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @ApiOperation(value = "查看对应业务实体已选中的工作界面",notes = "测试")
     public List<WorkPageUrl> findSelectEdByAppModuleId(@PathParam("appModuleId") String appModuleId, @PathParam("businessModelId") String businessModelId);
 
+
     /**
      * 查看对应业务实体未选中的工作界面
      * @param appModuleId  业务模块Id
      * @param businessModelId  业务实体ID
-     * @return 已选中的工作界面
+     * @return 未选中的工作界面
+     */
+    @POST
+    @Path("listAllNotSelectEdByAppModuleId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查看对应业务实体未选中的工作界面",notes = "查看对应业务实体未选中的工作界面")
+    ResponseData listAllNotSelectEdByAppModuleId(@QueryParam("appModuleId") String appModuleId, @QueryParam("businessModelId") String businessModelId);
+
+    /**
+     * 查看对应业务实体未选中的工作界面
+     * @param appModuleId  业务模块Id
+     * @param businessModelId  业务实体ID
+     * @return 选中的工作界面
      */
     @GET
     @Path("findNotSelectEdByAppModuleId/{appModuleId}/{businessModelId}")
@@ -110,6 +125,19 @@ public interface IWorkPageUrlService extends IBaseService<WorkPageUrl, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程类型id查找拥有的工作界面",notes = "测试")
     public List<WorkPageUrl> findByFlowTypeId(String flowTypeId);
+
+
+    /**
+     * 查看对应业务实体已选中的工作界面
+     * @param businessModelId  业务实体ID
+     * @return 已选中的工作界面
+     */
+    @GET
+    @Path("listAllSelectEdByAppModuleId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID查看业务实体已选中的工作界面",notes = "查看对应业务实体已选中的工作界面")
+    ResponseData listAllSelectEdByAppModuleId(@QueryParam("businessModelId") String businessModelId);
 
 
     /**

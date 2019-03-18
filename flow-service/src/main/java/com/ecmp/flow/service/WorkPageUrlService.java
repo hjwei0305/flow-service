@@ -1,12 +1,12 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.dao.WorkPageUrlDao;
 import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +51,19 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     }
 
     @Override
+    public ResponseData listAllNotSelectEdByAppModuleId(String appModuleId, String businessModelId){
+        ResponseData responseData = new ResponseData();
+        if(StringUtils.isNotEmpty(appModuleId)&&StringUtils.isNotEmpty(businessModelId)){
+            List<WorkPageUrl> list =   this.findNotSelectEdByAppModuleId(appModuleId,businessModelId);
+            responseData.setData(list);
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+        }
+        return responseData;
+    }
+
+    @Override
     public List<WorkPageUrl> findByFlowTypeId(String flowTypeId){
         return workPageUrlDao.findByFlowTypeId(flowTypeId);
     }
@@ -58,5 +71,18 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
 
     public List<WorkPageUrl> findSelectEdByBusinessModelId(String businessModelId){
      return    workPageUrlDao.findSelectEdByBusinessModelId(businessModelId);
+    }
+
+    @Override
+    public  ResponseData listAllSelectEdByAppModuleId(String businessModelId){
+        ResponseData responseData = new ResponseData();
+        if(StringUtils.isNotEmpty(businessModelId)){
+            List<WorkPageUrl> list =   this.findSelectEdByBusinessModelId(businessModelId);
+            responseData.setData(list);
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+        }
+        return responseData;
     }
 }
