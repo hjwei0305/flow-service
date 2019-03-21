@@ -529,6 +529,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             resultWithData.setData(flowStartResultVO);
             Map<String, Object> userMap = flowStartVO.getUserMap();
             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
+            if(businessModel == null){
+                return OperateResultWithData.operationFailure("业务实体未进行配置！");
+            }
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
