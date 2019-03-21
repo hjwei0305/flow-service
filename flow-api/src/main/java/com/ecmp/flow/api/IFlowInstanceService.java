@@ -163,7 +163,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param businessId 业务单据id
      * @return 流程实例及关联待办及任务历史
      */
-    @GET
+    @POST
     @Path("getProcessTrackVO")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -175,7 +175,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * @param instanceId id
      * @return 流程实例及关联待办及任务历史
      */
-    @GET
+    @POST
     @Path("getProcessTrackVOById")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
