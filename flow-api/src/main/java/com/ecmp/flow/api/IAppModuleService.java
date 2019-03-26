@@ -1,11 +1,8 @@
 package com.ecmp.flow.api;
 
-import com.ecmp.annotation.IgnoreAuthentication;
-import com.ecmp.annotation.IgnoreCheckAuth;
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.api.IFindAllService;
 import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.vo.SessionModelVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -46,23 +43,5 @@ public interface IAppModuleService extends IBaseEntityService<AppModule>,IFindAl
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过当前用户筛选有权限的数据", notes = "通过当前用户筛选有权限的数据")
     public List<AppModule> findAllByAuth();
-
-
-
-    /**
-     * 获取相应用户的token信息
-     *
-     * @return token字符串
-     */
-    @IgnoreCheckAuth
-    @IgnoreAuthentication
-    @POST
-    @Path("getNetToken")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取相应用户的token信息", notes = "获取相应用户的token信息")
-    String  getNetToken(SessionModelVO sessionModel);
-
-
 
 }

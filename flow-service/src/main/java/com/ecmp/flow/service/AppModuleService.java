@@ -10,18 +10,10 @@ import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.BaseService;
 import com.ecmp.core.service.Validation;
-import com.ecmp.enums.UserAuthorityPolicy;
-import com.ecmp.enums.UserType;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.flow.vo.SessionModelVO;
-import com.ecmp.util.IdGenerator;
-import com.ecmp.util.JwtTokenUtil;
-import com.ecmp.vo.LoginStatus;
 import com.ecmp.vo.OperateResultWithData;
-import com.ecmp.vo.SessionUser;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +23,6 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 
-import static com.ecmp.context.BaseApplicationContext.getBean;
 
 /**
  * <p>
@@ -62,32 +53,6 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
     }
 
     private final Logger logger = LoggerFactory.getLogger(BaseService.class);
-
-
-    public  String  getNetToken(SessionModelVO sessionModel){
-        JwtTokenUtil jwtTokenUtil;
-        try {
-            jwtTokenUtil = getBean(JwtTokenUtil.class);
-        } catch (Exception e) {
-            jwtTokenUtil = new JwtTokenUtil();
-        }
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("appId", sessionModel.getAppId());
-        claims.put("tenant", sessionModel.getTenant());
-        claims.put("account", sessionModel.getAccount());
-        claims.put("userId", sessionModel.getUserId());
-        claims.put("userName", sessionModel.getUserName());
-        claims.put("userType",  UserType.Employee.name());
-        claims.put("email", sessionModel.getEmail());
-        claims.put("authorityPolicy", UserAuthorityPolicy.TenantAdmin.name());
-        claims.put("ip", sessionModel.getIp());
-        claims.put("logoutUrl", LoginStatus.success);
-
-        String token = jwtTokenUtil.generateToken(sessionModel.getAccount(), sessionModel.getRandomKey(), claims);
-        return token;
-    }
-
-
 
 
     /**
