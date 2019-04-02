@@ -6,8 +6,11 @@ import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowHistoryService;
 import com.ecmp.flow.dao.FlowHistoryDao;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.flow.vo.phone.FlowHistoryPhoneVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
@@ -120,6 +123,70 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             });
         }
         return result;
+    }
+
+
+    public PageResult<FlowHistoryPhoneVo> findByBusinessModelIdOfMobile(String businessModelId, String property, String direction,
+                                                                        int page, int rows, String quickValue) {
+        Search searchConfig = new Search();
+        String userId = ContextUtil.getUserId();
+        searchConfig.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.EQ));
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        searchConfig.addQuickSearchProperty("flowName");
+        searchConfig.addQuickSearchProperty("flowTaskName");
+        searchConfig.addQuickSearchProperty("flowInstance.businessCode");
+        searchConfig.addQuickSearchProperty("flowInstance.businessModelRemark");
+        searchConfig.addQuickSearchProperty("creatorName");
+        searchConfig.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        searchConfig.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder;
+        if (StringUtils.isNotEmpty(property) && StringUtils.isNotEmpty(direction)) {
+            if (SearchOrder.Direction.ASC.equals(direction)) {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.ASC);
+            } else {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.DESC);
+            }
+        } else {
+            searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+        }
+        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        searchConfig.setSortOrders(list);
+
+        PageResult<FlowHistory> historyPage = this.findByBusinessModelId(businessModelId, searchConfig);
+        PageResult<FlowHistoryPhoneVo> historyVoPage = new PageResult<FlowHistoryPhoneVo>();
+        if(historyPage.getRows()!=null&&historyPage.getRows().size()>0){
+            List<FlowHistory>  historyList = historyPage.getRows();
+            List<FlowHistoryPhoneVo> phoneVoList = new ArrayList<FlowHistoryPhoneVo>();
+            historyList.forEach(bean->{
+                FlowHistoryPhoneVo beanVo =new FlowHistoryPhoneVo();
+                FlowInstance flowInstance = bean.getFlowInstance();
+                BusinessModel businessModel =bean.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                beanVo.setId(bean.getId());
+                beanVo.setFlowName(bean.getFlowName());
+                beanVo.setFlowTaskName(bean.getFlowTaskName());
+                beanVo.setCreatedDate(bean.getCreatedDate());
+                beanVo.setTaskStatus(bean.getTaskStatus());
+                beanVo.setCanCancel(bean.getCanCancel());
+                beanVo.setFlowInstanceBusinessId(flowInstance.getBusinessId());
+                beanVo.setFlowInstanceBusinessCode(flowInstance.getBusinessCode());
+                beanVo.setFlowInstanceEnded(flowInstance.isEnded());
+
+                String apiBaseAddress =  ContextUtil.getGlobalProperty(businessModel.getAppModule().getApiBaseAddress());
+                String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddress);
+                beanVo.setBusinessDetailServiceUrl(clientApiBaseUrl+businessModel.getBusinessDetailServiceUrl());
+                phoneVoList.add(beanVo);
+            });
+            historyVoPage.setRows(phoneVoList);
+        }else{
+            historyVoPage.setRows(new ArrayList<FlowHistoryPhoneVo>());
+        }
+        return historyVoPage;
     }
 
 
