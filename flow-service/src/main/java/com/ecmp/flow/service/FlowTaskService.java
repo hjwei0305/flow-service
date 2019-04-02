@@ -21,6 +21,7 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.flow.vo.phone.FlowTaskPhoneVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -60,9 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import sun.rmi.runtime.Log;
 
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1463,6 +1462,76 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
     }
+
+    /**
+     *  获取可批量审批待办信息(最新移动端专用)
+     */
+    public FlowTaskPageResultVO<FlowTaskPhoneVo> findByBusinessModelIdWithAllCountOfMobile(String businessModelId, int page, int rows, String quickValue) {
+        Search search = new Search();
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
+        search.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        search.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        search.setSortOrders(list);
+
+        FlowTaskPageResultVO<FlowTask>  flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, "", search);
+        FlowTaskPageResultVO<FlowTaskPhoneVo> phoneVoPage = new FlowTaskPageResultVO<FlowTaskPhoneVo>();
+        phoneVoPage.setAllTotal(flowTaskPage.getAllTotal());
+        phoneVoPage.setPage(flowTaskPage.getPage());
+        phoneVoPage.setRecords(flowTaskPage.getRecords());
+        phoneVoPage.setTotal(flowTaskPage.getTotal());
+        if(flowTaskPage.getAllTotal()!=0&&flowTaskPage.getRows()!=null&&flowTaskPage.getRows().size()>0){
+            List<FlowTask> taskList = flowTaskPage.getRows();
+            List<FlowTaskPhoneVo> phoneVoList = new ArrayList<FlowTaskPhoneVo>();
+            taskList.forEach(bean -> {
+                FlowTaskPhoneVo beanVo = new FlowTaskPhoneVo();
+                FlowType flowType = bean.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType();
+                beanVo.setFlowInstanceBusinessCode(bean.getFlowInstance().getBusinessCode());
+                beanVo.setFlowInstanceFlowName(bean.getFlowInstance().getFlowName());
+                beanVo.setTaskName(bean.getTaskName());
+                beanVo.setFlowTypeName(flowType.getName());
+                beanVo.setActClaimTime(bean.getActClaimTime());
+                beanVo.setCreatedDate(bean.getCreatedDate());
+                beanVo.setBusinessModelClassName(flowType.getBusinessModel().getClassName());
+                beanVo.setFlowInstanceBusinessId(bean.getFlowInstance().getBusinessId());
+                beanVo.setCanReject(bean.getCanReject());
+                beanVo.setFlowInstanceId(bean.getFlowInstance().getId());
+
+                String taskJsonDef = bean.getTaskJsonDef();
+                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                String nodeType = taskJsonDefObj.get("nodeType") + "";
+                beanVo.setNodeType(nodeType);
+
+               String webBaseAddress =  ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                        webBaseAddress = "/" + webBaseAddress + "/";
+                    }
+                }
+                beanVo.setCompleteTaskUrl(webBaseAddress);
+                phoneVoList.add(beanVo);
+            });
+            phoneVoPage.setRows(phoneVoList);
+        }else{
+            phoneVoPage.setRows(new ArrayList<FlowTaskPhoneVo>());
+        }
+
+        return phoneVoPage;
+    }
+
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCountOfPhone(String businessModelId, String property,
                                                                                    String direction, int page, int rows, String quickValue) {
