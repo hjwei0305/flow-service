@@ -8,7 +8,7 @@ import java.util.Date;
  * 我的单据VO（移动端专用）
  * 新建：何灿坤
  */
-public class MyBillPhoneVO implements Serializable {
+public class MyBillPhoneVO  implements Serializable {
 
 
     private String businessId; //业务单据id
@@ -27,6 +27,16 @@ public class MyBillPhoneVO implements Serializable {
 
     private String detailUrl;//详情查看地址拼接（apiBaseAddressAbsolute+businessDetailServiceUrl）
 
+    private String flowInstanceId;//流程实例ID
+
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
+    }
 
     public String getBusinessId() {
         return businessId;
