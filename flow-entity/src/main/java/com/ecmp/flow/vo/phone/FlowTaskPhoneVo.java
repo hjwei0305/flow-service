@@ -9,6 +9,60 @@ import java.util.Date;
  */
 public class FlowTaskPhoneVo implements Serializable {
 
+    /**
+     * 待办id
+     */
+    private String taskId;
+
+    /**
+     * 待办名称
+     */
+    private String taskName;
+
+    /**
+     * 是否允许驳回
+     */
+    private Boolean canReject;
+
+    /**
+     * 是否允许流程中止（退出流程）
+     */
+    private Boolean canSuspension;
+
+    /**
+     * 移动端能否
+     */
+    private Boolean canMobile;
+
+
+    /**
+     * 流程任务引擎实际的任务签收时间
+     */
+    private Date actClaimTime;
+
+
+    /**
+     * 创建时间
+     */
+    private Date createdDate;
+
+    /**
+     * 流程节点任务类型
+     * JSON.parse(taskJsonDef).nodeType
+     */
+    private String nodeType;
+
+    /**
+     * 流程实例id
+     * flowInstance.id
+     */
+    private String flowInstanceId;
+
+    /**
+     * 业务ID
+     * flowInstance.businessId
+     */
+    private String flowInstanceBusinessId;
 
     /**
      * 业务单号
@@ -24,35 +78,10 @@ public class FlowTaskPhoneVo implements Serializable {
 
 
     /**
-     * 待办名称
-     */
-    private String taskName;
-
-
-    /**
-     * 待办名称
+     * 流程类型名称
      * flowInstance.flowDefVersion.flowDefination.flowType.name
      */
     private String flowTypeName;
-
-
-    /**
-     * 流程任务引擎实际的任务签收时间
-     */
-    private Date actClaimTime;
-
-
-    /**
-     * 创建时间
-     */
-    private Date createdDate;
-
-
-    /**
-     * 流程节点任务类型
-     * JSON.parse(taskJsonDef).nodeType
-     */
-    private String nodeType;
 
 
     /**
@@ -63,28 +92,6 @@ public class FlowTaskPhoneVo implements Serializable {
 
 
     /**
-     * 业务ID
-     * flowInstance.businessId
-     */
-    private String flowInstanceBusinessId;
-
-
-
-    /**
-     * 是否允许驳回
-     */
-    private Boolean canReject;
-
-
-
-    /**
-     * 流程实例id
-     * flowInstance.id
-     */
-    private String flowInstanceId;
-
-
-    /**
      * 提交地址
      *  ContextUtil.getGlobalProperty(flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.webBaseAddress) +
      *  flowInstance.flowDefVersion.flowDefination.flowType.businessModel.completeTaskServiceUrl
@@ -92,9 +99,29 @@ public class FlowTaskPhoneVo implements Serializable {
     private String completeTaskUrl;
 
 
+    public String getTaskId() {
+        return taskId;
+    }
 
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
+    public Boolean getCanSuspension() {
+        return canSuspension;
+    }
 
+    public void setCanSuspension(Boolean canSuspension) {
+        this.canSuspension = canSuspension;
+    }
+
+    public Boolean getCanMobile() {
+        return canMobile;
+    }
+
+    public void setCanMobile(Boolean canMobile) {
+        this.canMobile = canMobile;
+    }
 
     public String getFlowInstanceBusinessCode() {
         return flowInstanceBusinessCode;

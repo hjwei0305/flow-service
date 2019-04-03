@@ -1507,6 +1507,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 beanVo.setFlowInstanceBusinessId(bean.getFlowInstance().getBusinessId());
                 beanVo.setCanReject(bean.getCanReject());
                 beanVo.setFlowInstanceId(bean.getFlowInstance().getId());
+                beanVo.setCanSuspension(bean.getCanSuspension());
+                beanVo.setCanMobile(bean.getCanMobile());
+                beanVo.setTaskId(bean.getId());
 
                 String taskJsonDef = bean.getTaskJsonDef();
                 JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
