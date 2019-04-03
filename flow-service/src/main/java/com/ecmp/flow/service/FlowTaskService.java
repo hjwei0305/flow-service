@@ -21,6 +21,7 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
+import com.ecmp.flow.vo.phone.FlowTaskBatchPhoneVO;
 import com.ecmp.flow.vo.phone.FlowTaskPhoneVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
@@ -1419,6 +1420,73 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
     }
+
+
+
+    public PageResult<FlowTaskBatchPhoneVO> findByPageCanBatchApprovalOfMobile(String businessModelId, int page, int rows, String quickValue) {
+        Search search = new Search();
+        search.addQuickSearchProperty("flowName");
+        search.addQuickSearchProperty("taskName");
+        search.addQuickSearchProperty("flowInstance.businessCode");
+        search.addQuickSearchProperty("flowInstance.businessModelRemark");
+        search.addQuickSearchProperty("creatorName");
+        search.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        search.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
+        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        search.setSortOrders(list);
+
+        PageResult<FlowTask>    flowTaskPage =   this.findByPageCanBatchApprovalByBusinessModelId(businessModelId, search);
+        PageResult<FlowTaskBatchPhoneVO> phoneVoPage = new PageResult<FlowTaskBatchPhoneVO>();
+        phoneVoPage.setPage(flowTaskPage.getPage());
+        phoneVoPage.setRecords(flowTaskPage.getRecords());
+        phoneVoPage.setTotal(flowTaskPage.getTotal());
+        if(flowTaskPage.getRows()!=null&&flowTaskPage.getRows().size()>0){
+            List<FlowTask> taskList = flowTaskPage.getRows();
+            List<FlowTaskBatchPhoneVO> phoneVoList = new ArrayList<FlowTaskBatchPhoneVO>();
+            taskList.forEach(bean -> {
+                FlowTaskBatchPhoneVO beanVo = new FlowTaskBatchPhoneVO();
+                FlowType flowType = bean.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType();
+                beanVo.setFlowInstanceBusinessCode(bean.getFlowInstance().getBusinessCode());
+                beanVo.setTaskName(bean.getTaskName());
+                beanVo.setFlowTypeName(flowType.getName());
+                beanVo.setActClaimTime(bean.getActClaimTime());
+                beanVo.setCreatedDate(bean.getCreatedDate());
+                beanVo.setCanMobile(bean.getCanMobile());
+                beanVo.setTaskId(bean.getId());
+                beanVo.setFlowName(bean.getFlowName());
+
+                String taskJsonDef = bean.getTaskJsonDef();
+                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                String nodeType = taskJsonDefObj.get("nodeType") + "";
+                beanVo.setNodeType(nodeType);
+
+                String webBaseAddress =  ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                        webBaseAddress = "/" + webBaseAddress + "/";
+                    }
+                }
+                beanVo.setCompleteTaskUrl(webBaseAddress);
+                phoneVoList.add(beanVo);
+            });
+            phoneVoPage.setRows(phoneVoList);
+        }else{
+            phoneVoPage.setRows(new ArrayList<FlowTaskBatchPhoneVO>());
+        }
+
+        return phoneVoPage;
+    }
+
+
 
     public PageResult<FlowTask> findByPageCanBatchApprovalOfPhone(String businessModelId, String property, String direction, int page, int rows, String quickValue) {
         Search search = new Search();

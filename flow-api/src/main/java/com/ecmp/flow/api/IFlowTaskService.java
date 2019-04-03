@@ -8,6 +8,7 @@ import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.phone.FlowTaskBatchPhoneVO;
 import com.ecmp.flow.vo.phone.FlowTaskPhoneVo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -427,6 +428,27 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取可批量审批待办信息",notes = "测试")
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
+
+
+    /**
+     * 获取可批量审批待办信息(最新移动端)
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @return 可批量审批待办信息
+     */
+    @POST
+    @Path("findByPageCanBatchApprovalOfMobile")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取可批量审批待办信息(最新移动端)",notes = "获取可批量审批待办信息(最新移动端)")
+    PageResult<FlowTaskBatchPhoneVO> findByPageCanBatchApprovalOfMobile(
+            @QueryParam("businessModelId") String businessModelId,
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue);
+
 
     /**
      * 获取可批量审批待办信息(移动端)
