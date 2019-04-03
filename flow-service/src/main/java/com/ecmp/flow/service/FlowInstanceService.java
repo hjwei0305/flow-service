@@ -634,6 +634,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     /**
+     * 撤销流程实例（网关支持的模式）
+     * 清除有关联的流程版本及对应的流程引擎数据
+     *
+     * @param id 待操作数据ID
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResult endByFlowInstanceId(String id) {
+        return this.endCommon(id, false);
+    }
+
+    /**
      * 强制撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
      *

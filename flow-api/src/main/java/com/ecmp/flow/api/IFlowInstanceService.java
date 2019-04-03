@@ -236,6 +236,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "终止流程实例", notes = "终止")
     public OperateResult end(@PathParam("id") String id);
 
+
+    /**
+     * 撤销流程实例（网关支持的模式）
+     * 清除有关联的流程版本及对应的流程引擎数据
+     * @param id 待操作数据ID
+     * @return 操作结果
+     */
+    @POST
+    @Path("endByFlowInstanceId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "终止流程实例", notes = "终止")
+    OperateResult endByFlowInstanceId(@QueryParam("id") String id);
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
