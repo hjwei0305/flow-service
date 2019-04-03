@@ -34,6 +34,11 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private Boolean canMobile;
 
+    /**
+     * 是被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态为null,委托完成为3
+     */
+    private Integer trustState;
+
 
     /**
      * 流程任务引擎实际的任务签收时间
@@ -98,6 +103,14 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private String completeTaskUrl;
 
+
+    public Integer getTrustState() {
+        return trustState;
+    }
+
+    public void setTrustState(Integer trustState) {
+        this.trustState = trustState;
+    }
 
     public String getTaskId() {
         return taskId;

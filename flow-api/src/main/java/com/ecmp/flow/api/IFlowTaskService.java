@@ -486,7 +486,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 获取可批量审批待办信息
+     * 获取待办信息
      * @param searchConfig 查询条件
      * @param businessModelId 为空查询全部
      * @param appSign 应用标识
@@ -502,7 +502,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 获取可批量审批待办信息(最新移动端专用)
+     * 获取待办信息(最新移动端专用)
      * @param businessModelId 为空查询全部
      * @param page 当前页数
      * @param rows 每页条数
@@ -522,7 +522,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 获取可批量审批待办信息(移动端专用)
+     * 获取待办信息(移动端专用)
      * @param businessModelId 为空查询全部
      * @param property 需要排序的字段
      * @param direction 排序规则
