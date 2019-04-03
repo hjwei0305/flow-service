@@ -19,6 +19,7 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.DateUtils;
 import com.ecmp.vo.OperateResult;
@@ -1050,6 +1051,76 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             LogUtil.error(e.getMessage());
         }
         return responseData;
+    }
+
+
+
+    public PageResult<MyBillPhoneVO> getMyBillsOfMobile(int page, int rows, String quickValue, boolean ended) {
+        String creatorId = ContextUtil.getUserId();
+        Search search = new Search();
+        SearchFilter searchFilterCreatorId = new SearchFilter("creatorId", creatorId, SearchFilter.Operator.EQ);
+        search.addFilter(searchFilterCreatorId);
+        SearchFilter searchFiltereEnded = new SearchFilter("ended", ended, SearchFilter.Operator.EQ);
+        search.addFilter(searchFiltereEnded);
+
+
+        //根据业务单据名称、业务单据号、业务工作说明快速查询
+        search.addQuickSearchProperty("businessName");
+        search.addQuickSearchProperty("businessCode");
+        search.addQuickSearchProperty("businessModelRemark");
+        search.setQuickSearchValue(quickValue);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(page);
+        pageInfo.setRows(rows);
+        search.setPageInfo(pageInfo);
+
+        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
+        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        list.add(searchOrder);
+        search.setSortOrders(list);
+
+        PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
+        List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
+        PageResult<MyBillPhoneVO> results = new PageResult<MyBillPhoneVO>();
+        ArrayList<MyBillPhoneVO> data = new ArrayList<MyBillPhoneVO>();
+        if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+            List<String> flowInstanceIds = new ArrayList<String>();
+            for (FlowInstance f : flowInstanceList) {
+                FlowInstance parent = f.getParent();
+                if (parent != null) {
+                    flowInstancePageResult.setRecords(flowInstancePageResult.getRecords() - 1);
+                    continue;
+                }
+                flowInstanceIds.add(f.getId());
+                MyBillPhoneVO myBillVO = new MyBillPhoneVO();
+                myBillVO.setBusinessCode(f.getBusinessCode());
+                myBillVO.setBusinessId(f.getBusinessId());
+                myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
+                myBillVO.setCreatedDate(f.getCreatedDate());
+                myBillVO.setFlowName(f.getFlowName());
+                String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+                if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                    businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                }
+                myBillVO.setDetailUrl(f.getApiBaseAddressAbsolute()+businessDetailServiceUrl);
+                data.add(myBillVO);
+            }
+
+            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
+            if (canEnds != null && !canEnds.isEmpty()) {
+                for (int i = 0; i < canEnds.size(); i++) {
+                    data.get(i).setCanManuallyEnd(canEnds.get(i));
+                }
+            }
+        }
+        results.setRows(data);
+        results.setRecords(flowInstancePageResult.getRecords());
+        results.setPage(flowInstancePageResult.getPage());
+        results.setTotal(flowInstancePageResult.getTotal());
+
+        return  results;
     }
 
 

@@ -8,6 +8,7 @@ import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -350,6 +351,25 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "获取我的单据",notes = "获取我的单据")
     ResponseData getMyBills(Search searchConfig);
 
+
+    /**
+     * 获取我的单据（已办/待办）
+     * @param page 当前页数
+     * @param rows 每页条数
+     * @param quickValue 模糊查询字段内容
+     * @param ended 是否完成
+     * @return
+     */
+    @POST
+    @Path("getMyBillsOfMobile")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取我的单据(最新移动端专用)",notes = "获取我的单据(最新移动端专用)")
+    PageResult<MyBillPhoneVO> getMyBillsOfMobile(
+            @QueryParam("page") int page,
+            @QueryParam("rows") int rows,
+            @QueryParam("quickValue") String quickValue,
+            @QueryParam("ended") boolean ended);
     /**
      * 获取我的单据（已办/待办）
      * @param property 需要排序的字段
