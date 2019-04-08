@@ -1141,6 +1141,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return nodeInfoList;
     }
 
+    public List<NodeInfo> findNextNodesOfGateway(String id) throws NoSuchMethodException {
+        return this.findNextNodes(id);
+    }
+
     public List<NodeInfo> findNextNodes(String id) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
