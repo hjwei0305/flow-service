@@ -1855,20 +1855,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     Map<String, Object> v = new HashMap<String, Object>();
                     List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
 
+                    Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                    Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
                     if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                         for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                            allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
+                            List<String> userList = new ArrayList<String>();
                             String flowTaskType = f.getFlowTaskType();
-                            selectedNodesMap.put(f.getNodeId(), f.getNodeId());
+                            selectedNodesMap.put(f.getNodeId(),f.getNodeId());
                             if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                                 String userId = f.getUserIds().replaceAll(",", "");
                                 v.put(f.getUserVarName(), userId);
                             } else {
                                 String[] idArray = f.getUserIds().split(",");
-                                if (StringUtils.isNotEmpty(f.getUserVarName())) {
+                                if(StringUtils.isNotEmpty(f.getUserVarName())){
                                     v.put(f.getUserVarName(), idArray);
                                 }
+                                userList = Arrays.asList(idArray);
                             }
+                            selectedNodesUserMap.put(f.getNodeId(), userList);
                         }
+                        v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+                        v.put("selectedNodesUserMap", selectedNodesUserMap);
+                    }else{
+                        v.put("selectedNodesUserMap", selectedNodesUserMap);
+                        v.put("allowChooseInstancyMap", allowChooseInstancyMap);
                     }
                     v.put("approved", true);//针对会签时同意、不同意、弃权等操作
                     flowTaskBatchCompleteVO.setVariables(v);
