@@ -1179,6 +1179,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    public ApprovalHeaderVO getApprovalHeaderVoOfGateway(String id) {
+        return  this.getApprovalHeaderVO(id);
+    }
+
     public ApprovalHeaderVO getApprovalHeaderVO(String id) {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {

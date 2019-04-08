@@ -330,6 +330,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
+     * 获取当前流程抬头信息(兼容网关)
+     * @param id 任务id
+     * @return  当前任务流程抬头信息
+     */
+    @GET
+    @Path("getApprovalHeaderVoOfGateway")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "选择当前流程抬头信息(兼容网关)",notes = "获取当前流程抬头信息(兼容网关)")
+    ApprovalHeaderVO getApprovalHeaderVoOfGateway(@QueryParam("id") String id);
+
+
+    /**
      * 查询流程待办和任务汇总列表
      * @return  ResponseData.data是 List<TodoBusinessSummaryVO>
      */
