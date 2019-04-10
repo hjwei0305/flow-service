@@ -103,6 +103,12 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private String completeTaskUrl;
 
+
+    /**
+     * 模块api地址
+     */
+    private String apiBaseAddress;
+
     /**
      *表单明细地址
      *  ContextUtil.getGlobalProperty(flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.apiBaseAddress) +
@@ -110,6 +116,14 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private String businessDetailServiceUrl;
 
+
+    public String getApiBaseAddress() {
+        return apiBaseAddress;
+    }
+
+    public void setApiBaseAddress(String apiBaseAddress) {
+        this.apiBaseAddress = apiBaseAddress;
+    }
 
     public String getBusinessDetailServiceUrl() {
         return businessDetailServiceUrl;

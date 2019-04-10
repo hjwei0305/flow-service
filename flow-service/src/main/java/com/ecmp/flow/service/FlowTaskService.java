@@ -1597,6 +1597,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String nodeType = taskJsonDefObj.get("nodeType") + "";
                 beanVo.setNodeType(nodeType);
 
+                String apiBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
+                beanVo.setApiBaseAddress(apiBaseAddress);
+                beanVo.setBusinessDetailServiceUrl(bean.getBusinessDetailServiceUrl());
+
                 String webBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
@@ -1606,11 +1610,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
                 beanVo.setCompleteTaskUrl(webBaseAddress + flowType.getBusinessModel().getCompleteTaskServiceUrl());
-
-
-                String apiBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
-                beanVo.setBusinessDetailServiceUrl(apiBaseAddress + bean.getBusinessDetailServiceUrl());
-
 
                 phoneVoList.add(beanVo);
             });
