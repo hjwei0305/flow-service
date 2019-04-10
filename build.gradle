@@ -6,7 +6,7 @@ allprojects {
         repositories {
             mavenLocal()
             maven { url REPOSITORY }
-            mavenCentral()
+//            mavenCentral()
         }
 
         dependencies {
@@ -33,7 +33,7 @@ allprojects {
 
         maven { url REPOSITORY }
 
-        mavenCentral()
+//        mavenCentral()
     }
 
 }
