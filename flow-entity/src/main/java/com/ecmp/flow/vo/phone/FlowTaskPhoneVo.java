@@ -103,6 +103,21 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private String completeTaskUrl;
 
+    /**
+     *表单明细地址
+     *  ContextUtil.getGlobalProperty(flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.apiBaseAddress) +
+     *  businessDetailServiceUrl
+     */
+    private String businessDetailServiceUrl;
+
+
+    public String getBusinessDetailServiceUrl() {
+        return businessDetailServiceUrl;
+    }
+
+    public void setBusinessDetailServiceUrl(String businessDetailServiceUrl) {
+        this.businessDetailServiceUrl = businessDetailServiceUrl;
+    }
 
     public Integer getTrustState() {
         return trustState;

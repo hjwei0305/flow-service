@@ -148,17 +148,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 查看是否需要推送任务信息到basic模块
-     * @return  true或者false，true为需要推送
+     *
+     * @return true或者false，true为需要推送
      */
-    public boolean getBooleanPushTaskToBasic(){
+    public boolean getBooleanPushTaskToBasic() {
         Boolean pushBasic = false;
         String pushBasicStr = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_BASIC");
-        if(StringUtils.isNotEmpty(pushBasicStr)){
-            if("true".equalsIgnoreCase(pushBasicStr.trim())){
+        if (StringUtils.isNotEmpty(pushBasicStr)) {
+            if ("true".equalsIgnoreCase(pushBasicStr.trim())) {
                 pushBasic = true;
             }
         }
-        return  pushBasic;
+        return pushBasic;
     }
 
     /**
@@ -179,9 +180,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //是否推送信息到baisc
         Boolean pushBasic = this.getBooleanPushTaskToBasic();
         //需要异步推送删除待办信息到basic
-        if(pushBasic){
-            List<FlowTask> alllist =  flowTaskDao.findListByProperty("actTaskId",actTaskId);
-            List<FlowTask> needDelList =  alllist.stream().filter((a)->!a.getId().equalsIgnoreCase(flowTask.getId())).collect(Collectors.toList());
+        if (pushBasic) {
+            List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
+            List<FlowTask> needDelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(flowTask.getId())).collect(Collectors.toList());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -514,8 +515,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
 
             //需要异步推送待办转已办信息到basic
-            if(pushBasic){
-                List<FlowTask> list =new ArrayList<FlowTask>();
+            if (pushBasic) {
+                List<FlowTask> list = new ArrayList<FlowTask>();
                 list.add(flowTask);
                 new Thread(new Runnable() {
                     @Override
@@ -528,9 +529,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowTaskDao.delete(flowTask);
             if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
                 //需要异步推送删除待办信息到basic
-                if(pushBasic){
-                   List<FlowTask> alllist =  flowTaskDao.findListByProperty("actTaskId",actTaskId);
-                   List<FlowTask> needDelList =  alllist.stream().filter((a)->!a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
+                if (pushBasic) {
+                    List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
+                    List<FlowTask> needDelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -585,7 +586,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
             flowSolidifyExecutorDao.deleteByBusinessId(flowInstance.getBusinessId());//查看是否为固化流程（如果是固化流程删除固化执行人列表）
             //需要异步推送归档信息到basic
-            if(pushBasic){
+            if (pushBasic) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -873,9 +874,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //                    }, params);
-                    params.put("userIds",Arrays.asList(startUserId));
+                    params.put("userIds", Arrays.asList(startUserId));
                     String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                    List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+                    }, params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -891,9 +893,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //                    }, params);
-                    params.put("userIds",Arrays.asList(startUserId));
+                    params.put("userIds", Arrays.asList(startUserId));
                     String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                    List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+                    }, params);
                     if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                         Set<Executor> employeeSet = new HashSet<Executor>();
                         employeeSet.addAll(employees);
@@ -979,9 +982,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //                            }, params);
 
-                            params.put("userIds",Arrays.asList(startUserId));
+                            params.put("userIds", Arrays.asList(startUserId));
                             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                            employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+                            }, params);
                         } else {
                             String selfDefId = (String) executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
@@ -1022,20 +1026,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                                        String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //                                        List<Executor> startUser = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //                                        }, params);
-                                        params.put("userIds",Arrays.asList(startUserId));
+                                        params.put("userIds", Arrays.asList(startUserId));
                                         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                                        List<Executor> startUser= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                                        List<Executor> startUser = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+                                        }, params);
                                         if (startUser != null && startUser.size() > 0) {  //岗位类别需要流程发起人的组织机构id
-                                            String startOrBusinessOrgId ="";
-                                            if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
+                                            String startOrBusinessOrgId = "";
+                                            if (StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())) {
                                                 startOrBusinessOrgId = startUser.get(0).getOrganizationId();
-                                            }else{
+                                            } else {
                                                 HistoricTaskInstance currTask = historyService
                                                         .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                                                         .singleResult();
                                                 String executionId = currTask.getExecutionId();
-                                                Map<String, VariableInstance>      processVariables= runtimeService.getVariableInstances(executionId);
-                                                String currentOrgId = processVariables.get("orgId").getValue()+"";
+                                                Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+                                                String currentOrgId = processVariables.get("orgId").getValue() + "";
                                                 startOrBusinessOrgId = currentOrgId;
                                             }
                                             employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
@@ -1180,8 +1185,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public ApprovalHeaderVO getApprovalHeaderVoOfGateway(String id) {
-        return  this.getApprovalHeaderVO(id);
+        return this.getApprovalHeaderVO(id);
     }
+
 
     public ApprovalHeaderVO getApprovalHeaderVO(String id) {
         FlowTask flowTask = flowTaskDao.findOne(id);
@@ -1298,17 +1304,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public ResponseData  listFlowTaskHeader(){
-        ResponseData  responseData = new ResponseData();
-        try{
+    public ResponseData listFlowTaskHeader() {
+        ResponseData responseData = new ResponseData();
+        try {
             List<TodoBusinessSummaryVO> list = this.findTaskSumHeader("");
             responseData.setData(list);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.error(e.getMessage());
             responseData.setSuccess(false);
             responseData.setMessage("操作失败！");
         }
-        return  responseData;
+        return responseData;
     }
 
     /**
@@ -1429,8 +1435,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskPageResult;
     }
 
-
-
     public PageResult<FlowTaskBatchPhoneVO> findByPageCanBatchApprovalOfMobile(String businessModelId, int page, int rows, String quickValue) {
         Search search = new Search();
         search.addQuickSearchProperty("flowName");
@@ -1450,12 +1454,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         list.add(searchOrder);
         search.setSortOrders(list);
 
-        PageResult<FlowTask>    flowTaskPage =   this.findByPageCanBatchApprovalByBusinessModelId(businessModelId, search);
+        PageResult<FlowTask> flowTaskPage = this.findByPageCanBatchApprovalByBusinessModelId(businessModelId, search);
         PageResult<FlowTaskBatchPhoneVO> phoneVoPage = new PageResult<FlowTaskBatchPhoneVO>();
         phoneVoPage.setPage(flowTaskPage.getPage());
         phoneVoPage.setRecords(flowTaskPage.getRecords());
         phoneVoPage.setTotal(flowTaskPage.getTotal());
-        if(flowTaskPage.getRows()!=null&&flowTaskPage.getRows().size()>0){
+        if (flowTaskPage.getRows() != null && flowTaskPage.getRows().size() > 0) {
             List<FlowTask> taskList = flowTaskPage.getRows();
             List<FlowTaskBatchPhoneVO> phoneVoList = new ArrayList<FlowTaskBatchPhoneVO>();
             taskList.forEach(bean -> {
@@ -1475,7 +1479,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String nodeType = taskJsonDefObj.get("nodeType") + "";
                 beanVo.setNodeType(nodeType);
 
-                String webBaseAddress =  ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                String webBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -1487,13 +1491,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 phoneVoList.add(beanVo);
             });
             phoneVoPage.setRows(phoneVoList);
-        }else{
+        } else {
             phoneVoPage.setRows(new ArrayList<FlowTaskBatchPhoneVO>());
         }
 
         return phoneVoPage;
     }
-
 
 
     public PageResult<FlowTask> findByPageCanBatchApprovalOfPhone(String businessModelId, String property, String direction, int page, int rows, String quickValue) {
@@ -1539,8 +1542,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskPageResult;
     }
 
+
     /**
-     *  获取可批量审批待办信息(最新移动端专用)
+     * 获取可批量审批待办信息(最新移动端专用)
      */
     public FlowTaskPageResultVO<FlowTaskPhoneVo> findByBusinessModelIdWithAllCountOfMobile(String businessModelId, int page, int rows, String quickValue) {
         Search search = new Search();
@@ -1561,13 +1565,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         list.add(searchOrder);
         search.setSortOrders(list);
 
-        FlowTaskPageResultVO<FlowTask>  flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, "", search);
+        FlowTaskPageResultVO<FlowTask> flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, "", search);
         FlowTaskPageResultVO<FlowTaskPhoneVo> phoneVoPage = new FlowTaskPageResultVO<FlowTaskPhoneVo>();
         phoneVoPage.setAllTotal(flowTaskPage.getAllTotal());
         phoneVoPage.setPage(flowTaskPage.getPage());
         phoneVoPage.setRecords(flowTaskPage.getRecords());
         phoneVoPage.setTotal(flowTaskPage.getTotal());
-        if(flowTaskPage.getAllTotal()!=0&&flowTaskPage.getRows()!=null&&flowTaskPage.getRows().size()>0){
+        if (flowTaskPage.getAllTotal() != 0 && flowTaskPage.getRows() != null && flowTaskPage.getRows().size() > 0) {
             List<FlowTask> taskList = flowTaskPage.getRows();
             List<FlowTaskPhoneVo> phoneVoList = new ArrayList<FlowTaskPhoneVo>();
             taskList.forEach(bean -> {
@@ -1593,7 +1597,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String nodeType = taskJsonDefObj.get("nodeType") + "";
                 beanVo.setNodeType(nodeType);
 
-               String webBaseAddress =  ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                String webBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -1601,17 +1605,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         webBaseAddress = "/" + webBaseAddress + "/";
                     }
                 }
-                beanVo.setCompleteTaskUrl(webBaseAddress+flowType.getBusinessModel().getCompleteTaskServiceUrl());
+                beanVo.setCompleteTaskUrl(webBaseAddress + flowType.getBusinessModel().getCompleteTaskServiceUrl());
+
+                String apiBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
+                beanVo.setBusinessDetailServiceUrl(apiBaseAddress + bean.getBusinessDetailServiceUrl());
+
                 phoneVoList.add(beanVo);
             });
             phoneVoPage.setRows(phoneVoList);
-        }else{
+        } else {
             phoneVoPage.setRows(new ArrayList<FlowTaskPhoneVo>());
         }
 
         return phoneVoPage;
     }
-
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCountOfPhone(String businessModelId, String property,
                                                                                    String direction, int page, int rows, String quickValue) {
@@ -1646,17 +1653,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     @Override
-    public ResponseData  listFlowTaskWithAllCount(Search search,String modelId){
+    public ResponseData listFlowTaskWithAllCount(Search search, String modelId) {
         ResponseData responseData = new ResponseData();
-        try{
-            FlowTaskPageResultVO<FlowTask>  resVo = this.findByBusinessModelIdWithAllCount(modelId,"",search);
+        try {
+            FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, "", search);
             responseData.setData(resVo);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.error(e.getMessage());
             responseData.setSuccess(false);
             responseData.setMessage("操作失败！");
         }
-        return   responseData;
+        return responseData;
     }
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
@@ -1870,13 +1877,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
                             List<String> userList = new ArrayList<String>();
                             String flowTaskType = f.getFlowTaskType();
-                            selectedNodesMap.put(f.getNodeId(),f.getNodeId());
+                            selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                             if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                                 String userId = f.getUserIds().replaceAll(",", "");
                                 v.put(f.getUserVarName(), userId);
                             } else {
                                 String[] idArray = f.getUserIds().split(",");
-                                if(StringUtils.isNotEmpty(f.getUserVarName())){
+                                if (StringUtils.isNotEmpty(f.getUserVarName())) {
                                     v.put(f.getUserVarName(), idArray);
                                 }
                                 userList = Arrays.asList(idArray);
@@ -1885,7 +1892,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         v.put("allowChooseInstancyMap", allowChooseInstancyMap);
                         v.put("selectedNodesUserMap", selectedNodesUserMap);
-                    }else{
+                    } else {
                         v.put("selectedNodesUserMap", selectedNodesUserMap);
                         v.put("allowChooseInstancyMap", allowChooseInstancyMap);
                     }
@@ -1955,9 +1962,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //            }, params);
-            params.put("userIds",Arrays.asList(userId));
+            params.put("userIds", Arrays.asList(userId));
             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            }, params);
             if (employees != null && !employees.isEmpty()) {
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
@@ -1995,7 +2003,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistoryDao.save(flowHistory);
                 //是否推送信息到baisc
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                if(pushBasic){
+                if (pushBasic) {
                     //删除待办
                     List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
@@ -2008,7 +2016,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
-                if(pushBasic){
+                if (pushBasic) {
                     //新增待办
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
@@ -2040,9 +2048,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //            }, params);
-            params.put("userIds",Arrays.asList(userId));
+            params.put("userIds", Arrays.asList(userId));
             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            }, params);
             if (employees != null && !employees.isEmpty()) {
                 Executor executor = employees.get(0);
                 FlowTask newFlowTask = new FlowTask();
@@ -2063,7 +2072,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setTrustOwnerTaskId(flowTask.getId());
                 //是否推送信息到baisc
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                if(pushBasic){
+                if (pushBasic) {
                     //删除待办推送basic
                     List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
@@ -2076,7 +2085,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
-                if(pushBasic){
+                if (pushBasic) {
                     //新增待办推送basic
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
@@ -2118,9 +2127,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
 //                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
 //                }, params);
-                params.put("userIds",userList);
+                params.put("userIds", userList);
                 String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                result= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+                }, params);
             } else {
                 throw new FlowException("非会签节点！");
             }
@@ -2621,7 +2631,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             message.setContentTemplateCode("EMAIL_TEMPLATE_TODO_WARN");//模板代码
 
             message.setCanToSender(false);
-            INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+//            INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+            INotifyService iNotifyService = ContextUtil.getBean(INotifyService.class);
             message.setSubject("催办提醒");
             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
             notifyTypes.add(NotifyType.Email);
@@ -2699,18 +2710,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 推送待办到basic模块
+     *
      * @param taskList 需要推送的待办
      */
     @Override
-    public void pushNewTaskToBasic(List<FlowTask> taskList){
-        if(taskList!=null && taskList.size()>0){
+    public void pushNewTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
-            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
-            String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
-            try{
-                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
-            }catch (Exception e){
+            String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
                 messageLog += "-推送待办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
             }
@@ -2720,18 +2733,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 推送新的已办到basic模块
+     *
      * @param taskList 需要推送的已办（刚执行完成的）
      */
     @Override
-    public void pushOldTaskToBasic(List<FlowTask> taskList){
-        if(taskList!=null && taskList.size()>0){
+    public void pushOldTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
-            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
-            String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
-            try{
-                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
-            }catch (Exception e){
+            String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
                 messageLog += "-推送已办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
             }
@@ -2740,18 +2755,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 推送需要删除的待办到basic模块
+     *
      * @param taskList 需要删除的待办
      */
     @Override
-    public void pushDelTaskToBasic(List<FlowTask> taskList){
-        if(taskList!=null && taskList.size()>0){
+    public void pushDelTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
-            taskList.forEach(a->idList.add("【id="+a.getId()+"】"));
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
-            String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);;
-            try{
-                ApiClient.postViaProxyReturnResult(url,Void.class,taskList);
-            }catch (Exception e){
+            String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
                 messageLog += "-推送删除待办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
             }
@@ -2760,16 +2777,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 推送需要归档（终止）的任务到basic模块
+     *
      * @param task 需要终止的任务
      */
     @Override
-    public void pushEndTaskToBasic(FlowTask task){
-        if(task!=null){
+    public void pushEndTaskToBasic(FlowTask task) {
+        if (task != null) {
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
-            try{
-                ApiClient.postViaProxyReturnResult(url,Void.class,task);
-            }catch (Exception e){
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, task);
+            } catch (Exception e) {
                 messageLog += "-推送归档任务异常：" + e.getMessage();
                 LogUtil.error(messageLog);
             }
@@ -2777,9 +2795,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-
     @Override
-    public void pushTaskToBusinessModel(String businessModelCode, String businessId,String taskId) {
+    public void pushTaskToBusinessModel(String businessModelCode, String businessId, String taskId) {
         if (StringUtils.isNotEmpty(businessId)) {
             BusinessModel businessModel = null;
             if (StringUtils.isEmpty(businessModelCode)) {
@@ -2797,12 +2814,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (responseData.getSuccess()) {
                     List<FlowTask> list = (List<FlowTask>) responseData.getData();
                     if (list != null && list.size() > 0) {
-                         if(StringUtils.isNotEmpty(taskId)){ //已办信息
-                             FlowTask flowTask  = new FlowTask();
-                             flowTask.setId(taskId);
-                             flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
-                             list.add(flowTask);
-                         }
+                        if (StringUtils.isNotEmpty(taskId)) { //已办信息
+                            FlowTask flowTask = new FlowTask();
+                            flowTask.setId(taskId);
+                            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
+                            list.add(flowTask);
+                        }
                         String pushMsgUrl = businessModel.getPushMsgUrl();
                         String flowPushTaskUrl = "";
                         if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
@@ -2818,7 +2835,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
 
                         List<String> idList = new ArrayList<String>();
-                        list.forEach(a->idList.add("【是否已处理："+a.getTaskStatus()+"-id="+a.getId()+"】"));
+                        list.forEach(a -> idList.add("【是否已处理：" + a.getTaskStatus() + "-id=" + a.getId() + "】"));
                         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
                             String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
                             try {
@@ -2890,10 +2907,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 try {
                     if (startUser != null && startUser.size() > 0) {
-                        String startOrBusinessOrgId ="";
-                        if(StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())){
+                        String startOrBusinessOrgId = "";
+                        if (StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())) {
                             startOrBusinessOrgId = startUser.get(0).getOrganizationId();
-                        }else{
+                        } else {
                             startOrBusinessOrgId = orgId;
                         }
                         executors = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
