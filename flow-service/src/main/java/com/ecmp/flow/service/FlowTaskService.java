@@ -1607,8 +1607,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 beanVo.setCompleteTaskUrl(webBaseAddress + flowType.getBusinessModel().getCompleteTaskServiceUrl());
 
+
                 String apiBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
                 beanVo.setBusinessDetailServiceUrl(apiBaseAddress + bean.getBusinessDetailServiceUrl());
+
 
                 phoneVoList.add(beanVo);
             });
