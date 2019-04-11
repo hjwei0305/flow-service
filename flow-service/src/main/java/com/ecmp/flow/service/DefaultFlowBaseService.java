@@ -200,7 +200,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         v.put(callActivityPath + "/" + f.getUserVarName(), f.getUserIds());
                     } else {
                         String[] idArray = f.getUserIds().split(",");
-                        v.put(callActivityPath + "/" + f.getUserVarName(), idArray);
+                        v.put(callActivityPath + "/" + f.getUserVarName(), Arrays.asList(idArray));
                     }
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
@@ -210,7 +210,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         v.put(f.getUserVarName(), f.getUserIds());
                     } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
 
-                        v.put(f.getUserVarName(), idArray);
+                        v.put(f.getUserVarName(), Arrays.asList(idArray));
                     }
                     userList = Arrays.asList(idArray);
                 }
