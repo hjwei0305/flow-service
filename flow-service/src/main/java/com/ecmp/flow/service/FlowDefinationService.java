@@ -1179,6 +1179,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return flowDefVersion;
     }
 
+    public ResponseData resetPositionOfGateway(String id) {
+        return  resetPosition(id);
+    }
+
+
     public ResponseData resetPosition(String id) {
         ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(id)) {
@@ -1433,6 +1438,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     private void initTask(FlowInstance flowInstance, Map<String, Object> variables) {
         flowTaskTool.initTask(flowInstance, null, null, variables);
+    }
+
+    public OperateResultWithData<FlowDefination> changeStatusOfGateway(String id, FlowDefinationStatus status) {
+        return  changeStatus(id,status);
     }
 
     public OperateResultWithData<FlowDefination> changeStatus(String id, FlowDefinationStatus status) {

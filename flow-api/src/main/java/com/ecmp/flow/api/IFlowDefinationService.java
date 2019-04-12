@@ -181,6 +181,21 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     ResponseData resetPosition(@PathParam("id") String id);
 
 
+
+    /**
+     * 重置流程图位置(兼容网关)
+     *
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("resetPositionOfGateway")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程定义key重置流程图位置(兼容网关)", notes = "通过流程定义key重置流程图位置(兼容网关)")
+    ResponseData resetPositionOfGateway(@QueryParam("id") String id);
+
+
 //    /**
 //     * 通过businessModelCode启动流程实体
 //     * @param typeCode typeCode 类型代码
@@ -224,6 +239,22 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体", notes = "测试 json流程定义保存实体")
     public OperateResultWithData<FlowDefination> changeStatus(@PathParam("id") String id, @PathParam("status") FlowDefinationStatus status);
+
+
+    /**
+     * 切换版本状态（兼容网关）
+     *
+     * @param id     单据id
+     * @param status 状态
+     * @return 操作结果
+     */
+    @POST
+    @Path("changeStatusOfGateway")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "json流程定义保存实体（兼容网关）", notes = "json流程定义保存实体（兼容网关）")
+    OperateResultWithData<FlowDefination> changeStatusOfGateway(@QueryParam("id") String id, @QueryParam("status") FlowDefinationStatus status);
+
 
 
     /**
