@@ -44,7 +44,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     @Override
-    public ResponseData startFlowNew(StartFlowVo startFlowVo)throws NoSuchMethodException, SecurityException {
+    public ResponseData startFlow(StartFlowVo startFlowVo)throws NoSuchMethodException, SecurityException {
         ResponseData responseData = new ResponseData();
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal

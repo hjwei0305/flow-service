@@ -59,17 +59,21 @@ public interface IDefaultFlowBaseService {
 
 
     /**
-     * 通过流程定义key启动流程
+     * 启动流程
+     *
+     * 提供三种调用方式：
+     * 第一种参数传businessModelCode（业务实体类路径）和businessKey（业务实体id），会返回给你flowTypeList（流程类型）一个或多个 ，nodeInfoList（节点信息，包含执行人信息）里面默认只是显示第一个类型的节点信息
+     * 第二种参数传businessModelCode（业务实体类路径）和businessKey（业务实体id）和typeId（指定的流程类型），会返回给你flowTypeList（流程类型）一个，nodeInfoList（指定流程类型的节点信息，包含执行人信息）
+     * 第三种是封装参数真正的流程启动
      * @return
      */
     @POST
     @Path("startFlowNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过流程定义key启动流程", notes = "通过流程定义key启动流程")
+    @ApiOperation(value = "启动流程", notes = "启动流程")
     @IgnoreCheckAuth
-    ResponseData startFlowNew(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
-
+    ResponseData startFlow(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
 
 
     /**
