@@ -2,6 +2,7 @@ package com.ecmp.flow.api;
 
 
 import com.ecmp.annotation.IgnoreCheckAuth;
+import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -55,6 +56,20 @@ public interface IDefaultFlowBaseService {
                            @QueryParam("flowDefKey") String flowDefKey,
                            @QueryParam("taskList") String taskList,
                            @QueryParam("anonymousNodeId") String anonymousNodeId) throws NoSuchMethodException, SecurityException;
+
+
+    /**
+     * 通过流程定义key启动流程
+     * @return
+     */
+    @POST
+    @Path("startFlowNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程定义key启动流程", notes = "通过流程定义key启动流程")
+    @IgnoreCheckAuth
+    ResponseData startFlowNew(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
+
 
 
     /**
