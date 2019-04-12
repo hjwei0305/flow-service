@@ -296,7 +296,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     @Override
-    public ResponseData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public ResponseData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr, Boolean solidifyFlow) throws NoSuchMethodException {
         ResponseData responseData = new ResponseData();
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
@@ -304,22 +304,35 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             includeNodeIds = Arrays.asList(includeNodeIdsStringArray);
         }
         if (StringUtils.isEmpty(approved)) {
-            approved = "APPROVED";
+            approved="true";
         }
-        List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+        List<NodeInfo> nodeInfoList = null;
+        try {
+            nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+        }catch (Exception e){
+            responseData.setSuccess(false);
+            responseData.setMessage("任务不存在，可能已经被处理");
+            return responseData;
+        }
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             responseData.setSuccess(true);
             responseData.setMessage("成功");
-            if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+            if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
                 responseData.setData("EndEvent");
-            } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
+            }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
                 responseData.setData("CounterSignNotEnd");
-            } else {
+            }else {
+                if(solidifyFlow!=null&&solidifyFlow==true){ //表示为固化流程（不返回下一步执行人信息）
+                    nodeInfoList.forEach(nodeInfo->nodeInfo.setExecutorSet(null));
+                }
                 responseData.setData(nodeInfoList);
             }
-        } else {
+        }else if(nodeInfoList == null) {
             responseData.setSuccess(false);
             responseData.setMessage("任务不存在，可能已经被处理");
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("当前表单规则找不到符合条件的分支");
         }
         return responseData;
     }

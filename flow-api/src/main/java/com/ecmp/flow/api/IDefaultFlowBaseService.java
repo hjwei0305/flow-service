@@ -161,7 +161,8 @@ public interface IDefaultFlowBaseService {
     @IgnoreCheckAuth
     ResponseData getSelectedNodesInfo(@QueryParam("taskId") String taskId,
                                       @QueryParam("approved") String approved,
-                                      @QueryParam("includeNodeIdsStr") String includeNodeIdsStr) throws NoSuchMethodException;
+                                      @QueryParam("includeNodeIdsStr") String includeNodeIdsStr,
+                                      @QueryParam("solidifyFlow") Boolean solidifyFlow) throws NoSuchMethodException;
 
 
     /**
