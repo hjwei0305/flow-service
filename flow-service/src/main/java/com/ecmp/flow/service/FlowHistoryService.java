@@ -186,6 +186,9 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         }else{
             historyVoPage.setRows(new ArrayList<FlowHistoryPhoneVo>());
         }
+        historyVoPage.setPage(historyPage.getPage());
+        historyVoPage.setRecords(historyPage.getRecords());
+        historyVoPage.setTotal(historyPage.getTotal());
         return historyVoPage;
     }
 
