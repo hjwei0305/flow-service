@@ -13,8 +13,11 @@ import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,30 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     protected BaseEntityDao<BusinessModel> getDao(){
         return this.businessModelDao;
+    }
+
+    @Override
+    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id) {
+        ResponseData responseData = new ResponseData();
+        if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
+            Map<String,Object> params = new HashMap();
+            params.put("businessModelCode",businessModelCode);
+            params.put("id",id);
+            String messageLog = "开始调用‘表单明细’接口（移动端），接口url="+url+",参数值"+ JsonUtils.toJson(params);
+            try{
+                Map<String,Object>  properties = ApiClient.getEntityViaProxy(url,new GenericType<Map<String,Object>>() {},params);
+                responseData.setData(properties);
+            }catch (Exception e){
+                messageLog+="表单明细接口调用异常："+e.getMessage();
+                logger.error(messageLog);
+                responseData.setSuccess(false);
+                responseData.setMessage("接口调用异常，请查看日志！");
+            }
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+        }
+        return responseData;
     }
 
 
