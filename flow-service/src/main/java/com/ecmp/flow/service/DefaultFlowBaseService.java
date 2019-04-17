@@ -151,6 +151,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         return responseData;
     }
 
+    @Override
+    public ResponseData completeTask(CompleteTaskVo completeTaskVo)throws Exception {
+        return  this.completeTask(completeTaskVo.getTaskId(),completeTaskVo.getBusinessId(),
+                completeTaskVo.getOpinion(),completeTaskVo.getTaskList(),completeTaskVo.getEndEventId(),
+                completeTaskVo.isManualSelected(),completeTaskVo.getApproved(),completeTaskVo.getLoadOverTime());
+    }
+
 
     @Override
     public ResponseData completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId,

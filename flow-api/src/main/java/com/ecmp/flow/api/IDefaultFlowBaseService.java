@@ -1,7 +1,7 @@
 package com.ecmp.flow.api;
 
 
-import com.ecmp.annotation.IgnoreCheckAuth;
+import com.ecmp.flow.vo.CompleteTaskVo;
 import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
@@ -48,7 +48,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程定义key启动流程", notes = "通过流程定义key启动流程")
-    @IgnoreCheckAuth
     ResponseData startFlow(@QueryParam("businessModelCode") String businessModelCode,
                            @QueryParam("businessKey") String businessKey,
                            @QueryParam("opinion") String opinion,
@@ -72,7 +71,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "启动流程", notes = "启动流程")
-    @IgnoreCheckAuth
     ResponseData startFlow(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
 
 
@@ -87,8 +85,19 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "签收任务", notes = "签收任务")
-    @IgnoreCheckAuth
     ResponseData claimTask(@QueryParam("taskId") String taskId);
+
+
+    /**
+     * 通过VO对象完成任务
+     * @return 操作结果
+     */
+    @POST
+    @Path("completeTaskNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过VO对象完成任务", notes = "通过VO对象完成任务")
+    ResponseData completeTask(CompleteTaskVo completeTaskVo) throws Exception;
 
 
     /**
@@ -109,7 +118,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "完成任务", notes = "完成任务")
-    @IgnoreCheckAuth
     ResponseData completeTask(@QueryParam("taskId") String taskId,
                               @QueryParam("businessId") String businessId,
                               @QueryParam("opinion") String opinion,
@@ -131,7 +139,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = " 回退（撤销）任务", notes = " 回退（撤销）任务")
-    @IgnoreCheckAuth
     ResponseData rollBackTo(@QueryParam("preTaskId") String preTaskId, @QueryParam("opinion") String opinion) throws CloneNotSupportedException;
 
 
@@ -147,7 +154,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "任务驳回", notes = "任务驳回")
-    @IgnoreCheckAuth
     ResponseData rejectTask(@QueryParam("taskId") String taskId, @QueryParam("opinion") String opinion) throws Exception;
 
 
@@ -162,7 +168,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取当前审批任务的决策信息", notes = "获取当前审批任务的决策信息")
-    @IgnoreCheckAuth
     ResponseData nextNodesInfo(@QueryParam("taskId") String taskId) throws NoSuchMethodException;
 
 
@@ -177,7 +182,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取下一步的节点信息任务", notes = "获取下一步的节点信息任务")
-    @IgnoreCheckAuth
     ResponseData getSelectedNodesInfo(@QueryParam("taskId") String taskId,
                                       @QueryParam("approved") String approved,
                                       @QueryParam("includeNodeIdsStr") String includeNodeIdsStr,
@@ -195,7 +199,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取下一步的节点信息任务(带用户信息)", notes = "获取下一步的节点信息任务(带用户信息)")
-    @IgnoreCheckAuth
     ResponseData nextNodesInfoWithUser(@QueryParam("taskId") String taskId) throws NoSuchMethodException;
 
 
@@ -210,7 +213,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取任务抬头信息信息任务", notes = "获取任务抬头信息信息任务")
-    @IgnoreCheckAuth
     ResponseData getApprovalHeaderInfo(@QueryParam("taskId") String taskId);
 
     /**
@@ -224,7 +226,6 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "流程实例id获取任务抬头信息", notes = "流程实例id获取任务抬头信息")
-    @IgnoreCheckAuth
     ResponseData getApprovalHeaderByInstanceId(@QueryParam("instanceId") String instanceId);
 
 
@@ -237,7 +238,6 @@ public interface IDefaultFlowBaseService {
     @POST
     @Path("findTasksByBusinessId")
     @ApiOperation(value = "获取待办任务", notes = "通过业务单据Id获取待办任务（不包含子流程）")
-    @IgnoreCheckAuth
     ResponseData findTasksByBusinessId(@QueryParam("businessId") String businessId);
 
 
