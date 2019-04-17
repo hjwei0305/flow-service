@@ -213,6 +213,20 @@ public interface IDefaultFlowBaseService {
     @IgnoreCheckAuth
     ResponseData getApprovalHeaderInfo(@QueryParam("taskId") String taskId);
 
+    /**
+     * 通过流程实例id获取任务抬头信息信息任务
+     *
+     * @param instanceId  流程实例id
+     * @return 操作结果
+     */
+    @POST
+    @Path("getApprovalHeaderByInstanceId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "流程实例id获取任务抬头信息", notes = "流程实例id获取任务抬头信息")
+    @IgnoreCheckAuth
+    ResponseData getApprovalHeaderByInstanceId(@QueryParam("instanceId") String instanceId);
+
 
     /**
      * 通过业务单据Id获取待办任务（中泰要求新增的功能:不包含子流程信息）

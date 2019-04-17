@@ -1258,4 +1258,25 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
+    public ApprovalHeaderVO getApprovalHeaderVo(String id) {
+        FlowInstance flowInstance = flowInstanceDao.findOne(id);
+        if (flowInstance == null) {
+            return null;
+        }
+        ApprovalHeaderVO result = new ApprovalHeaderVO();
+        result.setBusinessId(flowInstance.getBusinessId());
+        result.setBusinessCode(flowInstance.getBusinessCode());
+        result.setCreateUser(flowInstance.getCreatorName());
+        result.setCreateTime(flowInstance.getCreatedDate());
+        result.setWorkAndAdditionRemark(flowInstance.getBusinessModelRemark());
+        //判断是否是固化流程
+        if (flowInstance.getFlowDefVersion().getSolidifyFlow() == null
+                || flowInstance.getFlowDefVersion().getSolidifyFlow() == false) {
+            result.setSolidifyFlow(false);
+        } else {
+            result.setSolidifyFlow(true);
+        }
+        return result;
+    }
+
 }

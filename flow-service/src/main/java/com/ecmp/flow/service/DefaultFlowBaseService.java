@@ -3,9 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
-import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
-import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.*;
 import com.ecmp.vo.OperateResult;
@@ -41,6 +39,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private FlowTaskService flowTaskService;
     @Autowired
     private FlowSolidifyExecutorService flowSolidifyExecutorService;
+    @Autowired
+    private FlowInstanceService flowInstanceService;
 
 
     @Override
@@ -357,6 +357,21 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         return responseData;
     }
 
+
+    @Override
+    public ResponseData getApprovalHeaderByInstanceId(String instanceId) {
+        ResponseData responseData = new ResponseData();
+        ApprovalHeaderVO approvalHeaderVO = flowInstanceService.getApprovalHeaderVo(instanceId);
+        if (approvalHeaderVO != null) {
+            responseData.setSuccess(true);
+            responseData.setMessage("成功");
+            responseData.setData(approvalHeaderVO);
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("任务不存在，可能已经被处理");
+        }
+        return responseData;
+    }
 
     @Override
     public ResponseData getApprovalHeaderInfo(String taskId) {
