@@ -4,7 +4,6 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
-import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
@@ -2073,6 +2072,7 @@ public class FlowTaskTool {
         if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
             Map<String, Object> params = new HashMap();
             params.put("positionIds", idList);
+            params.put("orgId", orgId); //这个参数其实平台上没用、只是中泰有定制的接口在用
             String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
             employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
             }, params);

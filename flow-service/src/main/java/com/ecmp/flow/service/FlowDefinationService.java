@@ -761,25 +761,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             throw new FlowException("SelfDefinition's selfDefId is null exception!");
                         }
                     } else {
-                        if ("PositionType".equalsIgnoreCase(userType)) {
-                            String startUserId = flowStartVO.getStartUserId();
-                            if (StringUtils.isEmpty(startUserId)) {
-                                startUserId = ContextUtil.getSessionUser().getUserId();
-                            }
-                            List<Executor> startUser = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-                            if (startUser != null && startUser.size() > 0) {
-                                String startOrBusinessOrgId = "";
-                                if (StringUtils.isNotEmpty(startUser.get(0).getOrganizationId())) {
-                                    startOrBusinessOrgId = startUser.get(0).getOrganizationId();
-                                } else {
-                                    startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
-                                }
-                                employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
-                            }
-                        } else {
-                            employees = flowTaskTool.getExecutors(userType, ids, null);
-                        }
-
+                        //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
+                        String  startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
+                        employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
                     }
                 }
             }
