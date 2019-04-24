@@ -108,6 +108,21 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
      * @throws ClassNotFoundException
      */
     @POST
+    @Path("getProperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询条件属性", notes = "查询条件属性")
+    ResponseData getProperties(@QueryParam("businessModelCode") String businessModelCode)throws ClassNotFoundException;
+
+
+    /**
+     * 查询条件属性
+     *
+     * @param businessModelCode 业务实体代码
+     * @return 实体对象
+     * @throws ClassNotFoundException
+     */
+    @POST
     @Path("getPropertiesForConditionPojo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

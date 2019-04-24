@@ -79,30 +79,48 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
 
     @Override
-    public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException{
-        Map<String, String> result=null;
-        List<ConditionVo> list =new ArrayList<ConditionVo>();
+    public ResponseData getProperties(String businessModelCode) throws ClassNotFoundException {
+        ResponseData responseData = new ResponseData();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
             String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-            String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+            String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
             String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
-            Map<String,Object> params = new HashMap();
-            params.put("businessModelCode",businessModelCode);
-            params.put("all",false);
-            try{
-                result = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,String> >() {},params);
-            }catch (Exception e){
-                LogUtil.error(e.getMessage());
-                return list;
+            Map<String, Object> params = new HashMap();
+            params.put("businessModelCode", businessModelCode);
+            params.put("all", false);
+            String messageLog = "调用‘条件属性说明服务’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+            try {
+                Map<String, String> result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {}, params);
+                responseData.setData(result);
+            } catch (Exception e) {
+                messageLog += "-接口调用异常："+e.getMessage();
+                responseData.setSuccess(false);
+                responseData.setMessage("调用接口异常，请查看日志！");
+                LogUtil.error(messageLog);
             }
-            if(result!=null&&result.size()>0){
-                result.forEach((key, value) -> {
-                    ConditionVo bean =new ConditionVo();
-                    bean.setCode(key);
-                    bean.setName(value);
-                    list.add(bean);
-                });
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("获取业务实体失败！");
+        }
+        return responseData;
+    }
+
+    @Override
+    public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException {
+        ResponseData responseData  = this.getProperties(businessModelCode);
+        List<ConditionVo> list = new ArrayList<ConditionVo>();
+        if(responseData.getSuccess()){
+            if(responseData.getData()!=null){
+                Map<String, String> result = (Map<String, String>)responseData.getData();
+                if (result.size() > 0) {
+                    result.forEach((key, value) -> {
+                        ConditionVo bean = new ConditionVo();
+                        bean.setCode(key);
+                        bean.setName(value);
+                        list.add(bean);
+                    });
+                }
             }
         }
         return list;
