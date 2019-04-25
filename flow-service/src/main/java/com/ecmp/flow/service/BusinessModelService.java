@@ -97,7 +97,8 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 messageLog += "-接口调用异常："+e.getMessage();
                 responseData.setSuccess(false);
                 responseData.setMessage("调用接口异常，请查看日志！");
-                LogUtil.error(messageLog);
+            }finally {
+                LogUtil.info(messageLog);
             }
         }else{
             responseData.setSuccess(false);
