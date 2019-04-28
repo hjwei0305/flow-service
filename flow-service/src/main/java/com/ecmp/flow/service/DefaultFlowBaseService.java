@@ -64,6 +64,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         Map<String, Object> variables = new HashMap<String, Object>();
         flowStartVO.setVariables(variables);
         if (StringUtils.isNotEmpty(taskList)) {
+            variables.put("additionRemark", opinion);
             if ("anonymous".equalsIgnoreCase(taskList)) {
                 flowStartVO.setPoolTask(true);
                 userMap.put("anonymous", "anonymous");
