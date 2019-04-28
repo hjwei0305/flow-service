@@ -2831,25 +2831,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    @Override
-    public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
-        ResponseData responseData = new ResponseData();
-        if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
+    public ResponseData getExecutorsByRequestExecutorsVoAndOrg(List<RequestExecutorsVo> requestExecutorsVos,String  businessId, String orgId){
+
+        if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId) || StringUtils.isEmpty(orgId)) {
             return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
         }
 
-        String orgId = null;
-        try {
-            BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
-            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            orgId = (String) businessV.get(Constants.ORG_ID);
-            if (StringUtils.isEmpty(orgId)) {
-                return this.writeErrorLogAndReturnData(null, "业务单据组织机构为空！");
-            }
-        } catch (Exception e) {
-            return this.writeErrorLogAndReturnData(e, "获取业务单据组织机构失败！");
-        }
-
+        ResponseData responseData = new ResponseData();
         List<Executor> executors = null;
         if (requestExecutorsVos.size() == 1) { //流程发起人、指定岗位、指定岗位类别、自定义执行人、任意执行人
             String userType = requestExecutorsVos.get(0).getUserType();
@@ -2967,6 +2955,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         responseData.setData(executors);
+        return responseData;
+    }
+
+
+    @Override
+    public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
+        ResponseData responseData = new ResponseData();
+        if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
+            return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+        }
+
+        String orgId = null;
+        try {
+            BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
+            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            orgId = (String) businessV.get(Constants.ORG_ID);
+            if (StringUtils.isEmpty(orgId)) {
+                return this.writeErrorLogAndReturnData(null, "业务单据组织机构为空！");
+            }
+        } catch (Exception e) {
+            return this.writeErrorLogAndReturnData(e, "获取业务单据组织机构失败！");
+        }
+
+        responseData = this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos,businessId,orgId);
         return responseData;
     }
 

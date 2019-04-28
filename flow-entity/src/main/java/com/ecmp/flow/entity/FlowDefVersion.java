@@ -1,7 +1,9 @@
 package com.ecmp.flow.entity;
 
 import com.ecmp.core.entity.ITenant;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowDefinationStatus;
+import com.ecmp.flow.vo.SolidifyStartExecutorVo;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,6 +11,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -138,6 +142,11 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 //	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefVersion")
     private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
+    /**
+     * 固化流程初始化时用的单个执行人列表（json文本）
+     */
+    @Transient
+    private Map<String,SolidifyStartExecutorVo> solidifyExecutorOfOnly;
 
     /**
      * 是否允许做为子流程来进行引用
@@ -493,6 +502,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.endBeforeCallServiceUrlName = endBeforeCallServiceUrlName;
     }
 
+    public Map<String, SolidifyStartExecutorVo> getSolidifyExecutorOfOnly() {
+        return solidifyExecutorOfOnly;
+    }
+
+    public void setSolidifyExecutorOfOnly(Map<String, SolidifyStartExecutorVo> solidifyExecutorOfOnly) {
+        this.solidifyExecutorOfOnly = solidifyExecutorOfOnly;
+    }
 
     @Override
     public String getTenantCode() {

@@ -76,6 +76,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private FlowTaskTool flowTaskTool;
 
     @Autowired
+    private FlowTaskService flowTaskService;
+
+    @Autowired
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
@@ -1154,7 +1157,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
     }
 
-    public FlowDefVersion getFlowDefVersion(String id, Integer versionCode) {
+    public FlowDefVersion getFlowDefVersion(String id, Integer versionCode ,String businessModelCode ,String businessId) {
         FlowDefVersion flowDefVersion = null;
         if (versionCode > -1) {
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
@@ -1165,8 +1168,73 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         }
+
+        if(flowDefVersion!=null&&StringUtils.isNotEmpty(businessModelCode)&&StringUtils.isNotEmpty(businessId)){
+            try{
+                flowDefVersion = this.setSolidifyExecutorOfOnly(flowDefVersion,businessModelCode,businessId);
+            }catch (Exception e){
+                  LogUtil.error(e.getMessage());
+            }
+        }
+
         return flowDefVersion;
     }
+
+
+    public  FlowDefVersion setSolidifyExecutorOfOnly(FlowDefVersion flowDefVersion,String businessModelCode ,String businessId){
+
+        BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
+        Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+        String orgId = (String) businessV.get(Constants.ORG_ID);
+
+        Map<String,SolidifyStartExecutorVo> map = new HashMap<String,SolidifyStartExecutorVo>();
+
+        String defJson = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defJson);
+        JSONObject pocessObj= JSONObject.fromObject(defObj.get("process"));
+        JSONObject nodeObj = JSONObject.fromObject(pocessObj.get("nodes"));
+        nodeObj.keySet().forEach(obj -> {
+            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            String id =  (String)positionObj.get("id");
+            String nodeType = (String)positionObj.get("nodeType");
+            if(id.indexOf("UserTask")!=-1){
+                JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
+                List<Map<String,String>> executorList = (List<Map<String,String>>)nodeConfigObj.get("executor");
+                List<RequestExecutorsVo> requestExecutorsList  = new ArrayList<RequestExecutorsVo>();
+                executorList.forEach(list ->{
+                      RequestExecutorsVo bean = new RequestExecutorsVo();
+                      String userType = list.get("userType");
+                      if(!"AnyOne".equals(userType)){
+                          String ids ="";
+                          if(userType.indexOf("SelfDefinition")!=-1){
+                              ids = (list.get("selfDefId")!=null?list.get("selfDefId"):list.get("selfDefOfOrgAndSelId"));
+                          }else{
+                              ids =  list.get("ids");
+                          }
+                          bean.setUserType(userType);
+                          bean.setIds(ids);
+                          requestExecutorsList.add(bean);
+                      }
+                });
+
+                ResponseData responseData =  flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList,businessId,orgId);
+                List<Executor> executors = (List<Executor>)responseData.getData();
+                if(executors!=null&&executors.size()==1){ //固化选人的时候，只有单个人才进行默认设置
+                    SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                    bean.setActTaskDefKey(id);
+                    bean.setExecutorIds(executors.get(0).getId());
+                    bean.setNodeType(nodeType);
+                    map.put(id,bean);
+                }
+            }
+        });
+        flowDefVersion.setSolidifyExecutorOfOnly(map);
+        return  flowDefVersion;
+    }
+
+
+
+
 
     public ResponseData resetPositionOfGateway(String id) {
         return  resetPosition(id);
