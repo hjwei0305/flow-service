@@ -160,14 +160,14 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
 
     @GET
-    @Path("getFlowDefVersion/{id}/{versionCode}/{businessModelCode}/{businessId}")
+    @Path("getFlowDefVersion")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过Key启动流程实体,附加启动用户ID", notes = "测试")
-    public FlowDefVersion getFlowDefVersion(@PathParam("id") String id,
-                                            @PathParam("versionCode") Integer versionCode,
-                                            @PathParam("businessModelCode") String businessModelCode,
-                                            @PathParam("businessId") String businessId);
+    public FlowDefVersion getFlowDefVersion(@QueryParam("id") String id,
+                                            @QueryParam("versionCode") Integer versionCode,
+                                            @QueryParam("businessModelCode") String businessModelCode,
+                                            @QueryParam("businessId") String businessId);
 
 
     /**
