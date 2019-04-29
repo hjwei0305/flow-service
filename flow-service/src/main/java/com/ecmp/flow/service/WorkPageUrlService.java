@@ -3,8 +3,11 @@ package com.ecmp.flow.service;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IWorkPageUrlService;
+import com.ecmp.flow.dao.BusinessWorkPageUrlDao;
 import com.ecmp.flow.dao.WorkPageUrlDao;
+import com.ecmp.flow.entity.BusinessWorkPageUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,9 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
 
     @Autowired
     private WorkPageUrlDao workPageUrlDao;
+
+    @Autowired
+    private BusinessWorkPageUrlDao businessWorkPageUrlDao;
 
     protected BaseEntityDao<WorkPageUrl> getDao(){
         return this.workPageUrlDao;
@@ -84,5 +90,19 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
             responseData.setMessage("参数不能为空！");
         }
         return responseData;
+    }
+
+    /**
+     * 数据删除操作
+     * (检查工作界面是不是已经分配，已经分配的不能进行删除，给出提供)
+     * @param id 待操作数据
+     */
+    @Override
+    public OperateResult delete(String id) {
+      List<BusinessWorkPageUrl> list =  businessWorkPageUrlDao.findListByProperty("workPageUrlId",id);
+      if(list!=null&&list.size()>0){
+          return OperateResult.operationFailure("已分配的界面，不能进行删除！");
+      }
+        return super.delete(id);
     }
 }

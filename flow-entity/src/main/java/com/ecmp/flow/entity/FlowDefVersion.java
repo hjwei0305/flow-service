@@ -143,7 +143,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
     /**
-     * 固化流程初始化时用的单个执行人列表（json文本）
+     * 固化流程初始化时用的单个执行人列表
      */
     @Transient
     private Map<String,SolidifyStartExecutorVo> solidifyExecutorOfOnly;
