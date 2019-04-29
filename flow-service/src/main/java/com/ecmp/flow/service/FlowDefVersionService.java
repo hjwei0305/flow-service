@@ -2,6 +2,9 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
@@ -130,6 +133,17 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         //10018=冻结成功
         //10019=激活成功
         return OperateResultWithData.operationSuccess(status == FlowDefinationStatus.Freeze ? "10018" : "10019");
+    }
+
+    public PageResult<FlowDefVersion> findByPage(Search searchConfig){
+        List<SearchFilter> filters = searchConfig.getFilters();
+        SearchFilter  filter =new SearchFilter();
+        filter.setFieldName("versionCode");
+        filter.setOperator(SearchFilter.Operator.GE);
+        filter.setValue(1);
+        filter.setFieldType("Integer");
+        filters.add(filter);
+        return super.findByPage(searchConfig);
     }
 
 
