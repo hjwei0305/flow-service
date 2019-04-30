@@ -1199,6 +1199,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             result.setPreCreateTime(preFlowTask.getCreatedDate());
             result.setPrOpinion(preFlowTask.getDepict());
         }
+        //处理界面用于判断按钮的参数（没有按钮可以不需要）
+        result.setTrustState(flowTask.getTrustState());
+        result.setCanReject(flowTask.getCanReject());
+        result.setTaskJsonDef(flowTask.getTaskJsonDef());
+        result.setActClaimTime(flowTask.getActClaimTime());
+        result.setCanSuspension(flowTask.getCanSuspension());
+        result.setExecutorId(flowTask.getExecutorId());
+        result.setFlowInstanceCreatorId(flowTask.getFlowInstance().getCreatorId());
         return result;
     }
 

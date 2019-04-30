@@ -68,6 +68,102 @@ public class ApprovalHeaderVO implements Serializable{
     private String workAndAdditionRemark;
 
 
+    //下面是新增参数、用着判断按钮的参数，联合判断逻辑位于TodoTaskView.js的showData()中
+
+    /**
+     * 是被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态为null,委托完成为3
+     */
+    private Integer trustState;
+
+    /**
+     * 是否允许驳回
+     */
+    private Boolean canReject;
+
+
+    /**
+     * 任务定义JSON
+     */
+    private String taskJsonDef;
+
+    /**
+     * 流程任务引擎实际的任务签收时间
+     */
+    private Date actClaimTime;
+
+
+    /**
+     * 是否允许流程中止（退出流程）
+     */
+    private Boolean canSuspension;
+
+    /**
+     * 执行人ID
+     */
+    private String executorId;
+
+    /**
+     * 流程实例创建人
+     */
+    private String flowInstanceCreatorId;
+
+
+    public Integer getTrustState() {
+        return trustState;
+    }
+
+    public void setTrustState(Integer trustState) {
+        this.trustState = trustState;
+    }
+
+    public Boolean getCanReject() {
+        return canReject;
+    }
+
+    public void setCanReject(Boolean canReject) {
+        this.canReject = canReject;
+    }
+
+    public String getTaskJsonDef() {
+        return taskJsonDef;
+    }
+
+    public void setTaskJsonDef(String taskJsonDef) {
+        this.taskJsonDef = taskJsonDef;
+    }
+
+    public Date getActClaimTime() {
+        return actClaimTime;
+    }
+
+    public void setActClaimTime(Date actClaimTime) {
+        this.actClaimTime = actClaimTime;
+    }
+
+    public Boolean getCanSuspension() {
+        return canSuspension;
+    }
+
+    public void setCanSuspension(Boolean canSuspension) {
+        this.canSuspension = canSuspension;
+    }
+
+    public String getExecutorId() {
+        return executorId;
+    }
+
+    public void setExecutorId(String executorId) {
+        this.executorId = executorId;
+    }
+
+    public String getFlowInstanceCreatorId() {
+        return flowInstanceCreatorId;
+    }
+
+    public void setFlowInstanceCreatorId(String flowInstanceCreatorId) {
+        this.flowInstanceCreatorId = flowInstanceCreatorId;
+    }
+
     public String getWorkAndAdditionRemark() {
         return workAndAdditionRemark;
     }
