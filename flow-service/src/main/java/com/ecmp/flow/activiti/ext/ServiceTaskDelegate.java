@@ -133,7 +133,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         flowHistory.setActDurationInMillis(actDurationInMillis);
                     }
                     flowHistoryDao.save(flowHistory);
-                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
+                    //选择下一步执行人，默认选择第一个(会签、单签、串、并行选择全部)
                     List<NodeInfo> results = flowListenerTool.nextNodeInfoList(flowTask,delegateTask);
                     //初始化节点执行人
                     List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results,delegateTask,actTaskDefKey);

@@ -1980,13 +1980,7 @@ public class FlowTaskTool {
             }
             return result;
         } else if ("Approve".equalsIgnoreCase(nodeType)) {//审批任务
-            // 取得当前任务
-            HistoricTaskInstance currTask = historyService
-                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                    .singleResult();
-            String executionId = currTask.getExecutionId();
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
-
+            
             if ("true".equalsIgnoreCase(approved)) { //获取通过节点
                 shenPiNodesInit(currActivity, result, true, flowTask, v);
             } else {//获取不通过节点

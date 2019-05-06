@@ -1010,14 +1010,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     }, flowInvokeParams);
                                 } else {
                                     //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
-                                    HistoricTaskInstance currTask = historyService
-                                            .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                                            .singleResult();
-                                    String executionId = currTask.getExecutionId();
-                                    Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
-                                    String currentOrgId = processVariables.get("orgId").getValue() + "";
+                                    String currentOrgId = this.getOrgIdByFlowTask(flowTask);
                                     employees = flowTaskTool.getExecutors(userType, ids, currentOrgId);
-
                                 }
                             }
                         }
@@ -1056,12 +1050,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         // 取得当前任务
-                        HistoricTaskInstance currTask = historyService
-                                .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                                .singleResult();
-                        String executionId = currTask.getExecutionId();
-                        Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
-                        String currentOrgId = processVariables.get("orgId").getValue() + "";
+                        String currentOrgId = this.getOrgIdByFlowTask(flowTask);
                         if (StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)) {
                             FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
                             String path = flowExecutorConfig.getUrl();
@@ -2999,6 +2988,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         responseData.setSuccess(false);
         responseData.setMessage(msg);
         return responseData;
+    }
+
+
+    public String getOrgIdByFlowTask(FlowTask flowTask){
+        //从回调进来的参数flowTask.getActTaskId()可能为空（服务任务）
+        String currentOrgId;
+        if(StringUtils.isNotEmpty(flowTask.getActTaskId())){
+            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
+            String executionId = currTask.getExecutionId();
+            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+            currentOrgId = processVariables.get("orgId").getValue() + "";
+        }else{
+            BusinessModel businessModel =  flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            String businessId = flowTask.getFlowInstance().getBusinessId();
+            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            currentOrgId = (String) businessV.get(Constants.ORG_ID);
+        }
+      return  currentOrgId;
     }
 
 
