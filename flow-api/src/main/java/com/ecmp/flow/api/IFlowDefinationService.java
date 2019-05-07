@@ -325,6 +325,6 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取所有组织机构", notes = "获取所有组织机构")
-    ResponseData listAllUser(String organizationId);
+    ResponseData listAllUser(@QueryParam("organizationId")String organizationId);
 
 }
