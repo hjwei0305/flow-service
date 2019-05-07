@@ -6,6 +6,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefinationService;
+import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
@@ -118,6 +119,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private DefaultBusinessModelDao defaultBusinessModelDao;
 
 
+
     @Override
     public ResponseData listAllOrgs() {
         String url = Constants.getBasicOrgListallorgsUrl();
@@ -130,6 +132,25 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         } catch (Exception e) {
             responseData.setSuccess(false);
             responseData.setMessage("请求接口错误！");
+            LogUtil.error(e.getMessage());
+        }
+        return responseData;
+    }
+
+
+    @Override
+    public ResponseData listAllUser(String organizationId) {
+        Map<String,Object> params = new HashMap();
+        params.put("organizationId",organizationId);
+        String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
+        ResponseData responseData = new ResponseData();
+        try {
+            List<Employee> result = ApiClient.getEntityViaProxy(url, new GenericType<List<Employee>>() {}, params);
+            responseData.setMessage("操作成功！");
+            responseData.setData(result);
+        } catch (Exception e) {
+            responseData.setSuccess(false);
+            responseData.setMessage("请求组织机构下员工接口错误！");
             LogUtil.error(e.getMessage());
         }
         return responseData;
