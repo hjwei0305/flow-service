@@ -101,7 +101,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
 
 
     /**
-     * 查询条件属性
+     * 查询条件属性说明
      *
      * @param businessModelCode 业务实体代码
      * @return 实体对象
@@ -111,12 +111,12 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Path("getProperties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "查询条件属性", notes = "查询条件属性")
+    @ApiOperation(value = "查询条件属性说明", notes = "查询条件属性说明")
     ResponseData getProperties(@QueryParam("businessModelCode") String businessModelCode)throws ClassNotFoundException;
 
 
     /**
-     * 查询条件属性
+     * 查询条件属性说明
      *
      * @param businessModelCode 业务实体代码
      * @return 实体对象
@@ -126,7 +126,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Path("getPropertiesForConditionPojo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "查询条件属性", notes = "查询条件属性")
+    @ApiOperation(value = "查询条件属性说明", notes = "查询条件属性说明")
     List<ConditionVo> getPropertiesForConditionPojo(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 

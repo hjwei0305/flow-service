@@ -1,7 +1,6 @@
 package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.config.util.ApiRestJsonProvider;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
@@ -9,14 +8,10 @@ import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.client.WebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -41,33 +36,28 @@ public class ExpressionUtil {
         return appModule;
     }
     /**
-     * 获取条件表达式的属性描述
+     * 获取条件属性说明
      * @param businessModel 业务模型
-     * @param  businessId 业务ID
      * @return
      */
-    public  static Map<String,Object>  getPropertiesDecMap(BusinessModel businessModel, String businessId){
+    public  static Map<String,String>  getPropertiesDecMap(BusinessModel businessModel){
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        params.put(Constants.ID,businessId);
-        String messageLog = "开始调用‘获取条件表达式的属性描述’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> pvs = null;
+        params.put(Constants.ALL,false);
+        String messageLog = "开始调用‘条件属性说明服务地址’，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,String> result = null;
         try {
-            pvs = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
-            }, params);
-            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {}, params);
         }catch (Exception e){
-            messageLog+="调用异常："+e.getMessage();
-            throw e;
+            messageLog+="-调用异常："+e.getMessage();
         }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
+            LogUtil.error(messageLog);
         }
-        return pvs;
+        return result;
     }
 
     /**
