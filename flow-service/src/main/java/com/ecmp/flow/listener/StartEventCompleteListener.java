@@ -5,6 +5,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
@@ -226,7 +227,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         params.put(Constants.STATUS, FlowStatus.INPROCESS);
         String apiBaseAddressConfig = appModule.getApiBaseAddress();
         String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-        String url = apiBaseAddress +"/"+businessModel.getConditonStatusRest();
+        String url = PageUrlUtil.buildUrl(apiBaseAddress,businessModel.getConditonStatusRest());
         String messageLog = "启动流程-开始调用‘重置表单状态’接口，接口url="+url+",参数值"+ JsonUtils.toJson(params);
         try {
             Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
