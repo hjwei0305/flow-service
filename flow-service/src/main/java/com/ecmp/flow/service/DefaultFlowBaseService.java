@@ -93,9 +93,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
-                        String[] idArray = f.getUserIds().split(",");
+                        String userIds = f.getUserIds()==null?"":f.getUserIds();
+                        String[] idArray = userIds.split(",");
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                            userMap.put(f.getUserVarName(), f.getUserIds());
+                            userMap.put(f.getUserVarName(), userIds);
                         } else {
                             userMap.put(f.getUserVarName(), idArray);
                         }
@@ -209,18 +210,20 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         userVarNameList.add(f.getUserVarName());
                         v.put(callActivityPath + "_sonProcessSelectNodeUserV", userVarNameList);//选择的变量名,子流程存在选择了多个的情况
                     }
+                    String userIds = f.getUserIds()==null?"":f.getUserIds();
                     if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                        v.put(callActivityPath + "/" + f.getUserVarName(), f.getUserIds());
+                        v.put(callActivityPath + "/" + f.getUserVarName(), userIds);
                     } else {
-                        String[] idArray = f.getUserIds().split(",");
+                        String[] idArray = userIds.split(",");
                         v.put(callActivityPath + "/" + f.getUserVarName(), Arrays.asList(idArray));
                     }
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
+                    String userIds = f.getUserIds()==null?"":f.getUserIds();
                     selectedNodesMap.put(f.getNodeId(), f.getNodeId());
-                    String[] idArray = f.getUserIds().split(",");
+                    String[] idArray = userIds.split(",");
                     if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                        v.put(f.getUserVarName(), f.getUserIds());
+                        v.put(f.getUserVarName(), userIds);
                     } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
 
                         v.put(f.getUserVarName(), Arrays.asList(idArray));
