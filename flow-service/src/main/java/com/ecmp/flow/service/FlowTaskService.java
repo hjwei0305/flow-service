@@ -163,6 +163,247 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     /**
+     * 推送待办到basic模块
+     *
+     * @param taskList 需要推送的待办
+     */
+    @Override
+    public void pushNewTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
+            String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
+                messageLog += "-推送待办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+
+    /**
+     * 推送新的已办到basic模块
+     *
+     * @param taskList 需要推送的已办（刚执行完成的）
+     */
+    @Override
+    public void pushOldTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
+            String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
+                messageLog += "-推送已办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+    /**
+     * 推送需要删除的待办到basic模块
+     *
+     * @param taskList 需要删除的待办
+     */
+    @Override
+    public void pushDelTaskToBasic(List<FlowTask> taskList) {
+        if (taskList != null && taskList.size() > 0) {
+            List<String> idList = new ArrayList<String>();
+            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
+            String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
+            ;
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
+            } catch (Exception e) {
+                messageLog += "-推送删除待办异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+    /**
+     * 推送需要归档（终止）的任务到basic模块
+     *
+     * @param task 需要终止的任务
+     */
+    @Override
+    public void pushEndTaskToBasic(FlowTask task) {
+        if (task != null) {
+            String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
+            String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
+            try {
+                ApiClient.postViaProxyReturnResult(url, Void.class, task);
+            } catch (Exception e) {
+                messageLog += "-推送归档任务异常：" + e.getMessage();
+                LogUtil.error(messageLog);
+            }
+        }
+    }
+
+
+
+    /**
+     *  查看是否需要推动任务到<业务模块>、<配置的url>
+     * @param flowInstance  流程实例
+     * @return
+     */
+    public boolean getBooleanPushModelOrUrl(FlowInstance flowInstance){
+        Boolean pushModelOrUrl = false;
+        if(flowInstance!=null){
+            BusinessModel businessModel =   flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            if(businessModel!=null){
+                String pushMsgUrl = businessModel.getPushMsgUrl();
+                if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
+                    pushModelOrUrl = true;
+                    return  pushModelOrUrl;
+                }
+            }
+        }
+        //取配置中心统一推送待办地址
+        String flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+        if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
+            pushModelOrUrl = true;
+        }
+         return  pushModelOrUrl;
+    }
+
+    /**
+     * 通过流程实例得到推动到<业务模块>、<配置的url>的地址
+     * @param flowInstance 流程实例
+     * @return
+     */
+    public String getPushModelOrUrlStr(FlowInstance flowInstance){
+        String flowPushTaskUrl = "";  //具体推送地址
+        if(flowInstance!=null){
+            BusinessModel businessModel =   flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            if(businessModel!=null){
+                String pushMsgUrl = businessModel.getPushMsgUrl();
+                if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
+                    String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
+                    String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    if (StringUtils.isEmpty(clientApiBaseUrl)) {
+                        LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
+                    } else {
+                        flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
+                        return flowPushTaskUrl;  //如果都配置了，业务模块中的生效
+                    }
+                }
+            }
+        }
+        //取配置中心统一推送待办地址
+        flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+        return  flowPushTaskUrl;
+    }
+
+    /**
+     * 推送待办、已办到<业务模块>、<配置的url>
+     * @param flowInstance  流程实例
+     * @param taskList 需要推送的待办
+     */
+    public void pushTaskToModelOrUrl(FlowInstance flowInstance,List<FlowTask> taskList,TaskStatus taskStatus) {
+        if (taskList != null && taskList.size() > 0) {
+            //得到具体推送地址
+            String flowPushTaskUrl = this.getPushModelOrUrlStr(flowInstance);
+            if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
+                List<String> idList = new ArrayList<String>();
+                taskList.forEach(a ->{
+                    a.setTaskStatus(taskStatus.toString());
+                    idList.add("【id=" + a.getId() + "】");
+                });
+                String msg = "推送已办";
+                if(taskStatus.toString().equals(TaskStatus.INIT.toString())){
+                    msg = "推送待办";
+                }
+                String messageLog = "开始调用["+msg+"]接口，接口url=" + flowPushTaskUrl + ",参数值:" + JsonUtils.toJson(idList);
+                try {
+                    ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {}, taskList);
+                    LogUtil.bizLog(messageLog);
+                } catch (Exception e) {
+                    messageLog += "-["+msg+"异常]：" + e.getMessage();
+                    LogUtil.error(messageLog);
+                }
+            }
+        }
+    }
+
+
+
+    @Override
+    public void pushTaskToBusinessModel(String businessModelCode, String businessId, String taskId) {
+        if (StringUtils.isNotEmpty(businessId)) {
+            BusinessModel businessModel = null;
+            if (StringUtils.isEmpty(businessModelCode)) {
+                //通过业务单据id查询没有结束并且没有挂起的流程实例
+                List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+                if (flowInstanceList != null && flowInstanceList.size() > 0) {
+                    businessModel = flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                }
+            } else {
+                businessModel = businessModelService.findByClassName(businessModelCode);
+            }
+            if (businessModel != null) {
+                //根据业务id查询待办
+                ResponseData responseData = this.findTasksByBusinessId(businessId);
+                if (responseData.getSuccess()) {
+                    List<FlowTask> list = (List<FlowTask>) responseData.getData();
+                    if (list != null && list.size() > 0) {
+                        if (StringUtils.isNotEmpty(taskId)) { //已办信息
+                            FlowTask flowTask = new FlowTask();
+                            flowTask.setId(taskId);
+                            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
+                            list.add(flowTask);
+                        }
+                        String pushMsgUrl = businessModel.getPushMsgUrl();
+                        String flowPushTaskUrl = "";
+                        if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
+                            String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
+                            String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                            if (StringUtils.isEmpty(clientApiBaseUrl)) {
+                                LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
+                            } else {
+                                flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
+                            }
+                        } else {//取配置中心统一推送待办地址
+                            flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+                        }
+
+                        List<String> idList = new ArrayList<String>();
+                        list.forEach(a -> idList.add("【是否已处理：" + a.getTaskStatus() + "-id=" + a.getId() + "】"));
+                        if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
+                            String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
+                            try {
+                                ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {
+                                }, list);
+                                LogUtil.bizLog(messageLog);
+                            } catch (Exception e) {
+                                messageLog += "-推送待办异常：" + e.getMessage();
+                                LogUtil.error(messageLog);
+                            }
+                        }
+                    }
+                } else {
+                    LogUtil.error("推送待办-查询待办失败！");
+                }
+            } else {
+                LogUtil.error("推送待办-获取业务模块失败！");
+            }
+        } else {
+            LogUtil.error("推送待办-参数不能为空！");
+        }
+    }
+
+
+
+
+    /**
      * 任务签收
      *
      * @param id     任务id
@@ -179,16 +420,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTaskDao.save(flowTask);
         //是否推送信息到baisc
         Boolean pushBasic = this.getBooleanPushTaskToBasic();
+        //是否推送信息到业务模块或者直接配置的url
+        Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
         //需要异步推送删除待办信息到basic
-        if (pushBasic) {
+        if (pushBasic||pushModelOrUrl) {
             List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
             List<FlowTask> needDelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(flowTask.getId())).collect(Collectors.toList());
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    pushDelTaskToBasic(needDelList);
-                }
-            }).start();
+           if(pushBasic){
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       pushDelTaskToBasic(needDelList);
+                   }
+               }).start();
+           }
+           if(pushModelOrUrl){
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       pushTaskToModelOrUrl(flowTask.getFlowInstance(),needDelList,TaskStatus.COMPLETED);
+                   }
+               }).start();
+           }
         }
         flowTaskDao.deleteNotClaimTask(actTaskId, id);
         OperateResult result = OperateResult.operationSuccess("10012");
@@ -498,6 +751,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 .singleResult();
         //是否推送信息到baisc
         Boolean pushBasic = this.getBooleanPushTaskToBasic();
+        //是否推送信息到业务模块或者直接配置的url
+        Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowInstance);
 
         if (historicTaskInstance != null) {
             String defJson = flowTask.getTaskJsonDef();
@@ -514,30 +769,53 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId, flowTask);
             }
 
-            //需要异步推送待办转已办信息到basic
-            if (pushBasic) {
+            //需要异步推送待办转已办信息到basic、<业务模块>、<配置的url>
+            if (pushBasic||pushModelOrUrl) {
                 List<FlowTask> list = new ArrayList<FlowTask>();
                 list.add(flowTask);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pushOldTaskToBasic(list);
-                    }
-                }).start();
+                //异步推送待办转已办信息到basic
+                if(pushBasic){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushOldTaskToBasic(list);
+                        }
+                    }).start();
+                }
+                //异步推送已办信息到<业务模块>、<配置的url>
+               if(pushModelOrUrl){
+                   new Thread(new Runnable() {
+                       @Override
+                       public void run() {
+                           pushTaskToModelOrUrl(flowInstance,list,TaskStatus.COMPLETED);
+                       }
+                   }).start();
+               }
             }
             flowHistoryDao.save(flowHistory);
             flowTaskDao.delete(flowTask);
             if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
                 //需要异步推送删除待办信息到basic
-                if (pushBasic) {
+                if (pushBasic||pushModelOrUrl) {
                     List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
                     List<FlowTask> needDelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushDelTaskToBasic(needDelList);
-                        }
-                    }).start();
+                    if(pushBasic){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushDelTaskToBasic(needDelList);
+                            }
+                        }).start();
+                    }
+                    if(pushModelOrUrl){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushTaskToModelOrUrl(flowInstance,needDelList,TaskStatus.COMPLETED);
+                            }
+                        }).start();
+                    }
+
                 }
                 flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
             }
@@ -1925,11 +2203,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String, Object> params = new HashMap();
-//            params.put("employeeIds", Arrays.asList(userId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//            }, params);
             params.put("userIds", Arrays.asList(userId));
             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
             List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
@@ -1971,29 +2244,53 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistoryDao.save(flowHistory);
                 //是否推送信息到baisc
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                if (pushBasic) {
-                    //删除待办
+                //是否推送信息到业务模块或者直接配置的url
+                Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+
+                if (pushBasic||pushModelOrUrl) {
                     List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushDelTaskToBasic(needDelList);
-                        }
-                    }).start();
+                    //删除待办
+                    if(pushBasic){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushDelTaskToBasic(needDelList);
+                            }
+                        }).start();
+                    }
+                    //推送成已办
+                    if(pushModelOrUrl){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() { pushTaskToModelOrUrl(flowTask.getFlowInstance(),needDelList,TaskStatus.COMPLETED); }
+                        }).start();
+                    }
+
                 }
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
-                if (pushBasic) {
-                    //新增待办
+                if (pushBasic||pushModelOrUrl) {
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushNewTaskToBasic(needAddList);
-                        }
-                    }).start();
+                    //新增待办
+                    if(pushBasic){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushNewTaskToBasic(needAddList);
+                            }
+                        }).start();
+                    }
+                    if(pushModelOrUrl){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(),needAddList,TaskStatus.INIT);
+                            }
+                        }).start();
+                    }
+
                 }
                 result = OperateResult.operationSuccess();
             } else {
@@ -2011,11 +2308,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
             Map<String, Object> params = new HashMap();
-//            params.put("employeeIds", Arrays.asList(userId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//            }, params);
             params.put("userIds", Arrays.asList(userId));
             String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
             List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
@@ -2040,29 +2332,52 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setTrustOwnerTaskId(flowTask.getId());
                 //是否推送信息到baisc
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                if (pushBasic) {
-                    //删除待办推送basic
+                //是否推送信息到业务模块或者直接配置的url
+                Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+                if (pushBasic||pushModelOrUrl) {
                     List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushDelTaskToBasic(needDelList);
-                        }
-                    }).start();
+                    if(pushBasic){
+                        //删除待办推送basic
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushDelTaskToBasic(needDelList);
+                            }
+                        }).start();
+                    }
+                  if(pushModelOrUrl){
+                     new Thread(new Runnable() {
+                         @Override
+                         public void run() {
+                             pushTaskToModelOrUrl(flowTask.getFlowInstance(),needDelList,TaskStatus.COMPLETED);
+                         }
+                     }).start();
+                  }
                 }
                 flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
-                if (pushBasic) {
-                    //新增待办推送basic
+                if (pushBasic||pushModelOrUrl) {
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushNewTaskToBasic(needAddList);
-                        }
-                    }).start();
+                    //新增待办推送basic
+                    if(pushBasic){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushNewTaskToBasic(needAddList);
+                            }
+                        }).start();
+                    }
+                    //推送待办
+                   if(pushModelOrUrl){
+                       new Thread(new Runnable() {
+                           @Override
+                           public void run() {
+                               pushTaskToModelOrUrl(flowTask.getFlowInstance(),needAddList,TaskStatus.INIT);
+                           }
+                       }).start();
+                   }
                 }
                 result = OperateResult.operationSuccess();
             } else {
@@ -2673,158 +2988,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         responseData.setSuccess(true);
         responseData.setData(list);
         return responseData;
-    }
-
-
-    /**
-     * 推送待办到basic模块
-     *
-     * @param taskList 需要推送的待办
-     */
-    @Override
-    public void pushNewTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
-            List<String> idList = new ArrayList<String>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
-            String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
-            String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            ;
-            try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-            } catch (Exception e) {
-                messageLog += "-推送待办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-            }
-        }
-    }
-
-
-    /**
-     * 推送新的已办到basic模块
-     *
-     * @param taskList 需要推送的已办（刚执行完成的）
-     */
-    @Override
-    public void pushOldTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
-            List<String> idList = new ArrayList<String>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
-            String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
-            String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            ;
-            try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-            } catch (Exception e) {
-                messageLog += "-推送已办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-            }
-        }
-    }
-
-    /**
-     * 推送需要删除的待办到basic模块
-     *
-     * @param taskList 需要删除的待办
-     */
-    @Override
-    public void pushDelTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
-            List<String> idList = new ArrayList<String>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
-            String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
-            String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            ;
-            try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-            } catch (Exception e) {
-                messageLog += "-推送删除待办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-            }
-        }
-    }
-
-    /**
-     * 推送需要归档（终止）的任务到basic模块
-     *
-     * @param task 需要终止的任务
-     */
-    @Override
-    public void pushEndTaskToBasic(FlowTask task) {
-        if (task != null) {
-            String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
-            String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
-            try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, task);
-            } catch (Exception e) {
-                messageLog += "-推送归档任务异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-            }
-        }
-    }
-
-
-    @Override
-    public void pushTaskToBusinessModel(String businessModelCode, String businessId, String taskId) {
-        if (StringUtils.isNotEmpty(businessId)) {
-            BusinessModel businessModel = null;
-            if (StringUtils.isEmpty(businessModelCode)) {
-                //通过业务单据id查询没有结束并且没有挂起的流程实例
-                List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
-                if (flowInstanceList != null && flowInstanceList.size() > 0) {
-                    businessModel = flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                }
-            } else {
-                businessModel = businessModelService.findByClassName(businessModelCode);
-            }
-            if (businessModel != null) {
-                //根据业务id查询待办
-                ResponseData responseData = this.findTasksByBusinessId(businessId);
-                if (responseData.getSuccess()) {
-                    List<FlowTask> list = (List<FlowTask>) responseData.getData();
-                    if (list != null && list.size() > 0) {
-                        if (StringUtils.isNotEmpty(taskId)) { //已办信息
-                            FlowTask flowTask = new FlowTask();
-                            flowTask.setId(taskId);
-                            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
-                            list.add(flowTask);
-                        }
-                        String pushMsgUrl = businessModel.getPushMsgUrl();
-                        String flowPushTaskUrl = "";
-                        if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
-                            String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
-                            String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                            if (StringUtils.isEmpty(clientApiBaseUrl)) {
-                                LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
-                            } else {
-                                flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
-                            }
-                        } else {//取配置中心统一推送待办地址
-                            flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
-                        }
-
-                        List<String> idList = new ArrayList<String>();
-                        list.forEach(a -> idList.add("【是否已处理：" + a.getTaskStatus() + "-id=" + a.getId() + "】"));
-                        if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
-                            String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
-                            try {
-                                ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {
-                                }, list);
-                                LogUtil.bizLog(messageLog);
-                            } catch (Exception e) {
-                                messageLog += "-推送待办异常：" + e.getMessage();
-                                LogUtil.error(messageLog);
-                            }
-                        }
-                    }
-                } else {
-                    LogUtil.error("推送待办-查询待办失败！");
-                }
-            } else {
-                LogUtil.error("推送待办-获取业务模块失败！");
-            }
-        } else {
-            LogUtil.error("推送待办-参数不能为空！");
-        }
     }
 
 

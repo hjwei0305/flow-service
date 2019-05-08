@@ -18,6 +18,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
@@ -25,6 +26,7 @@ import com.ecmp.util.DateUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import com.ecmp.vo.SessionUser;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -282,7 +284,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @param processInstanceId
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private void deleteActiviti(String processInstanceId, String deleteReason) {
+    public void deleteActiviti(String processInstanceId, String deleteReason) {
         runtimeService.deleteProcessInstance(processInstanceId, deleteReason);
     }
 
@@ -686,7 +688,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     //任务池指定真实用户，抢单池确定用户签定
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId) {
+    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId) {
         OperateResultWithData<FlowTask> result = null;
         String actTaskId = historicTaskInstance.getId();
         Map<String, Object> params = new HashMap();
@@ -749,7 +751,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private OperateResultWithData<FlowTask> signalPoolTaskByBusinessIdWithResult(String businessId, String poolTaskActDefId, String userId, Map<String, Object> v) {
+    public OperateResultWithData<FlowTask> signalPoolTaskByBusinessIdWithResult(String businessId, String poolTaskActDefId, String userId, Map<String, Object> v) {
         if (StringUtils.isEmpty(poolTaskActDefId)) {
             return OperateResultWithData.operationFailure("10032");
         }
@@ -822,6 +824,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     if (fTemp.isEnded()) {
                         continue;
                     }
+                    //是否推送信息到业务模块或者直接配置的url
+                    Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(fTemp);
+
                     Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
                     if (flowTaskList != null && !flowTaskList.isEmpty()) {
                         List<FlowTask> needDelList = new ArrayList<FlowTask>();
@@ -854,12 +859,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             } catch (Exception e) {
                                 logger.error(e.getMessage());
                             }
-                            if(pushBasic){//是否推送信息到baisc
+                            if(pushBasic||pushModelOrUrl){//是否推送信息到baisc、<业务模块>、<配置的url>
                                 needDelList.add(flowTask);
                             }
                             flowTaskDao.delete(flowTask);
                         }
-                        if(pushBasic){  //流程终止时，异步推送需要删除待办
+                        if(pushBasic){  //流程终止时，异步推送需要删除待办到baisc
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -867,6 +872,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 }
                             }).start();
                         }
+                        if(pushModelOrUrl){  //流程终止时，异步推送成已办<业务模块>、<配置的url>
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    flowTaskService.pushTaskToModelOrUrl(fTemp,needDelList, TaskStatus.COMPLETED);
+                                }
+                            }).start();
+                        }
+
                     }
 
                     String actInstanceId = fTemp.getActInstanceId();
@@ -1000,66 +1014,75 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     public   ResponseData getMyBills(Search search){
         ResponseData responseData =new ResponseData();
-        try{
-            PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
-            List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
-            PageResult<MyBillVO> results = new PageResult<MyBillVO>();
-            ArrayList<MyBillVO> data = new ArrayList<MyBillVO>();
-            if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
-                List<String> flowInstanceIds = new ArrayList<String>();
-                for (FlowInstance f : flowInstanceList) {
-                    FlowInstance parent = f.getParent();
-                    if (parent != null) {
-                        flowInstancePageResult.setRecords(flowInstancePageResult.getRecords() - 1);
-                        continue;
+        if (search != null) {
+            SessionUser user = ContextUtil.getSessionUser();
+            logger.debug("当前用户：{}", user);
+            String creatorId = user.getUserId();
+            SearchFilter searchFilterCreatorId = new SearchFilter("creatorId", creatorId, SearchFilter.Operator.EQ);
+            search.addFilter(searchFilterCreatorId);
+            try {
+                PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
+                List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
+                PageResult<MyBillVO> results = new PageResult<MyBillVO>();
+                ArrayList<MyBillVO> data = new ArrayList<MyBillVO>();
+                if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+                    List<String> flowInstanceIds = new ArrayList<String>();
+                    for (FlowInstance f : flowInstanceList) {
+                        FlowInstance parent = f.getParent();
+                        if (parent != null) {
+                            flowInstancePageResult.setRecords(flowInstancePageResult.getRecords() - 1);
+                            continue;
+                        }
+                        flowInstanceIds.add(f.getId());
+                        MyBillVO myBillVO = new MyBillVO();
+                        myBillVO.setBusinessCode(f.getBusinessCode());
+                        myBillVO.setBusinessId(f.getBusinessId());
+                        myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
+                        myBillVO.setBusinessName(f.getBusinessName());
+                        myBillVO.setCreatedDate(f.getCreatedDate());
+                        myBillVO.setCreatorAccount(f.getCreatorAccount());
+                        myBillVO.setCreatorName(f.getCreatorName());
+                        myBillVO.setCreatorId(f.getCreatorId());
+                        myBillVO.setFlowName(f.getFlowName());
+                        String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+                        String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                        if (StringUtils.isEmpty(lookUrl)) {
+                            lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                        }
+                        if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                            businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                        }
+                        myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+                        myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+                        myBillVO.setLookUrl(lookUrl);
+                        myBillVO.setEndDate(f.getEndDate());
+                        myBillVO.setFlowInstanceId(f.getId());
+                        myBillVO.setWebBaseAddress(f.getWebBaseAddress());
+                        myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
+                        myBillVO.setApiBaseAddress(f.getApiBaseAddress());
+                        myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
+                        data.add(myBillVO);
                     }
-                    flowInstanceIds.add(f.getId());
-                    MyBillVO myBillVO = new MyBillVO();
-                    myBillVO.setBusinessCode(f.getBusinessCode());
-                    myBillVO.setBusinessId(f.getBusinessId());
-                    myBillVO.setBusinessModelRemark(f.getBusinessModelRemark());
-                    myBillVO.setBusinessName(f.getBusinessName());
-                    myBillVO.setCreatedDate(f.getCreatedDate());
-                    myBillVO.setCreatorAccount(f.getCreatorAccount());
-                    myBillVO.setCreatorName(f.getCreatorName());
-                    myBillVO.setCreatorId(f.getCreatorId());
-                    myBillVO.setFlowName(f.getFlowName());
-                    String lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
-                    String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
-                    if (StringUtils.isEmpty(lookUrl)) {
-                        lookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
-                    }
-                    if (StringUtils.isEmpty(businessDetailServiceUrl)) {
-                        businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
-                    }
-                    myBillVO.setBusinessDetailServiceUrl(businessDetailServiceUrl);
-                    myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
-                    myBillVO.setLookUrl(lookUrl);
-                    myBillVO.setEndDate(f.getEndDate());
-                    myBillVO.setFlowInstanceId(f.getId());
-                    myBillVO.setWebBaseAddress(f.getWebBaseAddress());
-                    myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
-                    myBillVO.setApiBaseAddress(f.getApiBaseAddress());
-                    myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
-                    data.add(myBillVO);
-                }
 
-                List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
-                if (canEnds != null && !canEnds.isEmpty()) {
-                    for (int i = 0; i < canEnds.size(); i++) {
-                        data.get(i).setCanManuallyEnd(canEnds.get(i));
+                    List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
+                    if (canEnds != null && !canEnds.isEmpty()) {
+                        for (int i = 0; i < canEnds.size(); i++) {
+                            data.get(i).setCanManuallyEnd(canEnds.get(i));
+                        }
                     }
                 }
+                results.setRows(data);
+                results.setRecords(flowInstancePageResult.getRecords());
+                results.setPage(flowInstancePageResult.getPage());
+                results.setTotal(flowInstancePageResult.getTotal());
+                responseData.setData(results);
+            } catch (Exception e) {
+                responseData.setSuccess(false);
+                responseData.setMessage(e.getMessage());
+                LogUtil.error(e.getMessage());
             }
-            results.setRows(data);
-            results.setRecords(flowInstancePageResult.getRecords());
-            results.setPage(flowInstancePageResult.getPage());
-            results.setTotal(flowInstancePageResult.getTotal());
-            responseData.setData(results);
-        }catch (Exception e){
-            responseData.setSuccess(false);
-            responseData.setMessage(e.getMessage());
-            LogUtil.error(e.getMessage());
+        } else {
+            logger.error("获取我的单据时，search 对象不能为空。");
         }
         return responseData;
     }

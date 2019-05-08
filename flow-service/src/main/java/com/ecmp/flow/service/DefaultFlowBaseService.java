@@ -115,14 +115,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if (flowStartResultVO != null) {
                 if (flowStartResultVO.getCheckStartResult()) {
-                    if (flowStartResultVO.getFlowTypeList() == null && flowStartResultVO.getNodeInfoList() == null) {//真正启动流程
-                        new Thread(new Runnable() {//异步推送待办
-                            @Override
-                            public void run() {
-                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
-                            }
-                        }).start();
-                    }
+//                    if (flowStartResultVO.getFlowTypeList() == null && flowStartResultVO.getNodeInfoList() == null) {//真正启动流程
+//                        new Thread(new Runnable() {//异步推送待办
+//                            @Override
+//                            public void run() {
+//                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
+//                            }
+//                        }).start();
+//                    }
                     responseData.setMessage("成功");
                     responseData.setData(flowStartResultVO);
 
@@ -254,12 +254,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
         if (operateResult.successful() && StringUtils.isEmpty(endEventId)) { //处理成功并且不是结束节点调用
-            new Thread(new Runnable() {//异步推送待办
-                @Override
-                public void run() {
-                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
-                }
-            }).start();
+//            new Thread(new Runnable() {//异步推送待办
+//                @Override
+//                public void run() {
+//                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
+//                }
+//            }).start();
 
             new Thread(new Runnable() {//检测待办是否自动执行
                 @Override
