@@ -393,6 +393,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return calendar2.compareTo(calendar1);
     }
 
+
+    public List<ProcessTrackVO>  getProcessTrackVOByTaskId(String taskId){
+        List<ProcessTrackVO>  list = new ArrayList<ProcessTrackVO>();
+        FlowTask flowTask = flowTaskService.findOne(taskId);
+        if(flowTask!=null&&flowTask.getFlowInstance()!=null){
+            list =  this.getProcessTrackVOById(flowTask.getFlowInstance().getId());
+        }
+        return list;
+    }
+
+
     public List<ProcessTrackVO> getProcessTrackVOById(String instanceId) {
         FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
         List<ProcessTrackVO> result = new ArrayList<ProcessTrackVO>();
