@@ -2437,6 +2437,49 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 oldFlowTask.setDepict("【委托完成】" + opinion);
                 oldFlowTask.setPreId(flowHistory.getId());
                 flowHistoryDao.save(flowHistory);
+                //是否推送信息到baisc
+                Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                //是否推送信息到业务模块或者直接配置的url
+                Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+                if(pushBasic||pushModelOrUrl){
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
+                    needDelList.add(flowTask);
+                    List<FlowTask> needAddList = new ArrayList<FlowTask>();
+                    needAddList.add(oldFlowTask);
+                    if(pushBasic){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushDelTaskToBasic(needDelList);
+                            }
+                        }).start();
+                    }
+                    if(pushModelOrUrl){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(),needDelList,TaskStatus.COMPLETED);
+                            }
+                        }).start();
+                    }
+                    //新增待办
+                    if (pushBasic) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushNewTaskToBasic(needAddList);
+                            }
+                        }).start();
+                    }
+                    if (pushModelOrUrl) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                            }
+                        }).start();
+                    }
+                }
                 flowTaskDao.save(oldFlowTask);
                 flowTaskDao.delete(flowTask);
                 result = OperateResult.operationSuccess();
