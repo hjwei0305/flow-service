@@ -5,13 +5,19 @@ import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowTaskBatchCompleteVO;
 import com.ecmp.flow.vo.FlowTaskPageResultVO;
+import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <strong>实现功能:</strong>
@@ -63,7 +69,16 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     }
 
 
-
-
-
+    @Test
+    public void completeBatch() {
+        FlowTaskBatchCompleteVO param = new FlowTaskBatchCompleteVO();
+        param.setTaskIdList(Collections.singletonList("A86CC83D-3647-11E9-AA0C-0242C0A8441B"));
+        param.setOpinion("同意");
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("approved", true);
+        param.setVariables(variables);
+        OperateResultWithData<Integer> result = service.completeBatch(param);
+        System.out.println(JsonUtils.toJson(result));
+        Assert.assertTrue(result.successful());
+    }
 }
