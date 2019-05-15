@@ -70,6 +70,10 @@ public class EndEventCompleteListener implements ExecutionListener {
         FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
         String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
         int endSign = 0;
+        String  endCode = taskEntity.getActivityId();
+        if(endCode.indexOf("TerminateEndEvent")!=-1){ //TerminateEndEvent：强制终止   EndEvent:终止
+            endSign = 3;
+        }
         if(StringUtils.isNotEmpty(deleteReason)){
             if("10035".equals(deleteReason)){//"被管理员强制终止流程
                 endSign = 2;
