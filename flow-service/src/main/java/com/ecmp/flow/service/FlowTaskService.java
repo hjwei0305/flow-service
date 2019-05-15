@@ -320,7 +320,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     a.setTaskStatus(taskStatus.toString());
                     idList.add("【id=" + a.getId() + "】");
                     if(taskStatus.toString().equals(TaskStatus.COMPLETED.toString())){
-                        a.setFlowInstance(null);//已办不需要流程实例
+                        a.getFlowInstance().setFlowTasks(null);//防止循环引用
                     }
                 });
                 String msg = "推送已办";
