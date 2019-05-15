@@ -319,14 +319,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 taskList.forEach(a -> {
                     a.setTaskStatus(taskStatus.toString());
                     idList.add("【id=" + a.getId() + "】");
+                    if(taskStatus.toString().equals(TaskStatus.COMPLETED.toString())){
+                        a.setFlowInstance(null);//已办不需要流程实例
+                    }
                 });
                 String msg = "推送已办";
                 if (taskStatus.toString().equals(TaskStatus.INIT.toString())) {
                     msg = "推送待办";
                     flowTaskDao.initFlowTasks(taskList); //添加待办处理地址等
                 }
-//                String messageLog = "开始调用[" + msg + "]接口，接口url=" + flowPushTaskUrl + ",参数值:" + JsonUtils.toJson(idList);
-                String messageLog = "开始调用[" + msg + "]接口，接口url=" + flowPushTaskUrl + ",参数值:" + JsonUtils.toJson(taskList);
+                String messageLog = "开始调用[" + msg + "]接口，接口url=" + flowPushTaskUrl + ",参数值:" + JsonUtils.toJson(idList);
                 try {
                     ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {
                     }, taskList);
