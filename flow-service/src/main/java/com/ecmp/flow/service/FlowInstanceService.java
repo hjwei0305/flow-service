@@ -871,6 +871,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 logger.error(e.getMessage());
                             }
                             if(pushBasic||pushModelOrUrl){//是否推送信息到baisc、<业务模块>、<配置的url>
+                                flowTask.getFlowInstance().setFlowTasks(null); //循环引用
                                 needDelList.add(flowTask);
                             }
                             flowTaskDao.delete(flowTask);
