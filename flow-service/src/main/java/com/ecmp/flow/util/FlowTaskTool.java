@@ -1018,7 +1018,7 @@ public class FlowTaskTool {
             callBackRunIdentityLinkEntity(currTask.getId());//还原候选人等信
 
             // 删除其他到达的节点
-            deleteOtherNode(currActivity, instance, definition, currTask , flowHistory.getFlowInstance());
+            deleteOtherNode(currActivity, instance, definition, currTask, flowHistory.getFlowInstance());
 
             //记录历史
             if (result.successful()) {
@@ -1084,7 +1084,7 @@ public class FlowTaskTool {
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public Boolean deleteOtherNode(PvmActivity currActivity, ProcessInstance instance,
-                                   ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask ,FlowInstance flowInstance ) {
+                                   ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask, FlowInstance flowInstance) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         Boolean result = true;
         for (PvmTransition nextTransition : nextTransitionList) {
@@ -1092,7 +1092,7 @@ public class FlowTaskTool {
             Boolean ifGateWay = ifGageway(nextActivity);
             boolean ifMultiInstance = ifMultiInstance(nextActivity);
             if (ifGateWay) {
-                result = deleteOtherNode(nextActivity, instance, definition, destnetionTask , flowInstance);
+                result = deleteOtherNode(nextActivity, instance, definition, destnetionTask, flowInstance);
                 if (!result) {
                     return result;
                 }
@@ -1110,13 +1110,13 @@ public class FlowTaskTool {
                 taskService.deleteRuningTask(nextTask.getId(), false);
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
-                if(pushBasic||pushModelOrUrl){
-                   List<FlowTask> needDel =  flowTaskDao.findListByProperty("actTaskId",nextTask.getId());
-                   needDelList.addAll(needDel);
+                if (pushBasic || pushModelOrUrl) {
+                    List<FlowTask> needDel = flowTaskDao.findListByProperty("actTaskId", nextTask.getId());
+                    needDelList.addAll(needDel);
                 }
                 flowTaskDao.deleteByActTaskId(nextTask.getId());//删除关联的流程新任务
             }
-            if(pushBasic){
+            if (pushBasic) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -1124,11 +1124,11 @@ public class FlowTaskTool {
                     }
                 }).start();
             }
-            if(pushModelOrUrl){
+            if (pushModelOrUrl) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance,needDelList,TaskStatus.COMPLETED);
+                        flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.COMPLETED);
                     }
                 }).start();
             }
@@ -1216,7 +1216,7 @@ public class FlowTaskTool {
         if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
                 || "parallelGateWay".equalsIgnoreCase(nextActivtityType)//并行网关
-                ) { //手工节点
+        ) { //手工节点
             result = true;
         }
         return result;
@@ -1478,7 +1478,7 @@ public class FlowTaskTool {
             //是否推送信息到业务模块或者直接配置的url
             Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
 
-            List<FlowTask>  pushTaskList = new ArrayList<FlowTask>();  //需要推送到basic的待办
+            List<FlowTask> pushTaskList = new ArrayList<FlowTask>();  //需要推送到basic的待办
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
@@ -1559,7 +1559,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
-                            if(pushBasic||pushModelOrUrl){
+                            if (pushBasic || pushModelOrUrl) {
                                 pushTaskList.add(flowTask);
                             }
                         }
@@ -1576,7 +1576,12 @@ public class FlowTaskTool {
                         Executor executor = null;
                         if (!Constants.ANONYMOUS.equalsIgnoreCase(identityLink.getUserId())) {
 //                            executor = flowCommonUtil.getBasicExecutor(identityLink.getUserId());
-                            executor = flowCommonUtil.getBasicUserExecutor(identityLink.getUserId());
+                            // 示例："[751444F9-BC78-11E8-8A20-0242C0A8440D,12356677]",获取第一个执行人
+                            String linkIds = identityLink.getUserId();
+                            linkIds = XmlUtil.trimFirstAndLastChar(linkIds, '[');
+                            linkIds = XmlUtil.trimFirstAndLastChar(linkIds, ']');
+                            List<String> userIds = Arrays.asList(StringUtils.split(linkIds, ','));
+                            executor = flowCommonUtil.getBasicUserExecutor(userIds.get(0));
                         }
                         if ("poolTask".equalsIgnoreCase(nodeType) && executor == null) {
                             FlowTask flowTask = new FlowTask();
@@ -1618,7 +1623,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
-                            if(pushBasic||pushModelOrUrl){
+                            if (pushBasic || pushModelOrUrl) {
                                 pushTaskList.add(flowTask);
                             }
                         } else {
@@ -1647,7 +1652,7 @@ public class FlowTaskTool {
                                 flowTask.setFlowInstance(flowInstance);
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
-                                if(pushBasic||pushModelOrUrl){
+                                if (pushBasic || pushModelOrUrl) {
                                     pushTaskList.add(flowTask);
                                 }
                             } else {
@@ -1658,7 +1663,7 @@ public class FlowTaskTool {
                 }
             }
             //需要异步推送待办到baisc
-            if(pushBasic && pushTaskList!=null && pushTaskList.size()>0){
+            if (pushBasic && pushTaskList != null && pushTaskList.size() > 0) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -1666,16 +1671,15 @@ public class FlowTaskTool {
                     }
                 }).start();
             }
-           //需要异步推送待办到<业务模块>、<配置的url>
-            if(pushModelOrUrl && pushTaskList!=null && pushTaskList.size()>0){
+            //需要异步推送待办到<业务模块>、<配置的url>
+            if (pushModelOrUrl && pushTaskList != null && pushTaskList.size() > 0) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance,pushTaskList,TaskStatus.INIT);
+                        flowTaskService.pushTaskToModelOrUrl(flowInstance, pushTaskList, TaskStatus.INIT);
                     }
                 }).start();
             }
-
 
 
         }
@@ -1999,7 +2003,7 @@ public class FlowTaskTool {
             }
             return result;
         } else if ("Approve".equalsIgnoreCase(nodeType)) {//审批任务
-            
+
             if ("true".equalsIgnoreCase(approved)) { //获取通过节点
                 shenPiNodesInit(currActivity, result, true, flowTask, v);
             } else {//获取不通过节点

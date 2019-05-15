@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.GenericType;
 import java.io.Serializable;
@@ -27,7 +28,7 @@ import java.util.*;
  * <p/>
  * *************************************************************************************************
  */
-//@Component
+@Component
 public class FlowCommonUtil implements Serializable {
 
     public FlowCommonUtil(){
@@ -50,8 +51,9 @@ public class FlowCommonUtil implements Serializable {
     }
 
     public Executor getBasicUserExecutor(String userId) {
+        List<String> userIds = Arrays.asList((userId));
         Map<String,Object> params = new HashMap();
-        params.put("userIds",java.util.Arrays.asList(userId));
+        params.put("userIds",userIds);
         String url = com.ecmp.flow.common.util.Constants.getBasicUserGetExecutorsbyUseridsUrl();
         List<Executor> users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         Executor executor = null;
