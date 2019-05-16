@@ -278,7 +278,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
-     * 激活ReceiveTask
+     * 激活ReceiveTask（接收任务）
      *
      * @param businessId 业务单据id
      * @param receiveTaskActDefId 实际节点id
@@ -289,7 +289,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Path("signalByBusinessId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过单据终止目前在线的流程实例", notes = "终止")
+    @ApiOperation(value = "通过单据id和接收任务节点id激活流程", notes = "通过单据id和接收任务节点id激活流程")
     public OperateResult signalByBusinessId(@QueryParam("businessId") String businessId, @QueryParam("receiveTaskActDefId") String receiveTaskActDefId, Map<String, Object> v);
 
 
