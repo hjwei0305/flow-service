@@ -33,6 +33,13 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
     @Test
+    public void getTaskFormUrlXiangDuiByTaskId(){
+        String taskId="A8C69533-6999-11E9-BAC1-0242C0A84403";
+        ResponseData res = service.getTaskFormUrlXiangDuiByTaskId(taskId);
+        System.out.print(res.getData());
+    }
+
+    @Test
     public void findCountByExecutorId(){
         String userId = "7363AEB8-BC78-11E8-8A20-0242C0A8440D";
         Search search = new Search();

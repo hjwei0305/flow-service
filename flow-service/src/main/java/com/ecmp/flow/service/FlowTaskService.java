@@ -15,6 +15,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
@@ -142,6 +143,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Autowired
     private FlowSolidifyExecutorService flowSolidifyExecutorService;
+
+    @Autowired
+    private AppModuleService  appModuleService;
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
@@ -3217,6 +3221,46 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return currentOrgId;
     }
 
+    @Override
+    public ResponseData getTaskFormUrlXiangDuiByTaskId(String taskId){
+         ResponseData  res = new ResponseData();
+         if(StringUtils.isNotEmpty(taskId)){
+             FlowTask flowTask = flowTaskDao.findOne(taskId);
+             if(flowTask!=null){
+                 String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                 String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                 if (StringUtils.isNotEmpty(webBaseAddress)) {
+                     String[] tempWebBaseAddress = webBaseAddress.split("/");
+                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                         webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                     }
+                 }
+                 WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
+                 String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+                 taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+                 flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui); //处理界面是同一模块
+                 String appModuleId = workPageUrl.getAppModuleId();
+                 AppModule appModule = appModuleService.findOne(appModuleId);
+                 if (appModule != null && appModule != flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()) {
+                     webBaseAddressConfig = appModule.getWebBaseAddress();
+                     webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                     webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("://") + 3);
+                     webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                     taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+                     taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+                     flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+                 }
+                 res.setData(flowTask.getTaskFormUrlXiangDui());
+             }else{
+                 res.setSuccess(false);
+                 res.setMessage("当前待办不存在！");
+             }
+         }else{
+             res.setSuccess(false);
+             res.setMessage("参数不能为空！");
+         }
+        return  res;
+    }
 
 }
 

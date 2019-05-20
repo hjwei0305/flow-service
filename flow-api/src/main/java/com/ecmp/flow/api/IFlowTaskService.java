@@ -841,4 +841,16 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @IgnoreCheckAuth
     void pushEndTaskToBasic(FlowTask task);
 
+
+    /**
+     * 通过当前待办id得到处理相对地址
+     *
+     * @param taskId     流程待办id
+     */
+    @GET
+    @Path("getTaskFormUrlXiangDuiByTaskId")
+    @ApiOperation(value = "通过当前待办得到处理相对地址", notes = "通过当前待办得到处理相对地址")
+    @IgnoreCheckAuth
+    ResponseData getTaskFormUrlXiangDuiByTaskId(@QueryParam("taskId")String taskId);
+
 }
