@@ -96,6 +96,22 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "完成任务",notes = "测试")
     public OperateResultWithData<FlowStatus> complete(FlowTaskCompleteVO flowTaskCompleteVO) throws Exception;
 
+
+
+    /**
+     * 批量处理（web端改造）
+     * @param flowTaskBatchCompleteWebVOList 任务传输对象
+     * @return 操作结果
+     */
+    @POST
+    @Path("completeTaskBatch")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "批量提交任务",notes = "批量提交任务")
+    public ResponseData completeTaskBatch(List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList) ;
+
+
+
     /**
      * 批量处理指定版本节点的任务
      * @param flowTaskBatchCompleteVO 任务传输对象
@@ -852,5 +868,9 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "通过当前待办得到处理相对地址", notes = "通过当前待办得到处理相对地址")
     @IgnoreCheckAuth
     ResponseData getTaskFormUrlXiangDuiByTaskId(@QueryParam("taskId")String taskId);
+
+
+
+
 
 }

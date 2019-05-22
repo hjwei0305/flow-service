@@ -2089,6 +2089,74 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+
+    public ResponseData completeTaskBatch(List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList) {
+        ResponseData responseData = new ResponseData();
+        if (flowTaskBatchCompleteWebVOList!=null&&flowTaskBatchCompleteWebVOList.size()>0) {
+            String opinion = "同意";
+            int total = 0;//记录处理任务总数
+            StringBuffer failMessage = new StringBuffer();
+            for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO : flowTaskBatchCompleteWebVOList) {
+                FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
+                flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
+                flowTaskBatchCompleteVO.setOpinion(opinion);
+                Map<String, String> selectedNodesMap = new HashMap<>();
+                Map<String, Object> v = new HashMap<String, Object>();
+                List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
+
+                Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+                Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                        allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
+                        List<String> userList = new ArrayList<String>();
+                        String flowTaskType = f.getFlowTaskType();
+                        selectedNodesMap.put(f.getNodeId(), f.getNodeId());
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            String userId = f.getUserIds().replaceAll(",", "");
+                            v.put(f.getUserVarName(), userId);
+                        } else {
+                            String[] idArray = f.getUserIds().split(",");
+                            if (StringUtils.isNotEmpty(f.getUserVarName())) {
+                                v.put(f.getUserVarName(), idArray);
+                            }
+                            userList = Arrays.asList(idArray);
+                        }
+                        selectedNodesUserMap.put(f.getNodeId(), userList);
+                    }
+                    v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+                    v.put("selectedNodesUserMap", selectedNodesUserMap);
+                } else {
+                    v.put("selectedNodesUserMap", selectedNodesUserMap);
+                    v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+                }
+                v.put("approved", true);//针对会签时同意、不同意、弃权等操作
+                flowTaskBatchCompleteVO.setVariables(v);
+                OperateResultWithData<Integer> operateResult = this.completeBatch(flowTaskBatchCompleteVO);
+                total += operateResult.getData();
+                if (operateResult.successful()) {
+                } else {
+                    failMessage.append(operateResult.getMessage() + ";");
+                }
+            }
+            if (total > 0) {
+                responseData.setSuccess(true);
+                responseData.setMessage("成功处理任务" + total + "条");
+            } else {
+                responseData.setSuccess(false);
+                responseData.setMessage(failMessage.toString());
+            }
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("参数值错误！");
+        }
+        return responseData;
+    }
+
+
+
+
+
     public ResponseData completeTaskBatchOfPhone(String flowTaskBatchCompleteWebVoStrs) {
         ResponseData responseData = new ResponseData();
         List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = null;
@@ -2107,63 +2175,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     flowTaskBatchCompleteWebVO.setTaskIdList(taskIdList);
                     flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO);
                 }
-
             }
-            String opinion = "同意";
-            if (flowTaskBatchCompleteWebVOList != null && !flowTaskBatchCompleteWebVOList.isEmpty()) {
-                int total = 0;//记录处理任务总数
-                StringBuffer failMessage = new StringBuffer();
-                for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO : flowTaskBatchCompleteWebVOList) {
-                    FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
-                    flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
-                    flowTaskBatchCompleteVO.setOpinion(opinion);
-                    Map<String, String> selectedNodesMap = new HashMap<>();
-                    Map<String, Object> v = new HashMap<String, Object>();
-                    List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
-
-                    Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
-                    Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                    if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
-                        for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                            allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
-                            List<String> userList = new ArrayList<String>();
-                            String flowTaskType = f.getFlowTaskType();
-                            selectedNodesMap.put(f.getNodeId(), f.getNodeId());
-                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                                String userId = f.getUserIds().replaceAll(",", "");
-                                v.put(f.getUserVarName(), userId);
-                            } else {
-                                String[] idArray = f.getUserIds().split(",");
-                                if (StringUtils.isNotEmpty(f.getUserVarName())) {
-                                    v.put(f.getUserVarName(), idArray);
-                                }
-                                userList = Arrays.asList(idArray);
-                            }
-                            selectedNodesUserMap.put(f.getNodeId(), userList);
-                        }
-                        v.put("allowChooseInstancyMap", allowChooseInstancyMap);
-                        v.put("selectedNodesUserMap", selectedNodesUserMap);
-                    } else {
-                        v.put("selectedNodesUserMap", selectedNodesUserMap);
-                        v.put("allowChooseInstancyMap", allowChooseInstancyMap);
-                    }
-                    v.put("approved", true);//针对会签时同意、不同意、弃权等操作
-                    flowTaskBatchCompleteVO.setVariables(v);
-                    OperateResultWithData<Integer> operateResult = this.completeBatch(flowTaskBatchCompleteVO);
-                    total += operateResult.getData();
-                    if (operateResult.successful()) {
-                    } else {
-                        failMessage.append(operateResult.getMessage() + ";");
-                    }
-                }
-                if (total > 0) {
-                    responseData.setSuccess(true);
-                    responseData.setMessage("成功处理任务" + total + "条");
-                } else {
-                    responseData.setSuccess(false);
-                    responseData.setMessage(failMessage.toString());
-                }
-            }
+            return  this.completeTaskBatch(flowTaskBatchCompleteWebVOList);
         } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数值错误！");
