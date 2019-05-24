@@ -167,6 +167,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     /**
+     *
+     * @param newList  待办
+     * @param oldList  待办转已办
+     * @param delList  删除待办
+     * @param endTask  归档
+     */
+    public void pushToBasic(List<FlowTask> newList,List<FlowTask> oldList,List<FlowTask> delList,FlowTask endTask){
+          if(delList!=null && delList.size()>0){ //删除待办
+              pushDelTaskToBasic(delList);
+          }
+          if(oldList!=null && oldList.size()>0){ //待办转已办
+              pushOldTaskToBasic(oldList);
+          }
+          if(newList!=null && newList.size()>0){  //新增待办
+              pushNewTaskToBasic(newList);
+          }
+          if(endTask!=null){ //归档（终止）
+              pushEndTaskToBasic(endTask);
+          }
+    }
+
+    /**
      * 推送待办到basic模块
      *
      * @param taskList 需要推送的待办
@@ -435,7 +457,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushDelTaskToBasic(needDelList);
+                        pushToBasic(null,null,needDelList,null);
                     }
                 }).start();
             }
@@ -759,6 +781,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //是否推送信息到业务模块或者直接配置的url
         Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowInstance);
 
+        List<FlowTask> oldList = new ArrayList<FlowTask>();
+        List<FlowTask> needDelList = new ArrayList<FlowTask>();
+
         if (historicTaskInstance != null) {
             String defJson = flowTask.getTaskJsonDef();
             JSONObject defObj = JSONObject.fromObject(defJson);
@@ -774,25 +799,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId, flowTask);
             }
 
+
             //需要异步推送待办转已办信息到basic、<业务模块>、<配置的url>
             if (pushBasic || pushModelOrUrl) {
-                List<FlowTask> list = new ArrayList<FlowTask>();
-                list.add(flowTask);
-                //异步推送待办转已办信息到basic
-                if (pushBasic) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushOldTaskToBasic(list);
-                        }
-                    }).start();
-                }
+                oldList.add(flowTask);
                 //异步推送已办信息到<业务模块>、<配置的url>
                 if (pushModelOrUrl) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            pushTaskToModelOrUrl(flowInstance, list, TaskStatus.COMPLETED);
+                            pushTaskToModelOrUrl(flowInstance, oldList, TaskStatus.COMPLETED);
                         }
                     }).start();
                 }
@@ -803,15 +819,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 //需要异步推送删除待办信息到basic
                 if (pushBasic || pushModelOrUrl) {
                     List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
-                    List<FlowTask> needDelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
-                    if (pushBasic) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushDelTaskToBasic(needDelList);
-                            }
-                        }).start();
-                    }
+                    List<FlowTask> DelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
+                    needDelList.addAll(DelList);
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
@@ -873,7 +882,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushEndTaskToBasic(flowTask);
+                        pushToBasic(null,oldList,needDelList,flowTask);
+                    }
+                }).start();
+            }
+        }else{
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushToBasic(null,oldList,needDelList,null);
                     }
                 }).start();
             }
@@ -2266,18 +2284,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 //是否推送信息到业务模块或者直接配置的url
                 Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
 
+                List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
                 if (pushBasic || pushModelOrUrl) {
-                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
-                    //删除待办
-                    if (pushBasic) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushDelTaskToBasic(needDelList);
-                            }
-                        }).start();
-                    }
                     //推送成已办
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
@@ -2291,15 +2300,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
+                List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
                 if (pushBasic || pushModelOrUrl) {
-                    List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
-                    //新增待办
                     if (pushBasic) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                pushNewTaskToBasic(needAddList);
+                                pushToBasic(needAddList,null,needDelList,null);
                             }
                         }).start();
                     }
@@ -2355,18 +2363,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
                 //是否推送信息到业务模块或者直接配置的url
                 Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+                List<FlowTask> needDelList = new ArrayList<FlowTask>(); //需要删除的待办
+                List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
                 if (pushBasic || pushModelOrUrl) {
-                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
                     needDelList.add(flowTask);
-                    if (pushBasic) {
-                        //删除待办推送basic
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushDelTaskToBasic(needDelList);
-                            }
-                        }).start();
-                    }
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
@@ -2379,17 +2379,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
                 if (pushBasic || pushModelOrUrl) {
-                    List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(newFlowTask);
-                    //新增待办推送basic
-                    if (pushBasic) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushNewTaskToBasic(needAddList);
-                            }
-                        }).start();
-                    }
                     //推送待办
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
@@ -2400,6 +2390,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }).start();
                     }
                 }
+
+                //新增和删除待办
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushToBasic(needAddList,null,needDelList,null);
+                        }
+                    }).start();
+                }
+
                 result = OperateResult.operationSuccess();
             } else {
                 result = OperateResult.operationFailure("10038");//执行人查询结果为空
@@ -2464,14 +2465,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     needDelList.add(flowTask);
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(oldFlowTask);
-                    if(pushBasic){
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushDelTaskToBasic(needDelList);
-                            }
-                        }).start();
-                    }
                     if(pushModelOrUrl){
                         new Thread(new Runnable() {
                             @Override
@@ -2480,20 +2473,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }).start();
                     }
-                    //新增待办
-                    if (pushBasic) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushNewTaskToBasic(needAddList);
-                            }
-                        }).start();
-                    }
+
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                            }
+                        }).start();
+                    }
+
+                    if (pushBasic) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pushToBasic(needAddList,null,needDelList,null);
                             }
                         }).start();
                     }

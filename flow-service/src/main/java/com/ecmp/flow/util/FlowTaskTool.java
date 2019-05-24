@@ -1120,7 +1120,7 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushDelTaskToBasic(needDelList);
+                        flowTaskService.pushToBasic(null,null,needDelList,null);
                     }
                 }).start();
             }
@@ -1667,7 +1667,7 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushNewTaskToBasic(pushTaskList);
+                        flowTaskService.pushToBasic(pushTaskList,null,null,null);
                     }
                 }).start();
             }
