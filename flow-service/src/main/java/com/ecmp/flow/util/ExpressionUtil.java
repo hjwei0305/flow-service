@@ -35,8 +35,9 @@ public class ExpressionUtil {
         AppModule appModule = businessModel.getAppModule();
         return appModule;
     }
+
     /**
-     * 获取条件属性说明
+     * 获取条件属性说明（键值对）
      * @param businessModel 业务模型
      * @return
      */
@@ -48,20 +49,22 @@ public class ExpressionUtil {
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ALL,false);
-        String messageLog = "开始调用‘条件属性说明服务地址’，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,String> result = null;
+        String messageLog = "开始调用【条件属性说明服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,String> result;
         try {
             result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {}, params);
+            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
+            throw e;
         }finally {
-            LogUtil.error(messageLog);
+            LogUtil.debug(messageLog);
         }
         return result;
     }
 
     /**
-     * 获取条件表达式的属性值对
+     * 获取条件属性值（键值对）
      * @param businessModel 业务模型
      * @param  businessId 业务ID
      * @return
@@ -75,20 +78,46 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
         params.put(Constants.ALL,all);
-        String messageLog = "开始调用‘获取条件表达式的属性值对’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> pvs = null;
+        String messageLog = "开始调用【条件属性值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> result;
         try {
-            pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
+            result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
-            messageLog+="调用异常："+e.getMessage();
+            messageLog+="-调用异常："+e.getMessage();
             throw e;
         }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
+            LogUtil.debug(messageLog);
         }
-        return pvs;
+        return result;
     }
+
+    /**
+     * 获取条件属性初始值（键值对）
+     * @param businessModel 业务实体模型
+     * @return
+     */
+    public static Map<String,Object>  getPropertiesInitialValuesMap(BusinessModel businessModel){
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
+        Map<String,Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
+        String messageLog = "开始调用【条件属性初始值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String,Object> result;
+        try {
+            result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            throw e;
+        }finally {
+            LogUtil.debug(messageLog);
+        }
+        return result;
+    }
+
+
 
     /**
      * 检证表达式语法是否合法
@@ -97,25 +126,9 @@ public class ExpressionUtil {
      * @return
      */
     public static Boolean validate(BusinessModel businessModel,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        Boolean result = true;
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-        String messageLog = "开始调用‘检证表达式语法是否合法’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> pvs = null;
-        try {
-            pvs =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
-        }catch (Exception e){
-            messageLog+="调用异常："+e.getMessage();
-            throw e;
-        }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
-        }
-        result = ConditionUtil.groovyTest(expression,pvs);
+        //获取条件属性初始值
+        Map<String,Object> pvs =  getPropertiesInitialValuesMap(businessModel);
+        Boolean result = ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
 
@@ -127,27 +140,9 @@ public class ExpressionUtil {
      * @return
      */
     public static boolean result(BusinessModel businessModel,String businessId,String expression){
-        boolean result = true;
-        String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        params.put(Constants.ID,businessId);
-        String messageLog = "开始调用‘直接获取表达式验证结果’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> pvs = null;
-        try {
-            pvs = ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + pvs==null?null:JsonUtils.toJson(pvs)+"】";
-        }catch (Exception e){
-            messageLog+="调用异常："+e.getMessage();
-            throw e;
-        }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
-        }
-        result = ConditionUtil.groovyTest(expression,pvs);
+        //获取条件属性值
+        Map<String,Object> pvs =  getPropertiesValuesMap(businessModel,businessId,true);
+        boolean result =  ConditionUtil.groovyTest(expression,pvs);
         return result;
     }
 
@@ -159,7 +154,7 @@ public class ExpressionUtil {
      * @return
      */
     public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status){
-        boolean result = true;
+        boolean result;
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
@@ -168,17 +163,15 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
         params.put(Constants.STATUS,status);
-        String messageLog = "开始调用‘重置单据状态’接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-
+        String messageLog = "开始调用【重置单据状态】接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
         try {
             result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
             messageLog+=",【result=" + result+"】";
         }catch (Exception e){
-            messageLog+="调用异常："+e.getMessage();
+            messageLog+="-调用异常："+e.getMessage();
             throw e;
         }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
+            LogUtil.debug(messageLog);
         }
         return result;
     }
