@@ -36,6 +36,10 @@ public class ExpressionUtil {
         return appModule;
     }
 
+    public static String  getErrorLogString(String url){
+        return  "【调用接口异常："+url+",详情请查看日志】";
+    }
+
     /**
      * 获取条件属性说明（键值对）
      * @param businessModel 业务模型
@@ -56,7 +60,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw e;
+            throw  new FlowException(getErrorLogString(clientApiUrl));
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -69,7 +73,7 @@ public class ExpressionUtil {
      * @param  businessId 业务ID
      * @return
      */
-    public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all){
+    public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
@@ -85,7 +89,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw e;
+            throw  new FlowException(getErrorLogString(clientApiUrl));
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -110,7 +114,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw e;
+            throw  new FlowException(getErrorLogString(clientApiUrl));
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -169,7 +173,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw e;
+            throw  new FlowException(getErrorLogString(clientApiUrl));
         }finally {
             LogUtil.debug(messageLog);
         }
