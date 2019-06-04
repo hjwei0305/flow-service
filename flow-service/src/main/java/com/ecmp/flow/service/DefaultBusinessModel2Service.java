@@ -16,6 +16,7 @@ import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.entity.DefaultBusinessModel2;
 import com.ecmp.flow.entity.DefaultBusinessModel3;
 import com.ecmp.flow.util.CodeGenerator;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class DefaultBusinessModel2Service extends BaseEntityService<DefaultBusin
     @Autowired
     private DefaultBusinessModel2Dao defaultBusinessModel2Dao;
 
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
+
     protected BaseEntityDao<DefaultBusinessModel2> getDao(){
         return this.defaultBusinessModel2Dao;
     }
@@ -65,14 +69,11 @@ public class DefaultBusinessModel2Service extends BaseEntityService<DefaultBusin
 
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public List<Executor> getPersonToExecutorConfig(String businessId, String paramJson){
-        List<Executor> result = new ArrayList<Executor>();
+        List<Executor> executors = new ArrayList<Executor>();
         if(StringUtils.isNotEmpty(businessId)){
             DefaultBusinessModel2 defaultBusinessModel = defaultBusinessModel2Dao.findOne(businessId);
             if(defaultBusinessModel!=null){
                 String orgid = defaultBusinessModel.getOrgId();
-//                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
-//                //获取市场部所有人员
-//                List<Employee> employeeList   = proxy.findByOrganizationId(orgid);
                 Map<String,Object> params = new HashMap();
                 params.put("organizationId",orgid);
                 String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
@@ -81,18 +82,10 @@ public class DefaultBusinessModel2Service extends BaseEntityService<DefaultBusin
                 for(Employee e : employeeList){
                     idList.add(e.getId());
                 }
-                //获取执行人
-//                result = proxy.getExecutorsByEmployeeIds(idList);
-                Map<String,Object> paramsV2 = new HashMap();
-//                paramsV2.put("employeeIds",idList);
-//                url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
-                paramsV2.put("userIds", idList);
-                url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                result = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},paramsV2);
-
+                //根据用户的id列表获取执行人
+                executors = flowCommonUtil.getBasicUserExecutors(idList);
             }
         }
-        return result;
+        return executors;
     }
 }

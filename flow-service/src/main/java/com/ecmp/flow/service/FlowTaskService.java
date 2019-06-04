@@ -1169,38 +1169,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("serviceTask");
-                    String startUserId = ContextUtil.getSessionUser().getUserId();
-                    Map<String, Object> params = new HashMap();
-//                    params.put("employeeIds", Arrays.asList(startUserId));
-//                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//                    }, params);
-                    params.put("userIds", Arrays.asList(startUserId));
-                    String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                    }, params);
-                    if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                    String userId = ContextUtil.getSessionUser().getUserId();
+                    //通过用户id获取用户信息
+                    Executor  executor = flowCommonUtil.getBasicUserExecutor(userId);
+                    if (executor != null ) {//服务任务默认选择当前操作人
                         Set<Executor> employeeSet = new HashSet<Executor>();
-                        employeeSet.addAll(employees);
+                        employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
                 } else if ("receiveTask".equalsIgnoreCase(nodeInfo.getType())) {
                     nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("receiveTask");
-                    String startUserId = ContextUtil.getSessionUser().getUserId();
-                    Map<String, Object> params = new HashMap();
-//                    params.put("employeeIds", Arrays.asList(startUserId));
-//                    String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//                    }, params);
-                    params.put("userIds", Arrays.asList(startUserId));
-                    String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                    List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                    }, params);
-                    if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
+                    String userId = ContextUtil.getSessionUser().getUserId();
+                    //通过用户id获取用户信息
+                    Executor  executor = flowCommonUtil.getBasicUserExecutor(userId);
+                    if (executor != null) {//接收任务默认选择当前操作人
                         Set<Executor> employeeSet = new HashSet<Executor>();
-                        employeeSet.addAll(employees);
+                        employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
                 } else if ("callActivity".equalsIgnoreCase(nodeInfo.getType())) {
@@ -1277,16 +1263,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             } else {
                                 startUserId = historicProcessInstance.getStartUserId();
                             }
-                            Map<String, Object> params = new HashMap();
-//                            params.put("employeeIds", Arrays.asList(startUserId));
-//                            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//                            }, params);
-
-                            params.put("userIds", Arrays.asList(startUserId));
-                            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                            }, params);
+                            //根据用户的id列表获取执行人
+                            employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
                         } else {
                             String selfDefId = (String) executor.get("selfDefId");
                             if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
@@ -2239,13 +2217,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTask = flowTaskDao.findOne(taskId);
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
-            Map<String, Object> params = new HashMap();
-            params.put("userIds", Arrays.asList(userId));
-            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
-            if (employees != null && !employees.isEmpty()) {
-                Executor executor = employees.get(0);
+            //根据用户的id获取执行人
+            Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+            if (executor != null ) {
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
@@ -2336,13 +2310,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTask = flowTaskDao.findOne(taskId);
         if (flowTask != null) {
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
-            Map<String, Object> params = new HashMap();
-            params.put("userIds", Arrays.asList(userId));
-            String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-            List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
-            if (employees != null && !employees.isEmpty()) {
-                Executor executor = employees.get(0);
+            //通过用户ID获取执行人
+            Executor executor =  flowCommonUtil.getBasicUserExecutor(userId);
+            if (executor != null) {
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
@@ -2427,15 +2397,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String processInstanceId = currTask.getProcessInstanceId();
                 String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
                 List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
-                Map<String, Object> params = new HashMap();
-//                params.put("employeeIds", userList);
-//                String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-//                }, params);
-                params.put("userIds", userList);
-                String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-                result = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-                }, params);
+                //根据用户的id列表获取执行人
+                result = flowCommonUtil.getBasicUserExecutors(userList);
             } else {
                 throw new FlowException("非会签节点！");
             }

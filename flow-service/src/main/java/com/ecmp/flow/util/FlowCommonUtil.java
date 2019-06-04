@@ -50,6 +50,14 @@ public class FlowCommonUtil implements Serializable {
         return definition;
     }
 
+
+    /**
+     * 根据用户的id获取执行人
+     * 1.剔除冻结的用户
+     * 2.如果有员工信息，赋值组织机构和岗位信息
+     * @param userId  用户id
+     * @return 流程执行人
+     */
     public Executor getBasicUserExecutor(String userId) {
         List<String> userIds = Arrays.asList((userId));
         Map<String,Object> params = new HashMap();
@@ -63,6 +71,14 @@ public class FlowCommonUtil implements Serializable {
         return executor;
     }
 
+
+    /**
+     * 根据用户的id列表获取执行人
+     * 1.剔除冻结的用户
+     * 2.如果有员工信息，赋值组织机构和岗位信息
+     * @param userIds  用户ID列表
+     * @return  流程执行人集合
+     */
     public List<Executor> getBasicUserExecutors(List<String> userIds) {
         Map<String,Object> params = new HashMap();
         params.put("userIds",userIds);
@@ -71,33 +87,6 @@ public class FlowCommonUtil implements Serializable {
         return users;
     }
 
-//    @Cacheable(value = "FLowGetBasicExecutor", key = "'FLowGetBasicExecutor_' + #userId")
-    public Executor getBasicExecutor(String userId) {
-        Map<String,Object> params = new HashMap();
-//        params.put("employeeIds",java.util.Arrays.asList(userId));
-//        String url = com.ecmp.flow.common.util.Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-        params.put("userIds", Arrays.asList(userId));
-        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-        Executor executor = null;
-        if(employees!=null && !employees.isEmpty()){
-            executor = employees.get(0);
-        }
-        return executor;
-    }
-
-//    @Cacheable(value = "FLowGetBasicExecutors")
-    public List<Executor> getBasicExecutors(List<String> userIds) {
-        Map<String,Object> params = new HashMap();
-//        params.put("employeeIds",userIds);
-//        String url = com.ecmp.flow.common.util.Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-        params.put("userIds",userIds);
-        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-        return employees;
-    }
 
 //    @Cacheable(value = "FLowGetLastFlowDefVersion", key = "'FLowGetLastFlowDefVersion_' + #versionId")
     public FlowDefVersion getLastFlowDefVersion(String versionId ){

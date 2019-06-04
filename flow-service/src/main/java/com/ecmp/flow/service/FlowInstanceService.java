@@ -15,10 +15,7 @@ import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.FlowListenerTool;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
@@ -95,6 +92,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
+
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     /**
      * 撤销流程实例
@@ -702,17 +702,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId) {
         OperateResultWithData<FlowTask> result = null;
         String actTaskId = historicTaskInstance.getId();
-        Map<String, Object> params = new HashMap();
-//            params.put("employeeIds",Arrays.asList(userId));
-//            String url = Constants.getBasicEmployeeGetexecutorsbyemployeeidsUrl();
-//            List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-        params.put("userIds", Arrays.asList(userId));
-        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-        }, params);
-        if (employees != null && !employees.isEmpty()) {
-
-            Executor executor = employees.get(0);
+        //根据用户的id获取执行人
+        Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+        if (executor != null) {
             FlowTask newFlowTask = flowTaskDao.findByActTaskId(actTaskId);
 //                newFlowTask.setId(null);
             newFlowTask.setExecutorId(executor.getId());
