@@ -141,7 +141,7 @@ public class Constants extends ConfigurableContants {
 	}
 
 	/**
-	 * 获取岗位列表
+	 * 获取岗位列表（web端使用）
 	 * @return
 	 */
 	public static String getBasicPositionFindbypageUrl() {
@@ -153,18 +153,6 @@ public class Constants extends ConfigurableContants {
 		return BASIC_POSITION_FINDBYPAGE_URL;
 	}
 
-	/**
-	 * 获取指定id岗位
-	 * @return
-	 */
-	public static String getBasicPositionFindoneUrl() {
-		String BASIC_POSITION_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDONE");
-		if(StringUtils.isEmpty(BASIC_POSITION_FINDONE_URL)){
-			BASIC_POSITION_FINDONE_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.findOne", "/position/findOne");
-		}
-		return BASIC_POSITION_FINDONE_URL;
-	}
 
 	/**
 	 * 根据岗位id列表获取岗位
