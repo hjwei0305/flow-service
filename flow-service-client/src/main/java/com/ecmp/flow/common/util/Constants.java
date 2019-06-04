@@ -155,19 +155,6 @@ public class Constants extends ConfigurableContants {
 
 
 	/**
-	 * 根据岗位id列表获取岗位
-	 * @return
-	 */
-	public static String getBasicPositionFindbyidsUrl() {
-		String BASIC_POSITION_FINDBYIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYIDS");
-		if(StringUtils.isEmpty(BASIC_POSITION_FINDBYIDS_URL)){
-			BASIC_POSITION_FINDBYIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.findByIds", "/position/findByIds");
-		}
-		return BASIC_POSITION_FINDBYIDS_URL;
-	}
-
-	/**
 	 * 根据岗位的id列表获取执行人
 	 * @return
 	 */
