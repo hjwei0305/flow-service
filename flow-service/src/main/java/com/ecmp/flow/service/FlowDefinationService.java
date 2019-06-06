@@ -122,18 +122,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listAllOrgs() {
-        String url = Constants.getBasicOrgListallorgsUrl();
         ResponseData responseData = new ResponseData();
-        try {
-            List<Organization> result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {
-            }, null);
-            responseData.setMessage("操作成功！");
-            responseData.setData(result);
-        } catch (Exception e) {
-            responseData.setSuccess(false);
-            responseData.setMessage("请求接口错误！");
-            LogUtil.error(e.getMessage());
-        }
+        List<Organization> result = flowCommonUtil.getBasicAllOrgs();
+        responseData.setMessage("操作成功！");
+        responseData.setData(result);
         return responseData;
     }
 
@@ -785,6 +777,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowInvokeParams.setId(flowStartVO.getBusinessKey());
                             flowInvokeParams.setOrgId("" + flowStartVO.getVariables().get("orgId"));
                             flowInvokeParams.setJsonParam(param);
+                            String nodeCode="";
+                            try{
+                                JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                nodeCode = normal.getString("nodeCode");
+                                if(StringUtils.isNotEmpty(nodeCode)){
+                                    Map<String,String> map = new HashMap<String,String>();
+                                    map.put("nodeCode",nodeCode);
+                                    flowInvokeParams.setParams(map);
+                                }
+                            }catch (Exception e){}
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                             }, flowInvokeParams);
                         } else {
@@ -843,6 +845,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setPositionIds(positionIds);
                 flowInvokeParams.setJsonParam(param);
+                String nodeCode="";
+                try{
+                    JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                    nodeCode = normal.getString("nodeCode");
+                    if(StringUtils.isNotEmpty(nodeCode)){
+                        Map<String,String> map = new HashMap<String,String>();
+                        map.put("nodeCode",nodeCode);
+                        flowInvokeParams.setParams(map);
+                    }
+                }catch (Exception e){}
                 employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                 }, flowInvokeParams);
             } else {
