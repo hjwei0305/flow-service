@@ -2,10 +2,13 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,14 +45,10 @@ public class FlowCommonUtil implements Serializable {
     @Autowired(required = false)
     protected RedisTemplate<String, Object> redisTemplate;
 
-//    @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
-    public Definition flowDefinition(FlowDefVersion flowDefVersion ){
-        String defObjStr = flowDefVersion.getDefJson();
-        JSONObject defObj = JSONObject.fromObject(defObjStr);
-        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-        return definition;
-    }
 
+    public  String  getErrorLogString(String url){
+        return  "【调用接口异常："+url+",详情请查看日志】";
+    }
 
     /**
      * 根据用户的id获取执行人
@@ -62,15 +61,22 @@ public class FlowCommonUtil implements Serializable {
         List<String> userIds = Arrays.asList((userId));
         Map<String,Object> params = new HashMap();
         params.put("userIds",userIds);
-        String url = com.ecmp.flow.common.util.Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+        String messageLog = "开始调用【根据用户的id获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Executor> users ;
+        try{
+            users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
         Executor executor = null;
         if(users!=null && !users.isEmpty()){
             executor = users.get(0);
         }
         return executor;
     }
-
 
     /**
      * 根据用户的id列表获取执行人
@@ -82,9 +88,51 @@ public class FlowCommonUtil implements Serializable {
     public List<Executor> getBasicUserExecutors(List<String> userIds) {
         Map<String,Object> params = new HashMap();
         params.put("userIds",userIds);
-        String url = com.ecmp.flow.common.util.Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+        List<Executor> users;
+        String messageLog = "开始调用【根据用户的id列表获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        try{
+            users   = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
         return users;
+    }
+
+    /**
+     * 获取所有组织机构树（不包含冻结）
+     * @return
+     */
+    public  List<Organization> getBasicAllOrgs(){
+        String url = Constants.getBasicOrgListallorgsUrl();
+        List<Organization> result;
+        String messageLog = "开始调用【获取所有组织机构树】，接口url="+url+",参数值为null";
+        try{
+            result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, null);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return result;
+    }
+
+
+
+
+
+
+
+
+
+//    @Cacheable(value = "FLowGetDefinitionJSON", key = "'FLowGetDefinitionJSON_' + #flowDefVersion.id")
+    public Definition flowDefinition(FlowDefVersion flowDefVersion ){
+        String defObjStr = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defObjStr);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        return definition;
     }
 
 
