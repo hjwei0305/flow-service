@@ -1273,18 +1273,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     String path = flowExecutorConfig.getUrl();
                                     AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
                                     String appModuleCode = appModule.getApiBaseAddress();
-//                                    Map<String, String>  params = new HashMap<String,String>();;
-//                                    String param = flowExecutorConfig.getParam();
-//                                    String businessId = flowTask.getFlowInstance().getBusinessId();
-//                                    params.put("businessId",businessId);
-//                                    params.put("paramJson",param);
-//                                    employees =  ApiClient.postViaProxyReturnResult(appModuleCode,  path,new GenericType<List<Executor>>() {}, params)
                                     String businessId = flowTask.getFlowInstance().getBusinessId();
                                     String param = flowExecutorConfig.getParam();
                                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                                     flowInvokeParams.setId(businessId);
 //                                    flowInvokeParams.setOrgId(""+flowStartVO.getVariables().get("orgId"));
                                     flowInvokeParams.setJsonParam(param);
+                                    String nodeCode="";
+                                    try{
+                                        JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                        nodeCode = normal.getString("nodeCode");
+                                        if(StringUtils.isNotEmpty(nodeCode)){
+                                            Map<String,String> map = new HashMap<String,String>();
+                                            map.put("nodeCode",nodeCode);
+                                            flowInvokeParams.setParams(map);
+                                        }
+                                    }catch (Exception e){}
                                     employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                                     }, flowInvokeParams);
                                 } else {
@@ -1343,6 +1347,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                             flowInvokeParams.setPositionIds(positionIds);
                             flowInvokeParams.setJsonParam(param);
+                            String nodeCode="";
+                            try{
+                                JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                nodeCode = normal.getString("nodeCode");
+                                if(StringUtils.isNotEmpty(nodeCode)){
+                                    Map<String,String> map = new HashMap<String,String>();
+                                    map.put("nodeCode",nodeCode);
+                                    flowInvokeParams.setParams(map);
+                                }
+                            }catch (Exception e){}
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                             }, flowInvokeParams);
                         } else {

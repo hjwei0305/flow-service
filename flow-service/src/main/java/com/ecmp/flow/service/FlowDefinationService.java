@@ -777,6 +777,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowInvokeParams.setId(flowStartVO.getBusinessKey());
                             flowInvokeParams.setOrgId("" + flowStartVO.getVariables().get("orgId"));
                             flowInvokeParams.setJsonParam(param);
+                            String nodeCode="";
+                            try{
+                                JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                nodeCode = normal.getString("nodeCode");
+                                if(StringUtils.isNotEmpty(nodeCode)){
+                                    Map<String,String> map = new HashMap<String,String>();
+                                    map.put("nodeCode",nodeCode);
+                                    flowInvokeParams.setParams(map);
+                                }
+                            }catch (Exception e){}
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                             }, flowInvokeParams);
                         } else {
@@ -835,6 +845,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setPositionIds(positionIds);
                 flowInvokeParams.setJsonParam(param);
+                String nodeCode="";
+                try{
+                    JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                    nodeCode = normal.getString("nodeCode");
+                    if(StringUtils.isNotEmpty(nodeCode)){
+                        Map<String,String> map = new HashMap<String,String>();
+                        map.put("nodeCode",nodeCode);
+                        flowInvokeParams.setParams(map);
+                    }
+                }catch (Exception e){}
                 employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                 }, flowInvokeParams);
             } else {
