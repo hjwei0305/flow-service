@@ -245,6 +245,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             flowTaskVO = new FlowTaskVO();
             flowTaskVO.setId(flowTask.getId());
             flowTaskVO.setName(flowTask.getTaskName());
+            if (Objects.nonNull(flowTask.getWorkPageUrl())){
+                flowTaskVO.setWorkPageUrl(flowTask.getWorkPageUrl().getUrl());
+            }
         }
         return flowTaskVO;
     }
