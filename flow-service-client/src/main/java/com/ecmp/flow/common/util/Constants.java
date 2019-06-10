@@ -35,6 +35,7 @@ public class Constants extends ConfigurableContants {
 		return BASIC_SERVICE_URL;
 	}
 
+
 	/**
 	 * 根据用户的id列表获取执行人
 	 */
@@ -46,6 +47,25 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_USER_GETEXECUTORSBYUSERIDS_URL;
 	}
+	/**
+	 * 根据岗位的id列表获取执行人
+	 * @return
+	 */
+	public static String getBasicPositionGetexecutorsbypositionidsUrl() {
+		String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSITIONIDS");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL)){
+			BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutorsByPositionIds", "/position/getExecutorsByPositionIds");
+		}
+		return BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
+	}
+
+
+
+
+
+
+
 
 	/**
 	 * 获取所有岗位列表（web端使用）
@@ -59,6 +79,12 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_POSITION_FINDBYPAGE_URL;
 	}
+
+
+
+
+
+
 
 	/**
 	 * 获取所有组织维度（web端使用）
@@ -74,6 +100,9 @@ public class Constants extends ConfigurableContants {
 	}
 
 
+
+
+
 	/**
 	 * 获取所有组织机构树（不包含冻结）
 	 * @return
@@ -86,6 +115,21 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_ORG_LISTALLORGS_URL;
 	}
+	/**
+	 * 获取指定节点的父组织机构列表
+	 * @return
+	 */
+	public static String getBasicOrgFindparentnodesUrl() {
+		String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDPARENTNODES");
+		if(StringUtils.isEmpty(BASIC_ORG_FINDPARENTNODES_URL)){
+			BASIC_ORG_FINDPARENTNODES_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.findParentNodes", "/organization/getParentNodes");
+		}
+		return BASIC_ORG_FINDPARENTNODES_URL;
+	}
+
+
+
 
 
 
@@ -151,45 +195,6 @@ public class Constants extends ConfigurableContants {
 	}
 
 
-
-	/**
-	 * 获取指定id的组织机构
-	 * @return
-	 */
-	public static String getBasicOrgFindoneUrl() {
-		String BASIC_ORG_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDONE");
-		if(StringUtils.isEmpty(BASIC_ORG_FINDONE_URL)){
-			BASIC_ORG_FINDONE_URL=getBasicServiceUrl() + getProperty(
-					"basic.org.findOne", "/organization/findOne");
-		}
-		return BASIC_ORG_FINDONE_URL;
-	}
-
-	/**
-	 * 获取指定id的父组织机构对象列表
-	 * @return
-	 */
-	public static String getBasicOrgFindparentnodesUrl() {
-		String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDPARENTNODES");
-		if(StringUtils.isEmpty(BASIC_ORG_FINDPARENTNODES_URL)){
-			BASIC_ORG_FINDPARENTNODES_URL=getBasicServiceUrl() + getProperty(
-					"basic.org.findParentNodes", "/organization/getParentNodes");
-		}
-		return BASIC_ORG_FINDPARENTNODES_URL;
-	}
-
-	/**
-	 * 根据岗位的id列表获取执行人
-	 * @return
-	 */
-	public static String getBasicPositionGetexecutorsbypositionidsUrl() {
-		String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSITIONIDS");
-		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL)){
-			BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.getExecutorsByPositionIds", "/position/getExecutorsByPositionIds");
-		}
-		return BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
-	}
 
 	/**
 	 * 根据岗位类别的id列表获取执行人
