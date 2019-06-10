@@ -4,12 +4,15 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowTaskBatchCompleteVO;
+import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.flow.vo.FlowTaskPageResultVO;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import io.swagger.util.Json;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +88,23 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
         variables.put("approved", true);
         param.setVariables(variables);
         OperateResultWithData<Integer> result = service.completeBatch(param);
+        System.out.println(JsonUtils.toJson(result));
+        Assert.assertTrue(result.successful());
+    }
+
+    @Test
+    public void complete() throws Exception{
+        FlowTaskCompleteVO completeVO = new FlowTaskCompleteVO();
+        completeVO.setTaskId("ECCD79BA-882F-11E9-BE3F-0242C0A84414");
+        completeVO.setOpinion("同意");
+        Map<String, Object> vars = new HashMap<>();
+        vars.put("manageSolidifyFlow", false);
+        vars.put("approved", null);
+        vars.put("loadOverTime", 1559807544731L);
+        vars.put("allowChooseInstancyMap", "{\"PoolTask_5\": null}");
+        vars.put("selectedNodesUserMap", "{\"PoolTask_5\": [\"\"]}");
+        completeVO.setVariables(vars);
+        OperateResultWithData<FlowStatus> result = service.complete(completeVO);
         System.out.println(JsonUtils.toJson(result));
         Assert.assertTrue(result.successful());
     }
