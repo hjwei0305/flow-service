@@ -10,6 +10,7 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,10 +51,10 @@ public class FlowCommonUtil implements Serializable {
         return  "【调用接口异常："+url+",详情请查看日志】";
     }
 
+
     /**
      * 根据用户的id获取执行人
-     * 1.剔除冻结的用户
-     * 2.如果有员工信息，赋值组织机构和岗位信息
+     * 1.剔除冻结的用户  2.如果有员工信息，赋值组织机构和岗位信息
      * @param userId  用户id
      * @return 流程执行人
      */
@@ -63,25 +64,24 @@ public class FlowCommonUtil implements Serializable {
         params.put("userIds",userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
         String messageLog = "开始调用【根据用户的id获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
-        List<Executor> users ;
+        List<Executor> executors ;
         try{
-            users= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            executors= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
             throw  new FlowException(getErrorLogString(url));
         }
         Executor executor = null;
-        if(users!=null && !users.isEmpty()){
-            executor = users.get(0);
+        if(executors!=null && !executors.isEmpty()){
+            executor = executors.get(0);
         }
         return executor;
     }
 
     /**
      * 根据用户的id列表获取执行人
-     * 1.剔除冻结的用户
-     * 2.如果有员工信息，赋值组织机构和岗位信息
+     * 1.剔除冻结的用户  2.如果有员工信息，赋值组织机构和岗位信息
      * @param userIds  用户ID列表
      * @return  流程执行人集合
      */
@@ -89,17 +89,48 @@ public class FlowCommonUtil implements Serializable {
         Map<String,Object> params = new HashMap();
         params.put("userIds",userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        List<Executor> users;
+        List<Executor> executors;
         String messageLog = "开始调用【根据用户的id列表获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
         try{
-            users   = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+            executors   = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
             throw  new FlowException(getErrorLogString(url));
         }
-        return users;
+        return executors;
     }
+
+    /**
+     * 根据岗位id列集合获取执行人
+     * @param positionIds  岗位id集合
+     * @param orgId  组织机构id（平台basic接口没用这个参数，项目需要的，直接在basic接口添加参数使用）
+     * @return  流程执行人集合
+     */
+    public List<Executor> getBasicExecutorsByPositionIds(List<String> positionIds,String orgId){
+        Map<String, Object> params = new HashMap();
+        params.put("positionIds", positionIds);
+        params.put("orgId", orgId);
+        String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
+        String messageLog = "开始调用【根据岗位的id列表获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Executor> executors;
+        try{
+            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return executors;
+    }
+
+
+
+
+
+
+
+
 
     /**
      * 获取所有组织机构树（不包含冻结）
@@ -118,7 +149,27 @@ public class FlowCommonUtil implements Serializable {
         }
         return result;
     }
-
+    /**
+     * 获取指定节点的父组织机构列表
+     * @param nodeId  指定的组织机构id
+     * @return  包含自己的所有父组织机构集合
+     */
+    public List<Organization> getParentOrganizations(String nodeId) {
+        Map<String, Object> params = new HashMap();
+        params.put("includeSelf", true); //默认包含本组织机构
+        params.put("nodeId", nodeId);
+        String url = Constants.getBasicOrgFindparentnodesUrl();
+        String messageLog = "开始调用【获取指定节点的父组织机构列表】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Organization> organizationsList;
+        try{
+            organizationsList = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return organizationsList;
+    }
 
 
 

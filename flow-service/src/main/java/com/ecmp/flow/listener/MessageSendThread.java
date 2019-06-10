@@ -9,6 +9,7 @@ import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.util.BpmnUtil;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -60,6 +61,8 @@ public class MessageSendThread implements Runnable {
     private RuntimeService runtimeService;
 
     private TaskService taskService;
+
+    private FlowCommonUtil flowCommonUtil;
 
     public MessageSendThread() {
     }
@@ -174,10 +177,8 @@ public class MessageSendThread implements Runnable {
                                           idList.add(positionId);
                                       }
                                   }
-                                  Map<String,Object> params = new HashMap();
-                                  params.put("positionIds",idList);
-                                  String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
-                                  List<Executor>  employees = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                                  List<Executor>  employees;
+                                  employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList,"");
                                   Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
                                   List<String> receiverIds = new ArrayList<String>();
                                   if(employees != null && !employees.isEmpty() ){

@@ -2085,24 +2085,19 @@ public class FlowTaskTool {
     public List<Executor> getExecutors(String userType, String ids, String orgId) {
         String[] idsShuZhu = ids.split(",");
         List<String> idList = Arrays.asList(idsShuZhu);
-        List<Executor> employees = null;
+        List<Executor> executors = null;
         if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
-            Map<String, Object> params = new HashMap();
-            params.put("positionIds", idList);
-            params.put("orgId", orgId); //这个参数其实平台上没用、只是中泰有定制的接口在用
-            String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
-            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
+            executors =  flowCommonUtil.getBasicExecutorsByPositionIds(idList,orgId);
         } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
             Map<String, Object> params = new HashMap();
             params.put("postCatIds", idList);
             params.put("orgId", orgId);
             String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
-            employees = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
             }, params);
         } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
-        return employees;
+        return executors;
     }
 
 
@@ -2275,12 +2270,7 @@ public class FlowTaskTool {
             //获取业务数据条件属性值接口【orgId未赋值】
             throw new FlowException("10069");
         }
-        Map<String, Object> params = new HashMap();
-        params.put("includeSelf", true);
-        params.put("nodeId", nodeId);
-        String url = Constants.getBasicOrgFindparentnodesUrl();
-        List<Organization> organizationsList = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {
-        }, params);
+        List<Organization> organizationsList = flowCommonUtil.getParentOrganizations(nodeId);
         List<String> orgCodesList = new ArrayList<>();
         if (organizationsList != null && !organizationsList.isEmpty()) {
             for (Organization organization : organizationsList) {
