@@ -35,7 +35,7 @@ public class Constants extends ConfigurableContants {
 		return BASIC_SERVICE_URL;
 	}
 
-
+	//------------------------------------------------获取执行人--------------------------------//
 	/**
 	 * 根据用户的id列表获取执行人
 	 */
@@ -59,25 +59,40 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL;
 	}
-
-
-
-
-
-
-
+	/**
+	 * 根据岗位类别的id列表获取执行人
+	 */
+	public static String getBasicPositionGetexecutorsbyposcateidsUrl() {
+		//根据单据的orgId查找最近的符合岗位类别的人员
+		String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATANDORGROOT");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL)){
+			BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutorsByPostCatAndOrgToRoot", "/position/getExecutorsByPostCatAndOrgToRoot");
+		}
+		return BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL;
+	}
+	/**
+	 * 通过岗位ids、组织维度ids和组织机构id来获取执行人
+	 */
+	public static String getBasicPositionGetExecutorsUrl() {
+		String BASIC_POSITION_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORS");
+		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORS_URL)){
+			BASIC_POSITION_GETEXECUTORS_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.getExecutors", "/position/getExecutors");
+		}
+		return BASIC_POSITION_GETEXECUTORS_URL;
+	}
 
 	/**
-	 * 获取所有岗位列表（web端使用）
-	 * @return
+	 * 根据企业员工的id列表获取执行人
 	 */
-	public static String getBasicPositionFindbypageUrl() {
-		String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYPAGE");
-		if(StringUtils.isEmpty(BASIC_POSITION_FINDBYPAGE_URL)){
-			BASIC_POSITION_FINDBYPAGE_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.findByPage", "/position/findByPage");
+	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
+		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
+			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
 		}
-		return BASIC_POSITION_FINDBYPAGE_URL;
+		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 	}
 
 
@@ -86,23 +101,7 @@ public class Constants extends ConfigurableContants {
 
 
 
-	/**
-	 * 获取所有组织维度（web端使用）
-	 * @return
-	 */
-	public static String getBasicOrgDimensionUrl() {
-		String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDORGANIZATIONDIMENSION");
-		if(StringUtils.isEmpty(BASIC_ORG_FINDORGANIZATIONDIMENSION_URL)){
-			BASIC_ORG_FINDORGANIZATIONDIMENSION_URL=getBasicServiceUrl() + getProperty(
-					"basic.org.findOrganizationDimension", "/organization/findOrganizationDimension");
-		}
-		return BASIC_ORG_FINDORGANIZATIONDIMENSION_URL;
-	}
-
-
-
-
-
+    //------------------------------------------------获取组织机构--------------------------------//
 	/**
 	 * 获取所有组织机构树（不包含冻结）
 	 * @return
@@ -127,6 +126,59 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_ORG_FINDPARENTNODES_URL;
 	}
+
+
+
+
+
+	//------------------------------------------------获取岗位--------------------------------//
+	/**
+	 * 获取所有岗位列表（web端使用）
+	 * @return
+	 */
+	public static String getBasicPositionFindbypageUrl() {
+		String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYPAGE");
+		if(StringUtils.isEmpty(BASIC_POSITION_FINDBYPAGE_URL)){
+			BASIC_POSITION_FINDBYPAGE_URL=getBasicServiceUrl() + getProperty(
+					"basic.position.findByPage", "/position/findByPage");
+		}
+		return BASIC_POSITION_FINDBYPAGE_URL;
+	}
+
+
+
+
+	//----------------------------------------------获取岗位类别--------------------------------//
+	/**
+	 * 获取所有岗位类别列表（web端使用）
+	 */
+	public static String getBasicPositioncategoryFindallUrl() {
+		String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDALL");
+		if(StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDALL_URL)){
+			BASIC_POSITIONCATEGORY_FINDALL_URL=getBasicServiceUrl() + getProperty(
+					"basic.positionCategory.findAll", "/positionCategory/findAll");
+		}
+		return BASIC_POSITIONCATEGORY_FINDALL_URL;
+	}
+
+
+
+
+	//----------------------------------------------获取组织维度--------------------------------//
+	/**
+	 * 获取所有组织维度（web端使用）
+	 * @return
+	 */
+	public static String getBasicOrgDimensionUrl() {
+		String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDORGANIZATIONDIMENSION");
+		if(StringUtils.isEmpty(BASIC_ORG_FINDORGANIZATIONDIMENSION_URL)){
+			BASIC_ORG_FINDORGANIZATIONDIMENSION_URL=getBasicServiceUrl() + getProperty(
+					"basic.org.findOrganizationDimension", "/organization/findOrganizationDimension");
+		}
+		return BASIC_ORG_FINDORGANIZATIONDIMENSION_URL;
+	}
+
+
 
 
 
@@ -195,21 +247,6 @@ public class Constants extends ConfigurableContants {
 	}
 
 
-
-	/**
-	 * 根据岗位类别的id列表获取执行人
-	 */
-	public static String getBasicPositionGetexecutorsbyposcateidsUrl() {
-		//根据单据的orgId查找最近的符合岗位类别的人员
-		String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATANDORGROOT");
-		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL)){
-			BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.getExecutorsByPostCatAndOrgToRoot", "/position/getExecutorsByPostCatAndOrgToRoot");
-		}
-		return BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL;
-	}
-
-
 	/**
 	 * 通过岗位类别ids和组织机构ids获取执行人
 	 * @return
@@ -221,55 +258,6 @@ public class Constants extends ConfigurableContants {
 					"basic.positionCatAndOrg.getExecutors", "/employee/getExecutorsByPostCatAndOrg");
 		}
 		return BASIC_POSITONCATANDORG_GETEXECUTORS_URL;
-	}
-
-	/**
-	 * 通过岗位ids、组织维度ids和组织机构id来获取执行人
-	 */
-	public static String getBasicPositionGetExecutorsUrl() {
-		String BASIC_POSITION_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORS");
-		if(StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORS_URL)){
-			BASIC_POSITION_GETEXECUTORS_URL=getBasicServiceUrl() + getProperty(
-					"basic.position.getExecutors", "/position/getExecutors");
-		}
-		return BASIC_POSITION_GETEXECUTORS_URL;
-	}
-
-	/**
-	 * 获取所有岗位类别列表
-	 */
-	public static String getBasicPositioncategoryFindallUrl() {
-		String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDALL");
-		if(StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDALL_URL)){
-			BASIC_POSITIONCATEGORY_FINDALL_URL=getBasicServiceUrl() + getProperty(
-					"basic.positionCategory.findAll", "/positionCategory/findAll");
-		}
-		return BASIC_POSITIONCATEGORY_FINDALL_URL;
-	}
-
-	/**
-	 * 获取指定id岗位类别
-	 */
-	public static String getBasicPositioncategoryFindoneUrl() {
-		String BASIC_POSITIONCATEGORY_FINDONE_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDONE");
-		if(StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDONE_URL)){
-			BASIC_POSITIONCATEGORY_FINDONE_URL=getBasicServiceUrl() + getProperty(
-					"basic.positionCategory.findOne", "/positionCategory/findOne");
-		}
-		return BASIC_POSITIONCATEGORY_FINDONE_URL;
-	}
-
-
-	/**
-	 * 根据企业员工的id列表获取执行人
-	 */
-	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
-		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
-			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
-		}
-		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
 	}
 
 	/**

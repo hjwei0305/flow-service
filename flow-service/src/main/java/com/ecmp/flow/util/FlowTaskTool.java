@@ -2086,15 +2086,12 @@ public class FlowTaskTool {
         String[] idsShuZhu = ids.split(",");
         List<String> idList = Arrays.asList(idsShuZhu);
         List<Executor> executors = null;
-        if ("Position".equalsIgnoreCase(userType)) {//调用岗位获取用户接口
+        if ("Position".equalsIgnoreCase(userType)) {
+            //调用岗位获取用户接口
             executors =  flowCommonUtil.getBasicExecutorsByPositionIds(idList,orgId);
-        } else if ("PositionType".equalsIgnoreCase(userType)) {//调用岗位类型获取用户接口
-            Map<String, Object> params = new HashMap();
-            params.put("postCatIds", idList);
-            params.put("orgId", orgId);
-            String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
-            }, params);
+        } else if ("PositionType".equalsIgnoreCase(userType)) {
+            //调用岗位类型获取用户接口
+            executors =  flowCommonUtil.getBasicExecutorsByPostCatIds(idList,orgId);
         } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
         return executors;

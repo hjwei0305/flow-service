@@ -713,13 +713,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-//            Map<String,Object> params = new HashMap();
-//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -733,13 +727,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-//            Map<String,Object> params = new HashMap();
-//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
                 employeeSet.addAll(employees);
@@ -864,19 +852,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     path = Constants.getExecutorsByPostCatAndOrgUrl();
                     params.put("orgIds", orgIds);
                     params.put("postCatIds", positionTypesIds);
+                    employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
                 } else {
-                    path = Constants.getBasicPositionGetExecutorsUrl();
-                    params.put("orgId", flowStartVO.getVariables().get("orgId"));
-                    params.put("orgDimIds", orgDimensionCodes);
-                    params.put("positionIds", positionIds);
-                }
-                String messageLog = "开始调用‘获取执行人’接口，接口url=" + path + ",参数值" + JsonUtils.toJson(params);
-                try {
-                    employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {
-                    }, params);
-                } catch (Exception e) {
-                    messageLog += "-获取执行人异常：" + e.getMessage();
-                    LogUtil.error(messageLog);
+                    String orgId = flowStartVO.getVariables().get("orgId")+"";
+                    //通过岗位ids、组织维度ids和组织机构id来获取执行人
+                    employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds,orgDimensionCodes,orgId);
                 }
             }
             if (employees != null && !employees.isEmpty()) {
@@ -1058,12 +1038,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-//            Map<String,Object> params = new HashMap();
-//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
-//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();
@@ -1082,12 +1056,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setUiType("radiobox");
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
-//            Map<String,Object> params = new HashMap();
-//            params.put("employeeIds",java.util.Arrays.asList(startUserId));
-//            String url = Constants.BASIC_SERVICE_URL+ Constants.BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-//            List<Executor> employees=ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
-
-//            List<Executor> employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
                 Set<Executor> employeeSet = new HashSet<Executor>();

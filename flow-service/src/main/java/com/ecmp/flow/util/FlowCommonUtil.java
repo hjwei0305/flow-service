@@ -52,6 +52,7 @@ public class FlowCommonUtil implements Serializable {
     }
 
 
+    //------------------------------------------------获取执行人--------------------------------//
     /**
      * 根据用户的id获取执行人
      * 1.剔除冻结的用户  2.如果有员工信息，赋值组织机构和岗位信息
@@ -78,7 +79,6 @@ public class FlowCommonUtil implements Serializable {
         }
         return executor;
     }
-
     /**
      * 根据用户的id列表获取执行人
      * 1.剔除冻结的用户  2.如果有员工信息，赋值组织机构和岗位信息
@@ -100,7 +100,6 @@ public class FlowCommonUtil implements Serializable {
         }
         return executors;
     }
-
     /**
      * 根据岗位id列集合获取执行人
      * @param positionIds  岗位id集合
@@ -123,6 +122,53 @@ public class FlowCommonUtil implements Serializable {
         }
         return executors;
     }
+    /**
+     * 根据岗位类别id列集合获取执行人
+     * @param postCatIds  岗位类别id集合
+     * @param orgId  组织机构id
+     * @return  流程执行人集合
+     */
+    public List<Executor> getBasicExecutorsByPostCatIds(List<String> postCatIds,String orgId){
+        Map<String, Object> params = new HashMap();
+        params.put("postCatIds", postCatIds);
+        params.put("orgId", orgId);
+        String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
+        String messageLog = "开始调用【根据岗位类别的id列表获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Executor> executors;
+        try{
+            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return executors;
+    }
+
+    /**
+     * 通过岗位ids、组织维度ids和组织机构id来获取执行人
+     * @param positionIds  岗位ids
+     * @param orgDimIds  组织维度ids
+     * @param orgId   组织机构id
+     * @return
+     */
+    public  List<Executor>  getExecutorsByPositionIdsAndorgDimIds(List<String> positionIds,List<String> orgDimIds,String orgId){
+        Map<String, Object> params = new HashMap();
+        params.put("orgId", orgId);
+        params.put("orgDimIds", orgDimIds);
+        params.put("positionIds", positionIds);
+        String url = Constants.getBasicPositionGetExecutorsUrl();
+        String messageLog = "开始调用【根据岗位集合、组织维度集合和组织机构获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Executor> executors;
+        try{
+            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return executors;
+    }
 
 
 
@@ -130,8 +176,7 @@ public class FlowCommonUtil implements Serializable {
 
 
 
-
-
+    //------------------------------------------------获取组织机构--------------------------------//
     /**
      * 获取所有组织机构树（不包含冻结）
      * @return
