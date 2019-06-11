@@ -175,10 +175,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
             if(defaultBusinessModel!=null){
                 String orgid = defaultBusinessModel.getOrgId();
-                Map<String,Object> params = new HashMap();
-                params.put("organizationId",orgid);
-                String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
-                List<Employee> employeeList=ApiClient.getEntityViaProxy(url,new GenericType<List<Employee>>() {},params);
+                //根据组织机构ID获取员工集合
+                List<Employee> employeeList =flowCommonUtil.getEmployeesByOrgId(orgid);
                 List<String> idList = new ArrayList<String>();
                 for(Employee e : employeeList){
                     idList.add(e.getId());

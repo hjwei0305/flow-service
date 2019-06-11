@@ -11,6 +11,7 @@ import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
@@ -45,6 +46,8 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     @Autowired
     private BusinessModelDao businessModelDao;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     protected BaseEntityDao<BusinessModel> getDao() {
         return this.businessModelDao;
@@ -189,23 +192,16 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     public PageResult<BusinessModel> findByPage(Search searchConfig) {
         List<AppModule> appModuleList = null;
         List<String> appModuleCodeList = null;
-        try {
-            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<AppModule>>() {
-            }, null);
-            if (appModuleList != null && !appModuleList.isEmpty()) {
-                appModuleCodeList = new ArrayList<String>();
-                for (AppModule appModule : appModuleList) {
-                    appModuleCodeList.add(appModule.getCode());
-                }
+        appModuleList =  flowCommonUtil.getBasicTenantAppModule();
+        if (appModuleList != null && !appModuleList.isEmpty()) {
+            appModuleCodeList = new ArrayList<String>();
+            for (AppModule appModule : appModuleList) {
+                appModuleCodeList.add(appModule.getCode());
             }
-            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
-                SearchFilter searchFilter = new SearchFilter("appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
-                searchConfig.addFilter(searchFilter);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+            SearchFilter searchFilter = new SearchFilter("appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
+            searchConfig.addFilter(searchFilter);
         }
         PageResult<BusinessModel> result = businessModelDao.findByPage(searchConfig);
         return result;
@@ -216,9 +212,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         List<AppModule> appModuleList = null;
         List<String> appModuleCodeList = null;
         try {
-            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<AppModule>>() {
-            }, null);
+            appModuleList = flowCommonUtil.getBasicTenantAppModule();
             if (appModuleList != null && !appModuleList.isEmpty()) {
                 appModuleCodeList = new ArrayList<String>();
                 for (AppModule appModule : appModuleList) {

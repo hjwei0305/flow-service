@@ -1,6 +1,7 @@
 package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
@@ -150,7 +151,7 @@ public class FlowCommonUtil implements Serializable {
      * @param positionIds  岗位ids
      * @param orgDimIds  组织维度ids
      * @param orgId   组织机构id
-     * @return
+     * @return    流程执行人集合
      */
     public  List<Executor>  getExecutorsByPositionIdsAndorgDimIds(List<String> positionIds,List<String> orgDimIds,String orgId){
         Map<String, Object> params = new HashMap();
@@ -169,6 +170,33 @@ public class FlowCommonUtil implements Serializable {
         }
         return executors;
     }
+
+    /**
+     * 通过岗位类别ids和组织机构ids获取执行人
+     * @param postCatIds  岗位类别ids
+     * @param orgIds    组织机构ids
+     * @return    流程执行人集合
+     */
+    public List<Executor>  getExecutorsByPostCatIdsAndOrgs(List<String> postCatIds,List<String> orgIds){
+        Map<String, Object> params = new HashMap();
+        params.put("postCatIds", postCatIds);
+        params.put("orgIds", orgIds);
+        String url = Constants.getExecutorsByPostCatAndOrgUrl();
+        String messageLog = "开始调用【根据岗位类别集合和组织机构集合获取执行人】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Executor> executors;
+        try{
+            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return executors;
+    }
+
+
+
+
 
 
 
@@ -216,6 +244,46 @@ public class FlowCommonUtil implements Serializable {
         return organizationsList;
     }
 
+
+    //----------------------------------------------获取员工--------------------------------//
+    /**
+     * 根据组织机构ID获取员工集合
+     * @param orgId  组织机构ID
+     * @return   员工list集合
+     */
+    public List<Employee> getEmployeesByOrgId(String orgId){
+        Map<String,Object> params = new HashMap();
+        params.put("organizationId",orgId);
+        String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
+        String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+        List<Employee> employeeList;
+        try{
+            employeeList = ApiClient.getEntityViaProxy(url, new GenericType<List<Employee>>() {}, params);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+        return employeeList;
+    }
+
+    /**
+     * 获取当前用户拥有权限的应用模块
+     * @return  拥有权限的应用模块集合
+     */
+    public List<com.ecmp.flow.basic.vo.AppModule> getBasicTenantAppModule(){
+        String url = Constants.getBasicTenantAppModuleUrl();
+        String messageLog = "开始调用【获取当前用户拥有权限的应用模块】，接口url="+url+",不需要参数值";
+        List<com.ecmp.flow.basic.vo.AppModule> appModuleList;
+        try{
+            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {}, null);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            throw  new FlowException(getErrorLogString(url));
+        }
+       return  appModuleList;
+    }
 
 
 

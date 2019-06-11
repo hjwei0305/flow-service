@@ -84,16 +84,20 @@ public class Constants extends ConfigurableContants {
 	}
 
 	/**
-	 * 根据企业员工的id列表获取执行人
+	 * 通过岗位类别ids和组织机构ids获取执行人
+	 * @return
 	 */
-	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
-		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
-			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
+	public static String getExecutorsByPostCatAndOrgUrl(){
+		String  BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATANDORG.GETEXECUTORS");
+		if(StringUtils.isEmpty(BASIC_POSITONCATANDORG_GETEXECUTORS_URL)){
+			BASIC_POSITONCATANDORG_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
+					"basic.positionCatAndOrg.getExecutors", "/employee/getExecutorsByPostCatAndOrg");
 		}
-		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+		return BASIC_POSITONCATANDORG_GETEXECUTORS_URL;
 	}
+
+
+
 
 
 
@@ -126,6 +130,21 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_ORG_FINDPARENTNODES_URL;
 	}
+
+
+    //------------------------------------------------获取员工--------------------------------//
+	/**
+	 * 根据组织机构的id获取员工
+	 */
+	public static String getBasicEmployeeFindbyorganizationidUrl() {
+		String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYORGANIZATIONID");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL)){
+			BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
+		}
+		return BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
+	}
+
 
 
 
@@ -180,9 +199,42 @@ public class Constants extends ConfigurableContants {
 
 
 
+    //----------------------------------------------获取应用模块--------------------------------//
+	/**
+	 * 获取当前用户所拥有的应用模块权限url
+	 * @return
+	 */
+	public static String getBasicTenantAppModuleUrl() {
+		String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.TENANTAPPMODULE.FINDTENANTAPPMODULES");
+		if(StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)){
+			BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL=getBasicServiceUrl() + getProperty(
+					"basic.tenantAppModule.findTenantAppModules", "/tenantAppModule/getTenantAppModules");
+		}
+		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
+	}
 
 
 
+
+
+
+
+
+
+
+
+
+	/**
+	 * 根据企业员工的id列表获取执行人
+	 */
+	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
+		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
+		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
+			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
+					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
+		}
+		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
+	}
 
 
 
@@ -248,44 +300,6 @@ public class Constants extends ConfigurableContants {
 
 
 	/**
-	 * 通过岗位类别ids和组织机构ids获取执行人
-	 * @return
-	 */
-	public static String getExecutorsByPostCatAndOrgUrl(){
-		String  BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATANDORG.GETEXECUTORS");
-		if(StringUtils.isEmpty(BASIC_POSITONCATANDORG_GETEXECUTORS_URL)){
-			BASIC_POSITONCATANDORG_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
-					"basic.positionCatAndOrg.getExecutors", "/employee/getExecutorsByPostCatAndOrg");
-		}
-		return BASIC_POSITONCATANDORG_GETEXECUTORS_URL;
-	}
-
-	/**
-	 * 根据组织机构的id获取员工
-	 */
-	public static String getBasicEmployeeFindbyorganizationidUrl() {
-		String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYORGANIZATIONID");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL)){
-			BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
-		}
-		return BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
-	}
-
-	/**
-	 * 通过id列表获取执行人列表
-	 * @return
-	 */
-	public static String getBasicEmployeeFindbyidsUrl() {
-		String BASIC_EMPLOYEE_FINDBYIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYIDS");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYIDS_URL)){
-			BASIC_EMPLOYEE_FINDBYIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.findByIds", "/employee/findByIds");
-		}
-		return BASIC_EMPLOYEE_FINDBYIDS_URL;
-	}
-
-	/**
 	 * 根据自定义的查询参数获取员工列表
 	 * @return
 	 */
@@ -299,18 +313,6 @@ public class Constants extends ConfigurableContants {
 	}
 
 
-	/**
-	 * 获取当前用户所拥有的应用模块权限url
-	 * @return
-	 */
-	public static String getBasicTenantAppModuleUrl() {
-		String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.TENANTAPPMODULE.FINDTENANTAPPMODULES");
-		if(StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)){
-			BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL=getBasicServiceUrl() + getProperty(
-					"basic.tenantAppModule.findTenantAppModules", "/tenantAppModule/getTenantAppModules");
-		}
-		return BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL;
-	}
 
 
 	/**

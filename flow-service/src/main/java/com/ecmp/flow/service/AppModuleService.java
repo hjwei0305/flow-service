@@ -13,6 +13,7 @@ import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
 
     @Autowired
     private AppModuleDao appModuleDao;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     @Override
     protected BaseEntityDao<AppModule> getDao() {
@@ -100,23 +103,16 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
     public PageResult<AppModule> findByPage(Search searchConfig) {
         List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
         List<String> appModuleCodeList = null;
-        try {
-            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
-            }, null);
-            if (appModuleList != null && !appModuleList.isEmpty()) {
-                appModuleCodeList = new ArrayList<String>();
-                for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
-                    appModuleCodeList.add(appModule.getCode());
-                }
+        appModuleList = flowCommonUtil.getBasicTenantAppModule();
+        if (appModuleList != null && !appModuleList.isEmpty()) {
+            appModuleCodeList = new ArrayList<String>();
+            for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
+                appModuleCodeList.add(appModule.getCode());
             }
-            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
-                SearchFilter searchFilter = new SearchFilter("code", appModuleCodeList, SearchFilter.Operator.IN);
-                searchConfig.addFilter(searchFilter);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+            SearchFilter searchFilter = new SearchFilter("code", appModuleCodeList, SearchFilter.Operator.IN);
+            searchConfig.addFilter(searchFilter);
         }
         PageResult<AppModule> result = appModuleDao.findByPage(searchConfig);
         return result;
@@ -127,9 +123,7 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
         List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
         List<String> appModuleCodeList = null;
         try {
-            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
-            }, null);
+            appModuleList =  flowCommonUtil.getBasicTenantAppModule();
             if (appModuleList != null && !appModuleList.isEmpty()) {
                 appModuleCodeList = new ArrayList<String>();
                 for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {

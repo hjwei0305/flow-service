@@ -1360,13 +1360,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                             }, flowInvokeParams);
                         } else {
-                            String path;
-                            Map<String, Object> params = new HashMap();
-                            if (positionTypesIds != null && orgIds != null) { //新增根据（岗位类别+组织机构）获得执行人
-                                path = Constants.getExecutorsByPostCatAndOrgUrl();
-                                params.put("orgIds", orgIds);
-                                params.put("postCatIds", positionTypesIds);
-                                employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
+                            if (positionTypesIds != null && orgIds != null) {
+                                //新增根据（岗位类别+组织机构）获得执行人
+                                employees = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds,orgIds);
                             } else {
                                 //通过岗位ids、组织维度ids和组织机构id来获取执行人
                                 employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds,orgDimensionCodes,currentOrgId);
@@ -3105,20 +3101,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return this.writeErrorLogAndReturnData(e, "获取【岗位+组织维度+自定义执行人】接口调用失败！");
                 }
             } else {
-                String path;
-                Map<String, Object> params = new HashMap();
-                String errorMes = "";
-                if (positionTypesIds != null && orgIds != null) { //新增根据（岗位类别+组织机构）获得执行人
-                    path = Constants.getExecutorsByPostCatAndOrgUrl();
-                    params.put("orgIds", orgIds);
-                    params.put("postCatIds", positionTypesIds);
-                    errorMes = "【岗位类别+组织机构】";
-                    try {
-                        executors = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {
-                        }, params);
-                    } catch (Exception e) {
-                        return this.writeErrorLogAndReturnData(e, "获取" + errorMes + "执行人接口调用失败！");
-                    }
+                if (positionTypesIds != null && orgIds != null) {
+                    //新增根据（岗位类别+组织机构）获得执行人
+                    executors = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds,orgIds);
                 } else {
                     //通过岗位ids、组织维度ids和组织机构id来获取执行人【岗位+组织维度】
                     executors = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds,orgDimensionCodes,orgId);

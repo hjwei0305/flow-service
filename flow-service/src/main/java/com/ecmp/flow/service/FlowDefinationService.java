@@ -132,19 +132,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listAllUser(String organizationId) {
-        Map<String,Object> params = new HashMap();
-        params.put("organizationId",organizationId);
-        String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
         ResponseData responseData = new ResponseData();
-        try {
-            List<Employee> result = ApiClient.getEntityViaProxy(url, new GenericType<List<Employee>>() {}, params);
-            responseData.setMessage("操作成功！");
-            responseData.setData(result);
-        } catch (Exception e) {
-            responseData.setSuccess(false);
-            responseData.setMessage("请求组织机构下员工接口错误！");
-            LogUtil.error(e.getMessage());
-        }
+        List<Employee> result = flowCommonUtil.getEmployeesByOrgId(organizationId);
+        responseData.setMessage("操作成功！");
+        responseData.setData(result);
         return responseData;
     }
 
@@ -846,13 +837,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
                 }, flowInvokeParams);
             } else {
-                String path;
-                Map<String, Object> params = new HashMap();
-                if (positionTypesIds != null && orgIds != null) { //新增根据（岗位类别+组织机构）获得执行人
-                    path = Constants.getExecutorsByPostCatAndOrgUrl();
-                    params.put("orgIds", orgIds);
-                    params.put("postCatIds", positionTypesIds);
-                    employees = ApiClient.getEntityViaProxy(path, new GenericType<List<Executor>>() {}, params);
+                if (positionTypesIds != null && orgIds != null) {
+                    //新增根据（岗位类别+组织机构）获得执行人
+                    employees = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds,orgIds);
                 } else {
                     String orgId = flowStartVO.getVariables().get("orgId")+"";
                     //通过岗位ids、组织维度ids和组织机构id来获取执行人

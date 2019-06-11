@@ -11,6 +11,7 @@ import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.slf4j.Logger;
@@ -42,6 +43,9 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
 
     @Autowired
     private FlowTypeDao flowTypeDao;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
+
 
     private final Logger logger = LoggerFactory.getLogger(BusinessModel.class);
 
@@ -84,23 +88,16 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     public PageResult<FlowType> findByPage(Search searchConfig){
         List<AppModule> appModuleList = null;
         List<String > appModuleCodeList = null;
-        try {
-            String url = com.ecmp.flow.common.util.Constants.getBasicTenantAppModuleUrl();
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<AppModule>>() {
-            }, null);
-            if(appModuleList!=null && !appModuleList.isEmpty()){
-                appModuleCodeList = new ArrayList<String>();
-                for(AppModule appModule:appModuleList){
-                    appModuleCodeList.add(appModule.getCode());
-                }
+        appModuleList = flowCommonUtil.getBasicTenantAppModule();
+        if(appModuleList!=null && !appModuleList.isEmpty()){
+            appModuleCodeList = new ArrayList<String>();
+            for(AppModule appModule:appModuleList){
+                appModuleCodeList.add(appModule.getCode());
             }
-            if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
-                SearchFilter searchFilter =   new SearchFilter("businessModel.appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
-                searchConfig.addFilter(searchFilter);
-            }
-
-        }catch (Exception e){
-               e.printStackTrace();
+        }
+        if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
+            SearchFilter searchFilter =   new SearchFilter("businessModel.appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
+            searchConfig.addFilter(searchFilter);
         }
         PageResult<FlowType> result = flowTypeDao.findByPage(searchConfig);
         return result;
