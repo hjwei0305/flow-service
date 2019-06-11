@@ -224,24 +224,6 @@ public class Constants extends ConfigurableContants {
 
 
 
-	/**
-	 * 根据企业员工的id列表获取执行人
-	 */
-	public static String getBasicEmployeeGetexecutorsbyemployeeidsUrl() {
-		String BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.GETEXECUTORSBYEMPLOYEEIDS");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL)){
-			BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.getExecutorsByEmployeeIds", "/employee/getExecutorsByEmployeeIds");
-		}
-		return BASIC_EMPLOYEE_GETEXECUTORSBYEMPLOYEEIDS_URL;
-	}
-
-
-
-
-
-
-
 
 
 
@@ -299,18 +281,6 @@ public class Constants extends ConfigurableContants {
 	}
 
 
-	/**
-	 * 根据自定义的查询参数获取员工列表
-	 * @return
-	 */
-	public static String getBasicEmployeeFindbyparamUrl() {
-		String BASIC_EMPLOYEE_FINDBYPARAM_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYEMPLOYEEPARAM");
-		if(StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYPARAM_URL)){
-			BASIC_EMPLOYEE_FINDBYPARAM_URL=getBasicServiceUrl() + getProperty(
-					"basic.employee.findByEmployeeParam", "/employee/findByEmployeeParam");
-		}
-		return BASIC_EMPLOYEE_FINDBYPARAM_URL;
-	}
 
 
 
