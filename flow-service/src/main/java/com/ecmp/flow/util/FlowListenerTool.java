@@ -71,6 +71,9 @@ public class FlowListenerTool {
     @Autowired
     private FlowServiceUrlDao flowServiceUrlDao;
 
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
+
     private final Logger logger = LoggerFactory.getLogger(FlowListenerTool.class);
 
 
@@ -149,17 +152,10 @@ public class FlowListenerTool {
                     userVarNameList.add(varUserName);
                 }
                 if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
-//                                IEmployeeService proxy = ApiClient.createProxy(IEmployeeService.class);
                     String currentUserId = ContextUtil.getUserId();
-                    List<String> usrIdList = new ArrayList<String>(1);
-                    usrIdList.add(currentUserId);
-//                                List<Executor> employees = proxy.getExecutorsByEmployeeIds(usrIdList);
-                    Map<String,Object> params = new HashMap();
-                    params.put("employeeIds",usrIdList);
-                    String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
-                    List<Executor> employees= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
+                    Executor executor = flowCommonUtil.getBasicUserExecutor(currentUserId);
                     Set<Executor> employeeSet = new HashSet<Executor>();
-                    employeeSet.addAll(employees);
+                    employeeSet.add(executor);
                     nodeInfo.setExecutorSet(employeeSet);
                 }
                 if ("SingleSign".equalsIgnoreCase(taskType) || "CounterSign".equalsIgnoreCase(taskType)||"ParallelTask".equalsIgnoreCase(taskType)||"SerialTask".equalsIgnoreCase(taskType)) {
