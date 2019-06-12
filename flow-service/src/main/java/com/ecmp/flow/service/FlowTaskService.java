@@ -150,6 +150,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
 
+    public  String  getErrorLogString(String url){
+        return  "【调用接口异常："+url+",详情请查看日志】";
+    }
+
     /**
      * 查看是否需要推送任务信息到basic模块
      *
@@ -206,6 +210,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送待办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
+                throw  new FlowException(getErrorLogString(url));
             }
         }
     }
@@ -229,6 +234,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送已办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
+                throw  new FlowException(getErrorLogString(url));
             }
         }
     }
@@ -251,6 +257,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送删除待办异常：" + e.getMessage();
                 LogUtil.error(messageLog);
+                throw  new FlowException(getErrorLogString(url));
             }
         }
     }
@@ -270,6 +277,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送归档任务异常：" + e.getMessage();
                 LogUtil.error(messageLog);
+                throw  new FlowException(getErrorLogString(url));
             }
         }
     }
@@ -359,6 +367,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 } catch (Exception e) {
                     messageLog += "-[" + msg + "异常]：" + e.getMessage();
                     LogUtil.error(messageLog);
+                    throw  new FlowException(getErrorLogString(flowPushTaskUrl));
                 }
             }
         }

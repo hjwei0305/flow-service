@@ -102,9 +102,6 @@ public class Constants extends ConfigurableContants {
 
 
 
-
-
-
     //------------------------------------------------获取组织机构--------------------------------//
 	/**
 	 * 获取所有组织机构树（不包含冻结）
@@ -132,6 +129,8 @@ public class Constants extends ConfigurableContants {
 	}
 
 
+
+
     //------------------------------------------------获取员工--------------------------------//
 	/**
 	 * 根据组织机构的id获取员工
@@ -144,7 +143,6 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
 	}
-
 
 
 
@@ -216,18 +214,7 @@ public class Constants extends ConfigurableContants {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+	//----------------------------------------------推送流程任务--------------------------------//
 	/**
 	 * 得到推送新生产待办的接口地址
 	 * @return
@@ -279,6 +266,10 @@ public class Constants extends ConfigurableContants {
 		}
 		return BASIC_PUSH_END_TASK_URL;
 	}
+
+
+
+
 
 
 
