@@ -56,14 +56,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     private String apiBaseAddress;
 
     /**
-     * api基地址
+     * api基地址绝对路径
      */
     @Transient
     private String apiBaseAddressAbsolute;
 
 
     /**
-     * api基地址
+     * 提交任务地址（react不在使用）
      */
     @Transient
     private String completeTaskServiceUrl;
