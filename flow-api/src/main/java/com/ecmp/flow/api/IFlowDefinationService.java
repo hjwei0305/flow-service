@@ -177,7 +177,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
      * @return
      */
     @GET
-    @Path("getFlowDefVersion/{id}")
+    @Path("resetPosition/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程定义key重置流程图位置", notes = "测试")
