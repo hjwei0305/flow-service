@@ -5,6 +5,7 @@ import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.entity.AppModule;
@@ -128,6 +129,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
         String  quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
@@ -145,7 +147,18 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             hqlCount+=extraHql.toString();
             hqlQuery+=extraHql.toString();
         }
-        hqlQuery+=" order by ft.createdDate desc";
+        if(sortOrders!=null&&sortOrders.size()>0){
+            for(int i=0;i<sortOrders.size();i++){
+                SearchOrder  searchOrder = sortOrders.get(i);
+                if(i==0){
+                    hqlQuery +="order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }else{
+                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }
+            }
+        }else{
+            hqlQuery+=" order by ft.createdDate desc";
+        }
         TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
         queryTotal.setParameter("executorId",executorId);
         Long total = queryTotal.getSingleResult();
