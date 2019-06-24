@@ -52,6 +52,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
 
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
         String hqlQuery = "select ft          from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
@@ -82,7 +83,18 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        hqlQuery += hqlQueryOrder;
+        if(sortOrders!=null&&sortOrders.size()>0){
+            for(int i=0;i<sortOrders.size();i++){
+                SearchOrder  searchOrder = sortOrders.get(i);
+                if(i==0){
+                    hqlQuery +="order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }else{
+                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }
+            }
+        }else{
+            hqlQuery+=" order by ft.createdDate desc";
+        }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
         Long total = queryTotal.getSingleResult();
 
