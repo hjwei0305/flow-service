@@ -50,6 +50,9 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
     public PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
+        if (Objects.isNull(pageInfo)) {
+            pageInfo = new PageInfo();
+        }
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
@@ -87,7 +90,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             for(int i=0;i<sortOrders.size();i++){
                 SearchOrder  searchOrder = sortOrders.get(i);
                 if(i==0){
-                    hqlQuery +="order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                    hqlQuery +=" order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
                 }else{
                     hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
                 }
