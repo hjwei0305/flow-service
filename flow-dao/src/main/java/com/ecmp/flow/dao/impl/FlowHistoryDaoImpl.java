@@ -7,11 +7,8 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
-import com.ecmp.flow.dao.CustomFlowHistoryDao;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -39,17 +36,68 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         super(FlowHistory.class, entityManager);
     }
 
-    public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId,String executorAccount, Search searchConfig) {
+    public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId,String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
+        String  quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
+        String hqlQuery =  "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
 
-        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) ", Integer.class);
-        queryTotal.setParameter("executorAccount",executorAccount);
+
+        if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for(String s:quickSearchProperties){
+                if(first){
+                    extraHql.append("  ft."+s+" like '%"+quickSearchValue+"%'");
+                    first = false;
+                }else {
+                    extraHql.append(" or  ft."+s+" like '%"+quickSearchValue+"%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount+=extraHql.toString();
+            hqlQuery+=extraHql.toString();
+        }
+        if(sortOrders!=null&&sortOrders.size()>0){
+            for(int i=0;i<sortOrders.size();i++){
+                SearchOrder  searchOrder = sortOrders.get(i);
+                if(i==0){
+                    hqlQuery +="order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }else{
+                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                }
+            }
+        }else{
+            hqlQuery+=" order by ft.createdDate desc";
+        }
+        TypedQuery<Long> queryTotal = entityManager.createQuery( hqlCount, Long.class);
+        queryTotal.setParameter("executorId",executorId);
         queryTotal.setParameter("businessModelId",businessModelId);
-        Integer total = queryTotal.getSingleResult();
+        Long total = queryTotal.getSingleResult();
 
-        TypedQuery<FlowHistory> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorAccount  = :executorAccount and ft.flowDefinitionId in(select fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) order by ft.lastEditedDate desc", FlowHistory.class);
-        query.setParameter("executorAccount",executorAccount);
+        TypedQuery<FlowHistory> query = entityManager.createQuery(hqlQuery, FlowHistory.class);
+        query.setParameter("executorId",executorId);
         query.setParameter("businessModelId",businessModelId);
+
+
+//        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft " +
+//                " where ft.executorId  = :executorId and ft.flowInstance.id " +
+//                " in ( select ins.id from  FlowInstance ins where  ins.flowDefinitionId .id in  " +
+//                " ( select fd.id from FlowDefination fd where fd.flowType.id in (select fType.id from FlowType fType " +
+//                " where fType.businessModel.id = :businessModelId  )  ) ) ", Integer.class);
+//        queryTotal.setParameter("executorId",executorId);
+//        queryTotal.setParameter("businessModelId",businessModelId);
+//        Integer total = queryTotal.getSingleResult();
+//
+//        TypedQuery<FlowHistory> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft " +
+//                " where ft.executorId  = :executorId and ft.flowInstance.id " +
+//                " in ( select ins.id from  FlowInstance ins where  ins.flowDefinitionId .id in " +
+//                " ( select fd.id from FlowDefination fd where fd.flowType.id in (select fType.id from FlowType fType " +
+//                " where fType.businessModel.id = :businessModelId  ) ) ) order by ft.lastEditedDate desc", FlowHistory.class);
+//        query.setParameter("executorId",executorId);
+//        query.setParameter("businessModelId",businessModelId);
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
@@ -58,8 +106,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
         pageResult.setRecords(result.size());
-        pageResult.setTotal(total);
-
+        pageResult.setTotal((total.intValue()+pageInfo.getRows()-1)/pageInfo.getRows());
         return pageResult;
     }
     public List<FlowHistory> findLastByBusinessId(String businessId){
