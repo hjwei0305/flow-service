@@ -8,6 +8,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
+import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.UserEmailAlert;
@@ -1671,6 +1672,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public PageResult<FlowTask> findAllByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig) {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+        if(!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)){
+            return  null;
+        }
         return flowTaskDao.findByPageByTenant(appModuleId, businessModelId, flowTypeId, searchConfig);
     }
 
