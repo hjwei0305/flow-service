@@ -601,7 +601,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                             }
                             try {
                                 IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"8A6A1592-4A95-11E7-A011-960F8309DEA7" ,variables);
+                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"1592D012-A330-11E7-A967-02420B99179E" ,variables);
                                 if (resultTemp.successful()) {
                                     return;
                                 } else {
@@ -621,9 +621,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        result.setSuccess(false);
-        result.setMessage("test failure!");
-        result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
+        result.setSuccess(true);
+        result.setMessage("test success!");
+//        result.setUserId("1592D012-A330-11E7-A967-02420B99179E");
         return result;
     }
 
