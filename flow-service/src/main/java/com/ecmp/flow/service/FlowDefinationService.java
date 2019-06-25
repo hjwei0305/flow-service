@@ -480,17 +480,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     logger.error(e.getMessage());
                     if (flowInstance != null) {
                         BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-                        AppModule appModule = businessModel.getAppModule();
-                        Map<String, Object> params = new HashMap<String, Object>();
-                        ;
-                        params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
-                        params.put(Constants.ID, flowInstance.getBusinessId());
-                        params.put(Constants.STATUS, FlowStatus.INIT);
-                        String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                        String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                        String url = baseUrl + "/" + businessModel.getConditonStatusRest();
-                        ApiClient.postViaProxyReturnResult(url, new GenericType<Boolean>() {
-                        }, params);
+                        ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
                     }
                     throw new FlowException(e.getMessage());
                 }
