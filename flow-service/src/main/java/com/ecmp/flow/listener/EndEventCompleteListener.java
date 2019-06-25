@@ -1,6 +1,5 @@
 package com.ecmp.flow.listener;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
@@ -9,6 +8,7 @@ import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -101,27 +101,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                 flowInstanceDao.save(flowInstance);
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
-                Map<String, Object> params = new HashMap<String,Object>();
-                params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-                params.put(Constants.ID,flowInstance.getBusinessId());
-                params.put(Constants.STATUS,FlowStatus.COMPLETED);
-
-                String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                String url = PageUrlUtil.buildUrl(apiBaseAddress,businessModel.getConditonStatusRest());
-                String messageLog = "结束流程开始调用‘重置表单状态’接口，接口url="+url+",参数值"+ JsonUtils.toJson(params);
-                try {
-                    Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-                    messageLog+=",【result=" + result +"】";
-                    if(!result){
-                        throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!
-                    }
-                }catch (Exception e){
-                    messageLog+="重置表单状态调用异常："+e.getMessage();
-                    throw e;
-                }finally {
-                    logger.info(messageLog);
-                    asyncUploadLog(messageLog);
+                Boolean result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.COMPLETED);
+                if(!result){
+                    throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!
                 }
                 if(flowInstanceP!=null){
                     ExecutionEntity parent = taskEntity.getSuperExecution();

@@ -405,13 +405,6 @@ public class FlowListenerTool {
                             new Thread(){
                                 public void run(){
                                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                    Map<String, Object> params = new HashMap<String,Object>();;
-                                    params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-                                    params.put(Constants.ID,flowInstance.getBusinessId());
-                                    params.put(Constants.STATUS, FlowStatus.INIT);
-                                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                                    String url = baseUrl+"/"+businessModel.getConditonStatusRest();
                                     Boolean result = false;
                                     int index = 5;
                                     while (!result && index>0){
@@ -421,7 +414,7 @@ public class FlowListenerTool {
                                             e.printStackTrace();
                                         }
                                         try {
-                                            result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                                            result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
                                         }catch (Exception e){
                                             logger.error(e.getMessage());
                                         }

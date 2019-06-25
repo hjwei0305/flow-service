@@ -7,6 +7,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowInvokeParams;
@@ -211,7 +212,6 @@ public class StartEventCompleteListener implements ExecutionListener {
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(),flowInstance.getFlowDefVersion());
         if(callAfterStartResult!=null && callAfterStartResult.isSuccess()!=true){
-//            String message = "流程启动调用服务失败，返回消息:"+callAfterStartResult.getMessage();
             String message = ContextUtil.getMessage("10043",callAfterStartResult.getMessage());
             String messageLogger =message+
                     ";businessId="+flowInstance.getBusinessId()
@@ -221,30 +221,11 @@ public class StartEventCompleteListener implements ExecutionListener {
             throw new FlowException(message);
         }
 
-        Map<String, Object> params = new HashMap<String,Object>();;
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-        params.put(Constants.ID,flowInstance.getBusinessId());
-        params.put(Constants.STATUS, FlowStatus.INPROCESS);
-        String apiBaseAddressConfig = appModule.getApiBaseAddress();
-        String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-        String url = PageUrlUtil.buildUrl(apiBaseAddress,businessModel.getConditonStatusRest());
-        String messageLog = "启动流程-开始调用‘重置表单状态’接口，接口url="+url+",参数值"+ JsonUtils.toJson(params);
-        try {
-            Boolean result = ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
-            messageLog+=",【result=" + result +"】";
-            if(!result){
-                String message = ContextUtil.getMessage("10042");
-                throw new FlowException(message);//流程启动-调用重置表单服务失败！
-            }
-        }catch (Exception e){
-            messageLog+="重置表单状态调用异常："+e.getMessage();
-            throw e;
-        }finally {
-            logger.info(messageLog);
-            asyncUploadLog(messageLog);
+        Boolean result = ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INPROCESS);
+        if(!result){
+            String message = ContextUtil.getMessage("10042");
+            throw new FlowException(message);//流程启动-调用重置表单服务失败！
         }
-
-
     }
 
     /**

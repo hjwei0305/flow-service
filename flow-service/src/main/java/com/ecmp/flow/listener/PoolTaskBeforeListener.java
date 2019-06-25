@@ -10,12 +10,14 @@ import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
@@ -136,7 +138,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         }
                         callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"";
                     }catch (Exception e){
-                          logger.error(e.getMessage());
+                        LogUtil.error(e.getMessage());
                         flowOperateResult=null;
                         callMessage = e.getMessage();
                     }
@@ -153,13 +155,6 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                             new Thread(){
                                 public void run(){
                                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                    Map<String, Object> params = new HashMap<String,Object>();;
-                                    params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-                                    params.put(Constants.ID,flowInstance.getBusinessId());
-                                    params.put(Constants.STATUS, FlowStatus.INIT);
-                                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                                    String url = baseUrl+"/"+businessModel.getConditonStatusRest();
                                     Boolean result = false;
                                     int index = 5;
                                     while (!result && index>0){
@@ -169,9 +164,9 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                                             e.printStackTrace();
                                         }
                                         try {
-                                            result =  ApiClient.postViaProxyReturnResult(url,new GenericType<Boolean>() {}, params);
+                                            result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
                                         }catch (Exception e){
-                                            logger.error(e.getMessage());
+                                            LogUtil.error(e.getMessage());
                                         }
                                         index--;
                                     }
