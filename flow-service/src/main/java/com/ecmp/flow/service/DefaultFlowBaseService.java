@@ -93,15 +93,22 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
-                        String userIds = f.getUserIds()==null?"":f.getUserIds();
-                        String[] idArray = userIds.split(",");
-                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                            userMap.put(f.getUserVarName(), userIds);
-                        } else {
-                            userMap.put(f.getUserVarName(), idArray);
+                        if(f.getUserIds()==null){ //react的工作池任务参数不是anonymous，而是userIds为null
+                            if(flowTaskType.equalsIgnoreCase("PoolTask")){
+                                userMap.put("anonymous", "anonymous");
+                            }
+                            selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
+                        }else{
+                            String userIds = f.getUserIds();
+                            String[] idArray = userIds.split(",");
+                            if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                                userMap.put(f.getUserVarName(), userIds);
+                            } else {
+                                userMap.put(f.getUserVarName(), idArray);
+                            }
+                            List<String> userList = Arrays.asList(idArray);
+                            selectedNodesUserMap.put(f.getNodeId(), userList);
                         }
-                        List<String> userList = Arrays.asList(idArray);
-                        selectedNodesUserMap.put(f.getNodeId(), userList);
                     }
                     variables.put("selectedNodesUserMap", selectedNodesUserMap);
                     variables.put("allowChooseInstancyMap", allowChooseInstancyMap);
@@ -219,18 +226,21 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
-                    String userIds = f.getUserIds()==null?"":f.getUserIds();
-                    selectedNodesMap.put(f.getNodeId(), f.getNodeId());
-                    String[] idArray = userIds.split(",");
-                    if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                        v.put(f.getUserVarName(), userIds);
-                    } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
-
-                        v.put(f.getUserVarName(), Arrays.asList(idArray));
+                    if(f.getUserIds()==null){
+                        selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
+                    }else{
+                        String userIds = f.getUserIds();
+                        selectedNodesMap.put(f.getNodeId(), f.getNodeId());
+                        String[] idArray = userIds.split(",");
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            v.put(f.getUserVarName(), userIds);
+                        } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
+                            v.put(f.getUserVarName(), Arrays.asList(idArray));
+                        }
+                        userList = Arrays.asList(idArray);
                     }
-                    userList = Arrays.asList(idArray);
+                    selectedNodesUserMap.put(f.getNodeId(), userList);
                 }
-                selectedNodesUserMap.put(f.getNodeId(), userList);
             }
             v.put("allowChooseInstancyMap", allowChooseInstancyMap);
             v.put("selectedNodesUserMap", selectedNodesUserMap);
