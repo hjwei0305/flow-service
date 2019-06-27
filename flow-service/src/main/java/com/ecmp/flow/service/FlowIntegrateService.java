@@ -91,6 +91,7 @@ public class FlowIntegrateService implements IFlowIntegrateService {
                 }else{
                     Executor executor = executors.iterator().next();
                     String userIds =  executor.getId();
+                    userList.add(userIds);
                     userMap.put(nodeInfo.getUserVarName(), userIds);
                 }
                 selectedNodesUserMap.put(nodeInfo.getUserVarName(), userList);
