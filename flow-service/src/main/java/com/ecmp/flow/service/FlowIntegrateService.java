@@ -81,14 +81,17 @@ public class FlowIntegrateService implements IFlowIntegrateService {
             // 使用第一个默认执行人
             Set<Executor> executors = nodeInfo.getExecutorSet();
             if (!CollectionUtils.isEmpty(executors)) {
-                Executor executor = executors.iterator().next();
-                String userIds =  executor.getId();
-                List<String> userList = Collections.singletonList(executor.getId());
-                String flowTaskType = nodeInfo.getFlowTaskType();
-                if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                    userMap.put(nodeInfo.getUserVarName(), userIds);
-                } else {
+                String  uiType  =  nodeInfo.getUiType();
+                List<String> userList = new ArrayList<String>();
+                if(uiType.equalsIgnoreCase("checkbox")){
+                    for(Executor  executor:executors){
+                        userList.add(executor.getId());
+                    }
                     userMap.put(nodeInfo.getUserVarName(), userList);
+                }else{
+                    Executor executor = executors.iterator().next();
+                    String userIds =  executor.getId();
+                    userMap.put(nodeInfo.getUserVarName(), userIds);
                 }
                 selectedNodesUserMap.put(nodeInfo.getUserVarName(), userList);
             }
