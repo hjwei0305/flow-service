@@ -85,11 +85,10 @@ public class FlowIntegrateService implements IFlowIntegrateService {
                 String userIds =  executor.getId();
                 List<String> userList = Collections.singletonList(executor.getId());
                 String flowTaskType = nodeInfo.getFlowTaskType();
-                String[] idArray = userIds.split(",");
                 if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                     userMap.put(nodeInfo.getUserVarName(), userIds);
                 } else {
-                    userMap.put(nodeInfo.getUserVarName(), idArray);
+                    userMap.put(nodeInfo.getUserVarName(), userList);
                 }
                 selectedNodesUserMap.put(nodeInfo.getUserVarName(), userList);
             }
