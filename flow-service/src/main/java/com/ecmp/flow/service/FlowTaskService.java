@@ -698,6 +698,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
         String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
         Boolean counterSignLastTask = false;
+        //得到当前执行节点自定义code
+        String  currentNodeCode = "";
+        try{
+            currentNodeCode = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getString("nodeCode");
+        }catch (Exception e){
+        }
+        if(StringUtils.isNotEmpty(currentNodeCode)){
+            variables.put("currentNodeCode",currentNodeCode);
+        }
+
         // 取得当前任务
         HistoricTaskInstance currTask = historyService
                 .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())

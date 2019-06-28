@@ -100,6 +100,10 @@ public class ServiceCallUtil {
                             Map<String, List<String>> itemMap = (Map<String, List<String>>) JSONObject.toBean(itemJSONObj, Map.class);
                             params.setNextNodeUserInfo(itemMap);
                         }
+                        if(jsonObject.has("currentNodeCode")){
+                            String  currentNodeCode = jsonObject.get("currentNodeCode")+"";
+                            paramMap.put("nodeCode",currentNodeCode);
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                         throw e;
