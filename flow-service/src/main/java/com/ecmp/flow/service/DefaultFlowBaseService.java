@@ -101,12 +101,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         }else{
                             String userIds = f.getUserIds();
                             String[] idArray = userIds.split(",");
+                            List<String> userList = Arrays.asList(idArray);
                             if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                                 userMap.put(f.getUserVarName(), userIds);
                             } else {
-                                userMap.put(f.getUserVarName(), idArray);
+                                userMap.put(f.getUserVarName(), userList);
                             }
-                            List<String> userList = Arrays.asList(idArray);
                             selectedNodesUserMap.put(f.getNodeId(), userList);
                         }
                     }
@@ -232,12 +232,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         String userIds = f.getUserIds();
                         selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                         String[] idArray = userIds.split(",");
+                        userList = Arrays.asList(idArray);
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             v.put(f.getUserVarName(), userIds);
                         } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
-                            v.put(f.getUserVarName(), Arrays.asList(idArray));
+                            v.put(f.getUserVarName(), userList);
                         }
-                        userList = Arrays.asList(idArray);
                     }
                     selectedNodesUserMap.put(f.getNodeId(), userList);
                 }

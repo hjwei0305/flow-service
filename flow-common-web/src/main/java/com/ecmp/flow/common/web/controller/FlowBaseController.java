@@ -99,12 +99,12 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
                         String userIds = f.getUserIds()==null?"":f.getUserIds();
                         String[] idArray = userIds.split(",");
+                        List<String> userList = Arrays.asList(idArray);
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             userMap.put(f.getUserVarName(), userIds);
                         } else {
-                            userMap.put(f.getUserVarName(), idArray);
+                            userMap.put(f.getUserVarName(), userList);
                         }
-                        List<String> userList = Arrays.asList(idArray);
                         selectedNodesUserMap.put(f.getNodeId(), userList);
                     }
                     variables.put("selectedNodesUserMap", selectedNodesUserMap);
@@ -228,20 +228,19 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                         v.put(callActivityPath + "/" + f.getUserVarName(), userIds);
                     } else {
                         String[] idArray = userIds.split(",");
-                        v.put(callActivityPath + "/" + f.getUserVarName(), idArray);
+                        v.put(callActivityPath + "/" + f.getUserVarName(), Arrays.asList(idArray));
                     }
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
                     String userIds = f.getUserIds()==null?"":f.getUserIds();
                     selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                     String[] idArray = userIds.split(",");
+                    userList = Arrays.asList(idArray);
                     if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                         v.put(f.getUserVarName(), userIds);
                     } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
-
-                        v.put(f.getUserVarName(), idArray);
+                        v.put(f.getUserVarName(), userList);
                     }
-                    userList = Arrays.asList(idArray);
                 }
                 selectedNodesUserMap.put(f.getNodeId(), userList);
             }
