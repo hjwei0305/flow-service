@@ -704,9 +704,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             currentNodeCode = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getString("nodeCode");
         }catch (Exception e){
         }
-        if(StringUtils.isNotEmpty(currentNodeCode)){
-            variables.put("currentNodeCode",currentNodeCode);
-        }
+        variables.put("currentNodeCode",currentNodeCode);
 
         // 取得当前任务
         HistoricTaskInstance currTask = historyService
