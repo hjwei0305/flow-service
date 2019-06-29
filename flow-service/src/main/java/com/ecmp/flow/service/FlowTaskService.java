@@ -208,8 +208,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
             } catch (Exception e) {
                 messageLog += "-推送待办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString(url));
+                LogUtil.error(messageLog, e);
+                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -232,8 +232,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
             } catch (Exception e) {
                 messageLog += "-推送已办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString(url));
+                LogUtil.error(messageLog, e);
+                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -255,8 +255,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
             } catch (Exception e) {
                 messageLog += "-推送删除待办异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString(url));
+                LogUtil.error(messageLog, e);
+                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -275,8 +275,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 ApiClient.postViaProxyReturnResult(url, Void.class, task);
             } catch (Exception e) {
                 messageLog += "-推送归档任务异常：" + e.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString(url));
+                LogUtil.error(messageLog, e);
+                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -365,8 +365,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     LogUtil.bizLog(messageLog);
                 } catch (Exception e) {
                     messageLog += "-[" + msg + "异常]：" + e.getMessage();
-                    LogUtil.error(messageLog);
-                    throw new FlowException(getErrorLogString(flowPushTaskUrl));
+                    LogUtil.error(messageLog, e);
+                    throw new FlowException(getErrorLogString(flowPushTaskUrl), e);
                 }
             }
         }
@@ -422,7 +422,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 LogUtil.bizLog(messageLog);
                             } catch (Exception e) {
                                 messageLog += "-推送待办异常：" + e.getMessage();
-                                LogUtil.error(messageLog);
+                                LogUtil.error(messageLog, e);
                             }
                         }
                     }
@@ -628,6 +628,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } catch (FlowException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             result = OperateResultWithData.operationFailure(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return result;
     }
@@ -654,7 +655,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 try {
                     reject = Integer.parseInt(rejectO.toString());
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
             Object manageSolidifyFlowO = variables.get("manageSolidifyFlow");
@@ -731,7 +732,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 try {
                     counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
                 String approved = variables.get("approved") + "";
                 Integer value = 0;//默认弃权
@@ -1930,7 +1931,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, "", search);
             responseData.setData(resVo);
         } catch (Exception e) {
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(), e);
             responseData.setSuccess(false);
             responseData.setMessage("操作失败！");
         }
@@ -2216,7 +2217,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     this.complete(flowTaskCompleteVO);
                     total++;
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
             if (total > 0) {
@@ -2507,7 +2508,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     try {
                         executor = flowCommonUtil.getBasicUserExecutor(userId);
                     } catch (IllegalArgumentException e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(), e);
                     }
                     if (executor == null) {
                         resultDecFalseOne.append("【ID='" + userId + "'】");
@@ -2626,7 +2627,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     try {
                         executor = flowCommonUtil.getBasicUserExecutor(userId);
                     } catch (IllegalArgumentException e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(), e);
                     }
                     if (executor == null) {
                         resultDecFalseOne.append("【ID=" + userId + "】");
@@ -3098,7 +3099,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
         if (e != null) {
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(), e);
         }
         ResponseData responseData = new ResponseData();
         responseData.setSuccess(false);

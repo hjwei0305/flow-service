@@ -168,7 +168,7 @@ public class FlowTaskTool {
                     break;
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
         }
         return result;
@@ -193,7 +193,7 @@ public class FlowTaskTool {
             try {
                 busType = nextNode.getString("busType");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
             if (busType != null && ("exclusiveGateway".equalsIgnoreCase(busType) || "inclusiveGateway".equalsIgnoreCase(busType))) {
                 result = true;
@@ -885,7 +885,7 @@ public class FlowTaskTool {
             resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
 
         } catch (Exception e) {
-            LogUtil.error("检查是否可以撤回报错：" + e.getMessage());
+            LogUtil.error("检查是否可以撤回报错：{}", e.getMessage(), e);
         }
 
         return resultCheck;
@@ -1041,8 +1041,7 @@ public class FlowTaskTool {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             return OperateResult.operationFailure("10004");//流程取回失败，未知错误
         }
     }
@@ -1307,7 +1306,7 @@ public class FlowTaskTool {
                 }
             }
         } catch (Exception e) {
-            logger.error("allowChooseInstancyMap解析错误！" + e.getMessage());
+            logger.error("allowChooseInstancyMap解析错误：{}", e.getMessage(), e);
         }
 
         flowTask.setCanReject(canReject);
@@ -1507,13 +1506,13 @@ public class FlowTaskTool {
                             }
                         }
                     } catch (Exception e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(), e);
                     }
                     try {
                         allowAddSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowAddSign");
                         allowSubtractSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowSubtractSign");
                     } catch (Exception eSign) {
-                        logger.error(eSign.getMessage());
+                        logger.error(eSign.getMessage(), eSign);
                     }
 
                 } else {
@@ -1964,7 +1963,7 @@ public class FlowTaskTool {
             try {
                 counterDecision = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
             }
             // 取得当前任务
             HistoricTaskInstance currTask = historyService
@@ -2167,8 +2166,7 @@ public class FlowTaskTool {
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 result = false;
             }
         }

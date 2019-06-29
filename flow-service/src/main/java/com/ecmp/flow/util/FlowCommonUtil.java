@@ -72,7 +72,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         Executor executor = null;
         if(executors!=null && !executors.isEmpty()){
@@ -97,7 +97,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
     }
@@ -119,7 +119,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
     }
@@ -141,7 +141,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
     }
@@ -166,7 +166,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
     }
@@ -189,7 +189,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
     }
@@ -218,7 +218,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return result;
     }
@@ -239,7 +239,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return organizationsList;
     }
@@ -262,7 +262,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
         return employeeList;
     }
@@ -280,7 +280,7 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog);
-            throw  new FlowException(getErrorLogString(url));
+            throw  new FlowException(getErrorLogString(url), e);
         }
        return  appModuleList;
     }
