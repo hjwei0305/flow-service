@@ -253,6 +253,9 @@ public class FlowCommonUtil implements Serializable {
      */
     public List<Employee> getEmployeesByOrgId(String orgId){
         Map<String,Object> params = new HashMap();
+        if (Objects.isNull(orgId)) {
+            orgId = StringUtils.EMPTY;
+        }
         params.put("organizationId",orgId);
         String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
         String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
