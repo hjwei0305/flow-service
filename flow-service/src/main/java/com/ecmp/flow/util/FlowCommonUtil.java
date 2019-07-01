@@ -71,7 +71,7 @@ public class FlowCommonUtil implements Serializable {
             executors= ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         Executor executor = null;
@@ -96,7 +96,7 @@ public class FlowCommonUtil implements Serializable {
             executors   = ApiClient.getEntityViaProxy(url,new GenericType<List<Executor>>() {},params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
@@ -118,7 +118,7 @@ public class FlowCommonUtil implements Serializable {
             executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
@@ -140,7 +140,7 @@ public class FlowCommonUtil implements Serializable {
             executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
@@ -165,7 +165,7 @@ public class FlowCommonUtil implements Serializable {
             executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
@@ -188,7 +188,7 @@ public class FlowCommonUtil implements Serializable {
             executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return executors;
@@ -217,7 +217,7 @@ public class FlowCommonUtil implements Serializable {
             result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, null);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return result;
@@ -238,7 +238,7 @@ public class FlowCommonUtil implements Serializable {
             organizationsList = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return organizationsList;
@@ -264,7 +264,7 @@ public class FlowCommonUtil implements Serializable {
             employeeList = ApiClient.getEntityViaProxy(url, new GenericType<List<Employee>>() {}, params);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
         return employeeList;
@@ -282,7 +282,7 @@ public class FlowCommonUtil implements Serializable {
             appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {}, null);
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error(messageLog,e);
             throw  new FlowException(getErrorLogString(url), e);
         }
        return  appModuleList;

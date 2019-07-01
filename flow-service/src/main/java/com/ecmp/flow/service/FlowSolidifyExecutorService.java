@@ -250,7 +250,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         //模拟请求下一步数据
                         responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved, true);
                     } catch (Exception e) {
-                        LogUtil.error("模拟请求下一步数据报错：" + e.getMessage());
+                        LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(),e);
                     }
                     //模拟下一不节点信息成功
                     if (responseData.getSuccess()) {
@@ -283,7 +283,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                     "同意【自动执行】", taskListString.toString(),
                                     endEventId, false, approved, currentTime);
                         } catch (Exception e) {
-                            LogUtil.error("自动执行待办报错：" + e.getMessage());
+                            LogUtil.error("自动执行待办报错：" + e.getMessage(),e);
                         }
 
                     }

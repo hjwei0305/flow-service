@@ -72,7 +72,7 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
             messageSendThread.setTaskService(taskService);
             messageSendThread.run();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
         }
     }
 }

@@ -863,7 +863,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.END.getCode());//终止
                                 flowHistoryDao.save(flowHistory);
                             } catch (Exception e) {
-                                logger.error(e.getMessage());
+                                logger.error(e.getMessage(),e);
                             }
                             if(pushBasic||pushModelOrUrl){//是否推送信息到baisc、<业务模块>、<配置的url>
                                 flowTask.getFlowInstance().setFlowTasks(null); //循环引用
@@ -919,7 +919,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);
                     } catch (Exception e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(),e);
                     }
                 }
             } else {
@@ -1086,7 +1086,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             } catch (Exception e) {
                 responseData.setSuccess(false);
                 responseData.setMessage(e.getMessage());
-                LogUtil.error(e.getMessage());
+                LogUtil.error(e.getMessage(),e);
             }
         } else {
             logger.error("获取我的单据时，search 对象不能为空。");

@@ -1576,7 +1576,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<TodoBusinessSummaryVO> list = this.findTaskSumHeader("");
             responseData.setData(list);
         } catch (Exception e) {
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(),e);
             responseData.setSuccess(false);
             responseData.setMessage("操作失败！");
         }

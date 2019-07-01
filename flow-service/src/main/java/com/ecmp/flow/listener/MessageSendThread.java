@@ -106,7 +106,7 @@ public class MessageSendThread implements Runnable {
                         notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
                         selectType = notifyExecutor.getJSONArray("type");
                     }catch (Exception e){
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(),e);
                     }
                     if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
                         Object[] types = selectType.toArray();

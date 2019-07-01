@@ -53,13 +53,13 @@ public class ConfigurableContants {
 				p.load(in);
 			}
 		} catch (IOException e) {
-			logger.error("load " + propertyFileName + " into Contants error!");
+			logger.error("load " + propertyFileName + " into Contants error!",e);
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {
-					logger.error("close " + propertyFileName + " error!");
+					logger.error("close " + propertyFileName + " error!",e);
 				}
 			}
 		}

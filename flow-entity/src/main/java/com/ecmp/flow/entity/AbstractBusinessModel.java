@@ -119,11 +119,11 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
                conditionPojo.customLogic();
            } catch (IllegalAccessException e) {
                e.printStackTrace();
-               logger.error(e.getMessage());
+               logger.error(e.getMessage(),e);
                conditionPojo = null;
            } catch (InvocationTargetException e) {
                e.printStackTrace();
-               logger.error(e.getMessage());
+               logger.error(e.getMessage(),e);
                conditionPojo = null;
            }
        }

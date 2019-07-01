@@ -120,7 +120,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                     String businessId = delegateTask.getProcessBusinessKey();
                     flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
                 }catch (Exception e){
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(),e);
                 }
             }
         }

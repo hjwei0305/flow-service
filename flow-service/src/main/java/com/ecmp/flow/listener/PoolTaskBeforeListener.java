@@ -138,7 +138,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         }
                         callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"";
                     }catch (Exception e){
-                        LogUtil.error(e.getMessage());
+                        LogUtil.error(e.getMessage(),e);
                         flowOperateResult=null;
                         callMessage = e.getMessage();
                     }
@@ -166,7 +166,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                                         try {
                                             result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
                                         }catch (Exception e){
-                                            LogUtil.error(e.getMessage());
+                                            LogUtil.error(e.getMessage(),e);
                                         }
                                         index--;
                                     }

@@ -67,7 +67,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 responseData.setData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
-                logger.error(messageLog);
+                logger.error(messageLog,e);
                 responseData.setSuccess(false);
                 responseData.setMessage("接口调用异常，请查看日志！");
             }
@@ -173,7 +173,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             } else {
                 resultWithData = OperateResultWithData.operationFailure(e.getMessage());
             }
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
         }
         clearFlowDefVersion();
         return resultWithData;

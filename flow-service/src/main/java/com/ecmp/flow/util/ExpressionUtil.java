@@ -60,7 +60,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl));
+            throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -89,7 +89,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl));
+            throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -114,7 +114,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl));
+            throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
             LogUtil.debug(messageLog);
         }
@@ -173,7 +173,7 @@ public class ExpressionUtil {
             messageLog+=",【result=" + result+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl));
+            throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
             LogUtil.debug(messageLog);
         }

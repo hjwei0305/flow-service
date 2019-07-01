@@ -380,7 +380,7 @@ public class FlowListenerTool {
                     flowOperateResult = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
                      callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"接口调用异常！";
                 }catch (Exception e){
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(),e);
                     flowOperateResult=null;
                     callMessage = e.getMessage();
                 }
@@ -416,7 +416,7 @@ public class FlowListenerTool {
                                         try {
                                             result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
                                         }catch (Exception e){
-                                            logger.error(e.getMessage());
+                                            logger.error(e.getMessage(),e);
                                         }
                                         index--;
                                     }
@@ -430,14 +430,14 @@ public class FlowListenerTool {
                 }
             }
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
             if(!async){
                 throw e;
             }
             new Thread(new Runnable() {//模拟异步
                 @Override
                 public void run() {
-                    LogUtil.bizLog(e.getMessage());
+                    LogUtil.bizLog(e.getMessage(),e);
                 }
             }).start();
         }

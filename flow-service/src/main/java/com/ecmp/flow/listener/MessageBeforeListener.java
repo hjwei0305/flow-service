@@ -64,7 +64,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setTaskService(taskService);
             messageSendThread.run();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(),e);
         }
     }
 }
