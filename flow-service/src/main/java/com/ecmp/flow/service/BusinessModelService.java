@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
@@ -10,9 +11,11 @@ import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.ConditionVo;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -48,9 +51,46 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     private BusinessModelDao businessModelDao;
     @Autowired
     private FlowCommonUtil flowCommonUtil;
+    @Autowired
+    private FlowTaskService flowTaskService;
 
     protected BaseEntityDao<BusinessModel> getDao() {
         return this.businessModelDao;
+    }
+
+    @Override
+    public ResponseData getPropertiesByTaskIdOfModile(String taskId, String businessModelCode, String id) {
+        ResponseData responseData = new ResponseData();
+        if (StringUtils.isNotEmpty(taskId)) {
+            FlowTask flowTask = flowTaskService.findOne(taskId);
+            String businessDetailServiceUrl = "";
+            String apiBaseAddress = "";
+
+            try {
+                businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                responseData.setSuccess(false);
+                responseData.setMessage("获取表单明细配置地址失败！");
+                return responseData;
+            }
+
+            try {
+                String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                responseData.setSuccess(false);
+                responseData.setMessage("获取模块Api基地址失败！");
+                return responseData;
+            }
+            String url = apiBaseAddress + businessDetailServiceUrl;
+            return this.getPropertiesByUrlOfModile(url, businessModelCode, id);
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("流程任务ID不能为空！");
+        }
+        return responseData;
     }
 
     @Override
@@ -67,7 +107,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 responseData.setData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
-                logger.error(messageLog,e);
+                LogUtil.error(messageLog, e);
                 responseData.setSuccess(false);
                 responseData.setMessage("接口调用异常，请查看日志！");
             }
@@ -173,7 +213,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             } else {
                 resultWithData = OperateResultWithData.operationFailure(e.getMessage());
             }
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         clearFlowDefVersion();
         return resultWithData;
@@ -192,7 +232,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     public PageResult<BusinessModel> findByPage(Search searchConfig) {
         List<AppModule> appModuleList = null;
         List<String> appModuleCodeList = null;
-        appModuleList =  flowCommonUtil.getBasicTenantAppModule();
+        appModuleList = flowCommonUtil.getBasicTenantAppModule();
         if (appModuleList != null && !appModuleList.isEmpty()) {
             appModuleCodeList = new ArrayList<String>();
             for (AppModule appModule : appModuleList) {
