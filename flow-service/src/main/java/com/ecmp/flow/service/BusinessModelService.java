@@ -67,7 +67,11 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             String apiBaseAddress = "";
 
             try {
-                businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+                businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                    businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+
+                }
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);
@@ -85,6 +89,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
+            if(StringUtils.isEmpty(businessModelCode)){
+                businessModelCode = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
+            }
             return this.getPropertiesByUrlOfModile(url, businessModelCode, id);
         } else {
             responseData.setSuccess(false);
