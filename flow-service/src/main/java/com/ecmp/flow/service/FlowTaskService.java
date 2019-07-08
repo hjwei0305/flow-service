@@ -1626,7 +1626,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(Boolean batchApproval, String appSign) {
-        List<TodoBusinessSummaryVO> voList = null;
+        List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         List groupResultList = null;
         if (batchApproval == true) {
@@ -1666,7 +1666,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         if (!businessModelCountMap.isEmpty()) {
-            voList = new ArrayList<>();
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
