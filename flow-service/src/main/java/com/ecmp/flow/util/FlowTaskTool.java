@@ -193,7 +193,6 @@ public class FlowTaskTool {
             try {
                 busType = nextNode.getString("busType");
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
             }
             if (busType != null && ("exclusiveGateway".equalsIgnoreCase(busType) || "inclusiveGateway".equalsIgnoreCase(busType))) {
                 result = true;
