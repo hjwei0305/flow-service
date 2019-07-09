@@ -5,21 +5,25 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowSolidifyExecutor;
 import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
-import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
-import com.ecmp.flow.vo.NodeInfo;
+import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,8 +40,58 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Autowired
     private DefaultFlowBaseService defaultFlowBaseService;
 
+    @Autowired
+    private FlowInstanceService flowInstanceService;
+
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
+
     protected BaseEntityDao<FlowSolidifyExecutor> getDao() {
         return this.flowSolidifyExecutorDao;
+    }
+
+
+    public ResponseData  getExecuteInfoByBusinessId (String businessId){
+        ResponseData  responseData = new ResponseData();
+        if (StringUtils.isNotEmpty(businessId)) {
+            FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
+            if(flowInstance==null){
+                responseData.setSuccess(false);
+                responseData.setMessage("流程实例不存在！");
+                return responseData;
+            }
+            List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
+            if(solidifylist==null||solidifylist.size()==0){
+                responseData.setSuccess(false);
+                responseData.setMessage("固化流程配置数据不存在！");
+                return responseData;
+            }
+            Definition definitionP = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
+            List<NodeAndExecutes> list = new ArrayList<NodeAndExecutes>();
+           for(FlowSolidifyExecutor bean:solidifylist){
+               String currNodeId = bean.getActTaskDefKey();
+               JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
+               //节点信息
+               FlowNodeVO flowNodeVO = new FlowNodeVO();
+               flowNodeVO.setId(currentNode.getString("id"));
+               flowNodeVO.setType(currentNode.getString("type"));
+               flowNodeVO.setNodeType(currentNode.getString("nodeType"));
+               flowNodeVO.setName(currentNode.getString("name"));
+               //执行人信息
+               String userIds = bean.getExecutorIds();
+               String[] idArray = userIds.split(",");
+               List<String> userList = Arrays.asList(idArray);
+               List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+               //节点和执行人汇总
+               NodeAndExecutes  nodeAndExecutes  = new NodeAndExecutes(flowNodeVO,executorList);
+               list.add(nodeAndExecutes);
+           }
+            responseData.setData(list);
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+        }
+     return  responseData;
     }
 
 

@@ -56,4 +56,20 @@ public interface IFlowSolidifyExecutorService  extends IBaseService<FlowSolidify
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据表单查询需要自动执行的待办",notes = "根据表单查询需要自动执行的待办")
     void  selfMotionExecuteTask(@QueryParam("businessId")String businessId);
+
+    /**
+     * 根据表单ID查询固化流程执行人配置信息
+     * @param businessId  业务表单ID
+     * @return
+     */
+    @GET
+    @Path("getExecuteInfoByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据表单ID查询固化流程执行人配置信息",notes = "根据表单ID查询固化流程执行人配置信息")
+    ResponseData   getExecuteInfoByBusinessId(@QueryParam("businessId")String businessId);
+
+
+
+
 }
