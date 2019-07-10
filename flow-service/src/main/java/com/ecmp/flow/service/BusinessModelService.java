@@ -12,6 +12,7 @@ import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.ConditionVo;
@@ -53,34 +54,50 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     private FlowCommonUtil flowCommonUtil;
     @Autowired
     private FlowTaskService flowTaskService;
+    @Autowired
+    private FlowTypeService flowTypeService;
 
     protected BaseEntityDao<BusinessModel> getDao() {
         return this.businessModelDao;
     }
 
     @Override
-    public ResponseData getPropertiesByTaskIdOfModile(String taskId, String businessModelCode, String id) {
+    public ResponseData getPropertiesByTaskIdOfModile(String taskId,String typeId, String id) {
         ResponseData responseData = new ResponseData();
-        if (StringUtils.isNotEmpty(taskId)) {
+        Boolean boo =  true ;  //是否为待办
+        if (StringUtils.isNotEmpty(taskId)&&StringUtils.isNotEmpty(typeId)) {
+            //能查询到就是待办，查不到就是已处理
             FlowTask flowTask = flowTaskService.findOne(taskId);
+            if(flowTask==null){
+                boo = false ;
+            }
+            FlowType  flowType  = flowTypeService.findOne(typeId);
+            if(flowType==null){
+                responseData.setSuccess(false);
+                responseData.setMessage("流程类型不存在！");
+                return responseData;
+            }
+
+
             String businessDetailServiceUrl = "";
             String apiBaseAddress = "";
+            String businessModelCode = "";
 
             try {
-                businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+                businessDetailServiceUrl = flowType.getBusinessDetailServiceUrl();
                 if (StringUtils.isEmpty(businessDetailServiceUrl)) {
-                    businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
-
+                    businessDetailServiceUrl = flowType.getBusinessModel().getBusinessDetailServiceUrl();
                 }
+                businessModelCode = flowType.getBusinessModel().getClassName();
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);
-                responseData.setMessage("获取表单明细配置地址失败！");
+                responseData.setMessage("获取业务实体数据失败！");
                 return responseData;
             }
 
             try {
-                String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
                 apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
@@ -89,19 +106,17 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
-            if(StringUtils.isEmpty(businessModelCode)){
-                businessModelCode = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
-            }
-            return this.getPropertiesByUrlOfModile(url, businessModelCode, id);
+            return this.getPropertiesByUrlOfModile(url, businessModelCode, id , boo);
         } else {
             responseData.setSuccess(false);
-            responseData.setMessage("流程任务ID不能为空！");
+            responseData.setMessage("参数不能为空！");
         }
         return responseData;
     }
 
-    @Override
-    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id) {
+
+
+    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id ,Boolean flowTaskIsInit) {
         ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
             Map<String, Object> params = new HashMap();
@@ -111,6 +126,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             try {
                 Map<String, Object> properties = ApiClient.getEntityViaProxy(url, new GenericType<Map<String, Object>>() {
                 }, params);
+                properties.put("flowTaskIsInit",flowTaskIsInit); //添加是否是待办参数，true为待办
                 responseData.setData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
@@ -124,6 +140,10 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         }
         return responseData;
     }
+
+
+
+
 
 
     @Override
