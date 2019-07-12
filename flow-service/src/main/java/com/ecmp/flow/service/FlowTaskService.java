@@ -645,6 +645,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask==null){
+            return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
+        }
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
         Integer reject = null;
