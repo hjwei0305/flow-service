@@ -1998,7 +1998,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
-        List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+        List<NodeInfo> nodeInfoList =  null ;
+        try {
+            nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+        }catch (Exception e){
+            LogUtil.error("获取下一节点信息错误，详情请查看日志！",e);
+            return  OperateResultWithData.operationFailure("获取下一节点信息错误，详情请查看日志！");
+        }
+
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateResultWithData = OperateResultWithData.operationSuccess();
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
@@ -2008,8 +2015,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else {
                 operateResultWithData.setData(nodeInfoList);
             }
-        } else {
-            operateResultWithData = OperateResultWithData.operationFailure("10033");
+        }else if(nodeInfoList == null) {
+            operateResultWithData = OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
+        }else{
+            operateResultWithData = OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
         }
         return operateResultWithData;
     }

@@ -6,6 +6,7 @@ import com.ecmp.flow.api.IDefaultFlowBaseService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.vo.*;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -335,8 +336,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         try {
             nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
         }catch (Exception e){
+            LogUtil.error("获取下一节点信息错误，详情请查看日志！",e);
             responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            responseData.setMessage("获取下一节点信息错误，详情请查看日志！");
             return responseData;
         }
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
@@ -354,10 +356,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             }
         }else if(nodeInfoList == null) {
             responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            responseData.setMessage("任务不存在，可能已经被处理！");
         }else{
             responseData.setSuccess(false);
-            responseData.setMessage("当前表单规则找不到符合条件的分支");
+            responseData.setMessage("当前规则找不到符合条件的分支！");
         }
         return responseData;
     }
