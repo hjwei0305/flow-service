@@ -1001,7 +1001,7 @@ public class FlowTaskTool {
             newTask.setName(currTask.getName());
             newTask.setOwner(currTask.getOwner());
             newTask.setParentTaskId(currTask.getParentTaskId());
-            newTask.setPriority(currTask.getPriority() + 1);
+            newTask.setPriority(currTask.getPriority());
             newTask.setTenantId(currTask.getTenantId());
             newTask.setCreateTime(new Date());
 
