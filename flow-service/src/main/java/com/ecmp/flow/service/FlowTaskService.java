@@ -209,7 +209,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送待办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -233,7 +232,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送已办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -256,7 +254,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送删除待办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -276,7 +273,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } catch (Exception e) {
                 messageLog += "-推送归档任务异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                throw new FlowException(getErrorLogString(url), e);
             }
         }
     }
@@ -366,7 +362,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 } catch (Exception e) {
                     messageLog += "-[" + msg + "异常]：" + e.getMessage();
                     LogUtil.error(messageLog, e);
-                    throw new FlowException(getErrorLogString(flowPushTaskUrl), e);
                 }
             }
         }
