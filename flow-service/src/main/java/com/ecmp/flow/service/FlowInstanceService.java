@@ -1,13 +1,11 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowHistoryDao;
@@ -42,7 +40,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.ws.rs.core.GenericType;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -1027,6 +1025,20 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String creatorId = user.getUserId();
             SearchFilter searchFilterCreatorId = new SearchFilter("creatorId", creatorId, SearchFilter.Operator.EQ);
             search.addFilter(searchFilterCreatorId);
+
+            List<SearchFilter> listFilter =  search.getFilters();
+            listFilter.forEach(filter->{
+                if(filter.getFieldName().equals("startDate")||filter.getFieldName().equals("endDate")){
+                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                    String  startDateString =  sim.format((Date)filter.getValue());
+                    try{
+                        Date newDate = sim.parse(startDateString);
+                        filter.setValue(newDate);
+                    }catch (Exception e){
+                    }
+                }
+            });
+
             try {
                 PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
                 List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
