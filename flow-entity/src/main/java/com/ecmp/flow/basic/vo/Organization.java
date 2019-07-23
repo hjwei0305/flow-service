@@ -27,7 +27,7 @@ import java.util.List;
 //@DynamicUpdate
 //@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Organization extends BaseAuditableEntity
-        implements TreeEntity<Organization>, ITenant, IFrozen,IDataAuthTreeEntity {
+        implements TreeEntity<Organization>, ITenant, IFrozen, IDataAuthTreeEntity {
     /**
      * 组织机构代码
      */
@@ -74,7 +74,7 @@ public class Organization extends BaseAuditableEntity
      * 排序
      */
 //    @Column(name = "rank",nullable = false)
-    private Integer rank=0;
+    private Integer rank = 0;
 
     /**
      * 租户代码
@@ -88,7 +88,7 @@ public class Organization extends BaseAuditableEntity
 //    @Column(name = "frozen",nullable = false)
     private Boolean frozen = Boolean.FALSE;
 
-//    @Transient
+    //    @Transient
     private List<Organization> children;
 
     public String getCode() {
@@ -177,7 +177,7 @@ public class Organization extends BaseAuditableEntity
         return frozen;
     }
 
-    public void setFrozen(boolean frozen) {
+    public void setFrozen(Boolean frozen) {
         this.frozen = frozen;
     }
 
