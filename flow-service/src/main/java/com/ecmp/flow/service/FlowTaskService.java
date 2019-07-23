@@ -1528,7 +1528,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
         }
         if (preFlowTask == null) {//如果没有上一步任务信息,默认上一步为开始节点
-            result.setPrUser(flowTask.getFlowInstance().getCreatorName());
+            result.setPrUser(flowTask.getFlowInstance().getCreatorAccount()+"["+flowTask.getFlowInstance().getCreatorName()+"]");
             result.setPreCreateTime(flowTask.getFlowInstance().getCreatedDate());
             result.setPrOpinion("流程启动");
         } else {
