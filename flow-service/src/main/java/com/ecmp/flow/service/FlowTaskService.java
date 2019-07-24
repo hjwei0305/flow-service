@@ -1520,6 +1520,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String defJson = flowTask.getTaskJsonDef();
         JSONObject defObj = JSONObject.fromObject(defJson);
         JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+        //如果节点配置了默认意见，就在请求头中返回
         if (normalInfo.has("defaultOpinion")) {
             result.setCurrentNodeDefaultOpinion(normalInfo.getString("defaultOpinion"));
         }
