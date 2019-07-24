@@ -2,6 +2,8 @@ package com.ecmp.flow.util;
 
 import java.util.Map;
 
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import org.activiti.engine.impl.javax.el.ELContext;
@@ -51,6 +53,7 @@ public class ConditionUtil {
             }
         } catch (Exception e) {
             result = null;
+            LogUtil.error("验证表达式失败！表达式：【"+condition+"】,带入参数：【"+ JsonUtils.toJson(map)+"】",e);
             e.printStackTrace();
         }
 
