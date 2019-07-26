@@ -147,6 +147,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowTaskPushControlService flowTaskPushControlService;
 
+
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
 
@@ -1529,7 +1530,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
         }
         if (preFlowTask == null) {//如果没有上一步任务信息,默认上一步为开始节点
-            result.setPrUser(flowTask.getFlowInstance().getCreatorAccount()+"["+flowTask.getFlowInstance().getCreatorName()+"]");
+            result.setPrUser(flowTask.getFlowInstance().getCreatorAccount() + "[" + flowTask.getFlowInstance().getCreatorName() + "]");
             result.setPreCreateTime(flowTask.getFlowInstance().getCreatedDate());
             result.setPrOpinion("流程启动");
         } else {
@@ -3198,28 +3199,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
                 WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
-                String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
-                taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
-                flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui); //处理界面是同一模块
-                String appModuleId = workPageUrl.getAppModuleId();
-                AppModule appModule = appModuleService.findOne(appModuleId);
-                if (appModule != null && appModule != flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()) {
-                    webBaseAddressConfig = appModule.getWebBaseAddress();
-                    webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
-                    webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("://") + 3);
-                    webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
-                    taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+                if (workPageUrl != null) {
+                    String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
                     taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
-                    flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+                    flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui); //处理界面是同一模块
+                    String appModuleId = workPageUrl.getAppModuleId();
+                    AppModule appModule = appModuleService.findOne(appModuleId);
+                    if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
+                        webBaseAddressConfig = appModule.getWebBaseAddress();
+                        webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                        if (StringUtils.isNotEmpty(webBaseAddress)) {
+                            String[] tempWebBaseAddress = webBaseAddress.split("/");
+                            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                            }
+                        }
+                        taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+                        taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+                        flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+                    }
+                    res.setData(flowTask.getTaskFormUrlXiangDui());
+                } else {
+                    res.operationFailure("当前待办页面信息不存在！");
                 }
-                res.setData(flowTask.getTaskFormUrlXiangDui());
             } else {
-                res.setSuccess(false);
-                res.setMessage("当前待办不存在！");
+                res.operationFailure("当前待办不存在！");
             }
         } else {
-            res.setSuccess(false);
-            res.setMessage("参数不能为空！");
+            res.operationFailure("参数不能为空！");
         }
         return res;
     }

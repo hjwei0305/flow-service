@@ -55,7 +55,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         }
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
-        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        List<SearchOrder> sortOrders = searchConfig.getSortOrders();
 
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
         String hqlQuery = "select ft          from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
@@ -86,17 +86,17 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        if(sortOrders!=null&&sortOrders.size()>0){
-            for(int i=0;i<sortOrders.size();i++){
-                SearchOrder  searchOrder = sortOrders.get(i);
-                if(i==0){
-                    hqlQuery +=" order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
-                }else{
-                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+        if (sortOrders != null && sortOrders.size() > 0) {
+            for (int i = 0; i < sortOrders.size(); i++) {
+                SearchOrder searchOrder = sortOrders.get(i);
+                if (i == 0) {
+                    hqlQuery += " order by  ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
+                } else {
+                    hqlQuery += ", ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
                 }
             }
-        }else{
-            hqlQuery+=" order by ft.createdDate desc";
+        } else {
+            hqlQuery += " order by ft.createdDate desc";
         }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
         Long total = queryTotal.getSingleResult();
@@ -124,7 +124,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     @Override
     public FlowTask findTaskById(String taskId) {
         FlowTask flowTask = findOne(taskId);
-        if (Objects.nonNull(flowTask)){
+        if (Objects.nonNull(flowTask)) {
             initFlowTask(flowTask);
         }
         return flowTask;
@@ -134,7 +134,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
-        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        List<SearchOrder> sortOrders = searchConfig.getSortOrders();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
                 "where ft.executorId  = :executorId " +
                 "and (ft.trustState !=1  or ft.trustState is null ) " +
@@ -164,15 +164,15 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        if(sortOrders!=null&&sortOrders.size()>0){
+        if (sortOrders != null && sortOrders.size() > 0) {
             hqlQuery += " order by ft.priority desc ";
-            for(int i=0;i<sortOrders.size();i++){
-                SearchOrder  searchOrder = sortOrders.get(i);
-                if(!"priority".equalsIgnoreCase(searchOrder.getProperty())){
-                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+            for (int i = 0; i < sortOrders.size(); i++) {
+                SearchOrder searchOrder = sortOrders.get(i);
+                if (!"priority".equalsIgnoreCase(searchOrder.getProperty())) {
+                    hqlQuery += ", ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
                 }
             }
-        }else{
+        } else {
             hqlQuery += hqlQueryOrder;
         }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
@@ -256,12 +256,18 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
             String appModuleId = workPageUrl.getAppModuleId();
             AppModule appModule = appModuleDao.findOne(appModuleId);
-            if (appModule != null && appModule != flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule()) {
+            if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
                 webBaseAddressConfig = appModule.getWebBaseAddress();
                 webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
                 flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
-                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("://") + 3);
-                webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+                    }
+                }
                 taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
                 taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
                 flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
@@ -273,7 +279,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
-        List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        List<SearchOrder> sortOrders = searchConfig.getSortOrders();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
                 "where ft.executorId  = :executorId " +
                 "and (ft.trustState !=1  or ft.trustState is null) ";
@@ -305,15 +311,15 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlQuery += appSignSql;
         }
 
-        if(sortOrders!=null&&sortOrders.size()>0){
+        if (sortOrders != null && sortOrders.size() > 0) {
             hqlQuery += " order by ft.priority desc ";
-             for(int i=0;i<sortOrders.size();i++){
-                 SearchOrder  searchOrder = sortOrders.get(i);
-                 if(!"priority".equalsIgnoreCase(searchOrder.getProperty())){
-                     hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
-                 }
-             }
-        }else{
+            for (int i = 0; i < sortOrders.size(); i++) {
+                SearchOrder searchOrder = sortOrders.get(i);
+                if (!"priority".equalsIgnoreCase(searchOrder.getProperty())) {
+                    hqlQuery += ", ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
+                }
+            }
+        } else {
             hqlQuery += hqlQueryOrder;
         }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
