@@ -591,7 +591,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        long time = 200; //默认200秒
+                        long time = 60; //默认60秒
                         int index = 2;//重试2次
                         while (index > 0) {
                             try {

@@ -707,6 +707,24 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
         if (executor != null) {
             FlowTask newFlowTask = flowTaskDao.findByActTaskId(actTaskId);
+            FlowTask delFlowTask  = new FlowTask();
+            org.springframework.beans.BeanUtils.copyProperties(newFlowTask, delFlowTask);
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            //是否推送信息到业务模块或者直接配置的url
+            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(newFlowTask.getFlowInstance());
+            List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
+            if (pushBasic||pushModelOrUrl) {
+                needDelList.add(delFlowTask);
+                if(pushModelOrUrl){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
+                        }
+                    }).start();
+                }
+            }
 //                newFlowTask.setId(null);
             newFlowTask.setExecutorId(executor.getId());
             newFlowTask.setExecutorAccount(executor.getCode());
@@ -720,6 +738,29 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             taskService.setAssignee(actTaskId, executor.getId());
 
             flowTaskDao.save(newFlowTask);
+
+            List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
+            if (pushBasic||pushModelOrUrl) {
+                needAddList.add(newFlowTask);
+                if(pushBasic){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                        }
+                    }).start();
+                }
+                if(pushModelOrUrl){
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                        }
+                    }).start();
+                }
+            }
+
+
             result = OperateResultWithData.operationSuccess();
             result.setData(newFlowTask);
         } else {

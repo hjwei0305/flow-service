@@ -277,7 +277,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             int sameNumber = 0;
             if (pushList.size() == taskList.size()) {
                 for (int k = 0; k < taskList.size(); k++) {
-                    Boolean boo = this.ifInclude(pushList, taskList.get(k).getId());
+                    Boolean boo = this.ifInclude(pushList, taskList.get(k));
                     if (!boo) {
                         break;
                     }
@@ -308,12 +308,13 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
      * 判断推送任务列表中是否存在该任务
      *
      * @param list
-     * @param flowTaskId
+     * @param flowTask
      * @return
      */
-    public Boolean ifInclude(List<FlowTaskPush> list, String flowTaskId) {
+    public Boolean ifInclude(List<FlowTaskPush> list, FlowTask flowTask) {
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getFlowTaskId().equals(flowTaskId)) {
+            //要判断执行人相同是因为（工作池任务最开始是匿名用户，指定用户后直接改的执行人）
+            if (list.get(i).getFlowTaskId().equals(flowTask.getId())&&list.get(i).getExecutorId().equals(flowTask.getExecutorId())) {
                 return true;
             }
         }
