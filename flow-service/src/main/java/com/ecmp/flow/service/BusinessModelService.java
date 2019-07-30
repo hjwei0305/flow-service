@@ -65,11 +65,15 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     public ResponseData getPropertiesByTaskIdOfModile(String taskId,String typeId, String id) {
         ResponseData responseData = new ResponseData();
         Boolean boo =  true ;  //是否为待办
+        Boolean  canMobile = true; //移动端是否可以审批
         if (StringUtils.isNotEmpty(taskId)&&StringUtils.isNotEmpty(typeId)) {
             //能查询到就是待办，查不到就是已处理
             FlowTask flowTask = flowTaskService.findOne(taskId);
             if(flowTask==null){
                 boo = false ;
+                canMobile = true;
+            }else{
+                canMobile =  flowTask.getCanMobile() ==null ? false : flowTask.getCanMobile();
             }
             FlowType  flowType  = flowTypeService.findOne(typeId);
             if(flowType==null){
@@ -106,7 +110,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
-            return this.getPropertiesByUrlOfModile(url, businessModelCode, id , boo);
+            return this.getPropertiesByUrlOfModile(url, businessModelCode, id , boo ,canMobile);
         } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数不能为空！");
@@ -116,7 +120,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
 
 
-    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id ,Boolean flowTaskIsInit) {
+    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id ,Boolean flowTaskIsInit,Boolean canMobile) {
         ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
             Map<String, Object> params = new HashMap();
@@ -127,6 +131,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 Map<String, Object> properties = ApiClient.getEntityViaProxy(url, new GenericType<Map<String, Object>>() {
                 }, params);
                 properties.put("flowTaskIsInit",flowTaskIsInit); //添加是否是待办参数，true为待办
+                properties.put("flowTaskCanMobile",canMobile);//添加移动端是都可以查看
                 responseData.setData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
