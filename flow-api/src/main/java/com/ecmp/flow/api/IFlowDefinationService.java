@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
+import com.ecmp.flow.vo.UserQueryVo;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
@@ -331,10 +332,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
     /**
      * 获取组织机构下员工（可以包含子节点：react版本最新使用）
-     * @param pageInfo  分页对象
-     * @param organizationId   组织机构ID
-     * @param includeSubNode   是否包含组织机构下节点
-     * @param quickSearchValue  快速查询字段
+     * @param userQueryVo  查询对象VO
      * @return
      */
     @POST
@@ -342,10 +340,7 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取组织机构下员工（可以包含子节点）", notes = "获取组织机构下员工（可以包含子节点）")
-    ResponseData listUserByOrg(PageInfo pageInfo,
-                               @QueryParam("organizationId")String organizationId,
-                               @QueryParam("includeSubNode")Boolean includeSubNode,
-                               @QueryParam("quickSearchValue")String quickSearchValue);
+    ResponseData listUserByOrg(UserQueryVo userQueryVo);
 
 
 }

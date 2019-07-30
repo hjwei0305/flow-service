@@ -144,25 +144,25 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
 
     @Override
-    public ResponseData listUserByOrg(PageInfo pageInfo, String organizationId, Boolean includeSubNode, String quickSearchValue) {
-        if(StringUtils.isEmpty(organizationId)){
+    public ResponseData listUserByOrg(UserQueryVo userQueryVo) {
+        if(StringUtils.isEmpty(userQueryVo.getOrganizationId())){
           return  ResponseData.operationFailure("组织机构ID不能为空！");
         }
         UserQueryParamVo vo =new UserQueryParamVo();
-        vo.setOrganizationId(organizationId);
-        vo.setIncludeSubNode(includeSubNode==null?true:includeSubNode);
+        vo.setOrganizationId(userQueryVo.getOrganizationId());
+        vo.setIncludeSubNode(userQueryVo.getIncludeSubNode()==null?true:userQueryVo.getIncludeSubNode());
         //快速查询
         ArrayList<String> properties = new ArrayList();
         properties.add("code");
         properties.add("user.userName");
         vo.setQuickSearchProperties(properties);
-        vo.setQuickSearchValue(quickSearchValue==null?"":quickSearchValue);
+        vo.setQuickSearchValue(userQueryVo.getQuickSearchValue()==null?"":userQueryVo.getQuickSearchValue());
         //排序
         List<SearchOrder> listOrder = new ArrayList<SearchOrder>();
         listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
         vo.setSortOrders(listOrder);
         //分页
-        vo.setPageInfo(pageInfo==null? new PageInfo():pageInfo);
+        vo.setPageInfo(userQueryVo.getPageInfo()==null? new PageInfo():userQueryVo.getPageInfo());
         PageResult<Employee> result = flowCommonUtil.getEmployeesByOrgIdAndQueryParam(vo);
         return ResponseData.operationSuccessWithData(result);
     }
