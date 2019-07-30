@@ -278,13 +278,11 @@ public class FlowCommonUtil implements Serializable {
      * @return
      */
    public PageResult<Employee>  getEmployeesByOrgIdAndQueryParam(UserQueryParamVo userQueryParamVo){
-       Map<String,Object> params = new HashMap();
-       params.put("UserQueryParam",userQueryParamVo);
        String url = Constants.getBasicEmployeeFindByUserQueryParam();
-       String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+       String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url="+url+",参数值"+ JsonUtils.toJson(userQueryParamVo);
        PageResult<Employee> employeeList;
        try{
-           employeeList = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Employee>>() {},params);
+           employeeList = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Employee>>() {},userQueryParamVo);
        }catch (Exception e){
            messageLog+="-调用异常："+e.getMessage();
            LogUtil.error(messageLog,e);
