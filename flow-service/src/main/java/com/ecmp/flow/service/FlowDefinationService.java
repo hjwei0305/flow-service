@@ -4,6 +4,9 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.PageInfo;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Employee;
@@ -18,7 +21,6 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -45,6 +47,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
 
 import javax.ws.rs.core.GenericType;
 import java.io.UnsupportedEncodingException;
@@ -138,6 +141,33 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         responseData.setData(result);
         return responseData;
     }
+
+
+    @Override
+    public ResponseData listUserByOrg(PageInfo pageInfo, String organizationId, Boolean includeSubNode, String quickSearchValue) {
+        if(StringUtils.isEmpty(organizationId)){
+          return  ResponseData.operationFailure("组织机构ID不能为空！");
+        }
+        UserQueryParamVo vo =new UserQueryParamVo();
+        vo.setOrganizationId(organizationId);
+        vo.setIncludeSubNode(includeSubNode==null?true:includeSubNode);
+        //快速查询
+        ArrayList<String> properties = new ArrayList();
+        properties.add("code");
+        properties.add("user.userName");
+        vo.setQuickSearchProperties(properties);
+        vo.setQuickSearchValue(quickSearchValue==null?"":quickSearchValue);
+        //排序
+        List<SearchOrder> listOrder = new ArrayList<SearchOrder>();
+        listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
+        vo.setSortOrders(listOrder);
+        //分页
+        vo.setPageInfo(pageInfo==null? new PageInfo():pageInfo);
+        PageResult<Employee> result = flowCommonUtil.getEmployeesByOrgIdAndQueryParam(vo);
+        return ResponseData.operationSuccessWithData(result);
+    }
+
+
 
     /**
      * 新增修改操作

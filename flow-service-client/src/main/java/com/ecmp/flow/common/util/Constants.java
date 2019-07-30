@@ -146,6 +146,18 @@ public class Constants extends ConfigurableContants {
         return BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL;
     }
 
+    /**
+     * 根据组织机构的id获取员工（新增：是否包含子节点）
+     */
+    public static String getBasicEmployeeFindByUserQueryParam() {
+        String BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYUSERQUERYPARAM");
+        if (StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL)) {
+            BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = getBasicServiceUrl() + getProperty(
+                    "basic.employee.findByUserQueryParam", "/employee/findByUserQueryParam");
+        }
+        return BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL;
+    }
+
 
     //------------------------------------------------获取岗位--------------------------------//
 

@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
@@ -324,7 +325,27 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Path("listAllUser")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取所有组织机构", notes = "获取所有组织机构")
+    @ApiOperation(value = "获取组织机构下员工", notes = "获取组织机构下员工")
     ResponseData listAllUser(@QueryParam("organizationId")String organizationId);
+
+
+    /**
+     * 获取组织机构下员工（可以包含子节点：react版本最新使用）
+     * @param pageInfo  分页对象
+     * @param organizationId   组织机构ID
+     * @param includeSubNode   是否包含组织机构下节点
+     * @param quickSearchValue  快速查询字段
+     * @return
+     */
+    @POST
+    @Path("listUserByOrg")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取组织机构下员工（可以包含子节点）", notes = "获取组织机构下员工（可以包含子节点）")
+    ResponseData listUserByOrg(PageInfo pageInfo,
+                               @QueryParam("organizationId")String organizationId,
+                               @QueryParam("includeSubNode")Boolean includeSubNode,
+                               @QueryParam("quickSearchValue")String quickSearchValue);
+
 
 }

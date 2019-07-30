@@ -1,12 +1,14 @@
 package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.vo.UserQueryParamVo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -269,6 +271,32 @@ public class FlowCommonUtil implements Serializable {
         }
         return employeeList;
     }
+
+    /**
+     * 根据组织机构获取员工（可以包含子节点）
+     * @param userQueryParamVo
+     * @return
+     */
+   public PageResult<Employee>  getEmployeesByOrgIdAndQueryParam(UserQueryParamVo userQueryParamVo){
+       Map<String,Object> params = new HashMap();
+       params.put("UserQueryParam",userQueryParamVo);
+       String url = Constants.getBasicEmployeeFindByUserQueryParam();
+       String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url="+url+",参数值"+ JsonUtils.toJson(params);
+       PageResult<Employee> employeeList;
+       try{
+           employeeList = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Employee>>() {},params);
+       }catch (Exception e){
+           messageLog+="-调用异常："+e.getMessage();
+           LogUtil.error(messageLog,e);
+           throw  new FlowException(getErrorLogString(url), e);
+       }
+       return employeeList;
+   }
+
+
+
+
+
 
     /**
      * 获取当前用户拥有权限的应用模块
