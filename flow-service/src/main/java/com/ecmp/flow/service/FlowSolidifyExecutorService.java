@@ -330,9 +330,17 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
                             taskListString = jsonArray.toString();
                         }
-                        //自动执行待办
-                        long currentTime = System.currentTimeMillis();
+
+
                         try {
+                            long time = 1; //默认1秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                            try {
+                                Thread.sleep(1000 * time);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            //自动执行待办
+                            long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),
                                     "同意【自动执行】", taskListString.toString(),
                                     endEventId, false, approved, currentTime);
