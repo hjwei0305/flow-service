@@ -51,47 +51,47 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     }
 
 
-    public ResponseData  getExecuteInfoByBusinessId (String businessId){
-        ResponseData  responseData = new ResponseData();
+    public ResponseData getExecuteInfoByBusinessId(String businessId) {
+        ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
-            if(flowInstance==null){
+            if (flowInstance == null) {
                 responseData.setSuccess(false);
                 responseData.setMessage("流程实例不存在！");
                 return responseData;
             }
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-            if(solidifylist==null||solidifylist.size()==0){
+            if (solidifylist == null || solidifylist.size() == 0) {
                 responseData.setSuccess(false);
                 responseData.setMessage("固化流程配置数据不存在！");
                 return responseData;
             }
             Definition definitionP = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             List<NodeAndExecutes> list = new ArrayList<NodeAndExecutes>();
-           for(FlowSolidifyExecutor bean:solidifylist){
-               String currNodeId = bean.getActTaskDefKey();
-               JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
-               //节点信息
-               FlowNodeVO flowNodeVO = new FlowNodeVO();
-               flowNodeVO.setId(currentNode.getString("id"));
-               flowNodeVO.setType(currentNode.getString("type"));
-               flowNodeVO.setNodeType(currentNode.getString("nodeType"));
-               flowNodeVO.setName(currentNode.getString("name"));
-               //执行人信息
-               String userIds = bean.getExecutorIds();
-               String[] idArray = userIds.split(",");
-               List<String> userList = Arrays.asList(idArray);
-               List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
-               //节点和执行人汇总
-               NodeAndExecutes  nodeAndExecutes  = new NodeAndExecutes(flowNodeVO,executorList);
-               list.add(nodeAndExecutes);
-           }
+            for (FlowSolidifyExecutor bean : solidifylist) {
+                String currNodeId = bean.getActTaskDefKey();
+                JSONObject currentNode = definitionP.getProcess().getNodes().getJSONObject(currNodeId);
+                //节点信息
+                FlowNodeVO flowNodeVO = new FlowNodeVO();
+                flowNodeVO.setId(currentNode.getString("id"));
+                flowNodeVO.setType(currentNode.getString("type"));
+                flowNodeVO.setNodeType(currentNode.getString("nodeType"));
+                flowNodeVO.setName(currentNode.getString("name"));
+                //执行人信息
+                String userIds = bean.getExecutorIds();
+                String[] idArray = userIds.split(",");
+                List<String> userList = Arrays.asList(idArray);
+                List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+                //节点和执行人汇总
+                NodeAndExecutes nodeAndExecutes = new NodeAndExecutes(flowNodeVO, executorList);
+                list.add(nodeAndExecutes);
+            }
             responseData.setData(list);
-        }else{
+        } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数不能为空！");
         }
-     return  responseData;
+        return responseData;
     }
 
 
@@ -192,7 +192,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             if (list != null && list.size() > 0) {
                 int maxInt = list.stream().mapToInt(FlowSolidifyExecutor::getTaskOrder).max().getAsInt();
                 FlowSolidifyExecutor bean = list.stream().filter(a -> taskKey.equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
-                if (bean != null && bean.getExecutorIds().indexOf(taskUserId)!=-1) { //转办和委托（实际执行人不是启动时设置的人的情况）
+                if (bean != null && bean.getExecutorIds().indexOf(taskUserId) != -1) { //转办和委托（实际执行人不是启动时设置的人的情况）
                     if ("SingleSign".equalsIgnoreCase(bean.getNodeType())) {  //单签任务设置实际执行人
                         bean.setTrueExecutorIds(task.getExecutorId());
                     }
@@ -292,7 +292,12 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
         if (taskList != null && taskList.size() > 0 && solidifylist != null && solidifylist.size() > 0) {
-            taskList.forEach(task -> {
+            for (int i = 0; i < taskList.size(); i++) {
+                FlowTask task = taskList.get(i);
+                Boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
+                if (!canMobile) {
+                    continue;
+                }
                 FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(task.getActTaskDefKey())).findFirst().orElse(null);
                 if (bean != null) {
                     String approved = null; //是否同意
@@ -304,7 +309,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         //模拟请求下一步数据
                         responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved, true);
                     } catch (Exception e) {
-                        LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(),e);
+                        LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
                     }
                     //模拟下一不节点信息成功
                     if (responseData.getSuccess()) {
@@ -345,12 +350,12 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                     "同意【自动执行】", taskListString.toString(),
                                     endEventId, false, approved, currentTime);
                         } catch (Exception e) {
-                            LogUtil.error("自动执行待办报错：" + e.getMessage(),e);
+                            LogUtil.error("自动执行待办报错：" + e.getMessage(), e);
                         }
 
                     }
                 }
-            });
+            }
         }
     }
 
