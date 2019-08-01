@@ -2313,7 +2313,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setOwnerId(executor.getId());
                 newFlowTask.setOwnerName(executor.getName());
                 newFlowTask.setOwnerAccount(executor.getCode());
-                newFlowTask.setPreId(flowHistory.getId());
                 newFlowTask.setTrustState(0);
                 newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
                 taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
