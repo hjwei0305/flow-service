@@ -106,7 +106,7 @@ alter table flow_task_push comment '推送任务子表（任务记录表）';
 /*==============================================================*/
 /* Index: fk_push_task_id                                       */
 /*==============================================================*/
-create unique index fk_push_task_id on flow_task_push
+create  index fk_push_task_id on flow_task_push
 (
    flow_task_id
 );
@@ -152,7 +152,7 @@ alter table flow_task_push_control comment '推送任务记录父表';
 /*==============================================================*/
 /* Index: fk_control_instance_id                                */
 /*==============================================================*/
-create unique index fk_control_instance_id on flow_task_push_control
+create  index fk_control_instance_id on flow_task_push_control
 (
    flow_instance_id
 );
@@ -160,7 +160,7 @@ create unique index fk_control_instance_id on flow_task_push_control
 /*==============================================================*/
 /* Index: fk_control_task__key                                  */
 /*==============================================================*/
-create unique index fk_control_task__key on flow_task_push_control
+create  index fk_control_task__key on flow_task_push_control
 (
    flow_act_task_def_key
 );
