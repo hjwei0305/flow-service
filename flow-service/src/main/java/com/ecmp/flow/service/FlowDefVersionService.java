@@ -17,8 +17,10 @@ import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.XmlUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.Process;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import org.activiti.engine.ProcessEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,6 +59,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
     @Autowired
     private FlowDefinationDao flowDefinationDao;
+
+    @Autowired
+    private FlowDefinationService flowDefinationService;
 
     @Autowired
     private FlowTypeDao flowTypeDao;
@@ -170,9 +175,18 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
-        boolean isNew = true;
+
+        String defJson = definition.getDefJson();
+        try{
+            ResponseData  responseData = flowDefinationService.resetPositionByJson(defJson);
+            if(responseData.getSuccess()){
+                defJson = (String)responseData.getData();
+            }
+        }catch (Exception e){
+            LogUtil.error("重置位置报错！",e);
+        }
+
         if (flowDefination == null) {//定义为空
-//            preInsert(flowDefination);
 
             flowDefination = new FlowDefination();
             flowDefination.setTenantCode(ContextUtil.getTenantCode());
@@ -210,7 +224,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setEndBeforeCallServiceUrlName(process.getBeforeEndServiceName());
 //            entity.setVersionCode(1);
             entity.setFlowDefination(flowDefination);
-            entity.setDefJson(definition.getDefJson());
+            entity.setDefJson(defJson);
 //            entity.setDefBpmn(defBpm);
             entity.setDefXml(defBpm);
             entity.setPriority(definition.getPriority());
@@ -250,7 +264,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 }
                 entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
                 entity.setFlowDefination(flowDefination);
-                entity.setDefJson(definition.getDefJson());
+                entity.setDefJson(defJson);
 //                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 entity.setName(process.getName());
@@ -284,7 +298,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setDefKey(process.getId());
 //                entity.setVersionCode(1);
                 entity.setFlowDefination(flowDefination);
-                entity.setDefJson(definition.getDefJson());
+                entity.setDefJson(defJson);
 //                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 if (process.getStartUEL() != null) {

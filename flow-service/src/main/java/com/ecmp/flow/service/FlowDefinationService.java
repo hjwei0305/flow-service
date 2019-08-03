@@ -1251,25 +1251,41 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
 
     public ResponseData resetPosition(String id) {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(id)) {
-            return this.writeErrorLogAndReturnData(null, "参数不能为空");
+            return  ResponseData.operationFailure("参数不能为空！");
         }
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if (flowDefination == null) {
-            return this.writeErrorLogAndReturnData(null, "未找到流程定义！");
+            return  ResponseData.operationFailure("未找到流程定义！");
         }
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         String defJson = flowDefVersion.getDefJson();
+        try{
+            ResponseData responseData = this.resetPositionByJson(defJson);
+            if(!responseData.getSuccess()){
+                return  responseData;
+            }
+            String newDefJson =  (String)responseData.getData();
+            flowDefVersion.setDefJson(newDefJson);
+            flowDefVersionDao.save(flowDefVersion);
+        }catch (Exception e){
+            LogUtil.error("重置位置报错！",e);
+            return  ResponseData.operationFailure("重置失败，请查看日志！");
+        }
+        return ResponseData.operationSuccess("重置成功！");
+    }
+
+
+    public ResponseData  resetPositionByJson(String defJson) throws Exception{
         JSONObject defObj = JSONObject.fromObject(defJson);
         Object pocessKey = defObj.keySet().stream().filter(obj -> "process".equals(obj.toString())).findFirst().orElse(null);
         if (pocessKey == null) {
-            return this.writeErrorLogAndReturnData(null, "数据格式1存在问题，转换失败！");
+            return ResponseData.operationFailure("数据格式1存在问题，转换失败！");
         }
         JSONObject pocessObj = JSONObject.fromObject(defObj.get(pocessKey));
         Object nodesKey = pocessObj.keySet().stream().filter(obj -> "nodes".equals(obj.toString())).findFirst().orElse(null);
         if (nodesKey == null) {
-            return this.writeErrorLogAndReturnData(null, "数据格式2存在问题，转换失败！");
+            return ResponseData.operationFailure("数据格式2存在问题，转换失败！");
         }
         JSONObject nodeObj = JSONObject.fromObject(pocessObj.get(nodesKey));
 
@@ -1294,11 +1310,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         pocessObj.put(nodesKey, nodeObj);
         defObj.put(pocessKey, pocessObj);
         String newDefJson = new JSONObject().fromObject(defObj).toString();
-        flowDefVersion.setDefJson(newDefJson);
-        flowDefVersionDao.save(flowDefVersion);
-
-        responseData.setMessage("重置成功！");
-        return responseData;
+        return ResponseData.operationSuccessWithData(newDefJson);
     }
 
 
