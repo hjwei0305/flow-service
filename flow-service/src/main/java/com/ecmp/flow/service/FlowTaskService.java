@@ -2191,9 +2191,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         List<String> userList = new ArrayList<String>();
                         String flowTaskType = f.getFlowTaskType();
                         selectedNodesMap.put(f.getNodeId(), f.getNodeId());
-                        if((f.getSolidifyFlow()==null||f.getSolidifyFlow()==false)&&StringUtils.isEmpty(f.getUserIds())){
-                            return ResponseData.operationFailure("执行人不能为空!");
-                        }
                         String userIds = f.getUserIds() == null ? "" : f.getUserIds();
                         if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
                             String userId = userIds.replaceAll(",", "");
