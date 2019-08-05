@@ -232,10 +232,12 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
         if (StringUtils.isNotEmpty(webBaseAddress)) {
             flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+            flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
             String[] tempWebBaseAddress = webBaseAddress.split("/");
             if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
                 webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
                 flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
             }
         }
         WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();

@@ -37,17 +37,31 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     private String taskFormUrlXiangDui;
 
     /**
-     * web基地址
+     * web基地址（跟随节点配置的工作界面模块）
      */
     @Transient
     private String webBaseAddress;
 
 
     /**
-     * web基地址绝对路径
+     * web基地址绝对路径（跟随节点配置的工作界面模块）
      */
     @Transient
     private String webBaseAddressAbsolute;
+
+
+    /**
+     * web基地址
+     */
+    @Transient
+    private String lookWebBaseAddress;
+
+
+    /**
+     * web基地址绝对路径
+     */
+    @Transient
+    private String lookWebBaseAddressAbsolute;
 
     /**
      * api基地址
@@ -828,5 +842,21 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
 
     public void setAllowSubtractSign(Boolean allowSubtractSign) {
         this.allowSubtractSign = allowSubtractSign;
+    }
+
+    public String getLookWebBaseAddress() {
+        return lookWebBaseAddress;
+    }
+
+    public void setLookWebBaseAddress(String lookWebBaseAddress) {
+        this.lookWebBaseAddress = lookWebBaseAddress;
+    }
+
+    public String getLookWebBaseAddressAbsolute() {
+        return lookWebBaseAddressAbsolute;
+    }
+
+    public void setLookWebBaseAddressAbsolute(String lookWebBaseAddressAbsolute) {
+        this.lookWebBaseAddressAbsolute = lookWebBaseAddressAbsolute;
     }
 }
