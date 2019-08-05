@@ -40,7 +40,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicUserGetExecutorsbyUseridsUrl() {
 //        String BASIC_USER_GETEXECUTORSBYUSERIDS_URL = ContextUtil.getGlobalProperty("BASIC.USER.GETEXECUTORSBYUSERIDS");
-        String BASIC_USER_GETEXECUTORSBYUSERIDS_URL = ContextUtil.getGlobalProperty("basic.user.getExecutorsByUserIds");
+        String BASIC_USER_GETEXECUTORSBYUSERIDS_URL = ContextUtil.getGlobalProperty("basic.user.getexecutorsbyuserids");
         if (StringUtils.isEmpty(BASIC_USER_GETEXECUTORSBYUSERIDS_URL)) {
             BASIC_USER_GETEXECUTORSBYUSERIDS_URL = getBasicServiceUrl() + getProperty(
                     "basic.user.getExecutorsByUserIds", "/user/getExecutorsByUserIds");
@@ -55,7 +55,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPositionGetexecutorsbypositionidsUrl() {
 //        String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSITIONIDS");
-        String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("basic.position.getExecutorsByPositionIds");
+        String BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = ContextUtil.getGlobalProperty("basic.position.getexecutorsbypositionids");
         if (StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL)) {
             BASIC_POSITION_GETEXECUTORSBYPOSITIONIDS_URL = getBasicServiceUrl() + getProperty(
                     "basic.position.getExecutorsByPositionIds", "/position/getExecutorsByPositionIds");
@@ -69,7 +69,7 @@ public class Constants extends ConfigurableContants {
     public static String getBasicPositionGetexecutorsbyposcateidsUrl() {
         //根据单据的orgId查找最近的符合岗位类别的人员
 //          String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORSBYPOSCATANDORGROOT");
-        String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("basic.position.getExecutorsByPostCatAndOrgToRoot");
+        String BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = ContextUtil.getGlobalProperty("basic.position.getexecutorsbypostcatandorgtoroot");
         if (StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL)) {
             BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL = getBasicServiceUrl() + getProperty(
                     "basic.position.getExecutorsByPostCatAndOrgToRoot", "/position/getExecutorsByPostCatAndOrgToRoot");
@@ -82,7 +82,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPositionGetExecutorsUrl() {
 //        String BASIC_POSITION_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.GETEXECUTORS");
-        String BASIC_POSITION_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("basic.position.getExecutors");
+        String BASIC_POSITION_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("basic.position.getexecutors");
         if (StringUtils.isEmpty(BASIC_POSITION_GETEXECUTORS_URL)) {
             BASIC_POSITION_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
                     "basic.position.getExecutors", "/position/getExecutors");
@@ -97,7 +97,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getExecutorsByPostCatAndOrgUrl() {
 //        String BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATANDORG.GETEXECUTORS");
-        String BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("basic.positionCatAndOrg.getExecutors");
+        String BASIC_POSITONCATANDORG_GETEXECUTORS_URL = ContextUtil.getGlobalProperty("basic.positioncatandorg.getexecutors");
         if (StringUtils.isEmpty(BASIC_POSITONCATANDORG_GETEXECUTORS_URL)) {
             BASIC_POSITONCATANDORG_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
                     "basic.positionCatAndOrg.getExecutors", "/employee/getExecutorsByPostCatAndOrg");
@@ -115,7 +115,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicOrgListallorgsUrl() {
 //        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("BASIC.ORG.LISTALLORGS");
-        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listAllOrgs");
+        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listallorgs");
         if (StringUtils.isEmpty(BASIC_ORG_LISTALLORGS_URL)) {
             BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + getProperty(
                     "basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
@@ -130,7 +130,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicOrgFindparentnodesUrl() {
 //        String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDPARENTNODES");
-        String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("basic.org.findParentNodes");
+        String BASIC_ORG_FINDPARENTNODES_URL = ContextUtil.getGlobalProperty("basic.org.findparentnodes");
         if (StringUtils.isEmpty(BASIC_ORG_FINDPARENTNODES_URL)) {
             BASIC_ORG_FINDPARENTNODES_URL = getBasicServiceUrl() + getProperty(
                     "basic.org.findParentNodes", "/organization/getParentNodes");
@@ -146,7 +146,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicEmployeeFindbyorganizationidUrl() {
 //        String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYORGANIZATIONID");
-        String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("basic.employee.findByOrganizationId");
+        String BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = ContextUtil.getGlobalProperty("basic.employee.findbyorganizationid");
         if (StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL)) {
             BASIC_EMPLOYEE_FINDBYORGANIZATIONID_URL = getBasicServiceUrl() + getProperty(
                     "basic.employee.findByOrganizationId", "/employee/findByOrganizationIdWithoutFrozen");
@@ -159,7 +159,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicEmployeeFindByUserQueryParam() {
 //        String BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = ContextUtil.getGlobalProperty("BASIC.EMPLOYEE.FINDBYUSERQUERYPARAM");
-        String BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = ContextUtil.getGlobalProperty("basic.employee.findByUserQueryParam");
+        String BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = ContextUtil.getGlobalProperty("basic.employee.findbyuserqueryparam");
         if (StringUtils.isEmpty(BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL)) {
             BASIC_EMPLOYEE_FINDBYUSERQUERYPARAM_URL = getBasicServiceUrl() + getProperty(
                     "basic.employee.findByUserQueryParam", "/employee/findByUserQueryParam");
@@ -177,7 +177,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPositionFindbypageUrl() {
 //        String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("BASIC.POSITION.FINDBYPAGE");
-        String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("basic.position.findByPage");
+        String BASIC_POSITION_FINDBYPAGE_URL = ContextUtil.getGlobalProperty("basic.position.findbypage");
         if (StringUtils.isEmpty(BASIC_POSITION_FINDBYPAGE_URL)) {
             BASIC_POSITION_FINDBYPAGE_URL = getBasicServiceUrl() + getProperty(
                     "basic.position.findByPage", "/position/findByPage");
@@ -193,7 +193,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPositioncategoryFindallUrl() {
 //        String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("BASIC.POSITIONCATEGORY.FINDALL");
-        String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("basic.positionCategory.findAll");
+        String BASIC_POSITIONCATEGORY_FINDALL_URL = ContextUtil.getGlobalProperty("basic.positioncategory.findall");
         if (StringUtils.isEmpty(BASIC_POSITIONCATEGORY_FINDALL_URL)) {
             BASIC_POSITIONCATEGORY_FINDALL_URL = getBasicServiceUrl() + getProperty(
                     "basic.positionCategory.findAll", "/positionCategory/findAll");
@@ -211,7 +211,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicOrgDimensionUrl() {
 //        String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("BASIC.ORG.FINDORGANIZATIONDIMENSION");
-        String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("basic.org.findOrganizationDimension");
+        String BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = ContextUtil.getGlobalProperty("basic.org.findorganizationdimension");
         if (StringUtils.isEmpty(BASIC_ORG_FINDORGANIZATIONDIMENSION_URL)) {
             BASIC_ORG_FINDORGANIZATIONDIMENSION_URL = getBasicServiceUrl() + getProperty(
                     "basic.org.findOrganizationDimension", "/organization/findOrganizationDimension");
@@ -229,7 +229,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicTenantAppModuleUrl() {
 //        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.TENANTAPPMODULE.FINDTENANTAPPMODULES");
-        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.tenantAppModule.findTenantAppModules");
+        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.tenantappmodule.findtenantappmodules");
         if (StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)) {
             BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = getBasicServiceUrl() + getProperty(
                     "basic.tenantAppModule.findTenantAppModules", "/tenantAppModule/getTenantAppModules");
@@ -247,7 +247,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPushNewTaskUrl() {
 //        String BASIC_PUSH_NEW_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.NEWTASK");
-        String BASIC_PUSH_NEW_TASK_URL = ContextUtil.getGlobalProperty("basic.push.newTask");
+        String BASIC_PUSH_NEW_TASK_URL = ContextUtil.getGlobalProperty("basic.push.newtask");
         if (StringUtils.isEmpty(BASIC_PUSH_NEW_TASK_URL)) {
             BASIC_PUSH_NEW_TASK_URL = getBasicServiceUrl() + getProperty(
                     "basic.push.newTask", "/task/pushNewTask");
@@ -262,7 +262,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPushOldTaskUrl() {
 //        String BASIC_PUSH_OLD_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.OLDTASK");
-        String BASIC_PUSH_OLD_TASK_URL = ContextUtil.getGlobalProperty("basic.push.oldTask");
+        String BASIC_PUSH_OLD_TASK_URL = ContextUtil.getGlobalProperty("basic.push.oldtask");
         if (StringUtils.isEmpty(BASIC_PUSH_OLD_TASK_URL)) {
             BASIC_PUSH_OLD_TASK_URL = getBasicServiceUrl() + getProperty(
                     "basic.push.oldTask", "/task/pushOldTask");
@@ -277,7 +277,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPushDelTaskUrl() {
 //        String BASIC_PUSH_DEL_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.DELTASK");
-        String BASIC_PUSH_DEL_TASK_URL = ContextUtil.getGlobalProperty("basic.push.delTask");
+        String BASIC_PUSH_DEL_TASK_URL = ContextUtil.getGlobalProperty("basic.push.deltask");
         if (StringUtils.isEmpty(BASIC_PUSH_DEL_TASK_URL)) {
             BASIC_PUSH_DEL_TASK_URL = getBasicServiceUrl() + getProperty(
                     "basic.push.delTask", "/task/pushDelTask");
@@ -292,7 +292,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicPushEndTaskUrl() {
 //        String BASIC_PUSH_END_TASK_URL = ContextUtil.getGlobalProperty("BASIC.PUSH.ENDTASK");
-        String BASIC_PUSH_END_TASK_URL = ContextUtil.getGlobalProperty("basic.push.endTask");
+        String BASIC_PUSH_END_TASK_URL = ContextUtil.getGlobalProperty("basic.push.endtask");
         if (StringUtils.isEmpty(BASIC_PUSH_END_TASK_URL)) {
             BASIC_PUSH_END_TASK_URL = getBasicServiceUrl() + getProperty(
                     "basic.push.endTask", "/task/pushEndTask");
@@ -308,7 +308,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getUserEmailAlertFindByUserIdsUrl() {
 //        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.USEREMAILALERT.FINDBYUSERIDS");
-        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.userEmailAlert.findByUserIds");
+        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.useremailalert.findbyuserids");
         if (StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)) {
             BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = getBasicServiceUrl() + getProperty(
                     "basic.userEmailAlert.findByUserIds", "/userEmailAlert/findByUserIds");
@@ -324,7 +324,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getUsderEmailAlertUpdateLastTimesUrl() {
 //        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("BASIC.USEREMAILALERT.UPDATELASTTIMES");
-        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.userEmailAlert.updateLastTimes");
+        String BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = ContextUtil.getGlobalProperty("basic.useremailalert.updatelasttimes");
         if (StringUtils.isEmpty(BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL)) {
             BASIC_TENANTAPPMODULE_FINDTENANTAPPMODULES_URL = getBasicServiceUrl() + getProperty(
                     "basic.userEmailAlert.updateLastTimes", "/userEmailAlert/updateLastTimes");
