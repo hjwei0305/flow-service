@@ -21,6 +21,7 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -463,12 +464,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-//                  String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
-                    }, flowInvokeParams);
+                    String msg = "启动前事件【"+flowServiceUrl.getName()+"】";
+                    try{
+                        flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                        }, flowInvokeParams);
+                        if(!flowOpreateResult.isSuccess()){
+                            flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
+                        }
+                    }catch (Exception e){
+                         LogUtil.error(msg+"内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                         throw new FlowException(msg+"内部报错，详情请查看日志！");
+                    }
                 }
             }
         }
