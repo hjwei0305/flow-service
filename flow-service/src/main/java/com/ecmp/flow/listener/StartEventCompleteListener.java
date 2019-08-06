@@ -212,13 +212,13 @@ public class StartEventCompleteListener implements ExecutionListener {
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(),flowInstance.getFlowDefVersion());
         if(callAfterStartResult!=null && callAfterStartResult.isSuccess()!=true){
-            String message = ContextUtil.getMessage("10043",callAfterStartResult.getMessage());
-            String messageLogger =message+
-                    ";businessId="+flowInstance.getBusinessId()
-                    +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
-                    +",appModule.code="+appModule.getCode();
-            logger.info(messageLogger);
-            throw new FlowException(message);
+//            String message = ContextUtil.getMessage("10043",callAfterStartResult.getMessage());
+//            String messageLogger =message+
+//                    ";businessId="+flowInstance.getBusinessId()
+//                    +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
+//                    +",appModule.code="+appModule.getCode();
+//            logger.info(messageLogger);
+            throw new FlowException(callAfterStartResult.getMessage());
         }
 
         Boolean result = ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INPROCESS);
@@ -249,17 +249,29 @@ public class StartEventCompleteListener implements ExecutionListener {
                     String checkUrlPath = baseUrl+checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
+                    String msg = "启动后事件【"+flowServiceUrl.getName()+"】";
                     if(afterStartServiceAync == true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                FlowOperateResult resultAync =  ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                                logger.info(resultAync.toString());
+                                try{
+                                    FlowOperateResult resultAync =  ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                                    LogUtil.info(msg+"异步调用返回信息："+resultAync.toString());
+                                }catch (Exception e){
+                                    LogUtil.error(msg+"异步调用内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                                }
                             }
                         }).start();
                     }else {
-                        result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                        logger.info(result.toString());
+                       try{
+                           result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                           if(!result.isSuccess()){
+                               result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
+                           }
+                       }catch (Exception e){
+                           LogUtil.error(msg+"内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                           throw new FlowException(msg+"内部报错，详情请查看日志！");
+                       }
                     }
                 }
             }
