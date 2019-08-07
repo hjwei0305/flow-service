@@ -114,33 +114,23 @@ public class ServiceCallUtil {
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = clientApiBaseUrl+"/"+clientUrl;
-                String exceptionMessage = null;
+                String msg = "事件【"+flowServiceUrl.getName()+"】";
+                String urlAndData = "-请求地址："+url+"，参数："+ JsonUtils.toJson(params);
                 try {
-                    result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {
-                    }, params);
+                    result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {}, params);
+                    if(result==null){
+                        result = new FlowOperateResult(false,msg+"返回信息为空！");
+                        LogUtil.info(msg+"返回参数为空!"+urlAndData);
+                    }else if(!result.isSuccess()){
+                        LogUtil.info(msg+"异步调用返回信息：【"+result.toString()+"】"+urlAndData);
+                        result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
+                    }
                 }catch (Exception e){
-                    exceptionMessage="Flow call Service exception:"+e.getMessage();
-                    result = new FlowOperateResult(false,"服务调用异常，请联系管理员！");
-                }finally {
-                    String exceptionMessageFinal = exceptionMessage;
-                    FlowOperateResult resultAy = result;
-                    new Thread(new Runnable() {//模拟异步,上传调用日志
-                        @Override
-                        public void run() {
-                            String paramsStr = JsonUtils.toJson(params);
-                            String message = "Flow call Service url =" + url + ";params="+paramsStr+";result = ";
-                            if(StringUtils.isNotEmpty(exceptionMessageFinal)){
-                                message+=exceptionMessageFinal;
-                            }else {
-                                message+=resultAy.toString();
-                            }
-                            LogUtil.bizLog(message);
-                        }
-                    }).start();
+                    LogUtil.error(msg+"内部报错!"+urlAndData,e);
+                    throw new FlowException(msg+"内部报错，详情请查看日志！");
                 }
-
             }else {
-                throw new FlowException("serviceUrlId='"+serviceUrlId+"'s service object can't be found!");
+                throw new FlowException("事件信息不能找到，可能已经被删除，serviceId="+serviceUrlId);
             }
         }
         return result;

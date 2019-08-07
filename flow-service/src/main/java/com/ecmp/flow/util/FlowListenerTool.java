@@ -378,29 +378,18 @@ public class FlowListenerTool {
                 String callMessage = null;
                 try{
                     flowOperateResult = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
-                     callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"接口调用异常！";
+                    callMessage = flowOperateResult.getMessage();
                 }catch (Exception e){
-                    logger.error(e.getMessage(),e);
-                    flowOperateResult=null;
                     callMessage = e.getMessage();
                 }
 
                 if((flowOperateResult==null || !flowOperateResult.isSuccess())){
-//                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
-//                        TransitionImpl transition = taskEntity.getTransition();
-//                        String sourceType =transition.getSource().getProperties().get("type")+"";
-
-//                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
                     if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
-//                            String actProcessInstanceId = delegateTask.getProcessInstanceId();
-//                            FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
-//                            String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-//                            FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
                             AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
                             new Thread(){
                                 public void run(){
@@ -420,9 +409,6 @@ public class FlowListenerTool {
                                         }
                                         index--;
                                     }
-//                                String actInstanceId = flowInstance.getActInstanceId();
-//                                runtimeService.deleteProcessInstance(actInstanceId, null);
-//                                flowInstanceDao.delete(flowInstance);
                                 }
                             }.start();
                     }
@@ -430,16 +416,12 @@ public class FlowListenerTool {
                 }
             }
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+            if(e.getClass()!=FlowException.class){
+                LogUtil.error(e.getMessage(),e);
+            }
             if(!async){
                 throw e;
             }
-            new Thread(new Runnable() {//模拟异步
-                @Override
-                public void run() {
-                    LogUtil.bizLog(e.getMessage(),e);
-                }
-            }).start();
         }
     }
 }
