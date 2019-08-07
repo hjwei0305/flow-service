@@ -136,22 +136,16 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                         if(flowOperateResult!=null && flowOperateResult.isSuccess() && StringUtils.isNotEmpty(flowOperateResult.getUserId())){
                             runtimeService.setVariable(delegateTask.getProcessInstanceId(),Constants.POOL_TASK_CALLBACK_USER_ID+actTaskDefKey, flowOperateResult.getUserId());
                         }
-                        callMessage = flowOperateResult!=null? flowOperateResult.getMessage():"";
+                        callMessage = flowOperateResult.getMessage();
                     }catch (Exception e){
-                        LogUtil.error(e.getMessage(),e);
-                        flowOperateResult=null;
                         callMessage = e.getMessage();
                     }
 
                     if((flowOperateResult==null || !flowOperateResult.isSuccess())){
-//                        ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
-//                        TransitionImpl transition = taskEntity.getTransition();
-//                        String sourceType =transition.getSource().getProperties().get("type")+"";
                         List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
                         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
                         if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
-//                        if("startEvent".equalsIgnoreCase(sourceType)){ //如果是开始节点，手动回滚
                             new Thread(){
                                 public void run(){
                                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
@@ -170,19 +164,14 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                                         }
                                         index--;
                                     }
-//                                String actInstanceId = flowInstance.getActInstanceId();
-//                                runtimeService.deleteProcessInstance(actInstanceId, null);
-//                                flowInstanceDao.delete(flowInstance);
                                 }
                             }.start();
                         }
                         throw new FlowException(callMessage);//抛出异常
                     }
-//                   flowTaskDao.save(flowTask);
 
                 }else{
-                    String message = ContextUtil.getMessage("10044");
-                    throw new FlowException(message);//服务地址为空！
+                    throw new FlowException("工作池任务不能找到，可能已经被删除，serviceId=" + serviceTaskId);
                 }
             }
     }
