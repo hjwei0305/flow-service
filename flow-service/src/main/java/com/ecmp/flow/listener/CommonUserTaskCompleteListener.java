@@ -77,14 +77,10 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                 }
             }
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
-            new Thread(new Runnable() {//模拟异步
-                @Override
-                public void run() {
-                    LogUtil.bizLog(e.getMessage());
-                }
-            }).start();
-            throw new FlowException(e.getMessage(),e);
+            if(e.getClass()!=FlowException.class){
+                LogUtil.error(e.getMessage(),e);
+            }
+            throw new FlowException(e.getMessage());
         }
     }
 }
