@@ -471,7 +471,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     try{
                         flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
                         }, flowInvokeParams);
-                        if(!flowOpreateResult.isSuccess()){
+                        if(flowOpreateResult==null){
+                            flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
+                        }else if(!flowOpreateResult.isSuccess()){
                             flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
                         }
                     }catch (Exception e){
