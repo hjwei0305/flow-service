@@ -2,20 +2,21 @@ package com.ecmp.flow.listener;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.AppModule;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.ServiceCallUtil;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -57,6 +58,8 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
+
+        try {
             Date now = new Date();
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
@@ -116,13 +119,56 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                         tempV.put(Constants.CALL_ACTIVITY_SON_PATHS,paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                   ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                   flowTaskDao.save(flowTask);
+                    FlowOperateResult flowOperateResult = null;
+                    String callMessage = null;
+                    try {
+                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        callMessage = flowOperateResult.getMessage();
+                    } catch (Exception e) {
+                        callMessage = e.getMessage();
+                    }
+                    if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
+                        List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+                        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
+                        if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
+                            new Thread() {
+                                public void run() {
+                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                    Boolean result = false;
+                                    int index = 5;
+                                    while (!result && index > 0) {
+                                        try {
+                                            Thread.sleep(1000 * (6 - index));
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        try {
+                                            result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        } catch (Exception e) {
+                                            LogUtil.error(e.getMessage(), e);
+                                        }
+                                        index--;
+                                    }
+                                }
+                            }.start();
+                        }
+                        throw new FlowException(callMessage);//抛出异常
+                    }
+
+                   flowTaskDao.save(flowTask);
                 }else{
-                    String message = ContextUtil.getMessage("10044");
-                    throw new FlowException(message);//服务地址为空！
+                    throw new FlowException("接收任务事件不能找到，可能已经被删除，serviceId=" + serviceTaskId);
                 }
             }
+
+        }catch (Exception e){
+            if(e.getClass()!=FlowException.class){
+                LogUtil.error(e.getMessage(),e);
+            }
+            throw e;
+        }
+
+
     }
 }
