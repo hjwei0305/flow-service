@@ -122,7 +122,7 @@ public class ServiceCallUtil {
                         result = new FlowOperateResult(false,msg+"返回信息为空！");
                         LogUtil.info(msg+"返回参数为空!"+urlAndData);
                     }else if(!result.isSuccess()){
-                        LogUtil.info(msg+"异步调用返回信息：【"+result.toString()+"】"+urlAndData);
+                        LogUtil.info(msg+"返回信息：【"+result.toString()+"】"+urlAndData);
                         result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
                     }
                 }catch (Exception e){

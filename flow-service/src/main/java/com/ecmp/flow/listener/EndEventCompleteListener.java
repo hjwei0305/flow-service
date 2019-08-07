@@ -86,15 +86,9 @@ public class EndEventCompleteListener implements ExecutionListener {
         }else {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                AppModule appModule = businessModel.getAppModule();
                 FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion(),endSign,variables);
-                if(callBeforeEndResult!=null && callBeforeEndResult.isSuccess()!=true){
-                    String message = "BusinessId="+flowInstance.getBusinessId()
-                            +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
-                            +",appModule.code="+appModule.getCode()
-                            +",Check the error before the end of the process and return the message :"+callBeforeEndResult.getMessage();
-                    logger.info(message);
-                    throw new FlowException(message);
+                if(callBeforeEndResult!=null&&!callBeforeEndResult.isSuccess()){
+                    throw new FlowException(callBeforeEndResult.getMessage());
                 }
                 flowInstance.setEnded(true);
                 flowInstance.setEndDate(new Date());
@@ -116,11 +110,11 @@ public class EndEventCompleteListener implements ExecutionListener {
                         runtimeService.setVariables(parentProcessInstance.getId(),variablesParent);
                     }
                 }
-                try {
-                    String businessId = delegateTask.getProcessBusinessKey();
-                    flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
-                }catch (Exception e){
-                    logger.error(e.getMessage(),e);
+
+                String businessId = delegateTask.getProcessBusinessKey();
+                flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
+                if(callBeforeEndResult!=null&&!callBeforeEndResult.isSuccess()){
+                    throw new FlowException(callBeforeEndResult.getMessage());
                 }
             }
         }
