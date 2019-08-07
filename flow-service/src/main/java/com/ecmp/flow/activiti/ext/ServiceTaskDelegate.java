@@ -2,21 +2,18 @@ package com.ecmp.flow.activiti.ext;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.entity.FlowDefVersion;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.FlowListenerTool;
-import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -64,13 +61,19 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
     @Autowired
     private FlowListenerTool flowListenerTool;
 
+    @Autowired
+    private FlowTaskService flowTaskService;
+
+
+
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
 
+        try {
             ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-            String businessId =delegateTask.getProcessBusinessKey();
+            String businessId = delegateTask.getProcessBusinessKey();
 
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
@@ -82,7 +85,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                 String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
                 String flowTaskName = (String) normal.get(Constants.NAME);
                 if (!StringUtils.isEmpty(serviceTaskId)) {
-                    Map<String,Object> tempV = delegateTask.getVariables();
+                    Map<String, Object> tempV = delegateTask.getVariables();
 
                     FlowHistory flowHistory = new FlowHistory();
                     flowHistory.setTaskJsonDef(currentNode.toString());
@@ -108,41 +111,79 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowHistory.setPreId(null);
 
                     FlowTask flowTask = new FlowTask();
-                    BeanUtils.copyProperties(flowHistory,flowTask);
+                    BeanUtils.copyProperties(flowHistory, flowTask);
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
 
                     List<String> paths = flowListenerTool.getCallActivitySonPaths(flowTask);
-                    if(!paths.isEmpty()){
-                        tempV.put(Constants.CALL_ACTIVITY_SON_PATHS,paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
+                    if (!paths.isEmpty()) {
+                        tempV.put(Constants.CALL_ACTIVITY_SON_PATHS, paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
-                    FlowOperateResult serviceCallResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
-                    if(!serviceCallResult.isSuccess()){
-                        String message = serviceCallResult.getMessage();
-                        message="serviceTaskId="+serviceTaskId+",businessId"+businessId+";call failure！ "+message;
-                        logger.error(message);
-                        throw new FlowException(message);
+
+                    FlowOperateResult flowOperateResult = null;
+                    String callMessage = null;
+                    try {
+                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        callMessage = flowOperateResult.getMessage();
+                    } catch (Exception e) {
+                        callMessage = e.getMessage();
                     }
+                    if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
+                        List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+                        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+
+                        if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
+                            new Thread() {
+                                public void run() {
+                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                    Boolean result = false;
+                                    int index = 5;
+                                    while (!result && index > 0) {
+                                        try {
+                                            Thread.sleep(1000 * (6 - index));
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        try {
+                                            result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        } catch (Exception e) {
+                                            logger.error(e.getMessage(), e);
+                                        }
+                                        index--;
+                                    }
+                                }
+                            }.start();
+                        }
+                        throw new FlowException(callMessage);//抛出异常
+                    }
+
                     Calendar c = new GregorianCalendar();
                     c.setTime(new Date());
-                    c.add(Calendar.SECOND,10);
+                    c.add(Calendar.SECOND, 10);
                     flowHistory.setActEndTime(c.getTime());//服务任务，默认延后10S
                     flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
-                    if(flowHistory.getActDurationInMillis() == null){
-                        Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
+                    if (flowHistory.getActDurationInMillis() == null) {
+                        Long actDurationInMillis = flowHistory.getActEndTime().getTime() - flowHistory.getActStartTime().getTime();
                         flowHistory.setActDurationInMillis(actDurationInMillis);
                     }
                     flowHistoryDao.save(flowHistory);
                     //选择下一步执行人，默认选择第一个(会签、单签、串、并行选择全部)
-                    List<NodeInfo> results = flowListenerTool.nextNodeInfoList(flowTask,delegateTask);
+                    List<NodeInfo> results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask);
                     //初始化节点执行人
-                    List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results,delegateTask,actTaskDefKey);
+                    List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results, delegateTask, actTaskDefKey);
                     //初始化下一步任务信息
-                    flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory );
-                }else{
-                    String message = ContextUtil.getMessage("10044");
-                    throw new FlowException(message);//服务地址为空！
+                    flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory);
+                } else {
+                    throw new FlowException("服务事件不能找到，可能已经被删除，serviceId=" + serviceTaskId);
                 }
             }
+
+
+        }catch (Exception e){
+            if(e.getClass()!=FlowException.class){
+                LogUtil.error(e.getMessage(),e);
+            }
+            throw e;
+        }
     }
 }
