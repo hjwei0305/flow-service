@@ -468,16 +468,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动前事件【"+flowServiceUrl.getName()+"】";
+                    String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
                     try{
                         flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
                         }, flowInvokeParams);
                         if(flowOpreateResult==null){
                             flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
+                            LogUtil.info(msg+"返回信息为空！"+urlAndData);
                         }else if(!flowOpreateResult.isSuccess()){
                             flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
+                            LogUtil.info(msg+"返回信息：【"+flowOpreateResult.toString()+"】"+urlAndData);
                         }
                     }catch (Exception e){
-                         LogUtil.error(msg+"内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                         LogUtil.error(msg+"内部报错!"+urlAndData,e);
                          throw new FlowException(msg+"内部报错，详情请查看日志！");
                     }
                 }

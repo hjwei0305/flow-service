@@ -250,26 +250,35 @@ public class StartEventCompleteListener implements ExecutionListener {
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动后事件【"+flowServiceUrl.getName()+"】";
+                    String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
                     if(afterStartServiceAync == true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
                                 try{
                                     FlowOperateResult resultAync =  ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                                    LogUtil.info(msg+"异步调用返回信息："+resultAync.toString());
+                                    if(resultAync==null){
+                                        LogUtil.info(msg+"返回信息为空!"+urlAndData);
+                                    }else if(!resultAync.isSuccess()){
+                                        LogUtil.info(msg+"异步调用返回信息：【"+resultAync.toString()+"】"+urlAndData);
+                                    }
                                 }catch (Exception e){
-                                    LogUtil.error(msg+"异步调用内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                                    LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
                                 }
                             }
                         }).start();
                     }else {
                        try{
                            result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                           if(!result.isSuccess()){
+                           if(result==null){
+                               result = new FlowOperateResult(false,msg+"返回信息为空！");
+                               LogUtil.info(msg+"返回参数为空!"+urlAndData);
+                           }else if(!result.isSuccess()){
                                result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
+                               LogUtil.info(msg+"异步调用返回信息：【"+result.toString()+"】"+urlAndData);
                            }
                        }catch (Exception e){
-                           LogUtil.error(msg+"内部报错，请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams),e);
+                           LogUtil.error(msg+"内部报错!"+urlAndData,e);
                            throw new FlowException(msg+"内部报错，详情请查看日志！");
                        }
                     }
