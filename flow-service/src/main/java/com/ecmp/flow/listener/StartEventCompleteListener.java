@@ -258,7 +258,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                                 try{
                                     FlowOperateResult resultAync =  ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
                                     if(resultAync==null){
-                                        LogUtil.info(msg+"返回信息为空!"+urlAndData);
+                                        LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
                                     }else if(!resultAync.isSuccess()){
                                         LogUtil.info(msg+"异步调用返回信息：【"+resultAync.toString()+"】"+urlAndData);
                                     }
@@ -274,8 +274,8 @@ public class StartEventCompleteListener implements ExecutionListener {
                                result = new FlowOperateResult(false,msg+"返回信息为空！");
                                LogUtil.info(msg+"返回参数为空!"+urlAndData);
                            }else if(!result.isSuccess()){
-                               result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
                                LogUtil.info(msg+"异步调用返回信息：【"+result.toString()+"】"+urlAndData);
+                               result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
                            }
                        }catch (Exception e){
                            LogUtil.error(msg+"内部报错!"+urlAndData,e);

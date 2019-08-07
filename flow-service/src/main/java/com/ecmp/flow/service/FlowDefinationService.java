@@ -476,8 +476,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
                             LogUtil.info(msg+"返回信息为空！"+urlAndData);
                         }else if(!flowOpreateResult.isSuccess()){
-                            flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
                             LogUtil.info(msg+"返回信息：【"+flowOpreateResult.toString()+"】"+urlAndData);
+                            flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
                         }
                     }catch (Exception e){
                          LogUtil.error(msg+"内部报错!"+urlAndData,e);
