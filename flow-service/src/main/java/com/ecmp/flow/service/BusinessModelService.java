@@ -10,11 +10,10 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.BusinessModelDao;
-import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -56,27 +55,47 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     private FlowTaskService flowTaskService;
     @Autowired
     private FlowTypeService flowTypeService;
+    @Autowired
+    private FlowTaskPushService flowTaskPushService;
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+    @Autowired
+    private FlowTaskTool flowTaskTool;
+
 
     protected BaseEntityDao<BusinessModel> getDao() {
         return this.businessModelDao;
     }
 
     @Override
-    public ResponseData getPropertiesByTaskIdOfModile(String taskId,String typeId, String id) {
+    public ResponseData getPropertiesByTaskIdOfModile(String taskId, String typeId, String id) {
         ResponseData responseData = new ResponseData();
-        Boolean boo =  true ;  //是否为待办
-        Boolean  canMobile = true; //移动端是否可以审批
-        if (StringUtils.isNotEmpty(taskId)&&StringUtils.isNotEmpty(typeId)) {
+        Boolean boo = true;  //是否为待办
+        Boolean canMobile = true; //移动端是否可以审批
+        Boolean canCancel = false; //如果是已办，是否可以撤回
+        if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
             //能查询到就是待办，查不到就是已处理
             FlowTask flowTask = flowTaskService.findOne(taskId);
-            if(flowTask==null){
-                boo = false ;
-                canMobile = true;
-            }else{
-                canMobile =  flowTask.getCanMobile() ==null ? false : flowTask.getCanMobile();
+            if (flowTask == null) {
+                boo = false;
+                List<FlowTaskPush> taskPush = flowTaskPushService.findListByProperty("flowTaskId", taskId);
+                if (taskPush != null && taskPush.size() > 0) {
+                    FlowHistory a = flowHistoryService.findByProperty("actHistoryId", taskPush.get(0).getActTaskId());
+                    if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
+                            a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
+                            a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
+                            a.getFlowInstance().isEnded() == false) {
+                        Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
+                        if (canCel) {
+                            canCancel = true;
+                        }
+                    }
+                }
+            } else {
+                canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
             }
-            FlowType  flowType  = flowTypeService.findOne(typeId);
-            if(flowType==null){
+            FlowType flowType = flowTypeService.findOne(typeId);
+            if (flowType == null) {
                 responseData.setSuccess(false);
                 responseData.setMessage("流程类型不存在！");
                 return responseData;
@@ -110,7 +129,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
-            return this.getPropertiesByUrlOfModile(url, businessModelCode, id , boo ,canMobile);
+            return this.getPropertiesByUrlOfModile(url, businessModelCode, id, boo, canMobile, canCancel);
         } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数不能为空！");
@@ -119,8 +138,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
 
-
-    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id ,Boolean flowTaskIsInit,Boolean canMobile) {
+    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel) {
         ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
             Map<String, Object> params = new HashMap();
@@ -130,8 +148,11 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             try {
                 Map<String, Object> properties = ApiClient.getEntityViaProxy(url, new GenericType<Map<String, Object>>() {
                 }, params);
-                properties.put("flowTaskIsInit",flowTaskIsInit); //添加是否是待办参数，true为待办
-                properties.put("flowTaskCanMobile",canMobile);//添加移动端是都可以查看
+                properties.put("flowTaskIsInit", flowTaskIsInit); //添加是否是待办参数，true为待办
+                properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                if (!flowTaskIsInit) {
+                    properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
+                }
                 responseData.setData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
@@ -145,10 +166,6 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         }
         return responseData;
     }
-
-
-
-
 
 
     @Override
