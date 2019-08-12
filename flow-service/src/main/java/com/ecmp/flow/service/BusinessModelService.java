@@ -73,6 +73,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean boo = true;  //是否为待办
         Boolean canMobile = true; //移动端是否可以审批
         Boolean canCancel = false; //如果是已办，是否可以撤回
+        String historyId = "";//撤回需要的历史ID
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
             //能查询到就是待办，查不到就是已处理
             FlowTask flowTask = flowTaskService.findOne(taskId);
@@ -81,6 +82,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 List<FlowTaskPush> taskPush = flowTaskPushService.findListByProperty("flowTaskId", taskId);
                 if (taskPush != null && taskPush.size() > 0) {
                     FlowHistory a = flowHistoryService.findByProperty("actHistoryId", taskPush.get(0).getActTaskId());
+                    historyId = a.getId();
                     if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
                             a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
                             a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
@@ -129,7 +131,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
-            return this.getPropertiesByUrlOfModile(url, businessModelCode, id, boo, canMobile, canCancel);
+            return this.getPropertiesByUrlOfModile(url, businessModelCode, id, boo, canMobile, canCancel, historyId);
         } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数不能为空！");
@@ -138,7 +140,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
 
-    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel) {
+    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId) {
         ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
             Map<String, Object> params = new HashMap();
@@ -152,6 +154,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
                 if (!flowTaskIsInit) {
                     properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
+                    properties.put("historyId", historyId);//撤回需要的历史ID
                 }
                 responseData.setData(properties);
             } catch (Exception e) {
