@@ -240,9 +240,11 @@ public class FlowListenerTool {
     }
 
 
-    public void callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign,Map<String,Object> variables){
+    public FlowOperateResult callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign,Map<String,Object> variables){
+        FlowOperateResult flowOpreateResult = null;
         if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
             String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
+            Boolean endCallServiceAync = flowDefVersion.getEndCallServiceAync();
             if(StringUtils.isNotEmpty(endCallServiceUrlId)){
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
@@ -271,24 +273,44 @@ public class FlowListenerTool {
                     flowInvokeParams.setParams(params);
                     String msg = "结束后事件【"+flowServiceUrl.getName()+"】";
                     String urlAndData = "-请求地址："+endCallServiceUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
-                    new Thread(new Runnable() {//模拟异步
-                        @Override
-                        public void run() {
-                            try{
-                                FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                                if(flowOperateResult==null){
-                                    LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
-                                }else if(!flowOperateResult.isSuccess()){
-                                    LogUtil.info(msg+"异步调用返回信息：【"+flowOperateResult.toString()+"】"+urlAndData);
+                    if (endCallServiceAync==true){
+                        new Thread(new Runnable() {//模拟异步
+                            @Override
+                            public void run() {
+                                try{
+                                    FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
+                                    if(flowOperateResult==null){
+                                        LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
+                                    }else if(!flowOperateResult.isSuccess()){
+                                        LogUtil.info(msg+"异步调用返回信息：【"+flowOperateResult.toString()+"】"+urlAndData);
+                                    }
+                                }catch (Exception e){
+                                    LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
                                 }
-                            }catch (Exception e){
-                                LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
                             }
+                        }).start();
+                        flowOpreateResult = new FlowOperateResult(true,"事件已异步调用！");
+                    }else{
+                        try{
+                            flowOpreateResult = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<FlowOperateResult>() {
+                            }, flowInvokeParams);
+                            if(flowOpreateResult==null){
+                                flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
+                                LogUtil.info(msg+"返回信息为空！"+urlAndData);
+                            }else if(!flowOpreateResult.isSuccess()){
+                                LogUtil.info(msg+"返回信息：【"+flowOpreateResult.toString()+"】"+urlAndData);
+                                flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
+                            }
+                        }catch (Exception e){
+                            LogUtil.error(msg+"内部报错!"+urlAndData,e);
+                            throw new FlowException(msg+"内部报错，详情请查看日志！");
                         }
-                    }).start();
+                    }
+
                 }
             }
         }
+        return flowOpreateResult;
     }
 
     /**
