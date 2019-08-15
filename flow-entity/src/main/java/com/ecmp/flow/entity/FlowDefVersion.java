@@ -29,10 +29,10 @@ import java.util.Set;
  * *************************************************************************************************
  */
 @Entity
-@Table(name = "flow_def_version",  uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
+@Table(name = "flow_def_version", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable ,ITenant {
+public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable, ITenant {
 
     /**
      * 乐观锁-版本
@@ -77,7 +77,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 启动条件UEL
      */
-    @Column(name = "start_uel",length = 6000)
+    @Column(name = "start_uel", length = 6000)
     private String startUel;
 
     /**
@@ -97,7 +97,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "def_json",columnDefinition="CLOB")
+    @Column(name = "def_json", columnDefinition = "CLOB")
     private String defJson;
 
 
@@ -120,7 +120,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "def_xml",columnDefinition="CLOB")
+    @Column(name = "def_xml", columnDefinition = "CLOB")
     private String defXml;
 
     /**
@@ -132,7 +132,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 当前流程版本状态
      */
-    @Column(name = "flow_defination_status",length = 2,nullable = false)
+    @Column(name = "flow_defination_status", length = 2, nullable = false)
     private FlowDefinationStatus flowDefinationStatus;
 
     /**
@@ -146,76 +146,95 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      * 固化流程初始化时用的单个执行人列表
      */
     @Transient
-    private Map<String,SolidifyStartExecutorVo> solidifyExecutorOfOnly;
+    private Map<String, SolidifyStartExecutorVo> solidifyExecutorOfOnly;
 
     /**
      * 是否允许做为子流程来进行引用
      */
-    @Column(name="sub_process")
+    @Column(name = "sub_process")
     private Boolean subProcess;
 
     /**
      * 是否为固化流程
      */
-    @Column(name="solidify_flow")
+    @Column(name = "solidify_flow")
     private Boolean solidifyFlow;
 
 
     /**
-     * 启动时调用检查服务，同步
+     * 启动时调用检查服务ID
      */
-    @Column(name="start_check_service_url",length = 36)
+    @Column(name = "start_check_service_url", length = 36)
     private String startCheckServiceUrlId;
 
     /**
-     * 启动时调用检查服务名称，同步
+     * 启动时调用检查服务名称
      */
-    @Column(name="start_check_service_name",length = 255)
+    @Column(name = "start_check_service_name", length = 255)
     private String startCheckServiceUrlName;
+
+    /**
+     * 启动时调用检查服务是否异步
+     */
+    @Column(name = "start_check_service_aync")
+    private Boolean startCheckServiceAync;
 
 
     /**
-     * 启动完成时调用服务id，同步
+     * 启动完成时调用服务id
      */
-    @Column(name="start_after_service_id",length = 36)
+    @Column(name = "start_after_service_id", length = 36)
     private String afterStartServiceId;
 
     /**
      * 启动完成时调用服务名称
      */
-    @Column(name="start_after_service_name",length = 255)
+    @Column(name = "start_after_service_name", length = 255)
     private String afterStartServiceName;
 
     /**
      * 启动完成时调用服务是否异步
      */
-    @Column(name="start_after_service_aync")
+    @Column(name = "start_after_service_aync")
     private Boolean afterStartServiceAync;
+
+    /**
+     * 流程结束前检查，调用服务ID
+     */
+    @Column(name = "end_before_call_service_url", length = 36)
+    private String endBeforeCallServiceUrlId;
+
+    /**
+     * 流程结束时，调用服务名称
+     */
+    @Column(name = "end_before_call_service_name", length = 255)
+    private String endBeforeCallServiceUrlName;
+
+
+    /**
+     * 流程结束前检查服务是否异步
+     */
+    @Column(name = "end_before_call_service_aync")
+    private Boolean endBeforeCallServiceAync;
 
     /**
      * 流程结束时，调用服务，异步
      */
-    @Column(name="end_call_service_url",length = 36)
+    @Column(name = "end_call_service_url", length = 36)
     private String endCallServiceUrlId;
 
     /**
      * 流程结束时，调用服务名称，异步
      */
-    @Column(name="end_call_service_name",length = 255)
+    @Column(name = "end_call_service_name", length = 255)
     private String endCallServiceUrlName;
 
 
     /**
-     * 流程结束前检查，调用服务ID，同步
+     * 流程结束调用服务是否异步
      */
-    @Column(name="end_before_call_service_url",length = 36)
-    private String endBeforeCallServiceUrlId;
-
-    /**
-     * 流程结束时，调用服务名称，同步
-     */
-    @Column(name="end_before_call_service_name",length = 255)
-    private String endBeforeCallServiceUrlName;
+    @Column(name = "end_call_service_aync")
+    private Boolean endCallServiceAync;
 
 
     /**
@@ -418,15 +437,17 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
                 .append("priority", priority)
                 .append("defJson", defJson)
                 .append("startCheckServiceUrl", startCheckServiceUrlId)
-                .append("endCallServiceUrl", endCallServiceUrlId)
                 .append("startCheckServiceUrlName", startCheckServiceUrlName)
-                .append("endCallServiceUrlName", endCallServiceUrlName)
+                .append("startCheckServiceAync", startCheckServiceAync)
                 .append("afterStartServiceId", afterStartServiceId)
                 .append("afterStartServiceName", afterStartServiceName)
                 .append("afterStartServiceAync", afterStartServiceAync)
-
                 .append("endBeforeCallServiceUrlId", endBeforeCallServiceUrlId)
                 .append("endBeforeCallServiceUrlName", endBeforeCallServiceUrlName)
+                .append("endBeforeCallServiceAync", endBeforeCallServiceAync)
+                .append("endCallServiceUrl", endCallServiceUrlId)
+                .append("endCallServiceUrlName", endCallServiceUrlName)
+                .append("endCallServiceAync", endCallServiceAync)
                 .append("defXml", defXml)
                 .append("depict", depict)
                 .append("flowInstances", flowInstances)
@@ -508,6 +529,30 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
     public void setSolidifyExecutorOfOnly(Map<String, SolidifyStartExecutorVo> solidifyExecutorOfOnly) {
         this.solidifyExecutorOfOnly = solidifyExecutorOfOnly;
+    }
+
+    public Boolean getStartCheckServiceAync() {
+        return startCheckServiceAync;
+    }
+
+    public void setStartCheckServiceAync(Boolean startCheckServiceAync) {
+        this.startCheckServiceAync = startCheckServiceAync;
+    }
+
+    public Boolean getEndBeforeCallServiceAync() {
+        return endBeforeCallServiceAync;
+    }
+
+    public void setEndBeforeCallServiceAync(Boolean endBeforeCallServiceAync) {
+        this.endBeforeCallServiceAync = endBeforeCallServiceAync;
+    }
+
+    public Boolean getEndCallServiceAync() {
+        return endCallServiceAync;
+    }
+
+    public void setEndCallServiceAync(Boolean endCallServiceAync) {
+        this.endCallServiceAync = endCallServiceAync;
     }
 
     @Override

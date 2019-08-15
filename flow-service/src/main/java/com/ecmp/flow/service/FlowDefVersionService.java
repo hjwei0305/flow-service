@@ -214,14 +214,16 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setDefKey(process.getId());
             entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
             entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
+            entity.setStartCheckServiceAync(process.getBeforeStartServiceAync());
             entity.setAfterStartServiceId(process.getAfterStartServiceId());
             entity.setAfterStartServiceName(process.getAfterStartServiceName());
             entity.setAfterStartServiceAync(process.getAfterStartServiceAync());
-
-            entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
-            entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
             entity.setEndBeforeCallServiceUrlId(process.getBeforeEndServiceId());
             entity.setEndBeforeCallServiceUrlName(process.getBeforeEndServiceName());
+            entity.setEndBeforeCallServiceAync(process.getBeforeEndServiceAync());
+            entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
+            entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
+            entity.setEndCallServiceAync(process.getAfterStartServiceAync());
 //            entity.setVersionCode(1);
             entity.setFlowDefination(flowDefination);
             entity.setDefJson(defJson);
@@ -273,14 +275,16 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setSolidifyFlow(canAssolidifyFlow);
                 entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
                 entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
+                entity.setStartCheckServiceAync(process.getBeforeStartServiceAync());
                 entity.setAfterStartServiceId(process.getAfterStartServiceId());
                 entity.setAfterStartServiceName(process.getAfterStartServiceName());
                 entity.setAfterStartServiceAync(process.getAfterStartServiceAync());
-
-                entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
-                entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
                 entity.setEndBeforeCallServiceUrlId(process.getBeforeEndServiceId());
                 entity.setEndBeforeCallServiceUrlName(process.getBeforeEndServiceName());
+                entity.setEndBeforeCallServiceAync(process.getBeforeEndServiceAync());
+                entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
+                entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
+                entity.setEndCallServiceAync(process.getAfterEndServiceAync());
 
                 flowDefVersionDao.save(entity);
                 flowDefination.setLastVersionId(entity.getId());
@@ -310,14 +314,16 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setSolidifyFlow(canAssolidifyFlow);
                 entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
                 entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
+                entity.setStartCheckServiceAync(process.getBeforeStartServiceAync());
                 entity.setAfterStartServiceId(process.getAfterStartServiceId());
                 entity.setAfterStartServiceName(process.getAfterStartServiceName());
                 entity.setAfterStartServiceAync(process.getAfterStartServiceAync());
-
-                entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
-                entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
                 entity.setEndBeforeCallServiceUrlId(process.getBeforeEndServiceId());
                 entity.setEndBeforeCallServiceUrlName(process.getBeforeEndServiceName());
+                entity.setEndBeforeCallServiceAync(process.getBeforeEndServiceAync());
+                entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
+                entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
+                entity.setEndCallServiceAync(process.getAfterEndServiceAync());
                 flowDefVersionDao.save(entity);
                 logger.info("Saved FlowDefVersion id is {}", entity.getId());
                 flowDefination.setName(process.getName());

@@ -64,6 +64,9 @@ public class Process extends BaseNode implements Serializable {
     private String beforeStartServiceName;//启动时调用服务名称
 
     @XmlTransient
+    private Boolean beforeStartServiceAync;//启动时调用检查服务是否异步
+
+    @XmlTransient
     private String afterStartServiceId;//启动完成时调用服务id
 
     @XmlTransient
@@ -73,16 +76,23 @@ public class Process extends BaseNode implements Serializable {
     private Boolean afterStartServiceAync;//启动完成时调用服务是否异步
 
     @XmlTransient
+    private String beforeEndServiceId;//结束前调用服务id
+
+    @XmlTransient
+    private String beforeEndServiceName;//结束前调用服务名称
+
+    @XmlTransient
+    private Boolean beforeEndServiceAync;//流程结束前检查服务是否异步
+
+    @XmlTransient
     private String afterEndServiceId;//结束时调用服务id
 
     @XmlTransient
     private String afterEndServiceName;//结束时调用服务名称
 
     @XmlTransient
-    private String beforeEndServiceId;//结束前调用服务id
+    private Boolean afterEndServiceAync;//流程结束调用服务是否异步
 
-    @XmlTransient
-    private String beforeEndServiceName;//结束前调用服务名称
 
     private List<StartEvent> startEvent;
     private List<EndEvent> endEvent;
@@ -742,6 +752,30 @@ public class Process extends BaseNode implements Serializable {
 
     public void setAfterStartServiceAync(Boolean afterStartServiceAync) {
         this.afterStartServiceAync = afterStartServiceAync;
+    }
+
+    public Boolean getBeforeStartServiceAync() {
+        return beforeStartServiceAync;
+    }
+
+    public void setBeforeStartServiceAync(Boolean beforeStartServiceAync) {
+        this.beforeStartServiceAync = beforeStartServiceAync;
+    }
+
+    public Boolean getBeforeEndServiceAync() {
+        return beforeEndServiceAync;
+    }
+
+    public void setBeforeEndServiceAync(Boolean beforeEndServiceAync) {
+        this.beforeEndServiceAync = beforeEndServiceAync;
+    }
+
+    public Boolean getAfterEndServiceAync() {
+        return afterEndServiceAync;
+    }
+
+    public void setAfterEndServiceAync(Boolean afterEndServiceAync) {
+        this.afterEndServiceAync = afterEndServiceAync;
     }
 
     public String getBeforeEndServiceId() {
