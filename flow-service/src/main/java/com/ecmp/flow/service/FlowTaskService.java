@@ -147,6 +147,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowTaskPushControlService flowTaskPushControlService;
 
+    @Autowired
+    private FlowTaskPushService flowTaskPushService;
+
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
@@ -3222,7 +3228,29 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return ResponseData.operationFailure("当前待办页面信息不存在！");
                 }
             } else {
-                return ResponseData.operationFailure("当前待办不存在！");
+                List<FlowTaskPush> taskPush = flowTaskPushService.findListByProperty("flowTaskId", taskId);
+                if (taskPush != null && taskPush.size() > 0) {
+                    List<FlowHistory> historyList = flowHistoryService.findListByProperty("actHistoryId", taskPush.get(0).getActTaskId());
+                    if(historyList!=null&&historyList.size()>0){
+                        FlowHistory history = historyList.get(0);
+                        String webBaseAddressConfig = history.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                        String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                        if (StringUtils.isNotEmpty(webBaseAddress)) {
+                            String[] tempWebBaseAddress = webBaseAddress.split("/");
+                            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                            }
+                        }
+                        String lookUrl = history.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                        String lookUrlXiangDui = "/" + webBaseAddress + "/" + lookUrl;
+                        lookUrlXiangDui = lookUrlXiangDui.replaceAll("\\//", "/");
+                        res.setData(lookUrlXiangDui);
+                    }else{
+                        return ResponseData.operationFailure("当前任务不存在！");
+                    }
+                }else{
+                    return ResponseData.operationFailure("当前任务不存在！");
+                }
             }
         } else {
             return  ResponseData.operationFailure("参数不能为空！");
