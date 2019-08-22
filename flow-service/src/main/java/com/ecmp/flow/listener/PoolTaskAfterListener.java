@@ -88,6 +88,7 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
             if(flowTask!=null){
                 BeanUtils.copyProperties(flowTask,flowHistory);
                 flowHistory.setId(null);
+                flowHistory.setOldTaskId(flowTask.getId());
                 flowHistory.setActStartTime(flowTask.getActDueDate());
             }else{
                 flowTask = new FlowTask();

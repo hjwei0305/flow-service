@@ -231,6 +231,13 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
 
 
     /**
+     * 关联的已删除的flowTaskId
+     */
+    @Column(name = "old_task_id")
+    private String oldTaskId;
+
+
+    /**
      * web基地址
      */
     @Transient
@@ -525,6 +532,14 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public String getOldTaskId() {
+        return oldTaskId;
+    }
+
+    public void setOldTaskId(String oldTaskId) {
+        this.oldTaskId = oldTaskId;
     }
 
     @Override

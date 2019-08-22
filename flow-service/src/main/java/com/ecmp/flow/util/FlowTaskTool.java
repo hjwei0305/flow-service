@@ -2201,6 +2201,7 @@ public class FlowTaskTool {
         flowHistory.setPreId(flowTask.getPreId());
         flowHistory.setDepict(flowTask.getDepict());
         flowHistory.setTaskStatus(flowTask.getTaskStatus());
+        flowHistory.setOldTaskId(flowTask.getId());
 
         if (TaskStatus.REJECT.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //驳回
             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.REJECT.getCode());

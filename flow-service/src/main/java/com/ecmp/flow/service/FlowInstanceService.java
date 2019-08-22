@@ -885,6 +885,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 }
                                 BeanUtils.copyProperties(flowHistory, flowTask);
                                 flowHistory.setId(null);
+                                flowHistory.setOldTaskId(flowTask.getId());
                                 flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
                                 if (!force) {
                                     flowHistory.setDepict(ContextUtil.getMessage("10036"));//【被发起人终止流程】

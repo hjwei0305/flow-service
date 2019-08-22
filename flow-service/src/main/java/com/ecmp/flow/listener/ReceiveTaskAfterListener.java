@@ -88,6 +88,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
             if(flowTask!=null){
                 BeanUtils.copyProperties(flowTask,flowHistory);
                 flowHistory.setId(null);
+                flowHistory.setOldTaskId(flowTask.getId());
                 flowHistory.setActStartTime(flowTask.getActDueDate());
             }else{
                 flowTask = new FlowTask();
