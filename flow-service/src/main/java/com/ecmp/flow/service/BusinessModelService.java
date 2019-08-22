@@ -79,9 +79,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             FlowTask flowTask = flowTaskService.findOne(taskId);
             if (flowTask == null) {
                 boo = false;
-                List<FlowTaskPush> taskPush = flowTaskPushService.findListByProperty("flowTaskId", taskId);
-                if (taskPush != null && taskPush.size() > 0) {
-                    FlowHistory a = flowHistoryService.findByProperty("actHistoryId", taskPush.get(0).getActTaskId());
+                List<FlowHistory> historylist =flowHistoryService.findListByProperty("oldTaskId",taskId);
+                if(historylist != null && historylist.size() > 0){
+                    FlowHistory a =  historylist.get(0);
                     historyId = a.getId();
                     if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
                             a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
@@ -93,6 +93,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                         }
                     }
                 }
+
             } else {
                 canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
             }

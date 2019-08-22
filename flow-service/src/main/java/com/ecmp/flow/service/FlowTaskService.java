@@ -3228,11 +3228,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return ResponseData.operationFailure("当前待办页面信息不存在！");
                 }
             } else {
-                List<FlowTaskPush> taskPush = flowTaskPushService.findListByProperty("flowTaskId", taskId);
-                if (taskPush != null && taskPush.size() > 0) {
-                    List<FlowHistory> historyList = flowHistoryService.findListByProperty("actHistoryId", taskPush.get(0).getActTaskId());
-                    if(historyList!=null&&historyList.size()>0){
-                        FlowHistory history = historyList.get(0);
+                List<FlowHistory> historylist =flowHistoryService.findListByProperty("oldTaskId",taskId);
+                if (historylist != null && historylist.size() > 0) {
+                        FlowHistory history = historylist.get(0);
                         String webBaseAddressConfig = history.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                         String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
                         if (StringUtils.isNotEmpty(webBaseAddress)) {
@@ -3245,9 +3243,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         String lookUrlXiangDui = "/" + webBaseAddress + "/" + lookUrl;
                         lookUrlXiangDui = lookUrlXiangDui.replaceAll("\\//", "/");
                         res.setData(lookUrlXiangDui);
-                    }else{
-                        return ResponseData.operationFailure("当前任务不存在！");
-                    }
                 }else{
                     return ResponseData.operationFailure("当前任务不存在！");
                 }
