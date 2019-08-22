@@ -1170,7 +1170,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     @Override
     public OperateResult delete(String id) {
-        OperateResult result = OperateResult.operationSuccess("core_00003");
+        OperateResult result = OperateResult.operationSuccess("删除成功！");
         List<FlowDefVersion> flowDefVersions = flowDefVersionDao.findByFlowDefinationId(id);
         for (FlowDefVersion flowDefVersion : flowDefVersions) {
             String actDeployId = flowDefVersion.getActDeployId();
