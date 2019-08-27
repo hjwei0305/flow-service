@@ -1295,8 +1295,8 @@ public class FlowTaskTool {
             if(workPageUrl==null){
                 String  errorName = normalInfo.get("name")!=null ? (String)normalInfo.get("name") :"";
                 String  workPageName = normalInfo.get("workPageName")!=null ? (String)normalInfo.get("workPageName") :"";
-                LogUtil.error("节点【"+errorName+"】的工作界面【"+workPageName+"】已不存在，可能已经被删除！【workPageId="+workPageUrlId+"】");
-                throw new FlowException("节点【"+errorName+"】的工作界面【"+workPageName+"】已不存在，可能已经被删除！");
+                LogUtil.error("节点【"+errorName+"】配置的工作界面【"+workPageName+"】不存在！【workPageId="+workPageUrlId+"】");
+                throw new FlowException("节点【"+errorName+"】配置的工作界面【"+workPageName+"】不存在！");
             }
             flowTask.setWorkPageUrl(workPageUrl);
         }
