@@ -1292,6 +1292,10 @@ public class FlowTaskTool {
             canSuspension = normalInfo.get("allowTerminate") != null ? (Boolean) normalInfo.get("allowTerminate") : null;
             String workPageUrlId = (String) normalInfo.get("id");
             workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+            if(workPageUrl==null){
+                LogUtil.error("配置的工作界面已不存在，可能已经被删除！【workPageId="+workPageUrlId+"】");
+                throw new FlowException("配置的工作界面已不存在，可能已经被删除！");
+            }
             flowTask.setWorkPageUrl(workPageUrl);
         }
         try {
@@ -1305,7 +1309,7 @@ public class FlowTaskTool {
                 }
             }
         } catch (Exception e) {
-            logger.error("allowChooseInstancyMap解析错误：{}", e.getMessage(), e);
+            LogUtil.error("allowChooseInstancyMap解析错误：{}", e.getMessage(), e);
         }
 
         flowTask.setCanReject(canReject);
