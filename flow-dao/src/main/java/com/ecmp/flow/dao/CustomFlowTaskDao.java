@@ -26,8 +26,16 @@ public interface CustomFlowTaskDao {
     @Transactional(readOnly = true)
     PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
 
+    //转授权
+    @Transactional(readOnly = true)
+    PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig);
+
     @Transactional(readOnly = true)
     PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig);
+
+    //转授权
+    @Transactional(readOnly = true)
+    PageResult<FlowTask> findByPageOfPower(List<String> executorIdList, String appSign, Search searchConfig);
 
     @Transactional(readOnly = true)
     PageResult<FlowTask> findByPageCanBatchApproval(String executorId, Search searchConfig);

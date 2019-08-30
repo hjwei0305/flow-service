@@ -153,6 +153,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowHistoryService flowHistoryService;
 
+    @Autowired
+    private TaskMakeOverPowerService taskMakeOverPowerService;
+
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
@@ -698,6 +701,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if(flowTask.getExecutorId()!=null&&!flowTask.getExecutorId().equals(ContextUtil.getUserId())){
+            //任创建时，执行人设置的任务所属人，执行时不一致则设置当前执行人（转授权）
+            flowTask.setExecutorId(ContextUtil.getUserId());
+            flowTask.setExecutorAccount(ContextUtil.getUserAccount());
+            flowTask.setExecutorName(ContextUtil.getUserName());
+        }
         if (flowTask == null) {
             return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
         }
@@ -1686,10 +1695,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         List groupResultList = null;
+
+        //是否允许转授权
+        String allowMakeOverPower =  ContextUtil.getGlobalProperty("ALLOW_MAKE_OVER_POWER");
+        List<String> userIdList = new ArrayList<>();
+        userIdList.add(userID);
+        if(StringUtils.isNotEmpty(allowMakeOverPower)&&"true".equals(allowMakeOverPower.toLowerCase())){
+            List<TaskMakeOverPower> powerUserlist =  taskMakeOverPowerService.findMeetUserByPowerId(userID);
+            if(powerUserlist!=null&&powerUserlist.size()>0){
+                powerUserlist.forEach(a->{
+                    userIdList.add(a.getUserId());
+                });
+            }
+        }
         if (batchApproval == true) {
             groupResultList = flowTaskDao.findByExecutorIdGroupCanBatchApproval(userID);
         } else {
-            groupResultList = flowTaskDao.findByExecutorIdGroup(userID);
+            groupResultList = flowTaskDao.findByExecutorIdGroupOfPower(userIdList);
         }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
@@ -1996,20 +2018,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        Long allCount = flowTaskDao.findCountByExecutorId(userId, searchConfig);
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
         PageResult<FlowTask> pageResult = null;
 
-        if (StringUtils.isNotEmpty(businessModelId)) {
-            pageResult = flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
-        } else {
-            pageResult = flowTaskDao.findByPage(userId, appSign, searchConfig);
+        //是否允许转授权
+        String allowMakeOverPower =  ContextUtil.getGlobalProperty("ALLOW_MAKE_OVER_POWER");
+        List<String> userIdList = new ArrayList<>();
+        userIdList.add(userId);
+        if(StringUtils.isNotEmpty(allowMakeOverPower)&&"true".equals(allowMakeOverPower.toLowerCase())) {
+            List<TaskMakeOverPower> powerUserlist = taskMakeOverPowerService.findMeetUserByPowerId(userId);
+            if(powerUserlist!=null&&powerUserlist.size()>0){
+                powerUserlist.forEach(a->{
+                    userIdList.add(a.getUserId());
+                });
+            }
         }
-        resultVO.setRows(pageResult.getRows());
+        if (StringUtils.isNotEmpty(businessModelId)) {
+            pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userIdList, searchConfig);
+        } else {
+            pageResult = flowTaskDao.findByPageOfPower(userIdList, appSign, searchConfig);
+        }
+        List<FlowTask> flowTaskList = pageResult.getRows();
+        flowTaskList.forEach(a->{
+            if(!userId.equals(a.getExecutorId()))  {
+                a.getFlowInstance().setBusinessModelRemark(a.getFlowInstance().getBusinessModelRemark()+"【"+a.getExecutorName()+"-转授权】");
+            }
+        });
+        resultVO.setRows(flowTaskList);
         resultVO.setRecords(pageResult.getRecords());
         resultVO.setPage(pageResult.getPage());
         resultVO.setTotal(pageResult.getTotal());
-        resultVO.setAllTotal(allCount);
+        resultVO.setAllTotal(pageResult.getRecords());
         return resultVO;
     }
 

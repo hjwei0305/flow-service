@@ -196,6 +196,73 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         return pageResult;
     }
 
+
+
+    public PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig) {
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
+        String quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders = searchConfig.getSortOrders();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  in (:executorIdList) " +
+                "and (ft.trustState !=1  or ft.trustState is null ) " +
+                "and ft.flowDefinitionId " +
+                "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  in (:executorIdList) " +
+                "and (ft.trustState !=1  or ft.trustState is null ) " +
+                "and ft.flowDefinitionId " +
+                "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                "in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
+        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for (String s : quickSearchProperties) {
+                if (first) {
+                    extraHql.append("  ft." + s + " like '%" + quickSearchValue + "%'");
+                    first = false;
+                } else {
+                    extraHql.append(" or  ft." + s + " like '%" + quickSearchValue + "%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount += extraHql.toString();
+            hqlQuery += extraHql.toString();
+        }
+        if (sortOrders != null && sortOrders.size() > 0) {
+            hqlQuery += " order by ft.priority desc ";
+            for (int i = 0; i < sortOrders.size(); i++) {
+                SearchOrder searchOrder = sortOrders.get(i);
+                if (!"priority".equalsIgnoreCase(searchOrder.getProperty())) {
+                    hqlQuery += ", ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
+                }
+            }
+        } else {
+            hqlQuery += hqlQueryOrder;
+        }
+        TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
+        queryTotal.setParameter("executorIdList", executorIdList);
+        queryTotal.setParameter("businessModelId", businessModelId);
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
+        query.setParameter("executorIdList", executorIdList);
+        query.setParameter("businessModelId", businessModelId);
+        query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
+        query.setMaxResults(pageInfo.getRows());
+        List<FlowTask> result = query.getResultList();
+        initFlowTasks(result);
+        PageResult<FlowTask> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue() + pageInfo.getRows() - 1) / pageInfo.getRows());
+        return pageResult;
+    }
+
     /**
      * 完成待办任务的URL设置
      *
@@ -333,6 +400,77 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
         TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
         query.setParameter("executorId", executorId);
+        if (!StringUtils.isBlank(appSign)) {
+            queryTotal.setParameter("appSign", appSign + "%");
+        }
+        query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
+        query.setMaxResults(pageInfo.getRows());
+        List<FlowTask> result = query.getResultList();
+        initFlowTasks(result);
+        PageResult<FlowTask> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue() + pageInfo.getRows() - 1) / pageInfo.getRows());
+        return pageResult;
+    }
+
+    public PageResult<FlowTask> findByPageOfPower(List<String> executorIdList, String appSign, Search searchConfig) {
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
+        String quickSearchValue = searchConfig.getQuickSearchValue();
+        List<SearchOrder> sortOrders = searchConfig.getSortOrders();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId  in (:executorIdList) " +
+                "and (ft.trustState !=1  or ft.trustState is null) ";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
+                "where ft.executorId   in (:executorIdList) " +
+                "and (ft.trustState !=1  or ft.trustState is null) ";
+        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for (String s : quickSearchProperties) {
+                if (first) {
+                    extraHql.append("  ft." + s + " like '%" + quickSearchValue + "%'");
+                    first = false;
+                } else {
+                    extraHql.append(" or  ft." + s + " like '%" + quickSearchValue + "%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount += extraHql.toString();
+            hqlQuery += extraHql.toString();
+        }
+        // 限制应用标识
+        if (!StringUtils.isBlank(appSign)) {
+            String appSignSql = "and ft.flowDefinitionId " +
+                    "in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
+                    "in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
+                    "in(select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.appModule.code like :appSign)))";
+            hqlCount += appSignSql;
+            hqlQuery += appSignSql;
+        }
+
+        if (sortOrders != null && sortOrders.size() > 0) {
+            hqlQuery += " order by ft.priority desc ";
+            for (int i = 0; i < sortOrders.size(); i++) {
+                SearchOrder searchOrder = sortOrders.get(i);
+                if (!"priority".equalsIgnoreCase(searchOrder.getProperty())) {
+                    hqlQuery += ", ft." + searchOrder.getProperty() + " " + searchOrder.getDirection();
+                }
+            }
+        } else {
+            hqlQuery += hqlQueryOrder;
+        }
+        TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
+        queryTotal.setParameter("executorIdList", executorIdList);
+        if (!StringUtils.isBlank(appSign)) {
+            queryTotal.setParameter("appSign", appSign + "%");
+        }
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
+        query.setParameter("executorIdList", executorIdList);
         if (!StringUtils.isBlank(appSign)) {
             queryTotal.setParameter("appSign", appSign + "%");
         }

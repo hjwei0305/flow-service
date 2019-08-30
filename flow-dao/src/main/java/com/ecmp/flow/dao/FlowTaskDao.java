@@ -79,6 +79,15 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     public List findByExecutorIdGroup(@Param("executorId") String executorId);
 
     /**
+     * 根据执行人集合查询归类查询(转授权)
+     *
+     * @param executorIdList
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList)  and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
+    public List findByExecutorIdGroupOfPower(@Param("executorIdList") List<String> executorIdList);
+
+    /**
      * 根据执行人账号归类查询,可批量审批
      *
      * @param executorId
@@ -86,6 +95,15 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      */
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
     public List findByExecutorIdGroupCanBatchApproval(@Param("executorId") String executorId);
+
+    /**
+     * 根据执行人集合查询,可批量审批(转授权)
+     *
+     * @param executorIdList
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
+    public List findByExecutorIdGroupCanBatchApprovalOfPower(@Param("executorIdList") List<String> executorIdList);
 
     /**
      * 查询可以加签的待办-针对启动
