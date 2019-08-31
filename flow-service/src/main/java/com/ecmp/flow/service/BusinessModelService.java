@@ -6,6 +6,7 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.GenericType;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -67,11 +69,109 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         return this.businessModelDao;
     }
 
+
+    @Override
+    public ResponseData getPropertiesByInstanceIdOfModile(String instanceId, String typeId, String id) {
+        ResponseData responseData = new ResponseData();
+        Boolean boo = true;  //是否为待办
+        Boolean canMobile = true; //移动端是否可以审批
+        Boolean canCancel = false; //如果是已办，是否可以撤回
+        String historyId = "";//撤回需要的历史ID
+        String flowTaskId = "";//待办ID
+        String userId = ContextUtil.getUserId();
+        Boolean isFlowtask = false;  //是否在待办中有数据
+        if(StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(typeId)){
+            List<FlowTask>  flowTaskList =  flowTaskService.findByInstanceId(instanceId);
+            if(flowTaskList!=null&&flowTaskList.size()>0){
+               FlowTask flowTask = flowTaskList.stream().filter(a->userId.equals(a.getExecutorId())).findFirst().orElse(null);
+               if(flowTask!=null){ //TODO:如果待办中有当前用户的，默认就是查询的待办(实际可能是从已办过来的)
+                   isFlowtask = true;
+                   flowTaskId = flowTask.getId();
+                   canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+               }
+            }
+
+           if(!isFlowtask){//TODO:待办里面没有，查询不到，默认取已办最后一条数据
+               boo = false;
+               Search search = new Search();
+               search.addFilter(new SearchFilter("flowInstance.id", instanceId));
+               search.addFilter(new SearchFilter("executorId", userId));
+               SearchOrder searchOrder = new SearchOrder();
+               search.addSortOrder(searchOrder.desc("lastEditedDate"));
+               List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
+               if(historylist != null && historylist.size() > 0){
+                   FlowHistory a =historylist.get(0);
+                   historyId = a.getId();
+                   if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
+                           a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
+                           a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
+                           a.getFlowInstance().isEnded() == false) {
+                       Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
+                       if (canCel) {
+                           canCancel = true;
+                       }
+                   }
+               }
+           }
+
+            FlowType flowType = flowTypeService.findOne(typeId);
+            if (flowType == null) {
+                responseData.setSuccess(false);
+                responseData.setMessage("流程类型不存在！");
+                return responseData;
+            }
+            String businessDetailServiceUrl = "";
+            String apiBaseAddress = "";
+            String businessModelCode = "";
+
+            try {
+                businessDetailServiceUrl = flowType.getBusinessDetailServiceUrl();
+                if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                    businessDetailServiceUrl = flowType.getBusinessModel().getBusinessDetailServiceUrl();
+                }
+                businessModelCode = flowType.getBusinessModel().getClassName();
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                responseData.setSuccess(false);
+                responseData.setMessage("获取业务实体数据失败！");
+                return responseData;
+            }
+
+            try {
+                String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
+                apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                responseData.setSuccess(false);
+                responseData.setMessage("获取模块Api基地址失败！");
+                return responseData;
+            }
+            String url = apiBaseAddress + businessDetailServiceUrl;
+            return this.getPropertiesByUrlOfModileByInstanceId(url, businessModelCode, id, boo, canMobile, canCancel, historyId ,flowTaskId);
+        }else{
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+        }
+        return responseData;
+    }
+
+    public ResponseData getPropertiesByUrlOfModileByInstanceId(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId ,String flowTaskId) {
+        ResponseData responseData = getPropertiesByUrlOfModile(url,businessModelCode,id,flowTaskIsInit,canMobile,canCancel,historyId);
+        if(responseData.getSuccess()){
+            Map<String, Object> properties = (Map<String, Object>)responseData.getData();
+            properties.put("flowTaskId",flowTaskId);
+            responseData.setData(properties);
+        }
+        return responseData;
+    }
+
+
+
     @Override
     public ResponseData getPropertiesByTaskIdOfModile(String taskId, String typeId, String id) {
         ResponseData responseData = new ResponseData();
         Boolean boo = true;  //是否为待办
-        Boolean canMobile = true; //移动端是否可以审批
+        Boolean canMobile = true; //移动端是否可以查看
         Boolean canCancel = false; //如果是已办，是否可以撤回
         String historyId = "";//撤回需要的历史ID
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
