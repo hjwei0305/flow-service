@@ -471,7 +471,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动前事件【"+flowServiceUrl.getName()+"】";
                     String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
-                    if(startCheckServiceAync == true){
+                    if(startCheckServiceAync!=null&&startCheckServiceAync == true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {

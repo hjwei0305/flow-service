@@ -273,7 +273,7 @@ public class FlowListenerTool {
                     flowInvokeParams.setParams(params);
                     String msg = "结束后事件【"+flowServiceUrl.getName()+"】";
                     String urlAndData = "-请求地址："+endCallServiceUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
-                    if (endCallServiceAync==true){
+                    if (endCallServiceAync!=null&&endCallServiceAync==true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
@@ -353,7 +353,7 @@ public class FlowListenerTool {
                     flowInvokeParams.setParams(params);
                     String msg = "结束前事件【"+flowServiceUrl.getName()+"】";
                     String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(params);
-                    if(endBeforeCallServiceAync==true){
+                    if(endBeforeCallServiceAync!=null&&endBeforeCallServiceAync==true){
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
