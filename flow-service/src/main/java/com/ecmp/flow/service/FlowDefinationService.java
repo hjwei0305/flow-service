@@ -4,9 +4,7 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.search.PageInfo;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.SearchOrder;
+import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.basic.vo.Employee;
@@ -625,7 +623,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 List<FlowType> flowTypeList = null;
                 List<StartFlowTypeVO> flowTypeListVO = null;
                 if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
-                    flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
+                    Search search = new Search();
+                    search.addFilter(new SearchFilter("businessModel", businessModel));
+                    SearchOrder searchOrder = new SearchOrder();
+                    search.addSortOrder(searchOrder.desc("lastEditedDate"));  //TODO：先加一个时间排序，让想显示在前面的编辑保存一下，后面加字段控制
+                    flowTypeList = flowTypeDao.findByFilters(search);
+//                    flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
                 } else {
                     flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
                     flowTypeList = new ArrayList<FlowType>();
