@@ -28,6 +28,16 @@ public interface ITaskMakeOverPowerService extends IBaseService<TaskMakeOverPowe
     @ApiOperation(value = "查询自己的转授权单据", notes = "查询自己的转授权单据")
     ResponseData findAllByUser();
 
+    /**
+     *  查询转授权处理历史（自己待办转授权人处理的）
+     */
+    @POST
+    @Path("findAllHistoryByUser")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询转授权处理历史", notes = "查询转授权处理历史")
+    ResponseData findAllHistoryByUser();
+
 
 
     /**

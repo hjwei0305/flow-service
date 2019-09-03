@@ -2447,6 +2447,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 newFlowTask.setExecutorId(executor.getId());
                 newFlowTask.setExecutorAccount(executor.getCode());
                 newFlowTask.setExecutorName(executor.getName());
+                newFlowTask.setOwnerId(executor.getId());
+                newFlowTask.setOwnerAccount(executor.getCode());
+                newFlowTask.setOwnerName(executor.getName());
                 newFlowTask.setPreId(flowHistory.getId());
                 newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】" + flowTask.getDepict());
                 flowHistoryDao.save(flowHistory);

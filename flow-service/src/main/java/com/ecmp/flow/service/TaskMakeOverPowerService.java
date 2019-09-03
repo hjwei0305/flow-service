@@ -4,10 +4,13 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.ITaskMakeOverPowerService;
 import com.ecmp.flow.dao.TaskMakeOverPowerDao;
+import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.TaskMakeOverPower;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -30,6 +33,9 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Autowired
     private TaskMakeOverPowerDao taskMakeOverPowerDao;
 
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+
     protected BaseEntityDao<TaskMakeOverPower> getDao() {
         return this.taskMakeOverPowerDao;
     }
@@ -50,6 +56,42 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             list = taskMakeOverPowerDao.findListByProperty("userId",userId);
         }
         return ResponseData.operationSuccessWithData(list);
+    }
+
+    /**
+     * 查询转授权处理历史（自己待办转授权人处理的）
+     */
+    @Override
+    public ResponseData findAllHistoryByUser() {
+        String userId = ContextUtil.getUserId();
+        Search search = new Search();
+        search.addFilter(new SearchFilter("ownerId", userId, SearchFilter.Operator.EQ));
+        search.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.NE));
+        SearchOrder searchOrder = new SearchOrder();
+        search.addSortOrder(searchOrder.desc("lastEditedDate"));
+        List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
+        this.initWebUrl(historylist);
+        return ResponseData.operationSuccessWithData(historylist);
+    }
+
+    private List<FlowHistory> initWebUrl(List<FlowHistory> result) {
+        if (result != null && !result.isEmpty()) {
+            for (FlowHistory flowHistory : result) {
+                FlowInstance  flowInstance = flowHistory.getFlowInstance();
+                String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                        flowInstance.setWebBaseAddress("/" + webBaseAddress);
+                    }
+                }
+
+            }
+        }
+        return result;
     }
 
 
