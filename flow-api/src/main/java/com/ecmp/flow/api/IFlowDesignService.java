@@ -1,13 +1,15 @@
 package com.ecmp.flow.api;
 
 
+import com.ecmp.flow.vo.SaveEntityVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-
+import javax.xml.bind.JAXBException;
+import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -49,6 +51,17 @@ public interface IFlowDesignService {
 
 
 
+
+    /**
+     * 流程设计保存(发布)
+     * @return
+     */
+    @POST
+    @Path("save")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "流程设计保存(发布)", notes = "流程设计保存(发布)")
+    ResponseData save(SaveEntityVo entityVo)throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException;
 
 
 
