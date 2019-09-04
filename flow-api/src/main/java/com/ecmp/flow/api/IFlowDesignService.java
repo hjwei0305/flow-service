@@ -10,6 +10,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 
 
 /**
@@ -63,6 +64,21 @@ public interface IFlowDesignService {
     @ApiOperation(value = "流程设计保存(发布)", notes = "流程设计保存(发布)")
     ResponseData save(SaveEntityVo entityVo)throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException;
 
+
+
+
+
+    /**
+     * 查询流程服务地址
+     *
+     * @return
+     */
+    @POST
+    @Path("listAllServiceUrl")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询流程服务地址", notes = "查询流程服务地址")
+    ResponseData listAllServiceUrl(@QueryParam("busModelId") String busModelId)throws ParseException;
 
 
 

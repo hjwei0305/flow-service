@@ -1,11 +1,8 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
-import com.ecmp.flow.api.IFlowDefVersionService;
-import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.api.IFlowDesignService;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.SaveEntityVo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -19,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.List;
 
 
 @Service
@@ -29,6 +28,9 @@ public class FlowDesignService implements IFlowDesignService {
 
     @Autowired
     private FlowDefVersionService flowDefVersionService;
+
+    @Autowired
+    private FlowServiceUrlService flowServiceUrlService;
 
 
    public ResponseData getEntity( String id, Integer versionCode, String businessModelCode, String businessId){
@@ -82,5 +84,15 @@ public class FlowDesignService implements IFlowDesignService {
        }
   }
 
+
+
+
+  public ResponseData listAllServiceUrl( String busModelId)throws ParseException {
+       if(StringUtils.isEmpty(busModelId)){
+           return  ResponseData.operationFailure("参数不能为空！");
+       }
+      List<FlowServiceUrl> flowServiceUrlPageResult = flowServiceUrlService.findByBusinessModelId(busModelId);
+      return ResponseData.operationSuccessWithData(flowServiceUrlPageResult);
+  }
 
 }
