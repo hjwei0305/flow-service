@@ -42,10 +42,10 @@ public interface IFlowDesignService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取流程设计", notes = "获取流程设计")
-    ResponseData getEntity(String id,
-                           Integer versionCode,
-                           String businessModelCode,
-                           String businessId);
+    ResponseData getEntity(@QueryParam("id") String id,
+                           @QueryParam("versionCode") Integer versionCode,
+                           @QueryParam("businessModelCode") String businessModelCode,
+                           @QueryParam("businessId") String businessId);
 
 
 
