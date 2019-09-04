@@ -54,9 +54,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                                   String typeId, String flowDefKey, String taskList, String anonymousNodeId) throws NoSuchMethodException, SecurityException {
-        ResponseData responseData = new ResponseData();
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
-        Map<String, Object> userMap = new HashMap<String, Object>();//UserTask_1_Normal
+        Map<String, Object> userMap = new HashMap<String, Object>();
         FlowStartVO flowStartVO = new FlowStartVO();
         flowStartVO.setBusinessKey(businessKey);
         flowStartVO.setBusinessModelCode(businessModelCode);
@@ -75,7 +73,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 variables.put("selectedNodesUserMap", selectedNodesUserMap);
             } else {
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
-                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+                List<FlowTaskCompleteWebVO> flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
                 if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
                     FlowTaskCompleteWebVO  firstBean = flowTaskCompleteList.get(0);
@@ -123,31 +121,16 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if (flowStartResultVO != null) {
                 if (flowStartResultVO.getCheckStartResult()) {
-//                    if (flowStartResultVO.getFlowTypeList() == null && flowStartResultVO.getNodeInfoList() == null) {//真正启动流程
-//                        new Thread(new Runnable() {//异步推送待办
-//                            @Override
-//                            public void run() {
-//                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
-//                            }
-//                        }).start();
-//                    }
-                    responseData.setMessage("成功");
-                    responseData.setData(flowStartResultVO);
-
+                    return  ResponseData.operationSuccessWithData(flowStartResultVO);
                 } else {
-                    responseData.setSuccess(false);
-                    responseData.setMessage("启动流程失败,启动检查服务返回false!");
+                    return  ResponseData.operationFailure("启动流程失败,启动检查服务返回false!");
                 }
             } else {
-                responseData.setSuccess(false);
-                responseData.setMessage("启动流程失败");
+                return  ResponseData.operationFailure("启动流程失败");
             }
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage(operateResultWithData.getMessage());
+            return  ResponseData.operationFailure(operateResultWithData.getMessage());
         }
-
-        return responseData;
     }
 
 
@@ -208,7 +191,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 String callActivityPath = f.getCallActivityPath();
                 List<String> userList = new ArrayList<String>();
                 if (StringUtils.isNotEmpty(callActivityPath)) {
-//                        Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath,true);
                     selectedNodesMap.put(callActivityPath, f.getNodeId());
                     List<String> userVarNameList = (List) v.get(callActivityPath + "_sonProcessSelectNodeUserV");
                     if (userVarNameList != null) {
@@ -265,13 +247,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
         if (operateResult.successful() && StringUtils.isEmpty(endEventId)) { //处理成功并且不是结束节点调用
-//            new Thread(new Runnable() {//异步推送待办
-//                @Override
-//                public void run() {
-//                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
-//                }
-//            }).start();
-
             new Thread(new Runnable() {//检测待办是否自动执行
                 @Override
                 public void run() {
@@ -307,23 +282,17 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
     @Override
     public ResponseData nextNodesInfo(String taskId) throws NoSuchMethodException {
-        ResponseData responseData = new ResponseData();
         List<NodeInfo> nodeInfoList = flowTaskService.findNextNodes(taskId);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
-            responseData.setData(nodeInfoList);
+            return  ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            return  ResponseData.operationFailure("任务不存在，可能已经被处理");
         }
-        return responseData;
     }
 
 
     @Override
     public ResponseData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr, Boolean solidifyFlow) throws NoSuchMethodException {
-        ResponseData responseData = new ResponseData();
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
@@ -337,78 +306,56 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
         }catch (Exception e){
             LogUtil.error("获取下一节点信息错误，详情请查看日志！",e);
-            responseData.setSuccess(false);
-            responseData.setMessage("获取下一节点信息错误，详情请查看日志！");
-            return responseData;
+            return ResponseData.operationFailure("获取下一节点信息错误，详情请查看日志！");
         }
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
             if(nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())){//只存在结束节点
-                responseData.setData("EndEvent");
+                return  ResponseData.operationSuccessWithData("EndEvent");
             }else if(nodeInfoList.size()==1&&"CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())){
-                responseData.setData("CounterSignNotEnd");
+                return  ResponseData.operationSuccessWithData("CounterSignNotEnd");
             }else {
                 if(solidifyFlow!=null&&solidifyFlow==true){ //表示为固化流程（不返回下一步执行人信息）
                     nodeInfoList.forEach(nodeInfo->nodeInfo.setExecutorSet(null));
                 }
-                responseData.setData(nodeInfoList);
+                return  ResponseData.operationSuccessWithData(nodeInfoList);
             }
         }else if(nodeInfoList == null) {
-            responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理！");
+            return ResponseData.operationFailure("任务不存在，可能已经被处理！");
         }else{
-            responseData.setSuccess(false);
-            responseData.setMessage("当前规则找不到符合条件的分支！");
+            return ResponseData.operationFailure("当前规则找不到符合条件的分支！");
         }
-        return responseData;
     }
 
 
     @Override
     public ResponseData nextNodesInfoWithUser(String taskId) throws NoSuchMethodException {
-        ResponseData responseData = new ResponseData();
         List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
-            responseData.setData(nodeInfoList);
+            return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("任务不存在，可能已经被处理");
         }
-        return responseData;
     }
 
 
     @Override
     public ResponseData getApprovalHeaderByInstanceId(String instanceId) {
-        ResponseData responseData = new ResponseData();
         ApprovalHeaderVO approvalHeaderVO = flowInstanceService.getApprovalHeaderVo(instanceId);
         if (approvalHeaderVO != null) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
-            responseData.setData(approvalHeaderVO);
+            return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            return  ResponseData.operationFailure("任务不存在，可能已经被处理");
         }
-        return responseData;
     }
 
     @Override
     public ResponseData getApprovalHeaderInfo(String taskId) {
-        ResponseData responseData = new ResponseData();
         ApprovalHeaderVO approvalHeaderVO = flowTaskService.getApprovalHeaderVO(taskId);
         if (approvalHeaderVO != null) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
-            responseData.setData(approvalHeaderVO);
+            return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("任务不存在，可能已经被处理");
         }
-        return responseData;
     }
 
 
