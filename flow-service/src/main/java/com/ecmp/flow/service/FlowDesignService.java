@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.flow.api.IFlowDesignService;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.SaveEntityVo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -31,6 +32,9 @@ public class FlowDesignService implements IFlowDesignService {
 
     @Autowired
     private FlowServiceUrlService flowServiceUrlService;
+
+    @Autowired
+    private WorkPageUrlService workPageUrlService;
 
 
    public ResponseData getEntity( String id, Integer versionCode, String businessModelCode, String businessId){
@@ -94,5 +98,16 @@ public class FlowDesignService implements IFlowDesignService {
       List<FlowServiceUrl> flowServiceUrlPageResult = flowServiceUrlService.findByBusinessModelId(busModelId);
       return ResponseData.operationSuccessWithData(flowServiceUrlPageResult);
   }
+
+
+
+    public ResponseData listAllWorkPage( String businessModelId) {
+        if(StringUtils.isEmpty(businessModelId)){
+            return  ResponseData.operationFailure("参数不能为空！");
+        }
+        List<WorkPageUrl> result= workPageUrlService.findSelectEdByBusinessModelId(businessModelId);
+        return ResponseData.operationSuccessWithData(result);
+    }
+
 
 }

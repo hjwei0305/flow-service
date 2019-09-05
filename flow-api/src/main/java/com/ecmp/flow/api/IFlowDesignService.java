@@ -34,10 +34,13 @@ import java.text.ParseException;
 public interface IFlowDesignService {
 
 
+
     /**
      * 获取流程设计
-     *
      * @param id
+     * @param versionCode
+     * @param businessModelCode
+     * @param businessId
      * @return
      */
     @POST
@@ -51,11 +54,13 @@ public interface IFlowDesignService {
                            @QueryParam("businessId") String businessId);
 
 
-
-
     /**
      * 流程设计保存(发布)
+     * @param entityVo
      * @return
+     * @throws JAXBException
+     * @throws UnsupportedEncodingException
+     * @throws CloneNotSupportedException
      */
     @POST
     @Path("save")
@@ -65,13 +70,11 @@ public interface IFlowDesignService {
     ResponseData save(SaveEntityVo entityVo)throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException;
 
 
-
-
-
     /**
      * 查询流程服务地址
-     *
+     * @param busModelId
      * @return
+     * @throws ParseException
      */
     @POST
     @Path("listAllServiceUrl")
@@ -79,6 +82,21 @@ public interface IFlowDesignService {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询流程服务地址", notes = "查询流程服务地址")
     ResponseData listAllServiceUrl(@QueryParam("busModelId") String busModelId)throws ParseException;
+
+
+
+    /**
+     *获取工作界面
+     * @param businessModelId
+     * @return
+     */
+    @POST
+    @Path("listAllWorkPage")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取工作界面", notes = "获取工作界面")
+    ResponseData listAllWorkPage(@QueryParam("businessModelId") String businessModelId);
+
 
 
 
