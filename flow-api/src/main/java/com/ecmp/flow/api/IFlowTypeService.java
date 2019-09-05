@@ -4,8 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowType;
-import com.ecmp.flow.vo.ListFlowTypeVo;
-import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.flow.vo.SearchVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -71,7 +70,7 @@ public interface IFlowTypeService extends IBaseService<FlowType, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
-    PageResult<FlowType> listFlowType(ListFlowTypeVo listFlowTypeVo);
+    PageResult<FlowType> listFlowType(SearchVo searchVo);
 
 
     /**

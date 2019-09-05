@@ -1,18 +1,20 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowExecutorConfigService;
-import com.ecmp.flow.api.IFlowServiceUrlService;
-import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowExecutorConfigDao;
 import com.ecmp.flow.entity.FlowExecutorConfig;
-import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 /**
  * *************************************************************************************************
@@ -48,5 +50,12 @@ public class FlowExecutorConfigService extends BaseEntityService<FlowExecutorCon
         return OperateResultWithData.operationSuccessWithData(flowExecutorConfig);
     }
 
-
+    @Override
+    public ResponseData listCombo(String businessModelId) {
+        if(StringUtils.isEmpty(businessModelId)){
+            return  ResponseData.operationFailure("参数不能为空!");
+        }
+        List<FlowExecutorConfig>  list = flowExecutorConfigDao.findListByProperty("businessModel.id",businessModelId);
+        return ResponseData.operationSuccessWithData(list);
+    }
 }

@@ -5,13 +5,10 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowExecutorConfig;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -85,5 +82,17 @@ public interface IFlowExecutorConfigService extends IBaseService<FlowExecutorCon
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取分页数据", notes = "测试 获取分页数据")
     List<FlowExecutorConfig> findByFilters(Search searchConfig);
+
+    /**
+     * 通过业务实体ID获取自定义执行人
+     * @param businessModelId
+     * @return
+     */
+    @POST
+    @Path("listCombo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体ID获取自定义执行人", notes = "通过业务实体ID获取自定义执行人")
+    ResponseData listCombo(@QueryParam("businessModelId") String businessModelId);
 
 }

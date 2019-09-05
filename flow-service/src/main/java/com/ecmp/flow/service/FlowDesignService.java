@@ -1,11 +1,21 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.PageInfo;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.api.IFlowDesignService;
+import com.ecmp.flow.basic.vo.Organization;
+import com.ecmp.flow.basic.vo.OrganizationDimension;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.entity.WorkPageUrl;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.SaveEntityVo;
+import com.ecmp.flow.vo.SearchVo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
@@ -35,6 +45,9 @@ public class FlowDesignService implements IFlowDesignService {
 
     @Autowired
     private WorkPageUrlService workPageUrlService;
+
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
 
    public ResponseData getEntity( String id, Integer versionCode, String businessModelCode, String businessId){
@@ -109,5 +122,40 @@ public class FlowDesignService implements IFlowDesignService {
         return ResponseData.operationSuccessWithData(result);
     }
 
+    public PageResult<Position> listPositon(SearchVo searchVo){
+        Search search = new Search();
+        search.addQuickSearchProperty("code");
+        search.addQuickSearchProperty("name");
+        search.addQuickSearchProperty("organization.name");
+        if(StringUtils.isNotEmpty(searchVo.getQuick_value())){
+            search.setQuickSearchValue(searchVo.getQuick_value());
+        }
 
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(searchVo.getPage());
+        pageInfo.setRows(searchVo.getRows());
+        search.setPageInfo(pageInfo);
+
+        if(StringUtils.isNotEmpty(searchVo.getSidx())){
+            SearchOrder searchOrder = new SearchOrder();
+            if("asc".equals(searchVo.getSord())){
+                search.addSortOrder(searchOrder.asc(searchVo.getSidx()));
+            }else{
+                search.addSortOrder(searchOrder.desc(searchVo.getSidx()));
+            }
+        }
+
+        PageResult<Position> result = flowCommonUtil.getBasicPositionFindbypage(search);
+        return    result;
+    }
+
+
+    public  List<PositionCategory> listPositonType(){
+       return   flowCommonUtil.getBasicPositioncategoryFindall();
+    }
+
+
+    public List<OrganizationDimension> listOrganizationDimension(){
+      return  flowCommonUtil.getBasicOrgDimension();
+    }
 }

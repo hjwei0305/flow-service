@@ -1,7 +1,12 @@
 package com.ecmp.flow.api;
 
 
+import com.ecmp.core.search.PageResult;
+import com.ecmp.flow.basic.vo.OrganizationDimension;
+import com.ecmp.flow.basic.vo.Position;
+import com.ecmp.flow.basic.vo.PositionCategory;
 import com.ecmp.flow.vo.SaveEntityVo;
+import com.ecmp.flow.vo.SearchVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.List;
 
 
 /**
@@ -98,6 +104,42 @@ public interface IFlowDesignService {
     ResponseData listAllWorkPage(@QueryParam("businessModelId") String businessModelId);
 
 
+
+    /**
+     * 获取岗位
+     * @param searchVo
+     * @return
+     */
+    @POST
+    @Path("listPos")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取岗位", notes = "获取岗位")
+    PageResult<Position> listPositon(SearchVo searchVo);
+
+
+    /**
+     * 获取岗位类别
+     * @return
+     */
+    @POST
+    @Path("listPositonType")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取岗位类别", notes = "获取岗位类别")
+    List<PositionCategory> listPositonType();
+
+
+    /**
+     * 获取组织维度
+     * @return
+     */
+    @POST
+    @Path("listOrganizationDimension")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取组织维度", notes = "获取组织维度")
+    List<OrganizationDimension> listOrganizationDimension();
 
 
 

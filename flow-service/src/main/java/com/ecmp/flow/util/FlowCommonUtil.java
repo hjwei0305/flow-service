@@ -2,9 +2,8 @@ package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.search.PageResult;
-import com.ecmp.flow.basic.vo.Employee;
-import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.basic.vo.Organization;
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.basic.vo.*;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
@@ -15,7 +14,6 @@ import com.ecmp.util.JsonUtils;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -214,7 +212,7 @@ public class FlowCommonUtil implements Serializable {
     public  List<Organization> getBasicAllOrgs(){
         String url = Constants.getBasicOrgListallorgsUrl();
         List<Organization> result;
-        String messageLog = "开始调用【获取所有组织机构树】，接口url="+url+",参数值为null";
+        String messageLog = "开始调用【获取所有组织机构树】，接口url="+url+",参数值为空";
         try{
             result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, null);
         }catch (Exception e){
@@ -292,6 +290,52 @@ public class FlowCommonUtil implements Serializable {
    }
 
 
+
+    //----------------------------------------------获取岗位--------------------------------//
+    public PageResult<Position> getBasicPositionFindbypage(Search search){
+        String url = Constants.getBasicPositionFindbypageUrl();
+        String messageLog = "开始调用【获取所有岗位】，接口url="+url+",参数值"+ JsonUtils.toJson(search);
+        PageResult<Position> positionList;
+        try{
+            positionList = ApiClient.postViaProxyReturnResult(url,new GenericType<PageResult<Position>>() {},search);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog,e);
+            throw  new FlowException(getErrorLogString(url), e);
+        }
+        return positionList;
+    }
+
+
+    //----------------------------------------------获取岗位类别--------------------------------//
+    public List<PositionCategory> getBasicPositioncategoryFindall(){
+        String url = Constants.getBasicPositioncategoryFindallUrl();
+        String messageLog = "开始调用【获取所有岗位类别】，接口url="+url+",参数值为空" ;
+        List<PositionCategory> positionCategoryList;
+        try{
+            positionCategoryList  = ApiClient.getEntityViaProxy(url,new GenericType<List<PositionCategory>>() {},null);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog,e);
+            throw  new FlowException(getErrorLogString(url), e);
+        }
+        return positionCategoryList;
+    }
+
+    //----------------------------------------------获取组织维度--------------------------------//
+    public List<OrganizationDimension> getBasicOrgDimension(){
+        String url = Constants.getBasicOrgDimensionUrl();
+        String messageLog = "开始调用【获取所有组织维度】，接口url="+url+",参数值为空" ;
+        List<OrganizationDimension> organizationDimensionList;
+        try{
+            organizationDimensionList  = ApiClient.getEntityViaProxy(url,new GenericType<List<OrganizationDimension>>() {},null);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog,e);
+            throw  new FlowException(getErrorLogString(url), e);
+        }
+        return organizationDimensionList;
+    }
 
 
 

@@ -1,6 +1,5 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
@@ -10,7 +9,7 @@ import com.ecmp.flow.dao.FlowTypeDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.FlowCommonUtil;
-import com.ecmp.flow.vo.ListFlowTypeVo;
+import com.ecmp.flow.vo.SearchVo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.GenericType;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,26 +84,26 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     }
 
 
-    public  PageResult<FlowType> listFlowType(ListFlowTypeVo listFlowTypeVo){
+    public  PageResult<FlowType> listFlowType(SearchVo searchVo){
         Search search = new Search();
         search.addQuickSearchProperty("code");
         search.addQuickSearchProperty("name");
         search.addQuickSearchProperty("businessModel.name");
-        if(StringUtils.isNotEmpty(listFlowTypeVo.getQuick_value())){
-            search.setQuickSearchValue(listFlowTypeVo.getQuick_value());
+        if(StringUtils.isNotEmpty(searchVo.getQuick_value())){
+            search.setQuickSearchValue(searchVo.getQuick_value());
         }
 
         PageInfo pageInfo = new PageInfo();
-        pageInfo.setPage(listFlowTypeVo.getPage());
-        pageInfo.setRows(listFlowTypeVo.getRows());
+        pageInfo.setPage(searchVo.getPage());
+        pageInfo.setRows(searchVo.getRows());
         search.setPageInfo(pageInfo);
 
-        if(StringUtils.isNotEmpty(listFlowTypeVo.getSidx())){
+        if(StringUtils.isNotEmpty(searchVo.getSidx())){
             SearchOrder searchOrder = new SearchOrder();
-            if("asc".equals(listFlowTypeVo.getSord())){
-                search.addSortOrder(searchOrder.asc(listFlowTypeVo.getSidx()));
+            if("asc".equals(searchVo.getSord())){
+                search.addSortOrder(searchOrder.asc(searchVo.getSidx()));
             }else{
-                search.addSortOrder(searchOrder.desc(listFlowTypeVo.getSidx()));
+                search.addSortOrder(searchOrder.desc(searchVo.getSidx()));
             }
         }
      return  this.findByPage(search);

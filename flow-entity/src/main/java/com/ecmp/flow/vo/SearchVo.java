@@ -2,7 +2,7 @@ package com.ecmp.flow.vo;
 
 import java.io.Serializable;
 
-public class ListFlowTypeVo  implements Serializable {
+public class SearchVo implements Serializable {
 
     /**
      * 当前页数
