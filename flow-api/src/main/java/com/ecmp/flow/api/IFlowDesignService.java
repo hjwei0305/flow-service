@@ -40,9 +40,9 @@ import java.util.List;
 public interface IFlowDesignService {
 
 
-
     /**
      * 获取流程设计
+     *
      * @param id
      * @param versionCode
      * @param businessModelCode
@@ -62,6 +62,7 @@ public interface IFlowDesignService {
 
     /**
      * 流程设计保存(发布)
+     *
      * @param entityVo
      * @return
      * @throws JAXBException
@@ -73,11 +74,12 @@ public interface IFlowDesignService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "流程设计保存(发布)", notes = "流程设计保存(发布)")
-    ResponseData save(SaveEntityVo entityVo)throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException;
+    ResponseData save(SaveEntityVo entityVo) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException;
 
 
     /**
      * 查询流程服务地址
+     *
      * @param busModelId
      * @return
      * @throws ParseException
@@ -87,12 +89,12 @@ public interface IFlowDesignService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询流程服务地址", notes = "查询流程服务地址")
-    ResponseData listAllServiceUrl(@QueryParam("busModelId") String busModelId)throws ParseException;
-
+    ResponseData listAllServiceUrl(@QueryParam("busModelId") String busModelId) throws ParseException;
 
 
     /**
-     *获取工作界面
+     * 获取工作界面
+     *
      * @param businessModelId
      * @return
      */
@@ -104,9 +106,9 @@ public interface IFlowDesignService {
     ResponseData listAllWorkPage(@QueryParam("businessModelId") String businessModelId);
 
 
-
     /**
      * 获取岗位
+     *
      * @param searchVo
      * @return
      */
@@ -120,6 +122,7 @@ public interface IFlowDesignService {
 
     /**
      * 获取岗位类别
+     *
      * @return
      */
     @POST
@@ -132,6 +135,7 @@ public interface IFlowDesignService {
 
     /**
      * 获取组织维度
+     *
      * @return
      */
     @POST
@@ -142,6 +146,19 @@ public interface IFlowDesignService {
     List<OrganizationDimension> listOrganizationDimension();
 
 
+    /**
+     * 根据流程实例获取当前流程所在节点
+     *
+     * @param id
+     * @param instanceId
+     * @return
+     */
+    @POST
+    @Path("getLookInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取组织维度", notes = "获取组织维度")
+    ResponseData getLookInfo(@QueryParam("id") String id, @QueryParam("instanceId") String instanceId);
 
 
 }
