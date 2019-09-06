@@ -109,6 +109,14 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         pageResult.setTotal((total.intValue()+pageInfo.getRows()-1)/pageInfo.getRows());
         return pageResult;
     }
+
+    public List<FlowHistory>  findByAllTaskMakeOverPowerHistory(){
+        TypedQuery<FlowHistory> flowHistoryQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId != ft.ownerId  and  ft.executorId is not null and  ft.ownerId is not null  order by ft.lastEditedDate desc", FlowHistory.class);
+        List<FlowHistory> flowHistoryList = flowHistoryQuery.getResultList();
+        initFlowTaskAppModule(flowHistoryList);
+        return flowHistoryList;
+    }
+
     public List<FlowHistory> findLastByBusinessId(String businessId){
         TypedQuery<FlowInstance> instanceQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc", FlowInstance.class);
         instanceQuery.setParameter("businessId",businessId);

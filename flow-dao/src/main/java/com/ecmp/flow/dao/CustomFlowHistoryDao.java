@@ -42,6 +42,16 @@ public interface CustomFlowHistoryDao {
 //    @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id = (select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
     public List<FlowHistory> findLastByBusinessId(String businessId);
 
+    /**
+     * 查询所有转授权历史
+     * @return
+     */
+    @Transactional(readOnly = true)
+    List<FlowHistory>  findByAllTaskMakeOverPowerHistory();
+
 
     public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig);
+
+
+
 }

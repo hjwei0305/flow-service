@@ -64,12 +64,19 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Override
     public ResponseData findAllHistoryByUser() {
         String userId = ContextUtil.getUserId();
-        Search search = new Search();
-        search.addFilter(new SearchFilter("ownerId", userId, SearchFilter.Operator.EQ));
-        search.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.NE));
-        SearchOrder searchOrder = new SearchOrder();
-        search.addSortOrder(searchOrder.desc("lastEditedDate"));
-        List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
+        SessionUser sessionUser =  ContextUtil.getSessionUser();
+        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+        List<FlowHistory> historylist ;
+        if (authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
+            historylist = flowHistoryService.findByAllTaskMakeOverPowerHistory();
+        }else{
+            Search search = new Search();
+            search.addFilter(new SearchFilter("ownerId", userId, SearchFilter.Operator.EQ));
+            search.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.NE));
+            SearchOrder searchOrder = new SearchOrder();
+            search.addSortOrder(searchOrder.desc("lastEditedDate"));
+            historylist = flowHistoryService.findByFilters(search);
+        }
         this.initWebUrl(historylist);
         return ResponseData.operationSuccessWithData(historylist);
     }
@@ -237,6 +244,26 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     }
 
 
+    /**
+     * 通过用户ID获取授权人的集合（包含自己）
+     * @param userId
+     * @return
+     */
+    public List<String> getAllPowerUserList(String userId){
+        List<String> userIdList = new ArrayList<>();
+        userIdList.add(userId);
+        //是否允许转授权
+        String allowMakeOverPower =  ContextUtil.getGlobalProperty("ALLOW_MAKE_OVER_POWER");
+        if(StringUtils.isNotEmpty(allowMakeOverPower)&&"true".equals(allowMakeOverPower.toLowerCase())){
+            List<TaskMakeOverPower> powerUserlist =  this.findMeetUserByPowerId(userId);
+            if(powerUserlist!=null&&powerUserlist.size()>0){
+                powerUserlist.forEach(a->{
+                    userIdList.add(a.getUserId());
+                });
+            }
+        }
+        return userIdList;
+    }
 
 
 

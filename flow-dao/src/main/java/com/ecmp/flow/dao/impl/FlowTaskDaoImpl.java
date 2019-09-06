@@ -528,6 +528,48 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     }
 
 
+    public PageResult<FlowTask> findByPageCanBatchApprovalOfPower(List<String> executorIdList, Search searchConfig) {
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
+        String quickSearchValue = searchConfig.getQuickSearchValue();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true ";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true ";
+        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for (String s : quickSearchProperties) {
+                if (first) {
+                    extraHql.append("  ft." + s + " like '%" + quickSearchValue + "%'");
+                    first = false;
+                } else {
+                    extraHql.append(" or  ft." + s + " like '%" + quickSearchValue + "%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount += extraHql.toString();
+            hqlQuery += extraHql.toString();
+        }
+        hqlQuery += hqlQueryOrder;
+        TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
+        queryTotal.setParameter("executorIdList", executorIdList);
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
+        query.setParameter("executorIdList", executorIdList);
+        query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
+        query.setMaxResults(pageInfo.getRows());
+        List<FlowTask> result = query.getResultList();
+        initFlowTasks(result);
+        PageResult<FlowTask> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue() + pageInfo.getRows() - 1) / pageInfo.getRows());
+
+        return pageResult;
+    }
+
+
     public Long findCountByExecutorId(String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
@@ -582,6 +624,50 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
         TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
         query.setParameter("executorId", executorId);
+        query.setParameter("businessModelId", businessModelId);
+        query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
+        query.setMaxResults(pageInfo.getRows());
+        List<FlowTask> result = query.getResultList();
+        initFlowTasks(result);
+        PageResult<FlowTask> pageResult = new PageResult<>();
+        pageResult.setPage(pageInfo.getPage());
+        pageResult.setRows(result);
+        pageResult.setRecords(total.intValue());
+        pageResult.setTotal((total.intValue() + pageInfo.getRows() - 1) / pageInfo.getRows());
+
+        return pageResult;
+    }
+
+
+    public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig) {
+        PageInfo pageInfo = searchConfig.getPageInfo();
+        Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
+        String quickSearchValue = searchConfig.getQuickSearchValue();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) ) ";
+        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id in( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)) )";
+        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+            StringBuffer extraHql = new StringBuffer(" and (");
+            boolean first = true;
+            for (String s : quickSearchProperties) {
+                if (first) {
+                    extraHql.append("  ft." + s + " like '%" + quickSearchValue + "%'");
+                    first = false;
+                } else {
+                    extraHql.append(" or  ft." + s + " like '%" + quickSearchValue + "%'");
+                }
+            }
+            extraHql.append(" )");
+            hqlCount += extraHql.toString();
+            hqlQuery += extraHql.toString();
+        }
+        hqlQuery += hqlQueryOrder;
+        TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
+        queryTotal.setParameter("executorIdList", executorIdList);
+        queryTotal.setParameter("businessModelId", businessModelId);
+        Long total = queryTotal.getSingleResult();
+
+        TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
+        query.setParameter("executorIdList", executorIdList);
         query.setParameter("businessModelId", businessModelId);
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());

@@ -66,6 +66,10 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return result;
     }
 
+    public List<FlowHistory> findByAllTaskMakeOverPowerHistory(){
+        return    flowHistoryDao.findByAllTaskMakeOverPowerHistory();
+    }
+
     private List<FlowHistory> initUrl(List<FlowHistory> result) {
         if (result != null && !result.isEmpty()) {
             for (FlowHistory flowHistory : result) {
