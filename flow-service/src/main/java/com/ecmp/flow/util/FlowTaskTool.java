@@ -1547,6 +1547,7 @@ public class FlowTaskTool {
                             flowTask.setFlowName(flowName);
                             flowTask.setTaskName(task.getName());
                             flowTask.setActTaskId(task.getId());
+                            flowTask.setOwnerId(executor.getId());
                             flowTask.setOwnerAccount(executor.getCode());
                             flowTask.setOwnerName(executor.getName());
                             flowTask.setExecutorAccount(executor.getCode());
@@ -1607,6 +1608,7 @@ public class FlowTaskTool {
                                 flowTask.setExecutorId(Constants.ANONYMOUS);
                                 flowTask.setExecutorName(Constants.ANONYMOUS);
                             } else {
+                                flowTask.setOwnerId(executor.getId());
                                 flowTask.setOwnerAccount(executor.getCode());
                                 flowTask.setOwnerName(executor.getName());
                                 flowTask.setExecutorAccount(executor.getCode());
