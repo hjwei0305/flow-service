@@ -3175,6 +3175,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     @Override
+    public ResponseData getExecutorsByExecutorsVos(FindExecutorsVo findExecutorsVo) {
+        List<RequestExecutorsVo> requestExecutorsVoList = null;
+        String requestExecutorsVos =findExecutorsVo.getRequestExecutorsVos();
+        if (StringUtils.isNotEmpty(requestExecutorsVos)) {
+            JSONArray jsonArray = JSONArray.fromObject(requestExecutorsVos);//把String转换为json
+            requestExecutorsVoList = (List<RequestExecutorsVo>) JSONArray.toCollection(jsonArray, RequestExecutorsVo.class);
+        }
+        return  this.getExecutorsByRequestExecutorsVo(requestExecutorsVoList,findExecutorsVo.getBusinessModelCode(),findExecutorsVo.getBusinessId());
+    }
+
+    @Override
     public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
         ResponseData responseData = new ResponseData();
         if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
