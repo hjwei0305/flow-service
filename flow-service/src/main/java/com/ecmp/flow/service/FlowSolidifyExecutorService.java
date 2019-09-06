@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
@@ -92,6 +93,22 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             responseData.setMessage("参数不能为空！");
         }
         return responseData;
+    }
+
+
+    /**
+     * 通过VO集合保存固化流程的执行人信息
+     * @return
+     */
+    @Transactional
+    public ResponseData saveSolidifyInfoByExecutorVos(FindSolidifyExecutorVO findSolidifyExecutorVO){
+        List<FlowSolidifyExecutorVO> solidifyExecutorVOList = null;
+        String executorsVos = findSolidifyExecutorVO.getExecutorsVos();
+        if (StringUtils.isNotEmpty(executorsVos)) {
+            JSONArray jsonArray = JSONArray.fromObject(executorsVos);//把String 转 换 为 json
+            solidifyExecutorVOList = (List<FlowSolidifyExecutorVO>) JSONArray.toCollection(jsonArray, FlowSolidifyExecutorVO.class);
+        }
+        return  this.saveByExecutorVoList(solidifyExecutorVOList,findSolidifyExecutorVO.getBusinessModelCode(),findSolidifyExecutorVO.getBusinessId());
     }
 
 

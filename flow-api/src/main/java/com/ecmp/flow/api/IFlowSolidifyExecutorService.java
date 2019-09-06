@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowSolidifyExecutor;
+import com.ecmp.flow.vo.FindSolidifyExecutorVO;
 import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
 import com.ecmp.vo.ResponseData;
@@ -16,6 +17,20 @@ import java.util.List;
 @Path("flowSolidifyExecutor")
 @Api(value = "IFlowSolidifyExecutorService 固化流程执行人接口")
 public interface IFlowSolidifyExecutorService  extends IBaseService<FlowSolidifyExecutor, String> {
+
+
+
+    /**
+     * 通过VO集合保存固化流程的执行人信息
+     * @return
+     */
+    @POST
+    @Path("saveSolidifyInfoByExecutorVos")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过执行人VO集合保存固化流程的执行人信息",notes = "通过执行人VO集合保存固化流程的执行人信息")
+    ResponseData saveSolidifyInfoByExecutorVos(FindSolidifyExecutorVO findSolidifyExecutorVO);
+
 
 
     /**
