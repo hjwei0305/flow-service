@@ -702,6 +702,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if(flowTask.getExecutorId()!=null&&!flowTask.getExecutorId().equals(ContextUtil.getUserId())){
+            LogUtil.bizLog("当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人{}", flowTask.getFlowInstance().getFlowName(),flowTask.getFlowName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
             //任创建时，执行人设置的任务所属人，执行时不一致则设置当前执行人（转授权）
             flowTask.setExecutorId(ContextUtil.getUserId());
             flowTask.setExecutorAccount(ContextUtil.getUserAccount());
