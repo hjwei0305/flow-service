@@ -536,11 +536,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         //针对并行、包容网关，只要有一条分支不允许终止，则全部符合条件的分支不允许终止
         if (!canEnd) {
             if (flowTaskList != null && !flowTaskList.isEmpty()) {
-//                int taskCount = flowTaskList.size();
-//                int index=0;
                 for (FlowTask flowTask : flowTaskList) {
-                    flowTask.setCanSuspension(false);
-                    flowTaskDao.save(flowTask);
+                    if(flowTask.getCanSuspension()==null||flowTask.getCanSuspension()==true){
+                        flowTask.setCanSuspension(false);
+                        flowTaskDao.save(flowTask);
+                    }
                 }
             }
         }
