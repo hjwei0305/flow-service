@@ -62,7 +62,7 @@ public class ExpressionUtil {
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
-            LogUtil.debug(messageLog);
+            LogUtil.bizLog(messageLog);
         }
         return result;
     }
@@ -91,7 +91,7 @@ public class ExpressionUtil {
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
-            LogUtil.debug(messageLog);
+            LogUtil.bizLog(messageLog);
         }
         return result;
     }
@@ -116,7 +116,7 @@ public class ExpressionUtil {
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
-            LogUtil.debug(messageLog);
+            LogUtil.bizLog(messageLog);
         }
         return result;
     }
@@ -175,7 +175,7 @@ public class ExpressionUtil {
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
         }finally {
-            LogUtil.debug(messageLog);
+            LogUtil.bizLog(messageLog);
         }
         return result;
     }
