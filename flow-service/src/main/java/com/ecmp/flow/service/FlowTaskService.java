@@ -701,12 +701,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
-        if(flowTask.getExecutorId()!=null&&!flowTask.getExecutorId().equals(ContextUtil.getUserId())){
-            LogUtil.bizLog("当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人{}", flowTask.getFlowInstance().getFlowName(),flowTask.getFlowName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
-            //任创建时，执行人设置的任务所属人，执行时不一致则设置当前执行人（转授权）
-            flowTask.setExecutorId(ContextUtil.getUserId());
-            flowTask.setExecutorAccount(ContextUtil.getUserAccount());
-            flowTask.setExecutorName(ContextUtil.getUserName());
+        String userId = ContextUtil.getUserId();
+        if(flowTask.getExecutorId()!=null&&!flowTask.getExecutorId().equals(userId)){
+            //查看当前用户是否是授权用户（如果是返回授权集合）
+            List<String>  userList = taskMakeOverPowerService.getAllPowerUserList(userId);
+            String exeId=  userList.stream().filter(a->a.equals(flowTask.getExecutorId())).findFirst().orElse(null);
+            if(exeId==null){
+                LogUtil.error("用户待办非法操作！当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人:{}", flowTask.getFlowName(),flowTask.getTaskName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
+                return  OperateResultWithData.operationFailure("【系统错误】，请联系管理员！");
+            }else{
+                //转授权情况替换执行人
+                flowTask.setExecutorId(ContextUtil.getUserId());
+                flowTask.setExecutorAccount(ContextUtil.getUserAccount());
+                flowTask.setExecutorName(ContextUtil.getUserName());
+            }
         }
         if (flowTask == null) {
             return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
