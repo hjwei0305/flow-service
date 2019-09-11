@@ -707,8 +707,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String>  userList = taskMakeOverPowerService.getAllPowerUserList(userId);
             String exeId=  userList.stream().filter(a->a.equals(flowTask.getExecutorId())).findFirst().orElse(null);
             if(exeId==null){
-                LogUtil.error("用户待办非法操作！当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人:{}", flowTask.getFlowName(),flowTask.getTaskName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
-                return  OperateResultWithData.operationFailure("【系统错误】，请联系管理员！");
+                //TODO
+//                LogUtil.error("用户待办非法操作！当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人:{}", flowTask.getFlowName(),flowTask.getTaskName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
+//                return  OperateResultWithData.operationFailure("【系统错误】，请联系管理员！");
             }else{
                 //转授权情况替换执行人
                 flowTask.setExecutorId(ContextUtil.getUserId());
