@@ -57,7 +57,7 @@ public class ExpressionUtil {
         Map<String,String> result;
         try {
             result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {}, params);
-            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
+            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result))+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
@@ -86,7 +86,7 @@ public class ExpressionUtil {
         Map<String,Object> result;
         try {
             result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
+            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result)) +"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
@@ -111,7 +111,7 @@ public class ExpressionUtil {
         Map<String,Object> result;
         try {
             result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + result==null?null:JsonUtils.toJson(result)+"】";
+            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result))+"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
