@@ -1252,9 +1252,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String flowTaskDefJson = flowTask.getTaskJsonDef();
             JSONObject flowTaskDefObj = JSONObject.fromObject(flowTaskDefJson);
             String currentNodeType = flowTaskDefObj.get("nodeType") + "";
+            JSONObject normalInfo = flowTaskDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            Boolean currentSinglePersonSingleTaskAuto =  false;
+            if(normalInfo !=null && normalInfo.has("SinglePersonSingleTask") && normalInfo.get("SinglePersonSingleTask")!=null){
+                currentSinglePersonSingleTaskAuto = normalInfo.getBoolean("SinglePersonSingleTask");
+            }
             Map<NodeInfo, List<NodeInfo>> nodeInfoSonMap = new LinkedHashMap();
             for (NodeInfo nodeInfo : nodeInfoList) {
                 nodeInfo.setCurrentTaskType(currentNodeType);
+                nodeInfo.setCurrentSinglePersonSingleTaskAuto(currentSinglePersonSingleTaskAuto);
                 if ("CounterSignNotEnd".equalsIgnoreCase(nodeInfo.getType())) {
                     continue;
                 } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getType())) {
@@ -2089,7 +2095,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return OperateResultWithData.operationSuccess("10017");
     }
 
-    public OperateResultWithData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr) throws NoSuchMethodException {
+    public OperateResultWithData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr , Boolean solidifyFlow) throws NoSuchMethodException {
         OperateResultWithData operateResultWithData = null;
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
@@ -2114,6 +2120,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 operateResultWithData.setData("CounterSignNotEnd");
             } else {
+                if(solidifyFlow!=null&&solidifyFlow==true){ //表示为固化流程（不返回下一步执行人信息）
+                    nodeInfoList.forEach(nodeInfo->nodeInfo.setExecutorSet(null));
+                }
                 operateResultWithData.setData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {

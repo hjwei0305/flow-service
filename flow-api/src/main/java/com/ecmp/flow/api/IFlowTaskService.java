@@ -653,19 +653,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 取得一一步的执行人信息
+     * 获取下一步的节点信息任务
      *
      * @param taskId            任务ID
      * @param approved          是否同意
      * @param includeNodeIdsStr 包含节点
+     * @param solidifyFlow    是否固化流程
      * @return 操作结果
      */
     @GET
     @Path("getSelectedNodesInfo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "完成任务", notes = "测试")
-    public OperateResultWithData getSelectedNodesInfo(@QueryParam("taskId") String taskId, @QueryParam("approved") String approved, @QueryParam("includeNodeIdsStr") String includeNodeIdsStr) throws NoSuchMethodException;
+    @ApiOperation(value = "获取下一步的节点信息任务", notes = "获取下一步的节点信息任务")
+    OperateResultWithData getSelectedNodesInfo(@QueryParam("taskId") String taskId, @QueryParam("approved") String approved, @QueryParam("includeNodeIdsStr") String includeNodeIdsStr, @QueryParam("solidifyFlow") Boolean solidifyFlow) throws NoSuchMethodException;
 
 
     /**
