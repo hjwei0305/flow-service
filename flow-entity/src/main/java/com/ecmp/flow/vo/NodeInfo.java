@@ -41,7 +41,7 @@ public class NodeInfo implements Serializable{
 	private String flowTaskId;//任务id
 	private Boolean allowChooseInstancy;//是否允许选择任务紧急状态
 
-	private Boolean currentSinglePersonSingleTaskAuto; //当前节点是否配置了单人单任务自动执行
+	private Boolean currentSingleTaskAuto; //当前节点是否配置了单人单任务自动执行
 
 //	private MultiInstanceConfig multiInstanceConfig;//记录会签任务信息
 
@@ -85,12 +85,12 @@ public class NodeInfo implements Serializable{
 		this.uiUserType = uiUserType;
 	}
 
-	public Boolean getCurrentSinglePersonSingleTaskAuto() {
-		return currentSinglePersonSingleTaskAuto;
+	public Boolean getCurrentSingleTaskAuto() {
+		return currentSingleTaskAuto;
 	}
 
-	public void setCurrentSinglePersonSingleTaskAuto(Boolean currentSinglePersonSingleTaskAuto) {
-		this.currentSinglePersonSingleTaskAuto = currentSinglePersonSingleTaskAuto;
+	public void setCurrentSingleTaskAuto(Boolean currentSingleTaskAuto) {
+		this.currentSingleTaskAuto = currentSingleTaskAuto;
 	}
 //	public Set<Employee> getEmployeeSet() {
 //		return employeeSet;
