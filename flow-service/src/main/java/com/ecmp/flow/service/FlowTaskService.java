@@ -1254,8 +1254,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String currentNodeType = flowTaskDefObj.get("nodeType") + "";
             JSONObject normalInfo = flowTaskDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
             Boolean currentSingleTaskAuto =  false;
-            if(normalInfo !=null && normalInfo.has("SinglePersonSingleTask") && normalInfo.get("SinglePersonSingleTask")!=null){
-                currentSingleTaskAuto = normalInfo.getBoolean("SinglePersonSingleTask");
+            if(normalInfo !=null && normalInfo.has("singleTaskNoChoose") && normalInfo.get("singleTaskNoChoose")!=null){
+                currentSingleTaskAuto = normalInfo.getBoolean("singleTaskNoChoose");
             }
             Map<NodeInfo, List<NodeInfo>> nodeInfoSonMap = new LinkedHashMap();
             for (NodeInfo nodeInfo : nodeInfoList) {
