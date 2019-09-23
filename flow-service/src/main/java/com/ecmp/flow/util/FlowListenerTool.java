@@ -183,7 +183,7 @@ public class FlowListenerTool {
                     }
                 }
             }
-            runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
+//            runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
             runtimeService.setVariables(delegateTask.getProcessInstanceId(),userVarNameMap);
         }
 
