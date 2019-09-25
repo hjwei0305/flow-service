@@ -3077,13 +3077,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
         if (flowInstanceList != null && flowInstanceList.size() > 0) {
-            for (FlowInstance instance : flowInstanceList) {
+            FlowInstance instance = flowInstanceList.get(0);
                 //根据流程实例id查询待办
                 List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
                 //完成待办任务的URL设置
                 flowTaskDao.initFlowTasks(addList);
                 list.addAll(addList);
-            }
         }
         responseData.setSuccess(true);
         responseData.setData(list);

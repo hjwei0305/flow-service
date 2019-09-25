@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -241,4 +242,16 @@ public interface IDefaultFlowBaseService {
     ResponseData findTasksByBusinessId(@QueryParam("businessId") String businessId);
 
 
+    /**
+     * 通过业务单据Id集合获取待办执行人（中泰要求新增的功能:不包含子流程信息）
+     *
+     * @param businessIdLists 业务单据id集合
+     * @return 待办任务集合
+     */
+    @POST
+    @Path("getExecutorsByBusinessIdList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务单据Id集合获取待办执行人", notes = "通过业务单据Id集合获取待办执行人（不包含子流程）")
+    ResponseData getExecutorsByBusinessIdList(List<String> businessIdLists);
 }

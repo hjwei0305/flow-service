@@ -4,7 +4,12 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dao.FlowInstanceDao;
+import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
@@ -16,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 
 /**
  * *************************************************************************************************
@@ -42,6 +48,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private FlowSolidifyExecutorService flowSolidifyExecutorService;
     @Autowired
     private FlowInstanceService flowInstanceService;
+    @Autowired
+    private FlowInstanceDao flowInstanceDao;
+    @Autowired
+    private FlowTaskDao flowTaskDao;
 
 
     @Override
@@ -369,6 +379,50 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public ResponseData findTasksByBusinessId(String businessId) {
         ResponseData responseData = flowTaskService.findTasksByBusinessId(businessId);
         return responseData;
+    }
+
+
+    @Override
+    public ResponseData getExecutorsByBusinessIdList(List<String> businessIdLists) {
+        if(businessIdLists==null||businessIdLists.size()==0){
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        Map<String,List<Executor>> map = new HashMap<>();
+        businessIdLists.forEach(businessId->{
+            ResponseData res =   this.getExecutorsByBusinessId(businessId);
+            if(res.getSuccess()){
+                map.put(businessId,(List<Executor>)res.getData());
+            }else{
+                map.put(businessId,null);
+            }
+        });
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+    public ResponseData getExecutorsByBusinessId(String businessId) {
+        if (StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        //通过业务单据id查询没有结束并且没有挂起的流程实例
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+        if (flowInstanceList != null && flowInstanceList.size() > 0) {
+            FlowInstance instance = flowInstanceList.get(0);
+            //根据流程实例id查询待办
+            List<FlowTask> addList = flowTaskService.findByInstanceId(instance.getId());
+            if(addList!=null&& addList.size()>0){
+               List<Executor>  listExecutors = new ArrayList<Executor>();
+                addList.forEach(a->{
+                    Executor e = new Executor();
+                    e.setId(a.getExecutorId());
+                    e.setCode(a.getExecutorAccount());
+                    e.setName(a.getExecutorName());
+                    listExecutors.add(e);
+                });
+               return  ResponseData.operationSuccessWithData(listExecutors);
+            }
+            return ResponseData.operationFailure("未找到执行人！");
+        }
+        return ResponseData.operationFailure("单据未在流程中！");
     }
 
 
