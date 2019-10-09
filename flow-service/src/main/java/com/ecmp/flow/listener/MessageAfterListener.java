@@ -3,6 +3,7 @@ package com.ecmp.flow.listener;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.util.FlowCommonUtil;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -53,6 +54,9 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
+
 
     @Override
     public void notify(DelegateExecution execution) throws Exception{
@@ -70,6 +74,7 @@ public class MessageAfterListener implements Serializable, org.activiti.engine.d
             messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
             messageSendThread.setRuntimeService(runtimeService);
             messageSendThread.setTaskService(taskService);
+            messageSendThread.setFlowCommonUtil(flowCommonUtil);
             messageSendThread.run();
         }catch (Exception e){
             logger.error(e.getMessage(),e);

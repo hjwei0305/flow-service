@@ -3,7 +3,6 @@ package com.ecmp.flow.listener;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
@@ -27,7 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -56,7 +54,7 @@ public class MessageSendThread implements Runnable {
 
     private HistoryService historyService;
 
-    private  FlowHistoryDao flowHistoryDao;
+    private FlowHistoryDao flowHistoryDao;
 
     private RuntimeService runtimeService;
 
@@ -76,7 +74,7 @@ public class MessageSendThread implements Runnable {
     @Override
     public void run() {
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
-        boolean canToSender =true;
+        boolean canToSender = true;
         String actTaskDefKey = taskEntity.getActivityId();
         String actProcessDefinitionId = execution.getProcessDefinitionId();
         ProcessInstance instance = taskEntity.getProcessInstance();
@@ -97,16 +95,16 @@ public class MessageSendThread implements Runnable {
         if (notify != null) {
             JSONObject currentNotify = notify.getJSONObject(eventType);
 //            String[] notifyType = {"notifyExecutor", "notifyStarter", "notifyPosition"};
-            if (currentNotify != null ) {//只有执行前才能发给执行人
+            if (currentNotify != null) {//只有执行前才能发给执行人
                 JSONArray selectType = null;
                 //发送给流程的实际执行人
-                if("before".equalsIgnoreCase(eventType)) {
+                if ("before".equalsIgnoreCase(eventType)) {
                     JSONObject notifyExecutor = null;
                     try {
                         notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
                         selectType = notifyExecutor.getJSONArray("type");
-                    }catch (Exception e){
-                        logger.error(e.getMessage(),e);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
                     }
                     if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
                         Object[] types = selectType.toArray();
@@ -125,94 +123,172 @@ public class MessageSendThread implements Runnable {
                                 message.setContentTemplateParams(contentTemplateParams);
                                 message.setContentTemplateCode(contentTemplateCode);//模板代码
                                 message.setCanToSender(canToSender);
-                                this.emailSend(message,flowDefVersion);
+                                this.emailSend(message, flowDefVersion);
+                            } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
+                                EcmpMessage message = new EcmpMessage();
+                                String senderId = ContextUtil.getUserId();
+                                message.setSenderId(senderId);
+                                List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
+                                if (receiverIds == null || receiverIds.isEmpty()) {
+                                    continue;
+                                }
+                                message.setReceiverIds(receiverIds);
+                                Map<String, Object> contentTemplateParams = getParamsMap();
+                                contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
+                                message.setContentTemplateParams(contentTemplateParams);
+                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                message.setCanToSender(canToSender);
+                                this.dingDingSend(message, flowDefVersion);
                             } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
                             } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
                             }
                         }
                     }
                 }
-                String multiInstance =  (String)taskEntity.getActivity().getProperty("multiInstance");
+                String multiInstance = (String) taskEntity.getActivity().getProperty("multiInstance");
                 Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
-                if((isMmultiInstance && taskEntity.getTransition()!=null) ||  !isMmultiInstance){
-                  //发送给流程启动人
+                if ((isMmultiInstance && taskEntity.getTransition() != null) || !isMmultiInstance) {
+                    //发送给流程启动人
                     JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter");
                     selectType = notifyStarter.getJSONArray("type");
                     if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
-                       Object[] types = selectType.toArray();
-                       for (Object type : types) {
-                          if ("EMAIL".equalsIgnoreCase(type.toString())) {
-                              EcmpMessage message = new EcmpMessage();
-                              String senderId = ContextUtil.getUserId();
-                              message.setSenderId(senderId);
-                              List<String> receiverIds = new ArrayList<String>();
-                              receiverIds.add(startUserId);//流程启动人
-                              message.setReceiverIds(receiverIds);
-                              Map<String, Object> contentTemplateParams = getParamsMap();
-                              contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
-                              message.setContentTemplateParams(contentTemplateParams);
-                              message.setContentTemplateCode(contentTemplateCode);//模板代码
-                              message.setCanToSender(canToSender);
-                              this.emailSend(message,flowDefVersion);
-                          } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
-                          } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
-                          }
-                      }
-                  }
+                        Object[] types = selectType.toArray();
+                        for (Object type : types) {
+                            if ("EMAIL".equalsIgnoreCase(type.toString())) {
+                                EcmpMessage message = new EcmpMessage();
+                                String senderId = ContextUtil.getUserId();
+                                message.setSenderId(senderId);
+                                List<String> receiverIds = new ArrayList<String>();
+                                receiverIds.add(startUserId);//流程启动人
+                                message.setReceiverIds(receiverIds);
+                                Map<String, Object> contentTemplateParams = getParamsMap();
+                                contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
+                                message.setContentTemplateParams(contentTemplateParams);
+                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                message.setCanToSender(canToSender);
+                                this.emailSend(message, flowDefVersion);
+                            } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
+                                EcmpMessage message = new EcmpMessage();
+                                String senderId = ContextUtil.getUserId();
+                                message.setSenderId(senderId);
+                                List<String> receiverIds = new ArrayList<String>();
+                                receiverIds.add(startUserId);//流程启动人
+                                message.setReceiverIds(receiverIds);
+                                Map<String, Object> contentTemplateParams = getParamsMap();
+                                contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
+                                message.setContentTemplateParams(contentTemplateParams);
+                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                message.setCanToSender(canToSender);
+                                message.setCanToSender(canToSender);
+                                this.dingDingSend(message, flowDefVersion);
+                            } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
+                            } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
+                            }
+                        }
+                    }
 
-                  //发送给选定的岗位
-                  JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");
-                  selectType = notifyPosition.getJSONArray("type");
-                  if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
-                      Object[] types = selectType.toArray();
-                      for (Object type : types) {
-                          if ("EMAIL".equalsIgnoreCase(type.toString())) {
-                              JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
-                              if(notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()){
-                                  List<String> idList = new ArrayList<String>();
-                                  for(int i=0;i<notifyPositionJsonArray.size();i++){
-                                      JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
-                                      String positionId = jsonObject.getString("id");
-                                      if(StringUtils.isNotEmpty(positionId)){
-                                          idList.add(positionId);
-                                      }
-                                  }
-                                  List<Executor>  employees;
-                                  employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList,"");
-                                  Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
-                                  List<String> receiverIds = new ArrayList<String>();
-                                  if(employees != null && !employees.isEmpty() ){
-                                      for(Executor executor:employees){
-                                          linkedHashSetReceiverIds.add(executor.getId());
-                                      }
-                                  }else {
-                                      return;
-                                  }
-                                  receiverIds.addAll(linkedHashSetReceiverIds);
-                                  EcmpMessage message = new EcmpMessage();
-                                  String senderId = ContextUtil.getUserId();
-                                  message.setSenderId(senderId);
-                                  message.setReceiverIds(receiverIds);
-                                  Map<String, Object> contentTemplateParams = getParamsMap();
-                                  contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
-                                  message.setContentTemplateParams(contentTemplateParams);
-                                  message.setContentTemplateCode(contentTemplateCode);//模板代码
-                                  message.setCanToSender(canToSender);
-                                  this.emailSend(message,flowDefVersion);
-                              }
+                    //发送给选定的岗位
+                    JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");
+                    selectType = notifyPosition.getJSONArray("type");
+                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                        Object[] types = selectType.toArray();
+                        for (Object type : types) {
+                            if ("EMAIL".equalsIgnoreCase(type.toString())) {
+                                JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
+                                if (notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()) {
+                                    List<String> idList = new ArrayList<String>();
+                                    for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
+                                        JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
+                                        String positionId = jsonObject.getString("id");
+                                        if (StringUtils.isNotEmpty(positionId)) {
+                                            idList.add(positionId);
+                                        }
+                                    }
+                                    List<Executor> employees;
+                                    employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
+                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
+                                    List<String> receiverIds = new ArrayList<String>();
+                                    if (employees != null && !employees.isEmpty()) {
+                                        for (Executor executor : employees) {
+                                            linkedHashSetReceiverIds.add(executor.getId());
+                                        }
+                                    } else {
+                                        return;
+                                    }
+                                    receiverIds.addAll(linkedHashSetReceiverIds);
+                                    EcmpMessage message = new EcmpMessage();
+                                    String senderId = ContextUtil.getUserId();
+                                    message.setSenderId(senderId);
+                                    message.setReceiverIds(receiverIds);
+                                    Map<String, Object> contentTemplateParams = getParamsMap();
+                                    contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
+                                    message.setContentTemplateParams(contentTemplateParams);
+                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                    message.setCanToSender(canToSender);
+                                    this.emailSend(message, flowDefVersion);
+                                }
 
-                          } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
-                          } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
-                          }
-                      }
-                  }
-              }
+                            } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
+                                JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
+                                if (notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()) {
+                                    List<String> idList = new ArrayList<String>();
+                                    for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
+                                        JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
+                                        String positionId = jsonObject.getString("id");
+                                        if (StringUtils.isNotEmpty(positionId)) {
+                                            idList.add(positionId);
+                                        }
+                                    }
+                                    List<Executor> employees;
+                                    employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
+                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
+                                    List<String> receiverIds = new ArrayList<String>();
+                                    if (employees != null && !employees.isEmpty()) {
+                                        for (Executor executor : employees) {
+                                            linkedHashSetReceiverIds.add(executor.getId());
+                                        }
+                                    } else {
+                                        return;
+                                    }
+                                    receiverIds.addAll(linkedHashSetReceiverIds);
+                                    EcmpMessage message = new EcmpMessage();
+                                    String senderId = ContextUtil.getUserId();
+                                    message.setSenderId(senderId);
+                                    message.setReceiverIds(receiverIds);
+                                    Map<String, Object> contentTemplateParams = getParamsMap();
+                                    contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
+                                    message.setContentTemplateParams(contentTemplateParams);
+                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                    message.setCanToSender(canToSender);
+                                    this.dingDingSend(message, flowDefVersion);
+                                }
+                            } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
+                            } else if ("APP".equalsIgnoreCase(type.toString())) {//后期扩展
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
+    private void dingDingSend(EcmpMessage message, FlowDefVersion flowDefVersion) {
+        INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
+        ExecutionEntity taskEntity = (ExecutionEntity) execution;
+        String taskName = (String) taskEntity.getActivity().getProperty("name");
+        message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
+        List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+        notifyTypes.add(NotifyType.DingTalk);
+        message.setNotifyTypes(notifyTypes);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                iNotifyService.send(message);
+            }
+        }).start();
+    }
 
-    private void emailSend(EcmpMessage message, FlowDefVersion flowDefVersion ){
+    private void emailSend(EcmpMessage message, FlowDefVersion flowDefVersion) {
         INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
         String taskName = (String) taskEntity.getActivity().getProperty("name");
@@ -227,16 +303,17 @@ public class MessageSendThread implements Runnable {
             }
         }).start();
     }
-    private Map<String, Object> getParamsMap(){
+
+    private Map<String, Object> getParamsMap() {
         Map<String, Object> contentTemplateParams = new HashMap<>();
         String workCaption = (String) execution.getVariable("workCaption");
         String businessName = (String) execution.getVariable("name");
         String businessCode = (String) execution.getVariable("businessCode");
-        String opinion = (String) execution.getVariable("opinion") ;
+        String opinion = (String) execution.getVariable("opinion");
         if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
             String eventName = execution.getEventName();
-            if("end".equalsIgnoreCase(eventName)){
-                opinion=((ExecutionEntity) execution).getDeleteReason();
+            if ("end".equalsIgnoreCase(eventName)) {
+                opinion = ((ExecutionEntity) execution).getDeleteReason();
             }
         }
 
@@ -251,18 +328,18 @@ public class MessageSendThread implements Runnable {
         return contentTemplateParams;
     }
 
-    private List<String> getReceiverIds(net.sf.json.JSONObject currentNode ,ExecutionEntity taskEntity ){
+    private List<String> getReceiverIds(net.sf.json.JSONObject currentNode, ExecutionEntity taskEntity) {
         List<String> receiverIds = new ArrayList<String>();
         if ("before".equalsIgnoreCase(eventType)) {
             String nodeParamName = BpmnUtil.getCurrentNodeParamName(currentNode);
             Object userObject = execution.getVariable(nodeParamName);
-            if(userObject!=null && userObject instanceof List){//单签的情况
-                List userList = (List)userObject;
-                for(Object userO:userList){
+            if (userObject != null && userObject instanceof List) {//单签的情况
+                List userList = (List) userObject;
+                for (Object userO : userList) {
                     receiverIds.add((String) userO);
                 }
-            }else {
-                String userIds = (String)execution.getVariable(nodeParamName);
+            } else {
+                String userIds = (String) execution.getVariable(nodeParamName);
                 if (StringUtils.isNotEmpty(userIds)) {
                     String[] userIdArray = userIds.split(",");
                     for (String userId : userIdArray) {
@@ -323,5 +400,13 @@ public class MessageSendThread implements Runnable {
 
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
+    }
+
+    public FlowCommonUtil getFlowCommonUtil() {
+        return flowCommonUtil;
+    }
+
+    public void setFlowCommonUtil(FlowCommonUtil flowCommonUtil) {
+        this.flowCommonUtil = flowCommonUtil;
     }
 }
