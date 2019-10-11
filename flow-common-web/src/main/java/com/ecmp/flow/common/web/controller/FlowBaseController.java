@@ -119,15 +119,13 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if (flowStartResultVO != null) {
                 if (flowStartResultVO.getCheckStartResult()) {
-//                    if (flowStartResultVO.getFlowTypeList() == null && flowStartResultVO.getNodeInfoList() == null) {//真正启动流程
-//                        new Thread(new Runnable() {//异步推送待办
-//                            @Override
-//                            public void run() {
-//                                IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-//                                flowTaskService.pushTaskToBusinessModel(businessModelCode, businessKey,null);
-//                            }
-//                        }).start();
-//                    }
+                    new Thread(new Runnable() {//检测待办是否自动执行
+                        @Override
+                        public void run() {
+                            IFlowSolidifyExecutorService SolidifyService = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
+                            SolidifyService.selfMotionExecuteTask(businessKey);
+                        }
+                    }).start();
                     operateStatus = new OperateStatus(true, "成功");
                     operateStatus.setData(flowStartResultVO);
                 } else {
@@ -267,14 +265,6 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
         IFlowTaskService proxy = ApiClient.createProxy(IFlowTaskService.class);
         OperateResultWithData<FlowStatus> operateResult = proxy.complete(flowTaskCompleteVO);
         if (operateResult.successful() && StringUtils.isEmpty(endEventId)) { //处理成功并且不是结束节点调用
-//            new Thread(new Runnable() {//异步推送待办
-//                @Override
-//                public void run() {
-//                    IFlowTaskService flowTaskService = ApiClient.createProxy(IFlowTaskService.class);
-//                    flowTaskService.pushTaskToBusinessModel(null, businessId,taskId);
-//                }
-//            }).start();
-
             new Thread(new Runnable() {//检测待办是否自动执行
                 @Override
                 public void run() {
@@ -282,7 +272,6 @@ public abstract class FlowBaseController<V extends BaseEntity> extends BaseEntit
                     SolidifyService.selfMotionExecuteTask(businessId);
                 }
             }).start();
-
         }
         operateStatus = new OperateStatus(operateResult.successful(), operateResult.getMessage());
 

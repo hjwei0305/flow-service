@@ -131,6 +131,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if (flowStartResultVO != null) {
                 if (flowStartResultVO.getCheckStartResult()) {
+                    new Thread(new Runnable() {//检测待办是否自动执行
+                        @Override
+                        public void run() {
+                            flowSolidifyExecutorService.selfMotionExecuteTask(businessKey);
+                        }
+                    }).start();
                     return  ResponseData.operationSuccessWithData(flowStartResultVO);
                 } else {
                     return  ResponseData.operationFailure("启动流程失败,启动检查服务返回false!");

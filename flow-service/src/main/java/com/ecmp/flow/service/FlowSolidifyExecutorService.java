@@ -268,6 +268,11 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                             //执行过的没有单签，该任务需要自动跳过
                                             needLsit.add(flowTask);
                                         }
+                                    }else{ //还没有相同执行人的情况，判断执行人是否是流程发起人
+                                        FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
+                                        if(flowTask.getExecutorId().equals(flowInstance.getCreatorId())){
+                                            needLsit.add(flowTask);
+                                        }
                                     }
                                 } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
                                     List<FlowSolidifyExecutor> updateList = solidifylist.stream().
