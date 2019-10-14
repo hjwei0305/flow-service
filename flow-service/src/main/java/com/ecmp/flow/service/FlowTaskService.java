@@ -906,7 +906,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
             flowHistoryDao.save(flowHistory);
-            flowTaskDao.delete(flowTask);
+//            flowTaskDao.delete(flowTask);
             if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
                 //需要异步推送删除待办信息到basic
                 if (pushBasic || pushModelOrUrl) {
@@ -921,13 +921,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }).start();
                     }
-
                 }
                 flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
             }
             //初始化新的任务
             String actTaskDefKey = flowTask.getActTaskDefKey();
             String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+            flowTaskDao.delete(flowTask);
             ProcessDefinitionEntity definition = null;
             PvmActivity currentNode = null;
             FlowInstance flowInstanceTemp = flowInstance;
