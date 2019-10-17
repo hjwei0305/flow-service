@@ -26,8 +26,10 @@ public class FlowInvokeParams implements Serializable{
     private Boolean reject=false;//是否是被驳回的任务,用于业务接口判断任务驳回时是否需要调用业务处理逻辑
     private List<String> callActivitySonPaths;//调用子流程路径
     private String orgId;//组织机构id
-    private List<String> orgDimensionCodes;//组织维度代码集合
-    private List<String> positionIds;//岗位代码集合
+    private List<String> positionIds;//岗位代码集合（参数自选）
+    private List<String> positionTypeIds;//岗位类别集合（参数自选）
+    private List<String> organizationIds;//组织机构集合（参数自选）
+    private List<String> orgDimensionCodes;//组织维度代码集合（参数自选）
     private String jsonParam;//其他json格式参数
     private Map<String,List<String>> nextNodeUserInfo;//下一步操作用户信息,key为节点代码（如没有配置，指定为默认id）,下一步选择的用户id集合
     public String getId() {
@@ -132,5 +134,21 @@ public class FlowInvokeParams implements Serializable{
 
     public void setNextNodeUserInfo(Map<String, List<String>> nextNodeUserInfo) {
         this.nextNodeUserInfo = nextNodeUserInfo;
+    }
+
+    public List<String> getPositionTypeIds() {
+        return positionTypeIds;
+    }
+
+    public void setPositionTypeIds(List<String> positionTypeIds) {
+        this.positionTypeIds = positionTypeIds;
+    }
+
+    public List<String> getOrganizationIds() {
+        return organizationIds;
+    }
+
+    public void setOrganizationIds(List<String> organizationIds) {
+        this.organizationIds = organizationIds;
     }
 }

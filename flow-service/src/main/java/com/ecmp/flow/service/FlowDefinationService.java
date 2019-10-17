@@ -824,10 +824,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     flowInvokeParams.setParams(map);
                                 }
                             }catch (Exception e){}
-                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-                            }, flowInvokeParams);
+//                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+//                            }, flowInvokeParams);
+                            employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode,flowExecutorConfig.getName(),path,flowInvokeParams);
                         } else {
-                            throw new FlowException("SelfDefinition's selfDefId is null exception!");
+                            throw new FlowException("自定义执行人配置参数为空!");
                         }
                     } else {
                         //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
@@ -879,8 +880,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                 flowInvokeParams.setId(flowStartVO.getBusinessKey());
                 flowInvokeParams.setOrgId("" + flowStartVO.getVariables().get("orgId"));
-                flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setPositionIds(positionIds);
+                flowInvokeParams.setPositionTypeIds(positionTypesIds);
+                flowInvokeParams.setOrganizationIds(orgIds);
+                flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setJsonParam(param);
                 String nodeCode="";
                 try{
@@ -892,8 +895,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowInvokeParams.setParams(map);
                     }
                 }catch (Exception e){}
-                employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-                }, flowInvokeParams);
+//                employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+//                }, flowInvokeParams);
+                    employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode,flowExecutorConfig.getName(),path,flowInvokeParams);
             } else {
                 if (positionTypesIds != null && orgIds != null) {
                     //新增根据（岗位类别+组织机构）获得执行人

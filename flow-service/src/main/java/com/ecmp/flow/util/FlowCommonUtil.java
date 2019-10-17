@@ -7,6 +7,7 @@ import com.ecmp.flow.basic.vo.*;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.UserQueryParamVo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
@@ -195,10 +196,27 @@ public class FlowCommonUtil implements Serializable {
     }
 
 
-
-
-
-
+    public List<Executor>   getExecutorsBySelfDef(String appModuleCode,String selfName, String path, FlowInvokeParams flowInvokeParams){
+        String messageLog = "调用【自定义执行人-"+selfName+"】";
+        String mes ="-应用模块："+appModuleCode+",接口地址："+path+",参数值:"+ JsonUtils.toJson(flowInvokeParams);
+        List<Executor> executors;
+        Boolean isSuccess = true;
+        try{
+            executors = ApiClient.postViaProxyReturnResult(appModuleCode, path,  new GenericType<List<Executor>>() {}, flowInvokeParams);
+            if(executors==null){
+                messageLog  +="-返回执行人为空!";
+                isSuccess=false;
+            }
+        }catch (Exception e){
+            LogUtil.error(messageLog+mes+"-【调用异常】",e);
+            throw  new FlowException(messageLog+"-【调用异常】,详情请查看日志！", e);
+        }
+        if(!isSuccess){
+            LogUtil.info(messageLog+mes);
+            throw  new FlowException(messageLog+",详情请查看日志！");
+        }
+        return executors;
+    }
 
 
 
@@ -357,6 +375,8 @@ public class FlowCommonUtil implements Serializable {
         }
        return  appModuleList;
     }
+
+
 
 
 
