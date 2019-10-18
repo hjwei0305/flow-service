@@ -50,4 +50,6 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @Query("select fv from com.ecmp.flow.entity.FlowInstance fv where fv.id  = :id")
     public FlowInstance findByIdNoF(@Param("id") String id);
 
+    @Query("select count(ft.id),ft.flowDefVersion.flowDefination.id from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended group by ft.flowDefVersion.flowDefination.id")
+    List findBillsByExecutorIdGroup(@Param("creatorId") String creatorId,@Param("ended") Boolean ended);
 }

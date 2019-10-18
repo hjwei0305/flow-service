@@ -8,10 +8,7 @@ import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.FlowHistoryDao;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
-import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -93,6 +90,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private FlowCommonUtil flowCommonUtil;
+
+    @Autowired
+    private FlowDefinationDao flowDefinationDao;
+
+    @Autowired
+    private BusinessModelDao businessModelDao;
 
     /**
      * 撤销流程实例
@@ -1058,6 +1061,75 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return callBeforeEndResult;
     }
 
+
+    /**
+     * 查询当前用户我的单据汇总信息
+     *
+     * @param orderType 是否在流程中    inFlow：流程中   ended：已完成
+     * @return 汇总信息
+     */
+    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,String appSign) {
+        List<TodoBusinessSummaryVO> voList = new ArrayList<>();
+        String userID = ContextUtil.getUserId();
+        Boolean ended =false;
+        if("ended".equals(orderType)){
+            ended=true;
+        }
+        List groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended);
+
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
+        if (groupResultList != null && !groupResultList.isEmpty()) {
+            Iterator it = groupResultList.iterator();
+            while (it.hasNext()) {
+                Object[] res = (Object[]) it.next();
+                int count = ((Number) res[0]).intValue();
+                String flowDefinationId = res[1] + "";
+                FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                if (flowDefination == null) {
+                    continue;
+                }
+                // 获取业务类型
+                BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
+                // 限制应用标识
+                boolean canAdd = true;
+                if (!StringUtils.isBlank(appSign)) {
+                    // 判断应用模块代码是否以应用标识开头,不是就不添加
+                    if (!businessModel.getAppModule().getCode().startsWith(appSign)) {
+                        canAdd = false;
+                    }
+                }
+                if (canAdd) {
+                    Integer oldCount = businessModelCountMap.get(businessModel);
+                    if (oldCount == null) {
+                        oldCount = 0;
+                    }
+                    businessModelCountMap.put(businessModel, oldCount + count);
+                }
+            }
+        }
+        if (!businessModelCountMap.isEmpty()) {
+            for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
+                TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
+                todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
+                todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
+                todoBusinessSummaryVO.setCount(map.getValue());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName() + "(" + map.getValue() + ")");
+                voList.add(todoBusinessSummaryVO);
+            }
+        }
+        return voList;
+    }
+
+    @Override
+    public ResponseData listMyBillsHeader(String orderType) {
+        try {
+            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(orderType,"");
+            return   ResponseData.operationSuccessWithData(list);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure("操作失败！");
+        }
+    }
 
     public   ResponseData getMyBills(Search search){
         ResponseData responseData =new ResponseData();
