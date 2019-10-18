@@ -1142,9 +1142,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
             List<SearchFilter> listFilter =  search.getFilters();
             listFilter.forEach(filter->{
+
                 if(filter.getFieldName().equals("startDate")||filter.getFieldName().equals("endDate")){
                     SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-                    String  startDateString =  sim.format((Date)filter.getValue());
+                    String  startDateString ;
+                    if(filter.getValue()!=null){
+                        startDateString =  sim.format((Date)filter.getValue());
+                    }else{
+                        if(filter.getFieldName().equals("startDate")){
+                            startDateString =  "1949-10-1";
+                        }else{
+                            startDateString =  sim.format(new Date());
+                        }
+                    }
                     try{
                         Date newDate = sim.parse(startDateString);
                         filter.setValue(newDate);
