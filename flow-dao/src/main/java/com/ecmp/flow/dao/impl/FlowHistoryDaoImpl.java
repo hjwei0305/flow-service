@@ -105,7 +105,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
-        pageResult.setRecords(result.size());
+        pageResult.setRecords(total.intValue());
         pageResult.setTotal((total.intValue()+pageInfo.getRows()-1)/pageInfo.getRows());
         return pageResult;
     }
