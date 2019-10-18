@@ -376,7 +376,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询我的单据汇总列表", notes = "查询我的单据汇总列表")
-    ResponseData listMyBillsHeader(@QueryParam("orderType") String orderType);
+    ResponseData listMyBillsHeader(@QueryParam("orderType") String orderType,@QueryParam("startDate") Long startDate,@QueryParam("startDate") Long endDate);
 
 
     /**

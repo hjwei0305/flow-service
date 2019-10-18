@@ -1068,14 +1068,36 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @param orderType 是否在流程中    inFlow：流程中   ended：已完成
      * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,String appSign) {
+    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,Long startLong,Long endLong,String appSign) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         Boolean ended =false;
         if("ended".equals(orderType)){
             ended=true;
         }
-        List groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended);
+        String startDateString;
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+        if(startLong!=null){
+            startDateString =  sim.format(new Date(startLong));
+        }else{
+            startDateString = "1949-10-01";
+        }
+        String endDateString;
+        if(startLong!=null){
+            endDateString =  sim.format(new Date(endLong));
+        }else{
+            endDateString =  sim.format(new Date());
+        }
+        Date startDate;
+        Date endDate;
+        try{
+            startDate = sim.parse(startDateString);
+            endDate = sim.parse(endDateString);
+        }catch (Exception e){
+            return  null;
+        }
+
+        List groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,startDate,endDate);
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
@@ -1121,9 +1143,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Override
-    public ResponseData listMyBillsHeader(String orderType) {
+    public ResponseData listMyBillsHeader(String orderType,Long startDate,Long endDate) {
         try {
-            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(orderType,"");
+            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(orderType,startDate,endDate,"");
             return   ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
