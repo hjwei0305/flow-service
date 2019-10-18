@@ -5,11 +5,15 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowHistoryService;
+import com.ecmp.flow.dao.BusinessModelDao;
+import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.entity.BusinessModel;
+import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.flow.vo.phone.FlowHistoryPhoneVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
@@ -17,8 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -40,6 +43,14 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     @Autowired
     private FlowTaskTool flowTaskTool;
+
+    @Autowired
+    private FlowDefinationDao flowDefinationDao;
+
+    @Autowired
+    private BusinessModelDao businessModelDao;
+
+
 
     protected BaseEntityDao<FlowHistory> getDao() {
         return this.flowHistoryDao;
@@ -88,6 +99,72 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             }
         }
         return result;
+    }
+
+
+    /**
+     * 查询当前用户已办单据汇总信息
+     *
+     * @param appSign 应用标识
+     * @return 汇总信息
+     */
+    public List<TodoBusinessSummaryVO> findHisTorySumHeader(String appSign) {
+        List<TodoBusinessSummaryVO> voList = new ArrayList<>();
+        String userID = ContextUtil.getUserId();
+        List groupResultList  = flowHistoryDao.findHisByExecutorIdGroup(userID);
+
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
+        if (groupResultList != null && !groupResultList.isEmpty()) {
+            Iterator it = groupResultList.iterator();
+            while (it.hasNext()) {
+                Object[] res = (Object[]) it.next();
+                int count = ((Number) res[0]).intValue();
+                String flowDefinationId = res[1] + "";
+                FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                if (flowDefination == null) {
+                    continue;
+                }
+                // 获取业务类型
+                BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
+                // 限制应用标识
+                boolean canAdd = true;
+                if (!StringUtils.isBlank(appSign)) {
+                    // 判断应用模块代码是否以应用标识开头,不是就不添加
+                    if (!businessModel.getAppModule().getCode().startsWith(appSign)) {
+                        canAdd = false;
+                    }
+                }
+                if (canAdd) {
+                    Integer oldCount = businessModelCountMap.get(businessModel);
+                    if (oldCount == null) {
+                        oldCount = 0;
+                    }
+                    businessModelCountMap.put(businessModel, oldCount + count);
+                }
+            }
+        }
+        if (!businessModelCountMap.isEmpty()) {
+            for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
+                TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
+                todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
+                todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
+                todoBusinessSummaryVO.setCount(map.getValue());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName() + "(" + map.getValue() + ")");
+                voList.add(todoBusinessSummaryVO);
+            }
+        }
+        return voList;
+    }
+
+    @Override
+    public ResponseData listFlowHistoryHeader() {
+        try {
+            List<TodoBusinessSummaryVO> list = this.findHisTorySumHeader("");
+            return   ResponseData.operationSuccessWithData(list);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure("操作失败！");
+        }
     }
 
     @Override

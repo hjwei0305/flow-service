@@ -87,6 +87,18 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
 
     /**
+     * 查询流程已办汇总列表
+     *
+     * @return ResponseData.data是 List<TodoBusinessSummaryVO>
+     */
+    @POST
+    @Path("listFlowHistoryHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询流程已办汇总列表", notes = "查询流程已办汇总列表")
+    ResponseData listFlowHistoryHeader();
+
+    /**
      * 获取已办信息
      * @param businessModelId 业务实体id
      * @param searchConfig 查询条件
