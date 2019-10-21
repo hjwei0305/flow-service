@@ -1143,9 +1143,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Override
-    public ResponseData listMyBillsHeader(String orderType,Long startDate,Long endDate) {
+    public ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo) {
         try {
-            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(orderType,startDate,endDate,"");
+            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(myBillsHeaderVo.getOrderType(),myBillsHeaderVo.getStartDate(),myBillsHeaderVo.getEndDate(),"");
             return   ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);

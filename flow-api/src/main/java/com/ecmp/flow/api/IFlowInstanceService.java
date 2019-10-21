@@ -368,7 +368,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
     /**
      * 查询我的单据汇总列表
-     * @param orderType    inFlow：流程中   ended：已完成
+     * @param   //myBillsHeaderVo.orderType    inFlow：流程中   ended：已完成
      * @return ResponseData.data是 List<TodoBusinessSummaryVO>
      */
     @POST
@@ -376,7 +376,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询我的单据汇总列表", notes = "查询我的单据汇总列表")
-    ResponseData listMyBillsHeader(@QueryParam("orderType") String orderType,@QueryParam("startDate") Long startDate,@QueryParam("endDate") Long endDate);
+    ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo);
 
 
     /**
