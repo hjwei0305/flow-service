@@ -21,8 +21,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -184,13 +184,16 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      * @param businessId 业务表单id
      * @return
      */
+    @Transactional
     public ResponseData deleteByBusinessId(String businessId) {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(businessId)) {
             return this.writeErrorLogAndReturnData(null, "参数不能为空！");
         }
-        flowSolidifyExecutorDao.deleteByBusinessId(businessId);
-        return responseData;
+        List<FlowSolidifyExecutor> list= flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
+        if(list!=null){
+            flowSolidifyExecutorDao.deleteByBusinessId(businessId);
+        }
+        return ResponseData.operationSuccess();
     }
 
 
