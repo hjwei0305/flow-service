@@ -391,6 +391,19 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "获取我的单据",notes = "获取我的单据")
     ResponseData getMyBills(Search searchConfig);
 
+    /**
+     * 根据业务实体获取我的单据
+     * @param modelId 业务实体ID
+     * @param searchConfig 查询条件
+     * @return
+     */
+    @POST
+    @Path("getMyBillsByModeId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据业务实体获取我的单据",notes = "根据业务实体获取我的单据")
+    ResponseData getMyBillsByModeId(@QueryParam("modelId") String modelId,Search searchConfig);
+
 
     /**
      * 获取我的单据（已办/待办）

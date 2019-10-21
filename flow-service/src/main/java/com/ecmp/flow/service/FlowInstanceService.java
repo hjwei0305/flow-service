@@ -1153,18 +1153,33 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
+
+
+    @Override
+    public   ResponseData getMyBillsByModeId(String modelId,Search search){
+       if(StringUtils.isEmpty(modelId)){
+            return this.getMyBills(search);
+       }else{
+         if(search != null){
+             List<SearchFilter> listFilter =  search.getFilters();
+             listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id",modelId, SearchFilter.Operator.EQ));
+             return this.getMyBills(search);
+         }else {
+             return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+         }
+       }
+    }
+
     public   ResponseData getMyBills(Search search){
         ResponseData responseData =new ResponseData();
         if (search != null) {
             SessionUser user = ContextUtil.getSessionUser();
-            logger.debug("当前用户：{}", user);
             String creatorId = user.getUserId();
             SearchFilter searchFilterCreatorId = new SearchFilter("creatorId", creatorId, SearchFilter.Operator.EQ);
             search.addFilter(searchFilterCreatorId);
 
             List<SearchFilter> listFilter =  search.getFilters();
             listFilter.forEach(filter->{
-
                 if(filter.getFieldName().equals("startDate")||filter.getFieldName().equals("endDate")){
                     SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
                     String  startDateString ;
@@ -1247,7 +1262,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 LogUtil.error(e.getMessage(),e);
             }
         } else {
-            logger.error("获取我的单据时，search 对象不能为空。");
+            return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
         }
         return responseData;
     }
