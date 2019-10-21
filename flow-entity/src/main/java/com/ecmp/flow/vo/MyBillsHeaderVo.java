@@ -1,15 +1,15 @@
 package com.ecmp.flow.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class MyBillsHeaderVo implements Serializable {
 
   private String orderType;
 
-  private  Long startDate;
+  private  Date startDate;
 
-  private  Long endDate;
-
+  private  Date endDate;
 
     public String getOrderType() {
         return orderType;
@@ -19,19 +19,19 @@ public class MyBillsHeaderVo implements Serializable {
         this.orderType = orderType;
     }
 
-    public Long getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Long startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public Long getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Long endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 }

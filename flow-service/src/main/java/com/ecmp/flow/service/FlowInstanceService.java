@@ -1068,7 +1068,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @param orderType 是否在流程中    inFlow：流程中   ended：已完成
      * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,Long startLong,Long endLong,String appSign) {
+    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,Date startLong,Date endLong,String appSign) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         Boolean ended =false;
@@ -1078,13 +1078,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         String startDateString;
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
         if(startLong!=null){
-            startDateString =  sim.format(new Date(startLong));
+            startDateString =  sim.format(startLong);
         }else{
             startDateString = "1949-10-01";
         }
         String endDateString;
         if(startLong!=null){
-            endDateString =  sim.format(new Date(endLong));
+            endDateString =  sim.format(endLong);
         }else{
             endDateString =  sim.format(new Date());
         }
