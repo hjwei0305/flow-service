@@ -922,12 +922,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }).start();
                     }
                 }
-                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
+//                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
+                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());
+            }else{
+                flowTaskDao.delete(flowTask);
             }
             //初始化新的任务
             String actTaskDefKey = flowTask.getActTaskDefKey();
             String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
-            flowTaskDao.delete(flowTask);
+//            flowTaskDao.delete(flowTask);
             ProcessDefinitionEntity definition = null;
             PvmActivity currentNode = null;
             FlowInstance flowInstanceTemp = flowInstance;
