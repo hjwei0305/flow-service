@@ -468,7 +468,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
      * 得到我的流程汇总信息（我的待办，我的未完结单据）
      *
      */
-    @POST
+    @GET
     @Path("getMyFlowCollectInfo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
