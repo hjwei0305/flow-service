@@ -1483,8 +1483,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-    public  int  getMybillsSum(){
-        String userID = ContextUtil.getUserId();
+    public  int  getMybillsSum(String userId){
         String startDateString = "1949-10-01";
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
         String endDateString =  sim.format(new Date());
@@ -1496,16 +1495,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }catch (Exception e){
             return 0;
         }
-        Integer billSum  = flowInstanceDao.getBillsSum(userID,false,startDate,endDate);
+        Integer billSum  = flowInstanceDao.getBillsSum(userId,false,startDate,endDate);
         return  billSum == null ? 0 : billSum;
     }
 
     @Override
-    public ResponseData getMyFlowCollectInfo() {
+    public ResponseData getMyFlowCollectInfo(String userId) {
         //用户待办数（包括转授权）
-        int todoSum =  flowTaskService.getUserTodoSum();
+        int todoSum =  flowTaskService.getUserTodoSum(userId);
         //用户单据数（流程中）
-        int billSum =  this.getMybillsSum();
+        int billSum =  this.getMybillsSum(userId);
         Map<String,Integer> map = new HashMap<>();
         map.put("todoSum",todoSum);
         map.put("billSum",billSum);

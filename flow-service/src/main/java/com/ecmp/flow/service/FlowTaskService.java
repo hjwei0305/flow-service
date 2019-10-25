@@ -1712,10 +1712,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public  Integer  getUserTodoSum(){
-        String userID = ContextUtil.getUserId();
+    public  Integer  getUserTodoSum(String userId){
         //是否允许转授权
-        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userID);
+        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userId);
         Integer todoSum  = flowTaskDao.findTodoSumByExecutorIds(userIdList);
         return  todoSum==null ? 0 : todoSum;
     }

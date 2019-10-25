@@ -473,7 +473,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "得到我的流程汇总信息",notes = "得到我的流程汇总信息")
-    ResponseData  getMyFlowCollectInfo();
+    ResponseData  getMyFlowCollectInfo(@QueryParam("userId") String userId);
 
 
 }
