@@ -87,6 +87,17 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList)  and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
     public List findByExecutorIdGroupOfPower(@Param("executorIdList") List<String> executorIdList);
 
+
+    /**
+     * 根据执行人集合查询待办总数(转授权)
+     *
+     * @param executorIdList
+     * @return
+     */
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList)  and (ft.trustState !=1  or ft.trustState is null )")
+    public Integer findTodoSumByExecutorIds(@Param("executorIdList") List<String> executorIdList);
+
+
     /**
      * 根据执行人账号归类查询,可批量审批
      *

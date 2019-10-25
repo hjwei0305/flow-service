@@ -1711,6 +1711,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return responseData;
     }
 
+
+    public  Integer  getUserTodoSum(){
+        String userID = ContextUtil.getUserId();
+        //是否允许转授权
+        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userID);
+        Integer todoSum  = flowTaskDao.findTodoSumByExecutorIds(userIdList);
+        return  todoSum==null ? 0 : todoSum;
+    }
+
+
     /**
      * 查询当前用户待办业务单据汇总信息,只有批量审批
      *
