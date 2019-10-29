@@ -10,6 +10,7 @@ import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
@@ -17,8 +18,10 @@ import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.protocol.ResponseDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -52,6 +55,97 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private FlowInstanceDao flowInstanceDao;
     @Autowired
     private FlowTaskDao flowTaskDao;
+    @Autowired
+    private FlowTypeService flowTypeService;
+
+    @Override
+    public  ResponseData startFlowByBusinessAndType(StartFlowBusinessAndTypeVo startParam){
+        String businessModelCode = startParam.getBusinessModelCode();
+        if(StringUtils.isEmpty(businessModelCode)){
+             return ResponseData.operationFailure("业务实体类全路径不能为空！");
+        }
+        String businessKey = startParam.getBusinessKey();
+        if(StringUtils.isEmpty(businessKey)){
+            return ResponseData.operationFailure("业务实体ID不能为空！");
+        }
+        String flowTypeCode = startParam.getFlowTypeCode();
+        if(StringUtils.isEmpty(flowTypeCode)){
+            return ResponseData.operationFailure("流程类型代码不能为空！");
+        }
+        FlowType  flowType = flowTypeService.findByProperty("code",flowTypeCode);
+        if(flowType==null){
+           return  ResponseData.operationFailure("找不到流程类型！");
+        }
+        FlowStartVO startVO = new FlowStartVO();
+        startVO.setBusinessModelCode(startParam.getBusinessModelCode());
+        startVO.setBusinessKey(startParam.getBusinessKey());
+        startVO.setFlowTypeId(flowType.getId());
+        OperateResultWithData<FlowStartResultVO> flowStartTypeResult;
+        //第一次调用，获取指定流程类型的第一步节点信息，以便下一次正常启动流程
+        try {
+            flowStartTypeResult = flowDefinationService.startByVO(startVO);
+        } catch (NoSuchMethodException e) {
+            LogUtil.error("获取流程类型和节点信息异常！", e);
+            return ResponseData.operationFailure("获取流程类型和节点信息异常!");
+        }
+        FlowStartResultVO flowStartResultVO = flowStartTypeResult.getData();
+        if (CollectionUtils.isEmpty(flowStartResultVO.getFlowTypeList())) {
+            return ResponseData.operationFailure("业务实体没有找到合规的流程定义！");
+        }
+        if (CollectionUtils.isEmpty(flowStartResultVO.getNodeInfoList())) {
+            return ResponseData.operationFailure("获取第一步节点信息为空！");
+        }
+        StartFlowTypeVO flowTypeVo = flowStartResultVO.getFlowTypeList().get(0);
+        NodeInfo nodeInfo = flowStartResultVO.getNodeInfoList().get(0);
+        startVO.setFlowDefKey(flowTypeVo.getFlowDefKey());
+        startVO.setPoolTask(Boolean.FALSE);
+        // 判断是否为工作池节点
+        if (nodeInfo.getType().equalsIgnoreCase("PoolTask")) {
+            startVO.setPoolTask(Boolean.TRUE);
+        }
+        // 确定默认的下一步执行人
+        Map<String, Object> userMap = new HashMap<>();
+        Map<String, List<String>> selectedNodesUserMap = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>();
+        if (startVO.getPoolTask()) {
+            userMap.put("anonymous", "anonymous");
+            selectedNodesUserMap.put(nodeInfo.getId(), new ArrayList<>());
+        } else {
+            Set<Executor> executors = nodeInfo.getExecutorSet();
+            if (!CollectionUtils.isEmpty(executors)) {
+                String  uiType  =  nodeInfo.getUiType();
+                List<String> userList = new ArrayList<String>();
+                if(uiType.equalsIgnoreCase("checkbox")){
+                    for(Executor  executor:executors){
+                        userList.add(executor.getId());
+                    }
+                    userMap.put(nodeInfo.getUserVarName(), userList);
+                }else{
+                    Executor executor = executors.iterator().next();
+                    String userIds =  executor.getId();
+                    userList.add(userIds);
+                    userMap.put(nodeInfo.getUserVarName(), userIds);
+                }
+                selectedNodesUserMap.put(nodeInfo.getUserVarName(), userList);
+            }
+        }
+        startVO.setUserMap(userMap);
+        variables.put("selectedNodesUserMap", selectedNodesUserMap);
+        startVO.setVariables(variables);
+        // 尝试启动流程
+        try {
+            flowStartTypeResult = flowDefinationService.startByVO(startVO);
+        } catch (NoSuchMethodException e) {
+            LogUtil.error("业务流程启动异常！", e);
+            // 业务流程启动异常！{0}
+            return ResponseData.operationFailure("10068", e.getMessage());
+        }
+        if (flowStartTypeResult.notSuccessful()) {
+            return ResponseData.operationFailure(flowStartTypeResult.getMessage());
+        }
+        return ResponseData.operationSuccessWithData("启动流程成功！");
+    }
+
 
 
     @Override

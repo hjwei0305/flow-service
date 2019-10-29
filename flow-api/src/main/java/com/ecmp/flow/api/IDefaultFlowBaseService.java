@@ -2,6 +2,7 @@ package com.ecmp.flow.api;
 
 
 import com.ecmp.flow.vo.CompleteTaskVo;
+import com.ecmp.flow.vo.StartFlowBusinessAndTypeVo;
 import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
@@ -73,6 +74,19 @@ public interface IDefaultFlowBaseService {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "启动流程", notes = "启动流程")
     ResponseData startFlow(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
+
+    /**
+     * 启动流程(通过业务信息和流程类型)
+     *
+     * @param startFlowBusinessAndTypeVo   其中包含业务实体类路径，业务实例ID、以及需要启动的流程类型代码
+     * @return
+     */
+    @POST
+    @Path("startFlowByBusinessAndType")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务信息和流程类型启动流程", notes = "通过业务信息和流程类型启动流程")
+    ResponseData startFlowByBusinessAndType(StartFlowBusinessAndTypeVo startFlowBusinessAndTypeVo);
 
 
     /**
