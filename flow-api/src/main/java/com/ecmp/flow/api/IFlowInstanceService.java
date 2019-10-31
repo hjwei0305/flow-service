@@ -406,6 +406,19 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
+     * 根据业务实体获取我的单据(关联待办执行人)
+     * @param modelId 业务实体ID
+     * @param searchConfig 查询条件
+     * @return
+     */
+    @POST
+    @Path("getMyBillsAndExecutorByModeId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据业务实体获取我的单据(关联待办执行人)",notes = "根据业务实体获取我的单据(关联待办执行人)")
+    ResponseData getMyBillsAndExecutorByModeId(@QueryParam("modelId") String modelId,Search searchConfig);
+
+    /**
      * 获取我的单据（已办/待办）
      * @param page 当前页数
      * @param rows 每页条数

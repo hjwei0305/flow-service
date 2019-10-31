@@ -1169,6 +1169,42 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
+    public String  getExecutorStringByInstanceId(String instanceId){
+        List<FlowTask>  list  =    flowTaskService.findByInstanceId(instanceId);
+        StringBuilder  executorString  = new StringBuilder();
+        if(list!=null){
+            for(int i=0;i<list.size();i++){
+                FlowTask flowTask =   list.get(i);
+                executorString.append(flowTask.getExecutorAccount()+":"+flowTask.getExecutorName());
+            }
+        }
+        return executorString.toString();
+    }
+
+    @Override
+    public   ResponseData getMyBillsAndExecutorByModeId(String modelId,Search search){
+        if(StringUtils.isEmpty(modelId)){
+            return this.getMyBills(search);
+        }else{
+            if(search != null){
+                List<SearchFilter> listFilter =  search.getFilters();
+                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id",modelId, SearchFilter.Operator.EQ));
+                ResponseData responseData = this.getMyBills(search);
+                if(responseData.getSuccess()){
+                    PageResult<MyBillVO> results = (PageResult<MyBillVO>)responseData.getData();
+                    ArrayList<MyBillVO> data = results.getRows();
+                    data.forEach(a->{
+                        if(!a.getEnded()){
+                            a.setTaskExecutors(this.getExecutorStringByInstanceId(a.getFlowInstanceId()));
+                        }
+                    });
+                }
+                return responseData;
+            }else {
+                return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+            }
+        }
+    }
 
     @Override
     public   ResponseData getMyBillsByModeId(String modelId,Search search){
@@ -1256,6 +1292,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
                         myBillVO.setApiBaseAddress(f.getApiBaseAddress());
                         myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
+                        myBillVO.setEnded(f.isEnded());
                         data.add(myBillVO);
                     }
 

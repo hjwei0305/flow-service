@@ -55,6 +55,26 @@ public class MyBillVO implements Serializable{
 
     private String apiBaseAddressAbsolute;
 
+    private Boolean ended; //是否结束
+
+    private String taskExecutors; //待办执行人（中泰）
+
+
+    public Boolean getEnded() {
+        return ended;
+    }
+
+    public void setEnded(Boolean ended) {
+        this.ended = ended;
+    }
+
+    public String getTaskExecutors() {
+        return taskExecutors;
+    }
+
+    public void setTaskExecutors(String taskExecutors) {
+        this.taskExecutors = taskExecutors;
+    }
 
     public String getBusinessName() {
         return businessName;
