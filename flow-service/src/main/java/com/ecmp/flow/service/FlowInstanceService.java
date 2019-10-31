@@ -1183,27 +1183,28 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Override
     public   ResponseData getMyBillsAndExecutorByModeId(String modelId,Search search){
+        ResponseData responseData;
         if(StringUtils.isEmpty(modelId)){
-            return this.getMyBills(search);
+                responseData = this.getMyBills(search);
         }else{
             if(search != null){
                 List<SearchFilter> listFilter =  search.getFilters();
                 listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id",modelId, SearchFilter.Operator.EQ));
-                ResponseData responseData = this.getMyBills(search);
-                if(responseData.getSuccess()){
-                    PageResult<MyBillVO> results = (PageResult<MyBillVO>)responseData.getData();
-                    ArrayList<MyBillVO> data = results.getRows();
-                    data.forEach(a->{
-                        if(!a.getEnded()){
-                            a.setTaskExecutors(this.getExecutorStringByInstanceId(a.getFlowInstanceId()));
-                        }
-                    });
-                }
-                return responseData;
+                responseData = this.getMyBills(search);
             }else {
                 return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
             }
         }
+        if(responseData.getSuccess()){
+            PageResult<MyBillVO> results = (PageResult<MyBillVO>)responseData.getData();
+            ArrayList<MyBillVO> data = results.getRows();
+            data.forEach(a->{
+                if(!a.getEnded()){
+                    a.setTaskExecutors(this.getExecutorStringByInstanceId(a.getFlowInstanceId()));
+                }
+            });
+        }
+        return responseData;
     }
 
     @Override
