@@ -793,7 +793,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 result = OperateResult.operationFailure("10031");
             }
         } else {
-            result = OperateResult.operationFailure("10030");
+            result = OperateResult.operationFailure("工作池任务设置执行人失败,流程实例找不到，或者已经结束！");
         }
         return result;
     }
@@ -1071,9 +1071,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,Date startLong,Date endLong,String appSign) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        Boolean ended =false;
+        Boolean ended = null;
         if("ended".equals(orderType)){
             ended=true;
+        }else if("inFlow".equals(orderType)){
+            ended=false;
         }
         String startDateString;
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
@@ -1105,7 +1107,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             return  null;
         }
 
-        List groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,startDate,endDate);
+        List groupResultList;
+        if(ended==null){
+            groupResultList  = flowInstanceDao.findBillsByGroup(userID,startDate,endDate);
+        }else{
+            groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,startDate,endDate);
+        }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
         if (groupResultList != null && !groupResultList.isEmpty()) {

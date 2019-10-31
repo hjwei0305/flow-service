@@ -54,6 +54,10 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @Query("select count(ft.id),ft.flowDefVersion.flowDefination.id from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended and ft.startDate>= :startDate and ft.endDate<= :endDate group by ft.flowDefVersion.flowDefination.id")
     List findBillsByExecutorIdGroup(@Param("creatorId") String creatorId, @Param("ended") Boolean ended, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
+    @Query("select count(ft.id),ft.flowDefVersion.flowDefination.id from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.startDate>= :startDate and ft.endDate<= :endDate group by ft.flowDefVersion.flowDefination.id")
+    List findBillsByGroup(@Param("creatorId") String creatorId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+
     @Query("select count(ft.id) from com.ecmp.flow.entity.FlowInstance ft where ft.creatorId  = :creatorId and ft.ended = :ended and ft.startDate>= :startDate and ft.endDate<= :endDate")
     Integer getBillsSum(@Param("creatorId") String creatorId, @Param("ended") Boolean ended, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
