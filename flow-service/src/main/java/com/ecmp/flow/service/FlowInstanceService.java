@@ -1083,10 +1083,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             startDateString = "1949-10-01";
         }
         String endDateString;
-        if(startLong!=null){
-            endDateString =  sim.format(endLong);
+        Calendar c = Calendar.getInstance();
+        if(endLong!=null){
+            c.setTime(endLong);
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            endDateString =  sim.format(c.getTime());
+//            endDateString =  sim.format(endLong);s
         }else{
-            endDateString =  sim.format(new Date());
+            Date date = new Date();
+            c.setTime(date);
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            endDateString =  sim.format(c.getTime());
+//            endDateString =  sim.format(new Date());
         }
         Date startDate;
         Date endDate;
