@@ -1175,7 +1175,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if(list!=null){
             for(int i=0;i<list.size();i++){
                 FlowTask flowTask =   list.get(i);
-                executorString.append(flowTask.getExecutorAccount()+":"+flowTask.getExecutorName());
+                if(i==0){
+                    executorString.append(flowTask.getExecutorName()+"【" +flowTask.getExecutorAccount()+"】");
+                }else{
+                    executorString.append(","+flowTask.getExecutorName()+"【" +flowTask.getExecutorAccount()+"】");
+                }
             }
         }
         return executorString.toString();
