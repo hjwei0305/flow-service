@@ -1072,10 +1072,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         Boolean ended = null;
+        Boolean manuallyEnd = null;
         if("ended".equals(orderType)){
             ended=true;
+            manuallyEnd =false;
         }else if("inFlow".equals(orderType)){
             ended=false;
+        }else if("abnormalEnd".equals(orderType)){
+            ended=true;
+            manuallyEnd= true;
         }
         String startDateString;
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
@@ -1110,8 +1115,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         List groupResultList;
         if(ended==null){
             groupResultList  = flowInstanceDao.findBillsByGroup(userID,startDate,endDate);
-        }else{
-            groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,startDate,endDate);
+        } else{
+            groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,manuallyEnd,startDate,endDate);
         }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
