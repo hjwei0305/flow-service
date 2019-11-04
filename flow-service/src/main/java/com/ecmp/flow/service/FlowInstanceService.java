@@ -1078,6 +1078,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             manuallyEnd =false;
         }else if("inFlow".equals(orderType)){
             ended=false;
+            manuallyEnd =false;
         }else if("abnormalEnd".equals(orderType)){
             ended=true;
             manuallyEnd= true;
