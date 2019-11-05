@@ -145,7 +145,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 StringBuilder executorIds = null;
                 for(int i=0;i<idArray.length;i++){
                    String  id =  idArray[i];
-                    if(id.length()==36){
+                    if(!id.equals("undefined")&&!id.equals("null")){
                         if(executorIds==null){
                             executorIds = new StringBuilder();
                             executorIds.append(id);
