@@ -435,7 +435,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
         if (e != null) {
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(),e);
         }
         ResponseData responseData = new ResponseData();
         responseData.setSuccess(false);
