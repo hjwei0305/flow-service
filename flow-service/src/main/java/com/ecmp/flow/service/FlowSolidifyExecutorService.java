@@ -140,7 +140,21 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 bean.setActTaskDefKey(executorVo.getActTaskDefKey());
                 bean.setNodeType(executorVo.getNodeType());
                 bean.setInstancyStatus(executorVo.getInstancyStatus());
-                bean.setExecutorIds(executorVo.getExecutorIds());
+                String   userIds  = executorVo.getExecutorIds();
+                String[] idArray = userIds.split(",");
+                StringBuilder executorIds = null;
+                for(int i=0;i<idArray.length;i++){
+                   String  id =  idArray[i];
+                    if(id.length()==36){
+                        if(executorIds==null){
+                            executorIds = new StringBuilder();
+                            executorIds.append(id);
+                        }else{
+                            executorIds.append(","+id);
+                        }
+                    }
+                }
+                bean.setExecutorIds(executorIds.toString());
                 flowSolidifyExecutorDao.save(bean);
             });
         } catch (Exception e) {
