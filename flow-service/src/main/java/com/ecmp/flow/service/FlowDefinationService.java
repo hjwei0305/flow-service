@@ -39,6 +39,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -119,6 +126,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Autowired
     private DefaultBusinessModelDao defaultBusinessModelDao;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
 
 
@@ -511,48 +521,69 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private FlowInstance startByTypeCode(String flowDefKey, FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
-        variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
-        if (startUserId == null) {
-            startUserId = ContextUtil.getUserId();
-        }
-        FlowInstance flowInstance = null;
-        FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
-        if (flowDefination != null) {
-            String versionId = flowDefination.getLastDeloyVersionId();
-            FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
-            if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
-                FlowOperateResult flowOperateResult = checkStart(businessKey, flowDefVersion);
-                if (flowOperateResult != null && !flowOperateResult.isSuccess()) {
-                    flowStartResultVO.setCheckStartResult(false);
-                    throw new FlowException(flowOperateResult.getMessage());
-                }
-                String actDefId = flowDefVersion.getActDefId();
-                variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
-                ProcessInstance processInstance = null;
-                if ((startUserId != null) && (!"".equals(startUserId))) {
-                    processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
-                } else {
-                    processInstance = this.startFlowById(actDefId, businessKey, variables);
-                }
-                try {
-                    flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-                    if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
-                        initTask(flowInstance, variables);
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(),e);
-                    if (flowInstance != null) {
-                        BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-                        ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
-                    }
-                    throw new FlowException(e.getMessage());
-                }
-            }
-        } else {
-            throw new FlowException("流程定义未找到！");
-        }
+        try {
 
-        return flowInstance;
+            String obj =   redisTemplate.execute(new SessionCallback<String>() {
+                @Nullable
+                @Override
+                public  String execute(RedisOperations operations) throws DataAccessException {
+                    return  (String)operations.opsForValue().getAndSet("flowStart_"+businessKey,businessKey.getBytes());
+                }
+            });
+
+           if(obj!=null){
+              throw new FlowException("流程已经在启动中，请不要重复提交！");
+           }
+
+          variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
+          if (startUserId == null) {
+              startUserId = ContextUtil.getUserId();
+          }
+          FlowInstance flowInstance = null;
+          FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
+          if (flowDefination != null) {
+              String versionId = flowDefination.getLastDeloyVersionId();
+              FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
+              if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
+                  FlowOperateResult flowOperateResult = checkStart(businessKey, flowDefVersion);
+                  if (flowOperateResult != null && !flowOperateResult.isSuccess()) {
+                      flowStartResultVO.setCheckStartResult(false);
+                      throw new FlowException(flowOperateResult.getMessage());
+                  }
+                  String actDefId = flowDefVersion.getActDefId();
+                  variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
+                  ProcessInstance processInstance = null;
+                  if ((startUserId != null) && (!"".equals(startUserId))) {
+                      processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
+                  } else {
+                      processInstance = this.startFlowById(actDefId, businessKey, variables);
+                  }
+                  try {
+                      flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
+                      if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                          initTask(flowInstance, variables);
+                      }
+                  } catch (Exception e) {
+                      logger.error(e.getMessage(), e);
+                      if (flowInstance != null) {
+                          BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
+                          ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                      }
+                      throw new FlowException(e.getMessage());
+                  }
+              }
+          } else {
+              throw new FlowException("流程定义未找到！");
+          }
+
+          return flowInstance;
+
+      }catch (Exception e){
+          throw e;
+      }finally {
+          //启动的时候设置的检查参数
+          redisTemplate.delete("flowStart_"+businessKey);
+      }
     }
 
 
@@ -614,6 +645,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                     }
                     flowStartVO.getVariables().put("workCaption", v.get("workCaption").toString());
+                }
+
+                if (v.get("workCaption")==null||"null".equalsIgnoreCase(v.get("workCaption").toString())){
+                    v.put("workCaption","");
                 }
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
