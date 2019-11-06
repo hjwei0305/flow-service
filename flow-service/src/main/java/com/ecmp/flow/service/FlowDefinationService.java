@@ -527,7 +527,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 @Nullable
                 @Override
                 public  String execute(RedisOperations operations) throws DataAccessException {
-                    return  (String)operations.opsForValue().getAndSet("flowStart_"+businessKey,businessKey.getBytes());
+                    return  (String)operations.opsForValue().getAndSet("flowStart_"+businessKey,businessKey);
                 }
             });
 
