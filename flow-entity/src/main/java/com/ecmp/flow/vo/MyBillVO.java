@@ -45,6 +45,8 @@ public class MyBillVO implements Serializable{
 
     private Boolean canManuallyEnd=false;//是否可以人工终止流程实例
 
+    private Boolean ManuallyEnd;//是否异常结束
+
     private String flowInstanceId;//流程实例ID
 
     private String webBaseAddress;
@@ -59,6 +61,14 @@ public class MyBillVO implements Serializable{
 
     private String taskExecutors; //待办执行人（中泰）
 
+
+    public Boolean getManuallyEnd() {
+        return ManuallyEnd;
+    }
+
+    public void setManuallyEnd(Boolean manuallyEnd) {
+        ManuallyEnd = manuallyEnd;
+    }
 
     public Boolean getEnded() {
         return ended;

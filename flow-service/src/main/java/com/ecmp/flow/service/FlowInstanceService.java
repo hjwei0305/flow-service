@@ -1304,6 +1304,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         myBillVO.setApiBaseAddress(f.getApiBaseAddress());
                         myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
                         myBillVO.setEnded(f.isEnded());
+                        myBillVO.setManuallyEnd(f.isManuallyEnd());
                         data.add(myBillVO);
                     }
 
