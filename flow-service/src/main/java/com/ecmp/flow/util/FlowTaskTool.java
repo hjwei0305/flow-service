@@ -1986,7 +1986,8 @@ public class FlowTaskTool {
                 Boolean approveResult = null;
                 //通过票数
                 Integer counterSignAgree = 0;
-                if (processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()) != null) {
+                //completeCounter==0 表示会签的第一人(会签第一人不取数据库参数，因为可能是上一次会签的数据)
+                if (processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
                     counterSignAgree = (Integer) processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()).getValue();
                 }
                 Integer value = 0;//默认弃权
