@@ -626,7 +626,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            if (flowStartVO.getVariables() == null) {
+            if (flowStartVO.getVariables().isEmpty()) {
                 flowStartVO.setVariables(businessV);
             } else {
                 flowStartVO.getVariables().putAll(businessV);
@@ -966,10 +966,16 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String type = jsonObjectNode.get("type") + "";
         String nodeId = jsonObjectNode.get("id") + "";
 
+        Map<String, Object> businessV = flowStartVO.getVariables();
+
         if ("ExclusiveGateway".equalsIgnoreCase(busType)) {//如果是系统排他网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
             List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
+            if(businessV.isEmpty()){
+                BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
+                businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
+            }
             for (int j = 0; j < targetNodes.size(); j++) {
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
                 String targetId = jsonObject.getString("targetId");
@@ -990,12 +996,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
-                        BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                            if (ConditionUtil.groovyTest(conditonFinal, businessV)) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
@@ -1006,7 +1010,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                 break;
                             }
                         } else {//其他的用UEL表达式验证
-                            Object tempResult = ConditionUtil.uelResult(groovyUel, v);
+                            Object tempResult = ConditionUtil.uelResult(groovyUel, businessV);
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
                                 if (resultB == true) {
@@ -1049,6 +1053,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
             List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
+            if(businessV.isEmpty()){
+                BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
+                businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
+            }
             for (int j = 0; j < targetNodes.size(); j++) {
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
                 String targetId = jsonObject.getString("targetId");
@@ -1070,12 +1078,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                     String groovyUel = uel.getString("groovyUel");
                     if (StringUtils.isNotEmpty(groovyUel)) {
-                        BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
-                        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                            if (ConditionUtil.groovyTest(conditonFinal, businessV)) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
@@ -1086,7 +1092,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //                                break;
                             }
                         } else {//其他的用UEL表达式验证
-                            Object tempResult = ConditionUtil.uelResult(groovyUel, v);
+                            Object tempResult = ConditionUtil.uelResult(groovyUel, businessV);
                             if (tempResult instanceof Boolean) {
                                 Boolean resultB = (Boolean) tempResult;
                                 if (resultB == true) {
