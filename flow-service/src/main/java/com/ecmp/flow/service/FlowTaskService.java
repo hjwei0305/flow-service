@@ -793,6 +793,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey(), 0);
                 runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey(), 0);
                 runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_WAIVER + currTask.getTaskDefinitionKey(), 0);
+                processVariables = runtimeService.getVariableInstances(executionId);
             }
             //总循环次数
             Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
