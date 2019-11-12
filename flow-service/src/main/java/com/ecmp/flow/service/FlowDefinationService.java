@@ -626,7 +626,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            if (flowStartVO.getVariables().isEmpty()) {
+            if (flowStartVO.getVariables()==null||flowStartVO.getVariables().isEmpty()) {
                 flowStartVO.setVariables(businessV);
             } else {
                 flowStartVO.getVariables().putAll(businessV);
