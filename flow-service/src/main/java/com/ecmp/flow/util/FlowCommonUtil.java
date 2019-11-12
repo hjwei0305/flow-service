@@ -49,8 +49,12 @@ public class FlowCommonUtil implements Serializable {
     protected RedisTemplate<String, Object> redisTemplate;
 
 
-    public  String  getErrorLogString(String url){
-        return  "【调用接口异常："+url+",详情请查看日志】";
+    public  String  getErrorLogString(String name){
+        return  "调用"+name+"接口异常,详情请查看日志!";
+    }
+
+    public  String  getNulString(String name){
+        return  "调用"+name+"接口,返回为空,详情请查看日志!";
     }
 
 
@@ -73,7 +77,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("【根据id获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据id获取执行人】"));
         }
         Executor executor = null;
         if(executors!=null && !executors.isEmpty()){
@@ -98,7 +106,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("【根据id列表获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据id列表获取执行人】"));
         }
         return executors;
     }
@@ -120,7 +132,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("根据岗位列表获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据岗位列表获取执行人】"));
         }
         return executors;
     }
@@ -142,7 +158,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("【根据岗位类别列表获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据岗位类别列表获取执行人】"));
         }
         return executors;
     }
@@ -167,7 +187,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("【根据岗位、组织维度和组织机构获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据岗位、组织维度和组织机构获取执行人】"));
         }
         return executors;
     }
@@ -190,7 +214,11 @@ public class FlowCommonUtil implements Serializable {
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             LogUtil.error(messageLog,e);
-            throw  new FlowException(getErrorLogString(url), e);
+            throw  new FlowException(getErrorLogString("【根据岗位类别和组织机构获取执行人】"), e);
+        }
+        if(executors.isEmpty()){
+            LogUtil.error(messageLog+"返回信息为空！");
+            throw  new FlowException(getNulString("【根据岗位类别和组织机构获取执行人】"));
         }
         return executors;
     }
