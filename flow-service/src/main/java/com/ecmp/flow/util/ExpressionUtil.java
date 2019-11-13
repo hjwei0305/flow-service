@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -82,11 +83,14 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         params.put(Constants.ID,businessId);
         params.put(Constants.ALL,all);
-        String messageLog = "开始调用【条件属性值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Date startDate = new Date();
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
+        String messageLog = sim.format(startDate)+"开始调用【条件属性值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
         Map<String,Object> result;
         try {
             result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result)) +"】";
+            Date endDate = new Date();
+            messageLog+=","+sim.format(endDate)+"【result=" + (result==null?null:JsonUtils.toJson(result)) +"】";
         }catch (Exception e){
             messageLog+="-调用异常："+e.getMessage();
             throw  new FlowException(getErrorLogString(clientApiUrl),e);
