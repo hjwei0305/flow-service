@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,16 +116,21 @@ public class ServiceCallUtil {
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = clientApiBaseUrl+"/"+clientUrl;
-                String msg = "事件【"+flowServiceUrl.getName()+"】";
+                Date startDate = new Date();
+                SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
+                String msg = sim.format(startDate)+"事件【"+flowServiceUrl.getName()+"】";
                 String urlAndData = "-请求地址："+url+"，参数："+ JsonUtils.toJson(params);
                 try {
                     result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {}, params);
+                    Date endDate = new Date();
                     if(result==null){
                         result = new FlowOperateResult(false,msg+"返回信息为空！");
                         LogUtil.info(msg+"返回参数为空!"+urlAndData);
                     }else if(!result.isSuccess()){
                         LogUtil.info(msg+"返回信息：【"+result.toString()+"】"+urlAndData);
                         result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
+                    }else{
+                        LogUtil.bizLog(msg+urlAndData+"返回信息时间："+sim.format(endDate));
                     }
                 }catch (Exception e){
                     LogUtil.error(msg+"内部报错!"+urlAndData,e);
