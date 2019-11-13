@@ -2276,10 +2276,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             v.put(f.getUserVarName(), userId);
                         } else {
                             String[] idArray = userIds.split(",");
-                            if (StringUtils.isNotEmpty(f.getUserVarName())) {
-                                v.put(f.getUserVarName(), idArray);
-                            }
                             userList = Arrays.asList(idArray);
+                            if (StringUtils.isNotEmpty(f.getUserVarName())) {
+                                v.put(f.getUserVarName(), userList);
+                            }
                         }
                         selectedNodesUserMap.put(f.getNodeId(), userList);
                     }
