@@ -3267,8 +3267,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String currentOrgId;
         if (StringUtils.isNotEmpty(flowTask.getActTaskId())) {
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
-            String executionId = currTask.getExecutionId();
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+            String actInstanceId = currTask.getProcessInstanceId();
+            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
             currentOrgId = processVariables.get("orgId").getValue() + "";
         } else {
             BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
