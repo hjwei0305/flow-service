@@ -3265,17 +3265,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public String getOrgIdByFlowTask(FlowTask flowTask) {
         //从回调进来的参数flowTask.getActTaskId()可能为空（服务任务）
         String currentOrgId;
+        String actInstanceId;
         if (StringUtils.isNotEmpty(flowTask.getActTaskId())) {
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
-            String actInstanceId = currTask.getProcessInstanceId();
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
-            currentOrgId = processVariables.get("orgId").getValue() + "";
+            actInstanceId = currTask.getProcessInstanceId();
         } else {
-            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-            String businessId = flowTask.getFlowInstance().getBusinessId();
-            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            currentOrgId = (String) businessV.get(Constants.ORG_ID);
+            actInstanceId = flowTask.getFlowInstance().getActInstanceId();
         }
+        Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
+        currentOrgId = processVariables.get("orgId").getValue() + "";
         return currentOrgId;
     }
 
