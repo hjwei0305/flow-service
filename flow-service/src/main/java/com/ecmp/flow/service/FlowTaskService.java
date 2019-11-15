@@ -701,6 +701,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask == null) {
+            return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
+        }
         String userId = ContextUtil.getUserId();
         if(flowTask.getExecutorId()!=null&&!flowTask.getExecutorId().equals(userId)){
             //查看当前用户是否是授权用户（如果是返回授权集合）
@@ -716,9 +719,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowTask.setExecutorAccount(ContextUtil.getUserAccount());
                 flowTask.setExecutorName(ContextUtil.getUserName());
             }
-        }
-        if (flowTask == null) {
-            return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
         }
         FlowInstance flowInstance = flowTask.getFlowInstance();
         flowTask.setDepict(opinion);
