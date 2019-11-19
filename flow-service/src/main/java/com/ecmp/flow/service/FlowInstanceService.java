@@ -703,7 +703,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     //任务池指定真实用户，抢单池确定用户签定
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId) {
+    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId ,  Map<String, Object> v) {
         OperateResultWithData<FlowTask> result = null;
         String actTaskId = historicTaskInstance.getId();
         //根据用户的id获取执行人
@@ -737,6 +737,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             newFlowTask.setOwnerAccount(executor.getCode());
 //                newFlowTask.setPreId(flowHistory.getId());
             newFlowTask.setTrustState(0);
+            if(v.get("instancyStatus")!=null){
+                try{
+                    if((Boolean)v.get("instancyStatus")==true){
+                        newFlowTask.setPriority(3);//设置为紧急
+                    }
+                }catch (Exception e){
+                  LogUtil.error(e.getMessage());
+                }
+            }
 //                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
             taskService.setAssignee(actTaskId, executor.getId());
 
@@ -783,7 +792,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                OperateResultWithData<FlowTask> operateResultWithData = this.poolTaskSign(historicTaskInstance, userId);
+                OperateResultWithData<FlowTask> operateResultWithData = this.poolTaskSign(historicTaskInstance, userId ,v);
                 if (operateResultWithData.successful()) {
                     result = OperateResult.operationSuccess(operateResultWithData.getMessage());
                 } else {
@@ -809,7 +818,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                result = this.poolTaskSign(historicTaskInstance, userId);
+                result = this.poolTaskSign(historicTaskInstance, userId,v);
             } else {
                 result = OperateResultWithData.operationFailure("10031");
             }
