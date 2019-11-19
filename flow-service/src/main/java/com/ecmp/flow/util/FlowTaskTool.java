@@ -750,7 +750,27 @@ public class FlowTaskTool {
                 PvmActivity nextTempActivity = pv.getDestination();
                 Boolean ifGateWay = ifGageway(nextTempActivity);//当前节点的子节点是否为网关
 
-                if ("ExclusiveGateway".equalsIgnoreCase(currentActivtityType) || "inclusiveGateway".equalsIgnoreCase(currentActivtityType)) {
+                if ("ExclusiveGateway".equalsIgnoreCase(currentActivtityType)) {
+                    if (conditionText != null) {
+                        if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
+                            String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
+                                    conditionText.lastIndexOf("}"));
+                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                                pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
+                                break;
+                            }
+                        } else {//其他的用UEL表达式验证
+                            Object tempResult = ConditionUtil.uelResult(conditionText, v);
+                            if (tempResult instanceof Boolean) {
+                                Boolean resultB = (Boolean) tempResult;
+                                if (resultB == true) {
+                                    pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }else if("inclusiveGateway".equalsIgnoreCase(currentActivtityType)){
                     if (conditionText != null) {
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
