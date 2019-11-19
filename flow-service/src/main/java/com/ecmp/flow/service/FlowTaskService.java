@@ -1922,7 +1922,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
         flowTaskList.forEach(a->{
             if(!userId.equals(a.getExecutorId()))  {
-                a.getFlowInstance().setBusinessModelRemark(a.getFlowInstance().getBusinessModelRemark()+"【"+a.getExecutorName()+"-转授权】");
+                a.getFlowInstance().setBusinessModelRemark("【"+a.getExecutorName()+"-转授权】"+a.getFlowInstance().getBusinessModelRemark());
             }
         });
 
@@ -2072,7 +2072,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTask> flowTaskList = pageResult.getRows();
         flowTaskList.forEach(a->{
             if(!userId.equals(a.getExecutorId()))  {
-                a.getFlowInstance().setBusinessModelRemark(a.getFlowInstance().getBusinessModelRemark()+"【"+a.getExecutorName()+"-转授权】");
+                a.getFlowInstance().setBusinessModelRemark("【"+a.getExecutorName()+"-转授权】"+a.getFlowInstance().getBusinessModelRemark());
             }
         });
         resultVO.setRows(flowTaskList);
