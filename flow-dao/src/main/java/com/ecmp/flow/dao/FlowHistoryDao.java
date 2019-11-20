@@ -12,6 +12,8 @@ import java.util.List;
 public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>,CustomFlowHistoryDao {
 
 
+    long deleteByFlowInstanceId(String flowInstanceId);
+
     /**
      * 根据执行人ID归类查询历史
      *

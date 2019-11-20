@@ -203,6 +203,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return flowHistoryDao.findLastByBusinessId(businessId);
     }
 
+
     public FlowInstance findLastInstanceByBusinessId(String businessId) {
         List<FlowInstance> list = flowInstanceDao.findByBusinessIdOrder(businessId);
         if (list != null && !list.isEmpty()) {
@@ -677,6 +678,37 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         return this.end(flowInstance.getId());
     }
+
+    /**
+     * .net项目专用
+     * @param businessIds  需要终止的单据ID集合
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData endByBusinessIdList(List<String> businessIds) {
+        if(businessIds!=null&&!businessIds.isEmpty()){
+           List<FlowInstance> list = flowInstanceDao.findByBusinessIdListNoEnd(businessIds);
+           if(list!=null&&!list.isEmpty()){
+               try {
+                   for (FlowInstance fTemp : list) {
+                       //删除所有待办
+                       flowTaskDao.deleteByFlowInstanceId(fTemp.getId());
+                       //删除所有流程历史
+                       flowHistoryDao.deleteByFlowInstanceId(fTemp.getId());
+                       //删除当前实例(包括底层表参数)
+                       this.delete(fTemp.getId());
+                   }
+               } catch (FlowException e) {
+                   TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                   return  ResponseData.operationFailure("终止失败！",e);
+               }
+               return   ResponseData.operationSuccess("已全部终止！");
+           }
+            return   ResponseData.operationFailure("未找到没有终止的流程！");
+        }
+        return   ResponseData.operationFailure("需要终止的ID集合不能为空！");
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult signalByBusinessId(String businessId, String receiveTaskActDefId, Map<String, Object> v) {

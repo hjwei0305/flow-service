@@ -28,6 +28,10 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     public List<FlowInstance> findByBusinessIdOrder(@Param("businessId") String businessId);
 
 
+    @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where  ft.businessId in  :businessIds  and  ft.ended=false  ")
+    public List<FlowInstance> findByBusinessIdListNoEnd(@Param("businessIds")List<String> businessIds);
+
+
     /**
      * 通过业务单据id查询没有结束并且没有挂起的流程实例
      * @param businessId  业务单据id

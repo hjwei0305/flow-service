@@ -278,6 +278,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
+     *
+     * 通过单据ID集合批量终止（.NET项目专用）
+     * @param businessIds  需要终止的单据ID集合
+     * @return
+     */
+    @POST
+    @Path("endByBusinessIdList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据ID集合批量终止", notes = "通过单据ID批量终止")
+    ResponseData endByBusinessIdList(List<String> businessIds);
+
+
+    /**
      * 激活ReceiveTask（接收任务）
      *
      * @param businessId 业务单据id
