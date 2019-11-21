@@ -2059,7 +2059,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String userId = ContextUtil.getUserId();
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
         if(StringUtils.isEmpty(userId)||"anonymous".equalsIgnoreCase(userId)){
-              return  resultVO;
+            throw new  FlowException("会话超时，请重新登录！");
         }
         PageResult<FlowTask> pageResult = null;
 
