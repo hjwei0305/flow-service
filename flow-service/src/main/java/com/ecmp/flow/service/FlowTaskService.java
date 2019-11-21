@@ -2058,6 +2058,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
+        if(StringUtils.isEmpty(userId)||"anonymous".equalsIgnoreCase(userId)){
+              return  resultVO;
+        }
         PageResult<FlowTask> pageResult = null;
 
         //是否允许转授权
