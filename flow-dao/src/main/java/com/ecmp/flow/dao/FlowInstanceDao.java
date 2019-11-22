@@ -27,6 +27,9 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc")
     public List<FlowInstance> findByBusinessIdOrder(@Param("businessId") String businessId);
 
+    @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where  ft.businessId = :businessId   and  ft.ended=false  ")
+    public FlowInstance findByBusinessIdNoEnd(@Param("businessId") String businessId);
+
 
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where  ft.businessId in  :businessIds  and  ft.ended=false  ")
     public List<FlowInstance> findByBusinessIdListNoEnd(@Param("businessIds")List<String> businessIds);
