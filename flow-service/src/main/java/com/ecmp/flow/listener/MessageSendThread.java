@@ -118,10 +118,14 @@ public class MessageSendThread implements Runnable {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
-                                Map<String, Object> contentTemplateParams = getParamsMap();
-                                contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
-                                message.setContentTemplateParams(contentTemplateParams);
-                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                if(StringUtils.isEmpty(contentTemplateCode)){
+                                    message.setContent(notifyExecutor.getString("content"));
+                                }else{
+                                    Map<String, Object> contentTemplateParams = getParamsMap();
+                                    contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
+                                    message.setContentTemplateParams(contentTemplateParams);
+                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                }
                                 message.setCanToSender(canToSender);
                                 this.emailSend(message, flowDefVersion);
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
@@ -133,10 +137,7 @@ public class MessageSendThread implements Runnable {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
-                                Map<String, Object> contentTemplateParams = getParamsMap();
-                                contentTemplateParams.put("remark", notifyExecutor.getString("content"));//备注说明
-                                message.setContentTemplateParams(contentTemplateParams);
-                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                message.setContent(notifyExecutor.getString("content"));
                                 message.setCanToSender(canToSender);
                                 this.dingDingSend(message, flowDefVersion);
                             } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
@@ -161,10 +162,14 @@ public class MessageSendThread implements Runnable {
                                 List<String> receiverIds = new ArrayList<String>();
                                 receiverIds.add(startUserId);//流程启动人
                                 message.setReceiverIds(receiverIds);
-                                Map<String, Object> contentTemplateParams = getParamsMap();
-                                contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
-                                message.setContentTemplateParams(contentTemplateParams);
-                                message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                if(StringUtils.isEmpty(contentTemplateCode)){
+                                    message.setContent(notifyStarter.getString("content"));
+                                }else{
+                                    Map<String, Object> contentTemplateParams = getParamsMap();
+                                    contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
+                                    message.setContentTemplateParams(contentTemplateParams);
+                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                }
                                 message.setCanToSender(canToSender);
                                 this.emailSend(message, flowDefVersion);
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
@@ -174,11 +179,7 @@ public class MessageSendThread implements Runnable {
                                 List<String> receiverIds = new ArrayList<String>();
                                 receiverIds.add(startUserId);//流程启动人
                                 message.setReceiverIds(receiverIds);
-                                Map<String, Object> contentTemplateParams = getParamsMap();
-                                contentTemplateParams.put("remark", notifyStarter.getString("content"));//备注说明
-                                message.setContentTemplateParams(contentTemplateParams);
-                                message.setContentTemplateCode(contentTemplateCode);//模板代码
-                                message.setCanToSender(canToSender);
+                                message.setContent(notifyStarter.getString("content"));
                                 message.setCanToSender(canToSender);
                                 this.dingDingSend(message, flowDefVersion);
                             } else if ("SMS".equalsIgnoreCase(type.toString())) {//后期扩展
@@ -220,10 +221,14 @@ public class MessageSendThread implements Runnable {
                                     String senderId = ContextUtil.getUserId();
                                     message.setSenderId(senderId);
                                     message.setReceiverIds(receiverIds);
-                                    Map<String, Object> contentTemplateParams = getParamsMap();
-                                    contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
-                                    message.setContentTemplateParams(contentTemplateParams);
-                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                    if(StringUtils.isEmpty(contentTemplateCode)){
+                                        message.setContent(notifyPosition.getString("content"));
+                                    }else{
+                                        Map<String, Object> contentTemplateParams = getParamsMap();
+                                        contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
+                                        message.setContentTemplateParams(contentTemplateParams);
+                                        message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                    }
                                     message.setCanToSender(canToSender);
                                     this.emailSend(message, flowDefVersion);
                                 }
@@ -255,10 +260,7 @@ public class MessageSendThread implements Runnable {
                                     String senderId = ContextUtil.getUserId();
                                     message.setSenderId(senderId);
                                     message.setReceiverIds(receiverIds);
-                                    Map<String, Object> contentTemplateParams = getParamsMap();
-                                    contentTemplateParams.put("remark", notifyPosition.getString("content"));//备注说明
-                                    message.setContentTemplateParams(contentTemplateParams);
-                                    message.setContentTemplateCode(contentTemplateCode);//模板代码
+                                    message.setContent(notifyPosition.getString("content"));
                                     message.setCanToSender(canToSender);
                                     this.dingDingSend(message, flowDefVersion);
                                 }
