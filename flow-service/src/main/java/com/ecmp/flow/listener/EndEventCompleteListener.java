@@ -112,7 +112,33 @@ public class EndEventCompleteListener implements ExecutionListener {
                 }
 
                 String businessId = delegateTask.getProcessBusinessKey();
-                FlowOperateResult callEndResult =  flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
+                FlowOperateResult callEndResult=null;
+                try{
+                    callEndResult =  flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(),endSign,variables);
+                }catch (Exception e){
+                    new Thread() {
+                        public void run() {
+                            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                            Boolean result = false;
+                            int index = 5;
+                            while (!result && index > 0) {
+                                try {
+                                    Thread.sleep(1000 * (6 - index));
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+                                } catch (Exception e) {
+                                    LogUtil.error(e.getMessage(), e);
+                                }
+                                index--;
+                            }
+                        }
+                    }.start();
+                    throw e;
+                }
+
                 if(callEndResult!=null&&!callEndResult.isSuccess()){
                     new Thread() {
                         public void run() {
