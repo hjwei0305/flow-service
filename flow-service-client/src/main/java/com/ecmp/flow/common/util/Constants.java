@@ -129,7 +129,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicOrgListByPowerUrl() {
-        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listallorgByPower");
+        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listallorgbypower");
         if(StringUtils.isNotEmpty(BASIC_ORG_LISTALLORGS_URL)){
             return  BASIC_ORG_LISTALLORGS_URL;
         }
