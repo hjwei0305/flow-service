@@ -2055,6 +2055,32 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return responseData;
     }
 
+    @Override
+    public ResponseData listFlowTaskByUserId(Search search, String userId) {
+        if(StringUtils.isEmpty(userId)||"anonymous".equalsIgnoreCase(userId)){
+            throw new  FlowException("会话超时，请重新登录！");
+        }
+        FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
+        //是否允许转授权
+        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userId);
+        PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userIdList, "", search);
+
+        //说明添加授权人信息
+        List<FlowTask> flowTaskList = pageResult.getRows();
+        flowTaskList.forEach(a->{
+            if(!userId.equals(a.getExecutorId()))  {
+                a.getFlowInstance().setBusinessModelRemark("【"+a.getExecutorName()+"-转授权】"+a.getFlowInstance().getBusinessModelRemark());
+            }
+        });
+        resultVO.setRows(flowTaskList);
+        resultVO.setRecords(pageResult.getRecords());
+        resultVO.setPage(pageResult.getPage());
+        resultVO.setTotal(pageResult.getTotal());
+        resultVO.setAllTotal(pageResult.getRecords());
+        return ResponseData.operationSuccessWithData(resultVO);
+    }
+
+
     public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
@@ -2085,6 +2111,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         resultVO.setAllTotal(pageResult.getRecords());
         return resultVO;
     }
+
+
 
     public List<BatchApprovalFlowTaskGroupVO> getBatchApprovalFlowTasks(List<String> taskIdArray) throws NoSuchMethodException {
         List<BatchApprovalFlowTaskGroupVO> result = new ArrayList<>();

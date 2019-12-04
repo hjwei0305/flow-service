@@ -555,6 +555,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
+     * 通过用户ID查询所有待办
+     * @param searchConfig 搜索对象
+     * @param userId  用户ID
+     * @return
+     */
+    @POST
+    @Path("listFlowTaskByUserId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询流程任务列表,带用户所有待办总数", notes = "查询流程任务列表,带用户所有待办总数")
+    ResponseData listFlowTaskByUserId(Search searchConfig, @QueryParam("userId") String userId);
+
+
+    /**
      * 获取待办信息
      *
      * @param searchConfig    查询条件
