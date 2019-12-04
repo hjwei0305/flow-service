@@ -268,6 +268,26 @@ public class FlowCommonUtil implements Serializable {
         }
         return result;
     }
+
+    /**
+     * 获取所有组织机构树（不包含冻结）
+     * @return
+     */
+    public  List<Organization> getBasicAllOrgByPower(){
+        String url = Constants.getBasicOrgListByPowerUrl();
+        List<Organization> result;
+        String messageLog = "开始调用【获取所有有权限的组织机构树】，接口url="+url+",参数值为空";
+        try{
+            result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {}, null);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog,e);
+            throw  new FlowException(getErrorLogString(url), e);
+        }
+        return result;
+    }
+
+
     /**
      * 获取指定节点的父组织机构列表
      * @param nodeId  指定的组织机构id

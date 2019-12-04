@@ -317,6 +317,19 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
 
 
     /**
+     * 获取所有有权限的组织机构
+     *
+     * @return 组织机构清单
+     */
+    @POST
+    @Path("listAllOrgByPower")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取所有组织机构", notes = "获取所有组织机构")
+    ResponseData listAllOrgByPower();
+
+
+    /**
      * 根据组织机构的id获取员工(不包含冻结)
      *
      * @param organizationId 组织机构的id

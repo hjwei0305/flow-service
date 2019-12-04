@@ -141,6 +141,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return responseData;
     }
 
+    @Override
+    public ResponseData listAllOrgByPower() {
+        ResponseData responseData = new ResponseData();
+        List<Organization> result = flowCommonUtil.getBasicAllOrgs();
+        responseData.setMessage("操作成功！");
+        responseData.setData(result);
+        return responseData;
+    }
+
 
     @Override
     public ResponseData listAllUser(String organizationId) {
