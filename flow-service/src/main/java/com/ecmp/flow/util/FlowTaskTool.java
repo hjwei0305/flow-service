@@ -218,6 +218,22 @@ public class FlowTaskTool {
         return result;
     }
 
+    /**
+     * 检查是否下一节点存在系统排他网关
+     *
+     * @param flowTask
+     * @return
+     */
+    public boolean checkExclusiveGateway(FlowTask flowTask, String manualExclusiveGatewayId) {
+        boolean result = false;
+        Definition definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
+        JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(manualExclusiveGatewayId);
+        if ("ExclusiveGateway".equalsIgnoreCase(nextNode.getString("busType"))) {
+            result = true;
+        }
+        return result;
+    }
+
 
     /**
      * 获取所有出口节点信息,包含网关迭代
@@ -230,7 +246,7 @@ public class FlowTaskTool {
         String nodeType = currentNode.get("nodeType") + "";
 
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<PvmActivity, List>();
-        initNextNodes(currActivity, nextNodes, 0, nodeType, null);
+        initNextNodes(false,flowTask,currActivity, nextNodes, 0, nodeType, null);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         if (!nextNodes.isEmpty()) {
@@ -450,7 +466,7 @@ public class FlowTaskTool {
 
         }
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<PvmActivity, List>();
-        initNextNodes(currActivity, nextNodes, 0, nodeType, null);
+        initNextNodes(false,flowTask,currActivity, nextNodes, 0, nodeType, null);
         if (!nextNodes.isEmpty()) {
             //判断网关
             Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
@@ -596,7 +612,7 @@ public class FlowTaskTool {
      * @param currActivity
      * @param nextNodes
      */
-    public void initNextNodes(PvmActivity currActivity, Map<PvmActivity, List> nextNodes, int index, String nodeType, List lineInfo) {
+    public void initNextNodes(Boolean needKnowRealPath ,FlowTask flowTask,PvmActivity currActivity, Map<PvmActivity, List> nextNodes, int index, String nodeType, List lineInfo) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
             for (PvmTransition pv : nextTransitionList) {
@@ -618,10 +634,39 @@ public class FlowTaskTool {
                     if (ifGateWay && index < 1) {
                         nextNodes.put(currTempActivity, value);//把网关放入第一个节点
                         index++;
-                        initNextNodes(currTempActivity, nextNodes, index, nodeType, null);
+                        //如果第一个节点是人工网关，设计到后面如果是系统排他网关需要找确切路径
+                        if(this.checkManualExclusiveGateway(flowTask,currTempActivity.getId())){
+                            needKnowRealPath=true;
+                        }
+                        initNextNodes(needKnowRealPath,flowTask,currTempActivity, nextNodes, index, nodeType, null);
                     } else {
-                        index++;
-                        initNextNodes(currTempActivity, nextNodes, index, nodeType, value);
+                        if(needKnowRealPath && ifGateWay && this.checkExclusiveGateway(flowTask, currTempActivity.getId())){
+                            //如果网关后面还是系统排他网关，需要找到确定的路径
+                            String businessId = flowTask.getFlowInstance().getBusinessId();
+                            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                            Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, false);
+                            List<NodeInfo> currentNodeInf=null;
+                            try{
+                                currentNodeInf = this.selectQualifiedNode(flowTask, currTempActivity, v, null);
+                            }catch (Exception e){
+                                nextNodes = null;
+                            }
+
+                            if(currentNodeInf!=null&&currentNodeInf.size()>0){
+                                String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+                                ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                                        .getDeployedProcessDefinition(actProcessDefinitionId);
+                                for(int k=0;k<currentNodeInf.size();k++){
+                                    NodeInfo bean = currentNodeInf.get(k);
+                                    String actTaskDefKey =  bean.getId();
+                                    PvmActivity akActivity = this.getActivitNode(definition, actTaskDefKey);
+                                    nextNodes.put(akActivity, value);
+                                }
+                            }
+                        }else{
+                            index++;
+                            initNextNodes(needKnowRealPath,flowTask,currTempActivity, nextNodes, index, nodeType, value);
+                        }
                     }
                 } else {
                     nextNodes.put(currTempActivity, value);
@@ -1234,7 +1279,7 @@ public class FlowTaskTool {
         if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
                 || "parallelGateWay".equalsIgnoreCase(nextActivtityType)//并行网关
-        ) { //手工节点
+                ) { //手工节点
             result = true;
         }
         return result;
