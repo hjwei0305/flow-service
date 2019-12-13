@@ -776,6 +776,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         nodeInfo.setType(userTaskTemp.getType());
         if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
             nodeInfo.setType("EndEvent");
+            result.add(nodeInfo);
             return result;
         }
         if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
