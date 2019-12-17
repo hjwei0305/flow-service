@@ -2862,7 +2862,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务做处理判断
                             String processInstanceId = currTask.getProcessInstanceId();
                             String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
-                            List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
+                            List<String> userListArray = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
+                            List<String> userList = new ArrayList<>(userListArray);
                             if (!userList.contains(userId)) {
                                 resultDecFalseTwo.append("【" + executor.getName() + "-" + executor.getCode() + "】");
                                 logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,在当前任务节点找不到，减签失败;");
