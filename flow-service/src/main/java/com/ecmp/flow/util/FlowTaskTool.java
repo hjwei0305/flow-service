@@ -2094,7 +2094,7 @@ public class FlowTaskTool {
                         counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
                     }
                     counterSignOpposition++;
-                    if (  (100- counterDecision) <= ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//获取不通过节点
+                    if (  (100- counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//获取不通过节点
                         shenPiNodesInit(currActivity, result, false, flowTask, v);
                         return result;
                     }

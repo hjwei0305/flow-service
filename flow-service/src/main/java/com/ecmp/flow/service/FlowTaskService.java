@@ -863,7 +863,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
                     }
                     counterSignOpposition++;
-                    if (  (100- counterDecision) <= ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//不通过
+                    if (  (100- counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//不通过
                         flowTaskTool.counterSignImmediatelyEnd(flowTask,flowInstance,variables,isSequential);//删除其他会签执行人
                         variables.put("approveResult", false);
                         counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
