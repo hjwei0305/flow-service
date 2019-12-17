@@ -338,7 +338,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             v.put("allowChooseInstancyMap", allowChooseInstancyMap);
             v.put("selectedNodesUserMap", selectedNodesUserMap);
         } else {
-            if (StringUtils.isNotEmpty(endEventId)) {
+            if (StringUtils.isNotEmpty(endEventId)&&!"false".equals(endEventId)) {
                 selectedNodesMap.put(endEventId, endEventId);
             }
             Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
@@ -356,7 +356,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
-        if (operateResult.successful() && StringUtils.isEmpty(endEventId)) { //处理成功并且不是结束节点调用
+        if (operateResult.successful() && (StringUtils.isEmpty(endEventId)||"false".equals(endEventId))) { //处理成功并且不是结束节点调用
             new Thread(new Runnable() {//检测待办是否自动执行
                 @Override
                 public void run() {
