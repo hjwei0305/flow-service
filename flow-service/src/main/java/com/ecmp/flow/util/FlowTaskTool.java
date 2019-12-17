@@ -2400,7 +2400,8 @@ public class FlowTaskTool {
        String currentExecutorId =flowTask.getExecutorId();
 
        String userListDesc = taskActKey + "_List_CounterSign";
-       List<String> userList = (List<String>) runtimeService.getVariableLocal(actInstanceId, userListDesc);
+       List<String> userListArray = (List<String>) runtimeService.getVariableLocal(actInstanceId, userListDesc);
+       List<String> userList = new ArrayList<>(userListArray);
        userList.remove(currentExecutorId);
        if(isSequential){//串行，其他人待办未生产，将弃权人直接记录到最后审批人意见中
            List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
