@@ -16,10 +16,8 @@ public class FlowSolidifyExecutorServiceTest extends BaseContextTestCase{
 
     @Test
     public void getExecuteInfoByBusinessId() {
-        String businessId ="9A8008E3-5AA0-11E9-8D4A-0242C0A8441A";
-        ResponseData res = service.getExecuteInfoByBusinessId(businessId);
-        Assert.assertNotNull(res);
-        System.out.println(JsonUtils.toJson(res));
+        String businessId ="04483B02-1F18-11EA-91AC-0242C0A84503";
+        service.selfMotionExecuteTask(businessId);
     }
 
 

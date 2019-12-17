@@ -795,21 +795,32 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_WAIVER + currTask.getTaskDefinitionKey(), 0);
                 processVariables = runtimeService.getVariableInstances(executionId);
             }
+
             //总循环次数
             Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+            //会签决策比
+            int counterDecision = 100;
+            try {
+                counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            //会签结果是否即时生效
+            Boolean immediatelyEnd =false;
+            try {
+                immediatelyEnd = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+
             if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个任务
                 counterSignLastTask = true;
                 //通过票数
                 Integer counterSignAgree = 0;
-                if (processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()) != null) {
-                    counterSignAgree = (Integer) processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()).getValue();
+                if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null) {
+                    counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
                 }
-                int counterDecision = 100;
-                try {
-                    counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+
                 String approved = variables.get("approved") + "";
                 Integer value = 0;//默认弃权
                 if ("true".equalsIgnoreCase(approved)) {
@@ -821,17 +832,43 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (definition == null) {
                     logger.error(ContextUtil.getMessage("10003"));
                 }
-//                //取得当前活动定义节点
-//                ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
-//                        .findActivity(currTask.getTaskDefinitionKey());
-//
-//                PvmActivity destinationActivity = null;
                 if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//获取通过节点
                     variables.put("approveResult", true);
                 } else {
                     variables.put("approveResult", false);
                 }
                 //执行任务
+                this.completeActiviti(actTaskId, variables);
+            }else if(immediatelyEnd){ //会签结果是否即时生效
+                String approved = variables.get("approved") + "";
+                //并串行会签（false为并行：并行将已生成的待办转已办，串行在最后人审批中记录）
+                Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+
+                if ("true".equalsIgnoreCase(approved)) {
+                    //通过票数
+                    Integer counterSignAgree = 0;
+                    if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null) {
+                        counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
+                    }
+                    counterSignAgree++;
+                    if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//通过
+                        flowTaskTool.counterSignImmediatelyEnd(flowTask,flowInstance,variables,isSequential);//删除其他会签执行人
+                        variables.put("approveResult", true);
+                        counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
+                    }
+                }else{
+                    //不通过票数
+                    Integer counterSignOpposition = 0;
+                    if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                        counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
+                    }
+                    counterSignOpposition++;
+                    if (  (100- counterDecision) <= ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//不通过
+                        flowTaskTool.counterSignImmediatelyEnd(flowTask,flowInstance,variables,isSequential);//删除其他会签执行人
+                        variables.put("approveResult", false);
+                        counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
+                    }
+                }
                 this.completeActiviti(actTaskId, variables);
             } else {
                 this.completeActiviti(actTaskId, variables);
@@ -2807,6 +2844,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
                     if (flowTaskList != null && !flowTaskList.isEmpty()) {
                         FlowTask flowTaskTemp = flowTaskList.get(0);
+                        FlowInstance flowInstance =flowTaskTemp.getFlowInstance();
                         // 取得当前任务
                         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
                                 .singleResult();
@@ -2847,6 +2885,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey, actInstanceId, userId);
                             if (isSequential == false) {//并行会签，需要清空对应的执行人任务信息
                                 if (flowTaskListCurrent != null && !flowTaskListCurrent.isEmpty()) {
+                                    //是否推送信息到baisc
+                                    Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                                    //是否推送信息到业务模块或者直接配置的url
+                                    Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowInstance);
                                     runtimeService.setVariable(executionId, "nrOfInstances", (instanceOfNumbers - 1));
                                     if (isSequential == false) {
                                         Integer nrOfActiveInstancesNumbers = (Integer) processVariables.get("nrOfActiveInstances").getValue();
@@ -2854,10 +2896,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     }
                                     userList.remove(userId);
                                     runtimeService.setVariable(processInstanceId, userListDesc, userList);//回写减签后的执行人列表
+
+                                    List<FlowTask>  delList =new ArrayList<>();
                                     for (FlowTask flowTask : flowTaskListCurrent) {
+                                        if (pushBasic || pushModelOrUrl) {
+                                            delList.add(flowTask);
+                                        }
                                         taskService.deleteRuningTask(flowTask.getActTaskId(), true);
                                         flowTaskDao.delete(flowTask);
                                     }
+
+                                    if (pushModelOrUrl) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                pushTaskToModelOrUrl(flowInstance, delList, TaskStatus.COMPLETED);
+                                            }
+                                        }).start();
+                                    }
+
+                                    if (pushBasic) {
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                pushToBasic(null, null, delList, null);
+                                            }
+                                        }).start();
+                                    }
+
                                 } else {
                                     resultDecFalseFour.append("【" + executor.getName() + "-" + executor.getCode() + "】");
                                     logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,当前任务节点已执行，减签失败;");

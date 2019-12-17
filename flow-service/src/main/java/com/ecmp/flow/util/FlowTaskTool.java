@@ -2037,6 +2037,14 @@ public class FlowTaskTool {
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
+            //会签结果是否即时生效
+            Boolean immediatelyEnd =false;
+            try {
+                immediatelyEnd = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+
             // 取得当前任务
             HistoricTaskInstance currTask = historyService
                     .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
@@ -2047,13 +2055,13 @@ public class FlowTaskTool {
             Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
-            if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个执行人
+            if (completeCounter + 1 == instanceOfNumbers ) {//会签最后一个执行人
                 Boolean approveResult = null;
                 //通过票数
                 Integer counterSignAgree = 0;
                 //completeCounter==0 表示会签的第一人(会签第一人不取数据库参数，因为可能是上一次会签的数据)
-                if (processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
-                    counterSignAgree = (Integer) processVariables.get("counterSign_agree" + currTask.getTaskDefinitionKey()).getValue();
+                if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                    counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
                 }
                 Integer value = 0;//默认弃权
                 if ("true".equalsIgnoreCase(approved)) {
@@ -2067,6 +2075,34 @@ public class FlowTaskTool {
                     shenPiNodesInit(currActivity, result, approveResult, flowTask, v);
                 }
                 return result;
+            }else if(immediatelyEnd){ //会签结果是否即时生效
+                if ("true".equalsIgnoreCase(approved)) {
+                    //通过票数
+                    Integer counterSignAgree = 0;
+                    if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                        counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
+                    }
+                    counterSignAgree++;
+                    if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//获取通过节点
+                        shenPiNodesInit(currActivity, result, true, flowTask, v);
+                        return result;
+                    }
+                }else {
+                    //不通过票数
+                    Integer counterSignOpposition = 0;
+                    if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                        counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
+                    }
+                    counterSignOpposition++;
+                    if (  (100- counterDecision) <= ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//获取不通过节点
+                        shenPiNodesInit(currActivity, result, false, flowTask, v);
+                        return result;
+                    }
+                }
+                NodeInfo tempNodeInfo = new NodeInfo();
+                tempNodeInfo.setType("CounterSignNotEnd");
+                tempNodeInfo = convertNodes(flowTask, tempNodeInfo, currActivity);
+                result.add(tempNodeInfo);
             } else {
                 NodeInfo tempNodeInfo = new NodeInfo();
                 tempNodeInfo.setType("CounterSignNotEnd");
@@ -2348,4 +2384,73 @@ public class FlowTaskTool {
         }
         return orgCodesList;
     }
+
+
+    /**
+     * 会签即时结束（达到了会签的通过率或不通过率）
+     *
+     * @param flowTask  当前待办任务
+     * @param flowInstance  当前流程实例
+     * @param variables  当前提交参数
+     * @param isSequential  并串行（false为并行）
+     */
+   public void counterSignImmediatelyEnd(FlowTask flowTask,FlowInstance flowInstance,Map<String, Object> variables,Boolean isSequential){
+       String actInstanceId = flowInstance.getActInstanceId();
+       String taskActKey = flowTask.getActTaskDefKey();
+       String currentExecutorId =flowTask.getExecutorId();
+
+       String userListDesc = taskActKey + "_List_CounterSign";
+       List<String> userList = (List<String>) runtimeService.getVariableLocal(actInstanceId, userListDesc);
+       userList.remove(currentExecutorId);
+       if(isSequential){//串行，其他人待办未生产，将弃权人直接记录到最后审批人意见中
+           List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+           String mes = null;
+           if( executorList!=null && executorList.size()>0 ){
+               for(Executor  bean : executorList){
+                   if(mes==null){
+                       mes = "【自动弃权:"+bean.getName();
+                   }else{
+                       mes +=","+bean.getName();
+                   }
+               }
+               mes += "】";
+           }
+           if(StringUtils.isNotEmpty(flowTask.getDepict())){
+               flowTask.setDepict(flowTask.getDepict()+mes);
+           }else{
+               flowTask.setDepict(mes);
+           }
+       }else{//并行有待办，将弃权人待办转已办(底层直接删除)
+           List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
+            for(FlowTask  bean:flowTaskList){
+               if(!bean.getId().equals(flowTask.getId())){
+                   HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
+                   FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
+                   flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
+                   flowHistory.setActHistoryId(null);
+                   flowHistory.setDepict("【系统自动弃权】");
+                   flowHistoryDao.save(flowHistory);
+               }
+            }
+       }
+
+       String  userIds = null;
+       for(String  uId : userList){
+           if(userIds==null){
+               userIds=uId;
+           }else{
+               userIds+=","+uId;
+           }
+       }
+
+       //会签去除不需要审批的人
+       try{
+           flowTaskService.counterSignDel(actInstanceId,taskActKey,userIds);
+       }catch (Exception e){
+           LogUtil.error(e.getMessage(),e);
+           throw new FlowException("会签即时生效失败，详情请查看日志!",e);
+       }
+   }
+
+
 }

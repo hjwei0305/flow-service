@@ -66,14 +66,14 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Test
     public void complete() {
         CompleteTaskVo completeTaskVo  =new CompleteTaskVo();
-        completeTaskVo.setApproved(null);
-        completeTaskVo.setBusinessId("65D5D42E-0074-11EA-9F73-0242C0A8440A");
+        completeTaskVo.setApproved("true");
+        completeTaskVo.setBusinessId("04483B02-1F18-11EA-91AC-0242C0A84503");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
-        completeTaskVo.setManualSelected(true);
-        completeTaskVo.setOpinion("已扫描");
-        completeTaskVo.setTaskId("69A8ADF1-0074-11EA-AC4A-0242C0A8450D");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"ServiceTask_28\",\"flowTaskType\":\"serviceTask\",\"userIds\":\"161bb98cc55aedf1ba41e4248c6b98d5\",\"userVarName\":\"ServiceTask_28_ServiceTask\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setManualSelected(false);
+        completeTaskVo.setOpinion("同意");
+        completeTaskVo.setTaskId("8A5C5D6E-1FD7-11EA-84D4-0242C0A84516");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_15\",\"flowTaskType\":\"approve\",\"userVarName\":\"UserTask_15_Approve\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":true}]");
         ResponseData res=null;
         try{
             res =  defaultFlowBaseService.completeTask(completeTaskVo);

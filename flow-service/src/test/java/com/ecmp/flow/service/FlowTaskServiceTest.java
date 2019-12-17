@@ -80,6 +80,18 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void getSelectedNodesInfo(){
+        String taskId="8A5C5D6E-1FD7-11EA-84D4-0242C0A84516";
+        String apprvod="true";
+        try{
+            OperateResultWithData res = service.getSelectedNodesInfo(taskId,apprvod,null,true);
+            System.out.print(ApiJsonUtils.toJson(res));
+        }catch (Exception e){
+        }
+    }
+
+
+    @Test
     public void completeBatch() {
         FlowTaskBatchCompleteVO param = new FlowTaskBatchCompleteVO();
         param.setTaskIdList(Collections.singletonList("A86CC83D-3647-11E9-AA0C-0242C0A8441B"));
@@ -95,7 +107,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Test
     public void complete() throws Exception{
         FlowTaskCompleteVO completeVO = new FlowTaskCompleteVO();
-        completeVO.setTaskId("ECCD79BA-882F-11E9-BE3F-0242C0A84414");
+        completeVO.setTaskId("8A5C5D6E-1FD7-11EA-84D4-0242C0A84516");
         completeVO.setOpinion("同意");
         Map<String, Object> vars = new HashMap<>();
         vars.put("manageSolidifyFlow", false);
