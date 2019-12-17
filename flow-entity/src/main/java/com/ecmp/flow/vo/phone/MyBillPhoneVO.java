@@ -29,6 +29,16 @@ public class MyBillPhoneVO  implements Serializable {
 
     private String flowInstanceId;//流程实例ID
 
+    private String flowTypeId;//流程类型id
+
+
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
 
     public String getFlowInstanceId() {
         return flowInstanceId;

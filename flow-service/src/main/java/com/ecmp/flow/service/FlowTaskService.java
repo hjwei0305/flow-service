@@ -2005,6 +2005,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 beanVo.setFlowInstanceBusinessCode(bean.getFlowInstance().getBusinessCode());
                 beanVo.setFlowInstanceFlowName(bean.getFlowInstance().getFlowName());
                 beanVo.setTaskName(bean.getTaskName());
+                beanVo.setFlowTypeId(flowType.getId());
                 beanVo.setFlowTypeName(flowType.getName());
                 beanVo.setActClaimTime(bean.getActClaimTime());
                 beanVo.setCreatedDate(bean.getCreatedDate());

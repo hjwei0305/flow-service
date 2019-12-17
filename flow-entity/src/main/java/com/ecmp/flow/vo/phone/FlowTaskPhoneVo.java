@@ -83,6 +83,12 @@ public class FlowTaskPhoneVo implements Serializable {
 
 
     /**
+     * 流程类型ID
+     * flowInstance.flowDefVersion.flowDefination.flowType.id
+     */
+    private String flowTypeId;
+
+    /**
      * 流程类型名称
      * flowInstance.flowDefVersion.flowDefination.flowType.name
      */
@@ -187,6 +193,14 @@ public class FlowTaskPhoneVo implements Serializable {
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
+    }
+
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
     }
 
     public String getFlowTypeName() {
