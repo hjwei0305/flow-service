@@ -49,7 +49,7 @@ public class CommonCounterSignCompleteListener implements TaskListener{
 
         Integer counterSignWaiver = 0;//弃权
         if( processVariables.get(Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey())!=null) {
-            counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey()).getValue();
+            counterSignWaiver = (Integer) processVariables.get(Constants.COUNTER_SIGN_WAIVER+delegateTask.getTaskDefinitionKey()).getValue();
         }
 
         String approved = delegateTask.getVariable(Constants.APPROVED)+"";
