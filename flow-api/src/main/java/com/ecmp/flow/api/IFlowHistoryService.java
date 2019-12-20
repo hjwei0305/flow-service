@@ -96,7 +96,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询流程已办汇总列表", notes = "查询流程已办汇总列表")
-    ResponseData listFlowHistoryHeader();
+    ResponseData listFlowHistoryHeader(@QueryParam("dataType") String dataType);
 
     /**
      * 获取已办信息

@@ -20,8 +20,27 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>,CustomFlowHis
      * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId  group by ft.flowDefId")
+    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId  group by ft.flowDefId ")
     public List findHisByExecutorIdGroup(@Param("executorId") String executorId);
+
+
+    /**
+     * 根据执行人ID归类查询历史(有效数据)
+     *
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId  and  ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject') or  ft.flowExecuteStatus is null )  group by ft.flowDefId ")
+    public List findHisByExecutorIdGroupValid(@Param("executorId") String executorId);
+
+    /**
+     * 根据执行人ID归类查询历史(记录数据)
+     *
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and   ft.flowExecuteStatus in ('end','auto')   group by ft.flowDefId")
+    public List findHisByExecutorIdGroupRecord(@Param("executorId") String executorId);
 
 
     @Query("select fh from com.ecmp.flow.entity.FlowHistory fh where fh.flowInstance.id  = :instanceId order by fh.actEndTime asc")

@@ -108,10 +108,19 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
      * @param appSign 应用标识
      * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findHisTorySumHeader(String appSign) {
+    public List<TodoBusinessSummaryVO> findHisTorySumHeader(String appSign,String dataType) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        List groupResultList  = flowHistoryDao.findHisByExecutorIdGroup(userID);
+        List groupResultList  = null;
+        if(StringUtils.isNotEmpty(dataType)&&!"all".equals(dataType)){
+            if ("record".equals(dataType)){//记录数据
+                groupResultList  = flowHistoryDao.findHisByExecutorIdGroupRecord(userID);
+            }else{ //有效数据
+                groupResultList  = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
+            }
+        }else{
+            groupResultList  = flowHistoryDao.findHisByExecutorIdGroup(userID);
+        }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
@@ -124,6 +133,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 if (flowDefination == null) {
                     continue;
                 }
+
                 // 获取业务类型
                 BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
                 // 限制应用标识
@@ -157,9 +167,9 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     }
 
     @Override
-    public ResponseData listFlowHistoryHeader() {
+    public ResponseData listFlowHistoryHeader(String dataType) {
         try {
-            List<TodoBusinessSummaryVO> list = this.findHisTorySumHeader("");
+            List<TodoBusinessSummaryVO> list = this.findHisTorySumHeader("",dataType);
             return   ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);

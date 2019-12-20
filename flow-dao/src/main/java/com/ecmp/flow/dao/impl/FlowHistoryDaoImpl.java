@@ -2,10 +2,7 @@ package com.ecmp.flow.dao.impl;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
-import com.ecmp.core.search.PageInfo;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchOrder;
+import com.ecmp.core.search.*;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
@@ -41,9 +38,20 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
         String  quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        List<SearchFilter>  searchFilters = searchConfig.getFilters();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
         String hqlQuery =  "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
 
+        if (searchFilters!=null && searchFilters.size()>0 && searchFilters.get(0).getValue()!=null) {
+            SearchFilter filters =  searchFilters.get(0);
+            if("valid".equals(filters.getValue())){//有效数据
+                hqlCount+=" and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
+                hqlQuery+=" and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+            }else if("record".equals(filters.getValue())){ //记录数据
+                hqlCount+=" and ft.flowExecuteStatus in ('end','auto') ";
+                hqlQuery+=" and ft.flowExecuteStatus in ('end','auto') ";
+            }
+        }
 
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
             StringBuffer extraHql = new StringBuffer(" and (");
@@ -185,8 +193,19 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         Collection<String> quickSearchProperties= searchConfig.getQuickSearchProperties();
         String  quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders =   searchConfig.getSortOrders();
+        List<SearchFilter>  searchFilters = searchConfig.getFilters();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
+        if (searchFilters!=null && searchFilters.size()>0 && searchFilters.get(0).getValue()!=null) {
+            SearchFilter filters =  searchFilters.get(0);
+            if("valid".equals(filters.getValue())){//有效数据(以前没这个字段，都作为有效数据)
+                hqlCount+=" and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
+                hqlQuery+=" and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+            }else if("record".equals(filters.getValue())){ //记录数据
+                hqlCount+=" and ft.flowExecuteStatus in ('end','auto') ";
+                hqlQuery+=" and ft.flowExecuteStatus in ('end','auto') ";
+            }
+        }
         if(StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties!=null && !quickSearchProperties.isEmpty()){
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
@@ -195,7 +214,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                     extraHql.append("  ft."+s+" like '%"+quickSearchValue+"%'");
                     first = false;
                 }else {
-                    extraHql.append(" or  ft."+s+" like '%"+quickSearchValue+"%'");
+                    extraHql.append("  or  ft."+s+" like '%"+quickSearchValue+"%'");
                 }
             }
             extraHql.append(" )");
@@ -206,9 +225,9 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             for(int i=0;i<sortOrders.size();i++){
                 SearchOrder  searchOrder = sortOrders.get(i);
                 if(i==0){
-                    hqlQuery +="order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                    hqlQuery +=" order by  ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
                 }else{
-                    hqlQuery +=", ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
+                    hqlQuery +=" , ft."+searchOrder.getProperty() + " "+searchOrder.getDirection();
                 }
             }
         }else{
