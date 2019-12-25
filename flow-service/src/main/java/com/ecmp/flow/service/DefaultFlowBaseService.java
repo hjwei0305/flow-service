@@ -196,6 +196,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
                         String flowTaskType = f.getFlowTaskType();
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
+                        //如果不是工作池任务，又没有选择用户的，提示错误
+                        if(!"poolTask".equalsIgnoreCase(flowTaskType) && ( f.getUserIds()==null || StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()) )  ){
+                                  return  ResponseData.operationFailure("请选择下一节点用户！");
+                        }
                         if(f.getUserIds()==null){ //react的工作池任务参数不是anonymous，而是userIds为null
                             if(flowTaskType.equalsIgnoreCase("PoolTask")){
                                 userMap.put("anonymous", "anonymous");
@@ -319,6 +323,11 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
+                    //如果不是工作池任务，又没有选择用户的，提示错误
+                    if(!"poolTask".equalsIgnoreCase(flowTaskType) && ( f.getUserIds()==null || StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()) )  ){
+                        return  ResponseData.operationFailure("请选择下一节点用户！");
+                    }
+
                     if(f.getUserIds()==null){
                         selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
                     }else{
