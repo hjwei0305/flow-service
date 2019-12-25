@@ -131,7 +131,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private RedisTemplate<String, Object> redisTemplate;
 
 
-
     @Override
     public ResponseData listAllOrgs() {
         ResponseData responseData = new ResponseData();
@@ -163,28 +162,27 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listUserByOrg(UserQueryVo userQueryVo) {
-        if(StringUtils.isEmpty(userQueryVo.getOrganizationId())){
-          return  ResponseData.operationFailure("组织机构ID不能为空！");
+        if (StringUtils.isEmpty(userQueryVo.getOrganizationId())) {
+            return ResponseData.operationFailure("组织机构ID不能为空！");
         }
-        UserQueryParamVo vo =new UserQueryParamVo();
+        UserQueryParamVo vo = new UserQueryParamVo();
         vo.setOrganizationId(userQueryVo.getOrganizationId());
-        vo.setIncludeSubNode(userQueryVo.getIncludeSubNode()==null?true:userQueryVo.getIncludeSubNode());
+        vo.setIncludeSubNode(userQueryVo.getIncludeSubNode() == null ? true : userQueryVo.getIncludeSubNode());
         //快速查询
         ArrayList<String> properties = new ArrayList();
         properties.add("code");
         properties.add("user.userName");
         vo.setQuickSearchProperties(properties);
-        vo.setQuickSearchValue(userQueryVo.getQuickSearchValue()==null?"":userQueryVo.getQuickSearchValue());
+        vo.setQuickSearchValue(userQueryVo.getQuickSearchValue() == null ? "" : userQueryVo.getQuickSearchValue());
         //排序
         List<SearchOrder> listOrder = new ArrayList<SearchOrder>();
         listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
         vo.setSortOrders(listOrder);
         //分页
-        vo.setPageInfo(userQueryVo.getPageInfo()==null? new PageInfo():userQueryVo.getPageInfo());
+        vo.setPageInfo(userQueryVo.getPageInfo() == null ? new PageInfo() : userQueryVo.getPageInfo());
         PageResult<Employee> result = flowCommonUtil.getEmployeesByOrgIdAndQueryParam(vo);
         return ResponseData.operationSuccessWithData(result);
     }
-
 
 
     /**
@@ -486,39 +484,40 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    String msg = "启动前事件【"+flowServiceUrl.getName()+"】";
-                    String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
-                    if(startCheckServiceAync!=null&&startCheckServiceAync == true){
+                    String msg = "启动前事件【" + flowServiceUrl.getName() + "】";
+                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
+                    if (startCheckServiceAync != null && startCheckServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                try{
-                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {}, flowInvokeParams);
-                                    if(resultAync==null){
-                                        LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
-                                    }else if(!resultAync.isSuccess()){
-                                        LogUtil.info(msg+"异步调用返回信息：【"+resultAync.toString()+"】"+urlAndData);
+                                try {
+                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                                    }, flowInvokeParams);
+                                    if (resultAync == null) {
+                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                    } else if (!resultAync.isSuccess()) {
+                                        LogUtil.info(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
                                     }
-                                }catch (Exception e){
-                                    LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
+                                } catch (Exception e) {
+                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
                                 }
                             }
                         }).start();
-                        flowOpreateResult = new FlowOperateResult(true,"事件已异步调用！");
-                    }else{
-                        try{
+                        flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
+                    } else {
+                        try {
                             flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
                             }, flowInvokeParams);
-                            if(flowOpreateResult==null){
-                                flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
-                                LogUtil.info(msg+"返回信息为空！"+urlAndData);
-                            }else if(!flowOpreateResult.isSuccess()){
-                                LogUtil.info(msg+"返回信息：【"+flowOpreateResult.toString()+"】"+urlAndData);
-                                flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
+                            if (flowOpreateResult == null) {
+                                flowOpreateResult = new FlowOperateResult(false, msg + "返回信息为空！");
+                                LogUtil.info(msg + "返回信息为空！" + urlAndData);
+                            } else if (!flowOpreateResult.isSuccess()) {
+                                LogUtil.info(msg + "返回信息：【" + flowOpreateResult.toString() + "】" + urlAndData);
+                                flowOpreateResult.setMessage(msg + "返回信息：【" + flowOpreateResult.getMessage() + "】");
                             }
-                        }catch (Exception e){
-                            LogUtil.error(msg+"内部报错!"+urlAndData,e);
-                            throw new FlowException(msg+"内部报错，详情请查看日志！");
+                        } catch (Exception e) {
+                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
+                            throw new FlowException(msg + "内部报错，详情请查看日志！");
                         }
                     }
                 }
@@ -532,67 +531,67 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String businessKey = flowStartVO.getBusinessKey();
         try {
 
-            String obj =   redisTemplate.execute(new SessionCallback<String>() {
+            String obj = redisTemplate.execute(new SessionCallback<String>() {
                 @Nullable
                 @Override
-                public  String execute(RedisOperations operations) throws DataAccessException {
-                    return  (String)operations.opsForValue().getAndSet("flowStart_"+businessKey,businessKey);
+                public String execute(RedisOperations operations) throws DataAccessException {
+                    return (String) operations.opsForValue().getAndSet("flowStart_" + businessKey, businessKey);
                 }
             });
 
-           if(obj!=null){
-              throw new FlowException("流程已经在启动中，请不要重复提交！");
-           }
+            if (obj != null) {
+                throw new FlowException("流程已经在启动中，请不要重复提交！");
+            }
 
-          variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
-          if (startUserId == null) {
-              startUserId = ContextUtil.getUserId();
-          }
-          FlowInstance flowInstance = null;
-          FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
-          if (flowDefination != null) {
-              String versionId = flowDefination.getLastDeloyVersionId();
-              FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
-              if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
-                  FlowOperateResult flowOperateResult = checkStart(businessKey, flowDefVersion);
-                  if (flowOperateResult != null && !flowOperateResult.isSuccess()) {
-                      flowStartResultVO.setCheckStartResult(false);
-                      throw new FlowException(flowOperateResult.getMessage());
-                  }
-                  String actDefId = flowDefVersion.getActDefId();
-                  variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
-                  ProcessInstance processInstance = null;
-                  if ((startUserId != null) && (!"".equals(startUserId))) {
-                      processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
-                  } else {
-                      processInstance = this.startFlowById(actDefId, businessKey, variables);
-                  }
-                  try {
-                      flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-                      if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
-                          initTask(flowInstance, variables);
-                      }
-                  } catch (Exception e) {
-                      logger.error(e.getMessage(), e);
-                      if (flowInstance != null) {
-                          BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-                          ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
-                      }
-                      throw new FlowException(e.getMessage());
-                  }
-              }
-          } else {
-              throw new FlowException("流程定义未找到！");
-          }
+            variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
+            if (startUserId == null) {
+                startUserId = ContextUtil.getUserId();
+            }
+            FlowInstance flowInstance = null;
+            FlowDefination flowDefination = flowDefinationDao.findByDefKey(flowDefKey);
+            if (flowDefination != null) {
+                String versionId = flowDefination.getLastDeloyVersionId();
+                FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
+                if (flowDefVersion != null && flowDefVersion.getActDefId() != null && (flowDefVersion.getFlowDefinationStatus() == FlowDefinationStatus.Activate)) {
+                    FlowOperateResult flowOperateResult = checkStart(businessKey, flowDefVersion);
+                    if (flowOperateResult != null && !flowOperateResult.isSuccess()) {
+                        flowStartResultVO.setCheckStartResult(false);
+                        throw new FlowException(flowOperateResult.getMessage());
+                    }
+                    String actDefId = flowDefVersion.getActDefId();
+                    variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
+                    ProcessInstance processInstance = null;
+                    if ((startUserId != null) && (!"".equals(startUserId))) {
+                        processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
+                    } else {
+                        processInstance = this.startFlowById(actDefId, businessKey, variables);
+                    }
+                    try {
+                        flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
+                        if (processInstance != null && !processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                            initTask(flowInstance, variables);
+                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        if (flowInstance != null) {
+                            BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
+                            ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                        }
+                        throw new FlowException(e.getMessage());
+                    }
+                }
+            } else {
+                throw new FlowException("流程定义未找到！");
+            }
 
-          return flowInstance;
+            return flowInstance;
 
-      }catch (Exception e){
-          throw e;
-      }finally {
-          //启动的时候设置的检查参数
-          redisTemplate.delete("flowStart_"+businessKey);
-      }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            //启动的时候设置的检查参数
+            redisTemplate.delete("flowStart_" + businessKey);
+        }
     }
 
 
@@ -629,13 +628,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             resultWithData.setData(flowStartResultVO);
             Map<String, Object> userMap = flowStartVO.getUserMap();
             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-            if(businessModel == null){
+            if (businessModel == null) {
                 return OperateResultWithData.operationFailure("业务实体未进行配置！");
             }
             Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
             businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            if (flowStartVO.getVariables()==null||flowStartVO.getVariables().isEmpty()) {
+            if (flowStartVO.getVariables() == null || flowStartVO.getVariables().isEmpty()) {
                 flowStartVO.setVariables(businessV);
             } else {
                 flowStartVO.getVariables().putAll(businessV);
@@ -647,17 +646,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         && StringUtils.isNotEmpty(v.get("additionRemark").toString())
                         && !"null".equalsIgnoreCase(v.get("additionRemark").toString().trim())
                         && !"请填写附加说明".equals(v.get("additionRemark").toString().trim())) {
-                    if(v.get("workCaption")!=null){
+                    if (v.get("workCaption") != null) {
                         v.put("workCaption", v.get("workCaption").toString() + "【附加说明：" + v.get("additionRemark").toString() + "】");
-                    }else{
+                    } else {
                         v.put("workCaption", "【附加说明：" + v.get("additionRemark").toString() + "】");
 
                     }
                     flowStartVO.getVariables().put("workCaption", v.get("workCaption").toString());
                 }
 
-                if (v.get("workCaption")==null||"null".equalsIgnoreCase(v.get("workCaption").toString())){
-                    v.put("workCaption","");
+                if (v.get("workCaption") == null || "null".equalsIgnoreCase(v.get("workCaption").toString())) {
+                    v.put("workCaption", "");
                 }
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
@@ -859,25 +858,26 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowInvokeParams.setId(flowStartVO.getBusinessKey());
                             flowInvokeParams.setOrgId("" + flowStartVO.getVariables().get("orgId"));
                             flowInvokeParams.setJsonParam(param);
-                            String nodeCode="";
-                            try{
+                            String nodeCode = "";
+                            try {
                                 JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
                                 nodeCode = normal.getString("nodeCode");
-                                if(StringUtils.isNotEmpty(nodeCode)){
-                                    Map<String,String> map = new HashMap<String,String>();
-                                    map.put("nodeCode",nodeCode);
+                                if (StringUtils.isNotEmpty(nodeCode)) {
+                                    Map<String, String> map = new HashMap<String, String>();
+                                    map.put("nodeCode", nodeCode);
                                     flowInvokeParams.setParams(map);
                                 }
-                            }catch (Exception e){}
+                            } catch (Exception e) {
+                            }
 //                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
 //                            }, flowInvokeParams);
-                            employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode,flowExecutorConfig.getName(),path,flowInvokeParams);
+                            employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
                         } else {
                             throw new FlowException("自定义执行人配置参数为空!");
                         }
                     } else {
                         //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
-                        String  startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
+                        String startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
                         employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
                     }
                 }
@@ -930,27 +930,28 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInvokeParams.setOrganizationIds(orgIds);
                 flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setJsonParam(param);
-                String nodeCode="";
-                try{
+                String nodeCode = "";
+                try {
                     JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
                     nodeCode = normal.getString("nodeCode");
-                    if(StringUtils.isNotEmpty(nodeCode)){
-                        Map<String,String> map = new HashMap<String,String>();
-                        map.put("nodeCode",nodeCode);
+                    if (StringUtils.isNotEmpty(nodeCode)) {
+                        Map<String, String> map = new HashMap<String, String>();
+                        map.put("nodeCode", nodeCode);
                         flowInvokeParams.setParams(map);
                     }
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
 //                employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
 //                }, flowInvokeParams);
-                    employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode,flowExecutorConfig.getName(),path,flowInvokeParams);
+                employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
             } else {
                 if (positionTypesIds != null && orgIds != null) {
                     //新增根据（岗位类别+组织机构）获得执行人
-                    employees = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds,orgIds);
+                    employees = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds, orgIds);
                 } else {
-                    String orgId = flowStartVO.getVariables().get("orgId")+"";
+                    String orgId = flowStartVO.getVariables().get("orgId") + "";
                     //通过岗位ids、组织维度ids和组织机构id来获取执行人
-                    employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds,orgDimensionCodes,orgId);
+                    employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds, orgDimensionCodes, orgId);
                 }
             }
             if (employees != null && !employees.isEmpty()) {
@@ -982,10 +983,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
             List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
-            if(businessV.isEmpty()){
+            if (businessV.isEmpty()) {
                 BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                 businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
             }
+            String busType2Default = null;
+            JSONObject nextNodeDefault = null;
+            String targetIdDefault = null;
             for (int j = 0; j < targetNodes.size(); j++) {
                 JSONObject jsonObject = targetNodes.getJSONObject(j);
                 String targetId = jsonObject.getString("targetId");
@@ -995,13 +999,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (uel != null && !uel.isEmpty()) {
                     String isDefault = uel.get("isDefault") + "";
                     if ("true".equalsIgnoreCase(isDefault)) {
-                        if (checkGateway(busType2)) {
-                            this.findXunFanNodesInfo(resultDefault, flowStartVO, flowDefination, definition, nextNode, businessVName);
-                        } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
-                            result = getCallActivityNodeInfo(flowStartVO, flowDefination, definition, nextNode, result, businessVName);
-                        } else {
-                            resultDefault = initNodesInfo(resultDefault, flowStartVO, definition, targetId);
-                        }
+                        busType2Default = busType2;
+                        nextNodeDefault = nextNode;
+                        targetIdDefault = targetId;
                         continue;
                     }
                     String groovyUel = uel.getString("groovyUel");
@@ -1038,6 +1038,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             }
+            //其他路径都没有的时候，再去请求默认路径
+            if (resultCurrent == null || resultCurrent.isEmpty()) {
+                if (busType2Default != null && nextNodeDefault != null && targetIdDefault != null) {
+                    if (checkGateway(busType2Default)) {
+                        this.findXunFanNodesInfo(resultDefault, flowStartVO, flowDefination, definition, nextNodeDefault, businessVName);
+                    } else if ("CallActivity".equalsIgnoreCase((String) nextNodeDefault.get("nodeType"))) {
+                        result = getCallActivityNodeInfo(flowStartVO, flowDefination, definition, nextNodeDefault, result, businessVName);
+                    } else {
+                        resultDefault = initNodesInfo(resultDefault, flowStartVO, definition, targetIdDefault);
+                    }
+                }
+            }
+
             if ((resultCurrent == null || resultCurrent.isEmpty()) && (resultDefault != null && !resultDefault.isEmpty())) {
                 resultCurrent.addAll(resultDefault);
             }
@@ -1063,7 +1076,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
             List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
             List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
-            if(businessV.isEmpty()){
+            if (businessV.isEmpty()) {
                 BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                 businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
             }
@@ -1259,7 +1272,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
     }
 
-    public FlowDefVersion getFlowDefVersion(String id, Integer versionCode ,String businessModelCode ,String businessId) {
+    public FlowDefVersion getFlowDefVersion(String id, Integer versionCode, String businessModelCode, String businessId) {
         FlowDefVersion flowDefVersion = null;
         if (versionCode > -1) {
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
@@ -1271,11 +1284,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         }
 
-        if(flowDefVersion!=null&&StringUtils.isNotEmpty(businessModelCode)&&StringUtils.isNotEmpty(businessId)){
-            try{
-                flowDefVersion = this.setSolidifyExecutorOfOnly(flowDefVersion,businessModelCode,businessId);
-            }catch (Exception e){
-                  LogUtil.error(e.getMessage());
+        if (flowDefVersion != null && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(businessId)) {
+            try {
+                flowDefVersion = this.setSolidifyExecutorOfOnly(flowDefVersion, businessModelCode, businessId);
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage());
             }
         }
 
@@ -1283,93 +1296,90 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
 
-    public  FlowDefVersion setSolidifyExecutorOfOnly(FlowDefVersion flowDefVersion,String businessModelCode ,String businessId){
+    public FlowDefVersion setSolidifyExecutorOfOnly(FlowDefVersion flowDefVersion, String businessModelCode, String businessId) {
 
         BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
         Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
         String orgId = (String) businessV.get(Constants.ORG_ID);
 
-        Map<String,SolidifyStartExecutorVo> map = new HashMap<String,SolidifyStartExecutorVo>();
+        Map<String, SolidifyStartExecutorVo> map = new HashMap<String, SolidifyStartExecutorVo>();
 
         String defJson = flowDefVersion.getDefJson();
         JSONObject defObj = JSONObject.fromObject(defJson);
-        JSONObject pocessObj= JSONObject.fromObject(defObj.get("process"));
+        JSONObject pocessObj = JSONObject.fromObject(defObj.get("process"));
         JSONObject nodeObj = JSONObject.fromObject(pocessObj.get("nodes"));
         nodeObj.keySet().forEach(obj -> {
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
-            String id =  (String)positionObj.get("id");
-            String nodeType = (String)positionObj.get("nodeType");
-            if(id.indexOf("UserTask")!=-1){
+            String id = (String) positionObj.get("id");
+            String nodeType = (String) positionObj.get("nodeType");
+            if (id.indexOf("UserTask") != -1) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
-                List<Map<String,String>> executorList = (List<Map<String,String>>)nodeConfigObj.get("executor");
-                List<RequestExecutorsVo> requestExecutorsList  = new ArrayList<RequestExecutorsVo>();
-                executorList.forEach(list ->{
-                      RequestExecutorsVo bean = new RequestExecutorsVo();
-                      String userType = list.get("userType");
-                      if(!"AnyOne".equals(userType)){
-                          String ids ="";
-                          if(userType.indexOf("SelfDefinition")!=-1){
-                              ids = (list.get("selfDefId")!=null?list.get("selfDefId"):list.get("selfDefOfOrgAndSelId"));
-                          }else{
-                              ids =  list.get("ids");
-                          }
-                          bean.setUserType(userType);
-                          bean.setIds(ids);
-                          requestExecutorsList.add(bean);
-                      }
+                List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
+                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<RequestExecutorsVo>();
+                executorList.forEach(list -> {
+                    RequestExecutorsVo bean = new RequestExecutorsVo();
+                    String userType = list.get("userType");
+                    if (!"AnyOne".equals(userType)) {
+                        String ids = "";
+                        if (userType.indexOf("SelfDefinition") != -1) {
+                            ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
+                        } else {
+                            ids = list.get("ids");
+                        }
+                        bean.setUserType(userType);
+                        bean.setIds(ids);
+                        requestExecutorsList.add(bean);
+                    }
                 });
 
-                ResponseData responseData =  flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList,businessId,orgId);
-                List<Executor> executors = (List<Executor>)responseData.getData();
-                if(executors!=null&&executors.size()==1){ //固化选人的时候，只有单个人才进行默认设置
+                ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                List<Executor> executors = (List<Executor>) responseData.getData();
+                if (executors != null && executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
                     SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
                     bean.setActTaskDefKey(id);
                     bean.setExecutorIds(executors.get(0).getId());
                     bean.setNodeType(nodeType);
-                    map.put(id,bean);
+                    map.put(id, bean);
                 }
             }
         });
         flowDefVersion.setSolidifyExecutorOfOnly(map);
-        return  flowDefVersion;
+        return flowDefVersion;
     }
 
 
-
-
-
     public ResponseData resetPositionOfGateway(String id) {
-        return  resetPosition(id);
+        return resetPosition(id);
     }
 
 
     public ResponseData resetPosition(String id) {
         if (StringUtils.isEmpty(id)) {
-            return  ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if (flowDefination == null) {
-            return  ResponseData.operationFailure("未找到流程定义！");
+            return ResponseData.operationFailure("未找到流程定义！");
         }
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         String defJson = flowDefVersion.getDefJson();
-        try{
+        try {
             ResponseData responseData = this.resetPositionByJson(defJson);
-            if(!responseData.getSuccess()){
-                return  responseData;
+            if (!responseData.getSuccess()) {
+                return responseData;
             }
-            String newDefJson =  (String)responseData.getData();
+            String newDefJson = (String) responseData.getData();
             flowDefVersion.setDefJson(newDefJson);
             flowDefVersionDao.save(flowDefVersion);
-        }catch (Exception e){
-            LogUtil.error("重置位置报错！",e);
-            return  ResponseData.operationFailure("重置失败，请查看日志！");
+        } catch (Exception e) {
+            LogUtil.error("重置位置报错！", e);
+            return ResponseData.operationFailure("重置失败，请查看日志！");
         }
         return ResponseData.operationSuccess("重置成功！");
     }
 
 
-    public ResponseData  resetPositionByJson(String defJson) throws Exception{
+    public ResponseData resetPositionByJson(String defJson) throws Exception {
         JSONObject defObj = JSONObject.fromObject(defJson);
         Object pocessKey = defObj.keySet().stream().filter(obj -> "process".equals(obj.toString())).findFirst().orElse(null);
         if (pocessKey == null) {
@@ -1612,7 +1622,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     public OperateResultWithData<FlowDefination> changeStatusOfGateway(String id, FlowDefinationStatus status) {
-        return  changeStatus(id,status);
+        return changeStatus(id, status);
     }
 
     public OperateResultWithData<FlowDefination> changeStatus(String id, FlowDefinationStatus status) {
