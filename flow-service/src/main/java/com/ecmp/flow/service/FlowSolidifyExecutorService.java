@@ -193,6 +193,35 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
     /**
+     * 批量审批用（因为没有是否固化标志，可能查不出表信息，不提示报错）
+     *
+     * @param list       FlowTaskCompleteWebVO集合
+     * @param businessId 业务表单id
+     * @return
+     */
+    public ResponseData setInstancyAndIdsByTaskListOfBatch(List<FlowTaskCompleteWebVO> list, String businessId) {
+        ResponseData responseData = new ResponseData();
+        if (list == null || list.size() == 0 || StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("参数不全！");
+        }
+
+        for (FlowTaskCompleteWebVO webvO : list) {
+            Search search = new Search();
+            search.addFilter(new SearchFilter("businessId", businessId));
+            search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
+            List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
+            if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
+                return ResponseData.operationFailure("未找到固化配置！");
+            }
+            webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
+            webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
+        }
+        responseData.setData(list);
+        return responseData;
+    }
+
+
+    /**
      * 通过BusinessId删除固化流程执行人列表
      *
      * @param businessId 业务表单id

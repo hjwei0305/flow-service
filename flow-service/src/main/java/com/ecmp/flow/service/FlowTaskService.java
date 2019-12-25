@@ -2331,6 +2331,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Map<String, String> selectedNodesMap = new HashMap<>();
                 Map<String, Object> v = new HashMap<String, Object>();
                 List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
+                //判断是不是固化流程
+                String onlyTaskId =   flowTaskBatchCompleteVO.getTaskIdList().get(0);
+                FlowTask  flowTask = this.findOne(onlyTaskId);
+                if(flowTask!=null && flowTask.getFlowInstance()!=null){
+                    ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskListOfBatch(flowTaskCompleteList, flowTask.getFlowInstance().getBusinessId());
+                    if (solidifyData.getSuccess() == true) {
+                        flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
+                        JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
+                        flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+                        v.put("manageSolidifyFlow", true); //需要维护固化表
+                    }else{
+                        v.put("manageSolidifyFlow", false);
+                    }
+                }
 
                 Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
                 Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
