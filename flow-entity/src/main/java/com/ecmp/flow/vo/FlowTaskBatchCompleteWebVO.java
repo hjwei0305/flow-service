@@ -24,6 +24,8 @@ public class FlowTaskBatchCompleteWebVO implements Serializable{
 
     private List<FlowTaskCompleteWebVO> flowTaskCompleteList;
 
+    private Boolean  solidifyFlow;
+
     public List<String> getTaskIdList() {
         return taskIdList;
     }
@@ -38,5 +40,13 @@ public class FlowTaskBatchCompleteWebVO implements Serializable{
 
     public void setFlowTaskCompleteList(List<FlowTaskCompleteWebVO> flowTaskCompleteList) {
         this.flowTaskCompleteList = flowTaskCompleteList;
+    }
+
+    public Boolean getSolidifyFlow() {
+        return solidifyFlow;
+    }
+
+    public void setSolidifyFlow(Boolean solidifyFlow) {
+        this.solidifyFlow = solidifyFlow;
     }
 }
