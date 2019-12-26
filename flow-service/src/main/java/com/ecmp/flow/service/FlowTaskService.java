@@ -2306,9 +2306,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
                     nodeGroupByFlowVersionInfo.setId(flowDefVersionId);
                     nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getFlowDefVersionName());
+                    FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
+                    if (flowDefVersion != null) {
+                        Boolean boo = flowDefVersion.getSolidifyFlow() == null ? false : flowDefVersion.getSolidifyFlow();
+                        nodeGroupByFlowVersionInfo.setSolidifyFlow(boo);
+                    }
+                    if(nodeGroupByFlowVersionInfo.getSolidifyFlow() == true){
+                        nodeGroupInfo.setExecutorSet(null);
+                    }
                     nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
                     nodeGroupByFlowVersionInfoMap.put(flowDefVersionId, nodeGroupByFlowVersionInfo);
                 } else {
+                    if(nodeGroupByFlowVersionInfo.getSolidifyFlow() == true){
+                        nodeGroupInfo.setExecutorSet(null);
+                    }
                     nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
                 }
             }
@@ -2332,16 +2343,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Map<String, Object> v = new HashMap<String, Object>();
                 List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
                 //判断是不是固化流程
-                String onlyTaskId =   flowTaskBatchCompleteVO.getTaskIdList().get(0);
-                FlowTask  flowTask = this.findOne(onlyTaskId);
-                if(flowTask!=null && flowTask.getFlowInstance()!=null){
+                String onlyTaskId = flowTaskBatchCompleteVO.getTaskIdList().get(0);
+                FlowTask flowTask = this.findOne(onlyTaskId);
+                if (flowTask != null && flowTask.getFlowInstance() != null) {
                     ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskListOfBatch(flowTaskCompleteList, flowTask.getFlowInstance().getBusinessId());
                     if (solidifyData.getSuccess() == true) {
                         flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
                         JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
                         flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
                         v.put("manageSolidifyFlow", true); //需要维护固化表
-                    }else{
+                    } else {
                         v.put("manageSolidifyFlow", false);
                     }
                 }

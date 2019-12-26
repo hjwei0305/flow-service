@@ -25,6 +25,8 @@ public class NodeGroupByFlowVersionInfo implements Serializable{
     private String id;//流程版本id
     private String name;//流程版本名称
     private List<NodeGroupInfo> nodeGroupInfos = new ArrayList<>();
+	private Boolean isSolidifyFlow; //是否固化流程
+
 
 	public String getId() {
 		return id;
@@ -48,5 +50,13 @@ public class NodeGroupByFlowVersionInfo implements Serializable{
 
 	public void setNodeGroupInfos(List<NodeGroupInfo> nodeGroupInfos) {
 		this.nodeGroupInfos = nodeGroupInfos;
+	}
+
+	public Boolean getSolidifyFlow() {
+		return isSolidifyFlow;
+	}
+
+	public void setSolidifyFlow(Boolean solidifyFlow) {
+		isSolidifyFlow = solidifyFlow;
 	}
 }
