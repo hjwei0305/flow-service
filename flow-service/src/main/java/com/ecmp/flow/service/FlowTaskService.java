@@ -2343,9 +2343,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Map<String, Object> v = new HashMap<String, Object>();
                 List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
                 //判断是不是固化流程
-                String onlyTaskId = flowTaskBatchCompleteVO.getTaskIdList().get(0);
-                FlowTask flowTask = this.findOne(onlyTaskId);
-                if (flowTask != null && flowTask.getFlowInstance() != null) {
+                if(flowTaskBatchCompleteWebVO.getSolidifyFlow() == true){
+                    String onlyTaskId = flowTaskBatchCompleteVO.getTaskIdList().get(0);
+                    FlowTask flowTask = this.findOne(onlyTaskId);
                     ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskListOfBatch(flowTaskCompleteList, flowTask.getFlowInstance().getBusinessId());
                     if (solidifyData.getSuccess() == true) {
                         flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
