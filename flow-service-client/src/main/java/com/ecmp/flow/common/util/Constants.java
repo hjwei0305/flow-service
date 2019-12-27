@@ -490,6 +490,9 @@ public class Constants extends ConfigurableContants {
     //业务模块推送任务的状态（已办）
     public final static String STATUS_BUSINESS_COMPLETED = "completed";
 
+    //业务模块推送任务的状态（删除）
+    public final static String STATUS_BUSINESS_DEDLETE = "delete";
+
     //baisc推送任务的状态（新增待办）
     public final static String STATUS_BASIC_NEW = "new";
 

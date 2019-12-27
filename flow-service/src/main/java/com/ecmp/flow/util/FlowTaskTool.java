@@ -246,7 +246,7 @@ public class FlowTaskTool {
         String nodeType = currentNode.get("nodeType") + "";
 
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<PvmActivity, List>();
-        initNextNodes(false,flowTask,currActivity, nextNodes, 0, nodeType, null);
+        initNextNodes(false, flowTask, currActivity, nextNodes, 0, nodeType, null);
         //前端需要的数据出口任务数据
         List<NodeInfo> nodeInfoList = new ArrayList<NodeInfo>();
         if (!nextNodes.isEmpty()) {
@@ -466,7 +466,7 @@ public class FlowTaskTool {
 
         }
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<PvmActivity, List>();
-        initNextNodes(false,flowTask,currActivity, nextNodes, 0, nodeType, null);
+        initNextNodes(false, flowTask, currActivity, nextNodes, 0, nodeType, null);
         if (!nextNodes.isEmpty()) {
             //判断网关
             Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
@@ -612,7 +612,7 @@ public class FlowTaskTool {
      * @param currActivity
      * @param nextNodes
      */
-    public void initNextNodes(Boolean needKnowRealPath ,FlowTask flowTask,PvmActivity currActivity, Map<PvmActivity, List> nextNodes, int index, String nodeType, List lineInfo) {
+    public void initNextNodes(Boolean needKnowRealPath, FlowTask flowTask, PvmActivity currActivity, Map<PvmActivity, List> nextNodes, int index, String nodeType, List lineInfo) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
         if (nextTransitionList != null && !nextTransitionList.isEmpty()) {
             for (PvmTransition pv : nextTransitionList) {
@@ -635,37 +635,37 @@ public class FlowTaskTool {
                         nextNodes.put(currTempActivity, value);//把网关放入第一个节点
                         index++;
                         //如果第一个节点是人工网关，设计到后面如果是系统排他网关需要找确切路径
-                        if(this.checkManualExclusiveGateway(flowTask,currTempActivity.getId())){
-                            needKnowRealPath=true;
+                        if (this.checkManualExclusiveGateway(flowTask, currTempActivity.getId())) {
+                            needKnowRealPath = true;
                         }
-                        initNextNodes(needKnowRealPath,flowTask,currTempActivity, nextNodes, index, nodeType, null);
+                        initNextNodes(needKnowRealPath, flowTask, currTempActivity, nextNodes, index, nodeType, null);
                     } else {
-                        if(needKnowRealPath && ifGateWay && this.checkExclusiveGateway(flowTask, currTempActivity.getId())){
+                        if (needKnowRealPath && ifGateWay && this.checkExclusiveGateway(flowTask, currTempActivity.getId())) {
                             //如果网关后面还是系统排他网关，需要找到确定的路径
                             String businessId = flowTask.getFlowInstance().getBusinessId();
                             BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                             Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, false);
-                            List<NodeInfo> currentNodeInf=null;
-                            try{
+                            List<NodeInfo> currentNodeInf = null;
+                            try {
                                 currentNodeInf = this.selectQualifiedNode(flowTask, currTempActivity, v, null);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 nextNodes = null;
                             }
 
-                            if(currentNodeInf!=null&&currentNodeInf.size()>0){
+                            if (currentNodeInf != null && currentNodeInf.size() > 0) {
                                 String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
                                 ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                                         .getDeployedProcessDefinition(actProcessDefinitionId);
-                                for(int k=0;k<currentNodeInf.size();k++){
+                                for (int k = 0; k < currentNodeInf.size(); k++) {
                                     NodeInfo bean = currentNodeInf.get(k);
-                                    String actTaskDefKey =  bean.getId();
+                                    String actTaskDefKey = bean.getId();
                                     PvmActivity akActivity = this.getActivitNode(definition, actTaskDefKey);
                                     nextNodes.put(akActivity, value);
                                 }
                             }
-                        }else{
+                        } else {
                             index++;
-                            initNextNodes(needKnowRealPath,flowTask,currTempActivity, nextNodes, index, nodeType, value);
+                            initNextNodes(needKnowRealPath, flowTask, currTempActivity, nextNodes, index, nodeType, value);
                         }
                     }
                 } else {
@@ -815,7 +815,7 @@ public class FlowTaskTool {
                             }
                         }
                     }
-                }else if("inclusiveGateway".equalsIgnoreCase(currentActivtityType)){
+                } else if ("inclusiveGateway".equalsIgnoreCase(currentActivtityType)) {
                     if (conditionText != null) {
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
@@ -1183,7 +1183,7 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushToBasic(null,null,needDelList,null);
+                        flowTaskService.pushToBasic(null, null, needDelList, null);
                     }
                 }).start();
             }
@@ -1191,7 +1191,7 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.COMPLETED);
+                        flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
                     }
                 }).start();
             }
@@ -1357,11 +1357,11 @@ public class FlowTaskTool {
             canSuspension = normalInfo.get("allowTerminate") != null ? (Boolean) normalInfo.get("allowTerminate") : null;
             String workPageUrlId = (String) normalInfo.get("id");
             workPageUrl = workPageUrlDao.findOne(workPageUrlId);
-            if(workPageUrl==null){
-                String  errorName = normalInfo.get("name")!=null ? (String)normalInfo.get("name") :"";
-                String  workPageName = normalInfo.get("workPageName")!=null ? (String)normalInfo.get("workPageName") :"";
-                LogUtil.error("节点【"+errorName+"】配置的工作界面【"+workPageName+"】不存在！【workPageId="+workPageUrlId+"】");
-                throw new FlowException("节点【"+errorName+"】配置的工作界面【"+workPageName+"】不存在！");
+            if (workPageUrl == null) {
+                String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
+                String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
+                LogUtil.error("节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！【workPageId=" + workPageUrlId + "】");
+                throw new FlowException("节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！");
             }
             flowTask.setWorkPageUrl(workPageUrl);
         }
@@ -1738,7 +1738,7 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        flowTaskService.pushToBasic(pushTaskList,null,null,null);
+                        flowTaskService.pushToBasic(pushTaskList, null, null, null);
                     }
                 }).start();
             }
@@ -2038,7 +2038,7 @@ public class FlowTaskTool {
                 logger.error(e.getMessage(), e);
             }
             //会签结果是否即时生效
-            Boolean immediatelyEnd =false;
+            Boolean immediatelyEnd = false;
             try {
                 immediatelyEnd = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
             } catch (Exception e) {
@@ -2055,12 +2055,12 @@ public class FlowTaskTool {
             Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
             //总循环次数
             Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
-            if (completeCounter + 1 == instanceOfNumbers ) {//会签最后一个执行人
+            if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个执行人
                 Boolean approveResult = null;
                 //通过票数
                 Integer counterSignAgree = 0;
                 //completeCounter==0 表示会签的第一人(会签第一人不取数据库参数，因为可能是上一次会签的数据)
-                if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter != 0) {
                     counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
                 }
                 Integer value = 0;//默认弃权
@@ -2075,11 +2075,11 @@ public class FlowTaskTool {
                     shenPiNodesInit(currActivity, result, approveResult, flowTask, v);
                 }
                 return result;
-            }else if(immediatelyEnd){ //会签结果是否即时生效
+            } else if (immediatelyEnd) { //会签结果是否即时生效
                 if ("true".equalsIgnoreCase(approved)) {
                     //通过票数
                     Integer counterSignAgree = 0;
-                    if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                    if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null && completeCounter != 0) {
                         counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
                     }
                     counterSignAgree++;
@@ -2087,14 +2087,14 @@ public class FlowTaskTool {
                         shenPiNodesInit(currActivity, result, true, flowTask, v);
                         return result;
                     }
-                }else {
+                } else {
                     //不通过票数
                     Integer counterSignOpposition = 0;
-                    if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter !=0) {
+                    if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter != 0) {
                         counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
                     }
                     counterSignOpposition++;
-                    if (  (100- counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100) ) {//获取不通过节点
+                    if ((100 - counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100)) {//获取不通过节点
                         shenPiNodesInit(currActivity, result, false, flowTask, v);
                         return result;
                     }
@@ -2196,10 +2196,10 @@ public class FlowTaskTool {
         List<Executor> executors = null;
         if ("Position".equalsIgnoreCase(userType)) {
             //调用岗位获取用户接口
-            executors =  flowCommonUtil.getBasicExecutorsByPositionIds(idList,orgId);
+            executors = flowCommonUtil.getBasicExecutorsByPositionIds(idList, orgId);
         } else if ("PositionType".equalsIgnoreCase(userType)) {
             //调用岗位类型获取用户接口
-            executors =  flowCommonUtil.getBasicExecutorsByPostCatIds(idList,orgId);
+            executors = flowCommonUtil.getBasicExecutorsByPostCatIds(idList, orgId);
         } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
         return executors;
@@ -2389,69 +2389,69 @@ public class FlowTaskTool {
     /**
      * 会签即时结束（达到了会签的通过率或不通过率）
      *
-     * @param flowTask  当前待办任务
-     * @param flowInstance  当前流程实例
-     * @param variables  当前提交参数
-     * @param isSequential  并串行（false为并行）
+     * @param flowTask     当前待办任务
+     * @param flowInstance 当前流程实例
+     * @param variables    当前提交参数
+     * @param isSequential 并串行（false为并行）
      */
-   public void counterSignImmediatelyEnd(FlowTask flowTask,FlowInstance flowInstance,Map<String, Object> variables,Boolean isSequential){
-       String actInstanceId = flowInstance.getActInstanceId();
-       String taskActKey = flowTask.getActTaskDefKey();
-       String currentExecutorId =flowTask.getExecutorId();
+    public void counterSignImmediatelyEnd(FlowTask flowTask, FlowInstance flowInstance, Map<String, Object> variables, Boolean isSequential) {
+        String actInstanceId = flowInstance.getActInstanceId();
+        String taskActKey = flowTask.getActTaskDefKey();
+        String currentExecutorId = flowTask.getExecutorId();
 
-       String userListDesc = taskActKey + "_List_CounterSign";
-       List<String> userListArray = (List<String>) runtimeService.getVariableLocal(actInstanceId, userListDesc);
-       List<String> userList = new ArrayList<>(userListArray);
-       userList.remove(currentExecutorId);
-       if(isSequential){//串行，其他人待办未生产，将弃权人直接记录到最后审批人意见中
-           List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
-           String mes = null;
-           if( executorList!=null && executorList.size()>0 ){
-               for(Executor  bean : executorList){
-                   if(mes==null){
-                       mes = "【自动弃权:"+bean.getName();
-                   }else{
-                       mes +=","+bean.getName();
-                   }
-               }
-               mes += "】";
-           }
-           if(StringUtils.isNotEmpty(flowTask.getDepict())){
-               flowTask.setDepict(flowTask.getDepict()+mes);
-           }else{
-               flowTask.setDepict(mes);
-           }
-       }else{//并行有待办，将弃权人待办转已办(底层直接删除)
-           List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
-            for(FlowTask  bean:flowTaskList){
-               if(!bean.getId().equals(flowTask.getId())){
-                   HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
-                   FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
-                   flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
-                   flowHistory.setActHistoryId(null);
-                   flowHistory.setDepict("【系统自动弃权】");
-                   flowHistoryDao.save(flowHistory);
-               }
+        String userListDesc = taskActKey + "_List_CounterSign";
+        List<String> userListArray = (List<String>) runtimeService.getVariableLocal(actInstanceId, userListDesc);
+        List<String> userList = new ArrayList<>(userListArray);
+        userList.remove(currentExecutorId);
+        if (isSequential) {//串行，其他人待办未生产，将弃权人直接记录到最后审批人意见中
+            List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+            String mes = null;
+            if (executorList != null && executorList.size() > 0) {
+                for (Executor bean : executorList) {
+                    if (mes == null) {
+                        mes = "【自动弃权:" + bean.getName();
+                    } else {
+                        mes += "," + bean.getName();
+                    }
+                }
+                mes += "】";
             }
-       }
+            if (StringUtils.isNotEmpty(flowTask.getDepict())) {
+                flowTask.setDepict(flowTask.getDepict() + mes);
+            } else {
+                flowTask.setDepict(mes);
+            }
+        } else {//并行有待办，将弃权人待办转已办(底层直接删除)
+            List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
+            for (FlowTask bean : flowTaskList) {
+                if (!bean.getId().equals(flowTask.getId())) {
+                    HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
+                    FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
+                    flowHistory.setActHistoryId(null);
+                    flowHistory.setDepict("【系统自动弃权】");
+                    flowHistoryDao.save(flowHistory);
+                }
+            }
+        }
 
-       String  userIds = null;
-       for(String  uId : userList){
-           if(userIds==null){
-               userIds=uId;
-           }else{
-               userIds+=","+uId;
-           }
-       }
+        String userIds = null;
+        for (String uId : userList) {
+            if (userIds == null) {
+                userIds = uId;
+            } else {
+                userIds += "," + uId;
+            }
+        }
 
-       //会签去除不需要审批的人
-       try{
-           flowTaskService.counterSignDel(actInstanceId,taskActKey,userIds);
-       }catch (Exception e){
-           LogUtil.error(e.getMessage(),e);
-           throw new FlowException("会签即时生效失败，详情请查看日志!",e);
-       }
-   }
+        //会签去除不需要审批的人
+        try {
+            flowTaskService.counterSignDel(actInstanceId, taskActKey, userIds);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new FlowException("会签即时生效失败，详情请查看日志!", e);
+        }
+    }
 
 
 }

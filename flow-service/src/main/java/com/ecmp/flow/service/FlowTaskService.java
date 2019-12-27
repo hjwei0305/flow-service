@@ -176,13 +176,33 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void savePushAndControlInfo(String type, String status, String url, Boolean success, List<FlowTask> taskList) {
         if (taskList != null && taskList.size() > 0) {
             try {
-                List<FlowTaskPushControl> list = flowTaskPushControlService.getByInstanceAndNodeAndTypeAndStatus(taskList.get(0).getFlowInstance().getId(), taskList.get(0).getActTaskDefKey(), type, status);
-                if (list == null || list.size() == 0) {
-                    //新建推送任务父表和任务列表
-                    flowTaskPushControlService.saveNewControlInfo(type, status, url, success, taskList);
-                } else {
-                    //更新推送任务父表和任务列表
-                    flowTaskPushControlService.updateOldControlInfo(type, status, url, success, taskList, list);
+                //判断进来的任务是不是属于同一个实例
+                String oneFlowInstanceId = taskList.get(0).getFlowInstance().getId();
+                String oneTaskId = taskList.get(0).getId();
+                FlowTask bean = taskList.stream().filter(a -> (!oneFlowInstanceId.equals(a.getFlowInstance().getId()) && !oneTaskId.equals(a.getId()))).findFirst().orElse(null);
+                //taskList属于不同流程实例
+                if (bean != null) {
+                    for (FlowTask flowtask : taskList) {
+                        List<FlowTask> needList = new ArrayList<>();
+                        needList.add(flowtask);
+                        List<FlowTaskPushControl> list = flowTaskPushControlService.getByInstanceAndNodeAndTypeAndStatus(flowtask.getFlowInstance().getId(), flowtask.getActTaskDefKey(), type, status);
+                        if (list == null || list.size() == 0) {
+                            //新建推送任务父表和任务列表
+                            flowTaskPushControlService.saveNewControlInfo(type, status, url, success, needList);
+                        } else {
+                            //更新推送任务父表和任务列表
+                            flowTaskPushControlService.updateOldControlInfo(type, status, url, success, needList, list);
+                        }
+                    }
+                } else { //taskList属于同实例
+                    List<FlowTaskPushControl> list = flowTaskPushControlService.getByInstanceAndNodeAndTypeAndStatus(taskList.get(0).getFlowInstance().getId(), taskList.get(0).getActTaskDefKey(), type, status);
+                    if (list == null || list.size() == 0) {
+                        //新建推送任务父表和任务列表
+                        flowTaskPushControlService.saveNewControlInfo(type, status, url, success, taskList);
+                    } else {
+                        //更新推送任务父表和任务列表
+                        flowTaskPushControlService.updateOldControlInfo(type, status, url, success, taskList, list);
+                    }
                 }
             } catch (Exception e) {
                 LogUtil.error("保存推送信息失败！", e);
@@ -399,13 +419,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
                 List<String> idList = new ArrayList<String>();
                 taskList.forEach(a -> {
+                    a.getFlowInstance().setFlowTasks(null);
                     a.setTaskStatus(taskStatus.toString());
                     idList.add("【id=" + a.getId() + "】");
                 });
-                String msg = "推送已办";
+                String msg = "";
                 if (taskStatus.toString().equals(TaskStatus.INIT.toString())) {
                     msg = "推送待办";
                     flowTaskDao.initFlowTasks(taskList); //添加待办处理地址等
+                } else if (taskStatus.toString().equals(TaskStatus.DELETE.toString())) {
+                    msg = "推送删除待办";
+                } else {
+                    msg = "推送已办";
                 }
                 String messageLog = "开始调用[" + msg + "]接口，接口url=" + flowPushTaskUrl + ",参数值:" + JsonUtils.toJson(idList);
                 Boolean success = false;
@@ -418,80 +443,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     messageLog += "-[" + msg + "异常]：" + e.getMessage();
                     LogUtil.error(messageLog, e);
                 } finally {
-                    if (taskStatus.getValue().equals(Constants.STATUS_BUSINESS_INIT)) {
+                    if (taskStatus.getValue().equals(Constants.STATUS_BUSINESS_INIT)) { //新增
                         this.savePushAndControlInfo(Constants.TYPE_BUSINESS, Constants.STATUS_BUSINESS_INIT, flowPushTaskUrl, success, taskList);
-                    } else {
+                    } else if (taskStatus.getValue().equals(Constants.STATUS_BUSINESS_DEDLETE)) { //删除
+                        this.savePushAndControlInfo(Constants.TYPE_BUSINESS, Constants.STATUS_BUSINESS_DEDLETE, flowPushTaskUrl, success, taskList);
+                    } else {  //已办
                         this.savePushAndControlInfo(Constants.TYPE_BUSINESS, Constants.STATUS_BUSINESS_COMPLETED, flowPushTaskUrl, success, taskList);
                     }
                 }
             }
         }
     }
-
-
-//    @Override
-//    public void pushTaskToBusinessModel(String businessModelCode, String businessId, String taskId) {
-//        if (StringUtils.isNotEmpty(businessId)) {
-//            BusinessModel businessModel = null;
-//            if (StringUtils.isEmpty(businessModelCode)) {
-//                //通过业务单据id查询没有结束并且没有挂起的流程实例
-//                List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
-//                if (flowInstanceList != null && flowInstanceList.size() > 0) {
-//                    businessModel = flowInstanceList.get(0).getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-//                }
-//            } else {
-//                businessModel = businessModelService.findByClassName(businessModelCode);
-//            }
-//            if (businessModel != null) {
-//                //根据业务id查询待办
-//                ResponseData responseData = this.findTasksByBusinessId(businessId);
-//                if (responseData.getSuccess()) {
-//                    List<FlowTask> list = (List<FlowTask>) responseData.getData();
-//                    if (list != null && list.size() > 0) {
-//                        if (StringUtils.isNotEmpty(taskId)) { //已办信息
-//                            FlowTask flowTask = new FlowTask();
-//                            flowTask.setId(taskId);
-//                            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
-//                            list.add(flowTask);
-//                        }
-//                        String pushMsgUrl = businessModel.getPushMsgUrl();
-//                        String flowPushTaskUrl = "";
-//                        if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
-//                            String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
-//                            String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-//                            if (StringUtils.isEmpty(clientApiBaseUrl)) {
-//                                LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
-//                            } else {
-//                                flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
-//                            }
-//                        } else {//取配置中心统一推送待办地址
-//                            flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
-//                        }
-//
-//                        List<String> idList = new ArrayList<String>();
-//                        list.forEach(a -> idList.add("【是否已处理：" + a.getTaskStatus() + "-id=" + a.getId() + "】"));
-//                        if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
-//                            String messageLog = "开始调用‘推送待办’接口，接口url=" + flowPushTaskUrl + ",参数值flow_task:" + JsonUtils.toJson(idList);
-//                            try {
-//                                ApiClient.postViaProxyReturnResult(flowPushTaskUrl, new GenericType<String>() {
-//                                }, list);
-//                                LogUtil.bizLog(messageLog);
-//                            } catch (Exception e) {
-//                                messageLog += "-推送待办异常：" + e.getMessage();
-//                                LogUtil.error(messageLog, e);
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    LogUtil.error("推送待办-查询待办失败！");
-//                }
-//            } else {
-//                LogUtil.error("推送待办-获取业务模块失败！");
-//            }
-//        } else {
-//            LogUtil.error("推送待办-参数不能为空！");
-//        }
-//    }
 
 
     /**
@@ -529,7 +491,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
+                        pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
                     }
                 }).start();
             }
@@ -957,7 +919,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.COMPLETED);
+                                pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
                             }
                         }).start();
                     }
@@ -2311,13 +2273,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         Boolean boo = flowDefVersion.getSolidifyFlow() == null ? false : flowDefVersion.getSolidifyFlow();
                         nodeGroupByFlowVersionInfo.setSolidifyFlow(boo);
                     }
-                    if(nodeGroupByFlowVersionInfo.getSolidifyFlow() == true){
+                    if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
                         nodeGroupInfo.setExecutorSet(null);
                     }
                     nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
                     nodeGroupByFlowVersionInfoMap.put(flowDefVersionId, nodeGroupByFlowVersionInfo);
                 } else {
-                    if(nodeGroupByFlowVersionInfo.getSolidifyFlow() == true){
+                    if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
                         nodeGroupInfo.setExecutorSet(null);
                     }
                     nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
@@ -2343,7 +2305,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 Map<String, Object> v = new HashMap<String, Object>();
                 List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
                 //判断是不是固化流程
-                if(flowTaskBatchCompleteWebVO.getSolidifyFlow() == true){
+                if (flowTaskBatchCompleteWebVO.getSolidifyFlow() == true) {
                     String onlyTaskId = flowTaskBatchCompleteVO.getTaskIdList().get(0);
                     FlowTask flowTask = this.findOne(onlyTaskId);
                     ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskListOfBatch(flowTaskCompleteList, flowTask.getFlowInstance().getBusinessId());
@@ -2514,16 +2476,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
                 if (pushBasic || pushModelOrUrl) {
                     needDelList.add(flowTask);
-                    //推送成已办
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
-                            }
-                        }).start();
-                    }
-
                 }
                 flowTaskDao.delete(flowTask);
                 flowTaskDao.save(newFlowTask);
@@ -2538,10 +2490,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }).start();
                     }
+
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
                                 pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
                             }
                         }).start();
@@ -2593,14 +2547,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
                 if (pushBasic || pushModelOrUrl) {
                     needDelList.add(flowTask);
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
-                            }
-                        }).start();
-                    }
                 }
                 flowTaskDao.save(flowTask);
                 flowTaskDao.save(newFlowTask);
@@ -2611,6 +2557,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
                                 pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
                             }
                         }).start();
@@ -2684,19 +2631,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     needDelList.add(flowTask);
                     List<FlowTask> needAddList = new ArrayList<FlowTask>();
                     needAddList.add(oldFlowTask);
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
-                            }
-                        }).start();
-                    }
 
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
                                 pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
                             }
                         }).start();
@@ -2938,7 +2878,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         new Thread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pushTaskToModelOrUrl(flowInstance, delList, TaskStatus.COMPLETED);
+                                                pushTaskToModelOrUrl(flowInstance, delList, TaskStatus.DELETE);
                                             }
                                         }).start();
                                     }

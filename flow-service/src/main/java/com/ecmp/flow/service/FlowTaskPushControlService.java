@@ -139,6 +139,8 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.INIT);
         } else if (STATUS_BUSINESS_COMPLETED.equals(pushStatus)) {
             flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.COMPLETED);
+        } else if (STATUS_BUSINESS_DEDLETE.equals(pushStatus)) {
+            flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.DELETE);
         } else {
             responseData = ResponseData.operationFailure("推送状态不能识别！");
         }
@@ -314,7 +316,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
     public Boolean ifInclude(List<FlowTaskPush> list, FlowTask flowTask) {
         for (int i = 0; i < list.size(); i++) {
             //要判断执行人相同是因为（工作池任务最开始是匿名用户，指定用户后直接改的执行人）
-            if (list.get(i).getFlowTaskId().equals(flowTask.getId())&&list.get(i).getExecutorId().equals(flowTask.getExecutorId())) {
+            if (list.get(i).getFlowTaskId().equals(flowTask.getId()) && list.get(i).getExecutorId().equals(flowTask.getExecutorId())) {
                 return true;
             }
         }

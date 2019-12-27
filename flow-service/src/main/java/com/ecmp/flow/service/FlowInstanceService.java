@@ -206,9 +206,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     //因为中泰时间服务器问题，所以不能按照时间倒序查询
     public FlowInstance findLastInstanceByBusinessId(String businessId) {
         //流程中如果存在未终止的实例，肯定是最后一个
-        FlowInstance  bean =  flowInstanceDao.findByBusinessIdNoEnd(businessId);
-        if(bean!=null){
-            return  bean;
+        FlowInstance bean = flowInstanceDao.findByBusinessIdNoEnd(businessId);
+        if (bean != null) {
+            return bean;
         }
         List<FlowInstance> list = flowInstanceDao.findByBusinessIdOrder(businessId);
         if (list != null && !list.isEmpty()) {
@@ -252,7 +252,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             flowTaskVO = new FlowTaskVO();
             flowTaskVO.setId(flowTask.getId());
             flowTaskVO.setName(flowTask.getTaskName());
-            if (Objects.nonNull(flowTask.getWorkPageUrl())){
+            if (Objects.nonNull(flowTask.getWorkPageUrl())) {
                 flowTaskVO.setWorkPageUrl(flowTask.getWorkPageUrl().getUrl());
             }
         }
@@ -404,11 +404,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-    public List<ProcessTrackVO>  getProcessTrackVOByTaskId(String taskId){
-        List<ProcessTrackVO>  list = new ArrayList<ProcessTrackVO>();
+    public List<ProcessTrackVO> getProcessTrackVOByTaskId(String taskId) {
+        List<ProcessTrackVO> list = new ArrayList<ProcessTrackVO>();
         FlowTask flowTask = flowTaskService.findOne(taskId);
-        if(flowTask!=null&&flowTask.getFlowInstance()!=null){
-            list =  this.getProcessTrackVOById(flowTask.getFlowInstance().getId());
+        if (flowTask != null && flowTask.getFlowInstance() != null) {
+            list = this.getProcessTrackVOById(flowTask.getFlowInstance().getId());
         }
         return list;
     }
@@ -546,7 +546,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (!canEnd) {
             if (flowTaskList != null && !flowTaskList.isEmpty()) {
                 for (FlowTask flowTask : flowTaskList) {
-                    if(flowTask.getCanSuspension()==null||flowTask.getCanSuspension()==true){
+                    if (flowTask.getCanSuspension() == null || flowTask.getCanSuspension() == true) {
                         flowTask.setCanSuspension(false);
                         flowTaskDao.save(flowTask);
                     }
@@ -686,32 +686,33 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     /**
      * .net项目专用
-     * @param businessIds  需要终止的单据ID集合
+     *
+     * @param businessIds 需要终止的单据ID集合
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData endByBusinessIdList(List<String> businessIds) {
-        if(businessIds!=null&&!businessIds.isEmpty()){
-           List<FlowInstance> list = flowInstanceDao.findByBusinessIdListNoEnd(businessIds);
-           if(list!=null&&!list.isEmpty()){
-               try {
-                   for (FlowInstance fTemp : list) {
-                       //删除所有待办
-                       flowTaskDao.deleteByFlowInstanceId(fTemp.getId());
-                       //删除所有流程历史
-                       flowHistoryDao.deleteByFlowInstanceId(fTemp.getId());
-                       //删除当前实例(包括底层表参数)
-                       this.delete(fTemp.getId());
-                   }
-               } catch (FlowException e) {
-                   TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                   return  ResponseData.operationFailure("终止失败！",e);
-               }
-               return   ResponseData.operationSuccess("已全部终止！");
-           }
-            return   ResponseData.operationFailure("未找到没有终止的流程！");
+        if (businessIds != null && !businessIds.isEmpty()) {
+            List<FlowInstance> list = flowInstanceDao.findByBusinessIdListNoEnd(businessIds);
+            if (list != null && !list.isEmpty()) {
+                try {
+                    for (FlowInstance fTemp : list) {
+                        //删除所有待办
+                        flowTaskDao.deleteByFlowInstanceId(fTemp.getId());
+                        //删除所有流程历史
+                        flowHistoryDao.deleteByFlowInstanceId(fTemp.getId());
+                        //删除当前实例(包括底层表参数)
+                        this.delete(fTemp.getId());
+                    }
+                } catch (FlowException e) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResponseData.operationFailure("终止失败！", e);
+                }
+                return ResponseData.operationSuccess("已全部终止！");
+            }
+            return ResponseData.operationFailure("未找到没有终止的流程！");
         }
-        return   ResponseData.operationFailure("需要终止的ID集合不能为空！");
+        return ResponseData.operationFailure("需要终止的ID集合不能为空！");
     }
 
 
@@ -740,30 +741,22 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     //任务池指定真实用户，抢单池确定用户签定
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId ,  Map<String, Object> v) {
+    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId, Map<String, Object> v) {
         OperateResultWithData<FlowTask> result = null;
         String actTaskId = historicTaskInstance.getId();
         //根据用户的id获取执行人
         Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
         if (executor != null) {
             FlowTask newFlowTask = flowTaskDao.findByActTaskId(actTaskId);
-            FlowTask delFlowTask  = new FlowTask();
+            FlowTask delFlowTask = new FlowTask();
             org.springframework.beans.BeanUtils.copyProperties(newFlowTask, delFlowTask);
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
             //是否推送信息到业务模块或者直接配置的url
             Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(newFlowTask.getFlowInstance());
             List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
-            if (pushBasic||pushModelOrUrl) {
+            if (pushBasic || pushModelOrUrl) {
                 needDelList.add(delFlowTask);
-                if(pushModelOrUrl){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needDelList, TaskStatus.COMPLETED);
-                        }
-                    }).start();
-                }
             }
 //                newFlowTask.setId(null);
             newFlowTask.setExecutorId(executor.getId());
@@ -774,13 +767,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             newFlowTask.setOwnerAccount(executor.getCode());
 //                newFlowTask.setPreId(flowHistory.getId());
             newFlowTask.setTrustState(0);
-            if(v.get("instancyStatus")!=null){
-                try{
-                    if((Boolean)v.get("instancyStatus")==true){
+            if (v.get("instancyStatus") != null) {
+                try {
+                    if ((Boolean) v.get("instancyStatus") == true) {
                         newFlowTask.setPriority(3);//设置为紧急
                     }
-                }catch (Exception e){
-                  LogUtil.error(e.getMessage());
+                } catch (Exception e) {
+                    LogUtil.error(e.getMessage());
                 }
             }
 //                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
@@ -789,9 +782,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             flowTaskDao.save(newFlowTask);
 
             List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
-            if (pushBasic||pushModelOrUrl) {
+            if (pushBasic || pushModelOrUrl) {
                 needAddList.add(newFlowTask);
-                if(pushBasic){
+                if (pushBasic) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -799,10 +792,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         }
                     }).start();
                 }
-                if(pushModelOrUrl){
+                if (pushModelOrUrl) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
                             flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
                         }
                     }).start();
@@ -829,7 +823,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                OperateResultWithData<FlowTask> operateResultWithData = this.poolTaskSign(historicTaskInstance, userId ,v);
+                OperateResultWithData<FlowTask> operateResultWithData = this.poolTaskSign(historicTaskInstance, userId, v);
                 if (operateResultWithData.successful()) {
                     result = OperateResult.operationSuccess(operateResultWithData.getMessage());
                 } else {
@@ -855,7 +849,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(poolTaskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                result = this.poolTaskSign(historicTaskInstance, userId,v);
+                result = this.poolTaskSign(historicTaskInstance, userId, v);
             } else {
                 result = OperateResultWithData.operationFailure("10031");
             }
@@ -952,27 +946,26 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.END.getCode());//终止
                                 flowHistoryDao.save(flowHistory);
                             } catch (Exception e) {
-                                logger.error(e.getMessage(),e);
+                                logger.error(e.getMessage(), e);
                             }
-                            if(pushBasic||pushModelOrUrl){//是否推送信息到baisc、<业务模块>、<配置的url>
-                                flowTask.getFlowInstance().setFlowTasks(null); //循环引用
+                            if (pushBasic || pushModelOrUrl) {//是否推送信息到baisc、<业务模块>、<配置的url>
                                 needDelList.add(flowTask);
                             }
                             flowTaskDao.delete(flowTask);
                         }
-                        if(pushBasic){  //流程终止时，异步推送需要删除待办到baisc
+                        if (pushBasic) {  //流程终止时，异步推送需要删除待办到baisc
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    flowTaskService.pushToBasic(null,null,needDelList,null);
+                                    flowTaskService.pushToBasic(null, null, needDelList, null);
                                 }
                             }).start();
                         }
-                        if(pushModelOrUrl){  //流程终止时，异步推送成已办<业务模块>、<配置的url>
+                        if (pushModelOrUrl) {  //流程终止时，异步推送成已办<业务模块>、<配置的url>
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    flowTaskService.pushTaskToModelOrUrl(fTemp,needDelList, TaskStatus.COMPLETED);
+                                    flowTaskService.pushTaskToModelOrUrl(fTemp, needDelList, TaskStatus.DELETE);
                                 }
                             }).start();
                         }
@@ -1008,7 +1001,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);
                     } catch (Exception e) {
-                        logger.error(e.getMessage(),e);
+                        logger.error(e.getMessage(), e);
                     }
                 }
             } else {
@@ -1074,7 +1067,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callEndServiceAndSon(son, endSign);
             }
         }
-        flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign , null);
+        flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
     }
 
 
@@ -1095,7 +1088,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
-        FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion, endSign ,null);
+        FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
         if (callBeforeEndResult != null && callBeforeEndResult.isSuccess() != true) {
             String message = "BusinessId=" + flowInstance.getBusinessId()
                     + ",FlowDefVersion.id=" + flowInstance.getFlowDefVersion().getId()
@@ -1114,56 +1107,56 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @param orderType 是否在流程中    inFlow：流程中   ended：已完成
      * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType,Date startLong,Date endLong,String appSign) {
+    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType, Date startLong, Date endLong, String appSign) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         Boolean ended = null;
         Boolean manuallyEnd = null;
-        if("ended".equals(orderType)){
-            ended=true;
-            manuallyEnd =false;
-        }else if("inFlow".equals(orderType)){
-            ended=false;
-            manuallyEnd =false;
-        }else if("abnormalEnd".equals(orderType)){
-            ended=true;
-            manuallyEnd= true;
+        if ("ended".equals(orderType)) {
+            ended = true;
+            manuallyEnd = false;
+        } else if ("inFlow".equals(orderType)) {
+            ended = false;
+            manuallyEnd = false;
+        } else if ("abnormalEnd".equals(orderType)) {
+            ended = true;
+            manuallyEnd = true;
         }
         String startDateString;
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-        if(startLong!=null){
-            startDateString =  sim.format(startLong);
-        }else{
+        if (startLong != null) {
+            startDateString = sim.format(startLong);
+        } else {
             startDateString = "1949-10-01";
         }
         String endDateString;
         Calendar c = Calendar.getInstance();
-        if(endLong!=null){
+        if (endLong != null) {
             c.setTime(endLong);
             c.add(Calendar.DAY_OF_MONTH, 1);
-            endDateString =  sim.format(c.getTime());
+            endDateString = sim.format(c.getTime());
 //            endDateString =  sim.format(endLong);s
-        }else{
+        } else {
             Date date = new Date();
             c.setTime(date);
             c.add(Calendar.DAY_OF_MONTH, 1);
-            endDateString =  sim.format(c.getTime());
+            endDateString = sim.format(c.getTime());
 //            endDateString =  sim.format(new Date());
         }
         Date startDate;
         Date endDate;
-        try{
+        try {
             startDate = sim.parse(startDateString);
             endDate = sim.parse(endDateString);
-        }catch (Exception e){
-            return  null;
+        } catch (Exception e) {
+            return null;
         }
 
         List groupResultList;
-        if(ended==null){
-            groupResultList  = flowInstanceDao.findBillsByGroup(userID,startDate,endDate);
-        } else{
-            groupResultList  = flowInstanceDao.findBillsByExecutorIdGroup(userID,ended,manuallyEnd,startDate,endDate);
+        if (ended == null) {
+            groupResultList = flowInstanceDao.findBillsByGroup(userID, startDate, endDate);
+        } else {
+            groupResultList = flowInstanceDao.findBillsByExecutorIdGroup(userID, ended, manuallyEnd, startDate, endDate);
         }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
@@ -1212,8 +1205,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Override
     public ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo) {
         try {
-            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(myBillsHeaderVo.getOrderType(),myBillsHeaderVo.getStartDate(),myBillsHeaderVo.getEndDate(),"");
-            return   ResponseData.operationSuccessWithData(list);
+            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(myBillsHeaderVo.getOrderType(), myBillsHeaderVo.getStartDate(), myBillsHeaderVo.getEndDate(), "");
+            return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             return ResponseData.operationFailure("操作失败！");
@@ -1221,16 +1214,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-    public String  getExecutorStringByInstanceId(String instanceId){
-        List<FlowTask>  list  =    flowTaskService.findByInstanceId(instanceId);
-        StringBuilder  executorString  = new StringBuilder();
-        if(list!=null){
-            for(int i=0;i<list.size();i++){
-                FlowTask flowTask =   list.get(i);
-                if(i==0){
-                    executorString.append(flowTask.getExecutorName()+"【" +flowTask.getExecutorAccount()+"】");
-                }else{
-                    executorString.append(","+flowTask.getExecutorName()+"【" +flowTask.getExecutorAccount()+"】");
+    public String getExecutorStringByInstanceId(String instanceId) {
+        List<FlowTask> list = flowTaskService.findByInstanceId(instanceId);
+        StringBuilder executorString = new StringBuilder();
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                FlowTask flowTask = list.get(i);
+                if (i == 0) {
+                    executorString.append(flowTask.getExecutorName() + "【" + flowTask.getExecutorAccount() + "】");
+                } else {
+                    executorString.append("," + flowTask.getExecutorName() + "【" + flowTask.getExecutorAccount() + "】");
                 }
             }
         }
@@ -1238,24 +1231,24 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Override
-    public   ResponseData getMyBillsAndExecutorByModeId(String modelId,Search search){
+    public ResponseData getMyBillsAndExecutorByModeId(String modelId, Search search) {
         ResponseData responseData;
-        if(StringUtils.isEmpty(modelId)){
+        if (StringUtils.isEmpty(modelId)) {
+            responseData = this.getMyBills(search);
+        } else {
+            if (search != null) {
+                List<SearchFilter> listFilter = search.getFilters();
+                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
                 responseData = this.getMyBills(search);
-        }else{
-            if(search != null){
-                List<SearchFilter> listFilter =  search.getFilters();
-                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id",modelId, SearchFilter.Operator.EQ));
-                responseData = this.getMyBills(search);
-            }else {
+            } else {
                 return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
             }
         }
-        if(responseData.getSuccess()){
-            PageResult<MyBillVO> results = (PageResult<MyBillVO>)responseData.getData();
+        if (responseData.getSuccess()) {
+            PageResult<MyBillVO> results = (PageResult<MyBillVO>) responseData.getData();
             ArrayList<MyBillVO> data = results.getRows();
-            data.forEach(a->{
-                if(!a.getEnded()){
+            data.forEach(a -> {
+                if (!a.getEnded()) {
                     a.setTaskExecutors(this.getExecutorStringByInstanceId(a.getFlowInstanceId()));
                 }
             });
@@ -1264,46 +1257,46 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Override
-    public   ResponseData getMyBillsByModeId(String modelId,Search search){
-       if(StringUtils.isEmpty(modelId)){
+    public ResponseData getMyBillsByModeId(String modelId, Search search) {
+        if (StringUtils.isEmpty(modelId)) {
             return this.getMyBills(search);
-       }else{
-         if(search != null){
-             List<SearchFilter> listFilter =  search.getFilters();
-             listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id",modelId, SearchFilter.Operator.EQ));
-             return this.getMyBills(search);
-         }else {
-             return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
-         }
-       }
+        } else {
+            if (search != null) {
+                List<SearchFilter> listFilter = search.getFilters();
+                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
+                return this.getMyBills(search);
+            } else {
+                return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+            }
+        }
     }
 
-    public   ResponseData getMyBills(Search search){
-        ResponseData responseData =new ResponseData();
+    public ResponseData getMyBills(Search search) {
+        ResponseData responseData = new ResponseData();
         if (search != null) {
             SessionUser user = ContextUtil.getSessionUser();
             String creatorId = user.getUserId();
             SearchFilter searchFilterCreatorId = new SearchFilter("creatorId", creatorId, SearchFilter.Operator.EQ);
             search.addFilter(searchFilterCreatorId);
 
-            List<SearchFilter> listFilter =  search.getFilters();
-            listFilter.forEach(filter->{
-                if(filter.getFieldName().equals("startDate")||filter.getFieldName().equals("endDate")){
+            List<SearchFilter> listFilter = search.getFilters();
+            listFilter.forEach(filter -> {
+                if (filter.getFieldName().equals("startDate") || filter.getFieldName().equals("endDate")) {
                     SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-                    String  startDateString ;
-                    if(filter.getValue()!=null){
-                        startDateString =  sim.format((Date)filter.getValue());
-                    }else{
-                        if(filter.getFieldName().equals("startDate")){
-                            startDateString =  "1949-10-1";
-                        }else{
-                            startDateString =  sim.format(new Date());
+                    String startDateString;
+                    if (filter.getValue() != null) {
+                        startDateString = sim.format((Date) filter.getValue());
+                    } else {
+                        if (filter.getFieldName().equals("startDate")) {
+                            startDateString = "1949-10-1";
+                        } else {
+                            startDateString = sim.format(new Date());
                         }
                     }
-                    try{
+                    try {
                         Date newDate = sim.parse(startDateString);
                         filter.setValue(newDate);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                     }
                 }
             });
@@ -1369,14 +1362,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             } catch (Exception e) {
                 responseData.setSuccess(false);
                 responseData.setMessage(e.getMessage());
-                LogUtil.error(e.getMessage(),e);
+                LogUtil.error(e.getMessage(), e);
             }
         } else {
             return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
         }
         return responseData;
     }
-
 
 
     public PageResult<MyBillPhoneVO> getMyBillsOfMobile(int page, int rows, String quickValue, boolean ended) {
@@ -1430,7 +1422,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 if (StringUtils.isEmpty(businessDetailServiceUrl)) {
                     businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
                 }
-                myBillVO.setDetailUrl(f.getApiBaseAddressAbsolute()+businessDetailServiceUrl);
+                myBillVO.setDetailUrl(f.getApiBaseAddressAbsolute() + businessDetailServiceUrl);
                 data.add(myBillVO);
             }
 
@@ -1446,7 +1438,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         results.setPage(flowInstancePageResult.getPage());
         results.setTotal(flowInstancePageResult.getTotal());
 
-        return  results;
+        return results;
     }
 
 
@@ -1548,7 +1540,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         results.setPage(flowInstancePageResult.getPage());
         results.setTotal(flowInstancePageResult.getTotal());
 
-      return  results;
+        return results;
     }
 
 
@@ -1594,31 +1586,31 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-    public  int  getMybillsSum(String userId){
+    public int getMybillsSum(String userId) {
         String startDateString = "1949-10-01";
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-        String endDateString =  sim.format(new Date());
+        String endDateString = sim.format(new Date());
         Date startDate;
         Date endDate;
-        try{
+        try {
             startDate = sim.parse(startDateString);
             endDate = sim.parse(endDateString);
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
-        Integer billSum  = flowInstanceDao.getBillsSum(userId,false,startDate,endDate);
-        return  billSum == null ? 0 : billSum;
+        Integer billSum = flowInstanceDao.getBillsSum(userId, false, startDate, endDate);
+        return billSum == null ? 0 : billSum;
     }
 
     @Override
     public ResponseData getMyFlowCollectInfo(String userId) {
         //用户待办数（包括转授权）
-        int todoSum =  flowTaskService.getUserTodoSum(userId);
+        int todoSum = flowTaskService.getUserTodoSum(userId);
         //用户单据数（流程中）
-        int billSum =  this.getMybillsSum(userId);
-        Map<String,Integer> map = new HashMap<>();
-        map.put("todoSum",todoSum);
-        map.put("billSum",billSum);
+        int billSum = this.getMybillsSum(userId);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("todoSum", todoSum);
+        map.put("billSum", billSum);
         return ResponseData.operationSuccessWithData(map);
     }
 }
