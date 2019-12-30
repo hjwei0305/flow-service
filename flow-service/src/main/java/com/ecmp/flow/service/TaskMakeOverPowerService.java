@@ -464,5 +464,23 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return taskMakeOverPowerDao.findByFilters(search);
     }
 
+    /**
+     * 得到转授权的基本记录信息
+     * 注：如果是转授权的转办模式，task里面记录了【转授权-***授权】的信息，此方法主要用于提出这些信息，方便历史记录
+     *
+     * @param depict
+     * @return
+     */
+    public String getOverPowerStrByDepict(String depict) {
+        if (StringUtils.isNotEmpty(depict)) {
+            int startInt = depict.indexOf("【转授权-");
+            int endInt = depict.indexOf("授权】");
+            if (startInt != -1 && endInt != -1 && endInt >= startInt) {
+                return depict.substring(startInt, endInt + 3);
+            }
+        }
+        return "";
+    }
+
 
 }

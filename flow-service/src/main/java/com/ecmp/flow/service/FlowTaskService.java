@@ -678,14 +678,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                LogUtil.error("用户待办非法操作！当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人:{}", flowTask.getFlowName(),flowTask.getTaskName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
 //                return  OperateResultWithData.operationFailure("【系统错误】，请联系管理员！");
             } else {
-                //转授权情况替换执行人
+                //转授权情况替换执行人(共同查看模式-授权人处理)
                 flowTask.setExecutorId(ContextUtil.getUserId());
                 flowTask.setExecutorAccount(ContextUtil.getUserAccount());
                 flowTask.setExecutorName(ContextUtil.getUserName());
             }
         }
         FlowInstance flowInstance = flowTask.getFlowInstance();
-        flowTask.setDepict(opinion);
+        //如果是转授权转办模式（获取转授权记录信息）
+        String OverPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowTask.getDepict());
+        flowTask.setDepict(OverPowerStr + opinion);
         Integer reject = null;
         Boolean manageSolidifyFlow = false;
         if (variables != null) {
@@ -2439,7 +2441,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
-                flowHistory.setDepict("【被转办给：“" + executor.getName() + "”】");
+                //如果是转授权转办模式（获取转授权记录信息）
+                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                flowHistory.setDepict(overPowerStr + "【被转办给：“" + executor.getName() + "”】");
                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
                 newFlowTask.setId(null);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
@@ -2531,7 +2535,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 FlowTask newFlowTask = new FlowTask();
                 BeanUtils.copyProperties(flowTask, newFlowTask);
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
-                flowHistory.setDepict("【被委托给：" + executor.getName() + "】");
+                //如果是转授权转办模式（获取转授权记录信息）
+                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                flowHistory.setDepict(overPowerStr + "【被委托给：" + executor.getName() + "】");
                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
 
                 newFlowTask.setId(null);
@@ -2541,7 +2547,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】"+ flowTask.getDepict());
+                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】" + flowTask.getDepict());
                 } else {
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
@@ -2635,21 +2641,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask oldFlowTask = flowTaskDao.findOne(flowTask.getTrustOwnerTaskId());
             if (oldFlowTask != null) {
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, null, null);
-                flowHistory.setDepict("【办理完成返回委托方】" + opinion);
+                //如果是转授权转办模式（获取转授权记录信息）
+                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                flowHistory.setDepict(overPowerStr + "【办理完成返回委托方】" + opinion);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
                 TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId());
-                if(taskMakeOverPower!=null){
+                if (taskMakeOverPower != null) {
                     oldFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     oldFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     oldFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                     oldFlowTask.setDepict("【委托完成】【转授权-" + taskMakeOverPower.getUserName() + "授权】" + opinion);
-                }else{
+                } else {
                     oldFlowTask.setDepict("【委托完成】" + opinion);
                 }
                 oldFlowTask.setTrustState(3);  //委托完成
                 oldFlowTask.setPreId(flowHistory.getId());
                 flowHistoryDao.save(flowHistory);
-                //是否推送信息到baisc
+                //是否推送信息到basic
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
                 //是否推送信息到业务模块或者直接配置的url
                 Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());

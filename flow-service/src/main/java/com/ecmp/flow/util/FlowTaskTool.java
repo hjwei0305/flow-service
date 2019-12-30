@@ -2458,7 +2458,9 @@ public class FlowTaskTool {
                     FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
                     flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
                     flowHistory.setActHistoryId(null);
-                    flowHistory.setDepict("【系统自动弃权】");
+                    //如果是转授权转办模式（获取转授权记录信息）
+                    String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                    flowHistory.setDepict(overPowerStr + "【系统自动弃权】");
                     flowHistoryDao.save(flowHistory);
                 }
             }
