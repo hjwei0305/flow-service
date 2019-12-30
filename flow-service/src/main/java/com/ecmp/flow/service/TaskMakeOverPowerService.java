@@ -328,6 +328,25 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return "turnToDo";
     }
 
+    /**
+     * 通过授权用户ID返回转办模式转授权信息
+     *
+     * @param executorId 用户ID
+     * @return
+     */
+    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
+        if (StringUtils.isNotEmpty(executorId)) {
+            String makeOverPowerType = this.checkMakeOverPowerType();
+            if ("turnToDo".equalsIgnoreCase(makeOverPowerType)) {    //如果是转办模式（需要替换执行人，保留所属人）
+                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
+                if (listPower != null && listPower.size() > 0) {
+                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * 根据转授权模式处理不同的逻辑
@@ -421,6 +440,28 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         search.addFilter(new SearchFilter("lastEditedDate", startDate, GE, "Date"));
         search.addFilter(new SearchFilter("lastEditedDate", endDate, LE, "Date"));
         return flowTaskDao.findByFilters(search);
+    }
+
+
+    /**
+     * 根据授权人ID查询满足要求的授权信息
+     *
+     * @param userId 授权人ID
+     * @return
+     */
+    public List<TaskMakeOverPower> findPowerIdByUser(String userId) {
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = simp.parse(simp.format(date));
+        } catch (Exception e) {
+        }
+        Search search = new Search();
+        search.addFilter(new SearchFilter("userId", userId));
+        search.addFilter(new SearchFilter("openStatus", true));
+        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
+        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
+        return taskMakeOverPowerDao.findByFilters(search);
     }
 
 

@@ -14,6 +14,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
+import com.ecmp.flow.service.TaskMakeOverPowerService;
 import com.ecmp.flow.vo.FlowStartVO;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -113,6 +114,9 @@ public class FlowTaskTool {
 
     @Autowired
     private FlowTaskService flowTaskService;
+
+    @Autowired
+    private TaskMakeOverPowerService taskMakeOverPowerService;
 
     private final Logger logger = LoggerFactory.getLogger(FlowTaskTool.class);
 
@@ -1391,7 +1395,7 @@ public class FlowTaskTool {
                 flowTask.setPreId(preTask.getId());
             }
             flowTask.setPreId(preTask.getId());
-            flowTask.setDepict(preTask.getDepict());
+//            flowTask.setDepict(preTask.getDepict());
         }
         String nodeType = (String) currentNode.get("nodeType");
         if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)
@@ -1599,7 +1603,6 @@ public class FlowTaskTool {
                     String variableName = "" + actTaskDefKey + "_CounterSign";
                     String userId = runtimeService.getVariable(executionId, variableName) + "";//使用执行对象Id和流程变量名称，获取值
                     if (StringUtils.isNotEmpty(userId)) {
-//                        Executor executor = flowCommonUtil.getBasicExecutor(userId);
                         Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                         if (executor != null) {
                             FlowTask flowTask = new FlowTask();
@@ -1615,15 +1618,28 @@ public class FlowTaskTool {
                             flowTask.setOwnerId(executor.getId());
                             flowTask.setOwnerAccount(executor.getCode());
                             flowTask.setOwnerName(executor.getName());
-                            flowTask.setExecutorAccount(executor.getCode());
-                            flowTask.setExecutorId(executor.getId());
-                            flowTask.setExecutorName(executor.getName());
-                            flowTask.setActType("candidate");
-                            if (StringUtils.isEmpty(task.getDescription())) {
-                                flowTask.setDepict("流程启动");
+                            //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                            if (taskMakeOverPower != null) {
+                                flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                                flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                                flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                                if (StringUtils.isEmpty(task.getDescription())) {
+                                    flowTask.setDepict("【" + executor.getName() + "-转授权】" + "流程启动");
+                                } else {
+                                    flowTask.setDepict("【" + executor.getName() + "-转授权】" + task.getDescription());
+                                }
                             } else {
-                                flowTask.setDepict(task.getDescription());
+                                flowTask.setExecutorAccount(executor.getCode());
+                                flowTask.setExecutorId(executor.getId());
+                                flowTask.setExecutorName(executor.getName());
+                                if (StringUtils.isEmpty(task.getDescription())) {
+                                    flowTask.setDepict("流程启动");
+                                } else {
+                                    flowTask.setDepict(task.getDescription());
+                                }
                             }
+                            flowTask.setActType("candidate");
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
@@ -1713,11 +1729,24 @@ public class FlowTaskTool {
                                 flowTask.setOwnerAccount(executor.getCode());
                                 flowTask.setOwnerId(executor.getId());
                                 flowTask.setOwnerName(executor.getName());
-                                flowTask.setExecutorAccount(executor.getCode());
-                                flowTask.setExecutorId(executor.getId());
-                                flowTask.setExecutorName(executor.getName());
+                                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                                if (taskMakeOverPower != null) {
+                                    flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                                    flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                                    flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                                    if (StringUtils.isEmpty(task.getDescription())) {
+                                        flowTask.setDepict("【" + executor.getName() + "-转授权】");
+                                    } else {
+                                        flowTask.setDepict("【" + executor.getName() + "-转授权】" + task.getDescription());
+                                    }
+                                } else {
+                                    flowTask.setExecutorAccount(executor.getCode());
+                                    flowTask.setExecutorId(executor.getId());
+                                    flowTask.setExecutorName(executor.getName());
+                                    flowTask.setDepict(task.getDescription());
+                                }
                                 flowTask.setActType(identityLink.getType());
-                                flowTask.setDepict(task.getDescription());
                                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
                                 flowTask.setPriority(0);
                                 flowTask.setFlowInstance(flowInstance);

@@ -97,6 +97,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private BusinessModelDao businessModelDao;
 
+    @Autowired
+    private TaskMakeOverPowerService taskMakeOverPowerService;
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
@@ -758,14 +761,25 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (pushBasic || pushModelOrUrl) {
                 needDelList.add(delFlowTask);
             }
-//                newFlowTask.setId(null);
-            newFlowTask.setExecutorId(executor.getId());
-            newFlowTask.setExecutorAccount(executor.getCode());
-            newFlowTask.setExecutorName(executor.getName());
+            //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+            if (taskMakeOverPower != null) {
+                newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                if (StringUtils.isEmpty(newFlowTask.getDepict())) {
+                    newFlowTask.setDepict("【" + executor.getName() + "-转授权】");
+                } else {
+                    newFlowTask.setDepict("【" + executor.getName() + "-转授权】" + newFlowTask.getDepict());
+                }
+            } else {
+                newFlowTask.setExecutorId(executor.getId());
+                newFlowTask.setExecutorAccount(executor.getCode());
+                newFlowTask.setExecutorName(executor.getName());
+            }
             newFlowTask.setOwnerId(executor.getId());
             newFlowTask.setOwnerName(executor.getName());
             newFlowTask.setOwnerAccount(executor.getCode());
-//                newFlowTask.setPreId(flowHistory.getId());
             newFlowTask.setTrustState(0);
             if (v.get("instancyStatus") != null) {
                 try {
@@ -776,7 +790,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     LogUtil.error(e.getMessage());
                 }
             }
-//                newFlowTask.setDepict("【由：“"+flowTask.getExecutorName()+"”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict())?flowTask.getDepict():""));
             taskService.setAssignee(actTaskId, executor.getId());
 
             flowTaskDao.save(newFlowTask);
@@ -802,7 +815,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }).start();
                 }
             }
-
 
             result = OperateResultWithData.operationSuccess();
             result.setData(newFlowTask);
@@ -830,7 +842,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     result = OperateResult.operationFailure(operateResultWithData.getMessage());
                 }
             } else {
-                result = OperateResult.operationFailure("10031");
+                result = OperateResult.operationFailure("工作池任务设置执行人失败,当前节点不存在！");
             }
         } else {
             result = OperateResult.operationFailure("工作池任务设置执行人失败,流程实例找不到，或者已经结束！");
