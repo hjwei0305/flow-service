@@ -768,9 +768,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                 newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                 if (StringUtils.isEmpty(newFlowTask.getDepict())) {
-                    newFlowTask.setDepict("【" + executor.getName() + "-转授权】");
+                    newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
                 } else {
-                    newFlowTask.setDepict("【" + executor.getName() + "-转授权】" + newFlowTask.getDepict());
+                    newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】" + newFlowTask.getDepict());
                 }
             } else {
                 newFlowTask.setExecutorId(executor.getId());

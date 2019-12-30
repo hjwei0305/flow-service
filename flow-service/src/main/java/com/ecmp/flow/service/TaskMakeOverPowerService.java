@@ -378,9 +378,9 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                         taskBean.setExecutorName(entity.getPowerUserName());
                         taskBean.setExecutorAccount(entity.getPowerUserAccount());
                         if (StringUtils.isNotEmpty(taskBean.getDepict()) && !"null".equalsIgnoreCase(taskBean.getDepict())) {
-                            taskBean.setDepict("【" + entity.getUserName() + "-转授权】" + taskBean.getDepict());
+                            taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】" + taskBean.getDepict());
                         } else {
-                            taskBean.setDepict("【" + entity.getUserName() + "-转授权】");
+                            taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】");
                         }
                         if (pushBasic || pushModelOrUrl) {
                             needDelList.add(flowTask);

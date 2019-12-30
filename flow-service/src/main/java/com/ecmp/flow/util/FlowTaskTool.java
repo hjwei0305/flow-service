@@ -1625,9 +1625,9 @@ public class FlowTaskTool {
                                 flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                                 flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                                 if (StringUtils.isEmpty(task.getDescription())) {
-                                    flowTask.setDepict("【" + executor.getName() + "-转授权】" + "流程启动");
+                                    flowTask.setDepict("【转授权-" + executor.getName() + "授权】" + "流程启动");
                                 } else {
-                                    flowTask.setDepict("【" + executor.getName() + "-转授权】" + task.getDescription());
+                                    flowTask.setDepict("【转授权-" + executor.getName() + "授权】" + task.getDescription());
                                 }
                             } else {
                                 flowTask.setExecutorAccount(executor.getCode());
@@ -1736,9 +1736,9 @@ public class FlowTaskTool {
                                     flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                                     flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                                     if (StringUtils.isEmpty(task.getDescription())) {
-                                        flowTask.setDepict("【" + executor.getName() + "-转授权】");
+                                        flowTask.setDepict("【转授权-" + executor.getName() + "授权】");
                                     } else {
-                                        flowTask.setDepict("【" + executor.getName() + "-转授权】" + task.getDescription());
+                                        flowTask.setDepict("【转授权-" + executor.getName() + "授权】" + task.getDescription());
                                     }
                                 } else {
                                     flowTask.setExecutorAccount(executor.getCode());

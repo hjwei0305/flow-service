@@ -2448,7 +2448,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】【" + executor.getName() + "-转授权】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                    newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】【转授权-" + executor.getName() + "授权】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
                 } else {
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
@@ -2541,7 +2541,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【" + executor.getName() + "-转授权】"+ flowTask.getDepict());
+                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】"+ flowTask.getDepict());
                 } else {
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
@@ -2642,7 +2642,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     oldFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     oldFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     oldFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    oldFlowTask.setDepict("【委托完成】【" + taskMakeOverPower.getUserName() + "-转授权】" + opinion);
+                    oldFlowTask.setDepict("【委托完成】【转授权-" + taskMakeOverPower.getUserName() + "授权】" + opinion);
                 }else{
                     oldFlowTask.setDepict("【委托完成】" + opinion);
                 }
