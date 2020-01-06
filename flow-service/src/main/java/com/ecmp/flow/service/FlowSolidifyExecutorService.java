@@ -178,15 +178,21 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
-            Search search = new Search();
-            search.addFilter(new SearchFilter("businessId", businessId));
-            search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
-            List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
-            if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
-                return this.writeErrorLogAndReturnData(null, "固化执行人未设置！");
+            //添加工作池任务
+            if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
+                webvO.setInstancyStatus(false);
+                webvO.setUserIds(null);
+            } else {
+                Search search = new Search();
+                search.addFilter(new SearchFilter("businessId", businessId));
+                search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
+                List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
+                if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
+                    return this.writeErrorLogAndReturnData(null, "固化执行人未设置！");
+                }
+                webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
+                webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
             }
-            webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
-            webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
         }
         responseData.setData(list);
         return responseData;
@@ -207,15 +213,21 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
-            Search search = new Search();
-            search.addFilter(new SearchFilter("businessId", businessId));
-            search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
-            List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
-            if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
-                return ResponseData.operationFailure("未找到固化配置！");
+            //添加工作池任务
+            if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
+                webvO.setInstancyStatus(false);
+                webvO.setUserIds(null);
+            } else {
+                Search search = new Search();
+                search.addFilter(new SearchFilter("businessId", businessId));
+                search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
+                List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
+                if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
+                    return ResponseData.operationFailure("未找到固化配置！");
+                }
+                webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
+                webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
             }
-            webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
-            webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
         }
         responseData.setData(list);
         return responseData;
