@@ -2067,6 +2067,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
         //是否允许转授权
         List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userId);
+        if (search == null) {
+            search = new Search();
+            PageInfo pageInfo = new PageInfo();
+            pageInfo.setPage(1);
+            pageInfo.setRows(1000);
+            search.setPageInfo(pageInfo);
+        }
         PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userIdList, "", search);
 
         //说明添加授权人信息
