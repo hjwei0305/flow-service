@@ -98,17 +98,18 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     /**
      * 通过VO集合保存固化流程的执行人信息
+     *
      * @return
      */
     @Transactional
-    public ResponseData saveSolidifyInfoByExecutorVos(FindSolidifyExecutorVO findSolidifyExecutorVO){
+    public ResponseData saveSolidifyInfoByExecutorVos(FindSolidifyExecutorVO findSolidifyExecutorVO) {
         List<FlowSolidifyExecutorVO> solidifyExecutorVOList = null;
         String executorsVos = findSolidifyExecutorVO.getExecutorsVos();
         if (StringUtils.isNotEmpty(executorsVos)) {
             JSONArray jsonArray = JSONArray.fromObject(executorsVos);//把String 转 换 为 json
             solidifyExecutorVOList = (List<FlowSolidifyExecutorVO>) JSONArray.toCollection(jsonArray, FlowSolidifyExecutorVO.class);
         }
-        return  this.saveByExecutorVoList(solidifyExecutorVOList,findSolidifyExecutorVO.getBusinessModelCode(),findSolidifyExecutorVO.getBusinessId());
+        return this.saveByExecutorVoList(solidifyExecutorVOList, findSolidifyExecutorVO.getBusinessModelCode(), findSolidifyExecutorVO.getBusinessId());
     }
 
 
@@ -140,17 +141,17 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 bean.setActTaskDefKey(executorVo.getActTaskDefKey());
                 bean.setNodeType(executorVo.getNodeType());
                 bean.setInstancyStatus(executorVo.getInstancyStatus());
-                String   userIds  = executorVo.getExecutorIds();
+                String userIds = executorVo.getExecutorIds();
                 String[] idArray = userIds.split(",");
                 StringBuilder executorIds = null;
-                for(int i=0;i<idArray.length;i++){
-                   String  id =  idArray[i];
-                    if(!id.equals("undefined")&&!id.equals("null")){
-                        if(executorIds==null){
+                for (int i = 0; i < idArray.length; i++) {
+                    String id = idArray[i];
+                    if (!id.equals("undefined") && !id.equals("null")) {
+                        if (executorIds == null) {
                             executorIds = new StringBuilder();
                             executorIds.append(id);
-                        }else{
-                            executorIds.append(","+id);
+                        } else {
+                            executorIds.append("," + id);
                         }
                     }
                 }
@@ -232,8 +233,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         if (StringUtils.isEmpty(businessId)) {
             return this.writeErrorLogAndReturnData(null, "参数不能为空！");
         }
-        List<FlowSolidifyExecutor> list= flowSolidifyExecutorDao.findListByProperty("businessId",businessId);
-        if(list!=null){
+        List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
+        if (list != null) {
             flowSolidifyExecutorDao.deleteByBusinessId(businessId);
         }
         return ResponseData.operationSuccess();
@@ -314,9 +315,9 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                             //执行过的没有单签，该任务需要自动跳过
                                             needLsit.add(flowTask);
                                         }
-                                    }else{ //还没有相同执行人的情况，判断执行人是否是流程发起人
+                                    } else { //还没有相同执行人的情况，判断执行人是否是流程发起人
                                         FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
-                                        if(flowTask.getExecutorId().equals(flowInstance.getCreatorId())){
+                                        if (flowTask.getExecutorId().equals(flowInstance.getCreatorId())) {
                                             needLsit.add(flowTask);
                                         }
                                     }
@@ -441,7 +442,24 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
-        List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, null);
+        //可能路径（人工网关默认选择一条路径）
+        List<NodeInfo> list = flowTaskService.findNextNodes(taskId);
+        List<NodeInfo> nodeInfoList = null;
+        if (list != null && list.size() > 0) {
+            if (list.size() == 1) {
+                nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, null);
+            } else {
+                String gateWayName = list.get(0).getGateWayName();
+                if (StringUtils.isNotEmpty(gateWayName) && "人工排他网关".equals(gateWayName)) {
+                    List<String> nodeOnle = new ArrayList<>();
+                    nodeOnle.add(list.get(0).getId());
+                    nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, nodeOnle);
+                } else {
+                    nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, null);
+                }
+            }
+        }
+
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 responseData.setData("EndEvent");
@@ -464,7 +482,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
         if (e != null) {
-            LogUtil.error(e.getMessage(),e);
+            LogUtil.error(e.getMessage(), e);
         }
         ResponseData responseData = new ResponseData();
         responseData.setSuccess(false);
