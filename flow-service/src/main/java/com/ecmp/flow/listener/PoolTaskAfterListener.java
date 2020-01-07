@@ -48,7 +48,7 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-    FlowHistoryDao  flowHistoryDao;
+    FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -63,7 +63,7 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
     public void execute(DelegateExecution delegateTask) throws Exception {
         String eventName = delegateTask.getEventName();
         String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
-        if(Constants.END.equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)){
+        if (Constants.END.equalsIgnoreCase(eventName) && StringUtils.isNotEmpty(deleteReason)) {
             return;
         }
         String actProcessInstanceId = delegateTask.getProcessInstanceId();
@@ -80,17 +80,17 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
             String flowTaskName = (String) normal.get(Constants.NAME);
             FlowTask flowTask = null;
             FlowHistory flowHistory = new FlowHistory();
-            List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey,actProcessInstanceId);
-            if(flowTaskList!=null && !flowTaskList.isEmpty()){
+            List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey, actProcessInstanceId);
+            if (flowTaskList != null && !flowTaskList.isEmpty()) {
                 flowTask = flowTaskList.get(0);
                 flowTaskDao.delete(flowTask);
             }
-            if(flowTask!=null){
-                BeanUtils.copyProperties(flowTask,flowHistory);
+            if (flowTask != null) {
+                BeanUtils.copyProperties(flowTask, flowHistory);
                 flowHistory.setId(null);
                 flowHistory.setOldTaskId(flowTask.getId());
                 flowHistory.setActStartTime(flowTask.getActDueDate());
-            }else{
+            } else {
                 flowTask = new FlowTask();
                 flowHistory.setTaskJsonDef(currentNode.toString());
                 flowHistory.setFlowName(definition.getProcess().getName());
@@ -98,8 +98,8 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
                 FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                 flowHistory.setFlowInstance(flowInstance);
                 String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
-                AppModule appModule= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
+                AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
+                if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
                     ownerName = appModule.getName();
                 }
                 flowHistory.setOwnerAccount(Constants.ADMIN);
@@ -113,7 +113,7 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
                 flowHistory.setActTaskDefKey(actTaskDefKey);
                 flowHistory.setPreId(null);
 
-                BeanUtils.copyProperties(flowHistory,flowTask);
+                BeanUtils.copyProperties(flowHistory, flowTask);
                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
             }
             flowHistory.setFlowName(definition.getProcess().getName());
@@ -123,18 +123,23 @@ public class PoolTaskAfterListener implements org.activiti.engine.delegate.JavaD
             flowHistory.setActEndTime(new Date());
             flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
 
-            if(flowHistory.getActDurationInMillis() == null){
-                Long actDurationInMillis = flowHistory.getActEndTime().getTime()-flowHistory.getActStartTime().getTime();
+            if (flowHistory.getActDurationInMillis() == null) {
+                Long actDurationInMillis = flowHistory.getActEndTime().getTime() - flowHistory.getActStartTime().getTime();
                 flowHistory.setActDurationInMillis(actDurationInMillis);
             }
             flowHistoryDao.save(flowHistory);
 
-                //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
-            List<NodeInfo> results = flowListenerTool.nextNodeInfoList(flowTask,delegateTask);
-                //初始化节点执行人
-            List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results,delegateTask,actTaskDefKey);
-                //初始化下一步任务信息
-            flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory );
+            //选择下一步执行人，默认选择第一个(会签、单签、串、并行选择全部)
+            List<NodeInfo> results;
+            if (flowDefVersion != null && flowDefVersion.getSolidifyFlow() == true) { //固化流程
+                results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, true);
+            } else {
+                results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, false);
+            }
+            //初始化节点执行人
+            List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results, delegateTask, actTaskDefKey);
+            //初始化下一步任务信息
+            flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory);
         }
     }
 }

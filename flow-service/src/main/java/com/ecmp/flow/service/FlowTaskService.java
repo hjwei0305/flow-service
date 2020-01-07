@@ -1499,6 +1499,132 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return nodeInfoList;
     }
 
+
+    /**
+     * 固化流程获取出口节点信息（带初始化流程设计器配置用户）
+     *
+     * @param flowTask
+     * @param approved
+     * @return
+     * @throws NoSuchMethodException
+     */
+    public List<NodeInfo> findNexNodesWithUserSetSolidifyFlow(FlowTask flowTask, String approved, List<String> includeNodeIds) throws NoSuchMethodException {
+        List<NodeInfo> nodeInfoList = flowTaskTool.findNextNodesWithCondition(flowTask, approved, includeNodeIds);
+
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+
+            String flowTaskDefJson = flowTask.getTaskJsonDef();
+            JSONObject flowTaskDefObj = JSONObject.fromObject(flowTaskDefJson);
+            String currentNodeType = flowTaskDefObj.get("nodeType") + "";
+            JSONObject normalInfo = flowTaskDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            Boolean currentSingleTaskAuto = false;
+            if (normalInfo != null && normalInfo.has("singleTaskNoChoose") && normalInfo.get("singleTaskNoChoose") != null) {
+                currentSingleTaskAuto = normalInfo.getBoolean("singleTaskNoChoose");
+            }
+            Map<NodeInfo, List<NodeInfo>> nodeInfoSonMap = new LinkedHashMap();
+            for (NodeInfo nodeInfo : nodeInfoList) {
+                nodeInfo.setCurrentTaskType(currentNodeType);
+                nodeInfo.setCurrentSingleTaskAuto(currentSingleTaskAuto);
+                if ("CounterSignNotEnd".equalsIgnoreCase(nodeInfo.getType())) {
+                    continue;
+                } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getType())) {
+                    nodeInfo.setUserVarName(nodeInfo.getId() + "_ServiceTask");
+                    nodeInfo.setUiType("radiobox");
+                    nodeInfo.setFlowTaskType("serviceTask");
+                    String userId = ContextUtil.getSessionUser().getUserId();
+                    //通过用户id获取用户信息
+                    Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+                    if (executor != null) {//服务任务默认选择当前操作人
+                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        employeeSet.add(executor);
+                        nodeInfo.setExecutorSet(employeeSet);
+                    }
+                } else if ("receiveTask".equalsIgnoreCase(nodeInfo.getType())) {
+                    nodeInfo.setUserVarName(nodeInfo.getId() + "_ReceiveTask");
+                    nodeInfo.setUiType("radiobox");
+                    nodeInfo.setFlowTaskType("receiveTask");
+                    String userId = ContextUtil.getSessionUser().getUserId();
+                    //通过用户id获取用户信息
+                    Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+                    if (executor != null) {//接收任务默认选择当前操作人
+                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        employeeSet.add(executor);
+                        nodeInfo.setExecutorSet(employeeSet);
+                    }
+                } else if ("callActivity".equalsIgnoreCase(nodeInfo.getType())) {
+                    List<NodeInfo> nodeInfoListSons = new ArrayList<NodeInfo>();
+                    nodeInfoListSons = flowTaskTool.getCallActivityNodeInfo(flowTask, nodeInfo.getId(), nodeInfoListSons);
+                    nodeInfoSonMap.put(nodeInfo, nodeInfoListSons);
+                } else {
+                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    if (executorSet != null && !executorSet.isEmpty()) {
+                        continue;
+                    }
+
+                    JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+                    nodeInfo.setAllowChooseInstancy(false);
+
+                    UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+                    if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
+                        nodeInfo.setType("EndEvent");
+                        continue;
+                    }
+                    if (StringUtils.isEmpty(nodeInfo.getUserVarName())) {
+                        if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+                        } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                            nodeInfo.setUiType("checkbox");
+                        } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
+                        } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType()) || "ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType()) || "SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                            nodeInfo.setUiType("checkbox");
+                        }
+                    }
+
+                    if ("pooltask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                        nodeInfo.setExecutorSet(null);
+                    } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                        String userId = ContextUtil.getSessionUser().getUserId();
+                        Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+                        if (executor != null) {
+                            Set<Executor> employeeSet = new HashSet<Executor>();
+                            employeeSet.add(executor);
+                            nodeInfo.setExecutorSet(employeeSet);
+                        }
+                    } else {
+                        String businessId = flowTask.getFlowInstance().getBusinessId();
+                        Search search = new Search();
+                        search.addFilter(new SearchFilter("businessId", businessId));
+                        search.addFilter(new SearchFilter("actTaskDefKey", nodeInfo.getId()));
+                        List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
+                        if (solidifyExecutorlist != null && solidifyExecutorlist.size() > 0) {
+                            String userIds = solidifyExecutorlist.get(0).getExecutorIds();
+                            String[] idArray = userIds.split(",");
+                            List<String> idList = Arrays.asList(idArray);
+                            List<Executor> list = flowCommonUtil.getBasicUserExecutors(idList);
+                            if (list != null && list.size() > 0) {
+                                Set result = new HashSet(list);
+                                nodeInfo.setExecutorSet(result);
+                            }
+                        }
+                    }
+                }
+            }
+            if (nodeInfoSonMap != null && !nodeInfoSonMap.isEmpty()) {
+                for (Map.Entry<NodeInfo, List<NodeInfo>> entry : nodeInfoSonMap.entrySet()) {
+                    nodeInfoList.remove(entry.getKey());
+                    nodeInfoList.addAll(entry.getValue());
+                }
+            }
+        }
+        return nodeInfoList;
+    }
+
     public List<NodeInfo> findNextNodesOfGateway(String id) throws NoSuchMethodException {
         return this.findNextNodes(id);
     }
@@ -1607,6 +1733,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return null;
         }
         return this.findNexNodesWithUserSet(flowTask, null, null);
+    }
+
+    public List<NodeInfo> findNexNodesWithUserSetSolidifyFlow(FlowTask flowTask) throws NoSuchMethodException {
+        if (flowTask == null) {
+            return null;
+        }
+        return this.findNexNodesWithUserSetSolidifyFlow(flowTask, null, null);
     }
 
     public List<NodeInfo> findNexNodesWithUserSet(String id, String approved, List<String> includeNodeIds) throws NoSuchMethodException {

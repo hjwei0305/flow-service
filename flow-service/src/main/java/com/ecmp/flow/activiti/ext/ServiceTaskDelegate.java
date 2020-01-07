@@ -42,7 +42,8 @@ import java.util.*;
 //@Component(value="serviceTaskDelegate")
 public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDelegate {
 
-    public ServiceTaskDelegate(){}
+    public ServiceTaskDelegate() {
+    }
 
     private final Logger logger = LoggerFactory.getLogger(ServiceTaskDelegate.class);
 
@@ -50,7 +51,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-    FlowHistoryDao  flowHistoryDao;
+    FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -63,7 +64,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
     @Autowired
     private FlowTaskService flowTaskService;
-
 
 
     @Override
@@ -167,8 +167,14 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         flowHistory.setActDurationInMillis(actDurationInMillis);
                     }
                     flowHistoryDao.save(flowHistory);
+
                     //选择下一步执行人，默认选择第一个(会签、单签、串、并行选择全部)
-                    List<NodeInfo> results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask);
+                    List<NodeInfo> results;
+                    if (flowDefVersion != null && flowDefVersion.getSolidifyFlow() == true) { //固化流程
+                        results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, true);
+                    } else {
+                        results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, false);
+                    }
                     //初始化节点执行人
                     List<NodeInfo> nextNodes = flowListenerTool.initNodeUsers(results, delegateTask, actTaskDefKey);
                     //初始化下一步任务信息
@@ -179,9 +185,9 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
             }
 
 
-        }catch (Exception e){
-            if(e.getClass()!=FlowException.class){
-                LogUtil.error(e.getMessage(),e);
+        } catch (Exception e) {
+            if (e.getClass() != FlowException.class) {
+                LogUtil.error(e.getMessage(), e);
             }
             throw e;
         }

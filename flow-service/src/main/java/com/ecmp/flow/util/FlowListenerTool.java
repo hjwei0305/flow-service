@@ -54,7 +54,7 @@ public class FlowListenerTool {
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-   private FlowTaskService flowTaskService;
+    private FlowTaskService flowTaskService;
 
     @Autowired
     FlowHistoryDao flowHistoryDao;
@@ -78,21 +78,26 @@ public class FlowListenerTool {
 
 
     //选择下一步执行人
-    public  List<NodeInfo>  nextNodeInfoList(FlowTask flowTask,DelegateExecution delegateTask) throws NoSuchMethodException{
-        List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+    public List<NodeInfo> nextNodeInfoList(FlowTask flowTask, DelegateExecution delegateTask, Boolean isSolidifyFlow) throws NoSuchMethodException {
+        List<NodeInfo> nodeInfoList;
+        if (isSolidifyFlow) { //固化流程的执行人是从固化表中获取
+            nodeInfoList = flowTaskService.findNexNodesWithUserSetSolidifyFlow(flowTask);
+        } else {
+            nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+        }
         List<NodeInfo> results = null;
         results = nodeInfoList;
         FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
         FlowTask flowTaskTempSrc = new FlowTask();
-        org.springframework.beans.BeanUtils.copyProperties(flowTask,flowTaskTempSrc);
+        org.springframework.beans.BeanUtils.copyProperties(flowTask, flowTaskTempSrc);
         //针对子流程结束，循环向上查找父任务下一步的节点执行人信息
         ProcessInstance instanceSon = ((ExecutionEntity) delegateTask).getProcessInstance();
-        while (instanceSon!=null && parentFlowInstance != null&&nodeInfoList != null && !nodeInfoList.isEmpty()&& nodeInfoList.size()==1&&"EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType()) ){//针对子流程结束节点
+        while (instanceSon != null && parentFlowInstance != null && nodeInfoList != null && !nodeInfoList.isEmpty() && nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//针对子流程结束节点
             FlowTask flowTaskTemp = new FlowTask();
-            org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc,flowTaskTemp);
+            org.springframework.beans.BeanUtils.copyProperties(flowTaskTempSrc, flowTaskTemp);
             flowTaskTemp.setFlowInstance(parentFlowInstance);
             // 取得父流程实例
-            ExecutionEntity superExecution =instanceSon.getSuperExecution();
+            ExecutionEntity superExecution = instanceSon.getSuperExecution();
             if (superExecution != null) {
                 String activityId = superExecution.getActivityId();
                 flowTaskTemp.setActTaskKey(activityId);
@@ -102,22 +107,22 @@ public class FlowListenerTool {
                 Definition definitionP = (Definition) JSONObject.toBean(defObjP, Definition.class);
                 JSONObject currentNodeP = definitionP.getProcess().getNodes().getJSONObject(activityId);
                 flowTaskTemp.setTaskJsonDef(currentNodeP.toString());
-                results = flowTaskService.findNexNodesWithUserSet( flowTaskTemp);
+                results = flowTaskService.findNexNodesWithUserSet(flowTaskTemp);
             }
-            parentFlowInstance=parentFlowInstance.getParent();
-            nodeInfoList=results;
-            flowTaskTempSrc =flowTaskTemp;
-            instanceSon=superExecution.getProcessInstance();
+            parentFlowInstance = parentFlowInstance.getParent();
+            nodeInfoList = results;
+            flowTaskTempSrc = flowTaskTemp;
+            instanceSon = superExecution.getProcessInstance();
         }
         return results;
     }
 
-    public List<String> getCallActivitySonPaths(FlowTask flowTask) throws NoSuchMethodException{
+    public List<String> getCallActivitySonPaths(FlowTask flowTask) throws NoSuchMethodException {
         List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
         List<String> paths = new ArrayList<String>();
-        if(nodeInfoList!=null && !nodeInfoList.isEmpty()){
-            for(NodeInfo nodeInfo :nodeInfoList){
-                if(StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())){
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            for (NodeInfo nodeInfo : nodeInfoList) {
+                if (StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())) {
                     paths.add(nodeInfo.getCallActivityPath());
                 }
             }
@@ -125,16 +130,16 @@ public class FlowListenerTool {
         return paths;
     }
 
-    public List<NodeInfo>  initNodeUsers(List<NodeInfo> results,DelegateExecution delegateTask,String actTaskDefKey){
+    public List<NodeInfo> initNodeUsers(List<NodeInfo> results, DelegateExecution delegateTask, String actTaskDefKey) {
         List<NodeInfo> nextNodes = new ArrayList<NodeInfo>();
-        if(results !=null &&  !results.isEmpty()){
-            Map<String,Object> userVarNameMap = new HashMap<>();
+        if (results != null && !results.isEmpty()) {
+            Map<String, Object> userVarNameMap = new HashMap<>();
             List<String> userVarNameList = null;
-            for(NodeInfo nodeInfo:results){
+            for (NodeInfo nodeInfo : results) {
                 if ("EndEvent".equalsIgnoreCase(nodeInfo.getType())) {
                     nodeInfo.setType("EndEvent");
                     continue;
-                }else if("ServiceTask".equalsIgnoreCase(nodeInfo.getType())){//服务任务也不做处理
+                } else if ("ServiceTask".equalsIgnoreCase(nodeInfo.getType())) {//服务任务也不做处理
                     continue;
                 }
                 nextNodes.add(nodeInfo);
@@ -144,95 +149,95 @@ public class FlowListenerTool {
                 String varUserName = nodeInfo.getUserVarName();
 
                 if (StringUtils.isNotEmpty(callActivityPath)) {
-                    userVarNameList = (List<String>) userVarNameMap.get(callActivityPath+"_sonProcessSelectNodeUserV");
-                    if(userVarNameList==null){
+                    userVarNameList = (List<String>) userVarNameMap.get(callActivityPath + "_sonProcessSelectNodeUserV");
+                    if (userVarNameList == null) {
                         userVarNameList = new ArrayList<String>();
-                        userVarNameMap.put(callActivityPath+"_sonProcessSelectNodeUserV",userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                        userVarNameMap.put(callActivityPath + "_sonProcessSelectNodeUserV", userVarNameList);//选择的变量名,子流程存在选择了多个的情况
                     }
                     userVarNameList.add(varUserName);
                 }
-                if("AnyOne".equalsIgnoreCase(uiUserType)){//任意执行人默认规则为当前执行人
+                if ("AnyOne".equalsIgnoreCase(uiUserType)) {//任意执行人默认规则为当前执行人
                     String currentUserId = ContextUtil.getUserId();
                     Executor executor = flowCommonUtil.getBasicUserExecutor(currentUserId);
                     Set<Executor> employeeSet = new HashSet<Executor>();
                     employeeSet.add(executor);
                     nodeInfo.setExecutorSet(employeeSet);
                 }
-                if ("SingleSign".equalsIgnoreCase(taskType) || "CounterSign".equalsIgnoreCase(taskType)||"ParallelTask".equalsIgnoreCase(taskType)||"SerialTask".equalsIgnoreCase(taskType)) {
+                if ("SingleSign".equalsIgnoreCase(taskType) || "CounterSign".equalsIgnoreCase(taskType) || "ParallelTask".equalsIgnoreCase(taskType) || "SerialTask".equalsIgnoreCase(taskType)) {
                     Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                    if(executorSet != null && !executorSet.isEmpty()){
+                    if (executorSet != null && !executorSet.isEmpty()) {
                         List<String> userIdArray = new ArrayList<String>();
-                        for(Executor executor:executorSet){
+                        for (Executor executor : executorSet) {
                             userIdArray.add(executor.getId());
                         }
                         if (StringUtils.isNotEmpty(callActivityPath)) {
-                            userVarNameMap.put(callActivityPath+"/"+varUserName, userIdArray);
-                        }else {
+                            userVarNameMap.put(callActivityPath + "/" + varUserName, userIdArray);
+                        } else {
                             userVarNameMap.put(varUserName, userIdArray);
                         }
                     }
-                }else {
+                } else {
                     Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                    if(executorSet != null && !executorSet.isEmpty()){
-                        String userId = ((Executor)executorSet.toArray()[0]).getId();
+                    if (executorSet != null && !executorSet.isEmpty()) {
+                        String userId = ((Executor) executorSet.toArray()[0]).getId();
                         if (StringUtils.isNotEmpty(callActivityPath)) {
-                            userVarNameMap.put(callActivityPath+"/"+varUserName, userId);
-                        }else {
+                            userVarNameMap.put(callActivityPath + "/" + varUserName, userId);
+                        } else {
                             userVarNameMap.put(varUserName, userId);
                         }
                     }
                 }
             }
 //            runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
-            runtimeService.setVariables(delegateTask.getProcessInstanceId(),userVarNameMap);
+            runtimeService.setVariables(delegateTask.getProcessInstanceId(), userVarNameMap);
         }
 
         return nextNodes;
     }
 
-    public void initNextAllTask(FlowInstance flowInstance,FlowHistory flowHistory){
-        Calendar startTreadTime =  Calendar.getInstance();
+    public void initNextAllTask(FlowInstance flowInstance, FlowHistory flowHistory) {
+        Calendar startTreadTime = Calendar.getInstance();
         ScheduledExecutorService service = Executors
                 .newSingleThreadScheduledExecutor();
         Runnable runnable = new Runnable() {
             public void run() {
                 Calendar nowTime = Calendar.getInstance();
                 nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
-                if(nowTime.after(startTreadTime)){
+                if (nowTime.after(startTreadTime)) {
                     service.shutdown();
                 }
-                flowTaskTool.initTask(flowInstance,flowHistory,null,null);
+                flowTaskTool.initTask(flowInstance, flowHistory, null, null);
             }
         };
         // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
         service.scheduleWithFixedDelay(runnable, 1, 20, TimeUnit.SECONDS);
     }
 
-    public void initNextAllTask(List<NodeInfo> nextNodes,ExecutionEntity taskEntity,FlowHistory flowHistory){
-        if(!nextNodes.isEmpty()){
+    public void initNextAllTask(List<NodeInfo> nextNodes, ExecutionEntity taskEntity, FlowHistory flowHistory) {
+        if (!nextNodes.isEmpty()) {
             ExecutionEntity parent = taskEntity.getSuperExecution();
-            if(parent!=null){//针对作为子任务的情况
+            if (parent != null) {//针对作为子任务的情况
                 ExecutionEntity parentTemp = parent;
                 ProcessInstance parentProcessInstance = null;
                 ExecutionEntity zhuzhongEntity = parentTemp;
-                while (parentTemp!=null){
+                while (parentTemp != null) {
                     parentProcessInstance = parentTemp.getProcessInstance();
-                    zhuzhongEntity =parentTemp;
-                    parentTemp = ((ExecutionEntity)parentProcessInstance).getSuperExecution();
+                    zhuzhongEntity = parentTemp;
+                    parentTemp = ((ExecutionEntity) parentProcessInstance).getSuperExecution();
                 }
                 FlowInstance flowInstanceZhu = flowInstanceDao.findByActInstanceId(zhuzhongEntity.getProcessInstanceId());
                 new Thread(new Runnable() {//异步
                     @Override
                     public void run() {
-                        initNextAllTask(flowInstanceZhu,flowHistory);//初始化相关联的所有待办任务
+                        initNextAllTask(flowInstanceZhu, flowHistory);//初始化相关联的所有待办任务
                     }
                 }).start();
-            }else{
+            } else {
                 new Thread(new Runnable() {//异步
                     @Override
                     public void run() {
                         FlowInstance flowInstance = flowHistory.getFlowInstance();
-                        initNextAllTask(flowInstance,flowHistory);
+                        initNextAllTask(flowInstance, flowHistory);
                     }
                 }).start();
             }
@@ -240,70 +245,71 @@ public class FlowListenerTool {
     }
 
 
-    public FlowOperateResult callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign,Map<String,Object> variables){
+    public FlowOperateResult callEndService(String businessKey, FlowDefVersion flowDefVersion, int endSign, Map<String, Object> variables) {
         FlowOperateResult flowOpreateResult = null;
-        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+        if (flowDefVersion != null && StringUtils.isNotEmpty(businessKey)) {
             String endCallServiceUrlId = flowDefVersion.getEndCallServiceUrlId();
             Boolean endCallServiceAync = flowDefVersion.getEndCallServiceAync();
-            if(StringUtils.isNotEmpty(endCallServiceUrlId)){
+            if (StringUtils.isNotEmpty(endCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
-                if(StringUtils.isNotEmpty(checkUrl)){
+                if (StringUtils.isNotEmpty(checkUrl)) {
 //                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                    String endCallServiceUrlPath = baseUrl+checkUrl;
+                    String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String endCallServiceUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    Map<String,String> params = new HashMap<String,String>();
-                    if(variables!=null){
-                        if(variables.get("approved")!=null){
-                            String approved = variables.get("approved")+"";
+                    Map<String, String> params = new HashMap<String, String>();
+                    if (variables != null) {
+                        if (variables.get("approved") != null) {
+                            String approved = variables.get("approved") + "";
                             flowInvokeParams.setAgree(Boolean.parseBoolean(approved));
                         }
-                        if(variables.get("approveResult")!=null){
-                            String approveResult = variables.get("approveResult")+"";
+                        if (variables.get("approveResult") != null) {
+                            String approveResult = variables.get("approveResult") + "";
                             flowInvokeParams.setFinalAgree(Boolean.parseBoolean(approveResult));
                         }
-                        if(variables.get("opinion")!=null){
-                            params.put("opinion",variables.get("opinion")+"");
+                        if (variables.get("opinion") != null) {
+                            params.put("opinion", variables.get("opinion") + "");
                         }
                     }
-                    params.put("endSign",endSign+"");
+                    params.put("endSign", endSign + "");
                     flowInvokeParams.setParams(params);
-                    String msg = "结束后事件【"+flowServiceUrl.getName()+"】";
-                    String urlAndData = "-请求地址："+endCallServiceUrlPath+"，参数："+ JsonUtils.toJson(flowInvokeParams);
-                    if (endCallServiceAync!=null&&endCallServiceAync==true){
+                    String msg = "结束后事件【" + flowServiceUrl.getName() + "】";
+                    String urlAndData = "-请求地址：" + endCallServiceUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
+                    if (endCallServiceAync != null && endCallServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                try{
-                                    FlowOperateResult flowOperateResult =   ApiClient.postViaProxyReturnResult(endCallServiceUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                                    if(flowOperateResult==null){
-                                        LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
-                                    }else if(!flowOperateResult.isSuccess()){
-                                        LogUtil.info(msg+"异步调用返回信息：【"+flowOperateResult.toString()+"】"+urlAndData);
+                                try {
+                                    FlowOperateResult flowOperateResult = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<FlowOperateResult>() {
+                                    }, flowInvokeParams);
+                                    if (flowOperateResult == null) {
+                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                    } else if (!flowOperateResult.isSuccess()) {
+                                        LogUtil.info(msg + "异步调用返回信息：【" + flowOperateResult.toString() + "】" + urlAndData);
                                     }
-                                }catch (Exception e){
-                                    LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
+                                } catch (Exception e) {
+                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
                                 }
                             }
                         }).start();
-                        flowOpreateResult = new FlowOperateResult(true,"事件已异步调用！");
-                    }else{
-                        try{
+                        flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
+                    } else {
+                        try {
                             flowOpreateResult = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<FlowOperateResult>() {
                             }, flowInvokeParams);
-                            if(flowOpreateResult==null){
-                                flowOpreateResult = new FlowOperateResult(false,msg+"返回信息为空！");
-                                LogUtil.info(msg+"返回信息为空！"+urlAndData);
-                            }else if(!flowOpreateResult.isSuccess()){
-                                LogUtil.info(msg+"返回信息：【"+flowOpreateResult.toString()+"】"+urlAndData);
-                                flowOpreateResult.setMessage(msg+"返回信息：【"+flowOpreateResult.getMessage()+"】");
+                            if (flowOpreateResult == null) {
+                                flowOpreateResult = new FlowOperateResult(false, msg + "返回信息为空！");
+                                LogUtil.info(msg + "返回信息为空！" + urlAndData);
+                            } else if (!flowOpreateResult.isSuccess()) {
+                                LogUtil.info(msg + "返回信息：【" + flowOpreateResult.toString() + "】" + urlAndData);
+                                flowOpreateResult.setMessage(msg + "返回信息：【" + flowOpreateResult.getMessage() + "】");
                             }
-                        }catch (Exception e){
-                            LogUtil.error(msg+"内部报错!"+urlAndData,e);
-                            throw new FlowException(msg+"内部报错，详情请查看日志！");
+                        } catch (Exception e) {
+                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
+                            throw new FlowException(msg + "内部报错，详情请查看日志！");
                         }
                     }
 
@@ -314,75 +320,78 @@ public class FlowListenerTool {
     }
 
     /**
-     *  流程即将结束时调用服务检查，如果失败流程结束失败，同步
+     * 流程即将结束时调用服务检查，如果失败流程结束失败，同步
+     *
      * @param businessKey
      * @param flowDefVersion
      * @return
      */
-    public FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion,int endSign,Map<String,Object> variables){
+    public FlowOperateResult callBeforeEnd(String businessKey, FlowDefVersion flowDefVersion, int endSign, Map<String, Object> variables) {
         FlowOperateResult result = null;
-        if(flowDefVersion!=null && StringUtils.isNotEmpty(businessKey)){
+        if (flowDefVersion != null && StringUtils.isNotEmpty(businessKey)) {
             String endBeforeCallServiceUrlId = flowDefVersion.getEndBeforeCallServiceUrlId();
             Boolean endBeforeCallServiceAync = flowDefVersion.getEndBeforeCallServiceAync();
 
-            if(StringUtils.isNotEmpty(endBeforeCallServiceUrlId)){
+            if (StringUtils.isNotEmpty(endBeforeCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
-                if(StringUtils.isNotEmpty(checkUrl)){
+                if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
-                    String checkUrlPath = baseUrl+checkUrl;
+                    String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    Map<String,String> params = new HashMap<String,String>();
-                    if(variables!=null){
-                        if(variables.get("approved")!=null){
-                            String approved = variables.get("approved")+"";
+                    Map<String, String> params = new HashMap<String, String>();
+                    if (variables != null) {
+                        if (variables.get("approved") != null) {
+                            String approved = variables.get("approved") + "";
                             flowInvokeParams.setAgree(Boolean.parseBoolean(approved));
                         }
-                        if(variables.get("approveResult")!=null){
-                            String approveResult = variables.get("approveResult")+"";
+                        if (variables.get("approveResult") != null) {
+                            String approveResult = variables.get("approveResult") + "";
                             flowInvokeParams.setFinalAgree(Boolean.parseBoolean(approveResult));
                         }
-                        if(variables.get("opinion")!=null){
-                            params.put("opinion",variables.get("opinion")+"");
+                        if (variables.get("opinion") != null) {
+                            params.put("opinion", variables.get("opinion") + "");
                         }
 
                     }
-                    params.put("endSign",endSign+"");
+                    params.put("endSign", endSign + "");
                     flowInvokeParams.setParams(params);
-                    String msg = "结束前事件【"+flowServiceUrl.getName()+"】";
-                    String urlAndData = "-请求地址："+checkUrlPath+"，参数："+ JsonUtils.toJson(params);
-                    if(endBeforeCallServiceAync!=null&&endBeforeCallServiceAync==true){
+                    String msg = "结束前事件【" + flowServiceUrl.getName() + "】";
+                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(params);
+                    if (endBeforeCallServiceAync != null && endBeforeCallServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
                             public void run() {
-                                try{
-                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {}, flowInvokeParams);
-                                    if(resultAync==null){
-                                        LogUtil.info(msg+"异步调用返回信息为空!"+urlAndData);
-                                    }else if(!resultAync.isSuccess()){
-                                        LogUtil.info(msg+"异步调用返回信息：【"+resultAync.toString()+"】"+urlAndData);
+                                try {
+                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                                    }, flowInvokeParams);
+                                    if (resultAync == null) {
+                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                    } else if (!resultAync.isSuccess()) {
+                                        LogUtil.info(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
                                     }
-                                }catch (Exception e){
-                                    LogUtil.error(msg+"异步调用内部报错!"+urlAndData,e);
+                                } catch (Exception e) {
+                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
                                 }
                             }
                         }).start();
-                        result = new FlowOperateResult(true,"事件已异步调用！");
-                    }else{
+                        result = new FlowOperateResult(true, "事件已异步调用！");
+                    } else {
                         try {
-                            result = ApiClient.postViaProxyReturnResult(checkUrlPath,new GenericType<FlowOperateResult>() {},flowInvokeParams);
-                            if(result==null){
-                                result = new FlowOperateResult(false,msg+"返回信息为空！");
-                                LogUtil.info(msg+"返回参数为空!"+urlAndData);
-                            }else if(!result.isSuccess()){
-                                LogUtil.info(msg+"返回信息：【"+result.toString()+"】"+urlAndData);
-                                result.setMessage(msg+"返回信息：【"+result.getMessage()+"】");
+                            result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                            }, flowInvokeParams);
+                            if (result == null) {
+                                result = new FlowOperateResult(false, msg + "返回信息为空！");
+                                LogUtil.info(msg + "返回参数为空!" + urlAndData);
+                            } else if (!result.isSuccess()) {
+                                LogUtil.info(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
+                                result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
                             }
-                        }catch (Exception e){
-                            LogUtil.error(msg+"内部报错!"+urlAndData,e);
-                            throw new FlowException(msg+"内部报错，详情请查看日志！");
+                        } catch (Exception e) {
+                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
+                            throw new FlowException(msg + "内部报错，详情请查看日志！");
                         }
                     }
                 }
@@ -391,13 +400,13 @@ public class FlowListenerTool {
         return result;
     }
 
-    public void taskEventServiceCall(DelegateExecution delegateTask,boolean async, String beforeExcuteServiceId ,String businessId){
+    public void taskEventServiceCall(DelegateExecution delegateTask, boolean async, String beforeExcuteServiceId, String businessId) {
         try {
-            String multiInstance =  (String)((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
+            String multiInstance = (String) ((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
             Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
-            if(isMmultiInstance){//控制会签任务、串行任务、并行任务 所有执行完成时只触发一次完成事件（可能后续需要扩展控制）
-                TransitionImpl transiton =  ((ExecutionEntity) delegateTask).getTransition();
-                if(transiton==null){
+            if (isMmultiInstance) {//控制会签任务、串行任务、并行任务 所有执行完成时只触发一次完成事件（可能后续需要扩展控制）
+                TransitionImpl transiton = ((ExecutionEntity) delegateTask).getTransition();
+                if (transiton == null) {
                     return;
                 }
             }
@@ -407,79 +416,79 @@ public class FlowListenerTool {
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
 
-            Map<String,Object> tempV = delegateTask.getVariables();
-            Map<String,List<String>> selectedNodesUserMap = (Map<String, List<String>>) tempV.get("selectedNodesUserMap");
-            Map<String,List<String>> selectedNodesUserMapNew = new HashMap<>();
-            if(selectedNodesUserMap!=null && !selectedNodesUserMap.isEmpty()){//如果配置了自定义code，则进行替换
-               for(Map.Entry<String,List<String>> temp:selectedNodesUserMap.entrySet()){
-                  String actTaskDefKey = temp.getKey();
-                  JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-                  JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
-                   if(normalInfo!=null && !normalInfo.isEmpty() ){
-                      String nodeCode = normalInfo.get("nodeCode")!=null?(String)normalInfo.get("nodeCode"):null;
-                      if(StringUtils.isEmpty(nodeCode)){
-                          nodeCode = actTaskDefKey;
-                      }
-                       selectedNodesUserMapNew.put(nodeCode,temp.getValue());
-                   }
-               }
-                tempV.put("selectedNodesUserMap",selectedNodesUserMapNew);
+            Map<String, Object> tempV = delegateTask.getVariables();
+            Map<String, List<String>> selectedNodesUserMap = (Map<String, List<String>>) tempV.get("selectedNodesUserMap");
+            Map<String, List<String>> selectedNodesUserMapNew = new HashMap<>();
+            if (selectedNodesUserMap != null && !selectedNodesUserMap.isEmpty()) {//如果配置了自定义code，则进行替换
+                for (Map.Entry<String, List<String>> temp : selectedNodesUserMap.entrySet()) {
+                    String actTaskDefKey = temp.getKey();
+                    JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+                    JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+                    if (normalInfo != null && !normalInfo.isEmpty()) {
+                        String nodeCode = normalInfo.get("nodeCode") != null ? (String) normalInfo.get("nodeCode") : null;
+                        if (StringUtils.isEmpty(nodeCode)) {
+                            nodeCode = actTaskDefKey;
+                        }
+                        selectedNodesUserMapNew.put(nodeCode, temp.getValue());
+                    }
+                }
+                tempV.put("selectedNodesUserMap", selectedNodesUserMapNew);
             }
             String param = JsonUtils.toJson(tempV);
-            if(async){
+            if (async) {
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
                         ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
                     }
                 }).start();
-            }else {
+            } else {
                 FlowOperateResult flowOperateResult = null;
                 String callMessage = null;
-                try{
+                try {
                     flowOperateResult = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
                     callMessage = flowOperateResult.getMessage();
-                }catch (Exception e){
+                } catch (Exception e) {
                     callMessage = e.getMessage();
                 }
 
-                if((flowOperateResult==null || !flowOperateResult.isSuccess())){
+                if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
-                    if(flowTaskList.isEmpty()&&flowHistoryList.isEmpty()){ //如果是开始节点，手动回滚
-                            AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                            new Thread(){
-                                public void run(){
-                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                    Boolean result = false;
-                                    int index = 5;
-                                    while (!result && index>0){
-                                        try {
-                                            Thread.sleep(1000*(6-index));
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        try {
-                                            result =  ExpressionUtil.resetState(businessModel,flowInstance.getBusinessId(),FlowStatus.INIT);
-                                        }catch (Exception e){
-                                            logger.error(e.getMessage(),e);
-                                        }
-                                        index--;
+                    if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
+                        AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
+                        new Thread() {
+                            public void run() {
+                                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                                Boolean result = false;
+                                int index = 5;
+                                while (!result && index > 0) {
+                                    try {
+                                        Thread.sleep(1000 * (6 - index));
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
                                     }
+                                    try {
+                                        result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                    } catch (Exception e) {
+                                        logger.error(e.getMessage(), e);
+                                    }
+                                    index--;
                                 }
-                            }.start();
+                            }
+                        }.start();
                     }
                     throw new FlowException(callMessage);//抛出异常
                 }
             }
-        }catch (Exception e){
-            if(e.getClass()!=FlowException.class){
-                LogUtil.error(e.getMessage(),e);
+        } catch (Exception e) {
+            if (e.getClass() != FlowException.class) {
+                LogUtil.error(e.getMessage(), e);
             }
-            if(!async){
+            if (!async) {
                 throw e;
             }
         }
