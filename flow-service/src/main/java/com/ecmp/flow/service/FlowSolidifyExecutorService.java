@@ -1,6 +1,6 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
@@ -178,10 +178,13 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
-            //添加工作池任务
+            //工作池任务
             if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
                 webvO.setInstancyStatus(false);
                 webvO.setUserIds(null);
+            } else if ("serviceTask".equalsIgnoreCase(webvO.getFlowTaskType())) {
+                webvO.setInstancyStatus(false);
+                webvO.setUserIds(ContextUtil.getUserId());
             } else {
                 Search search = new Search();
                 search.addFilter(new SearchFilter("businessId", businessId));
@@ -213,10 +216,13 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
-            //添加工作池任务
+            //工作池任务
             if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
                 webvO.setInstancyStatus(false);
                 webvO.setUserIds(null);
+            } else if ("serviceTask".equalsIgnoreCase(webvO.getFlowTaskType())) {
+                webvO.setInstancyStatus(false);
+                webvO.setUserIds(ContextUtil.getUserId());
             } else {
                 Search search = new Search();
                 search.addFilter(new SearchFilter("businessId", businessId));
