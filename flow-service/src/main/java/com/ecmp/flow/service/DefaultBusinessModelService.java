@@ -404,6 +404,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional( propagation= Propagation.REQUIRES_NEW)
     public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams){
         Map<String,Object> variables = new HashMap<String,Object>();
+        try {
+            Thread.sleep(1000 * 20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         FlowOperateResult result = new FlowOperateResult();
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
