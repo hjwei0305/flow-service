@@ -2468,7 +2468,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 f.setSolidifyFlow(flowTaskBatchCompleteWebVO.getSolidifyFlow());
                             }
                         }
-                        completeTaskVo.setTaskList(flowTaskCompleteWebVOList.toString());
+                        completeTaskVo.setTaskList(JsonUtils.toJson(flowTaskCompleteWebVOList));
                         if (endEventId != null) {
                             completeTaskVo.setEndEventId("true");
                             completeTaskVo.setTaskList(null);
