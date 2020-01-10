@@ -156,6 +156,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private TaskMakeOverPowerService taskMakeOverPowerService;
 
+    @Autowired
+    private DefaultFlowBaseService defaultFlowBaseService;
+
 
     private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
@@ -2433,82 +2436,62 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    /**
+     * 批量处理（逻辑重新整理，只适合于react版本的批量处理）
+     * @param flowTaskBatchCompleteWebVOList 任务传输对象
+     * @return
+     */
     public ResponseData completeTaskBatch(List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList) {
-        ResponseData responseData = new ResponseData();
         if (flowTaskBatchCompleteWebVOList != null && flowTaskBatchCompleteWebVOList.size() > 0) {
-            String opinion = "同意";
             int total = 0;//记录处理任务总数
-            StringBuffer failMessage = new StringBuffer();
             for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO : flowTaskBatchCompleteWebVOList) {
-                FlowTaskBatchCompleteVO flowTaskBatchCompleteVO = new FlowTaskBatchCompleteVO();
-                flowTaskBatchCompleteVO.setTaskIdList(flowTaskBatchCompleteWebVO.getTaskIdList());
-                flowTaskBatchCompleteVO.setOpinion(opinion);
-                Map<String, String> selectedNodesMap = new HashMap<>();
-                Map<String, Object> v = new HashMap<String, Object>();
-                List<FlowTaskCompleteWebVO> flowTaskCompleteList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
-                //判断是不是固化流程
-                if (flowTaskBatchCompleteWebVO.getSolidifyFlow() == true) {
-                    String onlyTaskId = flowTaskBatchCompleteVO.getTaskIdList().get(0);
-                    FlowTask flowTask = this.findOne(onlyTaskId);
-                    ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskListOfBatch(flowTaskCompleteList, flowTask.getFlowInstance().getBusinessId());
-                    if (solidifyData.getSuccess() == true) {
-                        flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
-                        JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
-                        flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
-                        v.put("manageSolidifyFlow", true); //需要维护固化表
-                    } else {
-                        v.put("manageSolidifyFlow", false);
-                    }
-                }
-
-                Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
-                Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
-                    for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
-                        allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
-                        List<String> userList = new ArrayList<String>();
-                        String flowTaskType = f.getFlowTaskType();
-                        selectedNodesMap.put(f.getNodeId(), f.getNodeId());
-                        String userIds = f.getUserIds() == null ? "" : f.getUserIds();
-                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
-                            String userId = userIds.replaceAll(",", "");
-                            v.put(f.getUserVarName(), userId);
+                List<String> taskIdList = flowTaskBatchCompleteWebVO.getTaskIdList();
+                if (taskIdList != null && !taskIdList.isEmpty()) {
+                    for (String taskId : taskIdList) {
+                        CompleteTaskVo completeTaskVo = new CompleteTaskVo();
+                        completeTaskVo.setTaskId(taskId);
+                        FlowTask flowTask = flowTaskDao.findOne(taskId);
+                        if (flowTask != null && flowTask.getFlowInstance() != null) {
+                            completeTaskVo.setBusinessId(flowTask.getFlowInstance().getBusinessId());
                         } else {
-                            String[] idArray = userIds.split(",");
-                            userList = Arrays.asList(idArray);
-                            if (StringUtils.isNotEmpty(f.getUserVarName())) {
-                                v.put(f.getUserVarName(), userList);
+                            continue;
+                        }
+                        completeTaskVo.setOpinion("同意(批量)");
+                        List<FlowTaskCompleteWebVO> flowTaskCompleteWebVOList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
+                        Boolean endEventId = null;
+                        if (flowTaskCompleteWebVOList != null && flowTaskCompleteWebVOList.size() > 0) {
+                            for (FlowTaskCompleteWebVO f : flowTaskCompleteWebVOList) {
+                                if (endEventId == null && f.getFlowTaskType() == null && f.getNodeId().indexOf("EndEvent") != -1) {
+                                    endEventId = true;
+                                }
+                                f.setSolidifyFlow(flowTaskBatchCompleteWebVO.getSolidifyFlow());
                             }
                         }
-                        selectedNodesUserMap.put(f.getNodeId(), userList);
+                        completeTaskVo.setTaskList(flowTaskCompleteWebVOList.toString());
+                        if (endEventId) {
+                            completeTaskVo.setEndEventId("true");
+                            completeTaskVo.setTaskList(null);
+                        }
+                        completeTaskVo.setManualSelected(false);  //审批和会签都不能连接人工排他网关
+                        completeTaskVo.setApproved("true");
+                        completeTaskVo.setLoadOverTime(new Long(7777));
+                        try {
+                            defaultFlowBaseService.completeTask(completeTaskVo);
+                            total++;
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     }
-                    v.put("allowChooseInstancyMap", allowChooseInstancyMap);
-                    v.put("selectedNodesUserMap", selectedNodesUserMap);
-                } else {
-                    v.put("selectedNodesUserMap", selectedNodesUserMap);
-                    v.put("allowChooseInstancyMap", allowChooseInstancyMap);
-                }
-                v.put("approved", true);//针对会签时同意、不同意、弃权等操作
-                flowTaskBatchCompleteVO.setVariables(v);
-                OperateResultWithData<Integer> operateResult = this.completeBatch(flowTaskBatchCompleteVO);
-                total += operateResult.getData();
-                if (operateResult.successful()) {
-                } else {
-                    failMessage.append(operateResult.getMessage() + ";");
                 }
             }
             if (total > 0) {
-                responseData.setSuccess(true);
-                responseData.setMessage("成功处理任务" + total + "条");
+                return ResponseData.operationSuccess("成功处理任务" + total + "条");
             } else {
-                responseData.setSuccess(false);
-                responseData.setMessage(failMessage.toString());
+                return ResponseData.operationFailure("批量处理失败!");
             }
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数值错误！");
+            return ResponseData.operationFailure("批量审批，参数不能为空！");
         }
-        return responseData;
     }
 
 

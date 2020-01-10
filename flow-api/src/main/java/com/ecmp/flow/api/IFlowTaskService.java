@@ -101,7 +101,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 批量处理（web端改造）
+     * 批量处理（react版本）
      *
      * @param flowTaskBatchCompleteWebVOList 任务传输对象
      * @return 操作结果
@@ -556,8 +556,9 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 通过用户ID查询所有待办
+     *
      * @param searchConfig 搜索对象
-     * @param userId  用户ID
+     * @param userId       用户ID
      * @return
      */
     @POST
@@ -672,7 +673,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @param taskId            任务ID
      * @param approved          是否同意
      * @param includeNodeIdsStr 包含节点
-     * @param solidifyFlow    是否固化流程
+     * @param solidifyFlow      是否固化流程
      * @return 操作结果
      */
     @GET
