@@ -2438,6 +2438,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 批量处理（逻辑重新整理，只适合于react版本的批量处理）
+     *
      * @param flowTaskBatchCompleteWebVOList 任务传输对象
      * @return
      */
@@ -2468,7 +2469,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         completeTaskVo.setTaskList(flowTaskCompleteWebVOList.toString());
-                        if (endEventId) {
+                        if (endEventId != null) {
                             completeTaskVo.setEndEventId("true");
                             completeTaskVo.setTaskList(null);
                         }
