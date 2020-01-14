@@ -1044,7 +1044,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private List<FlowInstance> initUrl(List<FlowInstance> result) {
         if (result != null && !result.isEmpty()) {
             for (FlowInstance flowInstance : result) {
-//                String apiBaseAddress = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 if (StringUtils.isNotEmpty(apiBaseAddress)) {
@@ -1116,10 +1115,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     /**
      * 查询当前用户我的单据汇总信息
      *
-     * @param orderType 是否在流程中    inFlow：流程中   ended：已完成
+     * @param orderType 流程状态：all-全部、inFlow-流程中、ended-正常完成、abnormalEnd-异常结束
      * @return 汇总信息
      */
-    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType, Date startLong, Date endLong, String appSign) {
+    public List<TodoBusinessSummaryVO> findMyBillsSumHeader(String orderType, String appModelCode) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
         Boolean ended = null;
@@ -1134,44 +1133,23 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             ended = true;
             manuallyEnd = true;
         }
-        String startDateString;
-        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
-        if (startLong != null) {
-            startDateString = sim.format(startLong);
-        } else {
-            startDateString = "1949-10-01";
-        }
-        String endDateString;
-        Calendar c = Calendar.getInstance();
-        if (endLong != null) {
-            c.setTime(endLong);
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            endDateString = sim.format(c.getTime());
-//            endDateString =  sim.format(endLong);s
-        } else {
-            Date date = new Date();
-            c.setTime(date);
-            c.add(Calendar.DAY_OF_MONTH, 1);
-            endDateString = sim.format(c.getTime());
-//            endDateString =  sim.format(new Date());
-        }
-        Date startDate;
-        Date endDate;
-        try {
-            startDate = sim.parse(startDateString);
-            endDate = sim.parse(endDateString);
-        } catch (Exception e) {
-            return null;
-        }
 
         List groupResultList;
         if (ended == null) {
-            groupResultList = flowInstanceDao.findBillsByGroup(userID, startDate, endDate);
+            if (appModelCode == null) {
+                groupResultList = flowInstanceDao.findBillsByGroup(userID);
+            } else {
+                groupResultList = flowInstanceDao.findBillsByGroupAndAppCode(userID, appModelCode);
+            }
         } else {
-            groupResultList = flowInstanceDao.findBillsByExecutorIdGroup(userID, ended, manuallyEnd, startDate, endDate);
+            if (appModelCode == null) {
+                groupResultList = flowInstanceDao.findBillsByExecutorIdGroup(userID, ended, manuallyEnd);
+            } else {
+                groupResultList = flowInstanceDao.findBillsByExecutorIdGroupAndAppCode(userID, ended, manuallyEnd, appModelCode);
+            }
         }
 
-        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
             Iterator it = groupResultList.iterator();
             while (it.hasNext()) {
@@ -1184,23 +1162,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 }
                 // 获取业务类型
                 BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
-                // 限制应用标识
-                boolean canAdd = true;
-                if (!StringUtils.isBlank(appSign)) {
-                    // 判断应用模块代码是否以应用标识开头,不是就不添加
-                    if (!businessModel.getAppModule().getCode().startsWith(appSign)) {
-                        canAdd = false;
-                    }
+                Integer oldCount = businessModelCountMap.get(businessModel);
+                if (oldCount == null) {
+                    oldCount = 0;
                 }
-                if (canAdd) {
-                    Integer oldCount = businessModelCountMap.get(businessModel);
-                    if (oldCount == null) {
-                        oldCount = 0;
-                    }
-                    businessModelCountMap.put(businessModel, oldCount + count);
-                }
+                businessModelCountMap.put(businessModel, oldCount + count);
             }
         }
+
         if (!businessModelCountMap.isEmpty()) {
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
@@ -1217,7 +1186,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Override
     public ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo) {
         try {
-            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(myBillsHeaderVo.getOrderType(), myBillsHeaderVo.getStartDate(), myBillsHeaderVo.getEndDate(), "");
+            List<TodoBusinessSummaryVO> list = this.findMyBillsSumHeader(myBillsHeaderVo.getOrderType(), myBillsHeaderVo.getAppModelCode());
             return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
@@ -1243,18 +1212,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Override
-    public ResponseData getMyBillsAndExecutorByModeId(String modelId, Search search) {
+    public ResponseData getMyBillsAndExecutorByModeId(String appModelCode, String modelId, Search search) {
         ResponseData responseData;
-        if (StringUtils.isEmpty(modelId)) {
+        if (search != null) {
+            List<SearchFilter> listFilter = search.getFilters();
+            if (StringUtils.isNotEmpty(appModelCode)) {
+                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.appModule.code", appModelCode, SearchFilter.Operator.EQ));
+            }
+            if (StringUtils.isNotEmpty(modelId)) {
+                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
+            }
             responseData = this.getMyBills(search);
         } else {
-            if (search != null) {
-                List<SearchFilter> listFilter = search.getFilters();
-                listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
-                responseData = this.getMyBills(search);
-            } else {
-                return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
-            }
+            return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
         }
         if (responseData.getSuccess()) {
             PageResult<MyBillVO> results = (PageResult<MyBillVO>) responseData.getData();

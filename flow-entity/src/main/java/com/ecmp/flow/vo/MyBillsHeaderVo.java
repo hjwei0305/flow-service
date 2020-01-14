@@ -1,15 +1,12 @@
 package com.ecmp.flow.vo;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class MyBillsHeaderVo implements Serializable {
 
-  private String orderType;
+    private String orderType;  //流程状态：all-全部、inFlow-流程中、ended-正常完成、abnormalEnd-异常结束
 
-  private  Date startDate;
-
-  private  Date endDate;
+    private String appModelCode;  //应用模块代码
 
     public String getOrderType() {
         return orderType;
@@ -19,19 +16,11 @@ public class MyBillsHeaderVo implements Serializable {
         this.orderType = orderType;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public String getAppModelCode() {
+        return appModelCode;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setAppModelCode(String appModelCode) {
+        this.appModelCode = appModelCode;
     }
 }
