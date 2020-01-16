@@ -278,6 +278,21 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "终止流程实例", notes = "终止")
     OperateResult endByFlowInstanceId(@QueryParam("id") String id);
 
+
+    /**
+     * 通过单据ID终止流程实例（带流程配置权限检查）
+     * 列表组件使用
+     *
+     * @param businessId 业务单据id
+     * @return 操作结果
+     */
+    @POST
+    @Path("checkAndEndByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据ID终止流程实例（权限检查）", notes = "通过单据ID终止流程实例（权限检查）")
+    ResponseData checkAndEndByBusinessId(@QueryParam("businessId") String businessId);
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据

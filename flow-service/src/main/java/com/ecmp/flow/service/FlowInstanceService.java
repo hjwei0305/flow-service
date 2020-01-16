@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
+import com.ecmp.core.entity.IDataDict;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
@@ -19,6 +20,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import com.ecmp.vo.SessionUser;
+import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -26,8 +28,10 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -680,6 +684,61 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public OperateResult endForce(String id) {
         return this.endCommon(id, true);
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData checkAndEndByBusinessId(String businessId) {
+        if (StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("参数单据ID不能为空！");
+        }
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if (flowInstance == null) {
+            return ResponseData.operationFailure("该单据未发起过流程！");
+        } else if (flowInstance.isEnded() == true) {
+            return ResponseData.operationFailure("该单据没有流程中数据！");
+        } else {
+            ResponseData res = checkEnd(flowInstance);
+            if (!res.getSuccess()) {
+                return res;
+            }
+        }
+        return this.endCommon(flowInstance.getId(), false);
+    }
+
+
+    /**
+     * 检查运行实例当前节点是否允许发起人终止流程
+     * @param flowInstance
+     * @return
+     */
+    public ResponseData checkEnd(FlowInstance flowInstance) {
+        Set<FlowTask> taskSet = flowInstance.getFlowTasks();
+        Iterator<FlowTask> it = taskSet.iterator();
+        List<String> keyList = new ArrayList<>();
+        while (it.hasNext()) {
+            FlowTask flowTask = it.next();
+            String key = flowTask.getActTaskDefKey();
+            if (keyList.size() != 0) {
+                if (keyList.contains(key)) {   //如果已经判断过该节点，直接跳过
+                    continue;
+                }
+            }
+            keyList.add(key);
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            Boolean canStartEnd = false;
+            if (normalInfo.get("allowTerminate") != null) {   //是否允许发起人终止
+                canStartEnd = normalInfo.getBoolean("allowTerminate");
+            }
+            if (canStartEnd) {
+                continue;
+            } else {
+                return ResponseData.operationFailure("流程已到达【" + defObj.getString("name") + "】，不允许发起人终止流程！");
+            }
+        }
+        return ResponseData.operationSuccess();
+    }
+
 
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult endByBusinessId(String businessId) {
