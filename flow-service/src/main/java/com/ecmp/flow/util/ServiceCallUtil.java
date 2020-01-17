@@ -117,7 +117,7 @@ public class ServiceCallUtil {
                 String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
                 String url = clientApiBaseUrl+"/"+clientUrl;
                 Date startDate = new Date();
-                SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
+                SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 String msg = sim.format(startDate)+"事件【"+flowServiceUrl.getName()+"】";
                 String urlAndData = "-请求地址："+url+"，参数："+ JsonUtils.toJson(params);
                 try {

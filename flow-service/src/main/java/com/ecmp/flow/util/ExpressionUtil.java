@@ -84,7 +84,7 @@ public class ExpressionUtil {
         params.put(Constants.ID,businessId);
         params.put(Constants.ALL,all);
         Date startDate = new Date();
-        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
         String messageLog = sim.format(startDate)+"开始调用【条件属性值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
         Map<String,Object> result;
         try {
