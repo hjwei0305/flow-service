@@ -1596,7 +1596,15 @@ public class FlowTaskTool {
                         continue;
                     }
                 }
-                List<IdentityLink> identityLinks = taskService.getIdentityLinksForTask(task.getId());
+
+                List<IdentityLink> identityLinks;
+
+                try {
+                    identityLinks = taskService.getIdentityLinksForTask(task.getId());
+                } catch (Exception e) {
+                    return;
+                }
+
                 if (identityLinks == null || identityLinks.isEmpty()) {//多实例任务为null
                     /** 获取流程变量 **/
                     String executionId = task.getExecutionId();
