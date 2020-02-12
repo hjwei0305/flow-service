@@ -1,7 +1,9 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiJsonUtils;
+import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.vo.ResponseData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,12 +25,16 @@ public class AppModuleServiceTest extends BaseContextTestCase{
     private AppModuleService service;
     @Autowired
     private DefaultFlowBaseService defaultFlowBaseService;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
     @Test
-    public void findAll() {
-        List<AppModule> appModules = service.findAll();
-        Assert.assertNotNull(appModules);
-        System.out.println(ApiJsonUtils.toJson(appModules));
+    public void findAllaaa() {
+//        List<AppModule> appModules = service.findAll();
+//        Assert.assertNotNull(appModules);
+//        System.out.println(ApiJsonUtils.toJson(appModules));
+        List<Organization>  list = flowCommonUtil.getBasicAllOrgs();
+        System.out.println(ApiJsonUtils.toJson(list));
     }
 
     @Test
