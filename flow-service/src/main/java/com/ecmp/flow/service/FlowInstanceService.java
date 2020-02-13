@@ -7,6 +7,7 @@ import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
@@ -707,6 +708,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     /**
      * 检查运行实例当前节点是否允许发起人终止流程
+     *
      * @param flowInstance
      * @return
      */
@@ -1104,7 +1106,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (result != null && !result.isEmpty()) {
             for (FlowInstance flowInstance : result) {
                 String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                 if (StringUtils.isNotEmpty(apiBaseAddress)) {
                     flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
                     String[] tempApiBaseAddress = apiBaseAddress.split("/");
@@ -1114,7 +1116,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 }
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
                     String[] tempWebBaseAddress = webBaseAddress.split("/");

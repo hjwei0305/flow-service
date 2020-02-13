@@ -6,6 +6,7 @@ import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchOrder;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
 import com.ecmp.flow.dao.util.PageUrlUtil;
@@ -285,7 +286,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
      */
     private void initFlowTask(FlowTask flowTask) {
         String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-        String apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
         if (StringUtils.isNotEmpty(apiBaseAddress)) {
             flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
             String[] tempApiBaseAddress = apiBaseAddress.split("/");
@@ -295,7 +296,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             }
         }
         String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-        String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+        String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
 
         if (StringUtils.isNotEmpty(webBaseAddress)) {
             flowTask.setWebBaseAddressAbsolute(webBaseAddress);
@@ -319,7 +320,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
         flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
         if (workPageUrl != null) {
-            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(ContextUtil.getGlobalProperty(webBaseAddressConfig), workPageUrl.getUrl()));
+            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigKeyValueProperties(webBaseAddressConfig), workPageUrl.getUrl()));
             String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
             taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
             flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
@@ -327,7 +328,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             AppModule appModule = appModuleDao.findOne(appModuleId);
             if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
                 webBaseAddressConfig = appModule.getWebBaseAddress();
-                webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowTask.setWebBaseAddressAbsolute(webBaseAddress);

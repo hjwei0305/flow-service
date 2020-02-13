@@ -32,37 +32,39 @@ public class ExpressionUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(ExpressionUtil.class);
 
-    public static AppModule getAppModule(BusinessModel businessModel){
+    public static AppModule getAppModule(BusinessModel businessModel) {
         AppModule appModule = businessModel.getAppModule();
         return appModule;
     }
 
-    public static String  getErrorLogString(String url){
-        return  "【调用接口异常："+url+",详情请查看日志】";
+    public static String getErrorLogString(String url) {
+        return "【调用接口异常：" + url + ",详情请查看日志】";
     }
 
     /**
      * 获取条件属性说明（键值对）
+     *
      * @param businessModel 业务模型
      * @return
      */
-    public  static Map<String,String>  getPropertiesDecMap(BusinessModel businessModel){
+    public static Map<String, String> getPropertiesDecMap(BusinessModel businessModel) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        params.put(Constants.ALL,false);
-        String messageLog = "开始调用【条件属性说明服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,String> result;
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
+        params.put(Constants.ALL, false);
+        String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        Map<String, String> result;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {}, params);
-            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result))+"】";
-        }catch (Exception e){
-            messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl),e);
-        }finally {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {
+            }, params);
+            messageLog += ",【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
+            throw new FlowException(getErrorLogString(clientApiUrl), e);
+        } finally {
             LogUtil.bizLog(messageLog);
         }
         return result;
@@ -70,31 +72,33 @@ public class ExpressionUtil {
 
     /**
      * 获取条件属性值（键值对）
+     *
      * @param businessModel 业务模型
-     * @param  businessId 业务ID
+     * @param businessId    业务ID
      * @return
      */
-    public  static Map<String,Object>  getPropertiesValuesMap(BusinessModel businessModel, String businessId,Boolean all) {
+    public static Map<String, Object> getPropertiesValuesMap(BusinessModel businessModel, String businessId, Boolean all) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        params.put(Constants.ID,businessId);
-        params.put(Constants.ALL,all);
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
+        params.put(Constants.ID, businessId);
+        params.put(Constants.ALL, all);
         Date startDate = new Date();
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-        String messageLog = sim.format(startDate)+"开始调用【条件属性值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> result;
+        String messageLog = sim.format(startDate) + "开始调用【条件属性值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        Map<String, Object> result;
         try {
-            result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
+            }, params);
             Date endDate = new Date();
-            messageLog+=","+sim.format(endDate)+"【result=" + (result==null?null:JsonUtils.toJson(result)) +"】";
-        }catch (Exception e){
-            messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl),e);
-        }finally {
+            messageLog += "," + sim.format(endDate) + "【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
+            throw new FlowException(getErrorLogString(clientApiUrl), e);
+        } finally {
             LogUtil.bizLog(messageLog);
         }
         return result;
@@ -102,83 +106,88 @@ public class ExpressionUtil {
 
     /**
      * 获取条件属性初始值（键值对）
+     *
      * @param businessModel 业务实体模型
      * @return
      */
-    public static Map<String,Object>  getPropertiesInitialValuesMap(BusinessModel businessModel){
+    public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModel.getClassName());
-        String messageLog = "开始调用【条件属性初始值服务地址】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        Map<String,Object> result;
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
+        String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        Map<String, Object> result;
         try {
-            result =  ApiClient.getEntityViaProxy(clientApiUrl,new GenericType<Map<String,Object> >() {},params);
-            messageLog+=",【result=" + (result==null?null:JsonUtils.toJson(result))+"】";
-        }catch (Exception e){
-            messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl),e);
-        }finally {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
+            }, params);
+            messageLog += ",【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
+            throw new FlowException(getErrorLogString(clientApiUrl), e);
+        } finally {
             LogUtil.bizLog(messageLog);
         }
         return result;
     }
 
 
-
     /**
      * 检证表达式语法是否合法
-     * @param  businessModel 业务实体
-     * @param expression 表达式
+     *
+     * @param businessModel 业务实体
+     * @param expression    表达式
      * @return
      */
-    public static Boolean validate(BusinessModel businessModel,String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    public static Boolean validate(BusinessModel businessModel, String expression) throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         //获取条件属性初始值
-        Map<String,Object> pvs =  getPropertiesInitialValuesMap(businessModel);
-        Boolean result = ConditionUtil.groovyTest(expression,pvs);
+        Map<String, Object> pvs = getPropertiesInitialValuesMap(businessModel);
+        Boolean result = ConditionUtil.groovyTest(expression, pvs);
         return result;
     }
 
     /**
      * 直接获取表达式验证结果
-     * @param  businessModel 业务实体
+     *
+     * @param businessModel 业务实体
      * @param expression
-     * @param businessId  业务ID
+     * @param businessId    业务ID
      * @return
      */
-    public static boolean result(BusinessModel businessModel,String businessId,String expression){
+    public static boolean result(BusinessModel businessModel, String businessId, String expression) {
         //获取条件属性值
-        Map<String,Object> pvs =  getPropertiesValuesMap(businessModel,businessId,true);
-        boolean result =  ConditionUtil.groovyTest(expression,pvs);
+        Map<String, Object> pvs = getPropertiesValuesMap(businessModel, businessId, true);
+        boolean result = ConditionUtil.groovyTest(expression, pvs);
         return result;
     }
 
     /**
      * 重置单据状态
-     * @param  businessModel 业务实体
+     *
+     * @param businessModel 业务实体
      * @param status
-     * @param businessId  业务ID
+     * @param businessId    业务ID
      * @return
      */
-    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status){
+    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status) {
         boolean result;
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        params.put(Constants.ID,businessId);
-        params.put(Constants.STATUS,status);
-        String messageLog = "开始调用【重置单据状态】接口，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
+        params.put(Constants.ID, businessId);
+        params.put(Constants.STATUS, status);
+        String messageLog = "开始调用【重置单据状态】接口，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         try {
-            result = ApiClient.postViaProxyReturnResult(clientApiUrl,new GenericType<Boolean>() {},params);
-            messageLog+=",【result=" + result+"】";
-        }catch (Exception e){
-            messageLog+="-调用异常："+e.getMessage();
-            throw  new FlowException(getErrorLogString(clientApiUrl),e);
-        }finally {
+            result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<Boolean>() {
+            }, params);
+            messageLog += ",【result=" + result + "】";
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
+            throw new FlowException(getErrorLogString(clientApiUrl), e);
+        } finally {
             LogUtil.bizLog(messageLog);
         }
         return result;
@@ -187,9 +196,10 @@ public class ExpressionUtil {
 
     /**
      * 模拟异步,上传调用日志
+     *
      * @param message
      */
-    static void asyncUploadLog(String message){
+    static void asyncUploadLog(String message) {
         new Thread(new Runnable() {//模拟异步,上传调用日志
             @Override
             public void run() {

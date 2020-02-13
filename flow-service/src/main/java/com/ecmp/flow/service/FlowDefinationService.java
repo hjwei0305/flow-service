@@ -480,7 +480,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String baseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                     String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);

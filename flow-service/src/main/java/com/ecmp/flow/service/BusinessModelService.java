@@ -10,6 +10,7 @@ import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
@@ -80,39 +81,39 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         String flowTaskId = "";//待办ID
         String userId = ContextUtil.getUserId();
         Boolean isFlowtask = false;  //是否在待办中有数据
-        if(StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(typeId)){
-            List<FlowTask>  flowTaskList =  flowTaskService.findByInstanceId(instanceId);
-            if(flowTaskList!=null&&flowTaskList.size()>0){
-               FlowTask flowTask = flowTaskList.stream().filter(a->userId.equals(a.getExecutorId())).findFirst().orElse(null);
-               if(flowTask!=null){ //TODO:如果待办中有当前用户的，默认就是查询的待办(实际可能是从已办过来的)
-                   isFlowtask = true;
-                   flowTaskId = flowTask.getId();
-                   canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
-               }
+        if (StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(typeId)) {
+            List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(instanceId);
+            if (flowTaskList != null && flowTaskList.size() > 0) {
+                FlowTask flowTask = flowTaskList.stream().filter(a -> userId.equals(a.getExecutorId())).findFirst().orElse(null);
+                if (flowTask != null) { //TODO:如果待办中有当前用户的，默认就是查询的待办(实际可能是从已办过来的)
+                    isFlowtask = true;
+                    flowTaskId = flowTask.getId();
+                    canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+                }
             }
 
-           if(!isFlowtask){//TODO:待办里面没有，查询不到，默认取已办最后一条数据
-               boo = false;
-               Search search = new Search();
-               search.addFilter(new SearchFilter("flowInstance.id", instanceId));
-               search.addFilter(new SearchFilter("executorId", userId));
-               SearchOrder searchOrder = new SearchOrder();
-               search.addSortOrder(searchOrder.desc("lastEditedDate"));
-               List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
-               if(historylist != null && historylist.size() > 0){
-                   FlowHistory a =historylist.get(0);
-                   historyId = a.getId();
-                   if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
-                           a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
-                           a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
-                           a.getFlowInstance().isEnded() == false) {
-                       Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
-                       if (canCel) {
-                           canCancel = true;
-                       }
-                   }
-               }
-           }
+            if (!isFlowtask) {//TODO:待办里面没有，查询不到，默认取已办最后一条数据
+                boo = false;
+                Search search = new Search();
+                search.addFilter(new SearchFilter("flowInstance.id", instanceId));
+                search.addFilter(new SearchFilter("executorId", userId));
+                SearchOrder searchOrder = new SearchOrder();
+                search.addSortOrder(searchOrder.desc("lastEditedDate"));
+                List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
+                if (historylist != null && historylist.size() > 0) {
+                    FlowHistory a = historylist.get(0);
+                    historyId = a.getId();
+                    if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
+                            a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
+                            a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
+                            a.getFlowInstance().isEnded() == false) {
+                        Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
+                        if (canCel) {
+                            canCancel = true;
+                        }
+                    }
+                }
+            }
 
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
@@ -139,7 +140,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);
@@ -147,24 +148,23 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
             String url = apiBaseAddress + businessDetailServiceUrl;
-            return this.getPropertiesByUrlOfModileByInstanceId(url, businessModelCode, id, boo, canMobile, canCancel, historyId ,flowTaskId);
-        }else{
+            return this.getPropertiesByUrlOfModileByInstanceId(url, businessModelCode, id, boo, canMobile, canCancel, historyId, flowTaskId);
+        } else {
             responseData.setSuccess(false);
             responseData.setMessage("参数不能为空！");
         }
         return responseData;
     }
 
-    public ResponseData getPropertiesByUrlOfModileByInstanceId(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId ,String flowTaskId) {
-        ResponseData responseData = getPropertiesByUrlOfModile(url,businessModelCode,id,flowTaskIsInit,canMobile,canCancel,historyId);
-        if(responseData.getSuccess()){
-            Map<String, Object> properties = (Map<String, Object>)responseData.getData();
-            properties.put("flowTaskId",flowTaskId);
+    public ResponseData getPropertiesByUrlOfModileByInstanceId(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId, String flowTaskId) {
+        ResponseData responseData = getPropertiesByUrlOfModile(url, businessModelCode, id, flowTaskIsInit, canMobile, canCancel, historyId);
+        if (responseData.getSuccess()) {
+            Map<String, Object> properties = (Map<String, Object>) responseData.getData();
+            properties.put("flowTaskId", flowTaskId);
             responseData.setData(properties);
         }
         return responseData;
     }
-
 
 
     @Override
@@ -179,9 +179,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             FlowTask flowTask = flowTaskService.findOne(taskId);
             if (flowTask == null) {
                 boo = false;
-                List<FlowHistory> historylist =flowHistoryService.findListByProperty("oldTaskId",taskId);
-                if(historylist != null && historylist.size() > 0){
-                    FlowHistory a =  historylist.get(0);
+                List<FlowHistory> historylist = flowHistoryService.findListByProperty("oldTaskId", taskId);
+                if (historylist != null && historylist.size() > 0) {
+                    FlowHistory a = historylist.get(0);
                     historyId = a.getId();
                     if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
                             a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
@@ -224,7 +224,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);

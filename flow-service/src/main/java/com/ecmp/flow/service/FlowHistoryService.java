@@ -5,6 +5,7 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowHistoryService;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
@@ -85,12 +86,12 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         if (result != null && !result.isEmpty()) {
             for (FlowHistory flowHistory : result) {
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                 flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
                 apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                 apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
@@ -268,8 +269,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 beanVo.setFlowInstanceBusinessCode(flowInstance.getBusinessCode());
                 beanVo.setFlowInstanceEnded(flowInstance.isEnded());
 
-                String apiBaseAddress =  ContextUtil.getGlobalProperty(businessModel.getAppModule().getApiBaseAddress());
-                String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddress);
+                String apiBaseAddress =  Constants.getConfigKeyValueProperties(businessModel.getAppModule().getApiBaseAddress());
+                String clientApiBaseUrl =  Constants.getConfigKeyValueProperties(apiBaseAddress);
                 beanVo.setBusinessDetailServiceUrl(clientApiBaseUrl+businessModel.getBusinessDetailServiceUrl());
                 phoneVoList.add(beanVo);
             });

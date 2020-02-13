@@ -221,7 +221,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public boolean getBooleanPushTaskToBasic() {
         Boolean pushBasic = false;
-        String pushBasicStr = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_BASIC");
+        String pushBasicStr = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_BASIC");
         if (StringUtils.isNotEmpty(pushBasicStr)) {
             if ("true".equalsIgnoreCase(pushBasicStr.trim())) {
                 pushBasic = true;
@@ -373,7 +373,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         //取配置中心统一推送待办地址
-        String flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+        String flowPushTaskUrl = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_URL");
         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
             pushModelOrUrl = true;
         }
@@ -394,7 +394,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String pushMsgUrl = businessModel.getPushMsgUrl();
                 if (StringUtils.isNotEmpty(pushMsgUrl)) { //业务实体中是否配置了推送待办的接口地址
                     String apiBaseAddressConfig = ExpressionUtil.getAppModule(businessModel).getApiBaseAddress();
-                    String clientApiBaseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                     if (StringUtils.isEmpty(clientApiBaseUrl)) {
                         LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
                     } else {
@@ -405,7 +405,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         //取配置中心统一推送待办地址
-        flowPushTaskUrl = ContextUtil.getGlobalProperty("FLOW_PUSH_TASK_URL");
+        flowPushTaskUrl = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_URL");
         return flowPushTaskUrl;
     }
 
@@ -1994,7 +1994,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String nodeType = taskJsonDefObj.get("nodeType") + "";
                 beanVo.setNodeType(nodeType);
 
-                String webBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                String webBaseAddress = Constants.getConfigKeyValueProperties(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -2125,11 +2125,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String nodeType = taskJsonDefObj.get("nodeType") + "";
                 beanVo.setNodeType(nodeType);
 
-                String apiBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
+                String apiBaseAddress = Constants.getConfigKeyValueProperties(flowType.getBusinessModel().getAppModule().getApiBaseAddress());
                 beanVo.setApiBaseAddress(apiBaseAddress);
                 beanVo.setBusinessDetailServiceUrl(bean.getBusinessDetailServiceUrl());
 
-                String webBaseAddress = ContextUtil.getGlobalProperty(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
+                String webBaseAddress = Constants.getConfigKeyValueProperties(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -3508,7 +3508,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
                 String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
                     if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -3524,7 +3524,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     AppModule appModule = appModuleService.findOne(appModuleId);
                     if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
                         webBaseAddressConfig = appModule.getWebBaseAddress();
-                        webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                        webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                         if (StringUtils.isNotEmpty(webBaseAddress)) {
                             String[] tempWebBaseAddress = webBaseAddress.split("/");
                             if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
@@ -3544,7 +3544,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (historylist != null && historylist.size() > 0) {
                     FlowHistory history = historylist.get(0);
                     String webBaseAddressConfig = history.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                    String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                    String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                     if (StringUtils.isNotEmpty(webBaseAddress)) {
                         String[] tempWebBaseAddress = webBaseAddress.split("/");
                         if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {

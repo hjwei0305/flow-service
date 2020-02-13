@@ -3,6 +3,7 @@ package com.ecmp.flow.dao.impl;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.*;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
@@ -164,7 +165,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         if(result!=null && !result.isEmpty()){
             for(FlowHistory flowHistory:result){
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                String apiBaseAddress =  Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                 if(StringUtils.isNotEmpty(apiBaseAddress)){
                     flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
                     String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
@@ -174,7 +175,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                     }
                 }
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress =  ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 if(StringUtils.isNotEmpty(webBaseAddress)){
                     flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
                     String[]  tempWebBaseAddress = webBaseAddress.split("/");

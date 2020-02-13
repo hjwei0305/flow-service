@@ -8,6 +8,7 @@ import com.ecmp.core.search.SearchOrder;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.ITaskMakeOverPowerService;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.TaskMakeOverPowerDao;
 import com.ecmp.flow.entity.FlowHistory;
@@ -100,7 +101,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             for (FlowHistory flowHistory : result) {
                 FlowInstance flowInstance = flowHistory.getFlowInstance();
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = ContextUtil.getGlobalProperty(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
                     String[] tempWebBaseAddress = webBaseAddress.split("/");
@@ -316,12 +317,12 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      */
     public String checkMakeOverPowerType() {
         //是否允许转授权(如果没设置或者不为true，视为不允许进行转授权操作)
-        String allowMakeOverPower = ContextUtil.getGlobalProperty("ALLOW_MAKE_OVER_POWER");
+        String allowMakeOverPower = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER");
         if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
             return "noType";
         }
         //转授权类型（如果没设置或者不为turnToDo，视为转授权类型为同时查看）
-        String allowMakeOverPowerType = ContextUtil.getGlobalProperty("ALLOW_MAKE_OVER_POWER_TYPE");
+        String allowMakeOverPowerType = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER_TYPE");
         if (StringUtils.isEmpty(allowMakeOverPowerType) || !"turnToDo".equalsIgnoreCase(allowMakeOverPowerType)) {
             return "sameToSee";
         }

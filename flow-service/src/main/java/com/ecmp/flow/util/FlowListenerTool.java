@@ -254,9 +254,8 @@ public class FlowListenerTool {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
-//                    String baseUrl= flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String baseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                     String endCallServiceUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
@@ -337,7 +336,7 @@ public class FlowListenerTool {
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    String baseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
                     String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);

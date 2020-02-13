@@ -13,7 +13,7 @@ ext {
 // 依赖
 dependencies {
     compile project(':flow-entity')
-
+    compile project(':flow-service-client')
     compile(
             "org.springframework.boot:spring-boot-starter",
             "com.ecmp:jpa-ecmp-spring-boot-starter:$ecmp_version"

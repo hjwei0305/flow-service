@@ -1,6 +1,7 @@
 package com.ecmp.flow.common.util;
 
 import com.ecmp.context.ContextUtil;
+import com.ecmp.log.util.LogUtil;
 import org.apache.commons.lang.StringUtils;
 
 
@@ -39,6 +40,7 @@ public class Constants extends ConfigurableContants {
         }
         String value = getProperty(key);
         if (value == null) {
+            LogUtil.error("获取键值对参数[" + key + "]失败！");
             throw new FlowException("获取键值对参数[" + key + "]失败！");
         }
         return value;
@@ -122,6 +124,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicOrgListByPowerUrl() {
+        //TODO：获取有权限的组织机构树
 //        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listallorgbypower");
 //        if(StringUtils.isNotEmpty(BASIC_ORG_LISTALLORGS_URL)){
 //            return  BASIC_ORG_LISTALLORGS_URL;
