@@ -28,8 +28,25 @@ public class Constants extends ConfigurableContants {
         init("framework.properties");
     }
 
+    /**
+     * 获取键值对配置参数
+     *
+     * @return
+     */
+    public static String getConfigKeyValueProperties(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        String value = getProperty(key);
+        if (value == null) {
+            throw new FlowException("获取键值对参数[" + key + "]失败！");
+        }
+        return value;
+    }
+
+
     public static String getBasicServiceUrl() {
-        String BASIC_SERVICE_URL = getProperty("basic.service.url","http://10.4.208.86:8100/sei-gateway/sei-basic");
+        String BASIC_SERVICE_URL = getProperty("BASIC_API", "http://10.4.208.86:8100/sei-gateway/sei-basic");
         return BASIC_SERVICE_URL;
     }
 
