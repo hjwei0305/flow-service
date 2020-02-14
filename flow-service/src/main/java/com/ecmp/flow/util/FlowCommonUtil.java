@@ -70,15 +70,13 @@ public class FlowCommonUtil implements Serializable {
      */
     public Executor getBasicUserExecutor(String userId) {
         List<String> userIds = Arrays.asList((userId));
-        Map<String, Object> params = new HashMap();
-        params.put("userIds", userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
-        String messageLog = "开始调用【根据用户的id获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        String messageLog = "开始调用【根据用户的id获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(userIds);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
-            }, params);
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
+            }, userIds);
             if (result.successful()) {
                 executors = result.getData();
             } else {
@@ -111,15 +109,13 @@ public class FlowCommonUtil implements Serializable {
      * @return 流程执行人集合
      */
     public List<Executor> getBasicUserExecutors(List<String> userIds) {
-        Map<String, Object> params = new HashMap();
-        params.put("userIds", userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
         ResponseData<List<Executor>> result;
         List<Executor> executors;
-        String messageLog = "开始调用【根据用户的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        String messageLog = "开始调用【根据用户的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(userIds);
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
-            }, params);
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
+            }, userIds);
             if (result.successful()) {
                 executors = result.getData();
             } else {
