@@ -124,13 +124,14 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicOrgListByPowerUrl() {
-        //TODO：获取有权限的组织机构树
-//        String BASIC_ORG_LISTALLORGS_URL = ContextUtil.getGlobalProperty("basic.org.listallorgbypower");
-//        if(StringUtils.isNotEmpty(BASIC_ORG_LISTALLORGS_URL)){
-//            return  BASIC_ORG_LISTALLORGS_URL;
-//        }
-        String BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + getProperty(
-                "basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
+        String  BASIC_ORG_LISTALLORGS_URL ;
+        String POWER_Url =  getProperty("basic.org.listallorgbypower");
+        if(StringUtils.isNotEmpty(POWER_Url)){
+            BASIC_ORG_LISTALLORGS_URL =  getBasicServiceUrl() + POWER_Url;
+        }else{
+            BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + getProperty(
+                    "basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
+        }
         return BASIC_ORG_LISTALLORGS_URL;
     }
 

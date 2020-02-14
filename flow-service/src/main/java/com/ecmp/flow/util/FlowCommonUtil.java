@@ -74,17 +74,26 @@ public class FlowCommonUtil implements Serializable {
         params.put("userIds", userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
         String messageLog = "开始调用【根据用户的id获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据id获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString("【根据id获取执行人】"), e);
         }
+
         if (executors.isEmpty()) {
-            LogUtil.error(messageLog + "返回信息为空！");
+            LogUtil.error(messageLog + "-返回信息为空！");
             throw new FlowException(getNulString("【根据id获取执行人】"));
         }
         Executor executor = null;
@@ -105,18 +114,26 @@ public class FlowCommonUtil implements Serializable {
         Map<String, Object> params = new HashMap();
         params.put("userIds", userIds);
         String url = Constants.getBasicUserGetExecutorsbyUseridsUrl();
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         String messageLog = "开始调用【根据用户的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据id列表获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString("【根据id列表获取执行人】"), e);
         }
         if (executors.isEmpty()) {
-            LogUtil.error(messageLog + "返回信息为空！");
+            LogUtil.error(messageLog + "-返回信息为空！");
             throw new FlowException(getNulString("【根据id列表获取执行人】"));
         }
         return executors;
@@ -135,14 +152,22 @@ public class FlowCommonUtil implements Serializable {
         params.put("orgId", orgId);
         String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
         String messageLog = "开始调用【根据岗位的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据岗位列表获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
-            throw new FlowException(getErrorLogString("根据岗位列表获取执行人】"), e);
+            throw new FlowException(getErrorLogString("【根据岗位列表获取执行人】"), e);
         }
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回信息为空！");
@@ -164,10 +189,18 @@ public class FlowCommonUtil implements Serializable {
         params.put("orgId", orgId);
         String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
         String messageLog = "开始调用【根据岗位类别的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据岗位类别列表获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
@@ -195,10 +228,18 @@ public class FlowCommonUtil implements Serializable {
         params.put("positionIds", positionIds);
         String url = Constants.getBasicPositionGetExecutorsUrl();
         String messageLog = "开始调用【根据岗位集合、组织维度集合和组织机构获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据岗位、组织维度和组织机构获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
@@ -224,10 +265,18 @@ public class FlowCommonUtil implements Serializable {
         params.put("orgIds", orgIds);
         String url = Constants.getExecutorsByPostCatAndOrgUrl();
         String messageLog = "开始调用【根据岗位类别集合和组织机构集合获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            executors = ApiClient.getEntityViaProxy(url, new GenericType<List<Executor>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
             }, params);
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【根据岗位类别和组织机构获取执行人】"));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
@@ -300,17 +349,23 @@ public class FlowCommonUtil implements Serializable {
      */
     public List<Organization> getBasicAllOrgByPower() {
         String url = Constants.getBasicOrgListByPowerUrl();
-        List<Organization> result;
-        String messageLog = "开始调用【获取所有有权限的组织机构树】，接口url=" + url + ",参数值为空";
+        ResponseData<List<Organization>> result;
+        String messageLog = "开始调用【获取所有有权限的组织机构树】，接口url=" + url + ",参数为空";
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Organization>>>() {
             }, null);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return result;
     }
 
 
@@ -326,16 +381,22 @@ public class FlowCommonUtil implements Serializable {
         params.put("nodeId", nodeId);
         String url = Constants.getBasicOrgFindparentnodesUrl();
         String messageLog = "开始调用【获取指定节点的父组织机构列表】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
-        List<Organization> organizationsList;
+        ResponseData<List<Organization>> result;
         try {
-            organizationsList = ApiClient.getEntityViaProxy(url, new GenericType<List<Organization>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Organization>>>() {
             }, params);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return organizationsList;
     }
 
 
@@ -355,16 +416,22 @@ public class FlowCommonUtil implements Serializable {
         params.put("organizationId", orgId);
         String url = Constants.getBasicEmployeeFindbyorganizationidUrl();
         String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
-        List<Employee> employeeList;
+        ResponseData<List<Employee>> result;
         try {
-            employeeList = ApiClient.getEntityViaProxy(url, new GenericType<List<Employee>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Employee>>>() {
             }, params);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return employeeList;
     }
 
     /**
@@ -376,16 +443,22 @@ public class FlowCommonUtil implements Serializable {
     public PageResult<Employee> getEmployeesByOrgIdAndQueryParam(UserQueryParamVo userQueryParamVo) {
         String url = Constants.getBasicEmployeeFindByUserQueryParam();
         String messageLog = "开始调用【根据组织机构ID获取员工集合】，接口url=" + url + ",参数值" + JsonUtils.toJson(userQueryParamVo);
-        PageResult<Employee> employeeList;
+        ResponseData<PageResult<Employee>> result;
         try {
-            employeeList = ApiClient.postViaProxyReturnResult(url, new GenericType<PageResult<Employee>>() {
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<PageResult<Employee>>>() {
             }, userQueryParamVo);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return employeeList;
     }
 
 
@@ -393,16 +466,22 @@ public class FlowCommonUtil implements Serializable {
     public PageResult<Position> getBasicPositionFindbypage(Search search) {
         String url = Constants.getBasicPositionFindbypageUrl();
         String messageLog = "开始调用【获取所有岗位】，接口url=" + url + ",参数值" + JsonUtils.toJson(search);
-        PageResult<Position> positionList;
+        ResponseData<PageResult<Position>> result;
         try {
-            positionList = ApiClient.postViaProxyReturnResult(url, new GenericType<PageResult<Position>>() {
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<PageResult<Position>>>() {
             }, search);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return positionList;
     }
 
 
@@ -410,32 +489,44 @@ public class FlowCommonUtil implements Serializable {
     public List<PositionCategory> getBasicPositioncategoryFindall() {
         String url = Constants.getBasicPositioncategoryFindallUrl();
         String messageLog = "开始调用【获取所有岗位类别】，接口url=" + url + ",参数值为空";
-        List<PositionCategory> positionCategoryList;
+        ResponseData<List<PositionCategory>> result;
         try {
-            positionCategoryList = ApiClient.getEntityViaProxy(url, new GenericType<List<PositionCategory>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<PositionCategory>>>() {
             }, null);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return positionCategoryList;
     }
 
     //----------------------------------------------获取组织维度--------------------------------//
     public List<OrganizationDimension> getBasicOrgDimension() {
         String url = Constants.getBasicOrgDimensionUrl();
         String messageLog = "开始调用【获取所有组织维度】，接口url=" + url + ",参数值为空";
-        List<OrganizationDimension> organizationDimensionList;
+        ResponseData<List<OrganizationDimension>> result;
         try {
-            organizationDimensionList = ApiClient.getEntityViaProxy(url, new GenericType<List<OrganizationDimension>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<OrganizationDimension>>>() {
             }, null);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return organizationDimensionList;
     }
 
 
@@ -447,16 +538,22 @@ public class FlowCommonUtil implements Serializable {
     public List<com.ecmp.flow.basic.vo.AppModule> getBasicTenantAppModule() {
         String url = Constants.getBasicTenantAppModuleUrl();
         String messageLog = "开始调用【获取当前用户拥有权限的应用模块】，接口url=" + url + ",不需要参数值";
-        List<com.ecmp.flow.basic.vo.AppModule> appModuleList;
+        ResponseData<List<com.ecmp.flow.basic.vo.AppModule>> result;
         try {
-            appModuleList = ApiClient.getEntityViaProxy(url, new GenericType<List<com.ecmp.flow.basic.vo.AppModule>>() {
+            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<com.ecmp.flow.basic.vo.AppModule>>>() {
             }, null);
+            if (result.successful()) {
+                return result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString(url));
+            }
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog, e);
             throw new FlowException(getErrorLogString(url), e);
         }
-        return appModuleList;
     }
 
 
