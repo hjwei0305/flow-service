@@ -7,6 +7,7 @@ import com.ecmp.flow.basic.vo.*;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.vo.FindExecutorByPositionCateParamVo;
 import com.ecmp.flow.vo.FindExecutorByPositionParamVo;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.UserQueryParamVo;
@@ -181,16 +182,16 @@ public class FlowCommonUtil implements Serializable {
      * @return 流程执行人集合
      */
     public List<Executor> getBasicExecutorsByPostCatIds(List<String> postCatIds, String orgId) {
-        Map<String, Object> params = new HashMap();
-        params.put("postCatIds", postCatIds);
-        params.put("orgId", orgId);
+        FindExecutorByPositionCateParamVo vo  =  new FindExecutorByPositionCateParamVo();
+        vo.setPostCatIds(postCatIds);
+        vo.setOrgId(orgId);
         String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
-        String messageLog = "开始调用【根据岗位类别的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        String messageLog = "开始调用【根据岗位类别的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(vo);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
-            }, params);
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
+            }, vo);
             if (result.successful()) {
                 executors = result.getData();
             } else {
