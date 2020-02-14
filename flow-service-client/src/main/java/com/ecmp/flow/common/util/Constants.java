@@ -64,7 +64,7 @@ public class Constants extends ConfigurableContants {
     }
 
     /**
-     * 根据岗位的id列表获取执行人
+     * 通过岗位ids、组织维度ids和单据所属组织机构id来获取执行人
      *
      * @return
      */
@@ -84,14 +84,6 @@ public class Constants extends ConfigurableContants {
         return BASIC_POSITION_GETEXECUTORSBYPOSCATANDORGROOT_URL;
     }
 
-    /**
-     * 通过岗位ids、组织维度ids和组织机构id来获取执行人
-     */
-    public static String getBasicPositionGetExecutorsUrl() {
-        String BASIC_POSITION_GETEXECUTORS_URL = getBasicServiceUrl() + getProperty(
-                "basic.position.getExecutors", "/position/getExecutors");
-        return BASIC_POSITION_GETEXECUTORS_URL;
-    }
 
     /**
      * 通过岗位类别ids和组织机构ids获取执行人

@@ -7,6 +7,7 @@ import com.ecmp.flow.basic.vo.*;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.vo.FindExecutorByPositionParamVo;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.UserQueryParamVo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -136,23 +137,23 @@ public class FlowCommonUtil implements Serializable {
     }
 
     /**
-     * 根据岗位id列集合获取执行人
+     * 通过岗位ids和单据所属组织机构id来获取执行人
      *
      * @param positionIds 岗位id集合
-     * @param orgId       组织机构id（平台basic接口没用这个参数，项目需要的，直接在basic接口添加参数使用）
+     * @param orgId       组织机构id（应项目组要求添加，是否使用这个参数根据项目而定）
      * @return 流程执行人集合
      */
     public List<Executor> getBasicExecutorsByPositionIds(List<String> positionIds, String orgId) {
-        Map<String, Object> params = new HashMap();
-        params.put("positionIds", positionIds);
-        params.put("orgId", orgId);
+        FindExecutorByPositionParamVo vo = new FindExecutorByPositionParamVo();
+        vo.setPositionIds(positionIds);
+        vo.setOrgId(orgId);
         String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
-        String messageLog = "开始调用【根据岗位的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        String messageLog = "开始调用【根据岗位的id列表获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(vo);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
-            }, params);
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
+            }, vo);
             if (result.successful()) {
                 executors = result.getData();
             } else {
@@ -218,17 +219,17 @@ public class FlowCommonUtil implements Serializable {
      * @return 流程执行人集合
      */
     public List<Executor> getExecutorsByPositionIdsAndorgDimIds(List<String> positionIds, List<String> orgDimIds, String orgId) {
-        Map<String, Object> params = new HashMap();
-        params.put("orgId", orgId);
-        params.put("orgDimIds", orgDimIds);
-        params.put("positionIds", positionIds);
-        String url = Constants.getBasicPositionGetExecutorsUrl();
-        String messageLog = "开始调用【根据岗位集合、组织维度集合和组织机构获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+        FindExecutorByPositionParamVo vo = new FindExecutorByPositionParamVo();
+        vo.setPositionIds(positionIds);
+        vo.setOrgId(orgId);
+        vo.setOrgDimIds(orgDimIds);
+        String url = Constants.getBasicPositionGetexecutorsbypositionidsUrl();
+        String messageLog = "开始调用【根据岗位集合、组织维度集合和组织机构获取执行人】，接口url=" + url + ",参数值" + JsonUtils.toJson(vo);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Executor>>>() {
-            }, params);
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
+            }, vo);
             if (result.successful()) {
                 executors = result.getData();
             } else {

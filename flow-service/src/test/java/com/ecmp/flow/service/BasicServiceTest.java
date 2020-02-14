@@ -127,7 +127,7 @@ public class BasicServiceTest  extends BaseContextTestCase{
     }
 
     /**
-     * 根据岗位的id列表获取执行人
+     * 根据岗位的id列表和组织机构ID获取执行人
      */
     @Test
     public void getBasicExecutorsByPositionIds() {
