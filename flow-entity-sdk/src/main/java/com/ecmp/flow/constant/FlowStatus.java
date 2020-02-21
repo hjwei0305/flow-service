@@ -1,5 +1,6 @@
 package com.ecmp.flow.constant;
 
+import com.ecmp.annotation.Remark;
 
 import java.io.Serializable;
 
@@ -20,14 +21,17 @@ public enum FlowStatus implements Serializable{
     /**
      * 未进入流程
      */
+    @Remark("初始化状态")
     INIT("init"),
     /**
      * 流程处理中
      */
+    @Remark("流程中")
     INPROCESS("inProcess"),
     /**
      * 流程处理完成
      */
+    @Remark("流程处理完成")
     COMPLETED("completed");
 
     private String value;

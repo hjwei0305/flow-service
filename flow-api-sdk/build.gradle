@@ -1,6 +1,3 @@
-plugins {
-}
-
 // java编译的时候缺省状态下会因为中文字符而失败
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
@@ -8,15 +5,9 @@ plugins {
 ext {
 }
 
-
 // 依赖
 dependencies {
-    compile(
-            "javax.ws.rs:javax.ws.rs-api:2.0.1",
-            "io.swagger:swagger-annotations:1.5.12",
-            "net.sf.json-lib:json-lib:$jsonlib_version:jdk15",
-            "mysql:mysql-connector-java:$mysql_version"
-    )
+    compile project(':flow-entity-sdk')
 }
 
 jar {
@@ -66,4 +57,4 @@ uploadArchives {
     return 'Success'
 }
 
-
+// gradle upload
