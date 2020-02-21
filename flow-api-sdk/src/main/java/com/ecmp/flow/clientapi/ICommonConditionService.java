@@ -5,7 +5,6 @@ import com.ecmp.flow.entity.FlowTask;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.*;
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +30,6 @@ import java.util.Map;
  * </p>
  * *************************************************************************************************
  */
-@RestController
 public interface ICommonConditionService {
 
     /**
@@ -43,7 +41,7 @@ public interface ICommonConditionService {
      */
     @GetMapping(path="properties")
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性说明",notes = "测试")
-    public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all) throws ClassNotFoundException;
+    Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all) throws ClassNotFoundException;
 
 
     /**
@@ -58,7 +56,7 @@ public interface ICommonConditionService {
      */
     @GetMapping(path="initPropertiesAndValues")
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性初始化值键值对",notes = "测试")
-    public Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+    Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
 
     /**
@@ -74,7 +72,7 @@ public interface ICommonConditionService {
      */
     @GetMapping(path="propertiesAndValues")
     @ApiOperation(value = "通过业务实体代码,业务ID获取条件POJO属性键值对",notes = "测试")
-    public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
 
@@ -92,7 +90,7 @@ public interface ICommonConditionService {
      */
     @PostMapping(path="resetState")
     @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态",notes = "测试")
-    public Boolean resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
+    Boolean resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
                               @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
@@ -104,7 +102,7 @@ public interface ICommonConditionService {
      */
     @GetMapping(path="formPropertiesAndValues")
     @ApiOperation(value = "通过业务实体代码,业务ID获取POJO属性键值对",notes = "测试")
-    public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
+    Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
 
 
 
