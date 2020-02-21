@@ -57,6 +57,7 @@ public interface IBusinessFlowEntity  extends IAuditable {
 
     //业务单据号
    void setBusinessCode(String businessCode);
+    String getBusinessCode();
 
 
     // 获取条件实体
