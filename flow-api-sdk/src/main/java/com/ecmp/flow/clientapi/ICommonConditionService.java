@@ -3,9 +3,11 @@ package com.ecmp.flow.clientapi;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.Map;
  * </p>
  * *************************************************************************************************
  */
+@RestController
 public interface ICommonConditionService {
 
     /**
@@ -38,10 +41,7 @@ public interface ICommonConditionService {
      * @return  POJO属性说明Map
      * @throws ClassNotFoundException 类找不到异常
      */
-    @GET
-    @Path("properties")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @GetMapping(path="properties")
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性说明",notes = "测试")
     public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all) throws ClassNotFoundException;
 
@@ -56,10 +56,7 @@ public interface ICommonConditionService {
      * @throws IllegalAccessException 访问异常
      * @throws NoSuchMethodException 没有方法异常
      */
-    @GET
-    @Path("initPropertiesAndValues")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @GetMapping(path="initPropertiesAndValues")
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性初始化值键值对",notes = "测试")
     public Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
@@ -75,10 +72,7 @@ public interface ICommonConditionService {
      * @throws IllegalAccessException 访问异常
      * @throws NoSuchMethodException 没有方法异常
      */
-    @GET
-    @Path("propertiesAndValues")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @GetMapping(path="propertiesAndValues")
     @ApiOperation(value = "通过业务实体代码,业务ID获取条件POJO属性键值对",notes = "测试")
     public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
@@ -96,10 +90,7 @@ public interface ICommonConditionService {
      * @throws IllegalAccessException 访问异常
      * @throws NoSuchMethodException 没有方法异常
      */
-    @POST
-    @Path("resetState")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @PostMapping(path="resetState")
     @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态",notes = "测试")
     public Boolean resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
                               @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
@@ -111,10 +102,7 @@ public interface ICommonConditionService {
      * @param id 单据id
      * @return  POJO属性说明Map
      */
-    @GET
-    @Path("formPropertiesAndValues")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @GetMapping(path="formPropertiesAndValues")
     @ApiOperation(value = "通过业务实体代码,业务ID获取POJO属性键值对",notes = "测试")
     public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
 
@@ -124,10 +112,7 @@ public interface ICommonConditionService {
      * 推送待办
      * @param  list 待办信息
      */
-    @POST
-    @Path("pushTasksToDo")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @PostMapping(path="pushTasksToDo")
     @ApiOperation(value = "推送待办",notes = "推送待办")
     default  String pushTasksToDo(List<FlowTask> list){
         return "推送成功！";
