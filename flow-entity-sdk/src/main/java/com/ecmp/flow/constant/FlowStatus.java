@@ -1,6 +1,5 @@
 package com.ecmp.flow.constant;
 
-import com.ecmp.annotation.Remark;
 
 import java.io.Serializable;
 
