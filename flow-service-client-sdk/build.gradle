@@ -18,9 +18,6 @@ dependencies {
             "org.springframework.boot:spring-boot-starter",
             "com.ecmp:jpa-ecmp-spring-boot-starter:$ecmp_version"
     )
-    implementation("com.ecmp:jpa-ecmp-spring-boot-starter") {
-        exclude group: 'com.ecmp', module: 'core-entity'
-    }
 }
 
 
