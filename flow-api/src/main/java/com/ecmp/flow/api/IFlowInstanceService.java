@@ -368,6 +368,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "工作池任务确定执行人", notes = "工作池任务确定执行人")
     OperateResult signalPoolTaskByBusinessId(@QueryParam("businessId") String businessId, @QueryParam("poolTaskActDefId") String poolTaskActDefId, @QueryParam("userId") String userId, Map<String, Object> v);
 
+
+    /**
+     * 工作池任务确定多执行人（新）
+     *
+     * @return 操作结果
+     */
+    @POST
+    @Path("signalPoolTaskByBusinessIdAndUserList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "工作池任务确定多执行人", notes = "工作池任务确定多执行人")
+    ResponseData signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO signalPoolTaskVO);
+
+
     /**
      * 工作池任务确定执行人并完成任务
      *

@@ -2,7 +2,6 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.entity.IDataDict;
 import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowInstanceService;
@@ -29,10 +28,8 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
-import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -802,6 +799,86 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return result;
     }
 
+    //任务池指定真实用户组，抢单池确定用户组签定（多执行人）
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData<List<FlowTask>> poolTaskSignByUserList(HistoricTaskInstance historicTaskInstance, List<String> userList, Map<String, Object> v) {
+        String actTaskId = historicTaskInstance.getId();
+        //根据用户的id列表获取执行人列表
+        List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+        if (executorList != null) {
+            FlowTask oldFlowTask = flowTaskDao.findByActTaskId(actTaskId);
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            //是否推送信息到业务模块或者直接配置的url
+            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(oldFlowTask.getFlowInstance());
+            List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
+            List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
+
+            for (Executor executor : executorList) {
+                FlowTask newFlowTask = new FlowTask();
+                org.springframework.beans.BeanUtils.copyProperties(oldFlowTask, newFlowTask);
+                newFlowTask.setId(null);
+                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                if (taskMakeOverPower != null) {
+                    newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                    newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                    newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                    if (StringUtils.isEmpty(newFlowTask.getDepict())) {
+                        newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
+                    } else {
+                        newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】" + newFlowTask.getDepict());
+                    }
+                } else {
+                    newFlowTask.setExecutorId(executor.getId());
+                    newFlowTask.setExecutorAccount(executor.getCode());
+                    newFlowTask.setExecutorName(executor.getName());
+                }
+                newFlowTask.setOwnerId(executor.getId());
+                newFlowTask.setOwnerName(executor.getName());
+                newFlowTask.setOwnerAccount(executor.getCode());
+                newFlowTask.setTrustState(0);
+                if (v.get("instancyStatus") != null) {
+                    try {
+                        if ((Boolean) v.get("instancyStatus") == true) {
+                            newFlowTask.setPriority(3);//设置为紧急
+                        }
+                    } catch (Exception e) {
+                        LogUtil.error(e.getMessage());
+                    }
+                }
+                flowTaskDao.save(newFlowTask);
+                needAddList.add(newFlowTask);
+            }
+
+            needDelList.add(oldFlowTask);
+            flowTaskDao.delete(oldFlowTask);
+
+            if (pushBasic || pushModelOrUrl) {
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                        }
+                    }).start();
+                }
+                if (pushModelOrUrl) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushTaskToModelOrUrl(oldFlowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
+                            flowTaskService.pushTaskToModelOrUrl(oldFlowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                        }
+                    }).start();
+                }
+            }
+            return ResponseData.operationSuccessWithData(needAddList);
+        } else {
+            return ResponseData.operationFailure("执行人列表查询结果为空!");
+        }
+
+    }
 
     //任务池指定真实用户，抢单池确定用户签定
     @Transactional(propagation = Propagation.REQUIRED)
@@ -886,9 +963,43 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO signalPoolTaskVO) {
+        if (signalPoolTaskVO == null) {
+            return ResponseData.operationFailure("工作池任务设置多执行人失败，参数不能为空！");
+        }
+        if (StringUtils.isEmpty(signalPoolTaskVO.getBusinessId())) {
+            return ResponseData.operationFailure("工作池任务设置多执行人失败，单据ID未传入！");
+        }
+        if (StringUtils.isEmpty(signalPoolTaskVO.getPoolTaskActDefId())) {
+            return ResponseData.operationFailure("工作池任务设置多执行人失败,工作池节点ID未传入！");
+        }
+        if (signalPoolTaskVO.getUserIds() == null || signalPoolTaskVO.getUserIds().size() == 0) {
+            return ResponseData.operationFailure("工作池任务设置多执行人失败,用户ID未传入！");
+        }
+
+        if (signalPoolTaskVO.getUserIds().size() == 1) {   //只有一个执行人
+            return this.signalPoolTaskByBusinessId(signalPoolTaskVO.getBusinessId(), signalPoolTaskVO.getPoolTaskActDefId(), signalPoolTaskVO.getUserIds().get(0), signalPoolTaskVO.getMap());
+        } else {
+            FlowInstance flowInstance = this.findLastInstanceByBusinessId(signalPoolTaskVO.getBusinessId());
+            if (flowInstance != null && !flowInstance.isEnded()) {
+                String actInstanceId = flowInstance.getActInstanceId();
+                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(signalPoolTaskVO.getPoolTaskActDefId()).unfinished().singleResult(); // 创建历史任务实例查询
+                if (historicTaskInstance != null) {
+                    this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap());
+                    return ResponseData.operationSuccess();
+                } else {
+                    return ResponseData.operationFailure("工作池任务设置多执行人失败,当前节点不存在！");
+                }
+            } else {
+                return ResponseData.operationFailure("工作池任务设置多执行人失败,流程实例找不到，或者已经结束！");
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult signalPoolTaskByBusinessId(String businessId, String poolTaskActDefId, String userId, Map<String, Object> v) {
         if (StringUtils.isEmpty(poolTaskActDefId)) {
-            return OperateResult.operationFailure("10032");
+            return OperateResult.operationFailure("工作池任务设置执行人失败,请传入工作池节点ID");
         }
         OperateResult result = null;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
