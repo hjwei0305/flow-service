@@ -624,7 +624,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                                     logger.error(resultTemp.getMessage());
                                 }
                             } catch (Exception e) {
-                                time = time * 4; //加倍
+                                time = time * 2; //加倍
                                 logger.error(e.getMessage(), e);
                             }
                             index--;

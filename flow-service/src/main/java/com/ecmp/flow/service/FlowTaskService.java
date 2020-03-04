@@ -913,8 +913,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
             flowHistoryDao.save(flowHistory);
-//            flowTaskDao.delete(flowTask);
-            if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务，清除其他待办
+            //单签任务，清除其他待办;工作池任务新增多执行人模式，也需要清楚其他待办
+            if ("SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
                 //需要异步推送删除待办信息到basic
                 if (pushBasic || pushModelOrUrl) {
                     List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
@@ -937,7 +937,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             //初始化新的任务
             String actTaskDefKey = flowTask.getActTaskDefKey();
             String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
-//            flowTaskDao.delete(flowTask);
             ProcessDefinitionEntity definition = null;
             PvmActivity currentNode = null;
             FlowInstance flowInstanceTemp = flowInstance;
