@@ -289,24 +289,29 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
         if (StringUtils.isNotEmpty(apiBaseAddress)) {
             flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
-            String[] tempApiBaseAddress = apiBaseAddress.split("/");
-            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
-                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
-                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
-            }
+//            String[] tempApiBaseAddress = apiBaseAddress.split("/");
+//            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
+//                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
+//                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
+//            }
+            String  apiAddress=  Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+            flowTask.setApiBaseAddress(apiAddress);
         }
         String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
         String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+        String webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
 
         if (StringUtils.isNotEmpty(webBaseAddress)) {
             flowTask.setWebBaseAddressAbsolute(webBaseAddress);
             flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
-            String[] tempWebBaseAddress = webBaseAddress.split("/");
-            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
-            }
+//            String[] tempWebBaseAddress = webBaseAddress.split("/");
+//            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+//                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+//                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+//                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
+//            }
+            flowTask.setWebBaseAddress(webAddress);
+            flowTask.setLookWebBaseAddress(webAddress);
         }
         WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
         String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
@@ -321,7 +326,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
         if (workPageUrl != null) {
             flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigValueByWeb(webBaseAddressConfig), workPageUrl.getUrl()));
-            String taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+            String taskFormUrlXiangDui = webAddress + "/" + workPageUrl.getUrl();
             taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
             flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
             String appModuleId = workPageUrl.getAppModuleId();
@@ -332,11 +337,13 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                 flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-                    String[] tempWebBaseAddress = webBaseAddress.split("/");
-                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-                    }
+//                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+//                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+//                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+//                    }
+                    webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                    flowTask.setWebBaseAddress(webAddress);
                 }
                 taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
                 taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");

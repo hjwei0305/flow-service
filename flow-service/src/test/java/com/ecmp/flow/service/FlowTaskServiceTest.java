@@ -1,16 +1,14 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.config.util.ApiJsonUtils;
+import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.Search;
-import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
-import io.swagger.util.Json;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +27,19 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowTaskService service;
     @Autowired
     private FlowDefinationService flowDefinationService;
+
+
+    @Test
+    public void listFlowTaskWithAllCount(){
+        Search search = new Search();
+        search.setFilters(null);
+        search.setPageInfo(new PageInfo());
+        search.setQuickSearchProperties(null);
+        search.setQuickSearchValue(null);
+        search.setSortOrders(null);
+        ResponseData res = service.listFlowTaskWithAllCount(search,null);
+        System.out.print(ApiJsonUtils.toJson(res));
+    }
 
     @Test
     public void getTaskFormUrlXiangDuiByTaskId(){
