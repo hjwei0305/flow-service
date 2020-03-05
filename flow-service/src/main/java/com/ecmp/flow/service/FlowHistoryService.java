@@ -86,12 +86,12 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         if (result != null && !result.isEmpty()) {
             for (FlowHistory flowHistory : result) {
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                 flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
                 apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.lastIndexOf(":"));
                 apiBaseAddress = apiBaseAddress.substring(apiBaseAddress.indexOf("/"));
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
                 flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.lastIndexOf(":"));
                 webBaseAddress = webBaseAddress.substring(webBaseAddress.indexOf("/"));
@@ -269,9 +269,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 beanVo.setFlowInstanceBusinessCode(flowInstance.getBusinessCode());
                 beanVo.setFlowInstanceEnded(flowInstance.isEnded());
 
-                String apiBaseAddress =  Constants.getConfigKeyValueProperties(businessModel.getAppModule().getApiBaseAddress());
-                String clientApiBaseUrl =  Constants.getConfigKeyValueProperties(apiBaseAddress);
-                beanVo.setBusinessDetailServiceUrl(clientApiBaseUrl+businessModel.getBusinessDetailServiceUrl());
+                String apiBaseAddress =  Constants.getConfigValueByApi(businessModel.getAppModule().getApiBaseAddress());
+                beanVo.setBusinessDetailServiceUrl(apiBaseAddress + businessModel.getBusinessDetailServiceUrl());
                 phoneVoList.add(beanVo);
             });
             historyVoPage.setRows(phoneVoList);

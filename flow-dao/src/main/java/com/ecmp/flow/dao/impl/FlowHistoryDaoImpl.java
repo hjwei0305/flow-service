@@ -165,7 +165,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         if(result!=null && !result.isEmpty()){
             for(FlowHistory flowHistory:result){
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress =  Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                String apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
                 if(StringUtils.isNotEmpty(apiBaseAddress)){
                     flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
                     String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
@@ -175,7 +175,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                     }
                 }
                 String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                String webBaseAddress =  Constants.getConfigValueByWeb(webBaseAddressConfig);
                 if(StringUtils.isNotEmpty(webBaseAddress)){
                     flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
                     String[]  tempWebBaseAddress = webBaseAddress.split("/");

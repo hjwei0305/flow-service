@@ -253,7 +253,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                    String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
                     String checkUrlPath = baseUrl + checkUrl;
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);

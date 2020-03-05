@@ -1217,7 +1217,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (result != null && !result.isEmpty()) {
             for (FlowInstance flowInstance : result) {
                 String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                 if (StringUtils.isNotEmpty(apiBaseAddress)) {
                     flowInstance.setApiBaseAddressAbsolute(apiBaseAddress);
                     String[] tempApiBaseAddress = apiBaseAddress.split("/");
@@ -1227,7 +1227,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 }
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
                     String[] tempWebBaseAddress = webBaseAddress.split("/");

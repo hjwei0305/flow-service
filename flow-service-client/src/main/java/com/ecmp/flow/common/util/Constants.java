@@ -46,9 +46,43 @@ public class Constants extends ConfigurableContants {
         return value;
     }
 
+    /**
+     * 获取API基地址
+     * @param key
+     * @return
+     */
+    public static String getConfigValueByApi(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        String value = getProperty(key);
+        if (value == null) {
+            LogUtil.error("获取API基地址参数[" + key + "]失败！");
+            throw new FlowException("获取API基地址参数[" + key + "]失败！");
+        }
+        return getProperty("BASE_API") + value;
+    }
+
+    /**
+     * 获取web基地址
+     * @param key
+     * @return
+     */
+    public static String getConfigValueByWeb(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        String value = getProperty(key);
+        if (value == null) {
+            LogUtil.error("获取WEB基地址参数[" + key + "]失败！");
+            throw new FlowException("获取WEB基地址参数[" + key + "]失败！");
+        }
+        return getProperty("BASE_WEB") + value;
+    }
+
 
     public static String getBasicServiceUrl() {
-        String BASIC_SERVICE_URL = getProperty("BASIC_API", "http://10.4.208.86:8100/sei-gateway/sei-basic");
+        String BASIC_SERVICE_URL = getProperty("BASE_API") + getProperty("BASIC_API");
         return BASIC_SERVICE_URL;
     }
 
@@ -116,11 +150,11 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicOrgListByPowerUrl() {
-        String  BASIC_ORG_LISTALLORGS_URL ;
-        String POWER_Url =  getProperty("basic.org.listallorgbypower");
-        if(StringUtils.isNotEmpty(POWER_Url)){
-            BASIC_ORG_LISTALLORGS_URL =  getBasicServiceUrl() + POWER_Url;
-        }else{
+        String BASIC_ORG_LISTALLORGS_URL;
+        String POWER_Url = getProperty("basic.org.listallorgbypower");
+        if (StringUtils.isNotEmpty(POWER_Url)) {
+            BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + POWER_Url;
+        } else {
             BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + getProperty(
                     "basic.org.listAllOrgs", "/organization/findOrgTreeWithoutFrozen");
         }

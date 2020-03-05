@@ -101,7 +101,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             for (FlowHistory flowHistory : result) {
                 FlowInstance flowInstance = flowHistory.getFlowInstance();
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
                     String[] tempWebBaseAddress = webBaseAddress.split("/");

@@ -140,7 +140,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);
@@ -224,7 +224,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                apiBaseAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
                 responseData.setSuccess(false);

@@ -115,7 +115,7 @@ public class ServiceCallUtil {
                 params.setId(businessId);
                 params.setParams(paramMap);
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+                String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
                 String url = clientApiBaseUrl + "/" + clientUrl;
                 Date startDate = new Date();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");

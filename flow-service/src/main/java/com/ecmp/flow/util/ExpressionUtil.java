@@ -50,7 +50,7 @@ public class ExpressionUtil {
     public static Map<String, String> getPropertiesDecMap(BusinessModel businessModel) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
@@ -80,7 +80,7 @@ public class ExpressionUtil {
     public static Map<String, Object> getPropertiesValuesMap(BusinessModel businessModel, String businessId, Boolean all) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
@@ -112,7 +112,7 @@ public class ExpressionUtil {
      */
     public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
@@ -173,7 +173,7 @@ public class ExpressionUtil {
         boolean result;
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
