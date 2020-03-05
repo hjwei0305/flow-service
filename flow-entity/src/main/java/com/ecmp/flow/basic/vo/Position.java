@@ -4,55 +4,66 @@ import com.ecmp.core.entity.BaseAuditableEntity;
 import com.ecmp.core.entity.ICodeUnique;
 import com.ecmp.core.entity.ITenant;
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：岗位实体
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间                  变更人                 变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/4/17 11:02            高银军                  新建
- * <p/>
- * *************************************************************************************************
- */
-//@Access(AccessType.FIELD)
-//@Entity
-//@Table(name = "position")
-//@DynamicInsert
-//@DynamicUpdate
-//@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+
 public class Position extends BaseAuditableEntity
         implements ITenant,ICodeUnique {
     /**
      * 代码
      */
-//    @Column(name = "code",unique = true, length = 8, nullable = false)
     private String code;
     /**
      * 名称
      */
-//    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     /**
      * 租户代码
      */
-//    @Column(name = "tenant_code", length = 10, nullable = false, unique = true)
     private String tenantCode;
 
-//    @ManyToOne
-//    @JoinColumn(name = "organization_Id",nullable = false)
-    private Organization organization;
+    /**
+     * 组织机构Id
+     */
+    private String organizationId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "category_id",nullable = false)
-    private PositionCategory positionCategory;
+    /**
+     * 组织机构代码
+     */
+    private String organizationCode;
 
+    /**
+     * 组织机构名称
+     */
+    private String organizationName;
+
+
+    /**
+     * 组织机构中文路径
+     */
+    private String organizationNamePath;
+
+    /**
+     * 岗位类别Id
+     */
+    private String positionCategoryId;
+
+    /**
+     * 岗位类别代码
+     */
+    private String positionCategoryCode;
+
+    /**
+     * 岗位类别名称
+     */
+    private String positionCategoryName;
+
+
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }
@@ -65,28 +76,69 @@ public class Position extends BaseAuditableEntity
         this.name = name;
     }
 
-    public PositionCategory getPositionCategory() {
-        return positionCategory;
-    }
-
-    public void setPositionCategory(PositionCategory positionCategory) {
-        this.positionCategory = positionCategory;
-    }
-
+    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
+    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public String getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
     }
 
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public String getPositionCategoryId() {
+        return positionCategoryId;
+    }
+
+    public void setPositionCategoryId(String positionCategoryId) {
+        this.positionCategoryId = positionCategoryId;
+    }
+
+    public String getPositionCategoryCode() {
+        return positionCategoryCode;
+    }
+
+    public void setPositionCategoryCode(String positionCategoryCode) {
+        this.positionCategoryCode = positionCategoryCode;
+    }
+
+    public String getPositionCategoryName() {
+        return positionCategoryName;
+    }
+
+    public void setPositionCategoryName(String positionCategoryName) {
+        this.positionCategoryName = positionCategoryName;
+    }
+
+    public String getOrganizationNamePath() {
+        return organizationNamePath;
+    }
+
+    public void setOrganizationNamePath(String organizationNamePath) {
+        this.organizationNamePath = organizationNamePath;
+    }
 }
