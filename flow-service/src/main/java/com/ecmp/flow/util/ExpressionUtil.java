@@ -8,6 +8,7 @@ import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,18 +57,26 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
         String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        Map<String, String> result;
+        ResponseData<Map<String, String>>  result;
+        Map<String, String> map;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, String>>() {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, String>>>() {
             }, params);
-            messageLog += ",【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+            if (result.successful()) {
+                map =  result.getData();
+            }else{
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【条件属性说明服务地址】"));
+            }
+            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
-            throw new FlowException(getErrorLogString(clientApiUrl), e);
+            throw new FlowException(getErrorLogString("【条件属性说明服务地址】"), e);
         } finally {
             LogUtil.bizLog(messageLog);
         }
-        return result;
+        return map;
     }
 
     /**
