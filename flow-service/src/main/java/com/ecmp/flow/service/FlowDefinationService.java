@@ -40,8 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
@@ -1334,26 +1332,28 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                 ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
                 List<Executor> executors = (List<Executor>) responseData.getData();
-                if (executors != null && executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
-                    SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                    bean.setActTaskDefKey(id);
-                    bean.setExecutorIds(executors.get(0).getId());
-                    bean.setNodeType(nodeType);
-                    map.put(id, bean);
-                } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签任务默认全选
-                    String userIds = "";
-                    for (int i = 0; i < executors.size(); i++) {
-                        if (i == 0) {
-                            userIds += executors.get(i).getId();
-                        } else {
-                            userIds += "," + executors.get(i).getId();
+                if (executors != null && executors.size() != 0) {
+                    if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
+                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                        bean.setActTaskDefKey(id);
+                        bean.setExecutorIds(executors.get(0).getId());
+                        bean.setNodeType(nodeType);
+                        map.put(id, bean);
+                    } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签任务默认全选
+                        String userIds = "";
+                        for (int i = 0; i < executors.size(); i++) {
+                            if (i == 0) {
+                                userIds += executors.get(i).getId();
+                            } else {
+                                userIds += "," + executors.get(i).getId();
+                            }
                         }
+                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                        bean.setActTaskDefKey(id);
+                        bean.setExecutorIds(userIds);
+                        bean.setNodeType(nodeType);
+                        map.put(id, bean);
                     }
-                    SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                    bean.setActTaskDefKey(id);
-                    bean.setExecutorIds(userIds);
-                    bean.setNodeType(nodeType);
-                    map.put(id, bean);
                 }
             }
         });
