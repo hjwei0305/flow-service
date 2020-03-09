@@ -56,13 +56,13 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
         String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        ResponseData result;
+        ResponseData<Map<String,String>> result;
         Map<String, String> map;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData>() {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String,String>>>() {
             }, params);
             if (result.successful()) {
-                map = (Map<String, String>) result.getData();
+                map = result.getData();
             } else {
                 messageLog += "-接口返回信息：" + result.getMessage();
                 LogUtil.error(messageLog);
