@@ -80,10 +80,81 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         map.put("customeInt","额外属性");
         map.put("name","名称");
         if(all){
-            map.put("sum","金额");
-            map.put("applyCaption","申请说明");
+            map.put("orgId","组织机构ID");
         }
         return ResponseData.operationSuccessWithData(map);
+    }
+
+    /**
+     * 条件属性初始值
+     * @param businessModelCode 业务实体代码
+     * @return
+     * @throws ClassNotFoundException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     */
+    @Override
+    public ResponseData initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("unitPrice",0.0);
+        map.put("count",0);
+        map.put("customeInt",0);
+        map.put("name","中文字符串");
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+    /**
+     * 条件属性值
+     * @param businessModelCode 业务实体代码
+     * @param id                单据id
+     * @param all
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     */
+    @Override
+    public ResponseData propertiesAndValues(String businessModelCode, String id, Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+        DefaultBusinessModel bean=   defaultBusinessModelDao.findOne(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("unitPrice",bean.getUnitPrice());
+        map.put("count",bean.getCount());
+        map.put("customeInt",bean.getCount());
+        map.put("name",bean.getName());
+
+        map.put("orgId",bean.getOrgId());
+        map.put("orgCode",bean.getOrgCode());
+        map.put("orgPath",bean.getOrgPath());
+        map.put("tenantCode",bean.getTenantCode());
+        map.put("workCaption",bean.getWorkCaption());
+        map.put("businessCode",bean.getBusinessCode());
+        map.put("id",bean.getId());
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+
+    /**
+     * 重置单据状态
+     * @param businessModelCode 业务实体代码
+     * @param id                单据id
+     * @param status            状态
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     */
+    @Override
+    public ResponseData resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+        DefaultBusinessModel bean=   defaultBusinessModelDao.findOne(id);
+        bean.setFlowStatus(status);
+        this.save(bean);
+        return ResponseData.operationSuccessWithData(true);
     }
 
     /**

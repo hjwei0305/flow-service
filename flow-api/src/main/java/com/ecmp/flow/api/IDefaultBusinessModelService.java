@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.api.IFindByPageService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +60,67 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
 
     /**
+     * 获取条件POJO属性初始化值键值对
+     *
+     * @param businessModelCode 业务实体代码
+     * @return POJO属性说明Map
+     * @throws ClassNotFoundException    类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException    实例异常
+     * @throws IllegalAccessException    访问异常
+     * @throws NoSuchMethodException     没有方法异常
+     */
+    @GET
+    @Path("initPropertiesAndValues")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体代码获取条件POJO属性初始化值键值对", notes = "测试")
+    ResponseData initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+
+
+    /**
+     * 获取条件POJO属性键值对
+     *
+     * @param businessModelCode 业务实体代码
+     * @param id                单据id
+     * @return POJO属性说明Map
+     * @throws ClassNotFoundException    类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException    实例异常
+     * @throws IllegalAccessException    访问异常
+     * @throws NoSuchMethodException     没有方法异常
+     */
+    @GET
+    @Path("propertiesAndValues")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体代码,业务ID获取条件POJO属性键值对", notes = "测试")
+    ResponseData propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
+
+    /**
+     * 重置单据状态
+     *
+     * @param businessModelCode 业务实体代码
+     * @param id                单据id
+     * @param status            状态
+     * @return 返回结果
+     * @throws ClassNotFoundException    类找不到异常
+     * @throws InvocationTargetException 目标类解析异常
+     * @throws InstantiationException    实例异常
+     * @throws IllegalAccessException    访问异常
+     * @throws NoSuchMethodException     没有方法异常
+     */
+    @POST
+    @Path("resetState")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态", notes = "测试")
+    ResponseData resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
+                       @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+
+
+    /**
      * 测试事前
      *
      * @param id        单据id
@@ -69,7 +132,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public String changeCreateDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
+    String changeCreateDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
 
     /**
      * 测试事后
@@ -83,7 +146,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public String changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
+    String changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
 
     /**
      * 测试自定义执行人选择
@@ -96,7 +159,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "自定义获取excutor", notes = "测试 自定义获取excutor")
-    public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+    List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
     /**
@@ -111,21 +174,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试ReceiveCall", notes = "测试ReceiveCall")
-    public boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
-
-//
-// /**
-//  * 分页查询业务实体
-//  *
-//  * @param search 查询参数
-//  * @return 分页查询结果
-//  */
-// @POST
-// @Produces(MediaType.APPLICATION_JSON)
-// @Consumes(MediaType.APPLICATION_JSON)
-// @Path("findByPage")
-// @ApiOperation(value = "分页查询业务实体", notes = "分页查询业务实体")
-//public PageResult<DefaultBusinessModel> findByPage(Search search);
+    boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
 
 
     @GET
@@ -133,21 +182,21 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试checkStartFlow", notes = "测试checkStartFlow")
-    public boolean checkStartFlow(@QueryParam("id") String id);
+    boolean checkStartFlow(@QueryParam("id") String id);
 
     @POST
     @Path("endCall")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试endCall", notes = "endCall")
-    public void endCall(@QueryParam("id") String id);
+    void endCall(@QueryParam("id") String id);
 
     @POST
     @Path("newServiceCall")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试endCall", notes = "endCall")
-    public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
 
 
     @POST
@@ -155,21 +204,21 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试异常服务", notes = "failureCall")
-    public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
 
     @POST
     @Path("changeCreateDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCreateDepictNew", notes = "changeCreateDepictNew")
-    public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
 
     @POST
     @Path("changeCompletedDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
-    public FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
 
     @POST
@@ -177,28 +226,28 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testReceiveCallNew", notes = "testReceiveCallNew")
-    public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
     @GET
     @Path("testPJoin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "testPJoin", notes = "testPJoin")
-    public Map<String, Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
+    Map<String, Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
 
     @POST
     @Path("testPoolTaskComplete")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testPoolTaskComplete", notes = "testPoolTaskComplete")
-    public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
 
     @POST
     @Path("testPoolTaskSignal")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testPoolTaskSignal", notes = "testPoolTaskSignal")
-    public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
 
 
     @POST
@@ -206,6 +255,6 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "testPoolTaskCreatePool", notes = "testPoolTaskCreatePool")
-    public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
+    FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
 
 }
