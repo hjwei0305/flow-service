@@ -5,7 +5,6 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
-import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
@@ -14,6 +13,7 @@ import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.GenericType;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +47,6 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="startEventCompleteListener")
 public class StartEventCompleteListener implements ExecutionListener {
 
     private final Logger logger = LoggerFactory.getLogger(StartEventCompleteListener.class);
@@ -63,9 +61,6 @@ public class StartEventCompleteListener implements ExecutionListener {
 
     @Autowired
     private RepositoryService repositoryService;
-
-//    @Autowired
-//    private FlowTaskDao flowTaskDao;
 
     @Autowired
     private FlowCommonUtil flowCommonUtil;
@@ -88,7 +83,6 @@ public class StartEventCompleteListener implements ExecutionListener {
         Map<String, Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance = taskEntity.getProcessInstance();
         ProcessInstance parentProcessInstance = null;
-//        ExecutionEntity son = taskEntity.getSubProcessInstance();
         ExecutionEntity parent = taskEntity.getSuperExecution();
         String currentBusinessId = null;
         String callActivityPath = null;
@@ -105,7 +99,6 @@ public class StartEventCompleteListener implements ExecutionListener {
                     // 取得流程定义
                     ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                             .getDeployedProcessDefinition(parentProcessInstance.getProcessDefinitionId());
-                    ;
                     parentDefinitionKey = definition.getKey();
                 }
                 sonBusinessVNameBuff.insert(0, "/" + parentDefinitionKey + "/" + parentTemp.getActivityId());
@@ -129,8 +122,6 @@ public class StartEventCompleteListener implements ExecutionListener {
             FlowDefination flowDefination = flowDefinationDao.findByDefKey(definitionKey);
             String parentBusinessModelCode = flowDefinationParent.getFlowType().getBusinessModel().getClassName();
             String sonBusinessModelCode = flowDefination.getFlowType().getBusinessModel().getClassName();
-//            //父流程业务实体代码+callActivtiy的key+子流程key+'_sonBusinessId'
-//            String sonBusinessVName = parentBusinessModelCode+"_"+parent.getActivityId()+"_"+definitionKey+"_sonBusinessId";
             sonBusinessVNameBuff.append("/" + definitionKey);
             currentBusinessId = (String) delegateTask.getVariable(sonBusinessVNameBuff.toString());
             List<String> userVarNameList = (List) delegateTask.getVariable(sonBusinessVNameBuff + Constants.SON_PROCESS_SELECT_NODE_USER);
@@ -155,8 +146,6 @@ public class StartEventCompleteListener implements ExecutionListener {
             }
 
         }
-//        FlowInstance  flowInstance = flowInstanceDao.findByActInstanceId(processInstance.getId());
-//        if(flowInstance==null){
         FlowInstance flowInstance = new FlowInstance();
         flowInstance.setTenantCode(ContextUtil.getTenantCode());
         flowInstance.setBusinessId(processInstance.getBusinessKey());
@@ -209,19 +198,12 @@ public class StartEventCompleteListener implements ExecutionListener {
             flowInstance.setParent(flowInstanceP);
         }
         flowInstanceDao.save(flowInstance);
-//        }
 
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         AppModule appModule = businessModel.getAppModule();
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(), flowInstance.getFlowDefVersion());
         if (callAfterStartResult != null && callAfterStartResult.isSuccess() != true) {
-//            String message = ContextUtil.getMessage("10043",callAfterStartResult.getMessage());
-//            String messageLogger =message+
-//                    ";businessId="+flowInstance.getBusinessId()
-//                    +",FlowDefVersion.id="+flowInstance.getFlowDefVersion().getId()
-//                    +",appModule.code="+appModule.getCode();
-//            logger.info(messageLogger);
             throw new FlowException(callAfterStartResult.getMessage());
         }
 
@@ -264,12 +246,19 @@ public class StartEventCompleteListener implements ExecutionListener {
                             @Override
                             public void run() {
                                 try {
-                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                                    ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                                     }, flowInvokeParams);
+                                    FlowOperateResult resultAync = null;
+                                    if (res.successful()) {
+                                        resultAync = res.getData();
+                                    } else {
+                                        LogUtil.error(msg + "异步调用返回信息!" + urlAndData + ", 【返回结果：" + res.getMessage() + "】");
+                                    }
+
                                     if (resultAync == null) {
-                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息为空!" + urlAndData);
                                     } else if (!resultAync.isSuccess()) {
-                                        LogUtil.info(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
@@ -278,13 +267,19 @@ public class StartEventCompleteListener implements ExecutionListener {
                         }).start();
                     } else {
                         try {
-                            result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                            ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                             }, flowInvokeParams);
+                            if (res.successful()) {
+                                result = res.getData();
+                            } else {
+                                LogUtil.error(msg + "内部报错!" + urlAndData + "【返回信息：" + result.getMessage() + "】");
+                                throw new FlowException(msg + "内部报错，详情请查看日志！");
+                            }
                             if (result == null) {
                                 result = new FlowOperateResult(false, msg + "返回信息为空！");
-                                LogUtil.info(msg + "返回参数为空!" + urlAndData);
+                                LogUtil.error(msg + "返回参数为空!" + urlAndData);
                             } else if (!result.isSuccess()) {
-                                LogUtil.info(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
+                                LogUtil.error(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
                                 result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
                             }
                         } catch (Exception e) {
