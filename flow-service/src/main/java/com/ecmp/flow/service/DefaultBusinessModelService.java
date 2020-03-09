@@ -66,6 +66,27 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     /**
+     * 条件属性说明
+     * @param businessModelCode 业务实体代码
+     * @param all               是否查询全部
+     * @return
+     * @throws ClassNotFoundException
+     */
+    @Override
+    public ResponseData properties(String businessModelCode, Boolean all) throws ClassNotFoundException {
+        Map<String, String> map = new HashMap<>();
+        map.put("unitPrice","单价");
+        map.put("count","数量");
+        map.put("customeInt","额外属性");
+        map.put("name","名称");
+        if(all){
+            map.put("sum","金额");
+            map.put("applyCaption","申请说明");
+        }
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+    /**
      * 数据保存操作
      */
     @SuppressWarnings("unchecked")

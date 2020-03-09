@@ -6,6 +6,7 @@ import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -37,13 +38,30 @@ import java.util.Map;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = "IDefaultBusinessModelService 默认业务表单服务API接口")
-public interface IDefaultBusinessModelService extends IBaseEntityService<DefaultBusinessModel>,IFindByPageService<DefaultBusinessModel>{
+public interface IDefaultBusinessModelService extends IBaseEntityService<DefaultBusinessModel>, IFindByPageService<DefaultBusinessModel> {
 
 
-   /**
+    /**
+     * 获取条件POJO属性说明
+     *
+     * @param businessModelCode 业务实体代码
+     * @param all               是否查询全部
+     * @return POJO属性说明Map
+     * @throws ClassNotFoundException 类找不到异常
+     */
+    @GET
+    @Path("properties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过业务实体代码获取条件POJO属性说明", notes = "测试")
+    ResponseData properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all) throws ClassNotFoundException;
+
+
+    /**
      * 测试事前
-     * @param id 单据id
-    *  @param    paramJson json参数
+     *
+     * @param id        单据id
+     * @param paramJson json参数
      * @return 执行结果
      */
     @POST
@@ -55,8 +73,9 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 测试事后
-     * @param id 单据id
-     * @param    paramJson json参数
+     *
+     * @param id        单据id
+     * @param paramJson json参数
      * @return 执行结果
      */
     @POST
@@ -64,10 +83,11 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试事件", notes = "测试事件")
-    public String  changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
+    public String changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
 
     /**
      * 测试自定义执行人选择
+     *
      * @param flowInvokeParams 流程参数
      * @return 执行结果
      */
@@ -75,22 +95,23 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Path("getPersonToExecutorConfig")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "自定义获取excutor",notes = "测试 自定义获取excutor")
-   public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+    @ApiOperation(value = "自定义获取excutor", notes = "测试 自定义获取excutor")
+    public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
- /**
-  * 接收任务测试接口
-  * @param id  业务单据id
-  * @param changeText   参数文本
-  * @return 结果
-  */
- @POST
- @Path("testReceiveCall")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试ReceiveCall",notes = "测试ReceiveCall")
- public boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
+    /**
+     * 接收任务测试接口
+     *
+     * @param id         业务单据id
+     * @param changeText 参数文本
+     * @return 结果
+     */
+    @POST
+    @Path("testReceiveCall")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试ReceiveCall", notes = "测试ReceiveCall")
+    public boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
 
 //
 // /**
@@ -107,84 +128,84 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 //public PageResult<DefaultBusinessModel> findByPage(Search search);
 
 
- @GET
- @Path("checkStartFlow")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试checkStartFlow",notes = "测试checkStartFlow")
-public boolean checkStartFlow(@QueryParam("id") String id);
+    @GET
+    @Path("checkStartFlow")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试checkStartFlow", notes = "测试checkStartFlow")
+    public boolean checkStartFlow(@QueryParam("id") String id);
 
- @POST
- @Path("endCall")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试endCall",notes = "endCall")
- public void endCall(@QueryParam("id") String id);
+    @POST
+    @Path("endCall")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试endCall", notes = "endCall")
+    public void endCall(@QueryParam("id") String id);
 
- @POST
- @Path("newServiceCall")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试endCall",notes = "endCall")
- public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
-
-
- @POST
- @Path("newServiceCallFailure")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试异常服务",notes = "failureCall")
- public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
-
- @POST
- @Path("changeCreateDepictNew")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试changeCreateDepictNew",notes = "changeCreateDepictNew")
- public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
-
- @POST
- @Path("changeCompletedDepictNew")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试changeCompletedDepictNew",notes = "changeCompletedDepictNew")
- public FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+    @POST
+    @Path("newServiceCall")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试endCall", notes = "endCall")
+    public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
 
 
- @POST
- @Path("testReceiveCallNew")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试testReceiveCallNew",notes = "testReceiveCallNew")
- public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+    @POST
+    @Path("newServiceCallFailure")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试异常服务", notes = "failureCall")
+    public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
 
- @GET
- @Path("testPJoin")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "testPJoin",notes = "testPJoin")
- public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
+    @POST
+    @Path("changeCreateDepictNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试changeCreateDepictNew", notes = "changeCreateDepictNew")
+    public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
 
- @POST
- @Path("testPoolTaskComplete")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试testPoolTaskComplete",notes = "testPoolTaskComplete")
- public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
-
- @POST
- @Path("testPoolTaskSignal")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "测试testPoolTaskSignal",notes = "testPoolTaskSignal")
- public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+    @POST
+    @Path("changeCompletedDepictNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
+    public FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
 
- @POST
- @Path("testPoolTaskCreatePool")
- @Produces(MediaType.APPLICATION_JSON)
- @Consumes(MediaType.APPLICATION_JSON)
- @ApiOperation(value = "testPoolTaskCreatePool",notes = "testPoolTaskCreatePool")
- public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
+    @POST
+    @Path("testReceiveCallNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试testReceiveCallNew", notes = "testReceiveCallNew")
+    public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+
+    @GET
+    @Path("testPJoin")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "testPJoin", notes = "testPJoin")
+    public Map<String, Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
+
+    @POST
+    @Path("testPoolTaskComplete")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试testPoolTaskComplete", notes = "testPoolTaskComplete")
+    public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
+
+    @POST
+    @Path("testPoolTaskSignal")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "测试testPoolTaskSignal", notes = "testPoolTaskSignal")
+    public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+
+
+    @POST
+    @Path("testPoolTaskCreatePool")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "testPoolTaskCreatePool", notes = "testPoolTaskCreatePool")
+    public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
 
 }
