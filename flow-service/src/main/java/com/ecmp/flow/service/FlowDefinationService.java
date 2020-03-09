@@ -489,12 +489,18 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             @Override
                             public void run() {
                                 try {
-                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                                    ResponseData<FlowOperateResult> result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                                     }, flowInvokeParams);
+                                    FlowOperateResult resultAync = null;
+                                    if (result.successful()) {
+                                        resultAync = result.getData();
+                                    } else {
+                                        LogUtil.error(msg + "异步调用内部报错!" + urlAndData + ",返回信息【" + JsonUtils.toJson(result) + "】");
+                                    }
                                     if (resultAync == null) {
-                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息为空!" + urlAndData);
                                     } else if (!resultAync.isSuccess()) {
-                                        LogUtil.info(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
@@ -504,13 +510,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
                     } else {
                         try {
-                            flowOpreateResult = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                            ResponseData<FlowOperateResult> result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                             }, flowInvokeParams);
+                            if (result.successful()) {
+                                flowOpreateResult = result.getData();
+                            } else {
+                                LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(result) + "】" + urlAndData);
+                                flowOpreateResult.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
+                            }
                             if (flowOpreateResult == null) {
                                 flowOpreateResult = new FlowOperateResult(false, msg + "返回信息为空！");
-                                LogUtil.info(msg + "返回信息为空！" + urlAndData);
+                                LogUtil.error(msg + "返回信息为空！" + urlAndData);
                             } else if (!flowOpreateResult.isSuccess()) {
-                                LogUtil.info(msg + "返回信息：【" + flowOpreateResult.toString() + "】" + urlAndData);
+                                LogUtil.error(msg + "返回信息：【" + flowOpreateResult.toString() + "】" + urlAndData);
                                 flowOpreateResult.setMessage(msg + "返回信息：【" + flowOpreateResult.getMessage() + "】");
                             }
                         } catch (Exception e) {

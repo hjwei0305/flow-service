@@ -265,6 +265,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                                 }
                             }
                         }).start();
+                        result = new FlowOperateResult(true, "事件已异步调用！");
                     } else {
                         try {
                             ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
