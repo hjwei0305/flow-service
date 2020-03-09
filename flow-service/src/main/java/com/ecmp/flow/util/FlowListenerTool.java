@@ -10,7 +10,6 @@ import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.service.FlowHistoryService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
@@ -18,6 +17,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -188,7 +188,6 @@ public class FlowListenerTool {
                     }
                 }
             }
-//            runtimeService.setVariable(delegateTask.getProcessInstanceId(),actTaskDefKey+"_nextNodeIds",  nextNodes);
             runtimeService.setVariables(delegateTask.getProcessInstanceId(), userVarNameMap);
         }
 
@@ -364,12 +363,19 @@ public class FlowListenerTool {
                             @Override
                             public void run() {
                                 try {
-                                    FlowOperateResult resultAync = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                                    ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                                     }, flowInvokeParams);
+                                    FlowOperateResult  resultAync = null;
+                                    if(res.successful()){
+                                        resultAync =  res.getData();
+                                    }else{
+                                        LogUtil.error(msg + "异步调用返回信息：【" + JsonUtils.toJson(res) + "】" + urlAndData);
+                                    }
+
                                     if (resultAync == null) {
-                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息为空!" + urlAndData);
                                     } else if (!resultAync.isSuccess()) {
-                                        LogUtil.info(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息：【" + JsonUtils.toJson(resultAync) + "】" + urlAndData);
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
@@ -379,13 +385,18 @@ public class FlowListenerTool {
                         result = new FlowOperateResult(true, "事件已异步调用！");
                     } else {
                         try {
-                            result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<FlowOperateResult>() {
+                            ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                             }, flowInvokeParams);
+                            if(res.successful()){
+                                result =  res.getData();
+                            }else{
+                                LogUtil.info(msg + "返回信息：【" +  JsonUtils.toJson(res) + "】" + urlAndData);
+                            }
                             if (result == null) {
                                 result = new FlowOperateResult(false, msg + "返回信息为空！");
-                                LogUtil.info(msg + "返回参数为空!" + urlAndData);
+                                LogUtil.error(msg + "返回参数为空!" + urlAndData);
                             } else if (!result.isSuccess()) {
-                                LogUtil.info(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
+                                LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(result) + "】" + urlAndData);
                                 result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
                             }
                         } catch (Exception e) {
