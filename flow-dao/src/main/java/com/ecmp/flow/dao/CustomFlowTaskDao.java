@@ -59,18 +59,11 @@ public interface CustomFlowTaskDao {
 
     /**
      * 通过Id获取一个待办任务(设置了办理任务URL)
+     *
      * @param taskId 待办任务Id
      * @return 待办任务
      */
     @Transactional(readOnly = true)
     FlowTask findTaskById(String taskId);
 
-    /**
-     * 完成待办任务的URL设置
-     *
-     * @param flowTasks 待办任务清单
-     * @return 待办任务
-     */
-    @Transactional(readOnly = true)
-    void initFlowTasks(List<FlowTask> flowTasks);
 }

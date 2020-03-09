@@ -1,6 +1,5 @@
 package com.ecmp.flow.common.util;
 
-import com.ecmp.context.ContextUtil;
 import com.ecmp.log.util.LogUtil;
 import org.apache.commons.lang.StringUtils;
 

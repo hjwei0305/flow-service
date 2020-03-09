@@ -13,6 +13,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
@@ -60,6 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -86,6 +88,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowTaskDao flowTaskDao;
 
+    @Autowired
+    private AppModuleDao appModuleDao;
+
     protected BaseEntityDao<FlowTask> getDao() {
         return this.flowTaskDao;
     }
@@ -109,9 +114,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private RuntimeService runtimeService;
 
     @Autowired
-    private IdentityService identityService;
-
-    @Autowired
     private TaskService taskService;
 
     @Autowired
@@ -127,15 +129,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private HistoryService historyService;
 
     @Autowired
-    private ProcessEngine processEngine;
-
-    @Autowired
-    private FlowInstanceService flowInstanceService;
-
-    @Autowired
-    private BusinessModelService businessModelService;
-
-    @Autowired
     private FlowSolidifyExecutorDao flowSolidifyExecutorDao;
 
     @Autowired
@@ -146,9 +139,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Autowired
     private FlowTaskPushControlService flowTaskPushControlService;
-
-    @Autowired
-    private FlowTaskPushService flowTaskPushService;
 
     @Autowired
     private FlowHistoryService flowHistoryService;
@@ -261,7 +251,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
-            flowTaskDao.initFlowTasks(taskList); //添加待办处理地址等
+            this.initFlowTasks(taskList); //添加待办处理地址等
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
             String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
             Boolean success = false;
@@ -429,7 +419,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String msg = "";
                 if (taskStatus.toString().equals(TaskStatus.INIT.toString())) {
                     msg = "推送待办";
-                    flowTaskDao.initFlowTasks(taskList); //添加待办处理地址等
+                    this.initFlowTasks(taskList); //添加待办处理地址等
                 } else if (taskStatus.toString().equals(TaskStatus.DELETE.toString())) {
                     msg = "推送删除待办";
                 } else {
@@ -1929,22 +1919,36 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
             return null;
         }
-        return flowTaskDao.findByPageByTenant(appModuleId, businessModelId, flowTypeId, searchConfig);
+        PageResult<FlowTask> pageResult = flowTaskDao.findByPageByTenant(appModuleId, businessModelId, flowTypeId, searchConfig);
+        List<FlowTask> result = pageResult.getRows();
+        initFlowTasks(result);
+        pageResult.setRows(result);
+        return pageResult;
     }
 
 
     public PageResult<FlowTask> findByBusinessModelId(String businessModelId, String appSign, Search searchConfig) {
         String userId = ContextUtil.getUserId();
+        PageResult<FlowTask> pageResult;
         if (StringUtils.isNotEmpty(businessModelId)) {
-            return flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
+            pageResult = flowTaskDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
         } else {
-            return flowTaskDao.findByPage(userId, appSign, searchConfig);
+            pageResult = flowTaskDao.findByPage(userId, appSign, searchConfig);
         }
+        List<FlowTask> result = pageResult.getRows();
+        initFlowTasks(result);
+        pageResult.setRows(result);
+        return pageResult;
     }
 
     public PageResult<FlowTask> findByPageCanBatchApproval(Search searchConfig) {
         String userId = ContextUtil.getUserId();
         PageResult<FlowTask> flowTaskPageResult = flowTaskDao.findByPageCanBatchApproval(userId, searchConfig);
+
+        List<FlowTask> result = flowTaskPageResult.getRows();
+        initFlowTasks(result);
+        flowTaskPageResult.setRows(result);
+
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
     }
@@ -2058,11 +2062,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         //说明添加授权人信息
         List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
+
+        initFlowTasks(flowTaskList);
+
         flowTaskList.forEach(a -> {
             if (!userId.equals(a.getExecutorId())) {
                 a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
             }
         });
+
+        flowTaskPageResult.setRows(flowTaskList);
 
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
@@ -2211,8 +2220,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userIdList, "", search);
 
+
         //说明添加授权人信息
         List<FlowTask> flowTaskList = pageResult.getRows();
+
+        initFlowTasks(flowTaskList);
+
         flowTaskList.forEach(a -> {
             if (!userId.equals(a.getExecutorId())) {
                 a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
@@ -2240,11 +2253,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         if (StringUtils.isNotEmpty(businessModelId)) {
             pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userIdList, searchConfig);
+            List<FlowTask> result = pageResult.getRows();
+            initFlowTasks(result);
+            pageResult.setRows(result);
         } else {
             pageResult = flowTaskDao.findByPageOfPower(userIdList, appSign, searchConfig);
         }
         //说明添加授权人信息
         List<FlowTask> flowTaskList = pageResult.getRows();
+
+        initFlowTasks(flowTaskList);
+
         flowTaskList.forEach(a -> {
             if (!userId.equals(a.getExecutorId())) {
                 a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
@@ -3299,7 +3318,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Override
     public FlowTask findTaskById(String taskId) {
-        return flowTaskDao.findTaskById(taskId);
+        FlowTask flowTask = flowTaskDao.findTaskById(taskId);
+        if (Objects.nonNull(flowTask)) {
+            initFlowTask(flowTask);
+        }
+        return flowTask;
     }
 
 
@@ -3324,7 +3347,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
             //完成待办任务的URL设置
-            flowTaskDao.initFlowTasks(addList);
+            this.initFlowTasks(addList);
             list.addAll(addList);
         }
         responseData.setSuccess(true);
@@ -3563,6 +3586,96 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return res;
     }
+
+
+    /**
+     * 完成待办任务的URL设置
+     *
+     * @param flowTasks 待办任务清单
+     * @return 待办任务
+     */
+    public void initFlowTasks(List<FlowTask> flowTasks) {
+        if (CollectionUtils.isEmpty(flowTasks)) {
+            return;
+        }
+        flowTasks.forEach(this::initFlowTask);
+    }
+
+
+    /**
+     * 完成待办任务的URL设置
+     *
+     * @param flowTask 待办任务
+     * @return 待办任务
+     */
+    private void initFlowTask(FlowTask flowTask) {
+        String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+        String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
+        if (StringUtils.isNotEmpty(apiBaseAddress)) {
+            flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
+//            String[] tempApiBaseAddress = apiBaseAddress.split("/");
+//            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
+//                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
+//                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
+//            }
+            String apiAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+            flowTask.setApiBaseAddress(apiAddress);
+        }
+        String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+        String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+        String webAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+
+        if (StringUtils.isNotEmpty(webBaseAddress)) {
+            flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+            flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
+//            String[] tempWebBaseAddress = webBaseAddress.split("/");
+//            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+//                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+//                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+//                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
+//            }
+            flowTask.setWebBaseAddress(webAddress);
+            flowTask.setLookWebBaseAddress(webAddress);
+        }
+        WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
+        String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
+        String businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+        if (StringUtils.isEmpty(completeTaskServiceUrl)) {
+            completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+        }
+        if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+            businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+        }
+        flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
+        flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+        if (workPageUrl != null) {
+            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigValueByWeb(webBaseAddressConfig), workPageUrl.getUrl()));
+            String taskFormUrlXiangDui = webAddress + "/" + workPageUrl.getUrl();
+            taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+            flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+            String appModuleId = workPageUrl.getAppModuleId();
+            AppModule appModule = appModuleDao.findOne(appModuleId);
+            if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
+                webBaseAddressConfig = appModule.getWebBaseAddress();
+                webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+                flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+//                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+//                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+//                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+//                    }
+                    webAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                    flowTask.setWebBaseAddress(webAddress);
+                }
+                taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+                taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+                flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+            }
+        }
+    }
+
 
 }
 

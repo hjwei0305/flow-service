@@ -1,9 +1,7 @@
 package com.ecmp.flow.dao.impl;
 
-import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.*;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
@@ -90,27 +88,9 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         query.setParameter("executorId",executorId);
         query.setParameter("businessModelId",businessModelId);
 
-
-//        TypedQuery<Integer> queryTotal = entityManager.createQuery("select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft " +
-//                " where ft.executorId  = :executorId and ft.flowInstance.id " +
-//                " in ( select ins.id from  FlowInstance ins where  ins.flowDefinitionId .id in  " +
-//                " ( select fd.id from FlowDefination fd where fd.flowType.id in (select fType.id from FlowType fType " +
-//                " where fType.businessModel.id = :businessModelId  )  ) ) ", Integer.class);
-//        queryTotal.setParameter("executorId",executorId);
-//        queryTotal.setParameter("businessModelId",businessModelId);
-//        Integer total = queryTotal.getSingleResult();
-//
-//        TypedQuery<FlowHistory> query = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft " +
-//                " where ft.executorId  = :executorId and ft.flowInstance.id " +
-//                " in ( select ins.id from  FlowInstance ins where  ins.flowDefinitionId .id in " +
-//                " ( select fd.id from FlowDefination fd where fd.flowType.id in (select fType.id from FlowType fType " +
-//                " where fType.businessModel.id = :businessModelId  ) ) ) order by ft.lastEditedDate desc", FlowHistory.class);
-//        query.setParameter("executorId",executorId);
-//        query.setParameter("businessModelId",businessModelId);
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
-        initFlowTaskAppModule(result);
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -122,7 +102,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     public List<FlowHistory>  findByAllTaskMakeOverPowerHistory(){
         TypedQuery<FlowHistory> flowHistoryQuery = entityManager.createQuery("select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId != ft.ownerId  and  ft.executorId is not null and  ft.ownerId is not null  order by ft.lastEditedDate desc", FlowHistory.class);
         List<FlowHistory> flowHistoryList = flowHistoryQuery.getResultList();
-        initFlowTaskAppModule(flowHistoryList);
         return flowHistoryList;
     }
 
@@ -134,7 +113,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         TypedQuery<FlowHistory> flowHistoryQuery = entityManager.createQuery("select ft.id from com.ecmp.flow.entity.FlowHistory ft where ft.flowInstance.id = :instanceId  order by ft.lastEditedDate desc", FlowHistory.class);
         flowHistoryQuery.setParameter("instanceId",flowInstance.getId());
         List<FlowHistory> flowHistoryList = flowHistoryQuery.getResultList();
-        initFlowTaskAppModule(flowHistoryList);
         return flowHistoryList;
     }
 
@@ -150,7 +128,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
-        initFlowTaskAppModule(result);
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -161,33 +138,33 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     }
 
 
-    private List<FlowHistory> initFlowTaskAppModule(List<FlowHistory>  result ){
-        if(result!=null && !result.isEmpty()){
-            for(FlowHistory flowHistory:result){
-                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                String apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
-                if(StringUtils.isNotEmpty(apiBaseAddress)){
-                    flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
-                    String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
-                    if(tempWebApiBaseAddress!=null && tempWebApiBaseAddress.length>0){
-                        apiBaseAddress = tempWebApiBaseAddress[tempWebApiBaseAddress.length-1];
-                        flowHistory.setApiBaseAddress("/"+apiBaseAddress+"/");
-                    }
-                }
-                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress =  Constants.getConfigValueByWeb(webBaseAddressConfig);
-                if(StringUtils.isNotEmpty(webBaseAddress)){
-                    flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
-                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
-                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
-                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
-                        flowHistory.setWebBaseAddress("/"+webBaseAddress+"/");
-                    }
-                }
-            }
-        }
-        return result;
-    }
+//    private List<FlowHistory> initFlowTaskAppModule(List<FlowHistory>  result ){
+//        if(result!=null && !result.isEmpty()){
+//            for(FlowHistory flowHistory:result){
+//                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+//                String apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
+//                if(StringUtils.isNotEmpty(apiBaseAddress)){
+//                    flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
+//                    String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
+//                    if(tempWebApiBaseAddress!=null && tempWebApiBaseAddress.length>0){
+//                        apiBaseAddress = tempWebApiBaseAddress[tempWebApiBaseAddress.length-1];
+//                        flowHistory.setApiBaseAddress("/"+apiBaseAddress+"/");
+//                    }
+//                }
+//                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+//                String webBaseAddress =  Constants.getConfigValueByWeb(webBaseAddressConfig);
+//                if(StringUtils.isNotEmpty(webBaseAddress)){
+//                    flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
+//                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
+//                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
+//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
+//                        flowHistory.setWebBaseAddress("/"+webBaseAddress+"/");
+//                    }
+//                }
+//            }
+//        }
+//        return result;
+//    }
 
     public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig){
         PageInfo pageInfo = searchConfig.getPageInfo();
@@ -243,7 +220,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         query.setFirstResult( (pageInfo.getPage()-1) * pageInfo.getRows() );
         query.setMaxResults( pageInfo.getRows() );
         List<FlowHistory>  result = query.getResultList();
-        initFlowTaskAppModule(result);
         PageResult<FlowHistory> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);

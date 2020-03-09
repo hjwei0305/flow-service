@@ -65,7 +65,11 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     @Override
     public PageResult<FlowHistory> findByPageAndUser(Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        return flowHistoryDao.findByPageByBusinessModelId(userId, searchConfig);
+        PageResult<FlowHistory> pageResult  = flowHistoryDao.findByPageByBusinessModelId(userId, searchConfig);
+        List<FlowHistory>  result = pageResult.getRows();
+        initFlowTaskAppModule(result);
+        pageResult.setRows(result);
+        return  pageResult;
     }
 
     @Override
@@ -79,7 +83,9 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     }
 
     public List<FlowHistory> findByAllTaskMakeOverPowerHistory(){
-        return    flowHistoryDao.findByAllTaskMakeOverPowerHistory();
+          List<FlowHistory> flowHistoryList = flowHistoryDao.findByAllTaskMakeOverPowerHistory();
+          initFlowTaskAppModule(flowHistoryList);
+          return flowHistoryList;
     }
 
     private List<FlowHistory> initUrl(List<FlowHistory> result) {
@@ -200,6 +206,10 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         } else {
             result = flowHistoryDao.findByPage(userId, searchConfig);
         }
+        List<FlowHistory> list = result.getRows();
+        initFlowTaskAppModule(list);
+        result.setRows(list);
+
         if (result.getRows() != null && result.getRows().size() > 0) {
             result.getRows().forEach(a -> {
                 //CompleteTaskView.js中撤回按钮显示的判断逻辑：
@@ -317,6 +327,35 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         searchConfig.setSortOrders(list);
 
         return this.findByBusinessModelId(businessModelId, searchConfig);
+    }
+
+
+    public List<FlowHistory> initFlowTaskAppModule(List<FlowHistory>  result ){
+        if(result!=null && !result.isEmpty()){
+            for(FlowHistory flowHistory:result){
+                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                String apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
+                if(StringUtils.isNotEmpty(apiBaseAddress)){
+                    flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
+                    String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
+                    if(tempWebApiBaseAddress!=null && tempWebApiBaseAddress.length>0){
+                        apiBaseAddress = tempWebApiBaseAddress[tempWebApiBaseAddress.length-1];
+                        flowHistory.setApiBaseAddress("/"+apiBaseAddress+"/");
+                    }
+                }
+                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddress =  Constants.getConfigValueByWeb(webBaseAddressConfig);
+                if(StringUtils.isNotEmpty(webBaseAddress)){
+                    flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
+                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
+                        flowHistory.setWebBaseAddress("/"+webBaseAddress+"/");
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 

@@ -1,6 +1,5 @@
 package com.ecmp.flow.dao.impl;
 
-import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
@@ -106,7 +105,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -124,11 +122,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
      */
     @Override
     public FlowTask findTaskById(String taskId) {
-        FlowTask flowTask = findOne(taskId);
-        if (Objects.nonNull(flowTask)) {
-            initFlowTask(flowTask);
-        }
-        return flowTask;
+        return findOne(taskId);
     }
 
     public PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig) {
@@ -187,7 +181,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -196,7 +189,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 
         return pageResult;
     }
-
 
 
     public PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig) {
@@ -255,7 +247,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -264,93 +255,96 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         return pageResult;
     }
 
-    /**
-     * 完成待办任务的URL设置
-     *
-     * @param flowTasks 待办任务清单
-     * @return 待办任务
-     */
-    @Override
-    public void initFlowTasks(List<FlowTask> flowTasks) {
-        if (CollectionUtils.isEmpty(flowTasks)) {
-            return;
-        }
-        flowTasks.forEach(this::initFlowTask);
-    }
-
-    /**
-     * 完成待办任务的URL设置
-     *
-     * @param flowTask 待办任务
-     * @return 待办任务
-     */
-    private void initFlowTask(FlowTask flowTask) {
-        String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-        String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        if (StringUtils.isNotEmpty(apiBaseAddress)) {
-            flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
-//            String[] tempApiBaseAddress = apiBaseAddress.split("/");
-//            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
-//                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
-//                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
+//    /**
+//     * 完成待办任务的URL设置
+//     *
+//     * @param flowTasks 待办任务清单
+//     * @return 待办任务
+//     */
+//    @Override
+//    public void initFlowTasks(List<FlowTask> flowTasks) {
+//        if (CollectionUtils.isEmpty(flowTasks)) {
+//            return;
+//        }
+//        flowTasks.forEach(this::initFlowTask);
+//    }
+//
+//    /**
+//     * 完成待办任务的URL设置
+//     *
+//     * @param flowTask 待办任务
+//     * @return 待办任务
+//     */
+//    private void initFlowTask(FlowTask flowTask) {
+//        String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+//        String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
+//        if (StringUtils.isNotEmpty(apiBaseAddress)) {
+//            flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
+////            String[] tempApiBaseAddress = apiBaseAddress.split("/");
+////            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
+////                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
+////                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
+////            }
+//            String  apiAddress=  Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+//            flowTask.setApiBaseAddress(apiAddress);
+//        }
+//        String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+//        String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+//        String webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+//
+//        if (StringUtils.isNotEmpty(webBaseAddress)) {
+//            flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+//            flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
+////            String[] tempWebBaseAddress = webBaseAddress.split("/");
+////            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+////                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+////                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+////                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
+////            }
+//            flowTask.setWebBaseAddress(webAddress);
+//            flowTask.setLookWebBaseAddress(webAddress);
+//        }
+//        WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
+//        String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
+//        String businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
+//        if (StringUtils.isEmpty(completeTaskServiceUrl)) {
+//            completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
+//        }
+//        if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+//            businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
+//        }
+//        flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
+//        flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
+//        if (workPageUrl != null) {
+//            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigValueByWeb(webBaseAddressConfig), workPageUrl.getUrl()));
+//            String taskFormUrlXiangDui = webAddress + "/" + workPageUrl.getUrl();
+//            taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+//            flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
+//            String appModuleId = workPageUrl.getAppModuleId();
+//            AppModule appModule = appModuleDao.findOne(appModuleId);
+//            if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
+//                webBaseAddressConfig = appModule.getWebBaseAddress();
+//                webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+//                flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
+//                if (StringUtils.isNotEmpty(webBaseAddress)) {
+//                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
+////                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+////                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+////                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+////                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
+////                    }
+//                    webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+//                    flowTask.setWebBaseAddress(webAddress);
+//                }
+//                taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
+//                taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+//                flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
 //            }
-            String  apiAddress=  Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
-            flowTask.setApiBaseAddress(apiAddress);
-        }
-        String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-        String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
-        String webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+//        }
+//    }
 
-        if (StringUtils.isNotEmpty(webBaseAddress)) {
-            flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-            flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
-//            String[] tempWebBaseAddress = webBaseAddress.split("/");
-//            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-//                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-//                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-//                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
-//            }
-            flowTask.setWebBaseAddress(webAddress);
-            flowTask.setLookWebBaseAddress(webAddress);
-        }
-        WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
-        String completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getCompleteTaskServiceUrl();
-        String businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
-        if (StringUtils.isEmpty(completeTaskServiceUrl)) {
-            completeTaskServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getCompleteTaskServiceUrl();
-        }
-        if (StringUtils.isEmpty(businessDetailServiceUrl)) {
-            businessDetailServiceUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
-        }
-        flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
-        flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
-        if (workPageUrl != null) {
-            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigValueByWeb(webBaseAddressConfig), workPageUrl.getUrl()));
-            String taskFormUrlXiangDui = webAddress + "/" + workPageUrl.getUrl();
-            taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
-            flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
-            String appModuleId = workPageUrl.getAppModuleId();
-            AppModule appModule = appModuleDao.findOne(appModuleId);
-            if (appModule != null && !appModule.getId().equals(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
-                webBaseAddressConfig = appModule.getWebBaseAddress();
-                webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
-                flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
-                if (StringUtils.isNotEmpty(webBaseAddress)) {
-                    flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-//                    String[] tempWebBaseAddress = webBaseAddress.split("/");
-//                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-//                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-//                    }
-                    webAddress =  Constants.getConfigKeyValueProperties(webBaseAddressConfig);
-                    flowTask.setWebBaseAddress(webAddress);
-                }
-                taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
-                taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
-                flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
-            }
-        }
-    }
+
+
 
     public PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
@@ -414,7 +408,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -485,7 +478,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -525,7 +517,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -567,7 +558,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -636,7 +626,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);
@@ -680,7 +669,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
         List<FlowTask> result = query.getResultList();
-        initFlowTasks(result);
         PageResult<FlowTask> pageResult = new PageResult<>();
         pageResult.setPage(pageInfo.getPage());
         pageResult.setRows(result);

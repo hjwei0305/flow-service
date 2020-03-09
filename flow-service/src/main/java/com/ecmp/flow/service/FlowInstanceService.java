@@ -102,6 +102,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private TaskMakeOverPowerService taskMakeOverPowerService;
 
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+
     /**
      * 撤销流程实例
      * 清除有关联的流程版本及对应的流程引擎数据
@@ -205,7 +208,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
     public List<FlowHistory> findLastByBusinessId(String businessId) {
-        return flowHistoryDao.findLastByBusinessId(businessId);
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findLastByBusinessId(businessId);
+        flowHistoryService.initFlowTaskAppModule(flowHistoryList);
+        return  flowHistoryList;
     }
 
     //因为中泰时间服务器问题，所以不能按照时间倒序查询
