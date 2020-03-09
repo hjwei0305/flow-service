@@ -1,7 +1,6 @@
 package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AppModule;
@@ -38,8 +37,8 @@ public class ExpressionUtil {
         return appModule;
     }
 
-    public static String getErrorLogString(String url) {
-        return "【调用接口异常：" + url + ",详情请查看日志】";
+    public static String getErrorLogString(String name) {
+        return "调用" + name + "接口异常,详情请查看日志!";
     }
 
     /**
@@ -57,27 +56,64 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
         String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        ResponseData<Map<String, String>>  result;
+        ResponseData<Map<String, String>> result;
         Map<String, String> map;
         try {
             result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, String>>>() {
             }, params);
             if (result.successful()) {
-                map =  result.getData();
-            }else{
+                map = result.getData();
+            } else {
                 messageLog += "-接口返回信息：" + result.getMessage();
                 LogUtil.error(messageLog);
                 throw new FlowException(getErrorLogString("【条件属性说明服务地址】"));
             }
             messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
+            LogUtil.bizLog(messageLog);
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
+            LogUtil.error(messageLog);
             throw new FlowException(getErrorLogString("【条件属性说明服务地址】"), e);
-        } finally {
-            LogUtil.bizLog(messageLog);
         }
         return map;
     }
+
+
+    /**
+     * 获取条件属性初始值（键值对）
+     *
+     * @param businessModel 业务实体模型
+     * @return
+     */
+    public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
+        String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<Map<String, Object>> result;
+        Map<String, Object> map;
+        try {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, Object>>>() {
+            }, params);
+            if (result.successful()) {
+                map = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【条件属性初始值服务地址】"));
+            }
+            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
+            LogUtil.bizLog(messageLog);
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
+            LogUtil.error(messageLog);
+            throw new FlowException(getErrorLogString("【条件属性初始值服务地址】"), e);
+        }
+        return map;
+    }
+
 
     /**
      * 获取条件属性值（键值对）
@@ -98,46 +134,68 @@ public class ExpressionUtil {
         Date startDate = new Date();
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
         String messageLog = sim.format(startDate) + "开始调用【条件属性值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        Map<String, Object> result;
+        ResponseData<Map<String, Object>> result;
+        Map<String, Object> map;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, Object>>>() {
             }, params);
             Date endDate = new Date();
-            messageLog += "," + sim.format(endDate) + "【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+            if (result.successful()) {
+                map = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【条件属性值服务地址】"));
+            }
+            messageLog += "," + sim.format(endDate) + "【result=" + JsonUtils.toJson(result) + "】";
+            LogUtil.bizLog(messageLog);
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
-            throw new FlowException(getErrorLogString(clientApiUrl), e);
-        } finally {
-            LogUtil.bizLog(messageLog);
+            LogUtil.error(messageLog);
+            throw new FlowException(getErrorLogString("【条件属性值服务地址】"), e);
         }
-        return result;
+        return map;
     }
 
+
     /**
-     * 获取条件属性初始值（键值对）
+     * 重置单据状态
      *
-     * @param businessModel 业务实体模型
+     * @param businessModel 业务实体
+     * @param status
+     * @param businessId    业务ID
      * @return
      */
-    public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
+    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status) {
+        String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
         Map<String, Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
-        String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        Map<String, Object> result;
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
+        params.put(Constants.ID, businessId);
+        params.put(Constants.STATUS, status);
+        String messageLog = "开始调用【重置单据状态】接口，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<Boolean> result;
+        boolean boo;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<Map<String, Object>>() {
+            result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData<Boolean>>() {
             }, params);
-            messageLog += ",【result=" + (result == null ? null : JsonUtils.toJson(result)) + "】";
+            if (result.successful()) {
+                boo = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【重置单据状态】"));
+            }
+            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
+            LogUtil.bizLog(messageLog);
         } catch (Exception e) {
             messageLog += "-调用异常：" + e.getMessage();
-            throw new FlowException(getErrorLogString(clientApiUrl), e);
-        } finally {
-            LogUtil.bizLog(messageLog);
+            LogUtil.error(messageLog);
+            throw new FlowException(getErrorLogString("【重置单据状态】"), e);
         }
-        return result;
+        return boo;
     }
 
 
@@ -167,38 +225,6 @@ public class ExpressionUtil {
         //获取条件属性值
         Map<String, Object> pvs = getPropertiesValuesMap(businessModel, businessId, true);
         boolean result = ConditionUtil.groovyTest(expression, pvs);
-        return result;
-    }
-
-    /**
-     * 重置单据状态
-     *
-     * @param businessModel 业务实体
-     * @param status
-     * @param businessId    业务ID
-     * @return
-     */
-    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status) {
-        boolean result;
-        String businessModelCode = businessModel.getClassName();
-        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
-        Map<String, Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
-        params.put(Constants.ID, businessId);
-        params.put(Constants.STATUS, status);
-        String messageLog = "开始调用【重置单据状态】接口，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        try {
-            result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<Boolean>() {
-            }, params);
-            messageLog += ",【result=" + result + "】";
-        } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            throw new FlowException(getErrorLogString(clientApiUrl), e);
-        } finally {
-            LogUtil.bizLog(messageLog);
-        }
         return result;
     }
 
