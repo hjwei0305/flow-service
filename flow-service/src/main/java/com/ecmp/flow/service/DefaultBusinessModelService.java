@@ -494,7 +494,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
+    public ResponseData<FlowOperateResult> changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
         Map<String, Object> variables = new HashMap<String, Object>();
         try {
             Thread.sleep(1000 * 20);
@@ -542,12 +542,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        return result;
+        return ResponseData.operationSuccessWithData(result);
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
+    public ResponseData<FlowOperateResult> changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
         Map<String, Object> variables = new HashMap<String, Object>();
         FlowOperateResult result = new FlowOperateResult();
         try {
@@ -590,12 +590,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        return result;
+        return ResponseData.operationSuccessWithData(result);
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams) {
+    public ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams) {
         FlowOperateResult result = new FlowOperateResult();
         String receiveTaskActDefId = null;
         Map<String, Object> variables = new HashMap<String, Object>();
@@ -642,7 +642,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                                     logger.error(resultTemp.getMessage());
                                 }
                             } catch (Exception e) {
-                                time = time * 4; //加倍
+                                time = time * 2; //加倍
                                 logger.error(e.getMessage(), e);
                             }
                             index--;
@@ -654,11 +654,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             result.setSuccess(false);
             result.setMessage(e.getMessage());
         }
-        return result;
+        return ResponseData.operationSuccessWithData(result);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
+    public ResponseData<FlowOperateResult> testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
         System.out.println(flowInvokeParams.getPoolTaskCode());
         FlowOperateResult result = new FlowOperateResult();
         String taskActDefId = null;
@@ -687,7 +687,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        long time = 60; //默认60秒
+                        long time = 30; //默认60秒
                         int index = 2;//重试2次
                         while (index > 0) {
                             try {
@@ -731,7 +731,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         result.setSuccess(true);
         result.setMessage("test success!");
 //        result.setUserId("1592D012-A330-11E7-A967-02420B99179E");
-        return result;
+        return ResponseData.operationSuccessWithData(result);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

@@ -206,27 +206,42 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @ApiOperation(value = "测试异常服务", notes = "failureCall")
     FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
 
+    /**
+     * 流程事前事件测试
+     * @param flowInvokeParams
+     * @return
+     */
     @POST
     @Path("changeCreateDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCreateDepictNew", notes = "changeCreateDepictNew")
-    FlowOperateResult changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
+    ResponseData<FlowOperateResult> changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
 
+    /**
+     * 流程事后事件测试
+     * @param flowInvokeParams
+     * @return
+     */
     @POST
     @Path("changeCompletedDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
-    FlowOperateResult changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+    ResponseData<FlowOperateResult> changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
 
+    /**
+     * 接收任务测试
+     * @param flowInvokeParams
+     * @return
+     */
     @POST
     @Path("testReceiveCallNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testReceiveCallNew", notes = "testReceiveCallNew")
-    FlowOperateResult testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+    ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
     @GET
     @Path("testPJoin")
@@ -242,12 +257,17 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @ApiOperation(value = "测试testPoolTaskComplete", notes = "testPoolTaskComplete")
     FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
 
+    /**
+     * 工作池任务测试
+     * @param flowInvokeParams
+     * @return
+     */
     @POST
     @Path("testPoolTaskSignal")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testPoolTaskSignal", notes = "testPoolTaskSignal")
-    FlowOperateResult testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+    ResponseData<FlowOperateResult> testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
 
 
     @POST
