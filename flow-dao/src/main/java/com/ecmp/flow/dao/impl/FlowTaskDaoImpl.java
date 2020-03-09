@@ -5,16 +5,11 @@ import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchOrder;
-import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
-import com.ecmp.flow.dao.util.PageUrlUtil;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.entity.WorkPageUrl;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
