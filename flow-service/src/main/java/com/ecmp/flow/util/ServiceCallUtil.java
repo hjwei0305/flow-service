@@ -10,6 +10,7 @@ import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -122,14 +123,21 @@ public class ServiceCallUtil {
                 String msg = sim.format(startDate) + "事件【" + flowServiceUrl.getName() + "】";
                 String urlAndData = "-请求地址：" + url + "，参数：" + JsonUtils.toJson(params);
                 try {
-                    result = ApiClient.postViaProxyReturnResult(url, new GenericType<FlowOperateResult>() {
+                    ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<FlowOperateResult>>() {
                     }, params);
+                    if(res.successful()){
+                        result =  res.getData();
+                    }else{
+                        LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(res) + "】" + urlAndData);
+                        result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
+                    }
+
                     Date endDate = new Date();
                     if (result == null) {
                         result = new FlowOperateResult(false, msg + "返回信息为空！");
-                        LogUtil.info(msg + "返回参数为空!" + urlAndData);
+                        LogUtil.error(msg + "返回参数为空!" + urlAndData);
                     } else if (!result.isSuccess()) {
-                        LogUtil.info(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
+                        LogUtil.error(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
                         result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
                     } else {
                         LogUtil.bizLog(msg + urlAndData + "返回信息时间：" + sim.format(endDate));
