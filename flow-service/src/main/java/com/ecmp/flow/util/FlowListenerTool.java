@@ -281,12 +281,18 @@ public class FlowListenerTool {
                             @Override
                             public void run() {
                                 try {
-                                    FlowOperateResult flowOperateResult = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<FlowOperateResult>() {
+                                    ResponseData<FlowOperateResult> result = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                                     }, flowInvokeParams);
+                                    FlowOperateResult flowOperateResult = null;
+                                    if (result.successful()) {
+                                        flowOperateResult = result.getData();
+                                    }else{
+                                        LogUtil.error(msg + "异步调用返回信息：【" + JsonUtils.toJson(result) + "】" + urlAndData);
+                                    }
                                     if (flowOperateResult == null) {
-                                        LogUtil.info(msg + "异步调用返回信息为空!" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息为空!" + urlAndData);
                                     } else if (!flowOperateResult.isSuccess()) {
-                                        LogUtil.info(msg + "异步调用返回信息：【" + flowOperateResult.toString() + "】" + urlAndData);
+                                        LogUtil.error(msg + "异步调用返回信息：【" + JsonUtils.toJson(flowOperateResult) + "】" + urlAndData);
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
@@ -296,13 +302,19 @@ public class FlowListenerTool {
                         flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
                     } else {
                         try {
-                            flowOpreateResult = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<FlowOperateResult>() {
+                            ResponseData<FlowOperateResult> result = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                             }, flowInvokeParams);
+                            if(result.successful()){
+                                flowOpreateResult = result.getData();
+                            }else{
+                                flowOpreateResult = new FlowOperateResult(false, msg + "返回信息：【" + result.getMessage() + "】");
+                                LogUtil.error(msg + "返回信息为空！" + urlAndData);
+                            }
                             if (flowOpreateResult == null) {
                                 flowOpreateResult = new FlowOperateResult(false, msg + "返回信息为空！");
                                 LogUtil.info(msg + "返回信息为空！" + urlAndData);
                             } else if (!flowOpreateResult.isSuccess()) {
-                                LogUtil.info(msg + "返回信息：【" + flowOpreateResult.toString() + "】" + urlAndData);
+                                LogUtil.info(msg + "返回信息：【" + JsonUtils.toJson(flowOpreateResult) + "】" + urlAndData);
                                 flowOpreateResult.setMessage(msg + "返回信息：【" + flowOpreateResult.getMessage() + "】");
                             }
                         } catch (Exception e) {
@@ -365,10 +377,10 @@ public class FlowListenerTool {
                                 try {
                                     ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                                     }, flowInvokeParams);
-                                    FlowOperateResult  resultAync = null;
-                                    if(res.successful()){
-                                        resultAync =  res.getData();
-                                    }else{
+                                    FlowOperateResult resultAync = null;
+                                    if (res.successful()) {
+                                        resultAync = res.getData();
+                                    } else {
                                         LogUtil.error(msg + "异步调用返回信息：【" + JsonUtils.toJson(res) + "】" + urlAndData);
                                     }
 
@@ -387,10 +399,11 @@ public class FlowListenerTool {
                         try {
                             ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
                             }, flowInvokeParams);
-                            if(res.successful()){
-                                result =  res.getData();
-                            }else{
-                                LogUtil.info(msg + "返回信息：【" +  JsonUtils.toJson(res) + "】" + urlAndData);
+                            if (res.successful()) {
+                                result = res.getData();
+                            } else {
+                                LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(res) + "】" + urlAndData);
+                                result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
                             }
                             if (result == null) {
                                 result = new FlowOperateResult(false, msg + "返回信息为空！");

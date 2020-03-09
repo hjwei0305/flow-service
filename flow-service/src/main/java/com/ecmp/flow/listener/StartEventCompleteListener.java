@@ -273,8 +273,8 @@ public class StartEventCompleteListener implements ExecutionListener {
                             if (res.successful()) {
                                 result = res.getData();
                             } else {
-                                LogUtil.error(msg + "内部报错!" + urlAndData + "【返回信息：" + result.getMessage() + "】");
-                                throw new FlowException(msg + "内部报错，详情请查看日志！");
+                                LogUtil.error(msg + "内部报错!" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
+                                result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
                             }
                             if (result == null) {
                                 result = new FlowOperateResult(false, msg + "返回信息为空！");
