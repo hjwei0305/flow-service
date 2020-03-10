@@ -246,19 +246,10 @@ public class StartEventCompleteListener implements ExecutionListener {
                             @Override
                             public void run() {
                                 try {
-                                    ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
+                                    ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                                     }, flowInvokeParams);
-                                    FlowOperateResult resultAync = null;
-                                    if (res.successful()) {
-                                        resultAync = res.getData();
-                                    } else {
-                                        LogUtil.error(msg + "异步调用返回信息!" + urlAndData + ", 【返回结果：" + res.getMessage() + "】");
-                                    }
-
-                                    if (resultAync == null) {
-                                        LogUtil.error(msg + "异步调用返回信息为空!" + urlAndData);
-                                    } else if (!resultAync.isSuccess()) {
-                                        LogUtil.error(msg + "异步调用返回信息：【" + resultAync.toString() + "】" + urlAndData);
+                                    if (!res.successful()) {
+                                        LogUtil.error(msg + "异步调用报错!" + urlAndData + ", 【返回错误结果：" + res.getMessage() + "】");
                                     }
                                 } catch (Exception e) {
                                     LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
@@ -268,20 +259,14 @@ public class StartEventCompleteListener implements ExecutionListener {
                         result = new FlowOperateResult(true, "事件已异步调用！");
                     } else {
                         try {
-                            ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData<FlowOperateResult>>() {
+                            ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (res.successful()) {
-                                result = res.getData();
+                                LogUtil.bizLog(msg + urlAndData + ",【返回信息：" + JsonUtils.toJson(result) + "】");
+                                result = new FlowOperateResult(true, res.getMessage());
                             } else {
                                 LogUtil.error(msg + "内部报错!" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
                                 result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
-                            }
-                            if (result == null) {
-                                result = new FlowOperateResult(false, msg + "返回信息为空！");
-                                LogUtil.error(msg + "返回参数为空!" + urlAndData);
-                            } else if (!result.isSuccess()) {
-                                LogUtil.error(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
-                                result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
                             }
                         } catch (Exception e) {
                             LogUtil.error(msg + "内部报错!" + urlAndData, e);

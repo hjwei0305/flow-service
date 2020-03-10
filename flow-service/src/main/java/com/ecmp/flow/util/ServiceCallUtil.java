@@ -123,24 +123,15 @@ public class ServiceCallUtil {
                 String msg = sim.format(startDate) + "事件【" + flowServiceUrl.getName() + "】";
                 String urlAndData = "-请求地址：" + url + "，参数：" + JsonUtils.toJson(params);
                 try {
-                    ResponseData<FlowOperateResult> res = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<FlowOperateResult>>() {
+                    ResponseData res = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
                     }, params);
-                    if(res.successful()){
-                        result =  res.getData();
-                    }else{
-                        LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(res) + "】" + urlAndData);
-                        result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
-                    }
-
                     Date endDate = new Date();
-                    if (result == null) {
-                        result = new FlowOperateResult(false, msg + "返回信息为空！");
-                        LogUtil.error(msg + "返回参数为空!" + urlAndData);
-                    } else if (!result.isSuccess()) {
-                        LogUtil.error(msg + "返回信息：【" + result.toString() + "】" + urlAndData);
-                        result.setMessage(msg + "返回信息：【" + result.getMessage() + "】");
+                    if (res.successful()) {
+                        LogUtil.bizLog(msg + urlAndData + ",【返回信息时间：" + sim.format(endDate) + "，返回信息：" + JsonUtils.toJson(res) + "】");
+                        result = new FlowOperateResult(true, res.getMessage());
                     } else {
-                        LogUtil.bizLog(msg + urlAndData + "返回信息时间：" + sim.format(endDate));
+                        LogUtil.error(msg + "调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
+                        result = new FlowOperateResult(false, msg + ",【返回信息：" + res.getMessage() + "】");
                     }
                 } catch (Exception e) {
                     LogUtil.error(msg + "内部报错!" + urlAndData, e);
