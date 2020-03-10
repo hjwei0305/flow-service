@@ -39,7 +39,6 @@ import java.util.Map;
  */
 public class CommonConditionService implements ICommonConditionService {
 
-//    private IBusinessModelService businessModelService;
 
     public CommonConditionService() {
     }
@@ -70,64 +69,40 @@ public class CommonConditionService implements ICommonConditionService {
 
 
     @Override
-    public Map<String, String> properties(String businessModelCode,Boolean all) throws ClassNotFoundException {
+    public ResponseData<Map<String, String>> properties(String businessModelCode,Boolean all) throws ClassNotFoundException {
         String conditonPojoClassName = null;
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
-//        if (businessModel != null) {
-//            conditonPojoClassName = getConditionBeanName(businessModelCode);
-//        }
         conditonPojoClassName = getConditionBeanName(businessModelCode);
-        return this.getPropertiesForConditionPojo(conditonPojoClassName,all);
+        Map<String, String> map = this.getPropertiesForConditionPojo(conditonPojoClassName,all);
+        return    ResponseData.operationSuccessWithData(map);
     }
     public Map<String, String> propertiesAll(String businessModelCode) throws ClassNotFoundException {
         String conditonPojoClassName = null;
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
-//        if (businessModel != null) {
-//            conditonPojoClassName = getConditionBeanName(businessModelCode);
-//        }
         conditonPojoClassName = getConditionBeanName(businessModelCode);
         return this.getPropertiesForConditionPojo(conditonPojoClassName,true);
     }
 
     @Override
-    public Map<String, Object> initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    public ResponseData<Map<String, Object>> initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         String conditonPojoClassName = null;
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
-//        if (businessModel != null) {
-//            conditonPojoClassName = getConditionBeanName(businessModelCode);
-//        }
         conditonPojoClassName = getConditionBeanName(businessModelCode);
-        return this.getPropertiesAndValues(conditonPojoClassName,true);
+        Map<String, Object> map = this.getPropertiesAndValues(conditonPojoClassName,true);
+        return ResponseData.operationSuccessWithData(map);
     }
 
     @Override
-    public Map<String, Object> propertiesAndValues(String businessModelCode, String id,Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-
+    public ResponseData<Map<String, Object>> propertiesAndValues(String businessModelCode, String id,Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         String conditonPojoClassName = null;
         String daoBeanName = null;
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
-//        if (businessModel != null) {
-//            conditonPojoClassName = getConditionBeanName(businessModelCode);
-//            daoBeanName = getDaoBeanName(businessModelCode);
-//        }
         conditonPojoClassName = getConditionBeanName(businessModelCode);
         daoBeanName = getDaoBeanName(businessModelCode);
-        return this.getConditonPojoMap(conditonPojoClassName, daoBeanName, id,all);
+        Map<String, Object> map = this.getConditonPojoMap(conditonPojoClassName, daoBeanName, id,all);
+        return ResponseData.operationSuccessWithData(map);
     }
 
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public Boolean resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+    public ResponseData<Boolean> resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         String daoBeanName = null;
-//        if (businessModel != null) {
-//            daoBeanName = getDaoBeanName(businessModelCode);
-//        }
         daoBeanName = getDaoBeanName(businessModelCode);
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
@@ -144,21 +119,17 @@ public class CommonConditionService implements ICommonConditionService {
             content.setFlowStatus(status);
             appModuleDao.save(content);
         }
-        return true;
+        return  ResponseData.operationSuccessWithData(true);
     }
 
-    public Map<String,Object> businessPropertiesAndValues(String businessModelCode,String id) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
-//        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-//        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
+    public ResponseData<Map<String,Object>> businessPropertiesAndValues(String businessModelCode,String id) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,NoSuchMethodException{
         String daoBeanName = null;
-//        if (businessModel != null) {
-//            daoBeanName = getDaoBeanName(businessModelCode);
-//        }
         daoBeanName = getDaoBeanName(businessModelCode);
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
         IBusinessFlowEntity content = (IBusinessFlowEntity) appModuleDao.findOne(id);
-        return   BusinessUtil.getPropertiesAndValues(content,null);
+        Map<String,Object> map = BusinessUtil.getPropertiesAndValues(content,null);
+        return   ResponseData.operationSuccessWithData(map);
     }
     private String getDaoBeanName(String className)throws ClassNotFoundException {
         BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);
@@ -178,13 +149,13 @@ public class CommonConditionService implements ICommonConditionService {
         }
     }
 
-    public String pushTasksToDo(List<FlowTask> list){
+    public ResponseData<String> pushTasksToDo(List<FlowTask> list){
         List<String> megList = new ArrayList<String>();
         if(list!=null&&list.size()>0){
             list.forEach(a->megList.add("【是否已处理："+a.getTaskStatus()+"-id="+a.getId()+"】"));
         }
         LogUtil.bizLog("推动待办成功到达："+ JsonUtils.toJson(megList));
-        return "推送成功！";
+        return ResponseData.operationSuccessWithData("推送成功！");
     }
 
 

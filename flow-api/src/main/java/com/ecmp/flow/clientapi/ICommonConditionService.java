@@ -45,7 +45,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性说明",notes = "测试")
-    public Map<String, String> properties(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("all") Boolean all) throws ClassNotFoundException;
+    ResponseData<Map<String, String>> properties(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("all") Boolean all) throws ClassNotFoundException;
 
 
     /**
@@ -63,7 +63,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码获取条件POJO属性初始化值键值对",notes = "测试")
-    public Map<String, Object> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+    ResponseData<Map<String, Object>> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
 
 
     /**
@@ -82,7 +82,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码,业务ID获取条件POJO属性键值对",notes = "测试")
-    public Map<String,Object> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id,@QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    ResponseData<Map<String,Object>> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id,@QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
 
@@ -103,7 +103,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态",notes = "测试")
-    public Boolean resetState(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id")String id,
+    ResponseData<Boolean> resetState(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id")String id,
                               @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
@@ -118,7 +118,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码,业务ID获取POJO属性键值对",notes = "测试")
-    public Map<String,Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
+    ResponseData<Map<String,Object>> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode,@QueryParam("id") String id) throws Exception;
 
 
 
@@ -131,7 +131,7 @@ public interface ICommonConditionService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "推送待办",notes = "推送待办")
-    default  String pushTasksToDo(List<FlowTask> list){
-        return "推送成功！";
+    default  ResponseData<String> pushTasksToDo(List<FlowTask> list){
+        return ResponseData.operationSuccessWithData("推送成功！");
     }
 }
