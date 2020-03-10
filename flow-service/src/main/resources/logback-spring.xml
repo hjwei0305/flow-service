@@ -47,7 +47,7 @@
     </appender>
 
     <!-- 按照每天生成日志文件 -->
-    <appender name="FILE" class="com.changhong.sei.core.log.extend.SeiRollingFileAppender">
+    <appender name="FILE" class="com.ecmp.log.SeiRollingFileAppender">
 <!--        <file>logs/${LOG_FILE}.log</file>-->
         <file>logs/${APP_NAME:-sei}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -82,6 +82,7 @@
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
 
+<!--        <appender-ref ref="FILE"/>-->
         <appender-ref ref="ASYNC-FILE"/>
     </root>
 
