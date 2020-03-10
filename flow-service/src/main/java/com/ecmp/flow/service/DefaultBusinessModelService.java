@@ -501,7 +501,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        FlowOperateResult result = new FlowOperateResult();
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
@@ -539,17 +538,15 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
+            return ResponseData.operationFailure(e.getMessage());
         }
-        return ResponseData.operationSuccessWithData(result);
+        return ResponseData.operationSuccess();
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData<FlowOperateResult> changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
         Map<String, Object> variables = new HashMap<String, Object>();
-        FlowOperateResult result = new FlowOperateResult();
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
@@ -587,16 +584,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
+            return ResponseData.operationFailure(e.getMessage());
         }
-        return ResponseData.operationSuccessWithData(result);
+        return ResponseData.operationSuccess();
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams) {
-        FlowOperateResult result = new FlowOperateResult();
         String receiveTaskActDefId = null;
         Map<String, Object> variables = new HashMap<String, Object>();
         try {
@@ -651,16 +646,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 }).start();
             }
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
+            return ResponseData.operationFailure(e.getMessage());
         }
-        return ResponseData.operationSuccessWithData(result);
+        return ResponseData.operationSuccess();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData<FlowOperateResult> testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
+    public ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
         System.out.println(flowInvokeParams.getPoolTaskCode());
-        FlowOperateResult result = new FlowOperateResult();
         String taskActDefId = null;
         Map<String, Object> variables = new HashMap<String, Object>();
         try {
@@ -725,13 +718,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 }).start();
             }
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
+            return ResponseData.operationFailure(e.getMessage());
         }
-        result.setSuccess(true);
-        result.setMessage("test success!");
-//        result.setUserId("1592D012-A330-11E7-A967-02420B99179E");
-        return ResponseData.operationSuccessWithData(result);
+        return ResponseData.operationSuccess();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

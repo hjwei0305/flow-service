@@ -216,7 +216,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCreateDepictNew", notes = "changeCreateDepictNew")
-    ResponseData<FlowOperateResult> changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
+    ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
 
     /**
      * 流程事后事件测试
@@ -228,7 +228,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
-    ResponseData<FlowOperateResult> changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+    ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
 
     /**
@@ -241,7 +241,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testReceiveCallNew", notes = "testReceiveCallNew")
-    ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams);
+    ResponseData testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
     @GET
     @Path("testPJoin")
@@ -267,7 +267,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试testPoolTaskSignal", notes = "testPoolTaskSignal")
-    ResponseData<FlowOperateResult> testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
+    ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
 
 
     @POST
