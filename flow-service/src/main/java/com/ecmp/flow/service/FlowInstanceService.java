@@ -924,7 +924,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             newFlowTask.setOwnerName(executor.getName());
             newFlowTask.setOwnerAccount(executor.getCode());
             newFlowTask.setTrustState(0);
-            if (v.get("instancyStatus") != null) {
+            if (v != null && v.get("instancyStatus") != null) {
                 try {
                     if ((Boolean) v.get("instancyStatus") == true) {
                         newFlowTask.setPriority(3);//设置为紧急

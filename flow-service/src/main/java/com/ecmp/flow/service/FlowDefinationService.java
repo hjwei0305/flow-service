@@ -1277,7 +1277,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (flowDefination == null) {
                 return null;
             }
-            flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+            if (StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(businessId)) {
+                flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastDeloyVersionId());
+            } else {
+                flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+            }
         }
 
         if (flowDefVersion != null && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(businessId)) {
@@ -1298,7 +1302,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
         String orgId = (String) businessV.get(Constants.ORG_ID);
 
-        Map<String, SolidifyStartExecutorVo> map = new HashMap<String, SolidifyStartExecutorVo>();
+        Map<String, SolidifyStartExecutorVo> map = new HashMap<>();
 
         String defJson = flowDefVersion.getDefJson();
         JSONObject defObj = JSONObject.fromObject(defJson);

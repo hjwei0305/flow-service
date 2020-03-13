@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.flow.vo.CompleteTaskVo;
+import com.ecmp.flow.vo.SolidifyStartFlowVo;
 import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
@@ -12,6 +13,18 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
 
     @Autowired
     private  DefaultFlowBaseService defaultFlowBaseService;
+
+
+    @Test
+    public void solidifyCheckAndSetAndStart(){
+        SolidifyStartFlowVo bean  = new SolidifyStartFlowVo();
+        bean.setBusinessId("300EA92B-64CA-11EA-B339-0242C0A84421");
+        bean.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
+        bean.setFlowDefinationId("98307F87-5150-11EA-BBE4-0242C0A84421");
+        ResponseData responseData = defaultFlowBaseService.solidifyCheckAndSetAndStart(bean);
+        System.out.println(JsonUtils.toJson(responseData));
+    }
+
 
     @Test
     public void sart_one() {

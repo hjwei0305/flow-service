@@ -2,6 +2,7 @@ package com.ecmp.flow.api;
 
 
 import com.ecmp.flow.vo.CompleteTaskVo;
+import com.ecmp.flow.vo.SolidifyStartFlowVo;
 import com.ecmp.flow.vo.StartFlowBusinessAndTypeVo;
 import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.vo.ResponseData;
@@ -61,11 +62,12 @@ public interface IDefaultFlowBaseService {
 
     /**
      * 启动流程
-     *
+     * <p>
      * 提供三种调用方式：
      * 第一种参数传businessModelCode（业务实体类路径）和businessKey（业务实体id），会返回给你flowTypeList（流程类型）一个或多个 ，nodeInfoList（节点信息，包含执行人信息）里面默认只是显示第一个类型的节点信息
      * 第二种参数传businessModelCode（业务实体类路径）和businessKey（业务实体id）和typeId（指定的流程类型），会返回给你flowTypeList（流程类型）一个，nodeInfoList（指定流程类型的节点信息，包含执行人信息）
      * 第三种是封装参数真正的流程启动
+     *
      * @return
      */
     @POST
@@ -75,10 +77,26 @@ public interface IDefaultFlowBaseService {
     @ApiOperation(value = "启动流程", notes = "启动流程")
     ResponseData startFlow(StartFlowVo startFlowVo) throws NoSuchMethodException, SecurityException;
 
+
+    /**
+     * 固化流程的默认自动启动流程
+     * 条件：先检查固化每个节点执行人情况，如果是非人工选择的情况（单候选人，或者单签为多候选人），系统默认进行启动；反之跳转到配置执行人界面进行人为配置
+     *
+     * @param solidifyStartFlowVo
+     * @return
+     */
+    @POST
+    @Path("solidifyCheckAndSetAndStart")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "固化检查设置并启动流程", notes = "固化检查设置执行人并启动（如果没有人工选择情况）")
+    ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo);
+
+
     /**
      * 启动流程(通过业务信息和流程类型)
      *
-     * @param startFlowBusinessAndTypeVo   其中包含业务实体类路径，业务实例ID、以及需要启动的流程类型代码
+     * @param startFlowBusinessAndTypeVo 其中包含业务实体类路径，业务实例ID、以及需要启动的流程类型代码
      * @return
      */
     @POST
@@ -105,6 +123,7 @@ public interface IDefaultFlowBaseService {
 
     /**
      * 通过VO对象完成任务
+     *
      * @return 操作结果
      */
     @POST
@@ -233,7 +252,7 @@ public interface IDefaultFlowBaseService {
     /**
      * 通过流程实例id获取任务抬头信息信息任务
      *
-     * @param instanceId  流程实例id
+     * @param instanceId 流程实例id
      * @return 操作结果
      */
     @POST

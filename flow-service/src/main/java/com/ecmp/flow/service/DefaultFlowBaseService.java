@@ -5,26 +5,27 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
-import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.FlowTaskDao;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.entity.FlowType;
+import com.ecmp.flow.dao.*;
+import com.ecmp.flow.entity.*;
+import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.protocol.ResponseDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.concurrent.Executors;
 
 /**
  * *************************************************************************************************
@@ -54,9 +55,220 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Autowired
     private FlowInstanceDao flowInstanceDao;
     @Autowired
-    private FlowTaskDao flowTaskDao;
-    @Autowired
     private FlowTypeService flowTypeService;
+    @Autowired
+    private FlowDefinationDao flowDefinationDao;
+    @Autowired
+    private FlowDefVersionDao flowDefVersionDao;
+    @Autowired
+    private BusinessModelDao businessModelDao;
+
+
+    @Override
+    public ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) {
+        String businessId = solidifyStartFlowVo.getBusinessId();
+        if (StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("业务实体ID不能为空！");
+        }
+        String businessModelCode = solidifyStartFlowVo.getBusinessModelCode();
+        if (StringUtils.isEmpty(businessModelCode)) {
+            return ResponseData.operationFailure("业务实体类全路径不能为空！");
+        }
+        String flowDefinationId = solidifyStartFlowVo.getFlowDefinationId();
+        if (StringUtils.isEmpty(flowDefinationId)) {
+            return ResponseData.operationFailure("流程定义ID不能为空！");
+        }
+        FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+        if (flowDefination == null) {
+            return ResponseData.operationFailure("流程定义不存在！");
+        }
+        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastDeloyVersionId());
+        if (!flowDefVersion.getSolidifyFlow()) {
+            return ResponseData.operationFailure("当前流程不是固化流程，默认启动失败！");
+        }
+        try {
+            Map<String, SolidifyStartExecutorVo> map =
+                    this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
+            if (map.containsKey("humanIntervention")) {  //存在需要人为干涉的情况
+                return ResponseData.operationSuccessWithData(false);
+            }
+
+            if (MapUtils.isNotEmpty(map)) {
+                //如果不需要人工干涉，保存系统默认选择的固化执行人信息
+                ResponseData responseData = this.saveAutoSolidifyExecutorInfo(map, businessModelCode, businessId);
+                if (!responseData.successful()) {
+                    return ResponseData.operationFailure("自动保存固化执行人失败！");
+                }
+            }
+
+            //自动启动固化流程
+            ResponseData responseData = this.autoStartSolidifyFlow(businessId, businessModelCode, flowDefination.getFlowType().getId(), flowDefination.getDefKey());
+            if (!responseData.successful()) {
+                return responseData;
+            }
+
+        } catch (Exception e) {
+            LogUtil.error("固化流程自动启动报错!", e);
+            throw new FlowException("自动启动报错,详情请查看日志！");
+        }
+        return ResponseData.operationSuccessWithData(true);
+    }
+
+    /**
+     * 通过参数自动启动固化流程
+     *
+     * @param businessId
+     * @param businessModelCode
+     * @param typeId
+     * @param flowDefKey
+     * @return
+     */
+    public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) {
+        if (StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("业务实体ID不能为空！");
+        }
+        if (StringUtils.isEmpty(businessModelCode)) {
+            return ResponseData.operationFailure("业务实体类全路径不能为空！");
+        }
+        if (StringUtils.isEmpty(typeId)) {
+            return ResponseData.operationFailure("流程类型ID不能为空！");
+        }
+        if (StringUtils.isEmpty(flowDefKey)) {
+            return ResponseData.operationFailure("流程定义代码不能为空！");
+        }
+        StartFlowVo startFlowVo = new StartFlowVo();
+        startFlowVo.setBusinessKey(businessId);
+        startFlowVo.setBusinessModelCode(businessModelCode);
+        startFlowVo.setFlowDefKey(flowDefKey);
+        startFlowVo.setTypeId(typeId);
+        try {
+            ResponseData oneResInfo = this.startFlow(startFlowVo);
+            if (!oneResInfo.successful()) {
+                return oneResInfo;
+            }
+            FlowStartResultVO flowStartResultVO = (FlowStartResultVO) oneResInfo.getData();
+            List<NodeInfo> nodeList = flowStartResultVO.getNodeInfoList();
+            List<Map<String, Object>> taskList = new ArrayList<>();
+            nodeList.forEach(node -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("nodeId", node.getId());
+                map.put("userVarName", node.getUserVarName());
+                map.put("flowTaskType", node.getFlowTaskType());
+                map.put("instancyStatus", false);
+                map.put("userIds", "");
+                map.put("solidifyFlow", true);
+                taskList.add(map);
+            });
+            startFlowVo.setTaskList(JsonUtils.toJson(taskList));
+            //真正启动
+            return this.startFlow(startFlowVo);
+        } catch (Exception e) {
+            LogUtil.error("固化流程自动启动报错!", e);
+            throw new FlowException("自动启动报错,详情请查看日志！");
+        }
+    }
+
+
+    /**
+     * 报错固化执行人
+     *
+     * @param map
+     * @param businessModelCode
+     * @param businessId
+     * @return
+     */
+    public ResponseData saveAutoSolidifyExecutorInfo(Map<String, SolidifyStartExecutorVo> map, String businessModelCode, String businessId) {
+        List<SolidifyStartExecutorVo> list = new ArrayList<>();
+        map.keySet().forEach(a -> {
+            list.add(map.get(a));
+        });
+        FindSolidifyExecutorVO vo = new FindSolidifyExecutorVO();
+        vo.setExecutorsVos(JsonUtils.toJson(list));
+        vo.setBusinessModelCode(businessModelCode);
+        vo.setBusinessId(businessId);
+        return flowSolidifyExecutorService.saveSolidifyInfoByExecutorVos(vo);
+    }
+
+
+    /**
+     * 检查并得到所有满足节点执行人信息（单候选人和单签多候选人）
+     *
+     * @param flowDefVersion
+     * @param businessModelCode
+     * @param businessId
+     * @return
+     */
+    public Map<String, SolidifyStartExecutorVo> checkAndgetSolidifyExecutorsInfo(FlowDefVersion flowDefVersion, String businessModelCode, String businessId) {
+        BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
+        Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+        String orgId = (String) businessV.get(Constants.ORG_ID);
+
+        Map<String, SolidifyStartExecutorVo> map = new HashMap<>();
+
+        String defJson = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(defJson);
+        JSONObject pocessObj = JSONObject.fromObject(defObj.get("process"));
+        JSONObject nodeObj = JSONObject.fromObject(pocessObj.get("nodes"));
+
+        nodeObj.keySet().forEach(obj -> {
+            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
+            String id = (String) positionObj.get("id");
+            String nodeType = (String) positionObj.get("nodeType");
+            if (id.indexOf("UserTask") != -1) {
+                JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
+                List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
+                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<RequestExecutorsVo>();
+                executorList.forEach(list -> {
+                    RequestExecutorsVo bean = new RequestExecutorsVo();
+                    String userType = list.get("userType");
+                    if (!"AnyOne".equals(userType)) {
+                        String ids = "";
+                        if (userType.indexOf("SelfDefinition") != -1) {
+                            ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
+                        } else {
+                            ids = list.get("ids");
+                        }
+                        bean.setUserType(userType);
+                        bean.setIds(ids);
+                        requestExecutorsList.add(bean);
+                    }
+                });
+
+                ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                List<Executor> executors = (List<Executor>) responseData.getData();
+                if (executors != null && executors.size() != 0) {
+                    if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
+                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                        bean.setActTaskDefKey(id);
+                        bean.setExecutorIds(executors.get(0).getId());
+                        bean.setNodeType(nodeType);
+                        map.put(id, bean);
+                    } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签任务默认全选
+                        String userIds = "";
+                        for (int i = 0; i < executors.size(); i++) {
+                            if (i == 0) {
+                                userIds += executors.get(i).getId();
+                            } else {
+                                userIds += "," + executors.get(i).getId();
+                            }
+                        }
+                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                        bean.setActTaskDefKey(id);
+                        bean.setExecutorIds(userIds);
+                        bean.setNodeType(nodeType);
+                        map.put(id, bean);
+                    } else {
+                        //需要人工干涉
+                        map.put("humanIntervention", null);
+                    }
+                } else {
+                    //需要人工干涉
+                    map.put("humanIntervention", null);
+                }
+            }
+        });
+        return map;
+    }
 
     @Override
     public ResponseData startFlowByBusinessAndType(StartFlowBusinessAndTypeVo startParam) {
