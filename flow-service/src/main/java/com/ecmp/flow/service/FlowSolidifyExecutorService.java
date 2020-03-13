@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,33 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     protected BaseEntityDao<FlowSolidifyExecutor> getDao() {
         return this.flowSolidifyExecutorDao;
+    }
+
+
+    /**
+     * 为节点设置已选择的固化执行人信息
+     *
+     * @param nodeInfoList
+     * @param businessId
+     * @return
+     */
+    public List<NodeInfo> setNodeExecutorByBusinessId(List<NodeInfo> nodeInfoList, String businessId) {
+        if (StringUtils.isNotEmpty(businessId)) {
+            List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
+            if (solidifylist != null && solidifylist.size() > 0) {
+                nodeInfoList.forEach(nodeInfo -> {
+                    FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(nodeInfo.getId())).findFirst().orElse(null);
+                    if (bean != null) {
+                        String userIds = bean.getExecutorIds();
+                        String[] idArray = userIds.split(",");
+                        List<String> userList = Arrays.asList(idArray);
+                        List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+                        nodeInfo.setExecutorSet(new HashSet<>(executorList));
+                    }
+                });
+            }
+        }
+        return nodeInfoList;
     }
 
 

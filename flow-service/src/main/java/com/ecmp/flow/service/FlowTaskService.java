@@ -2335,8 +2335,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 operateResultWithData.setData("CounterSignNotEnd");
             } else {
-                if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程（不返回下一步执行人信息）
-                    nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
+                if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程
+                    FlowTask flowTask = flowTaskDao.findOne(taskId);
+                    //设置固化执行人信息(只是前台展示使用)
+                    nodeInfoList = flowSolidifyExecutorService.
+                            setNodeExecutorByBusinessId(nodeInfoList, flowTask.getFlowInstance().getBusinessId());
                 }
                 operateResultWithData.setData(nodeInfoList);
             }
