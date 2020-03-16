@@ -129,6 +129,10 @@ public class ServiceCallUtil {
                     if (res.successful()) {
                         LogUtil.bizLog(msg + urlAndData + ",【返回信息时间：" + sim.format(endDate) + "，返回信息：" + JsonUtils.toJson(res) + "】");
                         result = new FlowOperateResult(true, res.getMessage());
+                        //FlowOperateResult可以直接返回执行人（工作池任务）
+                        if(res.getData()!=null && StringUtils.isNotEmpty(res.getData().toString())){
+                            result.setUserId(res.getData().toString());
+                        }
                     } else {
                         LogUtil.error(msg + "调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
                         result = new FlowOperateResult(false, msg + ",【返回信息：" + res.getMessage() + "】");
