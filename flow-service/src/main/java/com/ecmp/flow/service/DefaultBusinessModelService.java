@@ -67,6 +67,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
     /**
      * 条件属性说明
+     *
      * @param businessModelCode 业务实体代码
      * @param all               是否查询全部
      * @return
@@ -75,18 +76,19 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Override
     public ResponseData properties(String businessModelCode, Boolean all) throws ClassNotFoundException {
         Map<String, String> map = new HashMap<>();
-        map.put("unitPrice","单价");
-        map.put("count","数量");
-        map.put("customeInt","额外属性");
-        map.put("name","名称");
-        if(all){
-            map.put("orgId","组织机构ID");
+        map.put("unitPrice", "单价");
+        map.put("count", "数量");
+        map.put("customeInt", "额外属性");
+        map.put("name", "名称");
+        if (all) {
+            map.put("orgId", "组织机构ID");
         }
         return ResponseData.operationSuccessWithData(map);
     }
 
     /**
      * 条件属性初始值
+     *
      * @param businessModelCode 业务实体代码
      * @return
      * @throws ClassNotFoundException
@@ -98,15 +100,16 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Override
     public ResponseData initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         Map<String, Object> map = new HashMap<>();
-        map.put("unitPrice",0.0);
-        map.put("count",0);
-        map.put("customeInt",0);
-        map.put("name","中文字符串");
+        map.put("unitPrice", 0.0);
+        map.put("count", 0);
+        map.put("customeInt", 0);
+        map.put("name", "中文字符串");
         return ResponseData.operationSuccessWithData(map);
     }
 
     /**
      * 条件属性值
+     *
      * @param businessModelCode 业务实体代码
      * @param id                单据id
      * @param all
@@ -119,26 +122,27 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      */
     @Override
     public ResponseData propertiesAndValues(String businessModelCode, String id, Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-        DefaultBusinessModel bean=   defaultBusinessModelDao.findOne(id);
+        DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
         Map<String, Object> map = new HashMap<>();
-        map.put("unitPrice",bean.getUnitPrice());
-        map.put("count",bean.getCount());
-        map.put("customeInt",bean.getCount());
-        map.put("name",bean.getName());
+        map.put("unitPrice", bean.getUnitPrice());
+        map.put("count", bean.getCount());
+        map.put("customeInt", bean.getCount());
+        map.put("name", bean.getName());
 
-        map.put("orgId",bean.getOrgId());
-        map.put("orgCode",bean.getOrgCode());
-        map.put("orgPath",bean.getOrgPath());
-        map.put("tenantCode",bean.getTenantCode());
-        map.put("workCaption",bean.getWorkCaption());
-        map.put("businessCode",bean.getBusinessCode());
-        map.put("id",bean.getId());
+        map.put("orgId", bean.getOrgId());
+        map.put("orgCode", bean.getOrgCode());
+        map.put("orgPath", bean.getOrgPath());
+        map.put("tenantCode", bean.getTenantCode());
+        map.put("workCaption", bean.getWorkCaption());
+        map.put("businessCode", bean.getBusinessCode());
+        map.put("id", bean.getId());
         return ResponseData.operationSuccessWithData(map);
     }
 
 
     /**
      * 重置单据状态
+     *
      * @param businessModelCode 业务实体代码
      * @param id                单据id
      * @param status            状态
@@ -151,7 +155,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      */
     @Override
     public ResponseData resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-        DefaultBusinessModel bean=   defaultBusinessModelDao.findOne(id);
+        DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
         bean.setFlowStatus(status);
         this.save(bean);
         return ResponseData.operationSuccessWithData(true);
@@ -677,45 +681,51 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 entity.setWorkCaption("工作池任务：[ID:" + flowInvokeParams.getId() + ",actId:" + flowInvokeParams.getTaskActDefId() + "]");
                 defaultBusinessModelDao.save(entity);
                 final String fTaskActDefId = taskActDefId;
-                new Thread(new Runnable() {//模拟异步
-                    @Override
-                    public void run() {
-                        long time = 30; //默认60秒
-                        int index = 2;//重试2次
-                        while (index > 0) {
-                            try {
-                                Thread.sleep(1000 * time);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                                //工作池任务设置单个执行人
-//                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"1592D012-A330-11E7-A967-02420B99179E" ,variables);
-                                //工作池任务设置多个执行人
-                                SignalPoolTaskVO SignalPoolTaskVO = new SignalPoolTaskVO();
-                                SignalPoolTaskVO.setBusinessId(flowInvokeParams.getId());
-                                SignalPoolTaskVO.setPoolTaskActDefId(fTaskActDefId);
-                                List<String> userIds = new ArrayList<>();
-                                userIds.add("1592D012-A330-11E7-A967-02420B99179E");
-                                userIds.add("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
-                                SignalPoolTaskVO.setUserIds(userIds);
-                                SignalPoolTaskVO.setMap(new HashMap<>());
-                                ResponseData resultTemp = proxy.signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO);
-                                if (resultTemp.successful()) {
-                                    return;
-                                } else {
-                                    time = time * 2; //加倍
-                                    logger.error(resultTemp.getMessage());
-                                }
-                            } catch (Exception e) {
-                                time = time * 2; //加倍
-                                logger.error(e.getMessage(), e);
-                            }
-                            index--;
-                        }
-                    }
-                }).start();
+
+
+//                new Thread(new Runnable() {//模拟异步
+//                    @Override
+//                    public void run() {
+//                        long time = 30; //默认60秒
+//                        int index = 2;//重试2次
+//                        while (index > 0) {
+//                            try {
+//                                Thread.sleep(1000 * time);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            try {
+//                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+//                                //工作池任务设置单个执行人
+////                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"1592D012-A330-11E7-A967-02420B99179E" ,variables);
+//                                //工作池任务设置多个执行人
+//                                SignalPoolTaskVO SignalPoolTaskVO = new SignalPoolTaskVO();
+//                                SignalPoolTaskVO.setBusinessId(flowInvokeParams.getId());
+//                                SignalPoolTaskVO.setPoolTaskActDefId(fTaskActDefId);
+//                                List<String> userIds = new ArrayList<>();
+//                                userIds.add("1592D012-A330-11E7-A967-02420B99179E");
+//                                userIds.add("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
+//                                SignalPoolTaskVO.setUserIds(userIds);
+//                                SignalPoolTaskVO.setMap(new HashMap<>());
+//                                ResponseData resultTemp = proxy.signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO);
+//                                if (resultTemp.successful()) {
+//                                    return;
+//                                } else {
+//                                    time = time * 2; //加倍
+//                                    logger.error(resultTemp.getMessage());
+//                                }
+//                            } catch (Exception e) {
+//                                time = time * 2; //加倍
+//                                logger.error(e.getMessage(), e);
+//                            }
+//                            index--;
+//                        }
+//                    }
+//                }).start();
+
+
+                //直接返回用户ID也可以直接进行待办添加（工作池任务添加执行人方式2）
+                return ResponseData.operationSuccessWithData("1592D012-A330-11E7-A967-02420B99179E,1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
             }
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
