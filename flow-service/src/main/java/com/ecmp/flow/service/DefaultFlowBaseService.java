@@ -90,7 +90,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             Map<String, SolidifyStartExecutorVo> map =
                     this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
             if (map.containsKey("humanIntervention")) {  //存在需要人为干涉的情况
-                return ResponseData.operationSuccessWithData(false);
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("humanIntervention", true);
+                resultMap.put("nodeInfoList", null);
+                return ResponseData.operationSuccessWithData(resultMap);
             }
 
             if (MapUtils.isNotEmpty(map)) {
@@ -107,12 +110,62 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 return responseData;
             }
 
+            List<NodeInfo> nodeInfoList = this.setNewStartFlowInfo(businessId);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("humanIntervention", false);
+            resultMap.put("nodeInfoList", nodeInfoList);
+            return ResponseData.operationSuccessWithData(resultMap);
+
         } catch (Exception e) {
             LogUtil.error("固化流程自动启动报错!", e);
             throw new FlowException("自动启动报错,详情请查看日志！");
         }
-        return ResponseData.operationSuccessWithData(true);
     }
+
+
+
+    /**
+     * 封装新启动的流程的第一步节点信息
+     *
+     * @param businessId
+     * @return
+     */
+    public List<NodeInfo> setNewStartFlowInfo(String businessId) {
+        List<FlowTask> flowTaskList = flowInstanceService.findCurrentTaskByBusinessId(businessId);
+        List<NodeInfo> nodeInfoList = new ArrayList<>();
+        if (flowTaskList != null && flowTaskList.size() > 0) {
+            for (FlowTask flowTask : flowTaskList) {
+                NodeInfo oldNodeInfo = nodeInfoList.stream().filter(a -> a.getId().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
+                if (oldNodeInfo == null) {
+                    NodeInfo nodeInfo = new NodeInfo();
+                    nodeInfo.setId(flowTask.getActTaskDefKey());
+                    String taskJsonDef = flowTask.getTaskJsonDef();
+                    JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                    String nodeType = taskJsonDefObj.get("nodeType") + "";
+                    nodeInfo.setFlowTaskType(nodeType);
+                    nodeInfo.setName(flowTask.getTaskName());
+                    Set<Executor> executorSet = new HashSet<>();
+                    Executor executor = new Executor();
+                    executor.setId(flowTask.getExecutorId());
+                    executor.setName(flowTask.getExecutorName());
+                    executor.setCode(flowTask.getExecutorAccount());
+                    executorSet.add(executor);
+                    nodeInfo.setExecutorSet(executorSet);
+                    nodeInfoList.add(nodeInfo);
+                } else {
+                    Set<Executor> executorSet = oldNodeInfo.getExecutorSet();
+                    Executor executor = new Executor();
+                    executor.setId(flowTask.getExecutorId());
+                    executor.setName(flowTask.getExecutorName());
+                    executor.setCode(flowTask.getExecutorAccount());
+                    executorSet.add(executor);
+                }
+            }
+        }
+        return nodeInfoList;
+    }
+
+
 
     /**
      * 通过参数自动启动固化流程
