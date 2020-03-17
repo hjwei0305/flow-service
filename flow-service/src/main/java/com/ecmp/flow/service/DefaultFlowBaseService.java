@@ -104,24 +104,27 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 }
             }
 
-            //自动启动固化流程
+            //自动启动固化流程（返回第一个节点执行信息）
             ResponseData responseData = this.autoStartSolidifyFlow(businessId, businessModelCode, flowDefination.getFlowType().getId(), flowDefination.getDefKey());
             if (!responseData.successful()) {
                 return responseData;
             }
-
-            List<NodeInfo> nodeInfoList = this.setNewStartFlowInfo(businessId);
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("humanIntervention", false);
-            resultMap.put("nodeInfoList", nodeInfoList);
-            return ResponseData.operationSuccessWithData(resultMap);
-
+            if (responseData.getData() != null) {
+                List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
+                //设置固化执行人信息(只是前台展示使用)
+                nodeInfoList = flowSolidifyExecutorService.
+                        setNodeExecutorByBusinessId(nodeInfoList, businessId);
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("humanIntervention", false);
+                resultMap.put("nodeInfoList", nodeInfoList);
+                return ResponseData.operationSuccessWithData(resultMap);
+            }
         } catch (Exception e) {
             LogUtil.error("固化流程自动启动报错!", e);
             throw new FlowException("自动启动报错,详情请查看日志！");
         }
+        return ResponseData.operationSuccess();
     }
-
 
 
     /**
@@ -166,7 +169,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     }
 
 
-
     /**
      * 通过参数自动启动固化流程
      *
@@ -194,13 +196,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         startFlowVo.setBusinessModelCode(businessModelCode);
         startFlowVo.setFlowDefKey(flowDefKey);
         startFlowVo.setTypeId(typeId);
+        List<NodeInfo> nodeList;
         try {
             ResponseData oneResInfo = this.startFlow(startFlowVo);
             if (!oneResInfo.successful()) {
                 return oneResInfo;
             }
             FlowStartResultVO flowStartResultVO = (FlowStartResultVO) oneResInfo.getData();
-            List<NodeInfo> nodeList = flowStartResultVO.getNodeInfoList();
+            nodeList = flowStartResultVO.getNodeInfoList();
             List<Map<String, Object>> taskList = new ArrayList<>();
             nodeList.forEach(node -> {
                 Map<String, Object> map = new HashMap<>();
@@ -214,11 +217,15 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             });
             startFlowVo.setTaskList(JsonUtils.toJson(taskList));
             //真正启动
-            return this.startFlow(startFlowVo);
+            ResponseData responseData = this.startFlow(startFlowVo);
+            if (!responseData.successful()) {
+                return responseData;
+            }
         } catch (Exception e) {
             LogUtil.error("固化流程自动启动报错!", e);
             throw new FlowException("自动启动报错,详情请查看日志！");
         }
+        return ResponseData.operationSuccessWithData(nodeList);
     }
 
 
