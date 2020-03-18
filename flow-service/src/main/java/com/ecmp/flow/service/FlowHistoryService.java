@@ -208,7 +208,6 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         }
         List<FlowHistory> list = result.getRows();
         initFlowTaskAppModule(list);
-        result.setRows(list);
 
         if (result.getRows() != null && result.getRows().size() > 0) {
             result.getRows().forEach(a -> {
