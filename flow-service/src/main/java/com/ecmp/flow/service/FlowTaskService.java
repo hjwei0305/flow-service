@@ -1922,7 +1922,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         PageResult<FlowTask> pageResult = flowTaskDao.findByPageByTenant(appModuleId, businessModelId, flowTypeId, searchConfig);
         List<FlowTask> result = pageResult.getRows();
         initFlowTasks(result);
-        pageResult.setRows(result);
         return pageResult;
     }
 
@@ -1937,7 +1936,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         List<FlowTask> result = pageResult.getRows();
         initFlowTasks(result);
-        pageResult.setRows(result);
         return pageResult;
     }
 
@@ -1947,7 +1945,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         List<FlowTask> result = flowTaskPageResult.getRows();
         initFlowTasks(result);
-        flowTaskPageResult.setRows(result);
 
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
@@ -2070,8 +2067,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
             }
         });
-
-        flowTaskPageResult.setRows(flowTaskList);
 
         FlowTaskTool.changeTaskStatue(flowTaskPageResult);
         return flowTaskPageResult;
@@ -2255,7 +2250,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userIdList, searchConfig);
             List<FlowTask> result = pageResult.getRows();
             initFlowTasks(result);
-            pageResult.setRows(result);
         } else {
             pageResult = flowTaskDao.findByPageOfPower(userIdList, appSign, searchConfig);
         }

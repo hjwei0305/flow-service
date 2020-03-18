@@ -68,7 +68,6 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         PageResult<FlowHistory> pageResult  = flowHistoryDao.findByPageByBusinessModelId(userId, searchConfig);
         List<FlowHistory>  result = pageResult.getRows();
         initFlowTaskAppModule(result);
-        pageResult.setRows(result);
         return  pageResult;
     }
 
