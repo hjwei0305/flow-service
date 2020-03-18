@@ -1,5 +1,6 @@
 package com.ecmp.flow.dao.impl;
 
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
@@ -52,8 +53,9 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders = searchConfig.getSortOrders();
 
-        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
-        String hqlQuery = "select ft          from com.ecmp.flow.entity.FlowTask ft where  (ft.trustState !=1  or ft.trustState is null )";
+        String tenantCode = ContextUtil.getTenantCode();
+        String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.tenantCode = '" + tenantCode + "' and   (ft.trustState !=1  or ft.trustState is null )";
+        String hqlQuery = "select ft          from com.ecmp.flow.entity.FlowTask ft where ft.tenantCode = '" + tenantCode + "' and   (ft.trustState !=1  or ft.trustState is null )";
 
         if (StringUtils.isNotEmpty(flowTypeId) && !"".equals(flowTypeId)) {
             hqlCount += " and ft.flowDefinitionId in(select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in(select fType.id from com.ecmp.flow.entity.FlowType fType where fType.id  = '" + flowTypeId + "' ))";
@@ -337,8 +339,6 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
 //            }
 //        }
 //    }
-
-
 
 
     public PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig) {
