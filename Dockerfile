@@ -9,4 +9,4 @@ LABEL  maintainer="hua.feng@changhong.com"
 ADD build/war/flow-service.war /usr/local/tomcat/webapps
 
 # Start app
-ENTRYPOINT ["/usr/local/limit_memory.sh"]
+ENTRYPOINT ["sh","/usr/local/tomcat/bin/catalina.sh","run"]
