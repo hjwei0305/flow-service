@@ -21,8 +21,12 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
         bean.setBusinessId("300EA92B-64CA-11EA-B339-0242C0A84421");
         bean.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
         bean.setFlowDefinationId("98307F87-5150-11EA-BBE4-0242C0A84421");
-        ResponseData responseData = defaultFlowBaseService.solidifyCheckAndSetAndStart(bean);
-        System.out.println(JsonUtils.toJson(responseData));
+        try{
+            ResponseData responseData = defaultFlowBaseService.solidifyCheckAndSetAndStart(bean);
+            System.out.println(JsonUtils.toJson(responseData));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
