@@ -90,7 +90,7 @@ public interface IDefaultFlowBaseService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "固化检查设置并启动流程", notes = "固化检查设置执行人并启动（如果没有人工选择情况）")
-    ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo);
+    ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) throws Exception;
 
 
     /**

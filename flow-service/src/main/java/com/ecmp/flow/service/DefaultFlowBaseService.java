@@ -65,7 +65,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     @Override
-    public ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) {
+    public ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) throws Exception {
         String businessId = solidifyStartFlowVo.getBusinessId();
         if (StringUtils.isEmpty(businessId)) {
             return ResponseData.operationFailure("业务实体ID不能为空！");
@@ -86,42 +86,37 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (!flowDefVersion.getSolidifyFlow()) {
             return ResponseData.operationFailure("当前流程不是固化流程，默认启动失败！");
         }
-        try {
-            Map<String, SolidifyStartExecutorVo> map =
-                    this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
-            if (map.containsKey("humanIntervention")) {  //存在需要人为干涉的情况
-                Map<String, Object> resultMap = new HashMap<>();
-                resultMap.put("humanIntervention", true);
-                resultMap.put("nodeInfoList", null);
-                return ResponseData.operationSuccessWithData(resultMap);
-            }
+        Map<String, SolidifyStartExecutorVo> map =
+                this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
+        if (map.containsKey("humanIntervention")) {  //存在需要人为干涉的情况
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("humanIntervention", true);
+            resultMap.put("nodeInfoList", null);
+            return ResponseData.operationSuccessWithData(resultMap);
+        }
 
-            if (MapUtils.isNotEmpty(map)) {
-                //如果不需要人工干涉，保存系统默认选择的固化执行人信息
-                ResponseData responseData = this.saveAutoSolidifyExecutorInfo(map, businessModelCode, businessId);
-                if (!responseData.successful()) {
-                    return ResponseData.operationFailure("自动保存固化执行人失败！");
-                }
-            }
-
-            //自动启动固化流程（返回第一个节点执行信息）
-            ResponseData responseData = this.autoStartSolidifyFlow(businessId, businessModelCode, flowDefination.getFlowType().getId(), flowDefination.getDefKey());
+        if (MapUtils.isNotEmpty(map)) {
+            //如果不需要人工干涉，保存系统默认选择的固化执行人信息
+            ResponseData responseData = this.saveAutoSolidifyExecutorInfo(map, businessModelCode, businessId);
             if (!responseData.successful()) {
-                return responseData;
+                return ResponseData.operationFailure("自动保存固化执行人失败！");
             }
-            if (responseData.getData() != null) {
-                List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
-                //设置固化执行人信息(只是前台展示使用)
-                nodeInfoList = flowSolidifyExecutorService.
-                        setNodeExecutorByBusinessId(nodeInfoList, businessId);
-                Map<String, Object> resultMap = new HashMap<>();
-                resultMap.put("humanIntervention", false);
-                resultMap.put("nodeInfoList", nodeInfoList);
-                return ResponseData.operationSuccessWithData(resultMap);
-            }
-        } catch (Exception e) {
-            LogUtil.error("固化流程自动启动报错!", e);
-            throw new FlowException("自动启动报错,详情请查看日志！");
+        }
+
+        //自动启动固化流程（返回第一个节点执行信息）
+        ResponseData responseData = this.autoStartSolidifyFlow(businessId, businessModelCode, flowDefination.getFlowType().getId(), flowDefination.getDefKey());
+        if (!responseData.successful()) {
+            return responseData;
+        }
+        if (responseData.getData() != null) {
+            List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
+            //设置固化执行人信息(只是前台展示使用)
+            nodeInfoList = flowSolidifyExecutorService.
+                    setNodeExecutorByBusinessId(nodeInfoList, businessId);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("humanIntervention", false);
+            resultMap.put("nodeInfoList", nodeInfoList);
+            return ResponseData.operationSuccessWithData(resultMap);
         }
         return ResponseData.operationSuccess();
     }
@@ -178,7 +173,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
      * @param flowDefKey
      * @return
      */
-    public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) {
+    public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) throws Exception {
         if (StringUtils.isEmpty(businessId)) {
             return ResponseData.operationFailure("业务实体ID不能为空！");
         }
@@ -197,33 +192,28 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         startFlowVo.setFlowDefKey(flowDefKey);
         startFlowVo.setTypeId(typeId);
         List<NodeInfo> nodeList;
-        try {
-            ResponseData oneResInfo = this.startFlow(startFlowVo);
-            if (!oneResInfo.successful()) {
-                return oneResInfo;
-            }
-            FlowStartResultVO flowStartResultVO = (FlowStartResultVO) oneResInfo.getData();
-            nodeList = flowStartResultVO.getNodeInfoList();
-            List<Map<String, Object>> taskList = new ArrayList<>();
-            nodeList.forEach(node -> {
-                Map<String, Object> map = new HashMap<>();
-                map.put("nodeId", node.getId());
-                map.put("userVarName", node.getUserVarName());
-                map.put("flowTaskType", node.getFlowTaskType());
-                map.put("instancyStatus", false);
-                map.put("userIds", "");
-                map.put("solidifyFlow", true);
-                taskList.add(map);
-            });
-            startFlowVo.setTaskList(JsonUtils.toJson(taskList));
-            //真正启动
-            ResponseData responseData = this.startFlow(startFlowVo);
-            if (!responseData.successful()) {
-                return responseData;
-            }
-        } catch (Exception e) {
-            LogUtil.error("固化流程自动启动报错!", e);
-            throw new FlowException("自动启动报错,详情请查看日志！");
+        ResponseData oneResInfo = this.startFlow(startFlowVo);
+        if (!oneResInfo.successful()) {
+            return oneResInfo;
+        }
+        FlowStartResultVO flowStartResultVO = (FlowStartResultVO) oneResInfo.getData();
+        nodeList = flowStartResultVO.getNodeInfoList();
+        List<Map<String, Object>> taskList = new ArrayList<>();
+        nodeList.forEach(node -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("nodeId", node.getId());
+            map.put("userVarName", node.getUserVarName());
+            map.put("flowTaskType", node.getFlowTaskType());
+            map.put("instancyStatus", false);
+            map.put("userIds", "");
+            map.put("solidifyFlow", true);
+            taskList.add(map);
+        });
+        startFlowVo.setTaskList(JsonUtils.toJson(taskList));
+        //真正启动
+        ResponseData responseData = this.startFlow(startFlowVo);
+        if (!responseData.successful()) {
+            return responseData;
         }
         return ResponseData.operationSuccessWithData(nodeList);
     }
