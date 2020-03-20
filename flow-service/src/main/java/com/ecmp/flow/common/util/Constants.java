@@ -1,7 +1,14 @@
 package com.ecmp.flow.common.util;
 
+import com.ecmp.context.BaseApplicationContext;
 import com.ecmp.log.util.LogUtil;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -21,11 +28,20 @@ import org.apache.commons.lang.StringUtils;
  * *************************************************************************************************
  * </p>
  */
+@Component
 public class Constants extends ConfigurableContants {
 
     // 静态初始化读入framework.properties中的设置
     static {
         init("framework.properties");
+    }
+
+    public static String getBaseApi(){
+        return BaseApplicationContext.getProperty("BASE_API");
+    }
+
+    public static String getBaseWeb(){
+        return BaseApplicationContext.getProperty("BASE_WEB");
     }
 
     /**
@@ -59,7 +75,8 @@ public class Constants extends ConfigurableContants {
             LogUtil.error("获取API基地址参数[" + key + "]失败！");
             throw new FlowException("获取API基地址参数[" + key + "]失败！");
         }
-        return getProperty("BASE_API") + value;
+//        return getProperty("BASE_API") + value;
+        return getBaseApi() + value;
     }
 
     /**
@@ -76,12 +93,14 @@ public class Constants extends ConfigurableContants {
             LogUtil.error("获取WEB基地址参数[" + key + "]失败！");
             throw new FlowException("获取WEB基地址参数[" + key + "]失败！");
         }
-        return getProperty("BASE_WEB") + value;
+//        return getProperty("BASE_WEB") + value;
+        return getBaseWeb() +  value;
     }
 
 
     public static String getBasicServiceUrl() {
-        String BASIC_SERVICE_URL = getProperty("BASE_API") + getProperty("BASIC_API");
+//        String BASIC_SERVICE_URL = getProperty("BASE_API") + getProperty("BASIC_API");
+        String BASIC_SERVICE_URL = getBaseApi() + getProperty("BASIC_API");
         return BASIC_SERVICE_URL;
     }
 
