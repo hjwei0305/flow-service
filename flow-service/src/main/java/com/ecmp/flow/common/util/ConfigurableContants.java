@@ -53,10 +53,6 @@ public class ConfigurableContants {
 				logger.debug("load " + propertyFileName + " into Contants!");
 				p.load(in);
 			}
-			//外部配置文件存放系统基地址
-			String filePath = "/usr/local/tomcat/webapps/flow-service.properties";
-			InputStream inputStream = new FileInputStream(filePath);
-			p.load(inputStream);
 		} catch (IOException e) {
 			logger.error("load " + propertyFileName + " into Contants error!",e);
 		} finally {
