@@ -3,6 +3,7 @@ package com.ecmp.flow.common.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -52,6 +53,10 @@ public class ConfigurableContants {
 				logger.debug("load " + propertyFileName + " into Contants!");
 				p.load(in);
 			}
+			//外部配置文件存放系统基地址
+			String filePath = "/usr/local/tomcat/webapps/flow-service.properties";
+			InputStream inputStream = new FileInputStream(filePath);
+			p.load(inputStream);
 		} catch (IOException e) {
 			logger.error("load " + propertyFileName + " into Contants error!",e);
 		} finally {
