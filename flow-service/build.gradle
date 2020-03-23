@@ -64,6 +64,21 @@ dependencies {
     )
 }
 
+
+bootJar  {
+    enabled = true
+    archiveName = 'flow-service.jar'
+    mainClassName = 'com.ecmp.FlowApplication'
+    manifest {
+        attributes("Manifest-Version": "6.0")
+        attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
+        attributes("Implementation-Title": "$project.name")
+        attributes("Implementation-Version": "$project.version")
+        attributes("Implementation-Vendor": "rcsit.cn")
+        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
+    }
+}
+
 jar {
     exclude('com/ecmp/FlowApplication.*')
     manifest {
