@@ -6,16 +6,16 @@ ext {
 
 }
 
-apply plugin: 'war'
+//apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-war {
-    enabled = true
-    //包名称
-    archiveName "${baseName}.${extension}"
-    //包存放路径
-    destinationDir = file("${rootProject.projectDir}/build/war")
-}
+//war {
+//    enabled = true
+//    //包名称
+//    archiveName "${baseName}.${extension}"
+//    //包存放路径
+//    destinationDir = file("${rootProject.projectDir}/build/war")
+//}
 
 // 依赖
 dependencies {
@@ -25,6 +25,7 @@ dependencies {
     compile project(':flow-service-client')
     compile(
             "org.springframework.boot:spring-boot-starter-web",
+            "org.springframework.boot:spring-boot-starter-actuator",
             "com.ecmp:cxf-service-ecmp-spring-boot-starter:$ecmp_version",
 
 
@@ -64,6 +65,7 @@ dependencies {
 }
 
 jar {
+    exclude('com/ecmp/FlowApplication.*')
     manifest {
         attributes("Manifest-Version": "$project.version")
         attributes("Extension-Name": "ECMP-$project.name")
@@ -94,5 +96,15 @@ install {
 
 //跳过上传任务
 uploadArchives {
-    enabled = false
+    repositories {
+        mavenDeployer {
+            repository(url: MAVEN_REPO_URL) {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
+            pom.version = "$project.version"
+            pom.artifactId = "$project.name"
+            pom.groupId = "$project.group"
+        }
+    }
+    return 'Success'
 }
