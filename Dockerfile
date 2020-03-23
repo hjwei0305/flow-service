@@ -1,15 +1,24 @@
 # Docker for java flow-service
-# Base image
-FROM tomcat8-jre8-zh-lm:v1.0.3
 
-# Maintainer
-LABEL  maintainer="hua.feng@changhong.com"
+# 基础镜像
+FROM java:8-jdk-alpine
 
-# Add app
-ADD build/war/flow-service.war /usr/local/tomcat/webapps
+# 作者
+LABEL maintainer="hua.feng@changhong.com"
 
-# USER
-USER root
+# 环境变量
+## JAVA_OPTS：JAVA启动参数
+## APP_NAME：应用名称（各项目需要修改）
+ENV JAVA_OPTS=""  APP_NAME="flow-service"
 
-# Start app
-CMD /usr/local/tomcat/bin/catalina.sh run
+# 设置时区
+RUN rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+# 添加应用
+ADD build/libs/$APP_NAME.jar $APP_NAME.jar
+
+# 开放8080端口
+EXPOSE 8080
+
+# 启动应用
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar $APP_NAME.jar --server.servlet.context-path=/$APP_NAME"]
