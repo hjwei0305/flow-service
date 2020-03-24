@@ -15,7 +15,7 @@ ENV JAVA_OPTS=""  APP_NAME="flow-service"
 RUN rm -rf /etc/localtime && ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 # 添加应用
-ADD build/libs/$APP_NAME.jar $APP_NAME.jar
+ADD $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
 
 # 开放8080端口
 EXPOSE 8080
