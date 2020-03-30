@@ -539,6 +539,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 throw new FlowException("流程已经在启动中，请不要重复提交！");
             }
 
+            if (checkFlowInstanceActivate(businessKey)) {
+                throw new FlowException("该单据已经启动，请不要重复启动！");
+            }
+
             variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
             if (startUserId == null) {
                 startUserId = ContextUtil.getUserId();
