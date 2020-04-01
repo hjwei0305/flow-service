@@ -70,12 +70,12 @@ public class Constants extends ConfigurableContants {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-        String value = getProperty(key);
+//        String value = getProperty(key);
+        String value = BaseApplicationContext.getProperty(key);
         if (value == null) {
             LogUtil.error("获取API基地址参数[" + key + "]失败！");
             throw new FlowException("获取API基地址参数[" + key + "]失败！");
         }
-//        return getProperty("BASE_API") + value;
         return getBaseApi() + value;
     }
 
@@ -88,18 +88,17 @@ public class Constants extends ConfigurableContants {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-        String value = getProperty(key);
+//        String value = getProperty(key);
+        String value = BaseApplicationContext.getProperty(key);
         if (value == null) {
             LogUtil.error("获取WEB基地址参数[" + key + "]失败！");
             throw new FlowException("获取WEB基地址参数[" + key + "]失败！");
         }
-//        return getProperty("BASE_WEB") + value;
         return getBaseWeb() +  value;
     }
 
 
     public static String getBasicServiceUrl() {
-//        String BASIC_SERVICE_URL = getProperty("BASE_API") + getProperty("BASIC_API");
         String BASIC_SERVICE_URL = getBaseApi() + getProperty("BASIC_API");
         return BASIC_SERVICE_URL;
     }
