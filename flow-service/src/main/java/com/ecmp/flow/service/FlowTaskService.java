@@ -3615,12 +3615,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
 //                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
 //            }
-            String apiAddress = Constants.getConfigKeyValueProperties(apiBaseAddressConfig);
+            String apiAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             flowTask.setApiBaseAddress(apiAddress);
         }
         String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
         String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
-        String webAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+        String webAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
 
         if (StringUtils.isNotEmpty(webBaseAddress)) {
             flowTask.setWebBaseAddressAbsolute(webBaseAddress);
@@ -3663,7 +3663,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 //                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
 //                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
 //                    }
-                    webAddress = Constants.getConfigKeyValueProperties(webBaseAddressConfig);
+                    webAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
                     flowTask.setWebBaseAddress(webAddress);
                 }
                 taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
