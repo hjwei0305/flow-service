@@ -44,6 +44,9 @@ public class Constants extends ConfigurableContants {
         return BaseApplicationContext.getProperty("BASE_WEB");
     }
 
+    public static String getAuthBaseApi(){return BaseApplicationContext.getProperty("SEI_AUTH_API");}
+
+
     /**
      * 获取键值对配置参数
      *

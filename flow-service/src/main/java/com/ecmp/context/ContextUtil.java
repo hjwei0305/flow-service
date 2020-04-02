@@ -3,6 +3,7 @@ package com.ecmp.context;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.enums.UserType;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.util.EnumUtils;
 import com.ecmp.util.IdGenerator;
 import com.ecmp.util.JwtTokenUtil;
@@ -335,11 +336,20 @@ public class ContextUtil extends BaseContextSupport {
 
         SessionUser sessionUser = new SessionUser();
         //模拟本地用户登录，采用正常的模式，不根据isConfigFile判断
+        String url = Constants.getAuthBaseApi()+"/sei-auth/auth/getAnonymousToken";
+        ResponseData res = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData>() {
+        }, null);
+        String token = "";
+        if(res.successful()){
+            token = (String)res.getData();
+        }
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tenant", StringUtils.isNotBlank(tenant) ? tenant : "");
         params.put("account", account);
-        String path = "http://10.4.208.86:20002/sei-auth/account/getByTenantAccount";
-        sessionUser.setAccessToken("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2NTQzMjEiLCJpcCI6IlVua25vd24iLCJ1c2VyTmFtZSI6Iuezu-e7n-euoeeQhuWRmCIsImxvY2FsZSI6InpoX0NOIiwidXNlcklkIjoiMTU5MkQwMTItQTMzMC0xMUU3LUE5NjctMDI0MjBCOTkxNzlFIiwicmFuZG9tS2V5IjoiQzk2QUNDMEM2RDcyMTFFQTkyOEE5ODNCOEY4MDVCQUIiLCJhdXRob3JpdHlQb2xpY3kiOiJUZW5hbnRBZG1pbiIsImxvZ2luVGltZSI6MTU4NTAxNTk4ODQ3OSwibG9nb3V0VXJsIjpudWxsLCJhcHBJZCI6IjIyNjlGNjM0LTA4Q0UtNjFGNy05MUFBLTY5OEIwNUYzNkM5NSIsInVzZXJUeXBlIjoiRW1wbG95ZWUiLCJleHAiOjE1ODUwNDUwODgsImlhdCI6MTU4NTAxNTk4OCwidGVuYW50IjoiMTAwNDQiLCJhY2NvdW50IjoiNjU0MzIxIiwiZW1haWwiOm51bGx9._PNbqWg32-hx5D8fgylG7npmbUCVSHXK9bjCJI9H5iu_-7bq0jdW7GSEDYzmCKWbRiI5Ks5Gf274S8uH87iQtA");
+        String path = Constants.getAuthBaseApi()+"/sei-auth/account/getByTenantAccount";
+
+        sessionUser.setAccessToken(token);
         ContextUtil.setSessionUser(sessionUser);
         ResponseData<Map<String, Object>> responseData = ApiClient.getEntityViaProxy(path, new GenericType<ResponseData<Map<String, Object>>>() {
         }, params);
