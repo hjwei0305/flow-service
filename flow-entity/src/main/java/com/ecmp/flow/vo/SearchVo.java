@@ -1,5 +1,8 @@
 package com.ecmp.flow.vo;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class SearchVo implements Serializable {
@@ -62,6 +65,7 @@ public class SearchVo implements Serializable {
         this.sord = sord;
     }
 
+    @JsonProperty("Quick_value")
     public String getQuick_value() {
         return Quick_value;
     }
