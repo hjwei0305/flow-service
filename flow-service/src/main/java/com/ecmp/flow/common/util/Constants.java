@@ -99,7 +99,7 @@ public class Constants extends ConfigurableContants {
 
 
     public static String getBasicServiceUrl() {
-        String BASIC_SERVICE_URL = getBaseApi() + getProperty("BASIC_API");
+        String BASIC_SERVICE_URL = getBaseApi() + BaseApplicationContext.getProperty("BASIC_API");
         return BASIC_SERVICE_URL;
     }
 
