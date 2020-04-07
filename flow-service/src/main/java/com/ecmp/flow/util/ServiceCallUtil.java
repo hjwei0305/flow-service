@@ -131,7 +131,12 @@ public class ServiceCallUtil {
                         result = new FlowOperateResult(true, res.getMessage());
                         //FlowOperateResult可以直接返回执行人（工作池任务）
                         if(res.getData()!=null && StringUtils.isNotEmpty(res.getData().toString())){
-                            result.setUserId(res.getData().toString());
+                           try{
+                               Map<String,Object>  map = (Map<String,Object>)res.getData();
+                               String userIds =   map.get("userIds").toString();
+                               result.setUserId(userIds);
+                           }catch (Exception e){
+                           }
                         }
                     } else {
                         LogUtil.error(msg + "调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
