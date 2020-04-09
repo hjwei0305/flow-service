@@ -263,6 +263,13 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     private String apiBaseAddressAbsolute;
 
 
+    /**
+     * 待办执行人（中泰）
+     */
+    @Transient
+    private String taskExecutors;
+
+
     public FlowHistory() {
     }
 
@@ -292,6 +299,13 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
         this.depict = depict;
     }
 
+    public String getTaskExecutors() {
+        return taskExecutors;
+    }
+
+    public void setTaskExecutors(String taskExecutors) {
+        this.taskExecutors = taskExecutors;
+    }
 
     public String getFlowExecuteStatus() {
         return flowExecuteStatus;

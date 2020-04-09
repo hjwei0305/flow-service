@@ -39,6 +39,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     /**
      * 保存一个实体
+     *
      * @param flowHistory 实体
      * @return 保存后的实体
      */
@@ -46,7 +47,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Path("save")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    @ApiOperation(value = "保存实体", notes = "测试 保存实体")
     OperateResultWithData<FlowHistory> save(FlowHistory flowHistory);
 
     /**
@@ -63,6 +64,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     /**
      * 根据流程实例ID查询流程历史
+     *
      * @param instanceId 实例id
      * @return 执行历史
      */
@@ -100,47 +102,65 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     /**
      * 获取已办信息
+     *
      * @param businessModelId 业务实体id
-     * @param searchConfig 查询条件
+     * @param searchConfig    查询条件
      * @return 已办汇总信息
      */
     @POST
     @Path("listFlowHistory")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "已办汇总信息",notes = "已办汇总信息")
+    @ApiOperation(value = "已办汇总信息", notes = "已办汇总信息")
     ResponseData listFlowHistory(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
+
+    /**
+     * 获取已办信息(关联待办执行人)
+     *
+     * @param businessModelId 业务实体id
+     * @param searchConfig    查询条件
+     * @return 已办汇总信息
+     */
+    @POST
+    @Path("listFlowHistoryAndExecutor")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "已办汇总信息（关联当前执行人）", notes = "已办汇总信息（关联当前执行人）")
+    ResponseData listFlowHistoryAndExecutor(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
 
     /**
      * 获取待办汇总信息
+     *
      * @param businessModelId 业务实体id
-     * @param searchConfig 查询条件
+     * @param searchConfig    查询条件
      * @return 待办汇总信息
      */
     @POST
     @Path("findByBusinessModelId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取待办汇总信息",notes = "测试")
+    @ApiOperation(value = "获取待办汇总信息", notes = "测试")
     public PageResult<FlowHistory> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
-
 
 
     /**
      * 获取已办汇总信息（最新移动端专用）
+     *
      * @param businessModelId 业务实体id
-     * @param property 需要排序的字段
-     * @param direction 排序规则
-     * @param page 当前页数
-     * @param rows 每页条数
-     * @param quickValue 模糊查询字段内容
+     * @param property        需要排序的字段
+     * @param direction       排序规则
+     * @param page            当前页数
+     * @param rows            每页条数
+     * @param quickValue      模糊查询字段内容
      * @return 待办汇总信息
      */
     @POST
     @Path("findByBusinessModelIdOfMobile")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取已办汇总信息（最新移动端专用）",notes = "获取已办汇总信息（最新移动端专用）")
+    @ApiOperation(value = "获取已办汇总信息（最新移动端专用）", notes = "获取已办汇总信息（最新移动端专用）")
     PageResult<FlowHistoryPhoneVo> findByBusinessModelIdOfMobile(
             @QueryParam("businessModelId") String businessModelId,
             @QueryParam("property") String property,
@@ -150,22 +170,22 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
             @QueryParam("quickValue") String quickValue);
 
 
-
     /**
      * 获取已办汇总信息（移动端专用）
+     *
      * @param businessModelId 业务实体id
-     * @param property 需要排序的字段
-     * @param direction 排序规则
-     * @param page 当前页数
-     * @param rows 每页条数
-     * @param quickValue 模糊查询字段内容
+     * @param property        需要排序的字段
+     * @param direction       排序规则
+     * @param page            当前页数
+     * @param rows            每页条数
+     * @param quickValue      模糊查询字段内容
      * @return 待办汇总信息
      */
     @POST
     @Path("findByBusinessModelIdOfPhone")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取已办汇总信息（移动端专用）",notes = "获取已办汇总信息（移动端专用）")
+    @ApiOperation(value = "获取已办汇总信息（移动端专用）", notes = "获取已办汇总信息（移动端专用）")
     PageResult<FlowHistory> findByBusinessModelIdOfPhone(
             @QueryParam("businessModelId") String businessModelId,
             @QueryParam("property") String property,
@@ -173,8 +193,6 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
             @QueryParam("page") int page,
             @QueryParam("rows") int rows,
             @QueryParam("quickValue") String quickValue);
-
-
 
 
 }
