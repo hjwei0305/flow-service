@@ -88,7 +88,7 @@ public class ExpressionUtil {
     public  static Map<String,String>  getPropertiesRemark(BusinessModel businessModel){
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiBaseUrl =  Constants.getConfigValueByApi(apiBaseAddressConfig);
         String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties() + "Remark";
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
