@@ -1,6 +1,7 @@
 package com.ecmp.flow.util;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.AppModule;
@@ -77,6 +78,43 @@ public class ExpressionUtil {
         }
         return map;
     }
+
+
+    /**
+     * 获取条件属性的备注说明
+     * @param businessModel 业务模型
+     * @return
+     */
+    public  static Map<String,String>  getPropertiesRemark(BusinessModel businessModel){
+        String businessModelCode = businessModel.getClassName();
+        String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
+        String clientApiBaseUrl =  ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties() + "Remark";
+        Map<String,Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
+        String messageLog = "开始调用【获取条件属性的备注说明】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
+        ResponseData<Map<String,String>> result;
+        Map<String,String> map;
+        try {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String,String>>>() {}, params);
+            if (result.successful()) {
+                map = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                return  null;
+            }
+            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
+            LogUtil.bizLog(messageLog);
+        }catch (Exception e){
+            messageLog+="-调用异常："+e.getMessage();
+            LogUtil.error(messageLog);
+            return  null;
+        }
+        return map;
+    }
+
+
 
 
     /**

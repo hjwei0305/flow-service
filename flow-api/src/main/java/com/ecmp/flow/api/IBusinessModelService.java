@@ -85,7 +85,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取业务实体数据", notes = "测试 获取业务实体数据")
-    public BusinessModel findByClassName(@QueryParam("classNmae") String classNmae);
+    BusinessModel findByClassName(@QueryParam("classNmae") String classNmae);
 
     /**
      * 获取当前用户权限范围所有
@@ -97,7 +97,7 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过当前用户筛选有权限的数据", notes = "通过当前用户筛选有权限的数据")
-    public List<BusinessModel> findAllByAuth();
+    List<BusinessModel> findAllByAuth();
 
 
     /**
@@ -112,7 +112,22 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "查询条件属性说明", notes = "查询条件属性说明")
-    ResponseData getProperties(@QueryParam("businessModelCode") String businessModelCode)throws ClassNotFoundException;
+    ResponseData getProperties(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+
+
+    /**
+     * 获取条件属性的备注说明（新增，方便条件表达式中查看属性类型和枚举值描述）
+     *
+     * @param businessModelCode 业务实体代码
+     * @return 实体对象
+     * @throws ClassNotFoundException
+     */
+    @POST
+    @Path("getPropertiesRemark")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取条件属性的备注说明", notes = "获取条件属性的备注说明")
+    ResponseData getPropertiesRemark(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 
     /**
@@ -130,30 +145,26 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
     List<ConditionVo> getPropertiesForConditionPojo(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 
-
-
     /**
      * 通过任务ID获取表单明细（移动端专用）
-     *
      */
     @POST
     @Path("getPropertiesByTaskIdOfModile")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务ID获取表单明细（移动端专用）", notes = "通过任务ID获取表单明细（移动端专用）")
-    ResponseData getPropertiesByTaskIdOfModile(@QueryParam("taskId")String taskId,@QueryParam("typeId")String typeId, @QueryParam("id") String id);
+    ResponseData getPropertiesByTaskIdOfModile(@QueryParam("taskId") String taskId, @QueryParam("typeId") String typeId, @QueryParam("id") String id);
 
 
     /**
      * 通过流程实例ID获取表单明细（长城移动端专用）
-     *
      */
     @POST
     @Path("getPropertiesByInstanceIdOfModile")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过实例ID获取表单明细（长城移动端专用）", notes = "通过实例ID获取表单明细（长城移动端专用）")
-    ResponseData getPropertiesByInstanceIdOfModile(@QueryParam("instanceId")String instanceId,@QueryParam("typeId")String typeId, @QueryParam("id") String id);
+    ResponseData getPropertiesByInstanceIdOfModile(@QueryParam("instanceId") String instanceId, @QueryParam("typeId") String typeId, @QueryParam("id") String id);
 
 
 }

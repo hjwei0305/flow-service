@@ -292,6 +292,26 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
     @Override
+    public ResponseData getPropertiesRemark(String businessModelCode) throws ClassNotFoundException {
+        ResponseData responseData = new ResponseData();
+        BusinessModel businessModel = this.findByClassName(businessModelCode);
+        if (businessModel != null) {
+            Map<String, String> result = ExpressionUtil.getPropertiesRemark(businessModel);
+            if (result != null) {
+                responseData.setData(result);
+            } else {
+                responseData.setSuccess(false);
+                responseData.setMessage("调用【获取条件属性的备注说明】接口异常，请查看日志！");
+            }
+        } else {
+            responseData.setSuccess(false);
+            responseData.setMessage("获取业务实体失败！");
+        }
+        return responseData;
+    }
+
+
+    @Override
     public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException {
         ResponseData responseData = this.getProperties(businessModelCode);
         List<ConditionVo> list = new ArrayList<ConditionVo>();

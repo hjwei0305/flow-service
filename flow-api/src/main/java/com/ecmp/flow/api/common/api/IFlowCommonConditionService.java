@@ -32,4 +32,18 @@ import java.util.Map;
 @Path("condition")
 @Api(value = "IFlowCommonConditionService 条件通用服务API接口")
 public interface IFlowCommonConditionService extends ICommonConditionService {
+
+    /**
+     * 获取条件属性的备注说明
+     *
+     * @param businessModelCode 业务实体代码
+     * @throws ClassNotFoundException 类找不到异常
+     */
+    @GET
+    @Path("propertiesRemark")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取条件属性的备注说明", notes = "获取条件属性的备注说明")
+    Map<String, String> propertiesRemark(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+
 }
