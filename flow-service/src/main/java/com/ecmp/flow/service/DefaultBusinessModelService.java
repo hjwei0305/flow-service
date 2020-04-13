@@ -88,12 +88,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
 
     @Override
-    public Map<String, String> propertiesRemark(String businessModelCode) throws ClassNotFoundException {
+    public ResponseData propertiesRemark(String businessModelCode) throws ClassNotFoundException {
         Map<String, String> map = new HashMap<>();
         map.put("count", "【数字】，表示订单中购买的数量");
         map.put("unitPrice", "【数字】，表示订单中单个物体的价格");
         map.put("customeInt", "【数字】，1：表示普通订单，2：表示未检测的特殊订单，3：表示检验合格的特殊订单...");
-        return map;
+        return ResponseData.operationSuccessWithData(map);
     }
 
 

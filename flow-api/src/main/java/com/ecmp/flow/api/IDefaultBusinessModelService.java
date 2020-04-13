@@ -70,7 +70,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件属性的备注说明", notes = "获取条件属性的备注说明")
-    Map<String, String> propertiesRemark(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+    ResponseData propertiesRemark(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
 
 
     /**
