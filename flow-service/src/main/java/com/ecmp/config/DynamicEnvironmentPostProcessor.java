@@ -40,8 +40,8 @@ public class DynamicEnvironmentPostProcessor implements EnvironmentPostProcessor
         String filePath  = System.getProperty("catalina.base")+"/webapps/flow-service.properties";
         File configFile = new File(filePath);
         if(!configFile.exists()){
-            filePath = "/usr/local/tomcat/webapps/flow-service.properties";
-//            filePath = "D:\\TempWork\\ecmp\\config-center-service\\application.properties";
+            filePath = "/usr/app/flow-service.properties";
+//            filePath = "D:\\usr\\app\\application.properties";
         }
         try (InputStream inputStream = new FileInputStream(filePath)) {
             Properties source = new Properties();
