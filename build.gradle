@@ -7,10 +7,12 @@ allprojects {
             mavenLocal()
             maven { url REPOSITORY }
 //            mavenCentral()
+            maven { url "https://plugins.gradle.org/m2/" }
         }
 
         dependencies {
             classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+            classpath("gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:2.1.0")
         }
     }
 
