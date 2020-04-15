@@ -54,7 +54,6 @@ public class ConditionUtil {
         } catch (Exception e) {
             result = null;
             LogUtil.error("验证表达式失败！表达式：【"+condition+"】,带入参数：【"+ JsonUtils.toJson(map)+"】",e);
-            e.printStackTrace();
         }
 
         return result;

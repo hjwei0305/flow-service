@@ -3,9 +3,9 @@ package com.ecmp.flow.activiti.ext;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.util.ConditionUtil;
-import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowException;
+import com.ecmp.util.JsonUtils;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.impl.Condition;
 import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
@@ -46,7 +46,10 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
                 if(conditionText != null && conditionText.startsWith("#{")){
                     String conditionFinal = conditionText.substring(conditionText.indexOf("#{")+2, conditionText.lastIndexOf("}"));
                     Map<String, Object> map = execution.getVariables();
-                    if(ConditionUtil.groovyTest(conditionFinal, map)){
+                    Boolean boo = ConditionUtil.groovyTest(conditionFinal, map);
+                    if(boo == null){
+                        throw  new FlowException("验证表达式失败！表达式：【"+conditionFinal+"】,带入参数：【"+ JsonUtils.toJson(map)+"】");
+                    }else if(boo){
                         execution.take(pv);
                         return;
                     }

@@ -427,7 +427,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, businessModelMap)) {
+                            Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessModelMap);
+                            if(boo == null){
+                               throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessModelMap)+"】");
+                            }else if(boo){
                                 if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
                                     finalFlowDefination = flowDefination;
                                     break;
@@ -1009,7 +1012,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, businessV)) {
+                            Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessV);
+                            if(boo == null){
+                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessV)+"】");
+                            }else if(boo){
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
@@ -1104,7 +1110,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, businessV)) {
+                            Boolean boo  =  ConditionUtil.groovyTest(conditonFinal, businessV);
+                            if(boo == null){
+                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessV)+"】");
+                            }else if(boo){
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {

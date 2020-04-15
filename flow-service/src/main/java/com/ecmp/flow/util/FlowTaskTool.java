@@ -20,6 +20,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.StartEvent;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import net.sf.json.JSONArray;
@@ -804,7 +805,10 @@ public class FlowTaskTool {
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                            Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
+                            if(boo == null){
+                               throw new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(v)+"】");
+                            }else if(boo){
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                                 break;
                             }
@@ -824,7 +828,10 @@ public class FlowTaskTool {
                         if (conditionText.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
-                            if (ConditionUtil.groovyTest(conditonFinal, v)) {
+                            Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
+                            if(boo == null){
+                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(v)+"】");
+                            }else if(boo){
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                             }
                         } else {//其他的用UEL表达式验证
