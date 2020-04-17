@@ -20,7 +20,12 @@ dependencies {
     /* 强制指定版本策略设置*/
 //    compile group:'org.hibernate.javax.persistence',name:'hibernate-jpa-2.1-api',version:'1.0.0.Final',force:true
     compile(
-            "com.ecmp:core-entity:$ecmp_version",
+//            "com.ecmp:core-entity:$ecmp_version",
+            "com.ecmp:ecmp-util:1.0.39.11",
+            "org.springframework.data:spring-data-jpa:2.0.10.RELEASE",
+            "org.hibernate:hibernate-core:5.2.17.Final",
+
+
             "net.sf.json-lib:json-lib:$jsonlib_version:jdk15",
             "mysql:mysql-connector-java:$mysql_version"
 //            "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final"
