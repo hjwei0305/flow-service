@@ -1,7 +1,6 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.flow.api.common.api.IFlowCommonConditionService;
-import com.ecmp.flow.service.client.CommonConditionService;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

@@ -25,7 +25,7 @@ dependencies {
     compile project(':flow-entity')
     compile project(':flow-dao')
     compile project(':flow-api')
-    compile project(':flow-service-client')
+//    compile project(':flow-service-client')
     compile(
             "org.springframework.boot:spring-boot-starter-web",
             "org.springframework.boot:spring-boot-starter-actuator",

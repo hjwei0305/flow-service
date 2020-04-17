@@ -1,13 +1,9 @@
 package com.ecmp.flow.common.util;
 
 import com.ecmp.context.BaseApplicationContext;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.log.util.LogUtil;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 
