@@ -528,19 +528,20 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private FlowInstance startByTypeCode(String flowDefKey, FlowStartVO flowStartVO, FlowStartResultVO flowStartResultVO, Map<String, Object> variables) throws NoSuchMethodException, RuntimeException {
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
-        try {
 
-            String obj = redisTemplate.execute(new SessionCallback<String>() {
-                @Nullable
-                @Override
-                public String execute(RedisOperations operations) throws DataAccessException {
-                    return (String) operations.opsForValue().getAndSet("flowStart_" + businessKey, businessKey);
-                }
-            });
-
-            if (obj != null) {
-                throw new FlowException("流程已经在启动中，请不要重复提交！");
+        String obj = redisTemplate.execute(new SessionCallback<String>() {
+            @Nullable
+            @Override
+            public String execute(RedisOperations operations) throws DataAccessException {
+                return (String) operations.opsForValue().getAndSet("flowStart_" + businessKey, businessKey);
             }
+        });
+
+        if (obj != null) {
+            throw new FlowException("流程已经在启动中，请不要重复提交！");
+        }
+
+        try {
 
             if (checkFlowInstanceActivate(businessKey)) {
                 throw new FlowException("该单据已经启动，请不要重复启动！");
