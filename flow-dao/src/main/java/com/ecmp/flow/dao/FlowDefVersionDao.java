@@ -14,35 +14,36 @@ import java.util.List;
 @Repository
 public interface FlowDefVersionDao extends BaseEntityDao<FlowDefVersion> {
 
-//    @Cacheable(cacheNames="findByDefIdAndVersionCode")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    //    @Cacheable(cacheNames="findByDefIdAndVersionCode")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.versionCode = :versionCode")
-    public FlowDefVersion findByDefIdAndVersionCode(@Param("defId") String defId, @Param("versionCode") Integer versionCode);
+    FlowDefVersion findByDefIdAndVersionCode(@Param("defId") String defId, @Param("versionCode") Integer versionCode);
 
-//    @Cacheable(cacheNames="findByFlowDefinationId")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
-    public List<FlowDefVersion> findByFlowDefinationId(String defId);
+    //    @Cacheable(cacheNames="findByFlowDefinationId")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    List<FlowDefVersion> findByFlowDefinationId(String defId);
 
-//    @Cacheable(cacheNames="findByFlowDefinationIdActivate")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    //    @Cacheable(cacheNames="findByFlowDefinationIdActivate")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.flowDefination.id  = :defId and fv.flowDefinationStatus = 1 order by fv.versionCode desc")
-    public List<FlowDefVersion> findByFlowDefinationIdActivate(@Param("defId") String defId);
+    List<FlowDefVersion> findByFlowDefinationIdActivate(@Param("defId") String defId);
 
-//    @Cacheable(cacheNames="findByKeyActivate")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    //    @Cacheable(cacheNames="findByKeyActivate")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.defKey  = :defKey and fv.flowDefinationStatus = 1 order by fv.versionCode desc")
-    public List<FlowDefVersion> findByKeyActivate(@Param("defKey") String defKey);
+    List<FlowDefVersion> findByKeyActivate(@Param("defKey") String defKey);
 
-//    @Cacheable(cacheNames="findByActDefId")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
-    public FlowDefVersion findByActDefId(String actDefId);
+    //    @Cacheable(cacheNames="findByActDefId")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.actDefId  = :actDefId and fv.actDeployId is not null")
+    FlowDefVersion findByActDefId(@Param("actDefId") String actDefId);
 
-//    @Cacheable(cacheNames="findByKeyAndVersionCode")
-@QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
+    //    @Cacheable(cacheNames="findByKeyAndVersionCode")
+    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.defKey  = :defKey and fv.versionCode = :versionCode")
-    public FlowDefVersion findByKeyAndVersionCode(@Param("defKey") String defKey, @Param("versionCode") Integer versionCode);
+    FlowDefVersion findByKeyAndVersionCode(@Param("defKey") String defKey, @Param("versionCode") Integer versionCode);
 
     @Query("select fv from com.ecmp.flow.entity.FlowDefVersion fv where fv.id  = :id")
-    public FlowDefVersion findByIdNoF(@Param("id") String id);
+    FlowDefVersion findByIdNoF(@Param("id") String id);
 
-    }
+}

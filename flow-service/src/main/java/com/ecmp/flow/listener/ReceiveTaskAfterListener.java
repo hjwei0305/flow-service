@@ -16,8 +16,6 @@ import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +25,7 @@ import java.util.List;
 /**
  * *************************************************************************************************
  * <p/>
- * 实现功能：
+ * 实现功能：接收任务触发后监听事件
  * <p>
  * ------------------------------------------------------------------------------------------------
  * 版本          变更时间             变更人                     变更原因
@@ -38,8 +36,6 @@ import java.util.List;
  */
 //@Component(value="receiveTaskAfterListener")
 public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.JavaDelegate {
-
-    private final Logger logger = LoggerFactory.getLogger(ReceiveTaskAfterListener.class);
 
     @Autowired
     private FlowTaskDao flowTaskDao;
