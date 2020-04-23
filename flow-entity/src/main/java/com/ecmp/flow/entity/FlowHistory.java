@@ -3,7 +3,6 @@ package com.ecmp.flow.entity;
 import javax.persistence.*;
 
 import com.ecmp.core.entity.ITenant;
-import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -235,6 +234,43 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
      */
     @Column(name = "old_task_id")
     private String oldTaskId;
+
+
+    /**
+     * 执行人组织机构ID
+     */
+    @Column(name = "executor_org_id")
+    private String executorOrgId;
+
+    /**
+     * 执行人组织机构code
+     */
+    @Column(name = "executor_org_code")
+    private String executorOrgCode;
+
+    /**
+     * 执行人组织机构名称
+     */
+    @Column(name = "executor_org_name")
+    private String executorOrgName;
+
+    /**
+     * 拥有者组织机构ID
+     */
+    @Column(name = "owner_org_id")
+    private String ownerOrgId;
+
+    /**
+     * 拥有者组织机构code
+     */
+    @Column(name = "owner_org_code")
+    private String ownerOrgCode;
+
+    /**
+     * 拥有者组织机构名称
+     */
+    @Column(name = "owner_org_name")
+    private String ownerOrgName;
 
 
     /**
@@ -681,5 +717,53 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getExecutorOrgId() {
+        return executorOrgId;
+    }
+
+    public void setExecutorOrgId(String executorOrgId) {
+        this.executorOrgId = executorOrgId;
+    }
+
+    public String getExecutorOrgCode() {
+        return executorOrgCode;
+    }
+
+    public void setExecutorOrgCode(String executorOrgCode) {
+        this.executorOrgCode = executorOrgCode;
+    }
+
+    public String getExecutorOrgName() {
+        return executorOrgName;
+    }
+
+    public void setExecutorOrgName(String executorOrgName) {
+        this.executorOrgName = executorOrgName;
+    }
+
+    public String getOwnerOrgId() {
+        return ownerOrgId;
+    }
+
+    public void setOwnerOrgId(String ownerOrgId) {
+        this.ownerOrgId = ownerOrgId;
+    }
+
+    public String getOwnerOrgCode() {
+        return ownerOrgCode;
+    }
+
+    public void setOwnerOrgCode(String ownerOrgCode) {
+        this.ownerOrgCode = ownerOrgCode;
+    }
+
+    public String getOwnerOrgName() {
+        return ownerOrgName;
+    }
+
+    public void setOwnerOrgName(String ownerOrgName) {
+        this.ownerOrgName = ownerOrgName;
     }
 }

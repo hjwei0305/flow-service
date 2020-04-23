@@ -829,6 +829,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                    newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                    newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                     if (StringUtils.isEmpty(newFlowTask.getDepict())) {
                         newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
                     } else {
@@ -838,10 +842,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
                     newFlowTask.setExecutorName(executor.getName());
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                    newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setExecutorOrgName(executor.getOrganizationName());
                 }
                 newFlowTask.setOwnerId(executor.getId());
                 newFlowTask.setOwnerName(executor.getName());
                 newFlowTask.setOwnerAccount(executor.getCode());
+                //添加组织机构信息
+                newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                 newFlowTask.setTrustState(0);
                 if (v.get("instancyStatus") != null) {
                     try {
@@ -910,6 +922,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                 newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                 newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                //添加组织机构信息
+                newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                 if (StringUtils.isEmpty(newFlowTask.getDepict())) {
                     newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
                 } else {
@@ -919,10 +935,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 newFlowTask.setExecutorId(executor.getId());
                 newFlowTask.setExecutorAccount(executor.getCode());
                 newFlowTask.setExecutorName(executor.getName());
+                //添加组织机构信息
+                newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                newFlowTask.setExecutorOrgName(executor.getOrganizationName());
             }
             newFlowTask.setOwnerId(executor.getId());
             newFlowTask.setOwnerName(executor.getName());
             newFlowTask.setOwnerAccount(executor.getCode());
+            //添加组织机构信息
+            newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+            newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+            newFlowTask.setOwnerOrgName(executor.getOrganizationName());
             newFlowTask.setTrustState(0);
             if (v != null && v.get("instancyStatus") != null) {
                 try {

@@ -669,12 +669,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (exeId == null) {
                 //TODO
 //                LogUtil.error("用户待办非法操作！当前处理流程名称：{}，任务名称：{}，单据号：{},原始执行人:{},实际处理人:{}", flowTask.getFlowName(),flowTask.getTaskName(),flowTask.getFlowInstance().getBusinessCode(),flowTask.getExecutorName(),ContextUtil.getUserName());
-//                return  OperateResultWithData.operationFailure("【系统错误】，请联系管理员！");
             } else {
                 //转授权情况替换执行人(共同查看模式-授权人处理)
                 flowTask.setExecutorId(ContextUtil.getUserId());
                 flowTask.setExecutorAccount(ContextUtil.getUserAccount());
                 flowTask.setExecutorName(ContextUtil.getUserName());
+                //添加组织机构信息
+                Executor executor = flowCommonUtil.getBasicUserExecutor(ContextUtil.getUserId());
+                flowTask.setExecutorOrgId(executor.getOrganizationId());
+                flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                flowTask.setExecutorOrgName(executor.getOrganizationName());
             }
         }
         FlowInstance flowInstance = flowTask.getFlowInstance();
@@ -712,6 +716,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             flowTask.setExecutorId(ContextUtil.getUserId());
             flowTask.setExecutorAccount(ContextUtil.getUserAccount());
             flowTask.setExecutorName(ContextUtil.getUserName());
+            //添加组织机构信息
+            Executor executor = flowCommonUtil.getBasicUserExecutor(ContextUtil.getUserId());
+            flowTask.setOwnerOrgId(executor.getOrganizationId());
+            flowTask.setOwnerOrgCode(executor.getOrganizationCode());
+            flowTask.setOwnerOrgName(executor.getOrganizationName());
+            flowTask.setExecutorOrgId(executor.getOrganizationId());
+            flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+            flowTask.setExecutorOrgName(executor.getOrganizationName());
         }
         variables.put("opinion", flowTask.getDepict());
         String actTaskId = flowTask.getActTaskId();
@@ -2593,15 +2605,27 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                     newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】【转授权-" + executor.getName() + "授权】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                    newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                    newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                 } else {
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
                     newFlowTask.setExecutorName(executor.getName());
                     newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                    newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setExecutorOrgName(executor.getOrganizationName());
                 }
                 newFlowTask.setOwnerId(executor.getId());
                 newFlowTask.setOwnerName(executor.getName());
                 newFlowTask.setOwnerAccount(executor.getCode());
+                //添加组织机构信息
+                newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                 newFlowTask.setTrustState(0);
                 taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
 
@@ -2688,16 +2712,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
                     newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】" + flowTask.getDepict());
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                    newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                    newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                 } else {
                     newFlowTask.setExecutorId(executor.getId());
                     newFlowTask.setExecutorAccount(executor.getCode());
                     newFlowTask.setExecutorName(executor.getName());
                     newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】" + flowTask.getDepict());
+                    //添加组织机构信息
+                    newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                    newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setExecutorOrgName(executor.getOrganizationName());
                 }
 
                 newFlowTask.setOwnerId(executor.getId());
                 newFlowTask.setOwnerAccount(executor.getCode());
                 newFlowTask.setOwnerName(executor.getName());
+                //添加组织机构信息
+                newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                 newFlowTask.setPreId(flowHistory.getId());
                 flowHistoryDao.save(flowHistory);
                 flowTask.setTrustState(1);
@@ -2790,6 +2826,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     oldFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     oldFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                     oldFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                    //添加组织机构信息
+                    oldFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                    oldFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                    oldFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                     oldFlowTask.setDepict("【委托完成】【转授权-" + taskMakeOverPower.getUserName() + "授权】" + opinion);
                 } else {
                     oldFlowTask.setDepict("【委托完成】" + opinion);

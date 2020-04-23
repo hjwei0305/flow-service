@@ -4,7 +4,6 @@ import com.ecmp.core.entity.ITenant;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import java.util.Date;
 
@@ -16,56 +15,76 @@ public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity 
     /**
      * 授权人id
      */
-    @JoinColumn(name = "user_id")
+    @Column(name = "user_id")
    private String userId;
 
     /**
      * 授权人账户
      */
-    @JoinColumn(name = "user_account")
+    @Column(name = "user_account")
     private String userAccount;
 
     /**
      * 授权人名称
      */
-    @JoinColumn(name = "user_name")
+    @Column(name = "user_name")
     private String userName;
 
     /**
      * 被授权人id
      */
-    @JoinColumn(name = "power_user_id")
+    @Column(name = "power_user_id")
     private String powerUserId;
 
     /**
      * 被授权人账户
      */
-    @JoinColumn(name = "power_user_account")
+    @Column(name = "power_user_account")
     private String powerUserAccount;
 
     /**
      * 被授权人名称
      */
-    @JoinColumn(name = "power_user_name")
+    @Column(name = "power_user_name")
     private String powerUserName;
+
+    /**
+     * 被授权人组织机构ID
+     */
+    @Column(name = "power_user_org_id")
+    private String powerUserOrgId;
+
+
+    /**
+     * 被授权人组织机构code
+     */
+    @Column(name = "power_user_org_code")
+    private String powerUserOrgCode;
+
+
+    /**
+     * 被授权人组织机构名称
+     */
+    @Column(name = "power_user_org_name")
+    private String powerUserOrgName;
 
 
     /**
      * 授权开始日期
      */
-    @JoinColumn(name = "power_start_date")
+    @Column(name = "power_start_date")
     private Date powerStartDate;
 
     /**
      * 授权结束日期
      */
-    @JoinColumn(name = "power_end_date")
+    @Column(name = "power_end_date")
     private Date powerEndDate;
 
     /**
      * 启用状态
      */
-    @JoinColumn(name = "open_status")
+    @Column(name = "open_status")
     private Boolean openStatus;
 
 
@@ -156,5 +175,29 @@ public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity 
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getPowerUserOrgId() {
+        return powerUserOrgId;
+    }
+
+    public void setPowerUserOrgId(String powerUserOrgId) {
+        this.powerUserOrgId = powerUserOrgId;
+    }
+
+    public String getPowerUserOrgCode() {
+        return powerUserOrgCode;
+    }
+
+    public void setPowerUserOrgCode(String powerUserOrgCode) {
+        this.powerUserOrgCode = powerUserOrgCode;
+    }
+
+    public String getPowerUserOrgName() {
+        return powerUserOrgName;
+    }
+
+    public void setPowerUserOrgName(String powerUserOrgName) {
+        this.powerUserOrgName = powerUserOrgName;
     }
 }

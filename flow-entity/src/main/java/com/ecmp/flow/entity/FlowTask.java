@@ -5,9 +5,6 @@ import javax.persistence.*;
 
 import com.ecmp.core.entity.ITenant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Date;
@@ -349,6 +346,44 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
      */
     @Column(name = "tenant_code", length = 10)
     private String tenantCode;
+
+
+    /**
+     * 执行人组织机构ID
+     */
+    @Column(name = "executor_org_id")
+    private String executorOrgId;
+
+    /**
+     * 执行人组织机构code
+     */
+    @Column(name = "executor_org_code")
+    private String executorOrgCode;
+
+    /**
+     * 执行人组织机构名称
+     */
+    @Column(name = "executor_org_name")
+    private String executorOrgName;
+
+    /**
+     * 拥有者组织机构ID
+     */
+    @Column(name = "owner_org_id")
+    private String ownerOrgId;
+
+    /**
+     * 拥有者组织机构code
+     */
+    @Column(name = "owner_org_code")
+    private String ownerOrgCode;
+
+    /**
+     * 拥有者组织机构名称
+     */
+    @Column(name = "owner_org_name")
+    private String ownerOrgName;
+
 
     public FlowTask() {
     }
@@ -858,5 +893,53 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
 
     public void setLookWebBaseAddressAbsolute(String lookWebBaseAddressAbsolute) {
         this.lookWebBaseAddressAbsolute = lookWebBaseAddressAbsolute;
+    }
+
+    public String getExecutorOrgId() {
+        return executorOrgId;
+    }
+
+    public void setExecutorOrgId(String executorOrgId) {
+        this.executorOrgId = executorOrgId;
+    }
+
+    public String getExecutorOrgCode() {
+        return executorOrgCode;
+    }
+
+    public void setExecutorOrgCode(String executorOrgCode) {
+        this.executorOrgCode = executorOrgCode;
+    }
+
+    public String getExecutorOrgName() {
+        return executorOrgName;
+    }
+
+    public void setExecutorOrgName(String executorOrgName) {
+        this.executorOrgName = executorOrgName;
+    }
+
+    public String getOwnerOrgId() {
+        return ownerOrgId;
+    }
+
+    public void setOwnerOrgId(String ownerOrgId) {
+        this.ownerOrgId = ownerOrgId;
+    }
+
+    public String getOwnerOrgCode() {
+        return ownerOrgCode;
+    }
+
+    public void setOwnerOrgCode(String ownerOrgCode) {
+        this.ownerOrgCode = ownerOrgCode;
+    }
+
+    public String getOwnerOrgName() {
+        return ownerOrgName;
+    }
+
+    public void setOwnerOrgName(String ownerOrgName) {
+        this.ownerOrgName = ownerOrgName;
     }
 }

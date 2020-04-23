@@ -1,6 +1,5 @@
 package com.ecmp.flow.util;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.flow.activiti.ext.PvmNodeInfo;
@@ -12,7 +11,6 @@ import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowDefinationService;
-import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.service.TaskMakeOverPowerService;
 import com.ecmp.flow.vo.FlowStartVO;
@@ -47,7 +45,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -90,25 +87,13 @@ public class FlowTaskTool {
     private TaskService taskService;
 
     @Autowired
-    private FlowDefinationDao flowDefinationDao;
-
-    @Autowired
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
     private HistoryService historyService;
 
     @Autowired
-    private ProcessEngine processEngine;
-
-    @Autowired
-    private FlowInstanceService flowInstanceService;
-
-    @Autowired
     private FlowDefinationService flowDefinationService;
-
-    @Autowired
-    private AppModuleDao appModuleDao;
 
     @Autowired
     private WorkPageUrlDao workPageUrlDao;
@@ -1500,11 +1485,20 @@ public class FlowTaskTool {
                         flowTask.setFlowName(flowName);
                         flowTask.setTaskName(task.getName());
                         flowTask.setActTaskId(task.getId());
+                        flowTask.setOwnerId(executor.getId());
                         flowTask.setOwnerAccount(executor.getCode());
                         flowTask.setOwnerName(executor.getName());
                         flowTask.setExecutorAccount(executor.getCode());
                         flowTask.setExecutorId(executor.getId());
                         flowTask.setExecutorName(executor.getName());
+                        //添加组织机构信息
+                        flowTask.setExecutorOrgId(executor.getOrganizationId());
+                        flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                        flowTask.setExecutorOrgName(executor.getOrganizationName());
+                        flowTask.setOwnerOrgId(executor.getOrganizationId());
+                        flowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                        flowTask.setOwnerOrgName(executor.getOrganizationName());
+
                         flowTask.setActType("candidate");
                         if (StringUtils.isEmpty(task.getDescription())) {
                             flowTask.setDepict("加签的任务");
@@ -1633,12 +1627,20 @@ public class FlowTaskTool {
                             flowTask.setOwnerId(executor.getId());
                             flowTask.setOwnerAccount(executor.getCode());
                             flowTask.setOwnerName(executor.getName());
+                            //添加组织机构信息
+                            flowTask.setOwnerOrgId(executor.getOrganizationId());
+                            flowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                            flowTask.setOwnerOrgName(executor.getOrganizationName());
                             //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
                             TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
                             if (taskMakeOverPower != null) {
                                 flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                                 flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                                 flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                                //添加组织机构信息
+                                flowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                                flowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                                flowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                                 if (StringUtils.isEmpty(task.getDescription())) {
                                     flowTask.setDepict("【转授权-" + executor.getName() + "授权】" + "流程启动");
                                 } else {
@@ -1648,6 +1650,10 @@ public class FlowTaskTool {
                                 flowTask.setExecutorAccount(executor.getCode());
                                 flowTask.setExecutorId(executor.getId());
                                 flowTask.setExecutorName(executor.getName());
+                                //添加组织机构信息
+                                flowTask.setExecutorOrgId(executor.getOrganizationId());
+                                flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                                flowTask.setExecutorOrgName(executor.getOrganizationName());
                                 if (StringUtils.isEmpty(task.getDescription())) {
                                     flowTask.setDepict("流程启动");
                                 } else {
@@ -1706,6 +1712,14 @@ public class FlowTaskTool {
                                     flowTask.setExecutorAccount(man.getCode());
                                     flowTask.setExecutorId(man.getId());
                                     flowTask.setExecutorName(man.getName());
+                                    //添加组织机构信息
+                                    flowTask.setExecutorOrgId(man.getOrganizationId());
+                                    flowTask.setExecutorOrgCode(man.getOrganizationCode());
+                                    flowTask.setExecutorOrgName(man.getOrganizationName());
+                                    flowTask.setOwnerOrgId(man.getOrganizationId());
+                                    flowTask.setOwnerOrgCode(man.getOrganizationCode());
+                                    flowTask.setOwnerOrgName(man.getOrganizationName());
+
                                     flowTask.setTaskJsonDef(currentNode.toString());
                                     flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                                     flowTask.setActTaskDefKey(actTaskDefKey);
@@ -1765,12 +1779,20 @@ public class FlowTaskTool {
                                 flowTask.setOwnerAccount(executor.getCode());
                                 flowTask.setOwnerId(executor.getId());
                                 flowTask.setOwnerName(executor.getName());
+                                //添加组织机构信息
+                                flowTask.setOwnerOrgId(executor.getOrganizationId());
+                                flowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                                flowTask.setOwnerOrgName(executor.getOrganizationName());
                                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
                                 TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
                                 if (taskMakeOverPower != null) {
                                     flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                                     flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                                     flowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                                    //添加组织机构信息
+                                    flowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                                    flowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                                    flowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                                     if (StringUtils.isEmpty(task.getDescription())) {
                                         flowTask.setDepict("【转授权-" + executor.getName() + "授权】");
                                     } else {
@@ -1781,6 +1803,10 @@ public class FlowTaskTool {
                                     flowTask.setExecutorId(executor.getId());
                                     flowTask.setExecutorName(executor.getName());
                                     flowTask.setDepict(task.getDescription());
+                                    //添加组织机构信息
+                                    flowTask.setExecutorOrgId(executor.getOrganizationId());
+                                    flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                                    flowTask.setExecutorOrgName(executor.getOrganizationName());
                                 }
                                 flowTask.setActType(identityLink.getType());
                                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
@@ -2366,6 +2392,13 @@ public class FlowTaskTool {
         flowHistory.setExecutorId(flowTask.getExecutorId());
         flowHistory.setExecutorName(flowTask.getExecutorName());
         flowHistory.setCandidateAccount(flowTask.getCandidateAccount());
+        //添加组织机构信息
+        flowHistory.setExecutorOrgId(flowTask.getExecutorOrgId());
+        flowHistory.setExecutorOrgCode(flowTask.getExecutorOrgCode());
+        flowHistory.setExecutorOrgName(flowTask.getExecutorOrgName());
+        flowHistory.setOwnerOrgId(flowTask.getOwnerOrgId());
+        flowHistory.setOwnerOrgCode(flowTask.getOwnerOrgCode());
+        flowHistory.setOwnerOrgName(flowTask.getOwnerOrgName());
 
         flowHistory.setActDurationInMillis(historicTaskInstance.getDurationInMillis());
         flowHistory.setActWorkTimeInMillis(historicTaskInstance.getWorkTimeInMillis());

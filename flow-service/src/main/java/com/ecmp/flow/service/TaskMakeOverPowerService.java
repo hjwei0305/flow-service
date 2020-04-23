@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
@@ -378,6 +377,10 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                         taskBean.setExecutorId(entity.getPowerUserId());
                         taskBean.setExecutorName(entity.getPowerUserName());
                         taskBean.setExecutorAccount(entity.getPowerUserAccount());
+                        //添加组织机构信息
+                        taskBean.setExecutorOrgId(entity.getPowerUserOrgId());
+                        taskBean.setExecutorOrgCode(entity.getPowerUserOrgCode());
+                        taskBean.setExecutorOrgName(entity.getPowerUserOrgName());
                         if (StringUtils.isNotEmpty(taskBean.getDepict()) && !"null".equalsIgnoreCase(taskBean.getDepict())) {
                             taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】" + taskBean.getDepict());
                         } else {
