@@ -90,7 +90,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     /**
      * 查询流程已办汇总列表
-     *
+     *（全部、有效数据、记录数据）
      * @return ResponseData.data是 List<TodoBusinessSummaryVO>
      */
     @POST
@@ -101,8 +101,21 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     ResponseData listFlowHistoryHeader(@QueryParam("dataType") String dataType);
 
     /**
-     * 获取已办信息
+     * 根据流程状态查询流程已办汇总列表
+     * （全部、流程中、正常完成、流程终止）
      *
+     * @return ResponseData.data是 List<TodoBusinessSummaryVO>
+     */
+    @POST
+    @Path("listFlowHistoryByFlowStatusHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据流程状态查询流程已办汇总列表", notes = "根据流程状态查询流程已办汇总列表")
+    ResponseData listFlowHistoryByFlowStatusHeader(@QueryParam("orderType") String orderType);
+
+    /**
+     * 获取已办信息
+     *（全部、有效数据、记录数据）
      * @param businessModelId 业务实体id
      * @param searchConfig    查询条件
      * @return 已办汇总信息
@@ -117,7 +130,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     /**
      * 获取已办信息(关联待办执行人)
-     *
+     *（全部、有效数据、记录数据）
      * @param businessModelId 业务实体id
      * @param searchConfig    查询条件
      * @return 已办汇总信息
@@ -128,6 +141,21 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "已办汇总信息（关联当前执行人）", notes = "已办汇总信息（关联当前执行人）")
     ResponseData listFlowHistoryAndExecutor(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
+    /**
+     * 根据流程状态获取已办信息(关联待办执行人)
+     * （全部、流程中、正常完成、流程终止）
+     *
+     * @param businessModelId 业务实体id
+     * @param searchConfig    查询条件
+     * @return 已办汇总信息
+     */
+    @POST
+    @Path("listFlowHistoryByFlowStatusAndExecutor")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "根据流程状态获取已办信息（关联当前执行人）", notes = "根据流程状态获取已办信息（关联当前执行人）")
+    ResponseData listFlowHistoryByFlowStatusAndExecutor(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
 
 
     /**

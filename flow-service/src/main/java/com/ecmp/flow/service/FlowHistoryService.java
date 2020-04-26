@@ -174,10 +174,81 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return voList;
     }
 
+    public List<TodoBusinessSummaryVO> findHisToryByFlowStatusSumHeader(String appSign, String orderType) {
+        List<TodoBusinessSummaryVO> voList = new ArrayList<>();
+        String userID = ContextUtil.getUserId();
+        List groupResultList = null;
+        if (StringUtils.isNotEmpty(orderType) && !"all".equals(orderType)) {
+            if ("inFlow".equals(orderType)) {//流程中
+                groupResultList = flowHistoryDao.findHisByExecutorIdAndFlowStatusGroup(userID, false, false);
+            } else if ("ended".equals(orderType)) {//正常结束
+                groupResultList = flowHistoryDao.findHisByExecutorIdAndFlowStatusGroup(userID, true, false);
+            } else if ("abnormalEnd".equals(orderType)) {  //流程终止
+                groupResultList = flowHistoryDao.findHisByExecutorIdAndFlowStatusGroup(userID, true, true);
+            }
+        } else {
+            groupResultList = flowHistoryDao.findHisByExecutorIdGroup(userID);
+        }
+
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
+        if (groupResultList != null && !groupResultList.isEmpty()) {
+            Iterator it = groupResultList.iterator();
+            while (it.hasNext()) {
+                Object[] res = (Object[]) it.next();
+                int count = ((Number) res[0]).intValue();
+                String flowDefinationId = res[1] + "";
+                FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                if (flowDefination == null) {
+                    continue;
+                }
+
+                // 获取业务类型
+                BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
+                // 限制应用标识
+                boolean canAdd = true;
+                if (!StringUtils.isBlank(appSign)) {
+                    // 判断应用模块代码是否以应用标识开头,不是就不添加
+                    if (!businessModel.getAppModule().getCode().startsWith(appSign)) {
+                        canAdd = false;
+                    }
+                }
+                if (canAdd) {
+                    Integer oldCount = businessModelCountMap.get(businessModel);
+                    if (oldCount == null) {
+                        oldCount = 0;
+                    }
+                    businessModelCountMap.put(businessModel, oldCount + count);
+                }
+            }
+        }
+        if (!businessModelCountMap.isEmpty()) {
+            for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
+                TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
+                todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
+                todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
+                todoBusinessSummaryVO.setCount(map.getValue());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName() + "(" + map.getValue() + ")");
+                voList.add(todoBusinessSummaryVO);
+            }
+        }
+        return voList;
+    }
+
     @Override
     public ResponseData listFlowHistoryHeader(String dataType) {
         try {
             List<TodoBusinessSummaryVO> list = this.findHisTorySumHeader("", dataType);
+            return ResponseData.operationSuccessWithData(list);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure("操作失败！");
+        }
+    }
+
+    @Override
+    public ResponseData listFlowHistoryByFlowStatusHeader(String orderType) {
+        try {
+            List<TodoBusinessSummaryVO> list = this.findHisToryByFlowStatusSumHeader("", orderType);
             return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
@@ -199,10 +270,38 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return responseData;
     }
 
+    public ResponseData listFlowHistoryByFlowStatus(String businessModelId, Search searchConfig) {
+        ResponseData responseData = new ResponseData();
+        try {
+            PageResult<FlowHistory> pageList = this.findByBusinessModelIdAndFlowStatus(businessModelId, searchConfig);
+            responseData.setData(pageList);
+        } catch (Exception e) {
+            responseData.setSuccess(false);
+            responseData.setMessage(e.getMessage());
+            LogUtil.error(e.getMessage());
+        }
+        return responseData;
+    }
+
 
     @Override
     public ResponseData listFlowHistoryAndExecutor(String businessModelId, Search searchConfig) {
         ResponseData responseData = this.listFlowHistory(businessModelId, searchConfig);
+        if (responseData.getSuccess()) {
+            PageResult<FlowHistory> pageHistory = (PageResult<FlowHistory>) responseData.getData();
+            List<FlowHistory> list = pageHistory.getRows();
+            list.forEach(history -> {
+                if (!history.getFlowInstance().isEnded()) {   //流程未结束
+                    history.setTaskExecutors(flowInstanceService.getExecutorStringByInstanceId(history.getFlowInstance().getId()));
+                }
+            });
+        }
+        return responseData;
+    }
+
+    @Override
+    public ResponseData listFlowHistoryByFlowStatusAndExecutor(String businessModelId, Search searchConfig) {
+        ResponseData responseData = this.listFlowHistoryByFlowStatus(businessModelId, searchConfig);
         if (responseData.getSuccess()) {
             PageResult<FlowHistory> pageHistory = (PageResult<FlowHistory>) responseData.getData();
             List<FlowHistory> list = pageHistory.getRows();
@@ -230,6 +329,27 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             result.getRows().forEach(a -> {
                 //CompleteTaskView.js中撤回按钮显示的判断逻辑：
                 // (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
+                if (a.getCanCancel() != null && a.getCanCancel() == true
+                        && a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus())
+                        && a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null && a.getFlowInstance().isEnded() == false) {
+                    Boolean boo = flowTaskTool.checkoutTaskRollBack(a);
+                    if (!boo) { //不可以显示
+                        a.setCanCancel(false);
+                    }
+                }
+            });
+        }
+        return result;
+    }
+
+    public PageResult<FlowHistory> findByBusinessModelIdAndFlowStatus(String businessModelId, Search searchConfig) {
+        String userId = ContextUtil.getUserId();
+        PageResult<FlowHistory> result = flowHistoryDao.findByPageByBusinessModelIdAndFlowStatus(businessModelId, userId, searchConfig);
+        List<FlowHistory> list = result.getRows();
+        initFlowTaskAppModule(list);
+
+        if (result.getRows() != null && result.getRows().size() > 0) {
+            result.getRows().forEach(a -> {
                 if (a.getCanCancel() != null && a.getCanCancel() == true
                         && a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus())
                         && a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null && a.getFlowInstance().isEnded() == false) {

@@ -24,34 +24,41 @@ public interface CustomFlowHistoryDao {
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)
-    public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorAccount, Search searchConfig);
+    PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorAccount, Search searchConfig);
 
 
     /**
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)
-    public PageResult<FlowHistory> findByPageByBusinessModelId(String executorAccount, Search searchConfig);
+    PageResult<FlowHistory> findByPageByBusinessModelId(String executorAccount, Search searchConfig);
+
+    /**
+     * 通过业务实体类型id,用户ID，基于动态组合条件对象和分页(含排序)对象查询数据集合（全部、流程中、正常完成、流程终止）
+     */
+    @Transactional(readOnly = true)
+    PageResult<FlowHistory> findByPageByBusinessModelIdAndFlowStatus(String businessModelId, String executorId, Search searchConfig);
 
     /**
      * 根据业务实体类型id，业务单据id，获取最新流程实体执行的待办，不包括撤销之前的历史任务
-//     * @param businessModelId
+     * //     * @param businessModelId
+     *
      * @param businessId
      * @return
      */
 //    @Query("select ft from com.ecmp.flow.entity.FlowHistory ft where  ft.flowDefinitionId in(select  fd.id from FlowDefination fd where fd.id in(select fType.id from FlowType fType where fType.id in( select bm.id from BusinessModel bm where bm.id = :businessModelId)) ) and fd.flowInstance.id = (select fi.id from FlowInstance fi where fi.businessId = :businessId ) order by ft.lastEditedDate desc")
-    public List<FlowHistory> findLastByBusinessId(String businessId);
+    List<FlowHistory> findLastByBusinessId(String businessId);
 
     /**
      * 查询所有转授权历史
+     *
      * @return
      */
     @Transactional(readOnly = true)
-    List<FlowHistory>  findByAllTaskMakeOverPowerHistory();
+    List<FlowHistory> findByAllTaskMakeOverPowerHistory();
 
 
-    public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig);
-
+    PageResult<FlowHistory> findByPage(String executorId, Search searchConfig);
 
 
 }
