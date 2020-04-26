@@ -49,7 +49,7 @@ public class BusinessUtil {
                 if(StringUtils.isEmpty(sourceFieldNameDes)){
                     throw new RuntimeException("sourceFieldName's Internationalization can not find! key = "+ key);
                 }
-                Object v = sourceMethod.invoke(conditionPojo,  null);
+                Object v = sourceMethod.invoke(conditionPojo);
                 if(v!=null){
                     List tempResult = new ArrayList();
                     BusinessFormValue businessFormValue = new BusinessFormValue();
