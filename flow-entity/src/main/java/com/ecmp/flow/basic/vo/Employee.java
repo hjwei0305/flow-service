@@ -19,80 +19,61 @@ public class Employee extends BaseAuditableEntity implements ITenant {
     /**
      * 员工编号
      */
-//    @Column(name = "code", length = 10, nullable = false)
     private String code;
 
     /**
      * 租户代码
      */
-//    @Column(name = "tenant_code", length = 10, nullable = false, unique = true)
     private String tenantCode;
 
-//    @OneToOne
-//    @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
-//    private User user;
-
-//    @ManyToOne
-//    @JoinColumn(name = "organization_id",nullable = false)
-    private Organization organization;
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    /**
-     * @return 租户代码
-     */
-    @Override
-    public String getTenantCode() {
-        return tenantCode;
-    }
 
     /**
      * 用户姓名
      */
-//    @Transient
     private String userName;
 
     /**
      * 是否冻结
      */
-//    @Transient
     private boolean frozen;
 
     /**
      * 是否是创建租户管理员
      */
-//    @Transient
     private boolean createAdmin;
 
     /**
      * 邮箱,创建租户管理员时发送邮件
      */
-//    @Transient
     private String email;
 
     /**
-     * 设置租户代码
-     *
-     * @param tenantCode 租户代码
+     * 组织机构Id
      */
-    @Override
-    public void setTenantCode(String tenantCode) {
-        this.tenantCode = tenantCode;
-    }
+    private String organizationId;
+
+    /**
+     * 组织机构代码
+     */
+    private String organizationCode;
+
+    /**
+     * 组织机构名称
+     */
+    private String organizationName;
+
+    /**
+     * 组织机构代码路径
+     */
+    private String organizationCodePath;
+
+    /**
+     * 组织机构名称路径
+     */
+    private String organizationNamePath;
+
+
+
 
     public String getUserName() {
         return userName;
@@ -101,14 +82,6 @@ public class Employee extends BaseAuditableEntity implements ITenant {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
 
     public boolean isCreateAdmin() {
         return createAdmin;
@@ -133,4 +106,73 @@ public class Employee extends BaseAuditableEntity implements ITenant {
     public void setFrozen(boolean frozen) {
         this.frozen = frozen;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
+
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public String getOrganizationCodePath() {
+        return organizationCodePath;
+    }
+
+    public void setOrganizationCodePath(String organizationCodePath) {
+        this.organizationCodePath = organizationCodePath;
+    }
+
+    public String getOrganizationNamePath() {
+        return organizationNamePath;
+    }
+
+    public void setOrganizationNamePath(String organizationNamePath) {
+        this.organizationNamePath = organizationNamePath;
+    }
+
+    /**
+     * @return 租户代码
+     */
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
+    }
+
+    /**
+     * 设置租户代码
+     *
+     * @param tenantCode 租户代码
+     */
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
+    }
+
+
+
 }
