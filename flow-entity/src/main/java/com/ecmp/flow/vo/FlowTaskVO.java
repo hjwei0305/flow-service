@@ -28,6 +28,11 @@ public class FlowTaskVO implements Serializable {
      */
     private String workPageUrl;
 
+    /**
+     * 流程实例ID
+     */
+    private String instanceId;
+
     public String getId() {
         return id;
     }
@@ -50,5 +55,13 @@ public class FlowTaskVO implements Serializable {
 
     public void setWorkPageUrl(String workPageUrl) {
         this.workPageUrl = workPageUrl;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }
