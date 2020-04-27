@@ -10,13 +10,13 @@ import java.util.Date;
 
 @Entity
 @Table(name = "task_make_over_power")
-public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity  implements ITenant {
+public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
     /**
      * 授权人id
      */
     @Column(name = "user_id")
-   private String userId;
+    private String userId;
 
     /**
      * 授权人账户
@@ -29,6 +29,48 @@ public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity 
      */
     @Column(name = "user_name")
     private String userName;
+
+    /**
+     * 授权类型（枚举）:MakeOverPowerType
+     */
+    @Column(name = "make_over_power_type")
+    private String makeOverPowerType;
+
+    /**
+     * 应用模块ID
+     */
+    @Column(name = "app_module_id")
+    private String appModuleId;
+
+    /**
+     * 应用模块名称
+     */
+    @Column(name = "app_module_name")
+    private String appModuleName;
+
+    /**
+     * 业务实体ID
+     */
+    @Column(name = "business_model_id")
+    private String businessModelId;
+
+    /**
+     * 业务实体名称
+     */
+    @Column(name = "business_model_name")
+    private String businessModelName;
+
+    /**
+     * 流程类型ID
+     */
+    @Column(name = "flow_type_id")
+    private String flowTypeId;
+
+    /**
+     * 流程类型名称
+     */
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
 
     /**
      * 被授权人id
@@ -121,6 +163,62 @@ public class TaskMakeOverPower extends com.ecmp.core.entity.BaseAuditableEntity 
 
     public String getPowerUserId() {
         return powerUserId;
+    }
+
+    public String getMakeOverPowerType() {
+        return makeOverPowerType;
+    }
+
+    public void setMakeOverPowerType(String makeOverPowerType) {
+        this.makeOverPowerType = makeOverPowerType;
+    }
+
+    public String getAppModuleId() {
+        return appModuleId;
+    }
+
+    public void setAppModuleId(String appModuleId) {
+        this.appModuleId = appModuleId;
+    }
+
+    public String getAppModuleName() {
+        return appModuleName;
+    }
+
+    public void setAppModuleName(String appModuleName) {
+        this.appModuleName = appModuleName;
+    }
+
+    public String getBusinessModelId() {
+        return businessModelId;
+    }
+
+    public void setBusinessModelId(String businessModelId) {
+        this.businessModelId = businessModelId;
+    }
+
+    public String getBusinessModelName() {
+        return businessModelName;
+    }
+
+    public void setBusinessModelName(String businessModelName) {
+        this.businessModelName = businessModelName;
+    }
+
+    public String getFlowTypeId() {
+        return flowTypeId;
+    }
+
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
     }
 
     public void setPowerUserId(String powerUserId) {
