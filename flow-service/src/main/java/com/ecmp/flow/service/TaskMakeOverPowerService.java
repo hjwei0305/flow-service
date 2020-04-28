@@ -228,15 +228,15 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
         } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
             search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
             search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else { //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("appModuleId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         }
 
         if (StringUtils.isNotEmpty(bean.getId())) {
@@ -293,15 +293,15 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
         } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
             search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
             search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else { //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("appModuleId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         }
 
         if (StringUtils.isNotEmpty(bean.getId())) {
@@ -357,15 +357,15 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
         } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
             search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
             search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         } else { //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("businessModelId", "ak", SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", "ak", SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("appModuleId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         }
 
         if (StringUtils.isNotEmpty(bean.getId())) {
