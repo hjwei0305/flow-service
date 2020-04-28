@@ -212,18 +212,20 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     }
 
     /**
-     * 检查被授权用户是否建立了相同等级的转授权
+     * 通用filter设置(发布状态、是否排除本数据、分级权限控制)
      *
      * @param bean
-     * @return
+     * @param search
      */
-    public ResponseData checkPowerAndUserRepetition(TaskMakeOverPower bean) {
-        //查询该用户所有授权信息（不包含当前数据）
-        Search search = new Search();
-        search.addFilter(new SearchFilter("userId", bean.getPowerUserId()));
+    public void setCommonFilter(TaskMakeOverPower bean, Search search) {
+
         search.addFilter(new SearchFilter("openStatus", true));
 
-        //分级控制条件设置（级别从高到低：流程类型、业务实体、应用模块）
+        if (StringUtils.isNotEmpty(bean.getId())) {
+            search.addFilter(new SearchFilter("id", bean.getId(), SearchFilter.Operator.NE));
+        }
+
+        //分级权限条件控制
         if (StringUtils.isNotEmpty(bean.getFlowTypeId())) {  //控制到流程类型
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
         } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
@@ -238,10 +240,63 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
             search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
         }
+    }
 
-        if (StringUtils.isNotEmpty(bean.getId())) {
-            search.addFilter(new SearchFilter("id", bean.getId(), SearchFilter.Operator.NE));
+
+    /**
+     * 分级授权提示信息拼接
+     *
+     * @param a
+     * @return
+     */
+    public String getMesString(TaskMakeOverPower a) {
+        String mesString = "";
+        //分级授权报错信息拼接
+        if (StringUtils.isNotEmpty(a.getAppModuleName())) {
+            mesString += "【应用模块：" + a.getAppModuleName() + "】";
         }
+        if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
+            mesString += "【业务实体：" + a.getBusinessModelName() + "】";
+        }
+        if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
+            mesString += "【流程类型：" + a.getFlowTypeName() + "】";
+        }
+        return mesString;
+    }
+
+    /**
+     * 时间段是否重叠判断
+     *
+     * @param startDate 开始时间
+     * @param endDate   结束事件
+     * @param start     要比较的开始时间
+     * @param end       要比较的结束时间
+     * @return
+     */
+    public Boolean checkSameTime(Date startDate, Date endDate, Date start, Date end) {
+        if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))) { //开始时间重叠
+            return true;
+        } else if (((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))) { //结束事件重叠
+            return true;
+        } else if ((startDate.before(start) && endDate.after(end))) { //包含
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 检查被授权用户是否建立了相同等级的转授权
+     *
+     * @param bean
+     * @return
+     */
+    public ResponseData checkPowerAndUserRepetition(TaskMakeOverPower bean) {
+        //查询该用户所有授权信息（不包含当前数据）
+        Search search = new Search();
+        search.addFilter(new SearchFilter("userId", bean.getPowerUserId()));
+        //通用filter设置
+        this.setCommonFilter(bean, search);
 
         List<TaskMakeOverPower> list = taskMakeOverPowerDao.findByFilters(search);
         Date startDate = bean.getPowerStartDate();
@@ -252,28 +307,14 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
                 Date end = a.getPowerEndDate();
-                if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))  //开始时间重叠
-                        || ((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))  //结束事件重叠
-                        || (startDate.before(start) && endDate.after(end))//包含
-                ) {
-                    String mesString = "";
-                    //分级授权报错信息拼接
-                    if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-                        mesString += "【应用模块：" + a.getAppModuleName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-                        mesString += "【业务实体：" + a.getBusinessModelName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-                        mesString += "【流程类型：" + a.getFlowTypeName() + "】";
-                    }
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权"+mesString+"给【"+a.getPowerUserName()+"】，所以您不能再转授权给他！");
+                if (checkSameTime(startDate, endDate, start, end)) {
+                    String mesString = this.getMesString(a);
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给【" + a.getPowerUserName() + "】，所以您不能再转授权给他！");
                 }
             }
         }
         return ResponseData.operationSuccess();
     }
-
 
 
     /**
@@ -286,27 +327,8 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         //查询该用户所有授权信息（不包含当前数据）
         Search search = new Search();
         search.addFilter(new SearchFilter("powerUserId", bean.getUserId()));
-        search.addFilter(new SearchFilter("openStatus", true));
-
-        //分级控制条件设置（级别从高到低：流程类型、业务实体、应用模块）
-        if (StringUtils.isNotEmpty(bean.getFlowTypeId())) {  //控制到流程类型
-            search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
-        } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
-            search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
-            search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        } else { //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        }
-
-        if (StringUtils.isNotEmpty(bean.getId())) {
-            search.addFilter(new SearchFilter("id", bean.getId(), SearchFilter.Operator.NE));
-        }
+        //通用filter设置
+        this.setCommonFilter(bean, search);
 
         List<TaskMakeOverPower> list = taskMakeOverPowerDao.findByFilters(search);
         Date startDate = bean.getPowerStartDate();
@@ -317,22 +339,9 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
                 Date end = a.getPowerEndDate();
-                if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))  //开始时间重叠
-                        || ((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))  //结束事件重叠
-                        || (startDate.before(start) && endDate.after(end))//包含
-                ) {
-                    String mesString = "";
-                    //分级授权报错信息拼接
-                    if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-                        mesString += "【应用模块：" + a.getAppModuleName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-                        mesString += "【业务实体：" + a.getBusinessModelName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-                        mesString += "【流程类型：" + a.getFlowTypeName() + "】";
-                    }
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权"+mesString+"给您，所以该时间段您不能再转授权！");
+                if (checkSameTime(startDate, endDate, start, end)) {
+                    String mesString = this.getMesString(a);
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给您，所以您不能再转授权！");
                 }
             }
         }
@@ -350,27 +359,9 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         //查询该用户所有授权信息（不包含当前数据）
         Search search = new Search();
         search.addFilter(new SearchFilter("userId", bean.getUserId()));
-        search.addFilter(new SearchFilter("openStatus", true));
+        //通用filter设置
+        this.setCommonFilter(bean, search);
 
-        //分级控制条件设置（级别从高到低：流程类型、业务实体、应用模块）
-        if (StringUtils.isNotEmpty(bean.getFlowTypeId())) {  //控制到流程类型
-            search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
-        } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
-            search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
-            search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        } else { //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("businessModelId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-            search.addFilter(new SearchFilter("flowTypeId", SearchFilter.NULL_VALUE, SearchFilter.Operator.NU));
-        }
-
-        if (StringUtils.isNotEmpty(bean.getId())) {
-            search.addFilter(new SearchFilter("id", bean.getId(), SearchFilter.Operator.NE));
-        }
         List<TaskMakeOverPower> list = taskMakeOverPowerDao.findByFilters(search);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = bean.getPowerStartDate();
@@ -380,21 +371,8 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
                 Date end = a.getPowerEndDate();
-                if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))  //开始时间重叠
-                        || ((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))  //结束事件重叠
-                        || (startDate.before(start) && endDate.after(end))//包含
-                ) {
-                    String mesString = "";
-                    //分级授权报错信息拼接
-                    if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-                        mesString += "【应用模块：" + a.getAppModuleName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-                        mesString += "【业务实体：" + a.getBusinessModelName() + "】";
-                    }
-                    if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-                        mesString += "【流程类型：" + a.getFlowTypeName() + "】";
-                    }
+                if (checkSameTime(startDate, endDate, start, end)) {
+                    String mesString = this.getMesString(a);
                     return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份" + mesString + "【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
                 }
             }
