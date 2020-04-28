@@ -274,15 +274,15 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                     String mesString = "";
                     //分级授权报错信息拼接
                     if(StringUtils.isNotEmpty(a.getAppModuleName())){
-                        mesString += "应用模块["+a.getAppModuleName()+"]";
+                        mesString += "【应用模块："+a.getAppModuleName()+"】";
                     }
                     if(StringUtils.isNotEmpty(a.getBusinessModelName())){
-                        mesString += "业务实体["+a.getBusinessModelName()+"]";
+                        mesString += "【业务实体："+a.getBusinessModelName()+"】";
                     }
                     if(StringUtils.isNotEmpty(a.getFlowTypeName())){
-                        mesString += "流程类型["+a.getFlowTypeName()+"]";
+                        mesString += "【流程类型："+a.getFlowTypeName()+"】";
                     }
-                    return ResponseData.operationFailure("[" + dateFormat.format(start) + "]至[" + dateFormat.format(end) + "],您建立了一份"+mesString+"被授权人[" + a.getPowerUserName() + "]的转授权，不能重复创建！");
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份"+mesString+"【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
                 }
             }
         }
