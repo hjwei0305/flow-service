@@ -130,6 +130,21 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         entity.setUserId(ContextUtil.getUserId());
         entity.setUserAccount(ContextUtil.getUserAccount());
         entity.setUserName(ContextUtil.getUserName());
+
+        if (StringUtils.isEmpty(entity.getFlowTypeId())) {
+            entity.setFlowTypeId(null);
+            entity.setFlowTypeName(null);
+        }
+        if (StringUtils.isEmpty(entity.getBusinessModelId())) {
+            entity.setBusinessModelId(null);
+            entity.setBusinessModelName(null);
+        }
+        if (StringUtils.isEmpty(entity.getAppModuleId())) {
+            entity.setAppModuleId(null);
+            entity.setAppModuleName(null);
+        }
+
+
         //规则检查
         ResponseData responseData = checkOk(entity);
         if (!responseData.getSuccess()) {
@@ -218,7 +233,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))  //开始时间重叠
                         || ((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))  //结束事件重叠
                         || (startDate.before(start) && endDate.after(end))//包含
-                        ) {
+                ) {
                     return ResponseData.operationFailure("[" + dateFormat.format(start) + "]至[" + dateFormat.format(end) + "],[" + a.getUserName() + "]已经转授权给您，所以该时间段您不能再转授权！");
                 }
             }
@@ -240,19 +255,19 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         search.addFilter(new SearchFilter("openStatus", true));
 
         //分级控制条件设置（级别从高到低：流程类型、业务实体、应用模块）
-        if(StringUtils.isNotEmpty(bean.getFlowTypeId())){  //控制到流程类型
+        if (StringUtils.isNotEmpty(bean.getFlowTypeId())) {  //控制到流程类型
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
-        }else if(StringUtils.isNotEmpty(bean.getBusinessModelId())){ //控制到业务类型
+        } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //控制到业务类型
             search.addFilter(new SearchFilter("businessModelId", bean.getBusinessModelId()));
-            search.addFilter(new SearchFilter("flowTypeId", null));
-        }else if(StringUtils.isNotEmpty(bean.getAppModuleId())){ //控制到应用模块
+            search.addFilter(new SearchFilter("flowTypeId", null, SearchFilter.Operator.NU));
+        } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //控制到应用模块
             search.addFilter(new SearchFilter("appModuleId", bean.getAppModuleId()));
-            search.addFilter(new SearchFilter("businessModelId", null));
-            search.addFilter(new SearchFilter("flowTypeId", null));
-        }else{ //设置全部待办
-            search.addFilter(new SearchFilter("appModuleId", null));
-            search.addFilter(new SearchFilter("businessModelId", null));
-            search.addFilter(new SearchFilter("flowTypeId", null));
+            search.addFilter(new SearchFilter("businessModelId", null, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", null, SearchFilter.Operator.NU));
+        } else { //设置全部待办
+            search.addFilter(new SearchFilter("appModuleId", null, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("businessModelId", null, SearchFilter.Operator.NU));
+            search.addFilter(new SearchFilter("flowTypeId", null, SearchFilter.Operator.NU));
         }
 
         if (StringUtils.isNotEmpty(bean.getId())) {
@@ -270,19 +285,19 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))  //开始时间重叠
                         || ((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))  //结束事件重叠
                         || (startDate.before(start) && endDate.after(end))//包含
-                        ) {
+                ) {
                     String mesString = "";
                     //分级授权报错信息拼接
-                    if(StringUtils.isNotEmpty(a.getAppModuleName())){
-                        mesString += "【应用模块："+a.getAppModuleName()+"】";
+                    if (StringUtils.isNotEmpty(a.getAppModuleName())) {
+                        mesString += "【应用模块：" + a.getAppModuleName() + "】";
                     }
-                    if(StringUtils.isNotEmpty(a.getBusinessModelName())){
-                        mesString += "【业务实体："+a.getBusinessModelName()+"】";
+                    if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
+                        mesString += "【业务实体：" + a.getBusinessModelName() + "】";
                     }
-                    if(StringUtils.isNotEmpty(a.getFlowTypeName())){
-                        mesString += "【流程类型："+a.getFlowTypeName()+"】";
+                    if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
+                        mesString += "【流程类型：" + a.getFlowTypeName() + "】";
                     }
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份"+mesString+"【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份" + mesString + "【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
                 }
             }
         }
