@@ -1790,7 +1790,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Override
     public ResponseData getMyFlowCollectInfo(String userId) {
-        //用户待办数（包括转授权）
+        //用户待办数（包括共同查看模式下的转授权待办）
         int todoSum = flowTaskService.getUserTodoSum(userId);
         //用户单据数（流程中）
         int billSum = this.getMybillsSum(userId);

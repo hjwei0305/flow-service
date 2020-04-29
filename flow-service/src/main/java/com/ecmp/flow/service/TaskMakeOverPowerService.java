@@ -514,7 +514,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     /**
-     * 根据被授权人和待办查询符合的转授权信息（通过查看模式）
+     * 根据被授权人和待办查询符合的转授权信息（共同查看模式）
      *
      * @param userId   用户id
      * @param flowTask 当前任务
@@ -553,6 +553,20 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return null;
     }
 
+    /**
+     * 根据被授权人查询所有符合的转授权信息（共同查看模式）
+     *
+     * @param userId
+     * @return
+     */
+    public List<TaskMakeOverPower> findPowerByPowerUser(String userId) {
+        //系统是否允许转授权操作
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            return this.findSameToSeePowerListByPowerUser(userId);
+        }
+        return null;
+    }
 
     /**
      * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）

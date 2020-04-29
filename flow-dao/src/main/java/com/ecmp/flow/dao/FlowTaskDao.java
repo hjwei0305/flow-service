@@ -109,15 +109,32 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList)  and (ft.trustState !=1  or ft.trustState is null )")
     Integer findTodoSumByExecutorIds(@Param("executorIdList") List<String> executorIdList);
 
-
     /**
-     * 根据执行人账号归类查询,可批量审批
+     * 根据执行人和流程类型ID查询待办总数
      *
      * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
-    List findByExecutorIdGroupCanBatchApproval(@Param("executorId") String executorId);
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.id = :flowTypeId  and (ft.trustState !=1  or ft.trustState is null )")
+    int findTodoSumByExecutorIdAndFlowTypeId(@Param("executorId") String executorId,@Param("flowTypeId") String flowTypeId);
+
+    /**
+     * 根据执行人和业务实体ID查询待办总数
+     *
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.id = :businessModelId  and (ft.trustState !=1  or ft.trustState is null )")
+    int findTodoSumByExecutorIdAndBusinessModelId(@Param("executorId") String executorId,@Param("businessModelId") String businessModelId);
+
+    /**
+     * 根据执行人和应用模块ID查询待办总数
+     *
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.id = :appModuleId  and (ft.trustState !=1  or ft.trustState is null )")
+    int findTodoSumByExecutorIdAndAppModuleId(@Param("executorId") String executorId,@Param("appModuleId") String appModuleId);
 
     /**
      * 根据执行人集合查询,可批量审批(转授权)
@@ -164,8 +181,6 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId")
     List<FlowTaskExecutorIdAndCount> findAllExecutorIdAndCount();
 
-//    @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.flowDefinitionId,ft.flowName,ft.taskKey,ft.taskName,ft.executorId,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft group by ft.executorId,ft.flowDefinitionId,ft.taskKey")
-//    public List<FlowTaskExecutorIdAndCount> findAllExecutorIdTaskKeyAndCount();
 
     @Query("select new com.ecmp.flow.dto.FlowTaskExecutorIdAndCount(ft.executorId,ft.executorName,ft.flowDefinitionId,ft.flowName,ft.actTaskDefKey,ft.taskName,count(ft.id)) from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId group by ft.executorId,ft.executorName,ft.flowDefinitionId,ft.flowName,ft.actTaskDefKey,ft.taskName")
     List<FlowTaskExecutorIdAndCount> findAllTaskKeyAndCountByExecutorId(@Param("executorId") String executorId);
