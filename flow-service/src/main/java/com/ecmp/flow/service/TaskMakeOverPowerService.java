@@ -33,6 +33,7 @@ import java.util.List;
 
 import static com.ecmp.core.search.SearchFilter.Operator.GE;
 import static com.ecmp.core.search.SearchFilter.Operator.LE;
+import static com.ecmp.core.search.SearchFilter.Operator.EQ;
 
 @Service
 public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPower> implements ITaskMakeOverPowerService {
@@ -125,7 +126,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Override
     @Transactional
     public OperateResultWithData<TaskMakeOverPower> setUserAndsave(TaskMakeOverPower entity) {
-        OperateResultWithData<TaskMakeOverPower> resultWithData;
 
         //是否允许待办转授权功能
         Boolean boo = this.isAllowMakeOverPower();
@@ -152,12 +152,12 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             if (!responseData.getSuccess()) {
                 return OperateResultWithData.operationFailure(responseData.getMessage());
             }
-            //保存待办转授权信息
-            resultWithData = super.save(entity);
 
+            //保存待办转授权信息
+            OperateResultWithData<TaskMakeOverPower> resultWithData = super.save(entity);
             if (resultWithData.getSuccess()) {
                 //根据转授权模式处理不同的逻辑
-                makeOverPowerTypeToDo(entity);
+                this.makeOverPowerTypeToDo(entity);
             }
             return resultWithData;
 
@@ -170,22 +170,28 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Override
     @Transactional
     public ResponseData updateOpenStatusById(String id) {
-        TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
-        if (bean.getOpenStatus() == true) {
-            bean.setOpenStatus(false);
-            taskMakeOverPowerDao.save(bean);
-        } else {
-            //生效规则检查
-            ResponseData responseData = checkOk(bean);
-            if (!responseData.getSuccess()) {
-                return OperateResultWithData.operationFailure(responseData.getMessage());
+        //是否允许待办转授权功能
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
+            if (bean.getOpenStatus() == true) {
+                bean.setOpenStatus(false);
+                taskMakeOverPowerDao.save(bean);
+            } else {
+                //生效规则检查
+                ResponseData responseData = checkOk(bean);
+                if (!responseData.getSuccess()) {
+                    return OperateResultWithData.operationFailure(responseData.getMessage());
+                }
+                bean.setOpenStatus(true);
+                taskMakeOverPowerDao.save(bean);
+                //根据不同转授权模式处理逻辑
+                this.makeOverPowerTypeToDo(bean);
             }
-            bean.setOpenStatus(true);
-            taskMakeOverPowerDao.save(bean);
-            //根据不同转授权模式处理逻辑
-            makeOverPowerTypeToDo(bean);
+            return ResponseData.operationSuccessWithData(bean);
+        } else {
+            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
         }
-        return ResponseData.operationSuccessWithData(bean);
     }
 
 
@@ -482,67 +488,63 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      * @param entity
      */
     public void makeOverPowerTypeToDo(TaskMakeOverPower entity) {
-        if (entity != null && entity.getOpenStatus() == true) { //规则生效
-            String makeOverPowerType = checkMakeOverPowerType();  //得到转授权模式
-            if ("turnToDo".equalsIgnoreCase(makeOverPowerType)) { //转办模式
-                List<FlowTask> taskList = getNeedTurnTodoList(entity);
-                if (taskList != null && taskList.size() > 0) {
-                    List<FlowTask> needDelList = new ArrayList<>();
-                    List<FlowTask> addList = new ArrayList<>();
-                    //是否推送信息到baisc
-                    Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-                    Boolean pushModelOrUrl = null;
-                    for (FlowTask flowTask : taskList) {
-                        //是否推送信息到业务模块或者直接配置的url
-                        if (pushModelOrUrl == null) {
-                            pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
-                        }
-                        //暂时先不变所属人，方便查看哪些是转授权出去的
-                        FlowTask taskBean = new FlowTask();
-                        BeanUtils.copyProperties(flowTask, taskBean);
-                        taskBean.setId(null);
-                        taskBean.setExecutorId(entity.getPowerUserId());
-                        taskBean.setExecutorName(entity.getPowerUserName());
-                        taskBean.setExecutorAccount(entity.getPowerUserAccount());
-                        //添加组织机构信息
-                        taskBean.setExecutorOrgId(entity.getPowerUserOrgId());
-                        taskBean.setExecutorOrgCode(entity.getPowerUserOrgCode());
-                        taskBean.setExecutorOrgName(entity.getPowerUserOrgName());
-                        if (StringUtils.isNotEmpty(taskBean.getDepict()) && !"null".equalsIgnoreCase(taskBean.getDepict())) {
-                            taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】" + taskBean.getDepict());
-                        } else {
-                            taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】");
-                        }
-                        if (pushBasic || pushModelOrUrl) {
-                            needDelList.add(flowTask);
-                            addList.add(taskBean);
-                        }
-                        flowTaskService.delete(flowTask.getId());
-                        flowTaskService.save(taskBean);
+        if (entity != null && entity.getOpenStatus() == true && "turnToDo".equalsIgnoreCase(entity.getMakeOverPowerType())) { //转办模式
+            //得到历史数据中需要转办的任务
+            List<FlowTask> taskList = getNeedTurnTodoList(entity);
+            if (taskList != null && taskList.size() > 0) {
+                List<FlowTask> needDelList = new ArrayList<>();
+                List<FlowTask> addList = new ArrayList<>();
+                //是否推送信息到baisc
+                Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+                Boolean pushModelOrUrl = null;
+                for (FlowTask flowTask : taskList) {
+                    //是否推送信息到业务模块或者直接配置的url
+                    if (pushModelOrUrl == null) {
+                        pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
                     }
-
-
+                    //暂时先不变所属人，方便查看哪些是转授权出去的
+                    FlowTask taskBean = new FlowTask();
+                    BeanUtils.copyProperties(flowTask, taskBean);
+                    taskBean.setId(null);
+                    taskBean.setExecutorId(entity.getPowerUserId());
+                    taskBean.setExecutorName(entity.getPowerUserName());
+                    taskBean.setExecutorAccount(entity.getPowerUserAccount());
+                    //添加组织机构信息
+                    taskBean.setExecutorOrgId(entity.getPowerUserOrgId());
+                    taskBean.setExecutorOrgCode(entity.getPowerUserOrgCode());
+                    taskBean.setExecutorOrgName(entity.getPowerUserOrgName());
+                    if (StringUtils.isNotEmpty(taskBean.getDepict()) && !"null".equalsIgnoreCase(taskBean.getDepict())) {
+                        taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】" + taskBean.getDepict());
+                    } else {
+                        taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】");
+                    }
                     if (pushBasic || pushModelOrUrl) {
-                        if (pushBasic) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    flowTaskService.pushToBasic(addList, null, needDelList, null);
-                                }
-                            }).start();
-                        }
-                        if (pushModelOrUrl) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), needDelList, TaskStatus.DELETE);
-                                    flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), addList, TaskStatus.INIT);
-                                }
-                            }).start();
-                        }
-
+                        needDelList.add(flowTask);
+                        addList.add(taskBean);
                     }
+                    flowTaskService.delete(flowTask.getId());
+                    flowTaskService.save(taskBean);
+                }
 
+
+                if (pushBasic || pushModelOrUrl) {
+                    if (pushBasic) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                flowTaskService.pushToBasic(addList, null, needDelList, null);
+                            }
+                        }).start();
+                    }
+                    if (pushModelOrUrl) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), needDelList, TaskStatus.DELETE);
+                                flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), addList, TaskStatus.INIT);
+                            }
+                        }).start();
+                    }
 
                 }
             }
@@ -570,6 +572,13 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         search.addFilter(new SearchFilter("executorId", entity.getUserId()));
         search.addFilter(new SearchFilter("lastEditedDate", startDate, GE, "Date"));
         search.addFilter(new SearchFilter("lastEditedDate", endDate, LE, "Date"));
+        if (StringUtils.isNotEmpty(entity.getFlowTypeId())) { //流程类型
+            search.addFilter(new SearchFilter("flowInstance.flowDefVersion.flowDefination.flowType.id", entity.getFlowTypeId(), EQ));
+        } else if (StringUtils.isNotEmpty(entity.getBusinessModelId())) { //业务实体
+            search.addFilter(new SearchFilter("flowInstance.flowDefVersion.flowDefination.flowType.businessModel.id", entity.getBusinessModelId(), EQ));
+        } else if (StringUtils.isNotEmpty(entity.getAppModuleId())) { //应用模块
+            search.addFilter(new SearchFilter("flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.id", entity.getAppModuleId(), EQ));
+        }
         return flowTaskDao.findByFilters(search);
     }
 
