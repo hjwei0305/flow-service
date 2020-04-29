@@ -9,12 +9,14 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.ITaskMakeOverPowerService;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.MakeOverPowerType;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.TaskMakeOverPowerDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.TaskMakeOverPower;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
@@ -396,99 +398,13 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     /**
-     * 根据被授权人ID查询满足要求的授权信息
-     *
-     * @param powerUserId 被授权人ID
-     * @return
-     */
-    public List<TaskMakeOverPower> findMeetUserByPowerId(String powerUserId) {
-        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        try {
-            date = simp.parse(simp.format(date));
-        } catch (Exception e) {
-        }
-        Search search = new Search();
-        search.addFilter(new SearchFilter("powerUserId", powerUserId));
-        search.addFilter(new SearchFilter("openStatus", true));
-        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
-        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
-        return taskMakeOverPowerDao.findByFilters(search);
-    }
-
-
-    /**
-     * 通过用户ID获取授权人的集合（包含自己）
-     * 待办转授权（同时查看模式）
-     *
-     * @param userId
-     * @return
-     */
-    public List<String> getAllPowerUserList(String userId) {
-        List<String> userIdList = new ArrayList<>();
-        userIdList.add(userId);
-        //查看转授权模式
-        String makeOverPowerType = checkMakeOverPowerType();
-        //同时查看模式（添加转授权执行人信息）
-        if ("sameToSee".equalsIgnoreCase(makeOverPowerType)) {
-            List<TaskMakeOverPower> powerUserlist = this.findMeetUserByPowerId(userId);
-            if (powerUserlist != null && powerUserlist.size() > 0) {
-                powerUserlist.forEach(a -> {
-                    userIdList.add(a.getUserId());
-                });
-            }
-        }
-        return userIdList;
-    }
-
-
-    /**
-     * 检查待办转授权模式（同时查看模式/转办模式）
-     *
-     * @return
-     */
-    public String checkMakeOverPowerType() {
-        //是否允许转授权(如果没设置或者不为true，视为不允许进行转授权操作)
-        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
-        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
-            return "noType";
-        }
-        //转授权类型（如果没设置或者不为turnToDo，视为转授权类型为同时查看）
-        String allowMakeOverPowerType = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER_TYPE");
-        if (StringUtils.isEmpty(allowMakeOverPowerType) || !"turnToDo".equalsIgnoreCase(allowMakeOverPowerType)) {
-            return "sameToSee";
-        }
-        return "turnToDo";
-    }
-
-    /**
-     * 通过授权用户ID返回转办模式转授权信息
-     *
-     * @param executorId 用户ID
-     * @return
-     */
-    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
-        if (StringUtils.isNotEmpty(executorId)) {
-            String makeOverPowerType = this.checkMakeOverPowerType();
-            if ("turnToDo".equalsIgnoreCase(makeOverPowerType)) {    //如果是转办模式（需要替换执行人，保留所属人）
-                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
-                if (listPower != null && listPower.size() > 0) {
-                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
-                }
-            }
-        }
-        return null;
-    }
-
-
-    /**
      * 根据转授权模式处理不同的逻辑
      * 注：目前主要针对转办模式（共同查看模式时是在查看待办的时候动态实现）
      *
      * @param entity
      */
     public void makeOverPowerTypeToDo(TaskMakeOverPower entity) {
-        if (entity != null && entity.getOpenStatus() == true && "turnToDo".equalsIgnoreCase(entity.getMakeOverPowerType())) { //转办模式
+        if (entity != null && entity.getOpenStatus() == true && MakeOverPowerType.TURNTODO.getCode().equalsIgnoreCase(entity.getMakeOverPowerType())) { //转办模式
             //得到历史数据中需要转办的任务
             List<FlowTask> taskList = getNeedTurnTodoList(entity);
             if (taskList != null && taskList.size() > 0) {
@@ -584,12 +500,67 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     /**
-     * 根据授权人ID查询满足要求的授权信息
+     * 平台是否允许待办转授权
      *
-     * @param userId 授权人ID
      * @return
      */
-    public List<TaskMakeOverPower> findPowerIdByUser(String userId) {
+    public boolean isAllowMakeOverPower() {
+        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
+        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * 根据被授权人和待办查询符合的转授权信息（通过查看模式）
+     *
+     * @param userId   用户id
+     * @param flowTask 当前任务
+     * @return
+     */
+    public TaskMakeOverPower findPowerByPowerUserAndTask(String userId, FlowTask flowTask) {
+        //系统是否允许转授权操作
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            List<TaskMakeOverPower> list = this.findSameToSeePowerListByPowerUser(userId);
+            String flowTaskId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+            String businessModelId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getId();
+            String appModuleId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId();
+            String oldExecutorId = flowTask.getExecutorId();
+            for (int i = 0; i < list.size(); i++) {
+                TaskMakeOverPower bean = list.get(i);
+                if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
+                    if (bean.getFlowTypeId().equals(flowTaskId) && bean.getUserId().equals(oldExecutorId)) {
+                        return bean;
+                    }
+                } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) { //业务实体
+                    if (bean.getBusinessModelId().equals(businessModelId) && bean.getUserId().equals(oldExecutorId)) {
+                        return bean;
+                    }
+                } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) { //应用模块
+                    if (bean.getAppModuleId().equals(appModuleId) && bean.getUserId().equals(oldExecutorId)) {
+                        return bean;
+                    }
+                } else {
+                    if (bean.getUserId().equals(oldExecutorId)) {
+                        return bean;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
+     *
+     * @param powerUserId 被授权人ID
+     * @return
+     */
+    public List<TaskMakeOverPower> findSameToSeePowerListByPowerUser(String powerUserId) {
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         try {
@@ -597,12 +568,14 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         } catch (Exception e) {
         }
         Search search = new Search();
-        search.addFilter(new SearchFilter("userId", userId));
+        search.addFilter(new SearchFilter("powerUserId", powerUserId));
+        search.addFilter(new SearchFilter("makeOverPowerType", MakeOverPowerType.SAMETOSEE.getCode()));
         search.addFilter(new SearchFilter("openStatus", true));
         search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
         search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
         return taskMakeOverPowerDao.findByFilters(search);
     }
+
 
     /**
      * 得到转授权的基本记录信息
@@ -622,17 +595,114 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return "";
     }
 
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * 平台是否允许待办转授权
+     * 通过用户ID获取授权人的集合（包含自己）
+     * 待办转授权（同时查看模式）
+     *
+     * @param userId
+     * @return
+     */
+    public List<String> getAllPowerUserList(String userId) {
+        List<String> userIdList = new ArrayList<>();
+        userIdList.add(userId);
+        //查看转授权模式
+        String makeOverPowerType = checkMakeOverPowerType();
+        //同时查看模式（添加转授权执行人信息）
+        if ("sameToSee".equalsIgnoreCase(makeOverPowerType)) {
+            List<TaskMakeOverPower> powerUserlist = this.findMeetUserByPowerId(userId);
+            if (powerUserlist != null && powerUserlist.size() > 0) {
+                powerUserlist.forEach(a -> {
+                    userIdList.add(a.getUserId());
+                });
+            }
+        }
+        return userIdList;
+    }
+
+
+    /**
+     * 根据被授权人ID查询满足要求的授权信息
+     *
+     * @param powerUserId 被授权人ID
+     * @return
+     */
+    public List<TaskMakeOverPower> findMeetUserByPowerId(String powerUserId) {
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = simp.parse(simp.format(date));
+        } catch (Exception e) {
+        }
+        Search search = new Search();
+        search.addFilter(new SearchFilter("powerUserId", powerUserId));
+        search.addFilter(new SearchFilter("openStatus", true));
+        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
+        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
+        return taskMakeOverPowerDao.findByFilters(search);
+    }
+
+
+    /**
+     * 检查待办转授权模式（同时查看模式/转办模式）
      *
      * @return
      */
-    public boolean isAllowMakeOverPower() {
+    public String checkMakeOverPowerType() {
+        //是否允许转授权(如果没设置或者不为true，视为不允许进行转授权操作)
         String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
         if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
-            return false;
+            return "noType";
         }
-        return true;
+        //转授权类型（如果没设置或者不为turnToDo，视为转授权类型为同时查看）
+        String allowMakeOverPowerType = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER_TYPE");
+        if (StringUtils.isEmpty(allowMakeOverPowerType) || !"turnToDo".equalsIgnoreCase(allowMakeOverPowerType)) {
+            return "sameToSee";
+        }
+        return "turnToDo";
+    }
+
+    /**
+     * 通过授权用户ID返回转办模式转授权信息
+     *
+     * @param executorId 用户ID
+     * @return
+     */
+    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
+        if (StringUtils.isNotEmpty(executorId)) {
+            String makeOverPowerType = this.checkMakeOverPowerType();
+            if ("turnToDo".equalsIgnoreCase(makeOverPowerType)) {    //如果是转办模式（需要替换执行人，保留所属人）
+                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
+                if (listPower != null && listPower.size() > 0) {
+                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 根据授权人ID查询满足要求的授权信息
+     *
+     * @param userId 授权人ID
+     * @return
+     */
+    public List<TaskMakeOverPower> findPowerIdByUser(String userId) {
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        try {
+            date = simp.parse(simp.format(date));
+        } catch (Exception e) {
+        }
+        Search search = new Search();
+        search.addFilter(new SearchFilter("userId", userId));
+        search.addFilter(new SearchFilter("openStatus", true));
+        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
+        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
+        return taskMakeOverPowerDao.findByFilters(search);
     }
 
 
