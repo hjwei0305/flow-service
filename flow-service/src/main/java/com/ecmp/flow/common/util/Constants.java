@@ -44,6 +44,18 @@ public class Constants extends ConfigurableContants {
 
 
     /**
+     * 从流程外部配置文件中读取参数
+     * @param key
+     * @return
+     */
+    public static String getFlowPropertiesByKey(String key){
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        return   BaseApplicationContext.getProperty(key);
+    }
+
+    /**
      * 获取键值对配置参数
      *
      * @return

@@ -127,35 +127,43 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     public OperateResultWithData<TaskMakeOverPower> setUserAndsave(TaskMakeOverPower entity) {
         OperateResultWithData<TaskMakeOverPower> resultWithData;
 
-        entity.setUserId(ContextUtil.getUserId());
-        entity.setUserAccount(ContextUtil.getUserAccount());
-        entity.setUserName(ContextUtil.getUserName());
+        //是否允许待办转授权功能
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            entity.setUserId(ContextUtil.getUserId());
+            entity.setUserAccount(ContextUtil.getUserAccount());
+            entity.setUserName(ContextUtil.getUserName());
 
-        if (StringUtils.isEmpty(entity.getFlowTypeId())) {
-            entity.setFlowTypeId(null);
-            entity.setFlowTypeName(null);
-        }
-        if (StringUtils.isEmpty(entity.getBusinessModelId())) {
-            entity.setBusinessModelId(null);
-            entity.setBusinessModelName(null);
-        }
-        if (StringUtils.isEmpty(entity.getAppModuleId())) {
-            entity.setAppModuleId(null);
-            entity.setAppModuleName(null);
-        }
+            if (StringUtils.isEmpty(entity.getFlowTypeId())) {
+                entity.setFlowTypeId(null);
+                entity.setFlowTypeName(null);
+            }
+            if (StringUtils.isEmpty(entity.getBusinessModelId())) {
+                entity.setBusinessModelId(null);
+                entity.setBusinessModelName(null);
+            }
+            if (StringUtils.isEmpty(entity.getAppModuleId())) {
+                entity.setAppModuleId(null);
+                entity.setAppModuleName(null);
+            }
 
+            //规则检查
+            ResponseData responseData = checkOk(entity);
+            if (!responseData.getSuccess()) {
+                return OperateResultWithData.operationFailure(responseData.getMessage());
+            }
+            //保存待办转授权信息
+            resultWithData = super.save(entity);
 
-        //规则检查
-        ResponseData responseData = checkOk(entity);
-        if (!responseData.getSuccess()) {
-            return OperateResultWithData.operationFailure(responseData.getMessage());
+            if (resultWithData.getSuccess()) {
+                //根据转授权模式处理不同的逻辑
+                makeOverPowerTypeToDo(entity);
+            }
+            return resultWithData;
+
+        } else {
+            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
         }
-        resultWithData = super.save(entity);
-        if (resultWithData.getSuccess()) {
-            //根据转授权模式处理不同的逻辑
-            makeOverPowerTypeToDo(entity);
-        }
-        return resultWithData;
     }
 
 
@@ -435,7 +443,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      */
     public String checkMakeOverPowerType() {
         //是否允许转授权(如果没设置或者不为true，视为不允许进行转授权操作)
-        String allowMakeOverPower = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER");
+        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
         if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
             return "noType";
         }
@@ -603,6 +611,19 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             }
         }
         return "";
+    }
+
+    /**
+     * 平台是否允许待办转授权
+     *
+     * @return
+     */
+    public boolean isAllowMakeOverPower() {
+        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
+        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
+            return false;
+        }
+        return true;
     }
 
 
