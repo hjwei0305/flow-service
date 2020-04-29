@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
@@ -1855,7 +1856,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<String> executorIdList = new ArrayList<>();
         executorIdList.add(userId);
         int allTodoSum = 0;
-        if (list != null && list.size() > 0) {
+        if (list != null && !list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower bean = list.get(i);
                 if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
@@ -1888,15 +1889,53 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<TodoBusinessSummaryVO> findCommonTaskSumHeader(Boolean batchApproval, String appSign) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        List groupResultList = null;
+        List groupResultList = new ArrayList();
 
-        //是否允许转授权
-        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userID);
+        List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userID);
+        List<String> userIdList = new ArrayList<>();
+        userIdList.add(userID);
+        if (powerList != null && !powerList.isEmpty()) {
+            if (batchApproval == true) {
+                for (int i = 0; i < powerList.size(); i++) {
+                    TaskMakeOverPower bean = powerList.get(i);
+                    if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
+                        List typeList = flowTaskDao.findCanBatchApprovalByExecutorAndFlowTypeId(bean.getUserId(), bean.getFlowTypeId());
+                        groupResultList.addAll(typeList);
+                    } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) {//业务实体
+                        List busList = flowTaskDao.findCanBatchApprovalByExecutorAndBusinessModelId(bean.getUserId(), bean.getBusinessModelId());
+                        groupResultList.addAll(busList);
+                    } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) {//应用模块
+                        List appList = flowTaskDao.findCanBatchApprovalByExecutorAndAppModuleId(bean.getUserId(), bean.getAppModuleId());
+                        groupResultList.addAll(appList);
+                    } else { //全部待办
+                        userIdList.add(bean.getUserId());
+                    }
+                }
+            } else {
+                for (int i = 0; i < powerList.size(); i++) {
+                    TaskMakeOverPower bean = powerList.get(i);
+                    if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
+                        List typeList = flowTaskDao.findGroupByExecutorIdAndAndFlowTypeId(bean.getUserId(), bean.getFlowTypeId());
+                        groupResultList.addAll(typeList);
+                    } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) {//业务实体
+                        List busList = flowTaskDao.findGroupByExecutorIdAndAndBusinessModelId(bean.getUserId(), bean.getBusinessModelId());
+                        groupResultList.addAll(busList);
+                    } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) {//应用模块
+                        List appList = flowTaskDao.findGroupByExecutorIdAndAndAppModuleId(bean.getUserId(), bean.getAppModuleId());
+                        groupResultList.addAll(appList);
+                    } else { //全部待办
+                        userIdList.add(bean.getUserId());
+                    }
+                }
+            }
+        }
 
         if (batchApproval == true) {
-            groupResultList = flowTaskDao.findByExecutorIdGroupCanBatchApprovalOfPower(userIdList);
+            List list = flowTaskDao.findByExecutorIdGroupCanBatchApprovalOfPower(userIdList);
+            groupResultList.addAll(list);
         } else {
-            groupResultList = flowTaskDao.findByExecutorIdGroupOfPower(userIdList);
+            List list = flowTaskDao.findByExecutorIdGroupOfPower(userIdList);
+            groupResultList.addAll(list);
         }
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
