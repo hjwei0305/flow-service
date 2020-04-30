@@ -12,10 +12,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.MakeOverPowerType;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.TaskMakeOverPowerDao;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
-import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.entity.TaskMakeOverPower;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.log.util.LogUtil;
@@ -30,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -53,9 +51,220 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Autowired
     private FlowTaskService flowTaskService;
 
+    @Autowired
+    private FlowTypeService flowTypeService;
+
+    @Autowired
+    private BusinessModelService BusinessModelService;
+
+    @Autowired
+    private AppModuleService appModuleService;
+
     protected BaseEntityDao<TaskMakeOverPower> getDao() {
         return this.taskMakeOverPowerDao;
     }
+
+    /**
+     * 保存转授权单据
+     *
+     * @param entity 实体
+     * @return
+     */
+    @Override
+    @Transactional
+    public OperateResultWithData<TaskMakeOverPower> setUserAndsave(TaskMakeOverPower entity) {
+        //是否允许待办转授权功能
+        Boolean boo = this.isAllowMakeOverPower();
+        //TODO：方便前端进行测试，逻辑重做完成后需修改根据参数设置控制
+        if (true) {
+            //因为按照最小颗粒度（流程类型）储存的数据，所以修改也必须在最小颗粒度上进行修改
+            if (StringUtils.isNotEmpty(entity.getId()) && StringUtils.isEmpty(entity.getFlowTypeId())) {
+                return OperateResultWithData.operationFailure("修改转授权信息等级必须控制到流程类型！");
+            }
+            //设置通用基础信息（授权人信息）
+            this.setCommonInfo(entity);
+            //将转授权信息转换成控制到流程类型的集合
+            List<TaskMakeOverPower> powerList = this.changeToMiniTypeList(entity);
+            if (powerList != null && !powerList.isEmpty()) {
+                for (int i = 0; i < powerList.size(); i++) {
+                    TaskMakeOverPower bean = powerList.get(i);
+                    //规则检查
+                    ResponseData responseData = checkOk(bean);
+                    if (!responseData.getSuccess()) {
+                        return OperateResultWithData.operationFailure(responseData.getMessage());
+                    }
+                }
+                try {
+                    //保存待办转授权信息
+                    super.save(powerList);
+                } catch (Exception e) {
+                    throw new FlowException("保存转授权信息失败！", e);
+                }
+
+                if (entity.getOpenStatus() == true && MakeOverPowerType.TURNTODO.getCode().equalsIgnoreCase(entity.getMakeOverPowerType())) {
+                    powerList.forEach(bean -> {
+                        //根据转授权模式处理不同的逻辑
+                        this.makeOverPowerTypeToDo(bean);
+                    });
+                }
+
+                return OperateResultWithData.operationSuccess();
+            }
+            return OperateResultWithData.operationSuccess();
+        } else {
+            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
+        }
+    }
+
+
+    /**
+     * 平台是否允许待办转授权
+     *
+     * @return
+     */
+    public boolean isAllowMakeOverPower() {
+        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
+        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * 设置通用基础信息
+     *
+     * @param entity
+     */
+    public void setCommonInfo(TaskMakeOverPower entity) {
+        //设置授权人信息
+        entity.setUserId(ContextUtil.getUserId());
+        entity.setUserAccount(ContextUtil.getUserAccount());
+        entity.setUserName(ContextUtil.getUserName());
+        //控制前台传空字符串的情况
+        if (StringUtils.isEmpty(entity.getFlowTypeId())) {
+            entity.setFlowTypeId(null);
+            entity.setFlowTypeName(null);
+        }
+        if (StringUtils.isEmpty(entity.getBusinessModelId())) {
+            entity.setBusinessModelId(null);
+            entity.setBusinessModelName(null);
+        }
+        if (StringUtils.isEmpty(entity.getAppModuleId())) {
+            entity.setAppModuleId(null);
+            entity.setAppModuleName(null);
+        }
+    }
+
+
+    /**
+     * 将授权信息转换成最小颗粒度（流程类型）授权信息储存
+     *
+     * @param entity
+     * @return
+     */
+    public List<TaskMakeOverPower> changeToMiniTypeList(TaskMakeOverPower entity) {
+        if (StringUtils.isNotEmpty(entity.getFlowTypeId())) { //流程类型(已经是最小颗粒度)
+            return Arrays.asList(entity);
+        } else if (StringUtils.isNotEmpty(entity.getBusinessModelId())) { //业务实体
+            return this.changeToMiniTypeListByBusinessModel(entity);
+        } else if (StringUtils.isNotEmpty(entity.getAppModuleId())) { //应用模块
+            return this.changeToMiniTypeListByAppModel(entity);
+        } else { //全部
+            return this.changeToMiniTypeListByAuth(entity);
+        }
+    }
+
+
+    /**
+     * 通过业务实体的转授权 转换成 流程类型的转授权 集合
+     *
+     * @param entity
+     * @return
+     */
+    public List<TaskMakeOverPower> changeToMiniTypeListByBusinessModel(TaskMakeOverPower entity) {
+        List<FlowType> typeList = flowTypeService.findByBusinessModelId(entity.getBusinessModelId());
+        List<TaskMakeOverPower> powerList = new ArrayList<>();
+        typeList.forEach(bean -> {
+            TaskMakeOverPower power = new TaskMakeOverPower();
+            BeanUtils.copyProperties(entity, power);
+            power.setId(null);
+            power.setFlowTypeId(bean.getId());
+            power.setFlowTypeName(bean.getName());
+            powerList.add(power);
+        });
+        return powerList;
+    }
+
+    /**
+     * 通过应用模块的转授权 转换成 流程类型的转授权 集合
+     *
+     * @param entity
+     * @return
+     */
+    public List<TaskMakeOverPower> changeToMiniTypeListByAppModel(TaskMakeOverPower entity) {
+        List<BusinessModel> businessList = BusinessModelService.findByAppModuleId(entity.getAppModuleId());
+        List<TaskMakeOverPower> powerList = new ArrayList<>();
+        businessList.forEach(bean -> {
+            entity.setBusinessModelId(bean.getId());
+            entity.setBusinessModelName(bean.getName());
+            List<TaskMakeOverPower> newList = changeToMiniTypeListByBusinessModel(entity);
+            powerList.addAll(newList);
+        });
+        return powerList;
+    }
+
+    /**
+     * 通过用户权限设置全部 流程类型的转授权 集合
+     *
+     * @param entity
+     * @return
+     */
+    public List<TaskMakeOverPower> changeToMiniTypeListByAuth(TaskMakeOverPower entity) {
+        List<AppModule> appList = appModuleService.findAllByAuth();
+        List<TaskMakeOverPower> powerList = new ArrayList<>();
+        appList.forEach(bean -> {
+            entity.setAppModuleId(bean.getId());
+            entity.setAppModuleName(bean.getName());
+            List<TaskMakeOverPower> newList = changeToMiniTypeListByAppModel(entity);
+            powerList.addAll(newList);
+        });
+        return powerList;
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     /**
@@ -116,56 +325,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             }
         }
         return result;
-    }
-
-
-    /**
-     * 保存转授权单据
-     *
-     * @param entity 实体
-     * @return
-     */
-    @Override
-    @Transactional
-    public OperateResultWithData<TaskMakeOverPower> setUserAndsave(TaskMakeOverPower entity) {
-
-        //是否允许待办转授权功能
-        Boolean boo = this.isAllowMakeOverPower();
-        if (boo) {
-            entity.setUserId(ContextUtil.getUserId());
-            entity.setUserAccount(ContextUtil.getUserAccount());
-            entity.setUserName(ContextUtil.getUserName());
-
-            if (StringUtils.isEmpty(entity.getFlowTypeId())) {
-                entity.setFlowTypeId(null);
-                entity.setFlowTypeName(null);
-            }
-            if (StringUtils.isEmpty(entity.getBusinessModelId())) {
-                entity.setBusinessModelId(null);
-                entity.setBusinessModelName(null);
-            }
-            if (StringUtils.isEmpty(entity.getAppModuleId())) {
-                entity.setAppModuleId(null);
-                entity.setAppModuleName(null);
-            }
-
-            //规则检查
-            ResponseData responseData = checkOk(entity);
-            if (!responseData.getSuccess()) {
-                return OperateResultWithData.operationFailure(responseData.getMessage());
-            }
-
-            //保存待办转授权信息
-            OperateResultWithData<TaskMakeOverPower> resultWithData = super.save(entity);
-            if (resultWithData.getSuccess()) {
-                //根据转授权模式处理不同的逻辑
-                this.makeOverPowerTypeToDo(entity);
-            }
-            return resultWithData;
-
-        } else {
-            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
-        }
     }
 
 
@@ -496,20 +655,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             search.addFilter(new SearchFilter("flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.id", entity.getAppModuleId(), EQ));
         }
         return flowTaskDao.findByFilters(search);
-    }
-
-
-    /**
-     * 平台是否允许待办转授权
-     *
-     * @return
-     */
-    public boolean isAllowMakeOverPower() {
-        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
-        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
-            return false;
-        }
-        return true;
     }
 
 
