@@ -242,7 +242,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @return 流程发布ID
      */
     @Override
-//    @Transactional
+    @Transactional
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
         String deployId = null;
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
@@ -1500,24 +1500,33 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @return 流程发布
      * @throws UnsupportedEncodingException
      */
+    @Transactional
     public Deployment deploy(String name, String xml) throws UnsupportedEncodingException {
         // InputStream stream = new ByteArrayInputStream(xml.getBytes("utf-8"));
         Deployment deploy = null;
-        org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+//        org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+//        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+//        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+//        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+//        try {
+//            //逻辑代码，可以写上你的逻辑处理代码
+//            DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
+//            deploymentBuilder.addString(name + ".bpmn", xml);
+//            deploy = deploymentBuilder.deploy();
+//            transactionManager.commit(status);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            transactionManager.rollback(status);
+//            throw e;
+//        }
         try {
             //逻辑代码，可以写上你的逻辑处理代码
             DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
             deploymentBuilder.addString(name + ".bpmn", xml);
             deploy = deploymentBuilder.deploy();
-            transactionManager.commit(status);
-
         } catch (Exception e) {
-            e.printStackTrace();
-            transactionManager.rollback(status);
-            throw e;
+            throw new FlowException("发布流程定义失败！",e);
         }
         return deploy;
     }
@@ -1528,12 +1537,25 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      * @param deployId 流程部署ID
      * @return Activiti流程定义实体
      */
-    private ProcessDefinitionEntity getProcessDefinitionByDeployId(String deployId) {
-        org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
-        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
+    @Transactional
+    public ProcessDefinitionEntity getProcessDefinitionByDeployId(String deployId) {
+//        org.springframework.orm.jpa.JpaTransactionManager transactionManager = (org.springframework.orm.jpa.JpaTransactionManager) ContextUtil.getApplicationContext().getBean("transactionManager");
+//        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+//        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW); // 事物隔离级别，开启新事务，这样会比较安全些。
+//        TransactionStatus status = transactionManager.getTransaction(def); // 获得事务状态
         ProcessDefinitionEntity result = null;
+//        try {
+//            //逻辑代码，可以写上你的逻辑处理代码
+//            ProcessDefinition proDefinition = (ProcessDefinition) this.repositoryService.createProcessDefinitionQuery()
+//                    .deploymentId(deployId).singleResult();
+//            if (proDefinition == null)
+//                return null;
+//            result = getProcessDefinitionByDefId(proDefinition.getId());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            transactionManager.rollback(status);
+//            throw e;
+//        }
         try {
             //逻辑代码，可以写上你的逻辑处理代码
             ProcessDefinition proDefinition = (ProcessDefinition) this.repositoryService.createProcessDefinitionQuery()
@@ -1542,9 +1564,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 return null;
             result = getProcessDefinitionByDefId(proDefinition.getId());
         } catch (Exception e) {
-            e.printStackTrace();
-            transactionManager.rollback(status);
-            throw e;
+            throw new FlowException("通过流程版本发布流程失败！",e);
         }
         return result;
     }
