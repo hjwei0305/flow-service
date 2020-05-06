@@ -44,7 +44,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Autowired
     private FlowHistoryService flowHistoryService;
 
-
     @Autowired
     private FlowTaskDao flowTaskDao;
 
@@ -53,9 +52,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
     @Autowired
     private FlowTypeService flowTypeService;
-
-    @Autowired
-    private BusinessModelService BusinessModelService;
 
     @Autowired
     private AppModuleService appModuleService;
@@ -71,10 +67,9 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      */
     public boolean isAllowMakeOverPower() {
         String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
-        //TODO：方便前端进行测试，逻辑重做完成后需修改根据参数设置控制
-//        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
-//            return false;
-//        }
+        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
+            return false;
+        }
         return true;
     }
 
@@ -650,7 +645,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     }
 
 
-
     /**
      * 得到转授权的基本记录信息
      * 注：如果是转授权的转办模式，task里面记录了【转授权-***授权】的信息，此方法主要用于提出这些信息，方便历史记录
@@ -685,6 +679,26 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return null;
     }
 
+    /**
+     * 通过授权用户ID返回转办模式转授权信息
+     *
+     * @param executorId 用户ID
+     * @return
+     */
+    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
+        //系统是否允许转授权操作
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            if (StringUtils.isNotEmpty(executorId)) {
+                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
+                if (listPower != null && listPower.size() > 0) {
+                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
@@ -709,130 +723,8 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     }
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
     /**
-     * 通过用户ID获取授权人的集合（包含自己）
-     * 待办转授权（同时查看模式）
-     *
-     * @param userId
-     * @return
-     */
-    public List<String> getAllPowerUserList(String userId) {
-        List<String> userIdList = new ArrayList<>();
-        userIdList.add(userId);
-        //查看转授权模式
-        String makeOverPowerType = checkMakeOverPowerType();
-        //同时查看模式（添加转授权执行人信息）
-        if ("sameToSee".equalsIgnoreCase(makeOverPowerType)) {
-            List<TaskMakeOverPower> powerUserlist = this.findMeetUserByPowerId(userId);
-            if (powerUserlist != null && powerUserlist.size() > 0) {
-                powerUserlist.forEach(a -> {
-                    userIdList.add(a.getUserId());
-                });
-            }
-        }
-        return userIdList;
-    }
-
-
-    /**
-     * 根据被授权人ID查询满足要求的授权信息
-     *
-     * @param powerUserId 被授权人ID
-     * @return
-     */
-    public List<TaskMakeOverPower> findMeetUserByPowerId(String powerUserId) {
-        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        try {
-            date = simp.parse(simp.format(date));
-        } catch (Exception e) {
-        }
-        Search search = new Search();
-        search.addFilter(new SearchFilter("powerUserId", powerUserId));
-        search.addFilter(new SearchFilter("openStatus", true));
-        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
-        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
-        return taskMakeOverPowerDao.findByFilters(search);
-    }
-
-
-    /**
-     * 检查待办转授权模式（同时查看模式/转办模式）
-     *
-     * @return
-     */
-    public String checkMakeOverPowerType() {
-        //是否允许转授权(如果没设置或者不为true，视为不允许进行转授权操作)
-        String allowMakeOverPower = Constants.getFlowPropertiesByKey("ALLOW_MAKE_OVER_POWER");
-        if (StringUtils.isEmpty(allowMakeOverPower) || !"true".equalsIgnoreCase(allowMakeOverPower)) {
-            return "noType";
-        }
-        //转授权类型（如果没设置或者不为turnToDo，视为转授权类型为同时查看）
-        String allowMakeOverPowerType = Constants.getConfigKeyValueProperties("ALLOW_MAKE_OVER_POWER_TYPE");
-        if (StringUtils.isEmpty(allowMakeOverPowerType) || !"turnToDo".equalsIgnoreCase(allowMakeOverPowerType)) {
-            return "sameToSee";
-        }
-        return "turnToDo";
-    }
-
-    /**
-     * 通过授权用户ID返回转办模式转授权信息
-     *
-     * @param executorId 用户ID
-     * @return
-     */
-    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
-        if (StringUtils.isNotEmpty(executorId)) {
-            String makeOverPowerType = this.checkMakeOverPowerType();
-            if ("turnToDo".equalsIgnoreCase(makeOverPowerType)) {    //如果是转办模式（需要替换执行人，保留所属人）
-                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
-                if (listPower != null && listPower.size() > 0) {
-                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
-                }
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * 根据授权人ID查询满足要求的授权信息
+     * 根据授权人ID查询满足要求的授权信息(转办模式)
      *
      * @param userId 授权人ID
      * @return
@@ -846,6 +738,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         }
         Search search = new Search();
         search.addFilter(new SearchFilter("userId", userId));
+        search.addFilter(new SearchFilter("makeOverPowerType", MakeOverPowerType.TURNTODO.getCode()));
         search.addFilter(new SearchFilter("openStatus", true));
         search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
         search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));

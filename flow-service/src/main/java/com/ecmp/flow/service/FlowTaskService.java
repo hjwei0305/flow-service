@@ -2227,9 +2227,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
-        List<TaskMakeOverPower>  powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
-        //是否允许转授权
-        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userId);
+        List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
         if (search == null) {
             search = new Search();
             PageInfo pageInfo = new PageInfo();
@@ -2237,7 +2235,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             pageInfo.setRows(1000);
             search.setPageInfo(pageInfo);
         }
-        PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userId,powerList, "", search);
+        PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userId, powerList, "", search);
 
 
         //说明添加授权人信息
@@ -2271,9 +2269,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
 
         if (StringUtils.isNotEmpty(businessModelId)) {
-            pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userId , powerList, searchConfig);
+            pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
         } else {
-            pageResult = flowTaskDao.findByPageOfPower(userId,powerList, appSign, searchConfig);
+            pageResult = flowTaskDao.findByPageOfPower(userId, powerList, appSign, searchConfig);
         }
         //说明添加授权人信息
         List<FlowTask> flowTaskList = pageResult.getRows();
