@@ -649,7 +649,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return null;
     }
 
-
     /**
      * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
      *

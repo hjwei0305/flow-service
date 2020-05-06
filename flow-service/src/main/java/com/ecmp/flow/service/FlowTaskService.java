@@ -1881,8 +1881,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List groupResultList = new ArrayList();
 
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userID);
-        List<String> userIdList = new ArrayList<>();
-        userIdList.add(userID);
         if (powerList != null && !powerList.isEmpty()) {
             if (batchApproval == true) {
                 for (int i = 0; i < powerList.size(); i++) {
@@ -1890,14 +1888,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
                         List typeList = flowTaskDao.findCanBatchApprovalByExecutorAndFlowTypeId(bean.getUserId(), bean.getFlowTypeId());
                         groupResultList.addAll(typeList);
-                    } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) {//业务实体
-                        List busList = flowTaskDao.findCanBatchApprovalByExecutorAndBusinessModelId(bean.getUserId(), bean.getBusinessModelId());
-                        groupResultList.addAll(busList);
-                    } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) {//应用模块
-                        List appList = flowTaskDao.findCanBatchApprovalByExecutorAndAppModuleId(bean.getUserId(), bean.getAppModuleId());
-                        groupResultList.addAll(appList);
-                    } else { //全部待办
-                        userIdList.add(bean.getUserId());
                     }
                 }
             } else {
@@ -1906,24 +1896,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
                         List typeList = flowTaskDao.findGroupByExecutorIdAndAndFlowTypeId(bean.getUserId(), bean.getFlowTypeId());
                         groupResultList.addAll(typeList);
-                    } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) {//业务实体
-                        List busList = flowTaskDao.findGroupByExecutorIdAndAndBusinessModelId(bean.getUserId(), bean.getBusinessModelId());
-                        groupResultList.addAll(busList);
-                    } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) {//应用模块
-                        List appList = flowTaskDao.findGroupByExecutorIdAndAndAppModuleId(bean.getUserId(), bean.getAppModuleId());
-                        groupResultList.addAll(appList);
-                    } else { //全部待办
-                        userIdList.add(bean.getUserId());
                     }
                 }
             }
         }
 
         if (batchApproval == true) {
-            List list = flowTaskDao.findByExecutorIdGroupCanBatchApprovalOfPower(userIdList);
+            List list = flowTaskDao.findByExecutorIdGroupCanBatchApprovalOfPower(userID);
             groupResultList.addAll(list);
         } else {
-            List list = flowTaskDao.findByExecutorIdGroupOfPower(userIdList);
+            List list = flowTaskDao.findByExecutorIdGroupOfPower(userID);
             groupResultList.addAll(list);
         }
 

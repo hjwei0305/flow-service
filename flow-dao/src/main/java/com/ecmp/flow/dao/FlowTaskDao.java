@@ -85,11 +85,11 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     /**
      * 根据执行人集合查询归类查询(转授权)
      *
-     * @param executorIdList
+     * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList)  and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
-    List findByExecutorIdGroupOfPower(@Param("executorIdList") List<String> executorIdList);
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
+    List findByExecutorIdGroupOfPower(@Param("executorId") String executorId);
 
 
     /**
@@ -99,27 +99,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      * @return
      */
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId and ft.flowInstance.flowDefVersion.flowDefination.flowType.id = :flowTypeId and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
-    List findGroupByExecutorIdAndAndFlowTypeId(@Param("executorId") String executorId,@Param("flowTypeId") String flowTypeId);
-
-
-    /**
-     * 根据执行人和业务实体ID查询待办汇总信息
-     *
-     * @param executorId
-     * @return
-     */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.id = :businessModelId and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
-    List findGroupByExecutorIdAndAndBusinessModelId(@Param("executorId") String executorId,@Param("businessModelId") String businessModelId);
-
-
-    /**
-     * 根据执行人和应用模块ID查询待办汇总信息
-     *
-     * @param executorId
-     * @return
-     */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.id = :appModuleId and (ft.trustState !=1  or ft.trustState is null ) group by ft.flowDefinitionId")
-    List findGroupByExecutorIdAndAndAppModuleId(@Param("executorId") String executorId,@Param("appModuleId") String appModuleId);
+    List findGroupByExecutorIdAndAndFlowTypeId(@Param("executorId") String executorId, @Param("flowTypeId") String flowTypeId);
 
 
     /**
@@ -138,16 +118,16 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      * @return
      */
     @Query("select count(ft.id) from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.id = :flowTypeId  and (ft.trustState !=1  or ft.trustState is null )")
-    int findTodoSumByExecutorIdAndFlowTypeId(@Param("executorId") String executorId,@Param("flowTypeId") String flowTypeId);
+    int findTodoSumByExecutorIdAndFlowTypeId(@Param("executorId") String executorId, @Param("flowTypeId") String flowTypeId);
 
     /**
-     * 根据执行人集合查询,可批量审批(转授权)
+     * 根据执行人查询可批量审批
      *
-     * @param executorIdList
+     * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  in (:executorIdList) and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
-    List findByExecutorIdGroupCanBatchApprovalOfPower(@Param("executorIdList") List<String> executorIdList);
+    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId = :executorId and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
+    List findByExecutorIdGroupCanBatchApprovalOfPower(@Param("executorId") String executorId);
 
 
     /**
@@ -157,26 +137,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      * @return
      */
     @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.id = :flowTypeId    and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
-    List findCanBatchApprovalByExecutorAndFlowTypeId(@Param("executorId") String executorId,@Param("flowTypeId") String flowTypeId);
-
-    /**
-     * 根据执行人和业务实体ID查询可批量审批
-     *
-     * @param executorId
-     * @return
-     */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.id = :businessModelId    and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
-    List findCanBatchApprovalByExecutorAndBusinessModelId(@Param("executorId") String executorId,@Param("businessModelId") String businessModelId);
-
-
-    /**
-     * 根据执行人和应用模块ID查询可批量审批
-     *
-     * @param executorId
-     * @return
-     */
-    @Query("select count(ft.id),ft.flowDefinitionId from com.ecmp.flow.entity.FlowTask ft where ft.executorId  = :executorId  and ft.flowInstance.flowDefVersion.flowDefination.flowType.businessModel.appModule.id = :appModuleId    and ft.canBatchApproval = true and (ft.trustState !=1  or ft.trustState is null )   group by ft.flowDefinitionId")
-    List findCanBatchApprovalByExecutorAndAppModuleId(@Param("executorId") String executorId,@Param("appModuleId") String appModuleId);
+    List findCanBatchApprovalByExecutorAndFlowTypeId(@Param("executorId") String executorId, @Param("flowTypeId") String flowTypeId);
 
     /**
      * 查询可以加签的待办-针对启动
