@@ -89,7 +89,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 for (int i = 0; i < powerList.size(); i++) {
                     TaskMakeOverPower bean = powerList.get(i);
                     //规则检查
-                    ResponseData responseData = checkOk(bean);
+                    ResponseData responseData = this.checkOk(bean);
                     if (!responseData.getSuccess()) {
                         return OperateResultWithData.operationFailure(responseData.getMessage());
                     }
@@ -101,16 +101,17 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                     throw new FlowException("保存转授权信息失败！", e);
                 }
 
+                //转办模式的数据
                 if (entity.getOpenStatus() == true && MakeOverPowerType.TURNTODO.getCode().equalsIgnoreCase(entity.getMakeOverPowerType())) {
                     powerList.forEach(bean -> {
                         //根据转授权模式处理不同的逻辑
                         this.makeOverPowerTypeToDo(bean);
                     });
                 }
-
                 return OperateResultWithData.operationSuccess();
+            } else {
+                return OperateResultWithData.operationFailure("待办转授权储存信息转换失败！");
             }
-            return OperateResultWithData.operationSuccess();
         } else {
             return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
         }
@@ -203,13 +204,17 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      * @return
      */
     public List<TaskMakeOverPower> changeToMiniTypeListByAppModel(TaskMakeOverPower entity) {
-        List<BusinessModel> businessList = BusinessModelService.findByAppModuleId(entity.getAppModuleId());
+        List<FlowType> typeList = flowTypeService.findListByProperty("businessModel.appModule.id", entity.getAppModuleId());
         List<TaskMakeOverPower> powerList = new ArrayList<>();
-        businessList.forEach(bean -> {
-            entity.setBusinessModelId(bean.getId());
-            entity.setBusinessModelName(bean.getName());
-            List<TaskMakeOverPower> newList = changeToMiniTypeListByBusinessModel(entity);
-            powerList.addAll(newList);
+        typeList.forEach(bean -> {
+            TaskMakeOverPower power = new TaskMakeOverPower();
+            BeanUtils.copyProperties(entity, power);
+            power.setId(null);
+            power.setBusinessModelId(bean.getBusinessModel().getId());
+            power.setBusinessModelName(bean.getBusinessModel().getName());
+            power.setFlowTypeId(bean.getId());
+            power.setFlowTypeName(bean.getName());
+            powerList.add(power);
         });
         return powerList;
     }
@@ -230,129 +235,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             powerList.addAll(newList);
         });
         return powerList;
-    }
-
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    /**
-     * 查询自己的转授权单据
-     */
-    @Override
-    public ResponseData findAllByUser() {
-        String userId = ContextUtil.getUserId();
-        List<TaskMakeOverPower> list;
-        SessionUser sessionUser = ContextUtil.getSessionUser();
-        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
-        if (authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
-            list = taskMakeOverPowerDao.findAll();
-        } else {
-            list = taskMakeOverPowerDao.findListByProperty("userId", userId);
-        }
-        return ResponseData.operationSuccessWithData(list);
-    }
-
-    /**
-     * 查询转授权处理历史（自己待办转授权人处理的）
-     */
-    @Override
-    public ResponseData findAllHistoryByUser() {
-        String userId = ContextUtil.getUserId();
-        SessionUser sessionUser = ContextUtil.getSessionUser();
-        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
-        List<FlowHistory> historylist;
-        if (authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
-            historylist = flowHistoryService.findByAllTaskMakeOverPowerHistory();
-        } else {
-            Search search = new Search();
-            search.addFilter(new SearchFilter("ownerId", userId, SearchFilter.Operator.EQ));
-            search.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.NE));
-            SearchOrder searchOrder = new SearchOrder();
-            search.addSortOrder(searchOrder.desc("lastEditedDate"));
-            historylist = flowHistoryService.findByFilters(search);
-        }
-        this.initWebUrl(historylist);
-        return ResponseData.operationSuccessWithData(historylist);
-    }
-
-    private List<FlowHistory> initWebUrl(List<FlowHistory> result) {
-        if (result != null && !result.isEmpty()) {
-            for (FlowHistory flowHistory : result) {
-                FlowInstance flowInstance = flowHistory.getFlowInstance();
-                String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
-                if (StringUtils.isNotEmpty(webBaseAddress)) {
-                    flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
-                    String[] tempWebBaseAddress = webBaseAddress.split("/");
-                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-                        flowInstance.setWebBaseAddress("/" + webBaseAddress);
-                    }
-                }
-
-            }
-        }
-        return result;
-    }
-
-
-    @Override
-    @Transactional
-    public ResponseData updateOpenStatusById(String id) {
-        //是否允许待办转授权功能
-        Boolean boo = this.isAllowMakeOverPower();
-        if (boo) {
-            TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
-            if (bean.getOpenStatus() == true) {
-                bean.setOpenStatus(false);
-                taskMakeOverPowerDao.save(bean);
-            } else {
-                //生效规则检查
-                ResponseData responseData = checkOk(bean);
-                if (!responseData.getSuccess()) {
-                    return OperateResultWithData.operationFailure(responseData.getMessage());
-                }
-                bean.setOpenStatus(true);
-                taskMakeOverPowerDao.save(bean);
-                //根据不同转授权模式处理逻辑
-                this.makeOverPowerTypeToDo(bean);
-            }
-            return ResponseData.operationSuccessWithData(bean);
-        } else {
-            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
-        }
     }
 
 
@@ -385,6 +267,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         responseData = checkPowerAndUserRepetition(bean);
         return responseData;
     }
+
 
     /**
      * 通用filter设置(发布状态、是否排除本数据、分级权限控制)
@@ -419,64 +302,22 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     /**
-     * 分级授权提示信息拼接
-     *
-     * @param a
-     * @return
-     */
-    public String getMesString(TaskMakeOverPower a) {
-        String mesString = "";
-        //分级授权报错信息拼接
-        if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-            mesString += "【应用模块：" + a.getAppModuleName() + "】";
-        }
-        if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-            mesString += "【业务实体：" + a.getBusinessModelName() + "】";
-        }
-        if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-            mesString += "【流程类型：" + a.getFlowTypeName() + "】";
-        }
-        return mesString;
-    }
-
-    /**
-     * 时间段是否重叠判断
-     *
-     * @param startDate 开始时间
-     * @param endDate   结束事件
-     * @param start     要比较的开始时间
-     * @param end       要比较的结束时间
-     * @return
-     */
-    public Boolean checkSameTime(Date startDate, Date endDate, Date start, Date end) {
-        if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))) { //开始时间重叠
-            return true;
-        } else if (((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))) { //结束事件重叠
-            return true;
-        } else if ((startDate.before(start) && endDate.after(end))) { //包含
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * 检查被授权用户是否建立了相同等级的转授权
+     * 检查该用户建立的授权信息是否重复
      *
      * @param bean
      * @return
      */
-    public ResponseData checkPowerAndUserRepetition(TaskMakeOverPower bean) {
+    public ResponseData checkUserRepetition(TaskMakeOverPower bean) {
         //查询该用户所有授权信息（不包含当前数据）
         Search search = new Search();
-        search.addFilter(new SearchFilter("userId", bean.getPowerUserId()));
+        search.addFilter(new SearchFilter("userId", bean.getUserId()));
         //通用filter设置
         this.setCommonFilter(bean, search);
 
         List<TaskMakeOverPower> list = taskMakeOverPowerDao.findByFilters(search);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = bean.getPowerStartDate();
         Date endDate = bean.getPowerEndDate();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower a = list.get(i);
@@ -484,7 +325,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 Date end = a.getPowerEndDate();
                 if (checkSameTime(startDate, endDate, start, end)) {
                     String mesString = this.getMesString(a);
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给【" + a.getPowerUserName() + "】，所以您不能再转授权给他！");
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份" + mesString + "【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
                 }
             }
         }
@@ -525,22 +366,22 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     /**
-     * 检查该用户建立的授权信息是否重复
+     * 检查被授权用户是否建立了相同等级的转授权
      *
      * @param bean
      * @return
      */
-    public ResponseData checkUserRepetition(TaskMakeOverPower bean) {
+    public ResponseData checkPowerAndUserRepetition(TaskMakeOverPower bean) {
         //查询该用户所有授权信息（不包含当前数据）
         Search search = new Search();
-        search.addFilter(new SearchFilter("userId", bean.getUserId()));
+        search.addFilter(new SearchFilter("userId", bean.getPowerUserId()));
         //通用filter设置
         this.setCommonFilter(bean, search);
 
         List<TaskMakeOverPower> list = taskMakeOverPowerDao.findByFilters(search);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = bean.getPowerStartDate();
         Date endDate = bean.getPowerEndDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (list != null && list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower a = list.get(i);
@@ -548,11 +389,54 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 Date end = a.getPowerEndDate();
                 if (checkSameTime(startDate, endDate, start, end)) {
                     String mesString = this.getMesString(a);
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份" + mesString + "【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
+                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给【" + a.getPowerUserName() + "】，所以您不能再转授权给他！");
                 }
             }
         }
         return ResponseData.operationSuccess();
+    }
+
+
+    /**
+     * 时间段是否重叠判断
+     *
+     * @param startDate 开始时间
+     * @param endDate   结束事件
+     * @param start     要比较的开始时间
+     * @param end       要比较的结束时间
+     * @return
+     */
+    public Boolean checkSameTime(Date startDate, Date endDate, Date start, Date end) {
+        if (((startDate.after(start) || startDate.equals(start)) && (startDate.before(end) || startDate.equals(end)))) { //开始时间重叠
+            return true;
+        } else if (((endDate.after(start) || endDate.equals(start)) && (endDate.before(end) || endDate.equals(end)))) { //结束事件重叠
+            return true;
+        } else if ((startDate.before(start) && endDate.after(end))) { //包含
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 分级授权提示信息拼接
+     *
+     * @param a
+     * @return
+     */
+    public String getMesString(TaskMakeOverPower a) {
+        String mesString = "";
+        //分级授权报错信息拼接
+        if (StringUtils.isNotEmpty(a.getAppModuleName())) {
+            mesString += "【应用模块：" + a.getAppModuleName() + "】";
+        }
+        if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
+            mesString += "【业务实体：" + a.getBusinessModelName() + "】";
+        }
+        if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
+            mesString += "【流程类型：" + a.getFlowTypeName() + "】";
+        }
+        return mesString;
     }
 
 
@@ -656,6 +540,136 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         }
         return flowTaskDao.findByFilters(search);
     }
+
+
+
+    @Override
+    @Transactional
+    public ResponseData updateOpenStatusById(String id) {
+        //是否允许待办转授权功能
+        Boolean boo = this.isAllowMakeOverPower();
+        //TODO：方便前端进行测试，逻辑重做完成后需修改根据参数设置控制
+        if (true) {
+            TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
+            if (bean.getOpenStatus() == true) {
+                bean.setOpenStatus(false);
+                taskMakeOverPowerDao.save(bean);
+            } else {
+                //生效规则检查
+                ResponseData responseData = checkOk(bean);
+                if (!responseData.getSuccess()) {
+                    return OperateResultWithData.operationFailure(responseData.getMessage());
+                }
+                bean.setOpenStatus(true);
+                taskMakeOverPowerDao.save(bean);
+                //根据不同转授权模式处理逻辑
+                this.makeOverPowerTypeToDo(bean);
+            }
+            return ResponseData.operationSuccessWithData(bean);
+        } else {
+            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
+        }
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * 查询自己的转授权单据
+     */
+    @Override
+    public ResponseData findAllByUser() {
+        String userId = ContextUtil.getUserId();
+        List<TaskMakeOverPower> list;
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+        if (authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
+            list = taskMakeOverPowerDao.findAll();
+        } else {
+            list = taskMakeOverPowerDao.findListByProperty("userId", userId);
+        }
+        return ResponseData.operationSuccessWithData(list);
+    }
+
+    /**
+     * 查询转授权处理历史（自己待办转授权人处理的）
+     */
+    @Override
+    public ResponseData findAllHistoryByUser() {
+        String userId = ContextUtil.getUserId();
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+        List<FlowHistory> historylist;
+        if (authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
+            historylist = flowHistoryService.findByAllTaskMakeOverPowerHistory();
+        } else {
+            Search search = new Search();
+            search.addFilter(new SearchFilter("ownerId", userId, SearchFilter.Operator.EQ));
+            search.addFilter(new SearchFilter("executorId", userId, SearchFilter.Operator.NE));
+            SearchOrder searchOrder = new SearchOrder();
+            search.addSortOrder(searchOrder.desc("lastEditedDate"));
+            historylist = flowHistoryService.findByFilters(search);
+        }
+        this.initWebUrl(historylist);
+        return ResponseData.operationSuccessWithData(historylist);
+    }
+
+    private List<FlowHistory> initWebUrl(List<FlowHistory> result) {
+        if (result != null && !result.isEmpty()) {
+            for (FlowHistory flowHistory : result) {
+                FlowInstance flowInstance = flowHistory.getFlowInstance();
+                String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+                if (StringUtils.isNotEmpty(webBaseAddress)) {
+                    flowInstance.setWebBaseAddressAbsolute(webBaseAddress);
+                    String[] tempWebBaseAddress = webBaseAddress.split("/");
+                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
+                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
+                        flowInstance.setWebBaseAddress("/" + webBaseAddress);
+                    }
+                }
+
+            }
+        }
+        return result;
+    }
+
+
+
+
+
 
 
     /**
