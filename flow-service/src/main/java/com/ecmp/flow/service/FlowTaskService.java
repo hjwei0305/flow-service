@@ -1853,8 +1853,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public Integer getUserTodoSum(String userId) {
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
         List<TaskMakeOverPower> list = taskMakeOverPowerService.findPowerByPowerUser(userId);
-        List<String> executorIdList = new ArrayList<>();
-        executorIdList.add(userId);
         int allTodoSum = 0;
         if (list != null && !list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
@@ -1862,20 +1860,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
                     int typeSum = flowTaskDao.findTodoSumByExecutorIdAndFlowTypeId(bean.getUserId(), bean.getFlowTypeId());
                     allTodoSum += typeSum;
-                } else if (StringUtils.isNotEmpty(bean.getBusinessModelId())) {//业务实体
-                    int bussSum = flowTaskDao.findTodoSumByExecutorIdAndBusinessModelId(bean.getUserId(), bean.getBusinessModelId());
-                    allTodoSum += bussSum;
-                } else if (StringUtils.isNotEmpty(bean.getAppModuleId())) {//应用模块
-                    int appSum = flowTaskDao.findTodoSumByExecutorIdAndAppModuleId(bean.getUserId(), bean.getAppModuleId());
-                    allTodoSum += appSum;
-                } else { //全部待办
-                    executorIdList.add(bean.getUserId());
                 }
             }
         }
-        int exeListSum = flowTaskDao.findTodoSumByExecutorIds(executorIdList);
+        int exeListSum = flowTaskDao.findTodoSumByExecutorId(userId);
         allTodoSum += exeListSum;
-
         return allTodoSum;
     }
 
