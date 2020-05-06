@@ -1981,13 +1981,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public PageResult<FlowTask> findByPageCanBatchApproval(Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        PageResult<FlowTask> flowTaskPageResult = flowTaskDao.findByPageCanBatchApproval(userId, searchConfig);
-
-        List<FlowTask> result = flowTaskPageResult.getRows();
-        initFlowTasks(result);
-
-        FlowTaskTool.changeTaskStatue(flowTaskPageResult);
-        return flowTaskPageResult;
+        return this.findByPageCanBatchApprovalByBusinessModelId(null, searchConfig);
     }
 
     public PageResult<FlowTaskBatchPhoneVO> findByPageCanBatchApprovalOfMobile(String businessModelId, int page, int rows, String quickValue) {
@@ -2087,16 +2081,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        PageResult<FlowTask> flowTaskPageResult = null;
+        PageResult<FlowTask> flowTaskPageResult;
 
-        //是否允许转授权
-        List<String> userIdList = taskMakeOverPowerService.getAllPowerUserList(userId);
-
+        //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
+        List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
         if (StringUtils.isNotEmpty(businessModelId)) {
-            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalByBusinessModelIdOfPower(businessModelId, userIdList, searchConfig);
+            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
         } else {
-            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalOfPower(userIdList, searchConfig);
+            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalOfPower(userId, powerList, searchConfig);
         }
+
         //说明添加授权人信息
         List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
 

@@ -649,27 +649,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return null;
     }
 
-    /**
-     * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
-     *
-     * @param powerUserId 被授权人ID
-     * @return
-     */
-    public List<TaskMakeOverPower> findSameToSeePowerListByPowerUser(String powerUserId) {
-        Date date = new Date();
-        try {
-            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
-            date = simp.parse(simp.format(date));
-        } catch (Exception e) {
-        }
-        Search search = new Search();
-        search.addFilter(new SearchFilter("powerUserId", powerUserId));
-        search.addFilter(new SearchFilter("makeOverPowerType", MakeOverPowerType.SAMETOSEE.getCode()));
-        search.addFilter(new SearchFilter("openStatus", true));
-        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
-        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
-        return taskMakeOverPowerDao.findByFilters(search);
-    }
 
 
     /**
@@ -704,6 +683,29 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             return this.findSameToSeePowerListByPowerUser(userId);
         }
         return null;
+    }
+
+
+    /**
+     * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
+     *
+     * @param powerUserId 被授权人ID
+     * @return
+     */
+    public List<TaskMakeOverPower> findSameToSeePowerListByPowerUser(String powerUserId) {
+        Date date = new Date();
+        try {
+            SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
+            date = simp.parse(simp.format(date));
+        } catch (Exception e) {
+        }
+        Search search = new Search();
+        search.addFilter(new SearchFilter("powerUserId", powerUserId));
+        search.addFilter(new SearchFilter("makeOverPowerType", MakeOverPowerType.SAMETOSEE.getCode()));
+        search.addFilter(new SearchFilter("openStatus", true));
+        search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
+        search.addFilter(new SearchFilter("powerEndDate", date, GE, "Date"));
+        return taskMakeOverPowerDao.findByFilters(search);
     }
 
 
