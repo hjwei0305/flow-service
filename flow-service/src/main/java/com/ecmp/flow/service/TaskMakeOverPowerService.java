@@ -530,14 +530,14 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     @Override
     @Transactional
     public ResponseData updateOpenStatusById(String id) {
-        //是否允许待办转授权功能
-        Boolean boo = this.isAllowMakeOverPower();
-        if (boo) {
-            TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
-            if (bean.getOpenStatus() == true) {
-                bean.setOpenStatus(false);
-                taskMakeOverPowerDao.save(bean);
-            } else {
+        TaskMakeOverPower bean = taskMakeOverPowerDao.findOne(id);
+        if (bean.getOpenStatus() == true) {
+            bean.setOpenStatus(false);
+            taskMakeOverPowerDao.save(bean);
+        } else {
+            //是否允许待办转授权功能
+            Boolean boo = this.isAllowMakeOverPower();
+            if (boo) {
                 //生效规则检查
                 ResponseData responseData = this.checkOk(bean);
                 if (!responseData.getSuccess()) {
@@ -547,11 +547,11 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 taskMakeOverPowerDao.save(bean);
                 //根据不同转授权模式处理逻辑
                 this.makeOverPowerTypeToDo(bean);
+            } else {
+                return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
             }
-            return ResponseData.operationSuccessWithData(bean);
-        } else {
-            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
         }
+        return ResponseData.operationSuccessWithData(bean);
     }
 
 
