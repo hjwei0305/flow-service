@@ -414,20 +414,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办信息（租户管理员）", notes = "测试")
     PageResult<FlowTask> findAllByTenant(@QueryParam("appModuleId") String appModuleId, @QueryParam("businessModelId") String businessModelId, @QueryParam("flowTypeId") String flowTypeId, Search searchConfig);
 
-    /**
-     * 获取待办汇总信息
-     *
-     * @param businessModelId 业务实体id
-     * @param appSign         应用标识
-     * @param searchConfig    查询条件
-     * @return 待办汇总信息
-     */
-    @POST
-    @Path("findByBusinessModelId")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "获取待办汇总信息", notes = "测试")
-    PageResult<FlowTask> findByBusinessModelId(@QueryParam("businessModelId") String businessModelId, @QueryParam("appSign") String appSign, Search searchConfig);
 
 
     /**

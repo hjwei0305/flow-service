@@ -23,25 +23,26 @@ import java.util.List;
 public interface CustomFlowTaskDao {
 
     /**
-     * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
+     * 通过业务实体ID和用户获取待办信息（包括共同查看模式的转授权待办）
      * @param businessModelId
      * @param executorId
+     * @param powerList
      * @param searchConfig
      * @return
      */
     @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig);
+    PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, String executorId, List<TaskMakeOverPower>  powerList, Search searchConfig);
 
-    //转授权
+    /**
+     * 查询用户待办信息（包括共同查看模式的转授权待办）
+     * @param executorId
+     * @param powerList
+     * @param appSign
+     * @param searchConfig
+     * @return
+     */
     @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig);
-
-    @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPage(String executorId, String appSign, Search searchConfig);
-
-    //转授权
-    @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPageOfPower(List<String> executorIdList, String appSign, Search searchConfig);
+    PageResult<FlowTask> findByPageOfPower(String executorId,List<TaskMakeOverPower>  powerList, String appSign, Search searchConfig);
 
     /**
      * 通过用户查询可批量审批待办（包括共同查看模式的转授权待办）

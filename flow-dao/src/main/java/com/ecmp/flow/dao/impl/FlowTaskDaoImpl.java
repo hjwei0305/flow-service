@@ -185,25 +185,39 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
     }
 
 
-    public PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, List<String> executorIdList, Search searchConfig) {
+    public PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, String executorId, List<TaskMakeOverPower>  powerList, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders = searchConfig.getSortOrders();
         String hqlCount = " select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
-                " where ft.executorId  in (:executorIdList) " +
-                " and (ft.trustState !=1  or ft.trustState is null ) " +
+                " where   (ft.trustState !=1  or ft.trustState is null ) " +
                 " and ft.flowDefinitionId " +
                 " in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
                 " in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
                 " in (select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
-                " where ft.executorId  in (:executorIdList) " +
-                " and (ft.trustState !=1  or ft.trustState is null ) " +
+                " where  (ft.trustState !=1  or ft.trustState is null ) " +
                 " and ft.flowDefinitionId " +
                 " in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
                 " in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
                 " in ( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId)))";
+
+        if (powerList != null && !powerList.isEmpty()) { //共同查看模式转授权信息不为空
+            hqlCount += " and  (  (ft.executorId  = :executorId )    ";
+            hqlQuery += " and  (  (ft.executorId  = :executorId )    ";
+            for (int i = 0; i < powerList.size(); i++) {
+                TaskMakeOverPower bean = powerList.get(i);
+                hqlCount += "  or  ( ft.executorId = '" + bean.getUserId() + "'  and  ft.flowInstance.flowDefVersion.flowDefination.flowType.id = '" + bean.getFlowTypeId() + "'    )   ";
+                hqlQuery += "  or  ( ft.executorId = '" + bean.getUserId() + "'  and  ft.flowInstance.flowDefVersion.flowDefination.flowType.id = '" + bean.getFlowTypeId() + "'    )   ";
+            }
+            hqlCount += "  )   ";
+            hqlQuery += "  )   ";
+        } else {
+            hqlCount += " and  ft.executorId  = :executorId  ";
+            hqlQuery += " and  ft.executorId  = :executorId  ";
+        }
+
         if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
@@ -231,12 +245,12 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlQuery += hqlQueryOrder;
         }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
-        queryTotal.setParameter("executorIdList", executorIdList);
+        queryTotal.setParameter("executorId", executorId);
         queryTotal.setParameter("businessModelId", businessModelId);
         Long total = queryTotal.getSingleResult();
 
         TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
-        query.setParameter("executorIdList", executorIdList);
+        query.setParameter("executorId", executorId);
         query.setParameter("businessModelId", businessModelId);
         query.setFirstResult((pageInfo.getPage() - 1) * pageInfo.getRows());
         query.setMaxResults(pageInfo.getRows());
@@ -320,17 +334,31 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         return pageResult;
     }
 
-    public PageResult<FlowTask> findByPageOfPower(List<String> executorIdList, String appSign, Search searchConfig) {
+    public PageResult<FlowTask> findByPageOfPower(String executorId,List<TaskMakeOverPower>  powerList, String appSign, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders = searchConfig.getSortOrders();
-        String hqlCount = " select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
-                " where ft.executorId  in (:executorIdList) " +
-                " and (ft.trustState !=1  or ft.trustState is null) ";
-        String hqlQuery = "select ft from com.ecmp.flow.entity.FlowTask ft " +
-                " where ft.executorId   in (:executorIdList) " +
-                " and (ft.trustState !=1  or ft.trustState is null) ";
+        String hqlCount = " select count(ft.id) from com.ecmp.flow.entity.FlowTask ft  where  (ft.trustState !=1  or ft.trustState is null) ";
+        String hqlQuery = " select ft           from com.ecmp.flow.entity.FlowTask ft  where  (ft.trustState !=1  or ft.trustState is null) ";
+
+        if (powerList != null && !powerList.isEmpty()) { //共同查看模式转授权信息不为空
+            hqlCount += " and  (  (ft.executorId  = :executorId )    ";
+            hqlQuery += " and  (  (ft.executorId  = :executorId )    ";
+            for (int i = 0; i < powerList.size(); i++) {
+                TaskMakeOverPower bean = powerList.get(i);
+                hqlCount += "  or  ( ft.executorId = '" + bean.getUserId() + "'  and  ft.flowInstance.flowDefVersion.flowDefination.flowType.id = '" + bean.getFlowTypeId() + "'    )   ";
+                hqlQuery += "  or  ( ft.executorId = '" + bean.getUserId() + "'  and  ft.flowInstance.flowDefVersion.flowDefination.flowType.id = '" + bean.getFlowTypeId() + "'    )   ";
+            }
+            hqlCount += "  )   ";
+            hqlQuery += "  )   ";
+        } else {
+            hqlCount += " and  ft.executorId  = :executorId  ";
+            hqlQuery += " and  ft.executorId  = :executorId  ";
+        }
+
+
+
         if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
@@ -368,14 +396,14 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlQuery += hqlQueryOrder;
         }
         TypedQuery<Long> queryTotal = entityManager.createQuery(hqlCount, Long.class);
-        queryTotal.setParameter("executorIdList", executorIdList);
+        queryTotal.setParameter("executorId", executorId);
         if (!StringUtils.isBlank(appSign)) {
             queryTotal.setParameter("appSign", appSign + "%");
         }
         Long total = queryTotal.getSingleResult();
 
         TypedQuery<FlowTask> query = entityManager.createQuery(hqlQuery, FlowTask.class);
-        query.setParameter("executorIdList", executorIdList);
+        query.setParameter("executorId", executorId);
         if (!StringUtils.isBlank(appSign)) {
             queryTotal.setParameter("appSign", appSign + "%");
         }
