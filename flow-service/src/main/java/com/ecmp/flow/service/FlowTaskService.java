@@ -2606,7 +2606,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
                 newFlowTask.setId(null);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2713,7 +2713,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 newFlowTask.setId(null);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2828,7 +2828,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
                 flowHistory.setDepict(overPowerStr + "【办理完成返回委托方】" + opinion);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId(),oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     oldFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     oldFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());

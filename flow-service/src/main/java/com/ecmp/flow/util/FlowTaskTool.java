@@ -1631,8 +1631,8 @@ public class FlowTaskTool {
                             flowTask.setOwnerOrgId(executor.getOrganizationId());
                             flowTask.setOwnerOrgCode(executor.getOrganizationCode());
                             flowTask.setOwnerOrgName(executor.getOrganizationName());
-                            //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                            //通过授权用户ID和流程类型返回转授权信息（转办模式）
+                            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
                             if (taskMakeOverPower != null) {
                                 flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                                 flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
@@ -1783,8 +1783,8 @@ public class FlowTaskTool {
                                 flowTask.setOwnerOrgId(executor.getOrganizationId());
                                 flowTask.setOwnerOrgCode(executor.getOrganizationCode());
                                 flowTask.setOwnerOrgName(executor.getOrganizationName());
-                                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                                //通过授权用户ID和流程类型返回转授权信息（转办模式）
+                                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
                                 if (taskMakeOverPower != null) {
                                     flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                                     flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());

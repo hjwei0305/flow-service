@@ -822,12 +822,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
             List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
 
+            String flowTypeId = oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+
             for (Executor executor : executorList) {
                 FlowTask newFlowTask = new FlowTask();
                 org.springframework.beans.BeanUtils.copyProperties(oldFlowTask, newFlowTask);
                 newFlowTask.setId(null);
-                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+                //通过授权用户ID和流程类型返回转授权信息（转办模式）
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTypeId);
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -919,8 +921,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (pushBasic || pushModelOrUrl) {
                 needDelList.add(delFlowTask);
             }
-            //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId());
+            //通过授权用户ID和流程类型返回转授权信息（转办模式）
+            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),newFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
             if (taskMakeOverPower != null) {
                 newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                 newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());

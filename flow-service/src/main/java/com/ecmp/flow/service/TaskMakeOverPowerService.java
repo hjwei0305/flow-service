@@ -679,26 +679,6 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return null;
     }
 
-    /**
-     * 通过授权用户ID返回转办模式转授权信息
-     *
-     * @param executorId 用户ID
-     * @return
-     */
-    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId) {
-        //系统是否允许转授权操作
-        Boolean boo = this.isAllowMakeOverPower();
-        if (boo) {
-            if (StringUtils.isNotEmpty(executorId)) {
-                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId);
-                if (listPower != null && listPower.size() > 0) {
-                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
-                }
-            }
-        }
-        return null;
-    }
-
 
     /**
      * 根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
@@ -722,6 +702,27 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         return taskMakeOverPowerDao.findByFilters(search);
     }
 
+    /**
+     * 通过授权用户ID和流程类型返回转授权信息（转办模式）
+     *
+     * @param executorId
+     * @param typeId
+     * @return
+     */
+    public TaskMakeOverPower getMakeOverPowerByTypeAndUserId(String executorId, String typeId) {
+        //系统是否允许转授权操作
+        Boolean boo = this.isAllowMakeOverPower();
+        if (boo) {
+            if (StringUtils.isNotEmpty(executorId) && StringUtils.isNotEmpty(typeId)) {
+                List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId, typeId);
+                if (listPower != null && listPower.size() > 0) {
+                    return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * 根据授权人ID查询满足要求的授权信息(转办模式)
@@ -729,7 +730,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      * @param userId 授权人ID
      * @return
      */
-    public List<TaskMakeOverPower> findPowerIdByUser(String userId) {
+    public List<TaskMakeOverPower> findPowerIdByUser(String userId, String typeId) {
         SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         try {
@@ -738,6 +739,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         }
         Search search = new Search();
         search.addFilter(new SearchFilter("userId", userId));
+        search.addFilter(new SearchFilter("flowTypeId", typeId));
         search.addFilter(new SearchFilter("makeOverPowerType", MakeOverPowerType.TURNTODO.getCode()));
         search.addFilter(new SearchFilter("openStatus", true));
         search.addFilter(new SearchFilter("powerStartDate", date, LE, "Date"));
