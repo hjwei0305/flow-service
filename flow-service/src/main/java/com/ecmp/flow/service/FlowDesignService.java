@@ -63,7 +63,6 @@ public class FlowDesignService implements IFlowDesignService {
     private FlowSolidifyExecutorService flowSolidifyExecutorService;
 
 
-
     @Override
     public ResponseData getEntity(String id, Integer versionCode, String businessModelCode, String businessId) {
         if (StringUtils.isEmpty(id)) {
@@ -180,35 +179,43 @@ public class FlowDesignService implements IFlowDesignService {
         FlowDefVersion def = null;
         Map<String, Object> data = new HashedMap();
         String businessId = "";
-        if(StringUtils.isNotEmpty(instanceId)){
+        Boolean ended = true;
+        if (StringUtils.isNotEmpty(instanceId)) {
             FlowInstance flowInstance = flowInstanceService.findOne(instanceId);
-            if(flowInstance != null){
+            if (flowInstance != null) {
                 def = flowInstance.getFlowDefVersion();
-                businessId =  flowInstance.getBusinessId();
+                businessId = flowInstance.getBusinessId();
+                ended = flowInstance.isEnded();
             }
         }
-        if(def == null){
+        if (def == null) {
             def = flowDefVersionService.findOne(id);
         }
         data.put("def", def);
-        if(StringUtils.isNotEmpty(instanceId)){
-            Map<String,String> nodeIds = flowInstanceService.currentNodeIds(instanceId);
+        if (StringUtils.isNotEmpty(instanceId)) {
+            Map<String, String> nodeIds = flowInstanceService.currentNodeIds(instanceId);
             data.put("currentNodes", nodeIds);
-        }else{
+        } else {
             data.put("currentNodes", "[]");
         }
         //如果是固化流程，加载配合执行人信息
-        if(def.getSolidifyFlow()!=null&& def.getSolidifyFlow()==true){
-            ResponseData res =  flowSolidifyExecutorService.getExecuteInfoByBusinessId(businessId);
-            if(res.getSuccess()){
-                data.put("solidifyExecutorsInfo",res.getData());
-            }else{
-                data.put("solidifyExecutorsInfo",null);
+        if (def.getSolidifyFlow() != null && def.getSolidifyFlow() == true && ended == false) {
+            if (StringUtils.isNotEmpty(businessId)) {
+                try{
+                    ResponseData res = flowSolidifyExecutorService.getExecuteInfoByBusinessId(businessId);
+                    if (res.getSuccess()) {
+                        data.put("solidifyExecutorsInfo", res.getData());
+                    } else {
+                        data.put("solidifyExecutorsInfo", null);
+                    }
+                }catch (Exception e){
+                    LogUtil.error("加载固化执行人列表失败，详情请查看日志!", e);
+                    return ResponseData.operationFailure("加载固化执行人列表失败，详情请查看日志!");
+                }
             }
         }
         return ResponseData.operationSuccessWithData(data);
     }
-
 
 
 }
