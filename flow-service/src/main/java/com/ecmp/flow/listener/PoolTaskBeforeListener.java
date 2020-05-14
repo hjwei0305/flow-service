@@ -159,7 +159,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 }
 
             } else {
-                throw new FlowException("工作池任务不能找到，可能已经被删除，serviceId=" + serviceTaskId);
+                throw new FlowException("工作池任务未配置服务事件！");
             }
         }
     }

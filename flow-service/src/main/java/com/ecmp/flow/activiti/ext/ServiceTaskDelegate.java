@@ -180,7 +180,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     //初始化下一步任务信息
                     flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory);
                 } else {
-                    throw new FlowException("服务事件不能找到，可能已经被删除，serviceId=" + serviceTaskId);
+                    throw new FlowException("服务任务未配置服务事件！");
                 }
             }
 

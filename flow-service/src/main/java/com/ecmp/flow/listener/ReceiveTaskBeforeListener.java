@@ -51,7 +51,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-    FlowHistoryDao  flowHistoryDao;
+    FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -63,7 +63,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
             Date now = new Date();
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
-            String businessId =delegateTask.getProcessBusinessKey();
+            String businessId = delegateTask.getProcessBusinessKey();
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -73,13 +73,13 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
             if (normal != null) {
                 String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
                 if (!StringUtils.isEmpty(serviceTaskId)) {
-                    Map<String,Object> tempV = delegateTask.getVariables();
-                    tempV.put(Constants.RECEIVE_TASK_ACT_DEF_ID,actTaskDefKey);
+                    Map<String, Object> tempV = delegateTask.getVariables();
+                    tempV.put(Constants.RECEIVE_TASK_ACT_DEF_ID, actTaskDefKey);
                     String flowTaskName = (String) normal.get(Constants.NAME);
                     FlowTask flowTask = new FlowTask();
                     flowTask.setTaskJsonDef(currentNode.toString());
                     flowTask.setFlowName(definition.getProcess().getName());
-                    flowTask.setDepict( ContextUtil.getMessage("10045"));//"接收任务【等待执行】"
+                    flowTask.setDepict(ContextUtil.getMessage("10045"));//"接收任务【等待执行】"
                     flowTask.setTaskName(flowTaskName);
                     flowTask.setFlowDefinitionId(flowDefVersion.getFlowDefination().getId());
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
@@ -87,7 +87,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     flowTask.setFlowInstance(flowInstance);
                     String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
                     AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                    if(appModule!=null && StringUtils.isNotEmpty(appModule.getName())){
+                    if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
                         ownerName = appModule.getName();
                     }
                     flowTask.setOwnerAccount(Constants.ADMIN);
@@ -105,18 +105,18 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
 
                     //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-                    FlowTaskService flowTaskService = (FlowTaskService)applicationContext.getBean("flowTaskService");
+                    FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
                     List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
                     List<String> paths = new ArrayList<String>();
-                    if(nodeInfoList!=null && !nodeInfoList.isEmpty()){
-                         for(NodeInfo nodeInfo :nodeInfoList){
-                             if(StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())){
-                                 paths.add(nodeInfo.getCallActivityPath());
-                             }
-                         }
+                    if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+                        for (NodeInfo nodeInfo : nodeInfoList) {
+                            if (StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())) {
+                                paths.add(nodeInfo.getCallActivityPath());
+                            }
+                        }
                     }
-                    if(!paths.isEmpty()){
-                        tempV.put(Constants.CALL_ACTIVITY_SON_PATHS,paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
+                    if (!paths.isEmpty()) {
+                        tempV.put(Constants.CALL_ACTIVITY_SON_PATHS, paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
                     FlowOperateResult flowOperateResult = null;
@@ -156,15 +156,15 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                         throw new FlowException(callMessage);//抛出异常
                     }
 
-                   flowTaskDao.save(flowTask);
-                }else{
-                    throw new FlowException("接收任务事件不能找到，可能已经被删除，serviceId=" + serviceTaskId);
+                    flowTaskDao.save(flowTask);
+                } else {
+                    throw new FlowException("接收任务未配置服务事件!");
                 }
             }
 
-        }catch (Exception e){
-            if(e.getClass()!=FlowException.class){
-                LogUtil.error(e.getMessage(),e);
+        } catch (Exception e) {
+            if (e.getClass() != FlowException.class) {
+                LogUtil.error(e.getMessage(), e);
             }
             throw e;
         }
