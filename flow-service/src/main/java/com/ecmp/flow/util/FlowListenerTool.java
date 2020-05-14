@@ -251,6 +251,9 @@ public class FlowListenerTool {
             Boolean endCallServiceAync = flowDefVersion.getEndCallServiceAync();
             if (StringUtils.isNotEmpty(endCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
+                if (flowServiceUrl == null) {
+                    throw new FlowException("获取结束后事件失败，可能已经被删除，serviceId = " + endCallServiceUrlId);
+                }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
@@ -330,6 +333,9 @@ public class FlowListenerTool {
 
             if (StringUtils.isNotEmpty(endBeforeCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
+                if (flowServiceUrl == null) {
+                    throw new FlowException("获取结束前事件失败，可能已经被删除，serviceId = " + endBeforeCallServiceUrlId);
+                }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();

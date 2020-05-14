@@ -428,9 +428,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessModelMap);
-                            if(boo == null){
-                               throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessModelMap)+"】");
-                            }else if(boo){
+                            if (boo == null) {
+                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessModelMap) + "】");
+                            } else if (boo) {
                                 if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
                                     finalFlowDefination = flowDefination;
                                     break;
@@ -478,6 +478,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
             if (StringUtils.isNotEmpty(startCheckServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
+                if (flowServiceUrl == null) {
+                    throw new FlowException("获取启动前事件失败，可能已经被删除，serviceId = " + startCheckServiceUrlId);
+                }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
@@ -1014,9 +1017,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessV);
-                            if(boo == null){
-                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessV)+"】");
-                            }else if(boo){
+                            if (boo == null) {
+                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessV) + "】");
+                            } else if (boo) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
@@ -1111,10 +1114,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         if (groovyUel.startsWith("#{")) {// #{开头代表自定义的groovy表达式
                             String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
                                     groovyUel.lastIndexOf("}"));
-                            Boolean boo  =  ConditionUtil.groovyTest(conditonFinal, businessV);
-                            if(boo == null){
-                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(businessV)+"】");
-                            }else if(boo){
+                            Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessV);
+                            if (boo == null) {
+                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessV) + "】");
+                            } else if (boo) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
                                 } else if ("CallActivity".equalsIgnoreCase((String) nextNode.get("nodeType"))) {
@@ -1526,7 +1529,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             deploymentBuilder.addString(name + ".bpmn", xml);
             deploy = deploymentBuilder.deploy();
         } catch (Exception e) {
-            throw new FlowException("发布流程定义失败！",e);
+            throw new FlowException("发布流程定义失败！", e);
         }
         return deploy;
     }
@@ -1564,7 +1567,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 return null;
             result = getProcessDefinitionByDefId(proDefinition.getId());
         } catch (Exception e) {
-            throw new FlowException("通过流程版本发布流程失败！",e);
+            throw new FlowException("通过流程版本发布流程失败！", e);
         }
         return result;
     }

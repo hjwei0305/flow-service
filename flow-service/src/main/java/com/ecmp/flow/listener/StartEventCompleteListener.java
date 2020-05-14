@@ -230,7 +230,7 @@ public class StartEventCompleteListener implements ExecutionListener {
             if (StringUtils.isNotEmpty(afterStartServiceId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(afterStartServiceId);
                 if (flowServiceUrl == null) {
-                    throw new FlowException("获取启动后事件失败，可能已经被删除！");
+                    throw new FlowException("获取启动后事件失败，可能已经被删除，serviceId = " + afterStartServiceId);
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
