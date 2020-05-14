@@ -479,7 +479,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (StringUtils.isNotEmpty(startCheckServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
                 if (flowServiceUrl == null) {
-                    throw new FlowException("获取启动前事件失败，可能已经被删除，serviceId = " + startCheckServiceUrlId);
+                    LogUtil.error("获取启动前事件失败，可能已经被删除，serviceId = " + startCheckServiceUrlId);
+                    throw new FlowException("获取启动前事件失败，可能已经被删除，详情请查看日志!");
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {

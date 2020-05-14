@@ -252,7 +252,8 @@ public class FlowListenerTool {
             if (StringUtils.isNotEmpty(endCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 if (flowServiceUrl == null) {
-                    throw new FlowException("获取结束后事件失败，可能已经被删除，serviceId = " + endCallServiceUrlId);
+                    LogUtil.error("获取结束后事件失败，可能已经被删除，serviceId = " + endCallServiceUrlId);
+                    throw new FlowException("获取结束后事件失败，可能已经被删除，详情请查看日志!");
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
@@ -334,7 +335,8 @@ public class FlowListenerTool {
             if (StringUtils.isNotEmpty(endBeforeCallServiceUrlId)) {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
                 if (flowServiceUrl == null) {
-                    throw new FlowException("获取结束前事件失败，可能已经被删除，serviceId = " + endBeforeCallServiceUrlId);
+                    LogUtil.error("获取结束前事件失败，可能已经被删除，serviceId = " + endBeforeCallServiceUrlId);
+                    throw new FlowException("获取结束前事件失败，可能已经被删除，详情请查看日志!");
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
@@ -400,7 +402,7 @@ public class FlowListenerTool {
         return result;
     }
 
-    public void taskEventServiceCall(DelegateExecution delegateTask, boolean async, String beforeExcuteServiceId, String businessId) {
+    public void taskEventServiceCall(DelegateExecution delegateTask, boolean async, String excuteServiceId, String businessId) {
         try {
             String multiInstance = (String) ((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
             Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
@@ -439,14 +441,14 @@ public class FlowListenerTool {
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                        ServiceCallUtil.callService(excuteServiceId, businessId, param);
                     }
                 }).start();
             } else {
                 FlowOperateResult flowOperateResult = null;
                 String callMessage = null;
                 try {
-                    flowOperateResult = ServiceCallUtil.callService(beforeExcuteServiceId, businessId, param);
+                    flowOperateResult = ServiceCallUtil.callService(excuteServiceId, businessId, param);
                     callMessage = flowOperateResult.getMessage();
                 } catch (Exception e) {
                     callMessage = e.getMessage();
