@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
  * <p/>
  * *************************************************************************************************
  */
-//@Component
 public class FlowListenerTool {
 
     @Autowired
@@ -402,7 +401,7 @@ public class FlowListenerTool {
         return result;
     }
 
-    public void taskEventServiceCall(DelegateExecution delegateTask, boolean async, String excuteServiceId, String businessId) {
+    public void taskEventServiceCall(DelegateExecution delegateTask, boolean async, String flowTaskName, String excuteServiceId, String excuteServiceName, String businessId) {
         try {
             String multiInstance = (String) ((ExecutionEntity) delegateTask).getActivity().getProperty("multiInstance");
             Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
@@ -441,14 +440,14 @@ public class FlowListenerTool {
                 new Thread(new Runnable() {//模拟异步
                     @Override
                     public void run() {
-                        ServiceCallUtil.callService(excuteServiceId, businessId, param);
+                        ServiceCallUtil.callService(excuteServiceId, excuteServiceName, flowTaskName, businessId, param);
                     }
                 }).start();
             } else {
                 FlowOperateResult flowOperateResult = null;
                 String callMessage = null;
                 try {
-                    flowOperateResult = ServiceCallUtil.callService(excuteServiceId, businessId, param);
+                    flowOperateResult = ServiceCallUtil.callService(excuteServiceId, excuteServiceName, flowTaskName, businessId, param);
                     callMessage = flowOperateResult.getMessage();
                 } catch (Exception e) {
                     callMessage = e.getMessage();

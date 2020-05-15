@@ -39,7 +39,6 @@ import java.util.*;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="serviceTaskDelegate")
 public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDelegate {
 
     public ServiceTaskDelegate() {
@@ -83,6 +82,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
             net.sf.json.JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
             if (normal != null) {
                 String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
+                String serviceTaskName = (String) normal.get(Constants.SERVICE_TASK);
                 String flowTaskName = (String) normal.get(Constants.NAME);
                 if (!StringUtils.isEmpty(serviceTaskId)) {
                     Map<String, Object> tempV = delegateTask.getVariables();
@@ -123,7 +123,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     FlowOperateResult flowOperateResult = null;
                     String callMessage = null;
                     try {
-                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                         callMessage = flowOperateResult.getMessage();
                     } catch (Exception e) {
                         callMessage = e.getMessage();

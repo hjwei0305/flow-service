@@ -38,7 +38,6 @@ import java.util.*;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="poolTaskBeforeListener")
 public class PoolTaskBeforeListener implements org.activiti.engine.delegate.JavaDelegate {
 
     @Autowired
@@ -68,6 +67,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
 
         if (normal != null) {
             String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
+            String serviceTaskName = (String) normal.get(Constants.SERVICE_TASK);
             String poolTaskCode = (String) normal.get(Constants.POOL_TASK_CODE);
             if (!StringUtils.isEmpty(serviceTaskId)) {
                 Map<String, Object> tempV = delegateTask.getVariables();
@@ -120,7 +120,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 FlowOperateResult flowOperateResult = null;
                 String callMessage = null;
                 try {
-                    flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                    flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                     if (flowOperateResult != null && flowOperateResult.isSuccess() && StringUtils.isNotEmpty(flowOperateResult.getUserId())) {
                         runtimeService.setVariable(delegateTask.getProcessInstanceId(), Constants.POOL_TASK_CALLBACK_USER_ID + actTaskDefKey, flowOperateResult.getUserId());
                     }

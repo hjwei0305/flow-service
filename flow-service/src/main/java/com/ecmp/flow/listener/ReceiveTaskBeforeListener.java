@@ -41,7 +41,6 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="receiveTaskBeforeListener")
 public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.JavaDelegate {
 
     @Autowired
@@ -51,7 +50,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
     private FlowDefVersionDao flowDefVersionDao;
 
     @Autowired
-    FlowHistoryDao flowHistoryDao;
+    private FlowHistoryDao flowHistoryDao;
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -72,6 +71,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
             JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
             if (normal != null) {
                 String serviceTaskId = (String) normal.get(Constants.SERVICE_TASK_ID);
+                String serviceTaskName = (String) normal.get(Constants.SERVICE_TASK);
                 if (!StringUtils.isEmpty(serviceTaskId)) {
                     Map<String, Object> tempV = delegateTask.getVariables();
                     tempV.put(Constants.RECEIVE_TASK_ACT_DEF_ID, actTaskDefKey);
@@ -122,7 +122,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     FlowOperateResult flowOperateResult = null;
                     String callMessage = null;
                     try {
-                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, businessId, param);
+                        flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                         callMessage = flowOperateResult.getMessage();
                     } catch (Exception e) {
                         callMessage = e.getMessage();

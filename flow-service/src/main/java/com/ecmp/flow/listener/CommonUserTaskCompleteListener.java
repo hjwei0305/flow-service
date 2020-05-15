@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="commonUserTaskCompleteListener")
 public class CommonUserTaskCompleteListener implements ExecutionListener {
 
     @Autowired
@@ -60,17 +59,27 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                 event = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EVENT);
             }
             if (event != null) {
-                String afterExcuteServiceIdTemp = null;
-                if (event.has(Constants.AFTER_EXCUTE_SERVICE_ID)) {
-                    afterExcuteServiceIdTemp = event.getString(Constants.AFTER_EXCUTE_SERVICE_ID);
+                String flowTaskName = ""; //节点名称
+                if (currentNode.has(Constants.NAME)) {
+                    flowTaskName = currentNode.getString(Constants.NAME);
                 }
-                String afterExcuteServiceId = afterExcuteServiceIdTemp;
+                String afterExcuteServiceId = null;//服务ID
+                if (event.has(Constants.AFTER_EXCUTE_SERVICE_ID)) {
+                    afterExcuteServiceId = event.getString(Constants.AFTER_EXCUTE_SERVICE_ID);
+                }
+                String afterExcuteService = "";//服务名称
+                if (event.has(Constants.AFTER_EXCUTE_SERVICE)) {
+                    afterExcuteService = "任务执行后 - " + event.getString(Constants.AFTER_EXCUTE_SERVICE);
+                }
                 boolean async = false;//默认为同步
                 if (event.has(Constants.AFTER_ASYNC)) {
                     async = event.getBoolean(Constants.AFTER_ASYNC);
+                    if (async != true) {
+                        async = false;
+                    }
                 }
                 if (!StringUtils.isEmpty(afterExcuteServiceId)) {
-                    flowListenerTool.taskEventServiceCall(delegateTask, async, afterExcuteServiceId, businessId);
+                    flowListenerTool.taskEventServiceCall(delegateTask, async, flowTaskName, afterExcuteServiceId, afterExcuteService, businessId);
                 }
             }
         } catch (Exception e) {

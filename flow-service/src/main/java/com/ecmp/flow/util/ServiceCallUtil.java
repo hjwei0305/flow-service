@@ -13,8 +13,6 @@ import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.GenericType;
@@ -37,9 +35,8 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ServiceCallUtil {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceCallUtil.class);
 
-    public static FlowOperateResult callService(String serviceUrlId, String businessId, String... args) {
+    public static FlowOperateResult callService(String serviceUrlId, String serviceName, String flowTaskName, String businessId, String... args) {
         FlowOperateResult result = null;
         if (!StringUtils.isEmpty(serviceUrlId)) {
             ApplicationContext applicationContext = ContextUtil.getApplicationContext();
@@ -72,7 +69,6 @@ public class ServiceCallUtil {
                                 params.setTaskActDefId(receiveTaskActDefId);
                             }
                         }
-//                        tempV.put(Constants.POOL_TASK_ACT_DEF_ID,actTaskDefKey);
                         if (jsonObject.has(Constants.POOL_TASK_ACT_DEF_ID)) {
                             String poolTaskActDefId = jsonObject.get(Constants.POOL_TASK_ACT_DEF_ID) + "";
                             if (StringUtils.isNotEmpty(poolTaskActDefId) && !Constants.NULL_S.equalsIgnoreCase(poolTaskActDefId)) {
@@ -120,34 +116,35 @@ public class ServiceCallUtil {
                 String url = clientApiBaseUrl + "/" + clientUrl;
                 Date startDate = new Date();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-                String msg = sim.format(startDate) + "事件【" + flowServiceUrl.getName() + "】";
+                String msg = "[" + sim.format(startDate) + "]开始请求节点【" + flowTaskName + "】的事件【" + flowServiceUrl.getName() + "】";
                 String urlAndData = "-请求地址：" + url + "，参数：" + JsonUtils.toJson(params);
                 try {
                     ResponseData res = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
                     }, params);
                     Date endDate = new Date();
                     if (res.successful()) {
-                        LogUtil.bizLog(msg + urlAndData + ",【返回信息时间：" + sim.format(endDate) + "，返回信息：" + JsonUtils.toJson(res) + "】");
+                        LogUtil.bizLog(msg + urlAndData + "，返回信息时间：[" + sim.format(endDate) + "]，返回信息：" + JsonUtils.toJson(res) + "】");
                         result = new FlowOperateResult(true, res.getMessage());
                         //FlowOperateResult可以直接返回执行人（工作池任务）
-                        if(res.getData()!=null && StringUtils.isNotEmpty(res.getData().toString())){
-                           try{
-                               Map<String,Object>  map = (Map<String,Object>)res.getData();
-                               String userIds =   map.get("userIds").toString();
-                               result.setUserId(userIds);
-                           }catch (Exception e){
-                           }
+                        if (res.getData() != null && StringUtils.isNotEmpty(res.getData().toString())) {
+                            try {
+                                Map<String, Object> map = (Map<String, Object>) res.getData();
+                                String userIds = map.get("userIds").toString();
+                                result.setUserId(userIds);
+                            } catch (Exception e) {
+                            }
                         }
                     } else {
-                        LogUtil.error(msg + "调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
-                        result = new FlowOperateResult(false, msg + ",【返回信息：" + res.getMessage() + "】");
+                        LogUtil.error(msg + "，调用报错:" + urlAndData + "，【返回信息：" + JsonUtils.toJson(res) + "】");
+                        result = new FlowOperateResult(false, msg + "，【返回信息：" + res.getMessage() + "】");
                     }
                 } catch (Exception e) {
-                    LogUtil.error(msg + "内部报错!" + urlAndData, e);
-                    throw new FlowException(msg + "内部报错，详情请查看日志！");
+                    LogUtil.error(msg + "，内部报错!" + urlAndData, e);
+                    throw new FlowException(msg + "，内部报错，详情请查看日志！");
                 }
             } else {
-                throw new FlowException("事件信息不能找到，可能已经被删除，serviceId=" + serviceUrlId);
+                LogUtil.error("获取节点【" + flowTaskName + "】配置的事件【" + serviceName + "】失败，可能已经被删除：【serviceId=" + serviceUrlId + "】");
+                throw new FlowException("获取节点【" + flowTaskName + "】配置的事件【" + serviceName + "】失败，可能已经被删除，详情请查看日志！");
             }
         }
         return result;

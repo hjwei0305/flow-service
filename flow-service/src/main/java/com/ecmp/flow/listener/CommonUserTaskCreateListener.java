@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
  * <p/>
  * *************************************************************************************************
  */
-//@Component(value="commonUserTaskCreateListener")
 public class CommonUserTaskCreateListener implements ExecutionListener {
 
     public CommonUserTaskCreateListener() {
@@ -58,7 +57,18 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                 event = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EVENT);
             }
             if (event != null) {
-                String beforeExcuteServiceId = (String) event.get(Constants.BEFORE_EXCUTE_SERVICE_ID);
+                String flowTaskName = ""; //节点名称
+                if (currentNode.has(Constants.NAME)) {
+                    flowTaskName = currentNode.getString(Constants.NAME);
+                }
+                String beforeExcuteServiceId = null;//服务ID
+                if (event.has(Constants.BEFORE_EXCUTE_SERVICE_ID)) {
+                    beforeExcuteServiceId = event.getString(Constants.BEFORE_EXCUTE_SERVICE_ID);
+                }
+                String beforeExcuteService = "";//服务名称
+                if (event.has(Constants.BEFORE_EXCUTE_SERVICE)) {
+                    beforeExcuteService = "任务到达时 - " + event.getString(Constants.BEFORE_EXCUTE_SERVICE);
+                }
                 boolean async = true;//默认为异步
                 if (event.has(Constants.BEFORE_ASYNC)) {
                     Boolean beforeAsync = event.getBoolean(Constants.BEFORE_ASYNC);
@@ -67,7 +77,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                     }
                 }
                 if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
-                    flowListenerTool.taskEventServiceCall(delegateTask, async, beforeExcuteServiceId, businessId);
+                    flowListenerTool.taskEventServiceCall(delegateTask, async, flowTaskName, beforeExcuteServiceId, beforeExcuteService, businessId);
                 }
             }
         } catch (Exception e) {

@@ -443,9 +443,13 @@ public class Constants extends ConfigurableContants {
 
     public final static String BEFORE_EXCUTE_SERVICE_ID = "beforeExcuteServiceId";
 
+    public final static String BEFORE_EXCUTE_SERVICE = "beforeExcuteService";
+
     public final static String BEFORE_ASYNC = "beforeAsync";
 
     public final static String AFTER_EXCUTE_SERVICE_ID = "afterExcuteServiceId";
+
+    public final static String AFTER_EXCUTE_SERVICE = "afterExcuteService";
 
     public final static String FLOW_TASK_SERVICE = "flowTaskService";
 
@@ -453,8 +457,9 @@ public class Constants extends ConfigurableContants {
 
     public final static String AFTER_ASYNC = "afterAsync";
 
-
     public final static String SERVICE_TASK_ID = "serviceTaskId";
+
+    public final static String SERVICE_TASK = "serviceTask";
 
     public final static String BUSINESS_MODEL_CODE = "businessModelCode";
 
