@@ -3516,12 +3516,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
-        ResponseData responseData = new ResponseData();
         if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
             return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
         }
 
-        String orgId = null;
+        String orgId;
         try {
             BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
             Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
@@ -3533,8 +3532,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return this.writeErrorLogAndReturnData(e, "获取业务单据组织机构失败！");
         }
 
-        responseData = this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, orgId);
-        return responseData;
+        return this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, orgId);
     }
 
 
