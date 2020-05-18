@@ -1352,7 +1352,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
                 ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
                 Set<Executor> setExecutors =  (Set<Executor>)responseData.getData();
-                List<Executor> executors = new ArrayList<>(setExecutors);
+                List<Executor> executors = null;
+                if(setExecutors != null ){
+                    executors = new ArrayList<>(setExecutors);
+                }
                 if (executors != null && executors.size() != 0) {
                     if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
                         SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
