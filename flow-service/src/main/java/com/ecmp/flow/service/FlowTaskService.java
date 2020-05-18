@@ -1,7 +1,6 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
@@ -34,7 +33,10 @@ import com.ecmp.vo.ResponseData;
 import com.ecmp.vo.SessionUser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.activiti.engine.*;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricProcessInstance;
@@ -54,8 +56,6 @@ import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,14 +149,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Autowired
     private DefaultFlowBaseService defaultFlowBaseService;
-
-
-    private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
-
-
-    public String getErrorLogString(String url) {
-        return "【调用接口异常：" + url + ",详情请查看日志】";
-    }
 
 
     /**
@@ -536,7 +528,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .getDeployedProcessDefinition(currTask
                                 .getProcessDefinitionId());
                 if (definition == null) {
-                    logger.error(ContextUtil.getMessage("10003"));
+                    LogUtil.error(ContextUtil.getMessage("10003"));
                 }
                 // 取得当前活动定义节点
                 ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
@@ -642,7 +634,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } catch (FlowException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             result = OperateResultWithData.operationFailure(e.getMessage());
-            logger.error(e.getMessage(), e);
+            LogUtil.error(e.getMessage(), e);
         }
         return result;
     }
@@ -689,7 +681,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 try {
                     reject = Integer.parseInt(rejectO.toString());
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
             }
             Object manageSolidifyFlowO = variables.get("manageSolidifyFlow");
@@ -770,14 +762,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             try {
                 counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                LogUtil.error(e.getMessage(), e);
             }
             //会签结果是否即时生效
             Boolean immediatelyEnd = false;
             try {
                 immediatelyEnd = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                LogUtil.error(e.getMessage(), e);
             }
 
             if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个任务
@@ -797,7 +789,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         .getDeployedProcessDefinition(currTask
                                 .getProcessDefinitionId());
                 if (definition == null) {
-                    logger.error(ContextUtil.getMessage("10003"));
+                    LogUtil.error(ContextUtil.getMessage("10003"));
                 }
                 if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//获取通过节点
                     variables.put("approveResult", true);
@@ -2515,7 +2507,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             defaultFlowBaseService.completeTask(completeTaskVo);
                             total++;
                         } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
+                            LogUtil.error(e.getMessage(), e);
                         }
                     }
                 }
@@ -2573,7 +2565,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     this.complete(flowTaskCompleteVO);
                     total++;
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
             }
             if (total > 0) {
@@ -2606,7 +2598,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
                 newFlowTask.setId(null);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2713,7 +2705,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 newFlowTask.setId(null);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2828,7 +2820,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
                 flowHistory.setDepict(overPowerStr + "【办理完成返回委托方】" + opinion);
                 //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId(),oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId(), oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     oldFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     oldFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2905,7 +2897,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     try {
                         executor = flowCommonUtil.getBasicUserExecutor(userId);
                     } catch (IllegalArgumentException e) {
-                        logger.error(e.getMessage(), e);
+                        LogUtil.error(e.getMessage(), e);
                     }
                     if (executor == null) {
                         resultDecFalseOne.append("【ID='" + userId + "'】");
@@ -2921,7 +2913,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                                 .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
                         if (definition == null) {
-                            logger.error(ContextUtil.getMessage("10003"));
+                            LogUtil.error(ContextUtil.getMessage("10003"));
                             return OperateResult.operationFailure("10003");//流程定义未找到找到");
                         }
                         FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
@@ -2953,16 +2945,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 flowTaskTool.initCounterSignAddTask(flowInstance, currTask.getTaskDefinitionKey(), userId, preId);
                             }
                             resultDecTrue.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的加签操作执行成功;");
+                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的加签操作执行成功;");
                             continue;
                         } else {
                             resultDecFalseTwo.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的执行节点为非会签节点，无法加签;");
+                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的执行节点为非会签节点，无法加签;");
                             continue;
                         }
                     } else {
                         resultDecFalseThree.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                        logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法加签;");
+                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法加签;");
                         continue;
                     }
                 }
@@ -3024,7 +3016,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     try {
                         executor = flowCommonUtil.getBasicUserExecutor(userId);
                     } catch (IllegalArgumentException e) {
-                        logger.error(e.getMessage(), e);
+                        LogUtil.error(e.getMessage(), e);
                     }
                     if (executor == null) {
                         resultDecFalseOne.append("【ID=" + userId + "】");
@@ -3041,7 +3033,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                                 .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
                         if (definition == null) {
-                            logger.error(ContextUtil.getMessage("10003"));
+                            LogUtil.error(ContextUtil.getMessage("10003"));
                             return OperateResult.operationFailure("10003");//流程定义未找到找到");
                         }
                         String taskJsonDef = flowTaskTemp.getTaskJsonDef();
@@ -3054,7 +3046,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<String> userList = new ArrayList<>(userListArray);
                             if (!userList.contains(userId)) {
                                 resultDecFalseTwo.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,在当前任务节点找不到，减签失败;");
+                                LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,在当前任务节点找不到，减签失败;");
                                 continue;
                             }
                             String executionId = currTask.getExecutionId();
@@ -3065,7 +3057,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
                             if (completeCounter + 1 == instanceOfNumbers) {//最后一个任务
                                 resultDecFalseThree.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务已经到达最后一位执行人，减签失败;");
+                                LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务已经到达最后一位执行人，减签失败;");
                                 continue;
                             }
 
@@ -3116,13 +3108,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                                 } else {
                                     resultDecFalseFour.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                    logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,当前任务节点已执行，减签失败;");
+                                    LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,当前任务节点已执行，减签失败;");
                                     continue;
                                 }
                             } else {//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
                                 if (flowTaskListCurrent != null && !flowTaskListCurrent.isEmpty()) {
                                     resultDecFalseFive.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                    logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
+                                    LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
                                 } else {
                                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
@@ -3150,22 +3142,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         runtimeService.setVariable(processInstanceId, userListDesc, userList);//回写减签后的执行人列表
                                     } else {
                                         resultDecFalseSix.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                        logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,发现已经执行，减签操作执行失败;");
+                                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,发现已经执行，减签操作执行失败;");
                                         continue;
                                     }
                                 }
                             }
 
                             resultDecTrue.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,的减签操作执行成;");
+                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,的减签操作执行成;");
                         } else {
                             resultDecFalseSeven.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,执行节点为非会签节点，无法减签;");
+                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,执行节点为非会签节点，无法减签;");
                             continue;
                         }
                     } else {
                         resultDecFalseEight.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                        logger.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法减签;");
+                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法减签;");
                         continue;
                     }
                 }
@@ -3263,28 +3255,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             if (lastSendTime == null) {
                                 //直接发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                logger.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达，lastSendTime==null。");
+                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达，lastSendTime==null。");
                                 continue;
                             }
                             double hours = (System.currentTimeMillis() - lastSendTime.getTime()) / (1000 * 60 * 60.0);
                             if (hours >= jianGeTime) {
                                 //发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                logger.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达。");
+                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达。");
                             }
                         }
                         if (toDoAmount >= executorIdAndCountMap.get(userEmailAlert.getUserId())) {
                             if (lastSendTime == null) {
                                 //直接发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                logger.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值，lastSendTime==null。");
+                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值，lastSendTime==null。");
                                 continue;
                             }
                             double hours = (System.currentTimeMillis() - lastSendTime.getTime()) / (1000 * 60 * 60.0);
                             if (hours >= 1) {
                                 //发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                logger.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值。");
+                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值。");
                             }
                         }
                     }
@@ -3334,7 +3326,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String url = Constants.getUsderEmailAlertUpdateLastTimesUrl();
                     OperateResult result = ApiClient.postViaProxyReturnResult(url, new GenericType<OperateResult>() {
                     }, receiverIds);
-                    logger.info("催办send email to userId=" + userId + ",userName = " + userName + "，重置时间状态=" + (result != null ? result.getMessage() : "失败"));
+                    LogUtil.info("催办send email to userId=" + userId + ",userName = " + userName + "，重置时间状态=" + (result != null ? result.getMessage() : "失败"));
                 }
             }).start();
         }
@@ -3516,6 +3508,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             requestExecutorsVoList = (List<RequestExecutorsVo>) JSONArray.toCollection(jsonArray, RequestExecutorsVo.class);
         }
         return this.getExecutorsByRequestExecutorsVo(requestExecutorsVoList, findExecutorsVo.getBusinessModelCode(), findExecutorsVo.getBusinessId());
+    }
+
+    @Override
+    public ResponseData getExecutorsByVoAndInstanceId(List<RequestExecutorsVo> requestExecutorsVos, String instanceId) {
+        if (StringUtils.isEmpty(instanceId)) {
+            return ResponseData.operationFailure("流程实例ID不能为空！");
+        }
+        FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
+        if (flowInstance == null) {
+            return ResponseData.operationFailure("通过参数获取流程实例失败！");
+        }
+        String businessModelCode = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
+        String businessId = flowInstance.getBusinessId();
+        return getExecutorsByRequestExecutorsVo(requestExecutorsVos, businessModelCode, businessId);
     }
 
     @Override

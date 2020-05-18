@@ -57,7 +57,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "签收任务", notes = "测试")
-    public OperateResult claim(@PathParam("id") String id, @PathParam("userId") String userId);
+    OperateResult claim(@PathParam("id") String id, @PathParam("userId") String userId);
 
 
     /**
@@ -413,7 +413,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取待办信息（租户管理员）", notes = "测试")
     PageResult<FlowTask> findAllByTenant(@QueryParam("appModuleId") String appModuleId, @QueryParam("businessModelId") String businessModelId, @QueryParam("flowTypeId") String flowTypeId, Search searchConfig);
-
 
 
     /**
@@ -783,13 +782,38 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取一个待办任务", notes = "通过Id获取一个待办任务(设置了办理任务URL)")
     FlowTask findTaskById(@QueryParam("taskId") String taskId);
 
-
+    /**
+     * 通过参数VO获取执行人
+     *
+     * @param findExecutorsVo 执行人信息、业务实体和单据ID的VO
+     * @return
+     */
     @POST
     @Path("getExecutorsByExecutorsVos")
     @ApiOperation(value = "获取执行人", notes = "通过参数VO获取执行人")
     ResponseData getExecutorsByExecutorsVos(FindExecutorsVo findExecutorsVo);
 
 
+    /**
+     * 通过执行人配置信息和实例信息获取执行人
+     *
+     * @param requestExecutorsVos 执行人配置信息
+     * @param instanceId          流程实例ID
+     * @return
+     */
+    @POST
+    @Path("getExecutorsByVoAndInstanceId")
+    @ApiOperation(value = "通过执行人配置信息和实例信息获取执行人", notes = "通过执行人配置信息和实例信息获取执行人")
+    ResponseData getExecutorsByVoAndInstanceId(List<RequestExecutorsVo> requestExecutorsVos, @QueryParam("instanceId") String instanceId);
+
+
+    /**
+     * 通过执行人配置信息、业务实体和单据获取执行人
+     *
+     * @param requestExecutorsVos 执行人配置信息
+     * @param businessModelCode   业务实体路径 businessId  单据ID
+     * @return
+     */
     @POST
     @Path("getExecutorsByRequestExecutorsVo")
     @ApiOperation(value = "获取执行人", notes = "通过执行人参数VO获取执行人")
