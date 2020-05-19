@@ -790,9 +790,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      */
     @POST
     @Path("getExecutorsByExecutorsVos")
-    @ApiOperation(value = "获取执行人", notes = "通过参数VO获取执行人")
+    @ApiOperation(value = "通过参数VO（业务实体、单据）获取执行人", notes = "通过参数VO（业务实体、单据）获取执行人")
     ResponseData getExecutorsByExecutorsVos(FindExecutorsVo findExecutorsVo);
 
+
+    /**
+     * 通过参数VO获取执行人
+     *
+     * @param findExecutorsVo 执行人信息、流程实例ID
+     * @return
+     */
+    @POST
+    @Path("getExecutorsByVoAndInstanceIdVo")
+    @ApiOperation(value = "通过参数VO（流程实例）获取执行人", notes = "通过参数VO（流程实例）获取执行人")
+    ResponseData getExecutorsByVoAndInstanceIdVo(FindExecutorsVo findExecutorsVo);
 
     /**
      * 通过执行人配置信息和实例信息获取执行人

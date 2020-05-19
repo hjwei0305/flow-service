@@ -11,6 +11,8 @@ public class FindExecutorsVo  implements Serializable {
 
     private String businessId;
 
+    private String instanceId;//流程实例ID，可以获取到businessModelCode和businessId
+
     public String getRequestExecutorsVos() {
         return requestExecutorsVos;
     }
@@ -33,5 +35,13 @@ public class FindExecutorsVo  implements Serializable {
 
     public void setBusinessId(String businessId) {
         this.businessId = businessId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }

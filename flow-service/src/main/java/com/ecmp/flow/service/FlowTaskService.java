@@ -3501,6 +3501,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     @Override
+    public ResponseData getExecutorsByVoAndInstanceIdVo(FindExecutorsVo findExecutorsVo) {
+        List<RequestExecutorsVo> requestExecutorsVoList = null;
+        String requestExecutorsVos = findExecutorsVo.getRequestExecutorsVos();
+        if (StringUtils.isNotEmpty(requestExecutorsVos)) {
+            JSONArray jsonArray = JSONArray.fromObject(requestExecutorsVos);//把String转换为json
+            requestExecutorsVoList = (List<RequestExecutorsVo>) JSONArray.toCollection(jsonArray, RequestExecutorsVo.class);
+        }
+        return  this.getExecutorsByVoAndInstanceId(requestExecutorsVoList,findExecutorsVo.getInstanceId());
+    }
+
+    @Override
     public ResponseData getExecutorsByVoAndInstanceId(List<RequestExecutorsVo> requestExecutorsVos, String instanceId) {
         if (StringUtils.isEmpty(instanceId)) {
             return ResponseData.operationFailure("流程实例ID不能为空！");
