@@ -210,7 +210,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
                 webvO.setInstancyStatus(false);
                 webvO.setUserIds(null);
-            } else if ("serviceTask".equalsIgnoreCase(webvO.getFlowTaskType())) {
+            } else if ("serviceTask".equalsIgnoreCase(webvO.getFlowTaskType())) { //服务任务
+                webvO.setInstancyStatus(false);
+                webvO.setUserIds(ContextUtil.getUserId());
+            } else if ("receiveTask".equalsIgnoreCase(webvO.getFlowTaskType())) { //接收任务
                 webvO.setInstancyStatus(false);
                 webvO.setUserIds(ContextUtil.getUserId());
             } else {
