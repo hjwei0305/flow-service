@@ -36,9 +36,8 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
     public FlowType(){}
 
     /**
-     * 乐观锁-版本
+     * 乐观锁-版本（现作为排序字段使用）
      */
-   // @Version
     @Column(name = "version")
     private Integer version = 0;
 
@@ -72,7 +71,6 @@ public class FlowType extends com.ecmp.core.entity.BaseAuditableEntity {
      * 拥有的流程定义
      */
     @Transient
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowType")
     private Set<FlowDefination> flowDefinations = new LinkedHashSet<>(0);
 
     /**

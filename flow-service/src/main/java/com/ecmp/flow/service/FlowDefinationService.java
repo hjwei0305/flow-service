@@ -622,10 +622,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
-//        System.setProperty("http.proxyHost", "localhost");
-//        System.setProperty("https.proxyHost", "localhost");
-//        System.setProperty("http.proxyPort", "8888");
-//        System.setProperty("https.proxyPort", "8888");
         if (checkFlowInstanceActivate(flowStartVO.getBusinessKey())) {
             String message = ContextUtil.getMessage("10051", flowStartVO.getBusinessKey());
             return OperateResultWithData.operationFailure(message);
@@ -658,7 +654,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         v.put("workCaption", v.get("workCaption").toString() + "【附加说明：" + v.get("additionRemark").toString() + "】");
                     } else {
                         v.put("workCaption", "【附加说明：" + v.get("additionRemark").toString() + "】");
-
                     }
                     flowStartVO.getVariables().put("workCaption", v.get("workCaption").toString());
                 }
@@ -669,25 +664,24 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
             } else {
-                FlowType flowType = null;
+                FlowType flowType;
                 FlowDefination finalFlowDefination = null;
-                List<FlowType> flowTypeList = null;
-                List<StartFlowTypeVO> flowTypeListVO = null;
+                List<FlowType> flowTypeList;
+                List<StartFlowTypeVO> flowTypeListVO;
                 if (StringUtils.isEmpty(flowStartVO.getFlowTypeId())) {//判断是否选择的有类型
                     Search search = new Search();
                     search.addFilter(new SearchFilter("businessModel", businessModel));
                     SearchOrder searchOrder = new SearchOrder();
-                    search.addSortOrder(searchOrder.desc("lastEditedDate"));  //TODO：先加一个时间排序，让想显示在前面的编辑保存一下，后面加字段控制
+                    search.addSortOrder(searchOrder.desc("version"));
                     flowTypeList = flowTypeDao.findByFilters(search);
-//                    flowTypeList = flowTypeDao.findListByProperty("businessModel", businessModel);
                 } else {
                     flowType = flowTypeDao.findOne(flowStartVO.getFlowTypeId());
-                    flowTypeList = new ArrayList<FlowType>();
+                    flowTypeList = new ArrayList<>();
                     if (flowType != null) {
                         flowTypeList.add(flowType);
                     }
                 }
-                List<String> orgParentCodeList = null;
+                List<String> orgParentCodeList;
                 if (flowTypeList != null && !flowTypeList.isEmpty()) {
                     flowTypeListVO = new ArrayList<>();
                     flowStartResultVO.setFlowTypeList(flowTypeListVO);
@@ -699,7 +693,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             StartFlowTypeVO startFlowTypeVO = new StartFlowTypeVO();
                             startFlowTypeVO.setId(flowTypeTemp.getId());
                             startFlowTypeVO.setName(flowTypeTemp.getName());
-//                        flowTypeTemp.getFlowDefinations().add(flowDefinationTemp);
                             startFlowTypeVO.setFlowDefKey(flowDefinationTemp.getDefKey());
                             startFlowTypeVO.setFlowDefName(flowDefinationTemp.getName());
                             flowTypeListVO.add(startFlowTypeVO);
@@ -708,12 +701,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             }
                         }
                     }
-//                for (FlowType flowTypeTemp : flowTypeList) {
-//                    if (flowTypeTemp.getFlowDefinations() != null && !flowTypeTemp.getFlowDefinations().isEmpty()) {
-//                        finalFlowDefination = (FlowDefination) flowTypeTemp.getFlowDefinations().toArray()[0];
-//                        break;
-//                    }
-//                }
                 } else {
                     flowStartResultVO = null;
                 }
@@ -730,21 +717,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowStartResultVO.setNodeInfoList(nodeInfoList);
                 }
             }
-//
-//        if (flowTypeList != null && !flowTypeList.isEmpty()) {
-//            for (FlowType flowTypeTemp : flowTypeList) {
-//                Set<FlowDefination> flowDefinationSet = flowTypeTemp.getFlowDefinations();
-//                if (flowDefinationSet != null && !flowDefinationSet.isEmpty()) {
-//                    for (FlowDefination flowDefination : flowDefinationSet) {
-//                        flowDefination.setFlowType(null);
-//                    }
-//                }
-//            }
-//        }
         } catch (FlowException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             resultWithData = OperateResultWithData.operationFailure(e.getMessage());
-//            throw  e;
         }
         return resultWithData;
     }
