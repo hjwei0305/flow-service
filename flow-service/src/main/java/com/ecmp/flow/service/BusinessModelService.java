@@ -23,6 +23,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.common.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.GenericType;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -58,8 +58,6 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     private FlowTaskService flowTaskService;
     @Autowired
     private FlowTypeService flowTypeService;
-    @Autowired
-    private FlowTaskPushService flowTaskPushService;
     @Autowired
     private FlowHistoryService flowHistoryService;
     @Autowired
@@ -121,9 +119,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 responseData.setMessage("流程类型不存在！");
                 return responseData;
             }
-            String businessDetailServiceUrl = "";
-            String apiBaseAddress = "";
-            String businessModelCode = "";
+            String businessDetailServiceUrl;
+            String apiBaseAddress;
+            String businessModelCode;
 
             try {
                 businessDetailServiceUrl = flowType.getBusinessDetailServiceUrl();
@@ -205,9 +203,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             }
 
 
-            String businessDetailServiceUrl = "";
-            String apiBaseAddress = "";
-            String businessModelCode = "";
+            String businessDetailServiceUrl;
+            String apiBaseAddress;
+            String businessModelCode;
 
             try {
                 businessDetailServiceUrl = flowType.getBusinessDetailServiceUrl();
@@ -273,7 +271,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
 
     @Override
-    public ResponseData getProperties(String businessModelCode) throws ClassNotFoundException {
+    public ResponseData getProperties(String businessModelCode) {
         ResponseData responseData = new ResponseData();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
@@ -292,7 +290,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
     @Override
-    public ResponseData getPropertiesRemark(String businessModelCode) throws ClassNotFoundException {
+    public ResponseData getPropertiesRemark(String businessModelCode) {
         ResponseData responseData = new ResponseData();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
@@ -312,9 +310,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
 
     @Override
-    public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) throws ClassNotFoundException {
+    public List<ConditionVo> getPropertiesForConditionPojo(String businessModelCode) {
         ResponseData responseData = this.getProperties(businessModelCode);
-        List<ConditionVo> list = new ArrayList<ConditionVo>();
+        List<ConditionVo> list = new ArrayList<>();
         if (responseData.getSuccess() && responseData.getData() != null) {
             Map<String, String> result = (Map<String, String>) responseData.getData();
             if (result.size() > 0) {
@@ -373,7 +371,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
     public OperateResultWithData<BusinessModel> save(BusinessModel businessModel) {
-        OperateResultWithData<BusinessModel> resultWithData = null;
+        OperateResultWithData<BusinessModel> resultWithData;
         try {
             resultWithData = super.save(businessModel);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -403,11 +401,11 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
     public PageResult<BusinessModel> findByPage(Search searchConfig) {
-        List<AppModule> appModuleList = null;
+        List<AppModule> appModuleList;
         List<String> appModuleCodeList = null;
         appModuleList = flowCommonUtil.getBasicTenantAppModule();
         if (appModuleList != null && !appModuleList.isEmpty()) {
-            appModuleCodeList = new ArrayList<String>();
+            appModuleCodeList = new ArrayList<>();
             for (AppModule appModule : appModuleList) {
                 appModuleCodeList.add(appModule.getCode());
             }
@@ -422,12 +420,12 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     public List<BusinessModel> findAllByAuth() {
         List<BusinessModel> result = null;
-        List<AppModule> appModuleList = null;
+        List<AppModule> appModuleList;
         List<String> appModuleCodeList = null;
         try {
             appModuleList = flowCommonUtil.getBasicTenantAppModule();
             if (appModuleList != null && !appModuleList.isEmpty()) {
-                appModuleCodeList = new ArrayList<String>();
+                appModuleCodeList = new ArrayList<>();
                 for (AppModule appModule : appModuleList) {
                     appModuleCodeList.add(appModule.getCode());
                 }
@@ -440,6 +438,15 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             e.printStackTrace();
             result = businessModelDao.findAll();
         }
+
+        //添加应用模块代码和名称（方便前端进行本地全字段搜索功能）
+        if (!CollectionUtils.isEmpty(result)) {
+            result.forEach(k -> {
+                k.setAppModuleCode(k.getAppModule().getCode());
+                k.setAppModuleName(k.getAppModule().getName());
+            });
+        }
+
         return result;
     }
 }
