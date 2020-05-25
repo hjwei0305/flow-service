@@ -921,7 +921,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
 //                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
 //                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());
-                flowTaskDao.delteTaskByActTaskId(actTaskId);
+                flowTaskDao.deleteByActTaskId(actTaskId);
             } else {
                 flowTaskDao.delete(flowTask);
             }

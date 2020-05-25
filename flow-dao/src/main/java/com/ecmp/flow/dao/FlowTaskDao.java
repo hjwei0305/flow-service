@@ -24,16 +24,6 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
     @Query("delete from FlowTask fv where (fv.actTaskId = :actTaskId) and (fv.id <> :idExclude) ")
     Integer deleteNotClaimTask(@Param("actTaskId") String actTaskId, @Param("idExclude") String idExclude);
 
-    /**
-     * 删除实例中，指定节点所有待办
-     *
-     * @param actTaskId 关联流程引擎实际的任务ID
-     * @return
-     */
-    @Modifying
-    @Query("delete from FlowTask fv where  (fv.actTaskId = :actTaskId) ")
-    Integer delteTaskByActTaskId(@Param("actTaskId") String actTaskId);
-
 
     long deleteByActTaskId(String actTaskId);
 
