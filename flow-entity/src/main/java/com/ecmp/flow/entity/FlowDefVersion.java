@@ -1,19 +1,16 @@
 package com.ecmp.flow.entity;
 
 import com.ecmp.core.entity.ITenant;
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.vo.SolidifyStartExecutorVo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -563,5 +560,53 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getCreatorId() {
+        return super.getCreatorId();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getCreatorAccount() {
+        return super.getCreatorAccount();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getCreatorName() {
+        return super.getCreatorName();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public Date getCreatedDate() {
+        return super.getCreatedDate();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getLastEditorId() {
+        return super.getLastEditorId();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getLastEditorAccount() {
+        return super.getLastEditorAccount();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public String getLastEditorName() {
+        return super.getLastEditorName();
+    }
+
+    @Override
+    @JsonIgnore(false)
+    public Date getLastEditedDate() {
+        return super.getLastEditedDate();
     }
 }
