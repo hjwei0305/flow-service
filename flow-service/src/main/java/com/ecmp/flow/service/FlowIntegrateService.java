@@ -1,14 +1,19 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.PageInfo;
+import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.IFlowIntegrateService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.dto.PortalFlowTask;
+import com.ecmp.flow.dto.PortalFlowTaskParam;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -22,10 +27,12 @@ import java.util.*;
 @Service
 public class FlowIntegrateService implements IFlowIntegrateService {
     private final FlowDefinationService flowDefinationService;
+    private final FlowTaskService flowTaskService;
 
     @Autowired
-    public FlowIntegrateService(FlowDefinationService flowDefinationService) {
+    public FlowIntegrateService(FlowDefinationService flowDefinationService, FlowTaskService flowTaskService) {
         this.flowDefinationService = flowDefinationService;
+        this.flowTaskService = flowTaskService;
     }
 
     /**
@@ -116,5 +123,26 @@ public class FlowIntegrateService implements IFlowIntegrateService {
         }
         // 流程启动成功！
         return OperateResult.operationSuccess("10065");
+    }
+
+    /**
+     * 获取当前用户门户待办信息
+     *
+     * @param portalFlowTaskParam 门户待办查询参数
+     * @return 门户待办信息清单
+     */
+    @Override
+    public List<PortalFlowTask> getPortalFlowTask(PortalFlowTaskParam portalFlowTaskParam) {
+        List<PortalFlowTask> result = new ArrayList<>();
+        // 构造查询参数
+        Search search = new Search();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setRows(portalFlowTaskParam.getRecordCount());
+        search.setPageInfo(pageInfo);
+        FlowTaskPageResultVO<FlowTask> resVo = flowTaskService.findByBusinessModelIdWithAllCount(portalFlowTaskParam.getModelId(), "", search);
+        if (CollectionUtils.isNotEmpty(resVo.getRows())) {
+            resVo.getRows().forEach(flowTask -> result.add(new PortalFlowTask(flowTask)));
+        }
+        return result;
     }
 }

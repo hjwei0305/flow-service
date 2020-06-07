@@ -1,11 +1,16 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.flow.dto.PortalFlowTask;
+import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -28,5 +33,15 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
         OperateResult result =service.startDefaultFlow(startParam);
         System.out.println(JsonUtils.toJson(result));
         Assert.assertTrue(result.successful());
+    }
+
+    @Test
+    public void getPortalFlowTask() {
+        PortalFlowTaskParam param = new PortalFlowTaskParam();
+        param.setModelId("838651D7-325F-11E8-BE29-0242C0A84204");
+        param.setRecordCount(10);
+        List<PortalFlowTask> tasks = service.getPortalFlowTask(param);
+        Assert.assertTrue(CollectionUtils.isNotEmpty(tasks));
+        System.out.println(JsonUtils.toJson(tasks));
     }
 }

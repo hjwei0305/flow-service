@@ -1,5 +1,7 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.dto.PortalFlowTask;
+import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
@@ -10,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * <strong>实现功能:</strong>
@@ -32,4 +35,14 @@ public interface IFlowIntegrateService {
     @Path("startDefaultFlow")
     @ApiOperation(value = "使用默认值启动流程", notes = "使用默认流程类型和第一节点执行人来启动流程")
     OperateResult startDefaultFlow(DefaultStartParam startParam);
+
+    /**
+     * 获取当前用户门户待办信息
+     * @param portalFlowTaskParam 门户待办查询参数
+     * @return 门户待办信息清单
+     */
+    @POST
+    @Path("getPortalFlowTask")
+    @ApiOperation(value = "获取当前用户门户待办信息", notes = "获取当前用户门户待办信息，只返回输入参数指定的条目数")
+    List<PortalFlowTask> getPortalFlowTask(PortalFlowTaskParam portalFlowTaskParam);
 }
