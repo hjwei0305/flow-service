@@ -78,7 +78,7 @@ public class FlowIntegrateService implements IFlowIntegrateService {
             userMap.put("anonymous", "anonymous");
             selectedNodesUserMap.put(nodeInfo.getId(), new ArrayList<>());
         } else {
-            // 使用第一个默认执行人
+            // 使用默认执行人
             Set<Executor> executors = nodeInfo.getExecutorSet();
             if (!CollectionUtils.isEmpty(executors)) {
                 String  uiType  =  nodeInfo.getUiType();
