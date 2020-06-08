@@ -40,6 +40,11 @@ public class PortalFlowTask implements Serializable {
     private String flowInstanceBusinessCode;
 
     /**
+     * 流程实例中的业务说明
+     */
+    private String businessModelRemark;
+
+    /**
      * 委托状态：被转办的状态0，委托状态，1发起委托的任务，2被委托的任务,非委托状态为null,委托完成为3
      */
     private Integer trustState;
@@ -77,6 +82,7 @@ public class PortalFlowTask implements Serializable {
             flowInstanceId = flowInstance.getId();
             flowInstanceBusinessId = flowInstance.getBusinessId();
             flowInstanceBusinessCode = flowInstance.getBusinessCode();
+            businessModelRemark = flowInstance.getBusinessModelRemark();
         }
         trustState = flowTask.getTrustState();
         taskName = flowTask.getTaskName();
@@ -122,6 +128,14 @@ public class PortalFlowTask implements Serializable {
 
     public void setFlowInstanceBusinessCode(String flowInstanceBusinessCode) {
         this.flowInstanceBusinessCode = flowInstanceBusinessCode;
+    }
+
+    public String getBusinessModelRemark() {
+        return businessModelRemark;
+    }
+
+    public void setBusinessModelRemark(String businessModelRemark) {
+        this.businessModelRemark = businessModelRemark;
     }
 
     public Integer getTrustState() {
