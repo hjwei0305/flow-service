@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
@@ -43,5 +44,13 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
         List<PortalFlowTask> tasks = service.getPortalFlowTask(param);
         Assert.assertTrue(CollectionUtils.isNotEmpty(tasks));
         System.out.println(JsonUtils.toJson(tasks));
+    }
+
+    @Test
+    public void getPortalFlowHistory() {
+        int recordCount = 10;
+        List<PortalFlowHistory> histories = service.getPortalFlowHistory(recordCount);
+        Assert.assertTrue(CollectionUtils.isNotEmpty(histories));
+        System.out.println(JsonUtils.toJson(histories));
     }
 }

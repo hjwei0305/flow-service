@@ -1,11 +1,14 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.search.PageInfo;
+import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.IFlowIntegrateService;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
+import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
@@ -26,14 +29,12 @@ import java.util.*;
  */
 @Service
 public class FlowIntegrateService implements IFlowIntegrateService {
-    private final FlowDefinationService flowDefinationService;
-    private final FlowTaskService flowTaskService;
-
     @Autowired
-    public FlowIntegrateService(FlowDefinationService flowDefinationService, FlowTaskService flowTaskService) {
-        this.flowDefinationService = flowDefinationService;
-        this.flowTaskService = flowTaskService;
-    }
+    private FlowDefinationService flowDefinationService;
+    @Autowired
+    private FlowTaskService flowTaskService;
+    @Autowired
+    private FlowHistoryService flowHistoryService;
 
     /**
      * 使用默认值启动业务流程
@@ -142,6 +143,27 @@ public class FlowIntegrateService implements IFlowIntegrateService {
         FlowTaskPageResultVO<FlowTask> resVo = flowTaskService.findByBusinessModelIdWithAllCount(portalFlowTaskParam.getModelId(), "", search);
         if (CollectionUtils.isNotEmpty(resVo.getRows())) {
             resVo.getRows().forEach(flowTask -> result.add(new PortalFlowTask(flowTask)));
+        }
+        return result;
+    }
+
+    /**
+     * 获取当前用户门户已办信息
+     *
+     * @param recordCount 获取条目数
+     * @return 门户已办信息清单
+     */
+    @Override
+    public List<PortalFlowHistory> getPortalFlowHistory(Integer recordCount) {
+        List<PortalFlowHistory> result = new ArrayList<>();
+        // 构造查询参数
+        Search search = new Search();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setRows(recordCount);
+        search.setPageInfo(pageInfo);
+        PageResult<FlowHistory> pageResult = flowHistoryService.findByBusinessModelId(null, search);
+        if (CollectionUtils.isNotEmpty(pageResult.getRows())) {
+            pageResult.getRows().forEach(flowHistory -> result.add(new PortalFlowHistory(flowHistory)));
         }
         return result;
     }

@@ -1,5 +1,6 @@
 package com.ecmp.flow.api;
 
+import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
@@ -7,10 +8,7 @@ import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -45,4 +43,14 @@ public interface IFlowIntegrateService {
     @Path("getPortalFlowTask")
     @ApiOperation(value = "获取当前用户门户待办信息", notes = "获取当前用户门户待办信息，只返回输入参数指定的条目数")
     List<PortalFlowTask> getPortalFlowTask(PortalFlowTaskParam portalFlowTaskParam);
+
+    /**
+     * 获取当前用户门户已办信息
+     * @param recordCount 获取条目数
+     * @return 门户已办信息清单
+     */
+    @GET
+    @Path("getPortalFlowHistory")
+    @ApiOperation(value = "获取当前用户门户已办信息", notes = "获取当前用户门户已办信息，只返回输入参数指定的条目数")
+    List<PortalFlowHistory> getPortalFlowHistory(Integer recordCount);
 }
