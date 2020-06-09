@@ -52,5 +52,5 @@ public interface IFlowIntegrateService {
     @GET
     @Path("getPortalFlowHistory")
     @ApiOperation(value = "获取当前用户门户已办信息", notes = "获取当前用户门户已办信息，只返回输入参数指定的条目数")
-    List<PortalFlowHistory> getPortalFlowHistory(Integer recordCount);
+    List<PortalFlowHistory> getPortalFlowHistory(@QueryParam("recordCount") Integer recordCount);
 }
