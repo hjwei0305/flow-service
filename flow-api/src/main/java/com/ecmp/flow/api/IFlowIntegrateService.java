@@ -4,6 +4,7 @@ import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
+import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.vo.OperateResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +23,7 @@ import java.util.List;
 @Path("flowIntegrate")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(value = "IFlowIntegrateService", description = "工作流业务集成服务API接口")
+@Api(value = "IFlowIntegrateService", tags = "工作流业务集成服务API接口")
 public interface IFlowIntegrateService {
     /**
      * 使用默认值启动业务流程
@@ -53,4 +54,14 @@ public interface IFlowIntegrateService {
     @Path("getPortalFlowHistory")
     @ApiOperation(value = "获取当前用户门户已办信息", notes = "获取当前用户门户已办信息，只返回输入参数指定的条目数")
     List<PortalFlowHistory> getPortalFlowHistory(@QueryParam("recordCount") Integer recordCount);
+
+    /**
+     * 获取当前用户门户在办单据
+     * @param recordCount 获取条目数
+     * @return 门户在办单据
+     */
+    @GET
+    @Path("getPortalMyBill")
+    @ApiOperation(value = "获取当前用户门户在办单据", notes = "获取当前用户门户在办单据，只返回输入参数指定的条目数")
+    List<MyBillVO> getPortalMyBill(@QueryParam("recordCount") Integer recordCount);
 }

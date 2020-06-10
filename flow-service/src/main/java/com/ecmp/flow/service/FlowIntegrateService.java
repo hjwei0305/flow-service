@@ -3,6 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.flow.api.IFlowIntegrateService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.dto.PortalFlowHistory;
@@ -14,6 +15,7 @@ import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class FlowIntegrateService implements IFlowIntegrateService {
     private FlowTaskService flowTaskService;
     @Autowired
     private FlowHistoryService flowHistoryService;
+    @Autowired
+    private FlowInstanceService flowInstanceService;
 
     /**
      * 使用默认值启动业务流程
@@ -166,5 +170,27 @@ public class FlowIntegrateService implements IFlowIntegrateService {
             pageResult.getRows().forEach(flowHistory -> result.add(new PortalFlowHistory(flowHistory)));
         }
         return result;
+    }
+
+    /**
+     * 获取当前用户门户在办单据
+     *
+     * @param recordCount 获取条目数
+     * @return 门户在办单据
+     */
+    @Override
+    public List<MyBillVO> getPortalMyBill(Integer recordCount) {
+        // 构造查询参数
+        Search search = new Search();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setRows(recordCount);
+        search.setPageInfo(pageInfo);
+        // 限制在流程中的单据
+        SearchFilter searchFilterEnded = new SearchFilter("ended", false, SearchFilter.Operator.EQ);
+        search.addFilter(searchFilterEnded);
+        SearchFilter searchFilterManuallyEnd = new SearchFilter("manuallyEnd", false, SearchFilter.Operator.EQ);
+        search.addFilter(searchFilterManuallyEnd);
+        ResponseData<PageResult<MyBillVO>> pageResult = flowInstanceService.getMyBills(search);
+        return pageResult.getData().getRows();
     }
 }

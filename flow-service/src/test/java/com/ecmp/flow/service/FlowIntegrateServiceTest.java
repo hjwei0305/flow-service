@@ -4,6 +4,7 @@ import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
 import com.ecmp.flow.vo.DefaultStartParam;
+import com.ecmp.flow.vo.MyBillVO;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import org.apache.commons.collections.CollectionUtils;
@@ -52,5 +53,13 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
         List<PortalFlowHistory> histories = service.getPortalFlowHistory(recordCount);
         Assert.assertTrue(CollectionUtils.isNotEmpty(histories));
         System.out.println(JsonUtils.toJson(histories));
+    }
+
+    @Test
+    public void getPortalMyBill() {
+        int recordCount = 10;
+        List<MyBillVO> myBillS = service.getPortalMyBill(recordCount);
+        Assert.assertTrue(CollectionUtils.isNotEmpty(myBillS));
+        System.out.println(JsonUtils.toJson(myBillS));
     }
 }

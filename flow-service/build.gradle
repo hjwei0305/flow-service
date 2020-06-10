@@ -93,9 +93,9 @@ bootJar  {
 }
 
 // 默认application文件中的配置从配置中心获取
-//processResources {
-//    excludes = ["**/application.yaml", "**/application.properties"]
-//}
+processResources {
+    excludes = ["**/application.yaml", "**/application.properties"]
+}
 
 jar {
     exclude('com/ecmp/FlowApplication.*')
