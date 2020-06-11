@@ -1036,6 +1036,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
+        if(flowHistory == null){
+            return  OperateResult.operationFailure("撤回节点不能找到！");
+        }
         String businessId = flowHistory.getFlowInstance().getBusinessId();
         OperateResult result = flowTaskTool.taskRollBack(flowHistory, opinion);
         if (result.successful()) {
