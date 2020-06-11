@@ -154,7 +154,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @throws CloneNotSupportedException 不能复制对象
      */
     @POST
-    @Path("rollBackToHis/{id}")
+    @Path("rollBackToHis")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务到指定节点", notes = "撤回任务到指定节点")
