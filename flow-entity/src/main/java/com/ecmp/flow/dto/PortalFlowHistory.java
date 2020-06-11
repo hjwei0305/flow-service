@@ -3,6 +3,7 @@ package com.ecmp.flow.dto;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -103,6 +104,9 @@ public class PortalFlowHistory implements Serializable {
             businessModelRemark = flowInstance.getBusinessModelRemark();
             flowInstanceCreatorAccount = flowInstance.getCreatorAccount();
             flowInstanceLookUrl = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getLookUrl();
+            if (StringUtils.isBlank(flowInstanceLookUrl)) {
+                flowInstanceLookUrl = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+            }
         }
         webBaseAddressAbsolute = flowHistory.getWebBaseAddressAbsolute();
         flowTaskName = flowHistory.getFlowTaskName();
