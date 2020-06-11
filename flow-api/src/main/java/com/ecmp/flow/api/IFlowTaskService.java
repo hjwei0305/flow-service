@@ -6,6 +6,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.phone.FlowTaskBatchPhoneVO;
@@ -131,7 +132,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 撤回到指定任务节点
+     * 撤回到指定任务节点（旧）
      *
      * @param id      任务id
      * @param opinion 意见
@@ -144,6 +145,22 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务", notes = "测试")
     OperateResult rollBackTo(@PathParam("id") String id, String opinion) throws CloneNotSupportedException;
+
+    /**
+     * 撤回任务到指定节点（新）
+     *
+     * @param rollBackParam 撤回接口参数
+     * @return 操作结果
+     * @throws CloneNotSupportedException 不能复制对象
+     */
+    @POST
+    @Path("rollBackToHis/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "撤回任务到指定节点", notes = "撤回任务到指定节点")
+    ResponseData rollBackToHis(RollBackParam rollBackParam) throws CloneNotSupportedException;
+
+
 
     /**
      * 撤回到指定任务节点(移动端专用)

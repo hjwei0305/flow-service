@@ -15,6 +15,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
+import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -1046,6 +1047,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }).start();
         }
         return result;
+    }
+
+    @Override
+    public ResponseData rollBackToHis(RollBackParam rollBackParam)  throws CloneNotSupportedException{
+        String id = rollBackParam.getId();
+        String opinion = rollBackParam.getOpinion();
+        if(StringUtils.isEmpty(id)){
+            return  ResponseData.operationFailure("撤回节点ID不能为空！");
+        }
+        if(StringUtils.isEmpty(opinion)){
+            return  ResponseData.operationFailure("撤回意见不能为空！");
+        }
+        return this.rollBackTo(id,opinion);
     }
 
 
