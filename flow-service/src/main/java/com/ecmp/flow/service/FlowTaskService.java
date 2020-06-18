@@ -16,6 +16,7 @@ import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
 import com.ecmp.flow.dto.RollBackParam;
+import com.ecmp.flow.dto.UserFlowTaskQueryParam;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -3669,6 +3670,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return ResponseData.operationFailure("参数不能为空！");
         }
         return res;
+    }
+
+    /**
+     * 查询当前用户的待办工作
+     *
+     * @param queryParam 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public FlowTaskPageResultVO<FlowTask> queryCurrentUserFlowTask(UserFlowTaskQueryParam queryParam) {
+        Boolean canBatch = queryParam.getCanBatch();
+        String modelId = queryParam.getModelId();
+        // 可以批量处理的待办查询结果
+        if (canBatch) {
+            PageResult<FlowTask> pageResult = findByPageCanBatchApprovalByBusinessModelId(modelId, queryParam);
+            FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<>();
+            resultVO.setRows(pageResult.getRows());
+            resultVO.setRecords(pageResult.getRecords());
+            resultVO.setPage(pageResult.getPage());
+            resultVO.setTotal(pageResult.getTotal());
+            resultVO.setAllTotal(pageResult.getRecords());
+            return resultVO;
+        }
+        // 一般待办查询结果
+        return findByBusinessModelIdWithAllCount(modelId, "", queryParam);
     }
 
 

@@ -7,6 +7,7 @@ import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dto.RollBackParam;
+import com.ecmp.flow.dto.UserFlowTaskQueryParam;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.phone.FlowTaskBatchPhoneVO;
@@ -919,5 +920,13 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @IgnoreCheckAuth
     ResponseData getTaskFormUrlXiangDuiByTaskId(@QueryParam("taskId") String taskId);
 
-
+    /**
+     * 查询当前用户的待办工作
+     * @param queryParam 查询参数
+     * @return 分页查询结果
+     */
+    @POST
+    @Path("queryCurrentUserFlowTask")
+    @ApiOperation(value = "查询当前用户的待办工作", notes = "查询当前用户的待办工作，可以区分是否为批量处理")
+    FlowTaskPageResultVO<FlowTask> queryCurrentUserFlowTask(UserFlowTaskQueryParam queryParam);
 }
