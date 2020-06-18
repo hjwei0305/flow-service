@@ -2446,6 +2446,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return responseData;
     }
 
+    @Override
+    public ResponseData<List<NodeGroupByFlowVersionInfo>> getBatchNextNodes(List<String> taskIds) {
+        if(CollectionUtils.isEmpty(taskIds)){
+          return  ResponseData.operationFailure("参数不能为空！");
+        }
+        String  taskIdsStr = taskIds.toString();
+        String  requestStr = taskIdsStr.substring(0,taskIdsStr.length()-1);
+        try{
+            List<NodeGroupByFlowVersionInfo>  list =  this.findNexNodesGroupByVersionWithUserSetCanBatch(requestStr);
+            return  ResponseData.operationSuccessWithData(list);
+        }catch (Exception e){
+            LogUtil.error(e.getMessage(),e);
+            return ResponseData.operationFailure(e.getMessage());
+        }
+    }
 
     public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds) throws NoSuchMethodException {
         List<NodeGroupByFlowVersionInfo> all = new ArrayList<NodeGroupByFlowVersionInfo>();

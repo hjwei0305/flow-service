@@ -668,6 +668,21 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds) throws NoSuchMethodException;
 
 
+
+    /**
+     * 通过任务IDS获取下一步节点信息(6.0新)
+     * @param taskIds 任务IDs
+     * @return 下一步执行的节点信息(带用户信息与版本分组), 带分组
+     */
+    @POST
+    @Path("getBatchNextNodes")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过任务IDS获取下一步节点信息", notes = "通过任务IDS获取下一步节点信息")
+    ResponseData<List<NodeGroupByFlowVersionInfo>>  getBatchNextNodes(List<String> taskIds);
+
+
+
     /**
      * 获取下一步的节点信息任务(移动端)
      *
