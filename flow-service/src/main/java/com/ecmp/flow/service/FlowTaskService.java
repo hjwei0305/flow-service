@@ -2453,7 +2453,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
           return  ResponseData.operationFailure("参数不能为空！");
         }
         String  taskIdsStr = taskIds.toString();
-        String  requestStr = taskIdsStr.substring(0,taskIdsStr.length()-1);
+        String  requestStr = taskIdsStr.substring(1,taskIdsStr.length()-1);
         try{
             List<NodeGroupByFlowVersionInfo>  list =  this.findNexNodesGroupByVersionWithUserSetCanBatch(requestStr);
             return  ResponseData.operationSuccessWithData(list);
