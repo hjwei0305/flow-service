@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.dto.UserFlowHistoryQueryParam;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.vo.phone.FlowHistoryPhoneVo;
 import com.ecmp.vo.OperateResultWithData;
@@ -89,6 +90,18 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
 
     /**
+     * 查询有效的流程已办汇总列表
+     * @return ResponseData.data是 List<TodoBusinessSummaryVO>
+     */
+    @GET
+    @Path("listValidFlowHistoryHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询有效的流程已办汇总列表", notes = "查询有效的流程已办汇总列表")
+    ResponseData listValidFlowHistoryHeader();
+
+
+    /**
      * 查询流程已办汇总列表
      *（全部、有效数据、记录数据）
      * @return ResponseData.data是 List<TodoBusinessSummaryVO>
@@ -118,7 +131,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
      *（全部、有效数据、记录数据）
      * @param businessModelId 业务实体id
      * @param searchConfig    查询条件
-     * @return 已办汇总信息
+     * @return 已办信息
      */
     @POST
     @Path("listFlowHistory")
@@ -126,6 +139,20 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "已办汇总信息", notes = "已办汇总信息")
     ResponseData listFlowHistory(@QueryParam("businessModelId") String businessModelId, Search searchConfig);
+
+
+    /**
+     * 获取有效的已办信息
+     * @param queryParam    查询参数
+     * @return 已办分页查询结果
+     */
+    @POST
+    @Path("listValidFlowHistory")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "已办汇总信息", notes = "已办汇总信息")
+    ResponseData listValidFlowHistory(UserFlowHistoryQueryParam queryParam);
+
 
 
     /**
@@ -221,6 +248,8 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
             @QueryParam("page") int page,
             @QueryParam("rows") int rows,
             @QueryParam("quickValue") String quickValue);
+
+
 
 
 }

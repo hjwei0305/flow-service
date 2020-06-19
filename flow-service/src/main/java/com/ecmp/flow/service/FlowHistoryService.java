@@ -9,6 +9,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
+import com.ecmp.flow.dto.UserFlowHistoryQueryParam;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowHistory;
@@ -234,6 +235,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return voList;
     }
 
+
     @Override
     public ResponseData listFlowHistoryHeader(String dataType) {
         try {
@@ -243,6 +245,44 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             LogUtil.error(e.getMessage(), e);
             return ResponseData.operationFailure("操作失败！");
         }
+    }
+
+    @Override
+    public ResponseData listValidFlowHistoryHeader() {
+        List<TodoBusinessSummaryVO> voList = new ArrayList<>();
+        String userID = ContextUtil.getUserId();
+        List groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
+        if (groupResultList != null && !groupResultList.isEmpty()) {
+            Iterator it = groupResultList.iterator();
+            while (it.hasNext()) {
+                Object[] res = (Object[]) it.next();
+                int count = ((Number) res[0]).intValue();
+                String flowDefinationId = res[1] + "";
+                FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
+                if (flowDefination == null) {
+                    continue;
+                }
+                // 获取业务类型
+                BusinessModel businessModel = businessModelDao.findOne(flowDefination.getFlowType().getBusinessModel().getId());
+                Integer oldCount = businessModelCountMap.get(businessModel);
+                if (oldCount == null) {
+                    oldCount = 0;
+                }
+                businessModelCountMap.put(businessModel, oldCount + count);
+            }
+        }
+        if (!businessModelCountMap.isEmpty()) {
+            for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
+                TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
+                todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
+                todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
+                todoBusinessSummaryVO.setCount(map.getValue());
+                todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName());
+                voList.add(todoBusinessSummaryVO);
+            }
+        }
+        return ResponseData.operationSuccessWithData(voList);
     }
 
     @Override
@@ -268,6 +308,15 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             LogUtil.error(e.getMessage());
         }
         return responseData;
+    }
+
+    @Override
+    public ResponseData listValidFlowHistory(UserFlowHistoryQueryParam queryParam) {
+       //设置只查询有效数据
+       List<SearchFilter> searchFilters = queryParam.getFilters();
+       SearchFilter filter = new SearchFilter("flowExecuteStatus","valid",SearchFilter.Operator.IN);
+       searchFilters.add(filter);
+       return this.listFlowHistory(queryParam.getModelId(),queryParam);
     }
 
     public ResponseData listFlowHistoryByFlowStatus(String businessModelId, Search searchConfig) {
