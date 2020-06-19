@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
@@ -441,6 +442,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo);
 
 
+
+    /**
+     * 查询我的单据汇总列表
+     *
+     * @return ResponseData.data是 List<TodoBusinessSummaryVO>
+     */
+    @POST
+    @Path("listAllMyBillsHeader")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "查询我的单据汇总列表", notes = "查询我的单据汇总列表")
+    ResponseData listAllMyBillsHeader();
+
+
     /**
      * 获取我的单据
      *
@@ -453,6 +468,21 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取我的单据", notes = "获取我的单据")
     ResponseData getMyBills(Search searchConfig);
+
+    /**
+     * 获取我的单据
+     *
+     * @param queryParam 查询参数
+     * @return
+     */
+    @POST
+    @Path("getAllMyBills")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取我的单据", notes = "获取我的单据")
+    ResponseData getAllMyBills(UserFlowBillsQueryParam queryParam);
+
+
 
     /**
      * 根据业务实体获取我的单据
@@ -483,6 +513,9 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据业务实体获取我的单据(关联待办执行人)", notes = "根据业务实体获取我的单据(关联待办执行人)")
     ResponseData getMyBillsAndExecutorByModeId(@QueryParam("appModelCode") String appModelCode, @QueryParam("modelId") String modelId, Search searchConfig);
+
+
+
 
     /**
      * 获取我的单据（已办/待办）
