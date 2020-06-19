@@ -1,6 +1,9 @@
 package com.ecmp.flow.dto;
 
+import com.ecmp.core.search.SearchOrder;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 实现功能: 门户待办查询参数
@@ -19,6 +22,11 @@ public class PortalFlowTaskParam implements Serializable {
      */
     private Integer recordCount = 10;
 
+    /**
+     * 排序属性清单
+     */
+    private List<SearchOrder> searchOrders;
+
     public String getModelId() {
         return modelId;
     }
@@ -33,5 +41,13 @@ public class PortalFlowTaskParam implements Serializable {
 
     public void setRecordCount(Integer recordCount) {
         this.recordCount = recordCount;
+    }
+
+    public List<SearchOrder> getSearchOrders() {
+        return searchOrders;
+    }
+
+    public void setSearchOrders(List<SearchOrder> searchOrders) {
+        this.searchOrders = searchOrders;
     }
 }
