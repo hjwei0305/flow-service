@@ -18,6 +18,12 @@ public class UserFlowBillsQueryParam  extends Search {
     private String modelId;
 
 
+    /**
+     * 流程状态：all-全部；inflow-流程中；ended-正常结束；abnormalEnd-异常终止
+     */
+    private String flowStatus;
+
+
     public String getModelId() {
         return modelId;
     }
@@ -26,5 +32,11 @@ public class UserFlowBillsQueryParam  extends Search {
         this.modelId = modelId;
     }
 
+    public String getFlowStatus() {
+        return flowStatus;
+    }
 
+    public void setFlowStatus(String flowStatus) {
+        this.flowStatus = flowStatus;
+    }
 }

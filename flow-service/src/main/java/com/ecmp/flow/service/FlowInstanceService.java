@@ -1501,6 +1501,27 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Override
     public ResponseData getAllMyBills(UserFlowBillsQueryParam queryParam) {
+        //设置流程状态
+        List<SearchFilter> searchFilters = queryParam.getFilters();
+        if(searchFilters == null){
+            searchFilters = new ArrayList<>();
+        }
+        if("inflow".equalsIgnoreCase(queryParam.getFlowStatus())){ //流程中
+            SearchFilter filter1 = new SearchFilter("ended",false,SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd",false,SearchFilter.Operator.EQ);
+            searchFilters.add(filter1);
+            searchFilters.add(filter2);
+        }else if("ended".equalsIgnoreCase(queryParam.getFlowStatus())){ //正常结束
+            SearchFilter filter1 = new SearchFilter("ended",true,SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd",false,SearchFilter.Operator.EQ);
+            searchFilters.add(filter1);
+            searchFilters.add(filter2);
+        }else if("abnormalEnd".equalsIgnoreCase(queryParam.getFlowStatus())){ //异常终止
+            SearchFilter filter1 = new SearchFilter("ended",true,SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd",true,SearchFilter.Operator.EQ);
+            searchFilters.add(filter1);
+            searchFilters.add(filter2);
+        }
         return     this.getMyBillsByModeId(queryParam.getModelId(),queryParam);
     }
 
