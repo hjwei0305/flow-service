@@ -314,8 +314,12 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     public ResponseData listValidFlowHistory(UserFlowHistoryQueryParam queryParam) {
        //设置只查询有效数据
        List<SearchFilter> searchFilters = queryParam.getFilters();
+        if(searchFilters == null){
+            searchFilters = new ArrayList<>();
+        }
        SearchFilter filter = new SearchFilter("flowExecuteStatus","valid",SearchFilter.Operator.IN);
        searchFilters.add(filter);
+       queryParam.setFilters(searchFilters);
        return this.listFlowHistory(queryParam.getModelId(),queryParam);
     }
 
