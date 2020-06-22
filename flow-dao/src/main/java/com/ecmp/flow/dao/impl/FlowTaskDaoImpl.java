@@ -382,13 +382,15 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         }
 
         if (searchFilters!=null && searchFilters.size()>0 ) {
+            SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
             for(SearchFilter filters :  searchFilters){
-                if("createdDate".equals(filters.getFieldName())){
-                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                if("startDate".equals(filters.getFieldName())){
                     if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
                         hqlCount+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
                         hqlQuery+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
-                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                    }
+                }else if("endDate".equals(filters.getFieldName())){
+                    if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
                         //因为截取日期算的是0点，所以结束日志操作加一天
                         Date endDate = (Date)filters.getValue();
                         Calendar calendar   = new GregorianCalendar();
