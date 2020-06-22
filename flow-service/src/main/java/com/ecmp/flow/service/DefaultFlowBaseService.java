@@ -685,13 +685,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
-        List<NodeInfo> nodeInfoList = null;
-        try {
-            nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
-        } catch (Exception e) {
-            LogUtil.error("获取下一节点信息错误，详情请查看日志！", e);
-            return ResponseData.operationFailure("获取下一节点信息错误，详情请查看日志！");
-        }
+        List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+//        try {
+//            nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+//        } catch (Exception e) {
+//            LogUtil.error("获取下一节点信息错误，详情请查看日志！", e);
+//            return ResponseData.operationFailure("获取下一节点信息错误，详情请查看日志！");
+//        }
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return ResponseData.operationSuccessWithData("EndEvent");

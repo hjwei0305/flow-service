@@ -2346,13 +2346,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
-        List<NodeInfo> nodeInfoList = null;
-        try {
-            nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
-        } catch (Exception e) {
-            LogUtil.error("获取下一节点信息错误，详情请查看日志！", e);
-            return OperateResultWithData.operationFailure("获取下一节点信息错误，详情请查看日志！");
-        }
+        List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+
+//        try {
+//            nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
+//        } catch (Exception e) {
+//            LogUtil.error("获取下一节点信息错误，详情请查看日志！", e);
+//            return OperateResultWithData.operationFailure("获取下一节点信息错误，详情请查看日志！");
+//        }
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             operateResultWithData = OperateResultWithData.operationSuccess();
