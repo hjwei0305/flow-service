@@ -400,8 +400,10 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                         hqlQuery+=" and ft.createdDate <  '"+sim.format(calendar.getTime())+"' ";
                     }
                 }else{
-                    hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
-                    hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    if(filters.getValue()!=null){
+                        hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                        hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    }
                 }
             }
         }
