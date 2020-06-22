@@ -2,10 +2,7 @@ package com.ecmp.flow.dao.impl;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.impl.BaseEntityDaoImpl;
-import com.ecmp.core.search.PageInfo;
-import com.ecmp.core.search.PageResult;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchOrder;
+import com.ecmp.core.search.*;
 import com.ecmp.flow.dao.CustomFlowTaskDao;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.TaskMakeOverPower;
@@ -13,9 +10,8 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -190,6 +186,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders = searchConfig.getSortOrders();
+        List<SearchFilter>  searchFilters = searchConfig.getFilters();
         String hqlCount = " select count(ft.id) from com.ecmp.flow.entity.FlowTask ft " +
                 " where   (ft.trustState !=1  or ft.trustState is null ) " +
                 " and ft.flowDefinitionId " +
@@ -217,6 +214,30 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlCount += " and  ft.executorId  = :executorId  ";
             hqlQuery += " and  ft.executorId  = :executorId  ";
         }
+
+        if (searchFilters!=null && searchFilters.size()>0 ) {
+            for(SearchFilter filters :  searchFilters){
+                if("createdDate".equals(filters.getFieldName())){
+                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                    if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
+                        hqlCount+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
+                        hqlQuery+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
+                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                        //因为截取日期算的是0点，所以结束日志操作加一天
+                        Date endDate = (Date)filters.getValue();
+                        Calendar calendar   = new GregorianCalendar();
+                        calendar.setTime(endDate);
+                        calendar.add(calendar.DATE,1);
+                        hqlCount+=" and ft.createdDate <  '"+sim.format(calendar.getTime())+"' ";
+                        hqlQuery+=" and ft.createdDate <  '"+sim.format(calendar.getTime())+"' ";
+                    }
+                }else{
+                    hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                }
+            }
+        }
+
 
         if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
             StringBuffer extraHql = new StringBuffer(" and (");
@@ -339,6 +360,7 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
         List<SearchOrder> sortOrders = searchConfig.getSortOrders();
+        List<SearchFilter>  searchFilters = searchConfig.getFilters();
         String hqlCount = " select count(ft.id) from com.ecmp.flow.entity.FlowTask ft  where  (ft.trustState !=1  or ft.trustState is null) ";
         String hqlQuery = " select ft           from com.ecmp.flow.entity.FlowTask ft  where  (ft.trustState !=1  or ft.trustState is null) ";
 
@@ -357,6 +379,28 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
             hqlQuery += " and  ft.executorId  = :executorId  ";
         }
 
+        if (searchFilters!=null && searchFilters.size()>0 ) {
+            for(SearchFilter filters :  searchFilters){
+                if("createdDate".equals(filters.getFieldName())){
+                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                    if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
+                        hqlCount+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
+                        hqlQuery+=" and ft.createdDate >=  '"+sim.format(filters.getValue())+"' ";
+                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                        //因为截取日期算的是0点，所以结束日志操作加一天
+                        Date endDate = (Date)filters.getValue();
+                        Calendar calendar   = new GregorianCalendar();
+                        calendar.setTime(endDate);
+                        calendar.add(calendar.DATE,1);
+                        hqlCount+=" and ft.createdDate <  '"+sim.format(calendar.getTime())+"' ";
+                        hqlQuery+=" and ft.createdDate <  '"+sim.format(calendar.getTime())+"' ";
+                    }
+                }else{
+                    hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                }
+            }
+        }
 
 
         if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
