@@ -9,8 +9,8 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.Collection;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -41,14 +41,36 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
 
-        if (searchFilters != null && searchFilters.size() > 0 && searchFilters.get(0).getValue() != null) {
-            SearchFilter filters = searchFilters.get(0);
-            if ("valid".equals(filters.getValue())) {//有效数据
-                hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
-                hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
-            } else if ("record".equals(filters.getValue())) { //记录数据
-                hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
-                hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
+        if (searchFilters!=null && searchFilters.size()>0 ) {
+            for(SearchFilter filters :  searchFilters){
+                if("flowExecuteStatus".equals(filters.getFieldName())){
+                    if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
+                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
+                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+                    } else if (filters.getValue()!=null && "record".equals(filters.getValue())) { //记录数据
+                        hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
+                        hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
+                    }
+                }else if("actEndTime".equals(filters.getFieldName())){
+                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                    if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
+                        hqlCount+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
+                        hqlQuery+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
+                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                        //因为截取日期算的是0点，所以结束日志操作加一天
+                        Date endDate = (Date)filters.getValue();
+                        Calendar calendar   = new GregorianCalendar();
+                        calendar.setTime(endDate);
+                        calendar.add(calendar.DATE,1);
+                        hqlCount+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
+                        hqlQuery+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
+                    }
+                }else{
+                    if(filters.getValue()!=null){
+                        hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                        hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    }
+                }
             }
         }
 
@@ -253,16 +275,41 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         List<SearchFilter> searchFilters = searchConfig.getFilters();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
-        if (searchFilters != null && searchFilters.size() > 0 && searchFilters.get(0).getValue() != null) {
-            SearchFilter filters = searchFilters.get(0);
-            if ("valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
-                hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
-                hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
-            } else if ("record".equals(filters.getValue())) { //记录数据
-                hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
-                hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
+
+        if (searchFilters!=null && searchFilters.size()>0 ) {
+            for(SearchFilter filters :  searchFilters){
+                if("flowExecuteStatus".equals(filters.getFieldName())){
+                    if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
+                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
+                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+                    } else if (filters.getValue()!=null && "record".equals(filters.getValue())) { //记录数据
+                        hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
+                        hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
+                    }
+                }else if("actEndTime".equals(filters.getFieldName())){
+                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                    if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
+                        hqlCount+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
+                        hqlQuery+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
+                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                        //因为截取日期算的是0点，所以结束日志操作加一天
+                        Date endDate = (Date)filters.getValue();
+                        Calendar calendar   = new GregorianCalendar();
+                        calendar.setTime(endDate);
+                        calendar.add(calendar.DATE,1);
+                        hqlCount+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
+                        hqlQuery+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
+                    }
+                }else{
+                    if(filters.getValue()!=null){
+                        hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                        hqlQuery += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
+                    }
+                }
             }
         }
+
+
         if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
