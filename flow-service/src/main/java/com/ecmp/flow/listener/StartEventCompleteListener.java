@@ -180,7 +180,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         flowInstance.setFlowDefVersion(flowDefVersion);
         Date now = new Date();
         flowInstance.setStartDate(now);
-        flowInstance.setEndDate(now);
+//        flowInstance.setEndDate(now);
         flowInstance.setFlowName(flowDefVersion.getName());
         flowInstance.setActInstanceId(processInstance.getId());
         if (parentProcessInstance != null) {
