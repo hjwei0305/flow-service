@@ -42,6 +42,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
 
         if (searchFilters!=null && searchFilters.size()>0 ) {
+            SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
             for(SearchFilter filters :  searchFilters){
                 if("flowExecuteStatus".equals(filters.getFieldName())){
                     if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
@@ -51,12 +52,13 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                         hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
                         hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
                     }
-                }else if("actEndTime".equals(filters.getFieldName())){
-                    SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+                }else if("startDate".equals(filters.getFieldName())){
                     if(SearchFilter.Operator.GE.equals(filters.getOperator()) && filters.getValue()!=null){ //开始日期
                         hqlCount+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
                         hqlQuery+=" and ft.actEndTime >=  '"+sim.format(filters.getValue())+"' ";
-                    }else if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
+                    }
+                }else if("endDate".equals(filters.getFieldName())){
+                    if(SearchFilter.Operator.LE.equals(filters.getOperator()) && filters.getValue()!=null){ //结束日期
                         //因为截取日期算的是0点，所以结束日志操作加一天
                         Date endDate = (Date)filters.getValue();
                         Calendar calendar   = new GregorianCalendar();
