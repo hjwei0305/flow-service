@@ -1510,8 +1510,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
            for(int i=0 ; i<searchFilters.size();i++){
                SearchFilter filter =  searchFilters.get(i);
                if("flowStatus".equalsIgnoreCase(filter.getFieldName())){
-                   queryParam.setFlowStatus(filter.getValue().toString());
-                   searchFilters.remove(i);
+                   if(filter.getValue() != null){
+                       queryParam.setFlowStatus(filter.getValue().toString());
+                       searchFilters.remove(i);
+                   }
                }
            }
         }
