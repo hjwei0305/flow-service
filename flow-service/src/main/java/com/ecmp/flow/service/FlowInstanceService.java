@@ -1505,6 +1505,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         List<SearchFilter> searchFilters = queryParam.getFilters();
         if(searchFilters == null){
             searchFilters = new ArrayList<>();
+        }else{
+            //前端可能在高级查询的filter中添加该查询
+           for(int i=0 ; i<searchFilters.size();i++){
+               SearchFilter filter =  searchFilters.get(i);
+               if("flowStatus".equalsIgnoreCase(filter.getFieldName())){
+                   queryParam.setFlowStatus(filter.getValue().toString());
+                   searchFilters.remove(i);
+               }
+           }
         }
         if("inflow".equalsIgnoreCase(queryParam.getFlowStatus())){ //流程中
             SearchFilter filter1 = new SearchFilter("ended",false,SearchFilter.Operator.EQ);
