@@ -1490,7 +1490,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             return this.getMyBills(search);
         } else {
             if (search != null) {
-                List<SearchFilter> listFilter = search.getFilters();
+                List<SearchFilter> listFilter;
+                if(search.getFilters()==null){
+                    listFilter = new ArrayList<>();
+                }else{
+                    listFilter = search.getFilters();
+                }
                 listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
                 return this.getMyBills(search);
             } else {
