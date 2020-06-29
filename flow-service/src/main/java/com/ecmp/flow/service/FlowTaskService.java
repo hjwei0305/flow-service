@@ -2973,6 +2973,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                             String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
                             List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
+                            userList = new ArrayList<String>(userList);
                             userList.add(userId);
                             runtimeService.setVariable(processInstanceId, userListDesc, userList);
                             if (isSequential == false) {//并行会签，需要立即初始化执行人
