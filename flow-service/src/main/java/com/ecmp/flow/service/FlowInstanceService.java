@@ -1687,6 +1687,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 myBillVO.setFlowName(f.getFlowName());
                 myBillVO.setFlowInstanceId(f.getId());
                 myBillVO.setFlowTypeId(f.getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                myBillVO.setFlowInstanceCreatorName(f.getCreatorName());
                 String businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessDetailServiceUrl();
                 myBillVO.setBusinessModelCode(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
                 if (StringUtils.isEmpty(businessDetailServiceUrl)) {
