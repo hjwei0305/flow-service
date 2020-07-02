@@ -67,6 +67,33 @@ public class FlowTaskBatchPhoneVO implements Serializable {
     private String completeTaskUrl;
 
 
+    /**
+     * 业务单据说明
+     */
+    private String businessModelRemark;
+
+    /**
+     * 流程实例创建人
+     */
+    private String flowInstanceCreatorName;
+
+
+    public String getBusinessModelRemark() {
+        return businessModelRemark;
+    }
+
+    public void setBusinessModelRemark(String businessModelRemark) {
+        this.businessModelRemark = businessModelRemark;
+    }
+
+    public String getFlowInstanceCreatorName() {
+        return flowInstanceCreatorName;
+    }
+
+    public void setFlowInstanceCreatorName(String flowInstanceCreatorName) {
+        this.flowInstanceCreatorName = flowInstanceCreatorName;
+    }
+
     public String getTaskId() {
         return taskId;
     }
