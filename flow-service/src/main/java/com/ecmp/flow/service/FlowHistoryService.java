@@ -467,6 +467,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 beanVo.setFlowInstanceBusinessId(flowInstance.getBusinessId());
                 beanVo.setFlowInstanceBusinessCode(flowInstance.getBusinessCode());
                 beanVo.setFlowInstanceEnded(flowInstance.isEnded());
+                beanVo.setFlowInstanceCreatorName(flowInstance.getCreatorName());
+                beanVo.setBusinessModelRemark(flowInstance.getBusinessModelRemark());
 
                 String apiBaseAddress = Constants.getConfigValueByApi(businessModel.getAppModule().getApiBaseAddress());
                 beanVo.setBusinessDetailServiceUrl(apiBaseAddress + businessModel.getBusinessDetailServiceUrl());
