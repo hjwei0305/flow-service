@@ -1124,7 +1124,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 });
 
-                //是否推送信息到baisc
+                //是否推送信息到 baisc
                 Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
 
                 for (FlowInstance fTemp : flowInstanceList) {
@@ -1133,62 +1133,41 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                     //是否推送信息到业务模块或者直接配置的url
                     Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(fTemp);
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
 
                     Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
                     if (flowTaskList != null && !flowTaskList.isEmpty()) {
-                        List<FlowTask> needDelList = new ArrayList<FlowTask>();
                         for (FlowTask flowTask : flowTaskList) {
-                            try {
-                                FlowHistory flowHistory = new FlowHistory();
-                                String preFlowHistoryId = flowTask.getPreId();
-                                FlowHistory preFlowHistory = null;
-                                if (StringUtils.isNotEmpty(preFlowHistoryId)) {
-                                    preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
-                                }
-                                BeanUtils.copyProperties(flowHistory, flowTask);
-                                flowHistory.setId(null);
-                                flowHistory.setOldTaskId(flowTask.getId());
-                                flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
-                                if (!force) {
-                                    flowHistory.setDepict(ContextUtil.getMessage("10036"));//【被发起人终止流程】
-                                } else {
-                                    flowHistory.setDepict(ContextUtil.getMessage("10035"));//"【被管理员强制终止流程】"
-                                }
-                                flowHistory.setFlowTaskName(flowTask.getTaskName());
-                                Date now = new Date();
-                                if (preFlowHistory != null) {
-                                    flowHistory.setActDurationInMillis(now.getTime() - preFlowHistory.getActEndTime().getTime());
-                                } else {
-                                    flowHistory.setActDurationInMillis(now.getTime() - flowTask.getCreatedDate().getTime());
-                                }
-                                flowHistory.setActEndTime(now);
-                                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.END.getCode());//终止
-                                flowHistoryDao.save(flowHistory);
-                            } catch (Exception e) {
-                                logger.error(e.getMessage(), e);
+                            FlowHistory flowHistory = new FlowHistory();
+                            String preFlowHistoryId = flowTask.getPreId();
+                            FlowHistory preFlowHistory = null;
+                            if (StringUtils.isNotEmpty(preFlowHistoryId)) {
+                                preFlowHistory = flowHistoryDao.findOne(preFlowHistoryId);
                             }
+                            BeanUtils.copyProperties(flowHistory, flowTask);
+                            flowHistory.setId(null);
+                            flowHistory.setOldTaskId(flowTask.getId());
+                            flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+                            if (!force) {
+                                flowHistory.setDepict(ContextUtil.getMessage("10036"));//【被发起人终止流程】
+                            } else {
+                                flowHistory.setDepict(ContextUtil.getMessage("10035"));//"【被管理员强制终止流程】"
+                            }
+                            flowHistory.setFlowTaskName(flowTask.getTaskName());
+                            Date now = new Date();
+                            if (preFlowHistory != null) {
+                                flowHistory.setActDurationInMillis(now.getTime() - preFlowHistory.getActEndTime().getTime());
+                            } else {
+                                flowHistory.setActDurationInMillis(now.getTime() - flowTask.getCreatedDate().getTime());
+                            }
+                            flowHistory.setActEndTime(now);
+                            flowHistory.setFlowExecuteStatus(FlowExecuteStatus.END.getCode());//终止
+                            flowHistoryDao.save(flowHistory);
                             if (pushBasic || pushModelOrUrl) {//是否推送信息到baisc、<业务模块>、<配置的url>
                                 needDelList.add(flowTask);
                             }
                             flowTaskDao.delete(flowTask);
                         }
-                        if (pushBasic) {  //流程终止时，异步推送需要删除待办到baisc
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    flowTaskService.pushToBasic(null, null, needDelList, null);
-                                }
-                            }).start();
-                        }
-                        if (pushModelOrUrl) {  //流程终止时，异步推送成已办<业务模块>、<配置的url>
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    flowTaskService.pushTaskToModelOrUrl(fTemp, needDelList, TaskStatus.DELETE);
-                                }
-                            }).start();
-                        }
-
                     }
 
                     String actInstanceId = fTemp.getActInstanceId();
@@ -1211,16 +1190,35 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     flowInstanceDao.save(fTemp);
                     //重置客户端表单流程状态
                     String businessId = fTemp.getBusinessId();
-                    FlowStatus status = FlowStatus.INIT;
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                    ExpressionUtil.resetState(businessModel, businessId, status);
+                    ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INIT);
                     //查看是否为固化流程（如果是固化流程删除固化执行人列表）
                     flowSolidifyExecutorDao.deleteByBusinessId(businessId);
+
                     //结束后触发
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+                        //重新让单据回到流程中
+                        ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INPROCESS);
+                        throw e;
+                    }
+
+                    if (pushBasic) {  //流程终止时，异步推送需要删除待办到baisc
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                flowTaskService.pushToBasic(null, null, needDelList, null);
+                            }
+                        }).start();
+                    }
+                    if (pushModelOrUrl) {  //流程终止时，异步推送成已办<业务模块>、<配置的url>
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                flowTaskService.pushTaskToModelOrUrl(fTemp, needDelList, TaskStatus.DELETE);
+                            }
+                        }).start();
                     }
                 }
             } else {
@@ -1230,7 +1228,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     result = OperateResult.operationFailure("10011");//不能终止
                 }
             }
-        } catch (FlowException e) {
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             result = OperateResult.operationFailure(e.getMessage());//终止失败
         }
