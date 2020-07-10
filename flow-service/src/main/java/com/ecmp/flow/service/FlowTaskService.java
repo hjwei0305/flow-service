@@ -2168,14 +2168,20 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 beanVo.setApiBaseAddress(apiBaseAddress);
                 beanVo.setBusinessDetailServiceUrl(bean.getBusinessDetailServiceUrl());
 
-                String webBaseAddress = Constants.getConfigValueByWeb(flowType.getBusinessModel().getAppModule().getWebBaseAddress());
-                if (StringUtils.isNotEmpty(webBaseAddress)) {
-                    String[] tempWebBaseAddress = webBaseAddress.split("/");
-                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-                        webBaseAddress = "/" + webBaseAddress + "/";
+                String webBaseAddressConfig = flowType.getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+                WorkPageUrl workPageUrl = bean.getWorkPageUrl();
+                if (workPageUrl != null) {
+                    beanVo.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
+                    String appModuleId = workPageUrl.getAppModuleId();
+                    AppModule appModule = appModuleDao.findOne(appModuleId);
+                    if (appModule != null && !appModule.getId().equals(bean.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getId())) {
+                        webBaseAddressConfig = appModule.getWebBaseAddress();
+                        webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
+                        beanVo.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
                     }
                 }
+
                 beanVo.setCompleteTaskUrl(webBaseAddress + flowType.getBusinessModel().getCompleteTaskServiceUrl());
 
                 phoneVoList.add(beanVo);

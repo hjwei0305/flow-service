@@ -133,6 +133,19 @@ public class FlowTaskPhoneVo implements Serializable {
      */
     private String flowInstanceCreatorName;
 
+    /**
+     * PC端当前待办处理地址（用于判断是否可以修改，需要修改那些字段）
+     */
+    private String taskFormUrl;
+
+
+    public String getTaskFormUrl() {
+        return taskFormUrl;
+    }
+
+    public void setTaskFormUrl(String taskFormUrl) {
+        this.taskFormUrl = taskFormUrl;
+    }
 
     public String getBusinessModelRemark() {
         return businessModelRemark;
