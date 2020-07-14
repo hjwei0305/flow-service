@@ -241,34 +241,6 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     }
 
 
-//    private List<FlowHistory> initFlowTaskAppModule(List<FlowHistory>  result ){
-//        if(result!=null && !result.isEmpty()){
-//            for(FlowHistory flowHistory:result){
-//                String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-//                String apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
-//                if(StringUtils.isNotEmpty(apiBaseAddress)){
-//                    flowHistory.setApiBaseAddressAbsolute(apiBaseAddress);
-//                    String[]  tempWebApiBaseAddress = apiBaseAddress.split("/");
-//                    if(tempWebApiBaseAddress!=null && tempWebApiBaseAddress.length>0){
-//                        apiBaseAddress = tempWebApiBaseAddress[tempWebApiBaseAddress.length-1];
-//                        flowHistory.setApiBaseAddress("/"+apiBaseAddress+"/");
-//                    }
-//                }
-//                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
-//                String webBaseAddress =  Constants.getConfigValueByWeb(webBaseAddressConfig);
-//                if(StringUtils.isNotEmpty(webBaseAddress)){
-//                    flowHistory.setWebBaseAddressAbsolute(webBaseAddress);
-//                    String[]  tempWebBaseAddress = webBaseAddress.split("/");
-//                    if(tempWebBaseAddress!=null && tempWebBaseAddress.length>0){
-//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length-1];
-//                        flowHistory.setWebBaseAddress("/"+webBaseAddress+"/");
-//                    }
-//                }
-//            }
-//        }
-//        return result;
-//    }
-
     public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();

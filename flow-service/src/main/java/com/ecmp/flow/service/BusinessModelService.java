@@ -12,6 +12,7 @@ import com.ecmp.flow.api.IBusinessModelService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
@@ -145,7 +146,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 responseData.setMessage("获取模块Api基地址失败！");
                 return responseData;
             }
-            String url = apiBaseAddress + businessDetailServiceUrl;
+            String url =  PageUrlUtil.buildUrl(apiBaseAddress,businessDetailServiceUrl);
             return this.getPropertiesByUrlOfModileByInstanceId(url, businessModelCode, id, boo, canMobile, canCancel, historyId, flowTaskId);
         } else {
             responseData.setSuccess(false);
@@ -229,7 +230,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 responseData.setMessage("获取模块Api基地址失败！");
                 return responseData;
             }
-            String url = apiBaseAddress + businessDetailServiceUrl;
+            String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
             return this.getPropertiesByUrlOfModile(url, businessModelCode, id, boo, canMobile, canCancel, historyId);
         } else {
             responseData.setSuccess(false);

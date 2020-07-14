@@ -9,6 +9,7 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.vo.FlowInvokeParams;
@@ -258,7 +259,7 @@ public class FlowListenerTool {
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String endCallServiceUrlPath = baseUrl + checkUrl;
+                    String endCallServiceUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String, String> params = new HashMap<String, String>();
@@ -341,7 +342,7 @@ public class FlowListenerTool {
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = baseUrl + checkUrl;
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String, String> params = new HashMap<String, String>();

@@ -9,6 +9,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.UserFlowHistoryQueryParam;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowDefination;
@@ -471,7 +472,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 beanVo.setBusinessModelRemark(flowInstance.getBusinessModelRemark());
 
                 String apiBaseAddress = Constants.getConfigValueByApi(businessModel.getAppModule().getApiBaseAddress());
-                beanVo.setBusinessDetailServiceUrl(apiBaseAddress + businessModel.getBusinessDetailServiceUrl());
+                beanVo.setBusinessDetailServiceUrl(PageUrlUtil.buildUrl(apiBaseAddress,businessModel.getBusinessDetailServiceUrl()));
                 phoneVoList.add(beanVo);
             });
             historyVoPage.setRows(phoneVoList);

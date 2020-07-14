@@ -5,6 +5,7 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
@@ -237,7 +238,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = baseUrl + checkUrl;
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动后事件【" + flowServiceUrl.getName() + "】";

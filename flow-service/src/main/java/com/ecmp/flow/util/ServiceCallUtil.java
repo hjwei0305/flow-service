@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowServiceUrl;
 import com.ecmp.flow.vo.FlowInvokeParams;
@@ -113,7 +114,7 @@ public class ServiceCallUtil {
                 params.setParams(paramMap);
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                String url = clientApiBaseUrl + "/" + clientUrl;
+                String url = PageUrlUtil.buildUrl(clientApiBaseUrl,clientUrl);
                 Date startDate = new Date();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 String msg = "[" + sim.format(startDate) + "]开始请求节点【" + flowTaskName + "】的事件【" + flowServiceUrl.getName() + "】";

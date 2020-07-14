@@ -14,6 +14,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -486,7 +487,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = baseUrl + checkUrl;
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动前事件【" + flowServiceUrl.getName() + "】";

@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.log.util.LogUtil;
@@ -52,7 +53,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties();
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonProperties());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
@@ -89,7 +90,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl =  Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonProperties() + "Remark";
+        String  clientApiUrl =  PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonProperties()+"Remark");
         Map<String,Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
         String messageLog = "开始调用【获取条件属性的备注说明】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
@@ -126,7 +127,7 @@ public class ExpressionUtil {
     public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPSValue();
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonPSValue());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
         String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
@@ -164,7 +165,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonPValue();
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonPValue());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ID, businessId);
@@ -208,7 +209,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = clientApiBaseUrl + businessModel.getConditonStatusRest();
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonStatusRest());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ID, businessId);

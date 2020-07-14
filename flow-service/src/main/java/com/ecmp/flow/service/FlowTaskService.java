@@ -383,7 +383,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if (StringUtils.isEmpty(clientApiBaseUrl)) {
                         LogUtil.error("推送待办-配置中心获取【" + apiBaseAddressConfig + "】参数失败！");
                     } else {
-                        flowPushTaskUrl = clientApiBaseUrl + pushMsgUrl;
+                        flowPushTaskUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,pushMsgUrl);
                         return flowPushTaskUrl;  //如果都配置了，业务模块中的生效
                     }
                 }
@@ -2182,7 +2182,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
 
-                beanVo.setCompleteTaskUrl(webBaseAddress + flowType.getBusinessModel().getCompleteTaskServiceUrl());
+                beanVo.setCompleteTaskUrl(PageUrlUtil.buildUrl(webBaseAddress,flowType.getBusinessModel().getCompleteTaskServiceUrl()));
 
                 phoneVoList.add(beanVo);
             });
@@ -3735,11 +3735,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
         if (StringUtils.isNotEmpty(apiBaseAddress)) {
             flowTask.setApiBaseAddressAbsolute(apiBaseAddress);
-//            String[] tempApiBaseAddress = apiBaseAddress.split("/");
-//            if (tempApiBaseAddress != null && tempApiBaseAddress.length > 0) {
-//                apiBaseAddress = tempApiBaseAddress[tempApiBaseAddress.length - 1];
-//                flowTask.setApiBaseAddress("/" + apiBaseAddress + "/");
-//            }
             String apiAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             flowTask.setApiBaseAddress(apiAddress);
         }
@@ -3750,12 +3745,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isNotEmpty(webBaseAddress)) {
             flowTask.setWebBaseAddressAbsolute(webBaseAddress);
             flowTask.setLookWebBaseAddressAbsolute(webBaseAddress);
-//            String[] tempWebBaseAddress = webBaseAddress.split("/");
-//            if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-//                webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-//                flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-//                flowTask.setLookWebBaseAddress("/" + webBaseAddress + "/");
-//            }
             flowTask.setWebBaseAddress(webAddress);
             flowTask.setLookWebBaseAddress(webAddress);
         }
@@ -3771,9 +3760,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         flowTask.setCompleteTaskServiceUrl(completeTaskServiceUrl);
         flowTask.setBusinessDetailServiceUrl(businessDetailServiceUrl);
         if (workPageUrl != null) {
-            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(Constants.getConfigValueByWeb(webBaseAddressConfig), workPageUrl.getUrl()));
-            String taskFormUrlXiangDui = webAddress + "/" + workPageUrl.getUrl();
-            taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+            flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
+            String taskFormUrlXiangDui = PageUrlUtil.buildUrl(webAddress,workPageUrl.getUrl());
             flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
             String appModuleId = workPageUrl.getAppModuleId();
             AppModule appModule = appModuleDao.findOne(appModuleId);
@@ -3783,16 +3771,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowTask.setTaskFormUrl(PageUrlUtil.buildUrl(webBaseAddress, workPageUrl.getUrl()));
                 if (StringUtils.isNotEmpty(webBaseAddress)) {
                     flowTask.setWebBaseAddressAbsolute(webBaseAddress);
-//                    String[] tempWebBaseAddress = webBaseAddress.split("/");
-//                    if (tempWebBaseAddress != null && tempWebBaseAddress.length > 0) {
-//                        webBaseAddress = tempWebBaseAddress[tempWebBaseAddress.length - 1];
-//                        flowTask.setWebBaseAddress("/" + webBaseAddress + "/");
-//                    }
                     webAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
                     flowTask.setWebBaseAddress(webAddress);
                 }
-                taskFormUrlXiangDui = "/" + webBaseAddress + "/" + workPageUrl.getUrl();
-                taskFormUrlXiangDui = taskFormUrlXiangDui.replaceAll("\\//", "/");
+                taskFormUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress,workPageUrl.getUrl());
                 flowTask.setTaskFormUrlXiangDui(taskFormUrlXiangDui);
             }
         }
