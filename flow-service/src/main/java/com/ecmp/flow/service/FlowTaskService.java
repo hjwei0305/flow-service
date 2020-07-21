@@ -249,15 +249,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             this.initFlowTasks(taskList); //添加待办处理地址等
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
             String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            Boolean success = false;
+            ResponseData responseData =  ResponseData.operationFailure("默认失败！");
             try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-                success = true;
+                responseData =  ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {}, taskList);
             } catch (Exception e) {
                 messageLog += "-推送待办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
             } finally {
-                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_NEW, url, success, taskList);
+                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_NEW, url, responseData.getSuccess(), taskList);
             }
         }
     }
@@ -275,15 +274,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
             String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            Boolean success = false;
+            ResponseData responseData =  ResponseData.operationFailure("默认失败！");
             try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-                success = true;
+                responseData =   ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {}, taskList);
             } catch (Exception e) {
                 messageLog += "-推送已办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
             } finally {
-                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_OLD, url, success, taskList);
+                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_OLD, url, responseData.getSuccess(), taskList);
             }
         }
     }
@@ -300,15 +298,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
             String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
-            Boolean success = false;
+            ResponseData responseData =  ResponseData.operationFailure("默认失败！");
             try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, taskList);
-                success = true;
+                responseData = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {} , taskList);
             } catch (Exception e) {
                 messageLog += "-推送删除待办异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
             } finally {
-                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_DEL, url, success, taskList);
+                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_DEL, url, responseData.getSuccess(), taskList);
             }
         }
     }
@@ -323,17 +320,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (task != null) {
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
-            Boolean success = false;
+            ResponseData responseData =  ResponseData.operationFailure("默认失败！");
             try {
-                ApiClient.postViaProxyReturnResult(url, Void.class, task);
-                success = true;
+                responseData =   ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {} , task);
             } catch (Exception e) {
                 messageLog += "-推送归档任务异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
             } finally {
                 List<FlowTask> taskList = new ArrayList<FlowTask>();
                 taskList.add(task);
-                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_END, url, success, taskList);
+                this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_END, url, responseData.getSuccess(), taskList);
             }
         }
     }
