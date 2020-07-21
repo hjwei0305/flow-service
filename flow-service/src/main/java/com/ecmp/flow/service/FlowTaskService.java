@@ -2125,13 +2125,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         SearchOrder searchOrder;
         if (StringUtils.isNotEmpty(property) && StringUtils.isNotEmpty(direction)) {
-            if (SearchOrder.Direction.ASC.equals(direction)) {
+            if ("ASC".equalsIgnoreCase(direction)) {
                 searchOrder = new SearchOrder(property, SearchOrder.Direction.ASC);
             } else {
                 searchOrder = new SearchOrder(property, SearchOrder.Direction.DESC);
             }
         } else {
-            searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+            searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
         }
         List<SearchOrder> list = new ArrayList<SearchOrder>();
         list.add(searchOrder);
