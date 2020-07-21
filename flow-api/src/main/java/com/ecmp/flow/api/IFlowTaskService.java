@@ -565,6 +565,8 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "获取待办信息(最新移动端专用)", notes = "获取待办信息(最新移动端专用)")
     FlowTaskPageResultVO<FlowTaskPhoneVo> findByBusinessModelIdWithAllCountOfMobile(
             @QueryParam("businessModelId") String businessModelId,
+            @QueryParam("property") String property,
+            @QueryParam("direction") String direction,
             @QueryParam("page") int page,
             @QueryParam("rows") int rows,
             @QueryParam("quickValue") String quickValue);

@@ -2106,7 +2106,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     /**
      * 获取可批量审批待办信息(最新移动端专用)
      */
-    public FlowTaskPageResultVO<FlowTaskPhoneVo> findByBusinessModelIdWithAllCountOfMobile(String businessModelId, int page, int rows, String quickValue) {
+    public FlowTaskPageResultVO<FlowTaskPhoneVo> findByBusinessModelIdWithAllCountOfMobile(String businessModelId,String property,String direction, int page, int rows, String quickValue) {
         Search search = new Search();
         search.addQuickSearchProperty("flowName");
         search.addQuickSearchProperty("taskName");
@@ -2120,7 +2120,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         pageInfo.setRows(rows);
         search.setPageInfo(pageInfo);
 
-        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+        SearchOrder searchOrder;
+        if (StringUtils.isNotEmpty(property) && StringUtils.isNotEmpty(direction)) {
+            if (SearchOrder.Direction.ASC.equals(direction)) {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.ASC);
+            } else {
+                searchOrder = new SearchOrder(property, SearchOrder.Direction.DESC);
+            }
+        } else {
+            searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+        }
         List<SearchOrder> list = new ArrayList<SearchOrder>();
         list.add(searchOrder);
         search.setSortOrders(list);
