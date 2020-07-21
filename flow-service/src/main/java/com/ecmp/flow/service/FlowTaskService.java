@@ -295,7 +295,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void pushDelTaskToBasic(List<FlowTask> taskList) {
         if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            taskList.forEach(a -> {
+                a.getFlowInstance().setFlowTasks(null);
+                idList.add("【id=" + a.getId() + "】");
+            });
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
             String messageLog = "开始调用‘推送删除待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
             ResponseData responseData =  ResponseData.operationFailure("默认失败！");
