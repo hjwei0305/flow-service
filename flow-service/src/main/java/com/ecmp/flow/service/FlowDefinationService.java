@@ -624,7 +624,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
-        LogUtil.error("Bug测试日志1：" + DateUtils.formatDate(new Date(), DateUtils.DEFAULT_TIME_FORMAT));
         if (checkFlowInstanceActivate(flowStartVO.getBusinessKey())) {
             String message = ContextUtil.getMessage("10051", flowStartVO.getBusinessKey());
             return OperateResultWithData.operationFailure(message);
@@ -666,7 +665,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
                 String flowDefKey = flowStartVO.getFlowDefKey();
                 this.startByTypeCode(flowDefKey, flowStartVO, flowStartResultVO, v);
-                LogUtil.error("Bug测试日志2：" + DateUtils.formatDate(new Date(), DateUtils.DEFAULT_TIME_FORMAT));
             } else {
                 FlowType flowType;
                 FlowDefination finalFlowDefination = null;
@@ -709,7 +707,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowStartResultVO = null;
                 }
                 if (finalFlowDefination != null) {
-                    LogUtil.error("Bug测试日志3：" + DateUtils.formatDate(new Date(), DateUtils.DEFAULT_TIME_FORMAT));
                     List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                     //固化流程字段不为空（兼容以前版本），并且选择了固化流程,提供流程定义的id
                     if (finalFlowDefination.getSolidifyFlow() != null && finalFlowDefination.getSolidifyFlow() == true) {
