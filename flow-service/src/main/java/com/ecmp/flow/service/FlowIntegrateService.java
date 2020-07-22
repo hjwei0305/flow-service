@@ -168,6 +168,9 @@ public class FlowIntegrateService implements IFlowIntegrateService {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setRows(recordCount);
         search.setPageInfo(pageInfo);
+        //历史只查询有效数据
+        SearchFilter filter = new SearchFilter("flowExecuteStatus","valid",SearchFilter.Operator.IN);
+        search.addFilter(filter);
         PageResult<FlowHistory> pageResult = flowHistoryService.findByBusinessModelId(null, search);
         if (CollectionUtils.isNotEmpty(pageResult.getRows())) {
             pageResult.getRows().forEach(flowHistory -> result.add(new PortalFlowHistory(flowHistory)));
