@@ -203,7 +203,6 @@ public class FlowCommonUtil implements Serializable {
             throw new FlowException(getErrorLogString("【根据岗位类别列表获取执行人】"), e);
         }
         if (executors.isEmpty()) {
-            LogUtil.error("Bug测试日志8：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
             LogUtil.error(messageLog + "返回信息为空！");
             throw new FlowException(getNulString("【根据岗位类别列表获取执行人】"));
         }

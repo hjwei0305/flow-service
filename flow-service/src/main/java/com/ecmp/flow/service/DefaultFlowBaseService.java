@@ -424,7 +424,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                                   String typeId, String flowDefKey, String taskList, String anonymousNodeId) throws NoSuchMethodException, SecurityException {
-        LogUtil.error("Bug测试日志1：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
         Map<String, Object> userMap = new HashMap<String, Object>();
         FlowStartVO flowStartVO = new FlowStartVO();
         flowStartVO.setBusinessKey(businessKey);
@@ -491,7 +490,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
 
         flowStartVO.setUserMap(userMap);
-        LogUtil.error("Bug测试日志2：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
         OperateResultWithData<FlowStartResultVO> operateResultWithData = flowDefinationService.startByVO(flowStartVO);
         if (operateResultWithData.successful()) {
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();

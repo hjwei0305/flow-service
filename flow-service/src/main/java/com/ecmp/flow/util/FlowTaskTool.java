@@ -2291,7 +2291,6 @@ public class FlowTaskTool {
             executors = flowCommonUtil.getBasicExecutorsByPositionIds(idList, orgId);
         } else if ("PositionType".equalsIgnoreCase(userType)) {
             //调用岗位类型获取用户接口
-            LogUtil.error("Bug测试日志7：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
             executors = flowCommonUtil.getBasicExecutorsByPostCatIds(idList, orgId);
         } else if ("AnyOne".equalsIgnoreCase(userType)) {//任意执行人不添加用户
         }
