@@ -20,6 +20,7 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.DateUtils;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -706,6 +707,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     flowStartResultVO = null;
                 }
                 if (finalFlowDefination != null) {
+                    LogUtil.error("Bug测试日志3：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
                     List<NodeInfo> nodeInfoList = this.findStartNextNodes(finalFlowDefination, flowStartVO);
                     //固化流程字段不为空（兼容以前版本），并且选择了固化流程,提供流程定义的id
                     if (finalFlowDefination.getSolidifyFlow() != null && finalFlowDefination.getSolidifyFlow() == true) {
@@ -862,6 +864,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     } else {
                         //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
                         String startOrBusinessOrgId = "" + flowStartVO.getVariables().get("orgId");
+                        LogUtil.error("Bug测试日志6：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
                         employees = flowTaskTool.getExecutors(userType, ids, startOrBusinessOrgId);
                     }
                 }
@@ -1177,6 +1180,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         } else if ("CallActivity".equalsIgnoreCase(type)) {
             result = getCallActivityNodeInfo(flowStartVO, flowDefination, definition, jsonObjectNode, result, businessVName);
         } else {
+            LogUtil.error("Bug测试日志5：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
             result = initNodesInfo(result, flowStartVO, definition, nodeId);
         }
         return result;
@@ -1212,6 +1216,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (startEventList != null && startEventList.size() == 1) {
                 StartEvent startEvent = startEventList.get(0);
                 JSONObject startEventNode = definition.getProcess().getNodes().getJSONObject(startEvent.getId());
+                LogUtil.error("Bug测试日志4：" + DateUtils.formatDate(new Date(), DateUtils.FULL_SEQ_FORMAT));
                 result = this.findXunFanNodesInfo(result, flowStartVO, flowDefination, definition, startEventNode, null);
                 if (!result.isEmpty()) {
                     for (NodeInfo nodeInfo : result) {
