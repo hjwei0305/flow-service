@@ -115,7 +115,6 @@ public class StartEventCompleteListener implements ExecutionListener {
                 // 取得流程定义
                 ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                         .getDeployedProcessDefinition(parentProcessInstance.getProcessDefinitionId());
-                ;
                 parentDefinitionKey = definition.getKey();
             }
             FlowDefination flowDefinationParent = flowDefinationDao.findByDefKey(parentDefinitionKey);
@@ -153,18 +152,27 @@ public class StartEventCompleteListener implements ExecutionListener {
         String workCaption = null;
         if (variables.containsKey(Constants.WORK_CAPTION)) {
             workCaption = (String) variables.get(Constants.WORK_CAPTION);//工作说明
+            if (StringUtils.isNotEmpty(workCaption) && workCaption.length() >= 2000) {
+                throw new FlowException("工作说明限定长度2000，实际长度为+" + workCaption.length());
+            }
         }
         flowInstance.setBusinessModelRemark(workCaption);
 
         String businessCode = null;
         if (variables.containsKey(Constants.BUSINESS_CODE)) {
-            businessCode = (String) variables.get(Constants.BUSINESS_CODE);//工作说明
+            businessCode = (String) variables.get(Constants.BUSINESS_CODE);//业务code
+            if (StringUtils.isNotEmpty(businessCode) && businessCode.length() >= 2000) {
+                throw new FlowException("业务单号限定长度2000,实际长度为+" + businessCode.length());
+            }
         }
         flowInstance.setBusinessCode(businessCode);
 
         String businessName = null;
         if (variables.containsKey(Constants.NAME)) {
             businessName = (String) variables.get(Constants.NAME);//业务单据名称
+            if (StringUtils.isNotEmpty(businessName) && businessName.length() >= 100) {
+                throw new FlowException("业务单据名称限定长度100,实际长度为+" + businessName.length());
+            }
         }
         flowInstance.setBusinessName(businessName);
 
@@ -201,7 +209,6 @@ public class StartEventCompleteListener implements ExecutionListener {
         flowInstanceDao.save(flowInstance);
 
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        AppModule appModule = businessModel.getAppModule();
 
         FlowOperateResult callAfterStartResult = callAfterStart(flowInstance.getBusinessId(), flowInstance.getFlowDefVersion());
         if (callAfterStartResult != null && callAfterStartResult.isSuccess() != true) {
@@ -238,7 +245,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动后事件【" + flowServiceUrl.getName() + "】";
