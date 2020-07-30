@@ -59,6 +59,7 @@ import javax.ws.rs.core.GenericType;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * *************************************************************************************************
@@ -535,16 +536,24 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String startUserId = flowStartVO.getStartUserId();
         String businessKey = flowStartVO.getBusinessKey();
 
-        String obj = redisTemplate.execute(new SessionCallback<String>() {
-            @Nullable
-            @Override
-            public String execute(RedisOperations operations) throws DataAccessException {
-                return (String) operations.opsForValue().getAndSet("flowStart_" + businessKey, businessKey);
-            }
-        });
+//        String obj = redisTemplate.execute(new SessionCallback<String>() {
+//            @Nullable
+//            @Override
+//            public String execute(RedisOperations operations) throws DataAccessException {
+//                return (String) operations.opsForValue().getAndSet("flowStart_" + businessKey, businessKey);
+//            }
+//        });
+//
+//        if (obj != null) {
+//            throw new FlowException("流程已经在启动中，请不要重复提交！");
+//        }
 
-        if (obj != null) {
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("flowStart_" + businessKey,businessKey);
+        if( !setValue ){
             throw new FlowException("流程已经在启动中，请不要重复提交！");
+        }else{
+            //启动redis检查设置10分钟过期
+            redisTemplate.expire("flowStart_" + businessKey,10 * 60, TimeUnit.SECONDS);
         }
 
         try {

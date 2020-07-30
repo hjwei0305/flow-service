@@ -68,6 +68,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -651,345 +652,362 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<FlowStatus> complete(String id, String opinion, Map<String, Object> variables) throws Exception {
-        FlowTask flowTask = flowTaskDao.findOne(id);
-        if (flowTask == null) {
-            return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
+
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("complete_" + id,id);
+        if( !setValue ){
+            throw new FlowException("任务已经在处理中，请不要重复提交！");
+        }else{
+            //处理redis检查设置10分钟过期
+            redisTemplate.expire("complete_" + id,10 * 60, TimeUnit.SECONDS);
         }
-        String userId = ContextUtil.getUserId();
-        if (flowTask.getExecutorId() != null && !flowTask.getExecutorId().equals(userId)) {
-            //根据被授权人和待办查询符合的转授权信息（通过查看模式）
-            TaskMakeOverPower bean = taskMakeOverPowerService.findPowerByPowerUserAndTask(userId, flowTask);
-            if (bean != null) {
-                //转授权情况替换执行人(共同查看模式-授权人处理)
+
+
+        try{
+
+            FlowTask flowTask = flowTaskDao.findOne(id);
+            if (flowTask == null) {
+                return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
+            }
+            String userId = ContextUtil.getUserId();
+            if (flowTask.getExecutorId() != null && !flowTask.getExecutorId().equals(userId)) {
+                //根据被授权人和待办查询符合的转授权信息（通过查看模式）
+                TaskMakeOverPower bean = taskMakeOverPowerService.findPowerByPowerUserAndTask(userId, flowTask);
+                if (bean != null) {
+                    //转授权情况替换执行人(共同查看模式-授权人处理)
+                    flowTask.setExecutorId(ContextUtil.getUserId());
+                    flowTask.setExecutorAccount(ContextUtil.getUserAccount());
+                    flowTask.setExecutorName(ContextUtil.getUserName());
+                    //添加组织机构信息
+                    flowTask.setExecutorOrgId(bean.getPowerUserOrgId());
+                    flowTask.setExecutorOrgCode(bean.getPowerUserOrgCode());
+                    flowTask.setExecutorOrgName(bean.getPowerUserOrgName());
+                }
+            }
+            FlowInstance flowInstance = flowTask.getFlowInstance();
+            //如果是转授权转办模式（获取转授权记录信息）
+            String OverPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowTask.getDepict());
+            flowTask.setDepict(OverPowerStr + opinion);
+            Integer reject = null;
+            Boolean manageSolidifyFlow = false;
+            if (variables != null) {
+                Object rejectO = variables.get("reject");
+                if (rejectO != null) {
+                    try {
+                        reject = Integer.parseInt(rejectO.toString());
+                    } catch (Exception e) {
+                    }
+                }
+                Object manageSolidifyFlowO = variables.get("manageSolidifyFlow");
+                if (manageSolidifyFlowO != null) {
+                    manageSolidifyFlow = Boolean.parseBoolean(manageSolidifyFlowO.toString());
+                }
+            }
+            if (reject != null && reject == 1) {
+                flowTask.setDepict("【被驳回】" + flowTask.getDepict());
+                flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                flowTask.setPriority(1);
+            } else {
+                flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
+            }
+            //匿名用户执行的情况，直接使用当前上下文用户
+            if (Constants.ANONYMOUS.equalsIgnoreCase(flowTask.getOwnerId()) && !Constants.ANONYMOUS.equalsIgnoreCase(ContextUtil.getUserId())) {
+                flowTask.setOwnerId(ContextUtil.getUserId());
+                flowTask.setOwnerAccount(ContextUtil.getUserAccount());
+                flowTask.setOwnerName(ContextUtil.getUserName());
                 flowTask.setExecutorId(ContextUtil.getUserId());
                 flowTask.setExecutorAccount(ContextUtil.getUserAccount());
                 flowTask.setExecutorName(ContextUtil.getUserName());
                 //添加组织机构信息
-                flowTask.setExecutorOrgId(bean.getPowerUserOrgId());
-                flowTask.setExecutorOrgCode(bean.getPowerUserOrgCode());
-                flowTask.setExecutorOrgName(bean.getPowerUserOrgName());
+                Executor executor = flowCommonUtil.getBasicUserExecutor(ContextUtil.getUserId());
+                flowTask.setOwnerOrgId(executor.getOrganizationId());
+                flowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                flowTask.setOwnerOrgName(executor.getOrganizationName());
+                flowTask.setExecutorOrgId(executor.getOrganizationId());
+                flowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                flowTask.setExecutorOrgName(executor.getOrganizationName());
             }
-        }
-        FlowInstance flowInstance = flowTask.getFlowInstance();
-        //如果是转授权转办模式（获取转授权记录信息）
-        String OverPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowTask.getDepict());
-        flowTask.setDepict(OverPowerStr + opinion);
-        Integer reject = null;
-        Boolean manageSolidifyFlow = false;
-        if (variables != null) {
-            Object rejectO = variables.get("reject");
-            if (rejectO != null) {
-                try {
-                    reject = Integer.parseInt(rejectO.toString());
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-            }
-            Object manageSolidifyFlowO = variables.get("manageSolidifyFlow");
-            if (manageSolidifyFlowO != null) {
-                manageSolidifyFlow = Boolean.parseBoolean(manageSolidifyFlowO.toString());
-            }
-        }
-        if (reject != null && reject == 1) {
-            flowTask.setDepict("【被驳回】" + flowTask.getDepict());
-            flowTask.setTaskStatus(TaskStatus.REJECT.toString());
-            flowTask.setPriority(1);
-        } else {
-            flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
-        }
-        //匿名用户执行的情况，直接使用当前上下文用户
-        if (Constants.ANONYMOUS.equalsIgnoreCase(flowTask.getOwnerId()) && !Constants.ANONYMOUS.equalsIgnoreCase(ContextUtil.getUserId())) {
-            flowTask.setOwnerId(ContextUtil.getUserId());
-            flowTask.setOwnerAccount(ContextUtil.getUserAccount());
-            flowTask.setOwnerName(ContextUtil.getUserName());
-            flowTask.setExecutorId(ContextUtil.getUserId());
-            flowTask.setExecutorAccount(ContextUtil.getUserAccount());
-            flowTask.setExecutorName(ContextUtil.getUserName());
-            //添加组织机构信息
-            Executor executor = flowCommonUtil.getBasicUserExecutor(ContextUtil.getUserId());
-            flowTask.setOwnerOrgId(executor.getOrganizationId());
-            flowTask.setOwnerOrgCode(executor.getOrganizationCode());
-            flowTask.setOwnerOrgName(executor.getOrganizationName());
-            flowTask.setExecutorOrgId(executor.getOrganizationId());
-            flowTask.setExecutorOrgCode(executor.getOrganizationCode());
-            flowTask.setExecutorOrgName(executor.getOrganizationName());
-        }
-        variables.put("opinion", flowTask.getDepict());
-        String actTaskId = flowTask.getActTaskId();
+            variables.put("opinion", flowTask.getDepict());
+            String actTaskId = flowTask.getActTaskId();
 
-        //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
-        String businessId = flowInstance.getBusinessId();
-        BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-        if (v != null && !v.isEmpty()) {
-            if (variables == null) {
-                variables = new HashMap<String, Object>();
+            //获取当前业务实体表单的条件表达式信息，（目前是任务执行时就注入，后期根据条件来优化)
+            String businessId = flowInstance.getBusinessId();
+            BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            if (v != null && !v.isEmpty()) {
+                if (variables == null) {
+                    variables = new HashMap<String, Object>();
+                }
+                variables.putAll(v);
             }
-            variables.putAll(v);
-        }
 //        flowInstance.setBusinessModelRemark(v.get("workCaption") + "");
-        String taskJsonDef = flowTask.getTaskJsonDef();
-        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-        String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
-        Boolean counterSignLastTask = false;
-        //得到当前执行节点自定义code
-        String currentNodeCode = "";
-        try {
-            currentNodeCode = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getString("nodeCode");
-        } catch (Exception e) {
-        }
-        variables.put("currentNodeCode", currentNodeCode);
-
-        // 取得当前任务
-        HistoricTaskInstance currTask = historyService
-                .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                .singleResult();
-        if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务做处理判断
-            String executionId = currTask.getExecutionId();
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
-            //完成会签的次数
-            Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
-            if (completeCounter == 0) {//表示会签第一人审批（初始化赞成、不赞成、弃权参数）
-                runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey(), 0);
-                runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey(), 0);
-                runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_WAIVER + currTask.getTaskDefinitionKey(), 0);
-                processVariables = runtimeService.getVariableInstances(executionId);
-            }
-
-            //总循环次数
-            Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
-            //会签决策比
-            int counterDecision = 100;
+            String taskJsonDef = flowTask.getTaskJsonDef();
+            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+            String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
+            Boolean counterSignLastTask = false;
+            //得到当前执行节点自定义code
+            String currentNodeCode = "";
             try {
-                counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
+                currentNodeCode = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getString("nodeCode");
             } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
             }
-            //会签结果是否即时生效
-            Boolean immediatelyEnd = false;
-            try {
-                immediatelyEnd = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
-            } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-            }
+            variables.put("currentNodeCode", currentNodeCode);
 
-            if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个任务
-                counterSignLastTask = true;
-                //通过票数
-                Integer counterSignAgree = 0;
-                if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null) {
-                    counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
+            // 取得当前任务
+            HistoricTaskInstance currTask = historyService
+                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                    .singleResult();
+            if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务做处理判断
+                String executionId = currTask.getExecutionId();
+                Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+                //完成会签的次数
+                Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
+                if (completeCounter == 0) {//表示会签第一人审批（初始化赞成、不赞成、弃权参数）
+                    runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey(), 0);
+                    runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey(), 0);
+                    runtimeService.setVariable(currTask.getProcessInstanceId(), Constants.COUNTER_SIGN_WAIVER + currTask.getTaskDefinitionKey(), 0);
+                    processVariables = runtimeService.getVariableInstances(executionId);
                 }
 
-                String approved = variables.get("approved") + "";
-                Integer value = 0;//默认弃权
-                if ("true".equalsIgnoreCase(approved)) {
-                    counterSignAgree++;
+                //总循环次数
+                Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+                //会签决策比
+                int counterDecision = 100;
+                try {
+                    counterDecision = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
+                } catch (Exception e) {
                 }
-                ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                        .getDeployedProcessDefinition(currTask
-                                .getProcessDefinitionId());
-                if (definition == null) {
-                    LogUtil.error(ContextUtil.getMessage("10003"));
+                //会签结果是否即时生效
+                Boolean immediatelyEnd = false;
+                try {
+                    immediatelyEnd = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
+                } catch (Exception e) {
                 }
-                if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//获取通过节点
-                    variables.put("approveResult", true);
-                } else {
-                    variables.put("approveResult", false);
-                }
-                //执行任务
-                this.completeActiviti(actTaskId, variables);
-            } else if (immediatelyEnd) { //会签结果是否即时生效
-                String approved = variables.get("approved") + "";
-                //并串行会签（false为并行：并行将已生成的待办转已办，串行在最后人审批中记录）
-                Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
 
-                if ("true".equalsIgnoreCase(approved)) {
+                if (completeCounter + 1 == instanceOfNumbers) {//会签最后一个任务
+                    counterSignLastTask = true;
                     //通过票数
                     Integer counterSignAgree = 0;
                     if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null) {
                         counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
                     }
-                    counterSignAgree++;
-                    if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//通过
-                        flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+
+                    String approved = variables.get("approved") + "";
+                    Integer value = 0;//默认弃权
+                    if ("true".equalsIgnoreCase(approved)) {
+                        counterSignAgree++;
+                    }
+                    ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                            .getDeployedProcessDefinition(currTask
+                                    .getProcessDefinitionId());
+                    if (definition == null) {
+                        LogUtil.error(ContextUtil.getMessage("10003"));
+                    }
+                    if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//获取通过节点
                         variables.put("approveResult", true);
-                        counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
-                    }
-                } else {
-                    //不通过票数
-                    Integer counterSignOpposition = 0;
-                    if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter != 0) {
-                        counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
-                    }
-                    counterSignOpposition++;
-                    if ((100 - counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100)) {//不通过
-                        flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+                    } else {
                         variables.put("approveResult", false);
-                        counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
                     }
+                    //执行任务
+                    this.completeActiviti(actTaskId, variables);
+                } else if (immediatelyEnd) { //会签结果是否即时生效
+                    String approved = variables.get("approved") + "";
+                    //并串行会签（false为并行：并行将已生成的待办转已办，串行在最后人审批中记录）
+                    Boolean isSequential = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+
+                    if ("true".equalsIgnoreCase(approved)) {
+                        //通过票数
+                        Integer counterSignAgree = 0;
+                        if (processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()) != null) {
+                            counterSignAgree = (Integer) processVariables.get(Constants.COUNTER_SIGN_AGREE + currTask.getTaskDefinitionKey()).getValue();
+                        }
+                        counterSignAgree++;
+                        if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//通过
+                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+                            variables.put("approveResult", true);
+                            counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
+                        }
+                    } else {
+                        //不通过票数
+                        Integer counterSignOpposition = 0;
+                        if (processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()) != null && completeCounter != 0) {
+                            counterSignOpposition = (Integer) processVariables.get(Constants.COUNTER_SIGN_OPPOSITION + currTask.getTaskDefinitionKey()).getValue();
+                        }
+                        counterSignOpposition++;
+                        if ((100 - counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100)) {//不通过
+                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+                            variables.put("approveResult", false);
+                            counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
+                        }
+                    }
+                    this.completeActiviti(actTaskId, variables);
+                } else {
+                    this.completeActiviti(actTaskId, variables);
+                }
+
+            } else if ("Approve".equalsIgnoreCase(nodeType)) {
+                String approved = variables.get("approved") + "";
+                if ("true".equalsIgnoreCase(approved)) {
+                    variables.put("approveResult", true);
+                } else {
+                    variables.put("approveResult", false);
+                }
+                this.completeActiviti(actTaskId, variables);
+                counterSignLastTask = true;
+            } else if ("ParallelTask".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType)) {
+                String executionId = currTask.getExecutionId();
+                Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+                //完成会签的次数
+                Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
+                //总循环次数
+                Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+                if (completeCounter + 1 == instanceOfNumbers) {//最后一个任务
+                    counterSignLastTask = true;
                 }
                 this.completeActiviti(actTaskId, variables);
             } else {
                 this.completeActiviti(actTaskId, variables);
-            }
-
-        } else if ("Approve".equalsIgnoreCase(nodeType)) {
-            String approved = variables.get("approved") + "";
-            if ("true".equalsIgnoreCase(approved)) {
-                variables.put("approveResult", true);
-            } else {
-                variables.put("approveResult", false);
-            }
-            this.completeActiviti(actTaskId, variables);
-            counterSignLastTask = true;
-        } else if ("ParallelTask".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType)) {
-            String executionId = currTask.getExecutionId();
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
-            //完成会签的次数
-            Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
-            //总循环次数
-            Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
-            if (completeCounter + 1 == instanceOfNumbers) {//最后一个任务
                 counterSignLastTask = true;
             }
-            this.completeActiviti(actTaskId, variables);
-        } else {
-            this.completeActiviti(actTaskId, variables);
-            counterSignLastTask = true;
-        }
 //        this.saveVariables(variables, flowTask);先不做保存
-        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(actTaskId).singleResult(); // 创建历史任务实例查询
 
-        // 取得流程实例
-        ProcessInstance instance = runtimeService
-                .createProcessInstanceQuery()
-                .processInstanceId(historicTaskInstance.getProcessInstanceId())
-                .singleResult();
-        //是否推送信息到baisc
-        Boolean pushBasic = this.getBooleanPushTaskToBasic();
-        //是否推送信息到业务模块或者直接配置的url
-        Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowInstance);
+            // 取得流程实例
+            ProcessInstance instance = runtimeService
+                    .createProcessInstanceQuery()
+                    .processInstanceId(historicTaskInstance.getProcessInstanceId())
+                    .singleResult();
+            //是否推送信息到baisc
+            Boolean pushBasic = this.getBooleanPushTaskToBasic();
+            //是否推送信息到业务模块或者直接配置的url
+            Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowInstance);
 
-        List<FlowTask> oldList = new ArrayList<FlowTask>();
-        List<FlowTask> needDelList = new ArrayList<FlowTask>();
+            List<FlowTask> oldList = new ArrayList<FlowTask>();
+            List<FlowTask> needDelList = new ArrayList<FlowTask>();
 
-        if (historicTaskInstance != null) {
-            String defJson = flowTask.getTaskJsonDef();
-            JSONObject defObj = JSONObject.fromObject(defJson);
-            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            if (historicTaskInstance != null) {
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
 
-            Boolean canCancel = null;
-            if (normalInfo.get("allowPreUndo") != null) {
-                canCancel = normalInfo.getBoolean("allowPreUndo");
-            }
-            FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, canCancel, variables);
-
-            if (manageSolidifyFlow) {  //需要处理流程固化表(添加逻辑执行顺序)
-                flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId, flowTask);
-            }
-
-
-            //需要异步推送待办转已办信息到basic、<业务模块>、<配置的url>
-            if (pushBasic || pushModelOrUrl) {
-                oldList.add(flowTask);
-                //异步推送已办信息到<业务模块>、<配置的url>
-                if (pushModelOrUrl) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushTaskToModelOrUrl(flowInstance, oldList, TaskStatus.COMPLETED);
-                        }
-                    }).start();
+                Boolean canCancel = null;
+                if (normalInfo.get("allowPreUndo") != null) {
+                    canCancel = normalInfo.getBoolean("allowPreUndo");
                 }
-            }
-            flowHistoryDao.save(flowHistory);
-            //单签任务，清除其他待办;工作池任务新增多执行人模式，也需要清楚其他待办
-            if ("SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
-                //需要异步推送删除待办信息到basic
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, canCancel, variables);
+
+                if (manageSolidifyFlow) {  //需要处理流程固化表(添加逻辑执行顺序)
+                    flowSolidifyExecutorService.manageSolidifyFlowByBusinessIdAndTaskKey(businessId, flowTask);
+                }
+
+
+                //需要异步推送待办转已办信息到basic、<业务模块>、<配置的url>
                 if (pushBasic || pushModelOrUrl) {
-                    List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
-                    List<FlowTask> DelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
-                    needDelList.addAll(DelList);
+                    oldList.add(flowTask);
+                    //异步推送已办信息到<业务模块>、<配置的url>
                     if (pushModelOrUrl) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
+                                pushTaskToModelOrUrl(flowInstance, oldList, TaskStatus.COMPLETED);
                             }
                         }).start();
                     }
                 }
+                flowHistoryDao.save(flowHistory);
+                //单签任务，清除其他待办;工作池任务新增多执行人模式，也需要清楚其他待办
+                if ("SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
+                    //需要异步推送删除待办信息到basic
+                    if (pushBasic || pushModelOrUrl) {
+                        List<FlowTask> alllist = flowTaskDao.findListByProperty("actTaskId", actTaskId);
+                        List<FlowTask> DelList = alllist.stream().filter((a) -> !a.getId().equalsIgnoreCase(id)).collect(Collectors.toList());
+                        needDelList.addAll(DelList);
+                        if (pushModelOrUrl) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
+                                }
+                            }).start();
+                        }
+                    }
 //                flowTaskDao.deleteNotClaimTask(actTaskId, id);//删除其他候选用户的任务
 //                flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());
-                flowTaskDao.deleteByActTaskId(actTaskId);
-            } else {
-                flowTaskDao.delete(flowTask);
-            }
-            //初始化新的任务
-            String actTaskDefKey = flowTask.getActTaskDefKey();
-            String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
-            ProcessDefinitionEntity definition = null;
-            PvmActivity currentNode = null;
-            FlowInstance flowInstanceTemp = flowInstance;
-            FlowInstance flowInstanceP = flowInstanceTemp.getParent();
-            boolean sonEndButParnetNotEnd = false;
-            while (flowInstanceTemp.isEnded() && (flowInstanceP != null)) {//子流程结束，主流程未结束
-                if (!flowInstanceP.isEnded()) {
-                    actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
+                    flowTaskDao.deleteByActTaskId(actTaskId);
+                } else {
+                    flowTaskDao.delete(flowTask);
+                }
+                //初始化新的任务
+                String actTaskDefKey = flowTask.getActTaskDefKey();
+                String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
+                ProcessDefinitionEntity definition = null;
+                PvmActivity currentNode = null;
+                FlowInstance flowInstanceTemp = flowInstance;
+                FlowInstance flowInstanceP = flowInstanceTemp.getParent();
+                boolean sonEndButParnetNotEnd = false;
+                while (flowInstanceTemp.isEnded() && (flowInstanceP != null)) {//子流程结束，主流程未结束
+                    if (!flowInstanceP.isEnded()) {
+                        actProcessDefinitionId = flowInstanceP.getFlowDefVersion().getActDefId();
+                        definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                                .getDeployedProcessDefinition(actProcessDefinitionId);
+                        String superExecutionId = null;
+                        superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(), flowInstanceTemp.getActInstanceId() + "_superExecutionId");
+                        HistoricActivityInstance historicActivityInstance = null;
+                        HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
+                                .executionId(superExecutionId).activityType("callActivity");
+                        if (his != null) {
+                            historicActivityInstance = his.singleResult();
+                            HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
+                            actTaskDefKey = he.getActivityId();
+                            currentNode = FlowTaskTool.getActivitNode(definition, actTaskDefKey);
+                            callInitTaskBack(currentNode, flowInstanceP, flowHistory, counterSignLastTask, variables);
+                        }
+                    }
+                    sonEndButParnetNotEnd = true;
+                    flowInstanceTemp = flowInstanceP;
+                    flowInstanceP = flowInstanceTemp.getParent();
+                }
+                if (!sonEndButParnetNotEnd) {
                     definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                             .getDeployedProcessDefinition(actProcessDefinitionId);
-                    String superExecutionId = null;
-                    superExecutionId = (String) runtimeService.getVariable(flowInstanceP.getActInstanceId(), flowInstanceTemp.getActInstanceId() + "_superExecutionId");
-                    HistoricActivityInstance historicActivityInstance = null;
-                    HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
-                            .executionId(superExecutionId).activityType("callActivity");
-                    if (his != null) {
-                        historicActivityInstance = his.singleResult();
-                        HistoricActivityInstanceEntity he = (HistoricActivityInstanceEntity) historicActivityInstance;
-                        actTaskDefKey = he.getActivityId();
-                        currentNode = FlowTaskTool.getActivitNode(definition, actTaskDefKey);
-                        callInitTaskBack(currentNode, flowInstanceP, flowHistory, counterSignLastTask, variables);
+                    currentNode = FlowTaskTool.getActivitNode(definition, actTaskDefKey);
+                    if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
+                        callInitTaskBack(currentNode, flowInstance, flowHistory, counterSignLastTask, variables);
                     }
                 }
-                sonEndButParnetNotEnd = true;
-                flowInstanceTemp = flowInstanceP;
-                flowInstanceP = flowInstanceTemp.getParent();
             }
-            if (!sonEndButParnetNotEnd) {
-                definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                        .getDeployedProcessDefinition(actProcessDefinitionId);
-                currentNode = FlowTaskTool.getActivitNode(definition, actTaskDefKey);
-                if (instance != null && currentNode != null && (!"endEvent".equalsIgnoreCase(currentNode.getProperty("type") + ""))) {
-                    callInitTaskBack(currentNode, flowInstance, flowHistory, counterSignLastTask, variables);
-                }
-            }
-        }
-        OperateResultWithData<FlowStatus> result = OperateResultWithData.operationSuccess("10017");
-        if (instance == null || instance.isEnded()) {
-            result.setData(FlowStatus.COMPLETED);//任务结束
+            OperateResultWithData<FlowStatus> result = OperateResultWithData.operationSuccess("10017");
+            if (instance == null || instance.isEnded()) {
+                result.setData(FlowStatus.COMPLETED);//任务结束
 //            flowTaskDao.deleteByFlowInstanceId(flowInstance.getId());//针对终止结束时，删除所有待办
-            flowSolidifyExecutorDao.deleteByBusinessId(flowInstance.getBusinessId());//查看是否为固化流程（如果是固化流程删除固化执行人列表）
-            //需要异步推送归档信息到basic
-            if (pushBasic) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pushToBasic(null, oldList, needDelList, flowTask);
-                    }
-                }).start();
+                flowSolidifyExecutorDao.deleteByBusinessId(flowInstance.getBusinessId());//查看是否为固化流程（如果是固化流程删除固化执行人列表）
+                //需要异步推送归档信息到basic
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushToBasic(null, oldList, needDelList, flowTask);
+                        }
+                    }).start();
+                }
+            } else {
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushToBasic(null, oldList, needDelList, null);
+                        }
+                    }).start();
+                }
             }
-        } else {
-            if (pushBasic) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        pushToBasic(null, oldList, needDelList, null);
-                    }
-                }).start();
-            }
+            return result;
+
+        }catch (Exception e){
+            LogUtil.error(e.getMessage(),e);
+            throw e;
+        } finally {
+            //处理开始的时候设置的检查参数
+            redisTemplate.delete("complete_" + id);
         }
-        return result;
     }
 
 
@@ -2635,82 +2653,216 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public OperateResult taskTurnToDo(String taskId, String userId) {
-        SessionUser sessionUser = ContextUtil.getSessionUser();
-        OperateResult result = null;
-        FlowTask flowTask = flowTaskDao.findOne(taskId);
-        if (flowTask != null) {
-            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
-            //根据用户的id获取执行人
-            Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
-            if (executor != null) {
-                FlowTask newFlowTask = new FlowTask();
-                BeanUtils.copyProperties(flowTask, newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
-                //如果是转授权转办模式（获取转授权记录信息）
-                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                flowHistory.setDepict(overPowerStr + "【被转办给：“" + executor.getName() + "”】");
-                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
-                newFlowTask.setId(null);
-                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
-                if (taskMakeOverPower != null) {
-                    newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
-                    newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
-                    newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】【转授权-" + executor.getName() + "授权】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTurn_" + taskId, taskId);
+        if (!setValue) {
+            throw new FlowException("任务已经在转办中，请不要重复转办！");
+        } else {
+            //如果设置成功，redis检查设置2分钟过期
+            redisTemplate.expire("taskTurn_" + taskId,2 * 60, TimeUnit.SECONDS);
+        }
+
+        try {
+            SessionUser sessionUser = ContextUtil.getSessionUser();
+            OperateResult result = null;
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (flowTask != null) {
+                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+                //根据用户的id获取执行人
+                Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+                if (executor != null) {
+                    FlowTask newFlowTask = new FlowTask();
+                    BeanUtils.copyProperties(flowTask, newFlowTask);
+                    FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
+                    //如果是转授权转办模式（获取转授权记录信息）
+                    String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                    flowHistory.setDepict(overPowerStr + "【被转办给：“" + executor.getName() + "”】");
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
+                    newFlowTask.setId(null);
+                    //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                    if (taskMakeOverPower != null) {
+                        newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                        newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                        newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                        newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】【转授权-" + executor.getName() + "授权】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                        newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                        newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                    } else {
+                        newFlowTask.setExecutorId(executor.getId());
+                        newFlowTask.setExecutorAccount(executor.getCode());
+                        newFlowTask.setExecutorName(executor.getName());
+                        newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                        newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                        newFlowTask.setExecutorOrgName(executor.getOrganizationName());
+                    }
+                    newFlowTask.setOwnerId(executor.getId());
+                    newFlowTask.setOwnerName(executor.getName());
+                    newFlowTask.setOwnerAccount(executor.getCode());
                     //添加组织机构信息
-                    newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
-                    newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
-                    newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                    newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                    newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setOwnerOrgName(executor.getOrganizationName());
+                    newFlowTask.setTrustState(0);
+                    taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
+
+                    // 取得当前任务
+                    HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                            .singleResult();
+                    String taskJsonDef = newFlowTask.getTaskJsonDef();
+                    JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                    String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
+                    if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务替换执行人集合
+                        String processInstanceId = currTask.getProcessInstanceId();
+                        String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
+                        List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
+                        Collections.replaceAll(userList, flowTask.getExecutorId(), userId);
+                        runtimeService.setVariableLocal(processInstanceId, userListDesc, userList);
+                    }
+
+                    flowHistoryDao.save(flowHistory);
+                    //是否推送信息到baisc
+                    Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                    //是否推送信息到业务模块或者直接配置的url
+                    Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
+                    if (pushBasic || pushModelOrUrl) {
+                        needDelList.add(flowTask);
+                    }
+                    flowTaskDao.delete(flowTask);
+                    flowTaskDao.save(newFlowTask);
+                    List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
+                    if (pushBasic || pushModelOrUrl) {
+                        needAddList.add(newFlowTask);
+                        if (pushBasic) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pushToBasic(needAddList, null, needDelList, null);
+                                }
+                            }).start();
+                        }
+
+                        if (pushModelOrUrl) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
+                                    pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                                }
+                            }).start();
+                        }
+
+                    }
+                    result = OperateResult.operationSuccess();
                 } else {
-                    newFlowTask.setExecutorId(executor.getId());
-                    newFlowTask.setExecutorAccount(executor.getCode());
-                    newFlowTask.setExecutorName(executor.getName());
-                    newFlowTask.setDepict("【由：“" + sessionUser.getUserName() + "”转办】" + (StringUtils.isNotEmpty(flowTask.getDepict()) ? flowTask.getDepict() : ""));
+                    result = OperateResult.operationFailure("10038");//执行人查询结果为空
+                }
+            } else {
+                result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
+            }
+            return result;
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(),e);
+            throw e;
+        } finally {
+            //转办开始的时候设置的检查参数
+            redisTemplate.delete("taskTurn_" + taskId);
+        }
+    }
+
+    public OperateResult taskTrustToDo(String taskId, String userId) throws Exception {
+
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId,taskId);
+        if (!setValue) {
+            throw new FlowException("任务已经在委托中，请不要重复委托！");
+        } else {
+            //如果设置成功，redis检查设置2分钟过期
+            redisTemplate.expire("taskTrust_" + taskId,2 * 60, TimeUnit.SECONDS);
+        }
+
+        try {
+            OperateResult result = null;
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (flowTask != null) {
+                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+                //通过用户ID获取执行人
+                Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+                if (executor != null) {
+                    FlowTask newFlowTask = new FlowTask();
+                    BeanUtils.copyProperties(flowTask, newFlowTask);
+                    FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
+                    //如果是转授权转办模式（获取转授权记录信息）
+                    String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                    flowHistory.setDepict(overPowerStr + "【被委托给：" + executor.getName() + "】");
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
+
+                    newFlowTask.setId(null);
+                    //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                    if (taskMakeOverPower != null) {
+                        newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                        newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                        newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                        newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】" + flowTask.getDepict());
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                        newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                        newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                    } else {
+                        newFlowTask.setExecutorId(executor.getId());
+                        newFlowTask.setExecutorAccount(executor.getCode());
+                        newFlowTask.setExecutorName(executor.getName());
+                        newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】" + flowTask.getDepict());
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                        newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                        newFlowTask.setExecutorOrgName(executor.getOrganizationName());
+                    }
+
+                    newFlowTask.setOwnerId(executor.getId());
+                    newFlowTask.setOwnerAccount(executor.getCode());
+                    newFlowTask.setOwnerName(executor.getName());
                     //添加组织机构信息
-                    newFlowTask.setExecutorOrgId(executor.getOrganizationId());
-                    newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
-                    newFlowTask.setExecutorOrgName(executor.getOrganizationName());
-                }
-                newFlowTask.setOwnerId(executor.getId());
-                newFlowTask.setOwnerName(executor.getName());
-                newFlowTask.setOwnerAccount(executor.getCode());
-                //添加组织机构信息
-                newFlowTask.setOwnerOrgId(executor.getOrganizationId());
-                newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
-                newFlowTask.setOwnerOrgName(executor.getOrganizationName());
-                newFlowTask.setTrustState(0);
-                taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
+                    newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                    newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setOwnerOrgName(executor.getOrganizationName());
+                    newFlowTask.setPreId(flowHistory.getId());
+                    flowHistoryDao.save(flowHistory);
+                    flowTask.setTrustState(1);
+                    newFlowTask.setTrustState(2);
+                    newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+                    //是否推送信息到baisc
+                    Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                    //是否推送信息到业务模块或者直接配置的url
+                    Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
+                    List<FlowTask> needDelList = new ArrayList<FlowTask>(); //需要删除的待办
+                    List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
+                    if (pushBasic || pushModelOrUrl) {
+                        needDelList.add(flowTask);
+                    }
+                    flowTaskDao.save(flowTask);
+                    flowTaskDao.save(newFlowTask);
+                    if (pushBasic || pushModelOrUrl) {
+                        needAddList.add(newFlowTask);
+                        //推送待办
+                        if (pushModelOrUrl) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
+                                    pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
+                                }
+                            }).start();
+                        }
+                    }
 
-                // 取得当前任务
-                HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                        .singleResult();
-                String taskJsonDef = newFlowTask.getTaskJsonDef();
-                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-                String nodeType = taskJsonDefObj.get("nodeType") + "";//会签
-                if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务替换执行人集合
-                    String processInstanceId = currTask.getProcessInstanceId();
-                    String userListDesc = currTask.getTaskDefinitionKey() + "_List_CounterSign";
-                    List<String> userList = (List<String>) runtimeService.getVariableLocal(processInstanceId, userListDesc);
-                    Collections.replaceAll(userList, flowTask.getExecutorId(), userId);
-                    runtimeService.setVariableLocal(processInstanceId, userListDesc, userList);
-                }
-
-                flowHistoryDao.save(flowHistory);
-                //是否推送信息到baisc
-                Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                //是否推送信息到业务模块或者直接配置的url
-                Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
-
-                List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
-                if (pushBasic || pushModelOrUrl) {
-                    needDelList.add(flowTask);
-                }
-                flowTaskDao.delete(flowTask);
-                flowTaskDao.save(newFlowTask);
-                List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
-                if (pushBasic || pushModelOrUrl) {
-                    needAddList.add(newFlowTask);
+                    //新增和删除待办
                     if (pushBasic) {
                         new Thread(new Runnable() {
                             @Override
@@ -2720,121 +2872,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }).start();
                     }
 
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
-                            }
-                        }).start();
-                    }
-
-                }
-                result = OperateResult.operationSuccess();
-            } else {
-                result = OperateResult.operationFailure("10038");//执行人查询结果为空
-            }
-        } else {
-            result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
-        }
-        return result;
-    }
-
-    public OperateResult taskTrustToDo(String taskId, String userId) throws Exception {
-        OperateResult result = null;
-        FlowTask flowTask = flowTaskDao.findOne(taskId);
-        if (flowTask != null) {
-            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
-            //通过用户ID获取执行人
-            Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
-            if (executor != null) {
-                FlowTask newFlowTask = new FlowTask();
-                BeanUtils.copyProperties(flowTask, newFlowTask);
-                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
-                //如果是转授权转办模式（获取转授权记录信息）
-                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                flowHistory.setDepict(overPowerStr + "【被委托给：" + executor.getName() + "】");
-                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
-
-                newFlowTask.setId(null);
-                //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
-                if (taskMakeOverPower != null) {
-                    newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
-                    newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
-                    newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】【转授权-" + executor.getName() + "授权】" + flowTask.getDepict());
-                    //添加组织机构信息
-                    newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
-                    newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
-                    newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                    result = OperateResult.operationSuccess();
                 } else {
-                    newFlowTask.setExecutorId(executor.getId());
-                    newFlowTask.setExecutorAccount(executor.getCode());
-                    newFlowTask.setExecutorName(executor.getName());
-                    newFlowTask.setDepict("【由：“" + flowTask.getExecutorName() + "”委托】" + flowTask.getDepict());
-                    //添加组织机构信息
-                    newFlowTask.setExecutorOrgId(executor.getOrganizationId());
-                    newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
-                    newFlowTask.setExecutorOrgName(executor.getOrganizationName());
+                    result = OperateResult.operationFailure("10038");//执行人查询结果为空
                 }
-
-                newFlowTask.setOwnerId(executor.getId());
-                newFlowTask.setOwnerAccount(executor.getCode());
-                newFlowTask.setOwnerName(executor.getName());
-                //添加组织机构信息
-                newFlowTask.setOwnerOrgId(executor.getOrganizationId());
-                newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
-                newFlowTask.setOwnerOrgName(executor.getOrganizationName());
-                newFlowTask.setPreId(flowHistory.getId());
-                flowHistoryDao.save(flowHistory);
-                flowTask.setTrustState(1);
-                newFlowTask.setTrustState(2);
-                newFlowTask.setTrustOwnerTaskId(flowTask.getId());
-                //是否推送信息到baisc
-                Boolean pushBasic = this.getBooleanPushTaskToBasic();
-                //是否推送信息到业务模块或者直接配置的url
-                Boolean pushModelOrUrl = this.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
-                List<FlowTask> needDelList = new ArrayList<FlowTask>(); //需要删除的待办
-                List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
-                if (pushBasic || pushModelOrUrl) {
-                    needDelList.add(flowTask);
-                }
-                flowTaskDao.save(flowTask);
-                flowTaskDao.save(newFlowTask);
-                if (pushBasic || pushModelOrUrl) {
-                    needAddList.add(newFlowTask);
-                    //推送待办
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
-                                pushTaskToModelOrUrl(flowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
-                            }
-                        }).start();
-                    }
-                }
-
-                //新增和删除待办
-                if (pushBasic) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pushToBasic(needAddList, null, needDelList, null);
-                        }
-                    }).start();
-                }
-
-                result = OperateResult.operationSuccess();
             } else {
-                result = OperateResult.operationFailure("10038");//执行人查询结果为空
+                result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
             }
-        } else {
-            result = OperateResult.operationFailure("10033");//任务不存在，可能已经被处理
+            return result;
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(),e);
+            throw e;
+        } finally {
+            //委托开始的时候设置的检查参数
+            redisTemplate.delete("taskTrust_" + taskId);
         }
-        return result;
     }
 
 
