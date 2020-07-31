@@ -21,4 +21,4 @@ ADD $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
 EXPOSE 8080
 
 # 启动应用
-ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar $APP_NAME.jar --server.servlet.context-path=/$APP_NAME"]
+ENTRYPOINT ["sh","-c","java -server -XX:+UseG1GC $JAVA_OPTS -jar $APP_NAME.jar --server.servlet.context-path=/$APP_NAME"]
