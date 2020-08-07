@@ -1059,14 +1059,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         String businessId = flowHistory.getFlowInstance().getBusinessId();
         OperateResult result = flowTaskTool.taskRollBack(flowHistory, opinion);
-        if (result.successful()) {
-            new Thread(new Runnable() {//检测待办是否自动执行
-                @Override
-                public void run() {
-                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
-                }
-            }).start();
-        }
+//        if (result.successful()) {
+//            new Thread(new Runnable() {//检测待办是否自动执行
+//                @Override
+//                public void run() {
+//                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
+//                }
+//            }).start();
+//        }
         return result;
     }
 
@@ -1155,14 +1155,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
         }
-        if (result.successful()) {
-            new Thread(new Runnable() {//检测待办是否自动执行
-                @Override
-                public void run() {
-                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
-                }
-            }).start();
-        }
+//        if (result.successful()) {
+//            new Thread(new Runnable() {//检测待办是否自动执行
+//                @Override
+//                public void run() {
+//                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
+//                }
+//            }).start();
+//        }
         return result;
     }
 
