@@ -2489,8 +2489,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if(CollectionUtils.isEmpty(taskIds)){
           return  ResponseData.operationFailure("参数不能为空！");
         }
-        String  taskIdsStr = taskIds.toString();
-        String  requestStr = taskIdsStr.substring(1,taskIdsStr.length()-1);
+        String  requestStr = "";
+        for(String taskId:taskIds){
+            if(StringUtils.isEmpty(requestStr)){
+                requestStr += taskId;
+            }else{
+                requestStr += ","+taskId;
+            }
+        }
         try{
             List<NodeGroupByFlowVersionInfo>  list =  this.findNexNodesGroupByVersionWithUserSetCanBatch(requestStr);
             return  ResponseData.operationSuccessWithData(list);
@@ -3471,7 +3477,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     /**
-     * 通过业务单据Id获取待办任务
+     * 通过业务单据Id获取待办任务（带url）
      *
      * @param businessId 业务单据id
      * @return 待办任务集合
