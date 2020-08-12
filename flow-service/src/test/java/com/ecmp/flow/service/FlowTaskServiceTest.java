@@ -30,6 +30,21 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void checkAutomaticToDoTask(){
+        service.checkAutomaticToDoTask("2FFDBAE5-6509-11EA-A049-0242C0A8460D");
+    }
+
+    @Test
+    public void getBatchNextNodes(){
+        List<String> list = new ArrayList<>();
+        list.add("2515F2AE-DAE6-11EA-B55A-0242C0A84613");
+        list.add("1F8C67E6-DAE6-11EA-B55A-0242C0A84613");
+        service.getBatchNextNodes(list);
+    }
+
+
+
+    @Test
     public void listFlowTaskWithAllCount(){
         Search search = new Search();
         search.setFilters(null);

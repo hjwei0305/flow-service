@@ -631,14 +631,22 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
-//        if (operateResult.successful() && (StringUtils.isEmpty(endEventId) || "false".equals(endEventId))) { //处理成功并且不是结束节点调用
+        if (operateResult.successful() && (StringUtils.isEmpty(endEventId) || "false".equals(endEventId))) { //处理成功并且不是结束节点调用
 //            new Thread(new Runnable() {//检测待办是否自动执行
 //                @Override
 //                public void run() {
 //                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
 //                }
 //            }).start();
-//        }
+
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    flowTaskService.checkAutomaticToDoTask(businessId);
+                }
+            }).start();
+
+        }
         responseData.setSuccess(operateResult.successful());
         responseData.setMessage(operateResult.getMessage());
         return responseData;

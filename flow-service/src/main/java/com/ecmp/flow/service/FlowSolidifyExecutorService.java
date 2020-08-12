@@ -329,7 +329,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
             if (solidifylist != null && solidifylist.size() > 0) {//说明该单据走的固化流程
                 //根据业务id查询待办
-                ResponseData responseData = flowTaskService.findTasksByBusinessId(businessId);
+                ResponseData responseData = flowTaskService.findTasksNoUrlByBusinessId(businessId);
                 if (responseData.getSuccess()) {
                     List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
                     if (taskList != null && taskList.size() > 0) {

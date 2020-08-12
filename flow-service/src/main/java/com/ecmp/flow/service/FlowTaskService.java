@@ -3847,5 +3847,220 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+
+
+    /**
+     * 检查待办是否自动执行
+     * @param businessId  业务单据ID
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void checkAutomaticToDoTask(String businessId){
+        //根据业务id查询待办
+        ResponseData responseData = this.findTasksNoUrlByBusinessId(businessId);
+        if (responseData.getSuccess()) {
+            List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
+            if (taskList != null && taskList.size() > 0) {
+                List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
+                for (FlowTask flowTask : taskList) {
+                    if(StringUtils.isNotEmpty(flowTask.getPreId())){
+                        //上一节点信息
+                        FlowHistory flowHistory =  flowHistoryService.findOne(flowTask.getPreId()) ;
+                        //上一步和当前执行人一致
+                        if(StringUtils.isNotEmpty(flowHistory.getExecutorId()) && StringUtils.isNotEmpty(flowTask.getExecutorId()) && flowHistory.getExecutorId().equals(flowTask.getExecutorId())){
+                            String hisJson =  flowHistory.getTaskJsonDef();
+                            JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
+                            String hisNodeType = hisJsonObj.get("nodeType") + "";
+                            //上一步如果是审批节点
+                            if("Approve".equalsIgnoreCase(hisNodeType)){
+                                String taskJsonDef = flowTask.getTaskJsonDef();
+                                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                                String nodeType = taskJsonDefObj.get("nodeType") + "";
+                                //本节点也是审批节点
+                                if("Approve".equalsIgnoreCase(nodeType)){
+                                    needLsit.add(flowTask);
+                                }
+                            }
+                        }
+                    }
+                }
+                //需要自动执行的待办
+                if (needLsit != null && needLsit.size() > 0) {
+                    this.automaticToDoTask(needLsit);
+                }
+            }else{
+                LogUtil.error("自动执行-查询待办为空！");
+            }
+        }else{
+            LogUtil.error("自动执行-查询待办失败！");
+        }
+    }
+
+
+    /**
+     * 需要自动执行人的待办(审批任务)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void automaticToDoTask(List<FlowTask> taskList){
+        for (int i = 0; i < taskList.size(); i++) {
+            FlowTask  task  = taskList.get(i);
+            ResponseData responseData = null;
+            try {
+                //模拟请求下一步数据
+                responseData = this.simulationGetNodesInfo(task.getId(), "true");
+            } catch (Exception e) {
+                LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
+            }
+
+            //模拟下一不节点信息成功
+            if (responseData.getSuccess()) {
+                String taskListString;
+                String endEventId = null;
+                if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
+                    taskListString = "[]";
+                } else if ("EndEvent".equalsIgnoreCase(responseData.getData().toString())) { //结束节点
+                    taskListString = "[]";
+                    endEventId = "true";
+                } else {
+                    List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
+                    List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<FlowTaskCompleteWebVO>();
+                    for(NodeInfo  nodeInfo : nodeInfoList){
+                        FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
+                        taskWebVO.setNodeId(nodeInfo.getId());
+                        taskWebVO.setUserVarName(nodeInfo.getUserVarName());
+                        taskWebVO.setFlowTaskType(nodeInfo.getFlowTaskType());
+                        //节点类型
+                        String flowTaskType = nodeInfo.getFlowTaskType()+"";
+                        if(flowTaskType.equalsIgnoreCase("pooltask")){//工作池任务
+                            taskWebVO.setUserIds("");
+                        }else if(flowTaskType.equalsIgnoreCase("serviceTask")
+                                || flowTaskType.equalsIgnoreCase("receiveTask") ){ //服务任务 或 接收任务
+                            taskWebVO.setUserIds(ContextUtil.getUserId());
+                        }else if(flowTaskType.equalsIgnoreCase("singleSign")
+                                || flowTaskType.equalsIgnoreCase("CounterSign")
+                                || flowTaskType.equalsIgnoreCase("ParallelTask")
+                                || flowTaskType.equalsIgnoreCase("SerialTask")){ //单签、会签、并行、串行
+                            Set<Executor>  set = nodeInfo.getExecutorSet();
+                            String  userIds = "";
+                            if(!CollectionUtils.isEmpty(set)){
+                                for (Executor executor : set) {
+                                    if(StringUtils.isEmpty(userIds)){
+                                        userIds += executor.getId();
+                                    }else{
+                                        userIds +=  "," + executor.getId();
+                                    }
+                                }
+                                taskWebVO.setUserIds(userIds);
+                            }else{
+                                return;
+                            }
+                        }else if(flowTaskType.equalsIgnoreCase("common")
+                                ||flowTaskType.equalsIgnoreCase("approve")){ //普通任务、审批任务
+                            Set<Executor>  set = nodeInfo.getExecutorSet();
+                            if(!CollectionUtils.isEmpty(set) && set.size()==1){
+                                taskWebVO.setUserIds(set.iterator().next().getId());
+                            }else{
+                                return;
+                            }
+                        }
+                        taskWebVO.setSolidifyFlow(false); //固化
+                        taskWebVO.setInstancyStatus(false);//加急
+                        flowTaskCompleteList.add(taskWebVO);
+                    }
+                    JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
+                    taskListString = jsonArray.toString();
+                }
+
+                try {
+                    long time = 1; //默认1秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                    try {
+                        Thread.sleep(1000 * time);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    //自动执行待办
+                    defaultFlowBaseService.completeTask(task.getId(), task.getFlowInstance().getBusinessId(),
+                            "同意【自动执行】", taskListString,
+                            endEventId, false, "true", null);
+                } catch (Exception e) {
+                    LogUtil.error("自动执行报错：" + e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * 通过业务单据Id获取待办任务（不带url）
+     *
+     * @param businessId 业务单据id
+     * @return 待办任务集合
+     */
+    public ResponseData findTasksNoUrlByBusinessId(String businessId) {
+        ResponseData responseData = new ResponseData();
+        if (StringUtils.isEmpty(businessId)) {
+            responseData.setSuccess(false);
+            responseData.setMessage("参数不能为空！");
+            return responseData;
+        }
+        List<FlowTask> list = new ArrayList<>();
+        //通过业务单据id查询没有结束并且没有挂起的流程实例
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+        if (flowInstanceList != null && flowInstanceList.size() > 0) {
+            FlowInstance instance = flowInstanceList.get(0);
+            //根据流程实例id查询待办
+            List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
+            list.addAll(addList);
+        }
+        responseData.setSuccess(true);
+        responseData.setData(list);
+        return responseData;
+    }
+
+
+    /**
+     * 模拟请求下一步数据flow-web/flowClient/getSelectedNodesInfo
+     *
+     * @param taskId
+     * @param approved
+     * @return
+     */
+    public ResponseData simulationGetNodesInfo(String taskId, String approved) throws Exception {
+        if (StringUtils.isEmpty(approved)) {
+            approved = "true";
+        }
+        //可能路径
+        List<NodeInfo> list = this.findNextNodes(taskId);
+        List<NodeInfo> nodeInfoList = null;
+        if (list != null && list.size() > 0) {
+            if (list.size() == 1) {
+                nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
+            } else {
+                String gateWayName = list.get(0).getGateWayName();
+                if (StringUtils.isNotEmpty(gateWayName) && "人工排他网关".equals(gateWayName)) {
+                    //人工网关不处理
+                    return ResponseData.operationFailure("人工网关不处理！");
+                } else {
+                    nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
+                }
+            }
+        }
+
+        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+            if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+                return  ResponseData.operationSuccessWithData("EndEvent");
+            } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
+                return  ResponseData.operationSuccessWithData("CounterSignNotEnd");
+            } else {
+                return  ResponseData.operationSuccessWithData(nodeInfoList);
+            }
+        } else {
+            LogUtil.error("当前规则找不到符合条件的分支！");
+            return ResponseData.operationFailure("当前规则找不到符合条件的分支！");
+        }
+
+    }
+
+
 }
 
