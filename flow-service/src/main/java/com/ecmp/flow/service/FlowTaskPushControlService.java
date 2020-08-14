@@ -242,7 +242,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                     String controlId = control.getId();
                     while (!result && index > 0) {
                         try {
-                            Thread.sleep(1000 * (4 - index));
+                            Thread.sleep(1000 * 60 * (4 - index));
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
