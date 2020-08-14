@@ -72,31 +72,25 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
      * @return
      */
     public ResponseData pushAgainByControl(FlowTaskPushControl flowTaskPushControl) {
-        ResponseData responseData = new ResponseData();
         String pushType = flowTaskPushControl.getPushType();
         if (StringUtils.isEmpty(pushType)) {
-            responseData = ResponseData.operationFailure("推送类型不能为空！");
-            return responseData;
+            return ResponseData.operationFailure("推送类型不能为空！");
         }
         String PushStatus = flowTaskPushControl.getPushStatus();
         if (StringUtils.isEmpty(PushStatus)) {
-            responseData = ResponseData.operationFailure("推送类状态不能为空！");
-            return responseData;
+            return ResponseData.operationFailure("推送类状态不能为空！");
         }
         try {
             //得到需要推送的任务集合
             List<FlowTaskPush> pushList = flowTaskControlAndPushService.getChildrenFromParentId(flowTaskPushControl.getId());
             List<FlowTask> taskList = this.copyPushTaskToFlowTask(pushList);
             if (taskList == null || taskList.size() == 0) {
-                responseData = ResponseData.operationFailure("推送任务不存在！");
-                return responseData;
+                return ResponseData.operationFailure("推送任务不存在！");
             }
-            responseData = this.pushAgainByTypeAndStatus(pushType, PushStatus, taskList);
+            return this.pushAgainByTypeAndStatus(pushType, PushStatus, taskList);
         } catch (Exception e) {
             LogUtil.error("重新推送任务获取参数失败！", e);
-            responseData = ResponseData.operationFailure("重新推送获取参数失败，详情请查看日志！");
-        } finally {
-            return responseData;
+            return ResponseData.operationFailure("重新推送获取参数失败，详情请查看日志！");
         }
     }
 
@@ -129,22 +123,26 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
      * @return
      */
     public ResponseData pushAgainToBusiness(String pushStatus, List<FlowTask> flowTaskList) {
-        ResponseData responseData = ResponseData.operationSuccess("推送成功！");
         FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
         if (flowInstance == null) {
-            responseData = ResponseData.operationFailure("得不到流程实例！");
-            return responseData;
+            return ResponseData.operationFailure("得不到流程实例！");
         }
+        Boolean boo;
         if (STATUS_BUSINESS_INIT.equals(pushStatus)) {
-            flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.INIT);
+            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.INIT);
         } else if (STATUS_BUSINESS_COMPLETED.equals(pushStatus)) {
-            flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.COMPLETED);
+            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.COMPLETED);
         } else if (STATUS_BUSINESS_DEDLETE.equals(pushStatus)) {
-            flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.DELETE);
+            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.DELETE);
         } else {
-            responseData = ResponseData.operationFailure("推送状态不能识别！");
+            return  ResponseData.operationFailure("推送状态不能识别！");
         }
-        return responseData;
+
+        if(boo){
+            return  ResponseData.operationSuccess("重推成功，状态：【成功】！");
+        }else{
+            return  ResponseData.operationFailure("重推成功，状态：【失败】！");
+        }
     }
 
     /**
@@ -153,19 +151,24 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
      * @return
      */
     public ResponseData pushAgainToBasic(String pushStatus, List<FlowTask> flowTaskList) {
-        ResponseData responseData = ResponseData.operationSuccess("推送成功！");
+        Boolean boo;
         if (STATUS_BASIC_NEW.equals(pushStatus)) {//新增待办
-            flowTaskService.pushToBasic(flowTaskList, null, null, null);
+            boo = flowTaskService.pushToBasic(flowTaskList, null, null, null);
         } else if (STATUS_BASIC_OLD.equals(pushStatus)) { //待办转已办
-            flowTaskService.pushToBasic(null, flowTaskList, null, null);
+            boo = flowTaskService.pushToBasic(null, flowTaskList, null, null);
         } else if (STATUS_BASIC_DEL.equals(pushStatus)) { //删除待办
-            flowTaskService.pushToBasic(null, null, flowTaskList, null);
+            boo = flowTaskService.pushToBasic(null, null, flowTaskList, null);
         } else if (STATUS_BASIC_END.equals(pushStatus)) { //归档（终止）
-            flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
+            boo = flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
         } else {
-            responseData = ResponseData.operationFailure("推送状态不能识别！");
+            return  ResponseData.operationFailure("推送状态不能识别！");
         }
-        return responseData;
+
+        if(boo){
+            return  ResponseData.operationSuccess("重推成功，状态：【成功】！");
+        }else{
+            return  ResponseData.operationFailure("重推成功，状态：【失败】！");
+        }
     }
 
 
@@ -229,6 +232,31 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         relationParam.setParentId(control.getId());
         relationParam.setChildIds(pushIdList);
         flowTaskControlAndPushService.insertRelationsByParam(relationParam);
+        //如果推送不成功，进行重新推送3次（任何一次成功就终止）：第一次间隔1分钟，第二次间隔2分钟,第三次间隔3分钟
+        if(!success){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Boolean result = false;
+                    int index = 3;
+                    String controlId = control.getId();
+                    while (!result && index > 0) {
+                        try {
+                            Thread.sleep(1000 * (4 - index));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            ResponseData responseData = pushAgainByControlId(controlId);
+                            result = responseData.getSuccess();
+                        } catch (Exception e) {
+                            LogUtil.error(e.getMessage(), e);
+                        }
+                        index--;
+                    }
+                }
+            }).start();
+        }
     }
 
 

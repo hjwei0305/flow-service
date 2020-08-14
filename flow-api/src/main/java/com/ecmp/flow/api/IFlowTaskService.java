@@ -875,7 +875,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("pushNewTaskToBasic")
     @ApiOperation(value = "推送新生成的待办到basic模块", notes = "推送新生成的待办到basic模块")
     @IgnoreCheckAuth
-    void pushNewTaskToBasic(List<FlowTask> taskList);
+    Boolean pushNewTaskToBasic(List<FlowTask> taskList);
 
     /**
      * 推送新的已办到basic模块
@@ -886,7 +886,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("pushOldTaskToBasic")
     @ApiOperation(value = "推送新的已办到basic模块", notes = "推送新的已办到basic模块")
     @IgnoreCheckAuth
-    void pushOldTaskToBasic(List<FlowTask> taskList);
+    Boolean pushOldTaskToBasic(List<FlowTask> taskList);
 
     /**
      * 推送需要删除的待办到basic模块
@@ -897,7 +897,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("pushDelTaskToBasic")
     @ApiOperation(value = "推送需要删除的待办到basic模块", notes = "推送需要删除的待办到basic模块")
     @IgnoreCheckAuth
-    void pushDelTaskToBasic(List<FlowTask> taskList);
+    Boolean pushDelTaskToBasic(List<FlowTask> taskList);
 
     /**
      * 推送需要归档（终止）的任务到basic模块
@@ -908,7 +908,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("pushEndTaskToBasic")
     @ApiOperation(value = "推送需要归档（终止）的任务到basic模块", notes = "推送需要归档（终止）的任务到basic模块")
     @IgnoreCheckAuth
-    void pushEndTaskToBasic(FlowTask task);
+    Boolean pushEndTaskToBasic(FlowTask task);
 
 
     /**

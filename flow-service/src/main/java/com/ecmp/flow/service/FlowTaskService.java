@@ -222,19 +222,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param delList 删除待办
      * @param endTask 归档
      */
-    public void pushToBasic(List<FlowTask> newList, List<FlowTask> oldList, List<FlowTask> delList, FlowTask endTask) {
+    public Boolean pushToBasic(List<FlowTask> newList, List<FlowTask> oldList, List<FlowTask> delList, FlowTask endTask) {
+        Boolean boo = false;
         if (delList != null && delList.size() > 0) { //删除待办
-            pushDelTaskToBasic(delList);
+            boo = pushDelTaskToBasic(delList);
         }
         if (oldList != null && oldList.size() > 0) { //待办转已办
-            pushOldTaskToBasic(oldList);
+            boo = pushOldTaskToBasic(oldList);
         }
         if (newList != null && newList.size() > 0) {  //新增待办
-            pushNewTaskToBasic(newList);
+            boo = pushNewTaskToBasic(newList);
         }
         if (endTask != null) { //归档（终止）
-            pushEndTaskToBasic(endTask);
+            boo = pushEndTaskToBasic(endTask);
         }
+        return  boo;
     }
 
     /**
@@ -243,7 +245,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskList 需要推送的待办
      */
     @Override
-    public void pushNewTaskToBasic(List<FlowTask> taskList) {
+    public Boolean pushNewTaskToBasic(List<FlowTask> taskList) {
         if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
@@ -258,8 +260,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_NEW, url, responseData.getSuccess(), taskList);
+                return  responseData.getSuccess();
             }
         }
+        return  false;
     }
 
 
@@ -269,7 +273,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskList 需要推送的已办（刚执行完成的）
      */
     @Override
-    public void pushOldTaskToBasic(List<FlowTask> taskList) {
+    public Boolean pushOldTaskToBasic(List<FlowTask> taskList) {
         if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
@@ -283,8 +287,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_OLD, url, responseData.getSuccess(), taskList);
+                return  responseData.getSuccess();
             }
         }
+        return  false;
     }
 
     /**
@@ -293,7 +299,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskList 需要删除的待办
      */
     @Override
-    public void pushDelTaskToBasic(List<FlowTask> taskList) {
+    public Boolean pushDelTaskToBasic(List<FlowTask> taskList) {
         if (taskList != null && taskList.size() > 0) {
             List<String> idList = new ArrayList<String>();
             taskList.forEach(a -> {
@@ -310,8 +316,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_DEL, url, responseData.getSuccess(), taskList);
+                return  responseData.getSuccess();
             }
         }
+        return  false;
     }
 
     /**
@@ -320,7 +328,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param task 需要终止的任务
      */
     @Override
-    public void pushEndTaskToBasic(FlowTask task) {
+    public Boolean pushEndTaskToBasic(FlowTask task) {
         if (task != null) {
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
@@ -334,8 +342,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<FlowTask> taskList = new ArrayList<FlowTask>();
                 taskList.add(task);
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_END, url, responseData.getSuccess(), taskList);
+                return  responseData.getSuccess();
             }
         }
+        return  false;
     }
 
 
@@ -400,7 +410,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param flowInstance 流程实例
      * @param taskList     需要推送的待办
      */
-    public void pushTaskToModelOrUrl(FlowInstance flowInstance, List<FlowTask> taskList, TaskStatus taskStatus) {
+    public Boolean pushTaskToModelOrUrl(FlowInstance flowInstance, List<FlowTask> taskList, TaskStatus taskStatus) {
         if (taskList != null && taskList.size() > 0) {
             //得到具体推送地址
             String flowPushTaskUrl = this.getPushModelOrUrlStr(flowInstance);
@@ -438,9 +448,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     } else {  //已办
                         this.savePushAndControlInfo(Constants.TYPE_BUSINESS, Constants.STATUS_BUSINESS_COMPLETED, flowPushTaskUrl, success, taskList);
                     }
+                    return  success;
                 }
             }
         }
+        return  false;
     }
 
 
