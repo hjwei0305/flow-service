@@ -296,7 +296,7 @@ public class MessageSendThread implements Runnable {
         String taskName = (String) taskEntity.getActivity().getProperty("name");
         message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
         List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-        notifyTypes.add(NotifyType.Email);
+        notifyTypes.add(NotifyType.EMAIL);
         message.setNotifyTypes(notifyTypes);
         new Thread(new Runnable() {
             @Override

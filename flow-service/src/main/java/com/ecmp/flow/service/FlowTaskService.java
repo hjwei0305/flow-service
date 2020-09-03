@@ -3442,7 +3442,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             INotifyService iNotifyService = ContextUtil.getBean(INotifyService.class);
             message.setSubject("催办提醒");
             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
-            notifyTypes.add(NotifyType.Email);
+            notifyTypes.add(NotifyType.EMAIL);
             message.setNotifyTypes(notifyTypes);
             new Thread(new Runnable() {
                 @Override
