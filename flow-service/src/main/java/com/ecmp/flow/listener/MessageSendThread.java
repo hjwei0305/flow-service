@@ -314,7 +314,7 @@ public class MessageSendThread implements Runnable {
         String opinion = (String) execution.getVariable("opinion");
         if ("after".equalsIgnoreCase(eventType)) {//当前任务执行意见
             String eventName = execution.getEventName();
-            if ("end".equalsIgnoreCase(eventName)) {
+            if (!"end".equalsIgnoreCase(eventName)) {
                 opinion = ((ExecutionEntity) execution).getDeleteReason();
             }
         }
