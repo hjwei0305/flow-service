@@ -1883,4 +1883,31 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         map.put("billSum", billSum);
         return ResponseData.operationSuccessWithData(map);
     }
+
+
+    @Override
+    public ResponseData updateRemarkByBusinessId(UpdateInstanceRemarkVo updateInstanceRemarkVo) {
+        if (Objects.isNull(updateInstanceRemarkVo)) {
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        if (StringUtils.isEmpty(updateInstanceRemarkVo.getBusinessId())) {
+            return ResponseData.operationFailure("单据ID不能为空！");
+        }
+        if (StringUtils.isEmpty(updateInstanceRemarkVo.getUpdateRemark())) {
+            return ResponseData.operationFailure("修改说明不能为空！");
+        }
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(updateInstanceRemarkVo.getBusinessId());
+        if (flowInstance != null && !flowInstance.isEnded()) { //只考虑还在流程中的流程实例
+            String oldRemark = flowInstance.getBusinessModelRemark();
+            int i = oldRemark.lastIndexOf("【附加说明");
+            if (i != -1) { //有附加说明
+                flowInstance.setBusinessModelRemark(updateInstanceRemarkVo.getUpdateRemark() + oldRemark.substring(i));
+            } else {
+                flowInstance.setBusinessModelRemark(updateInstanceRemarkVo.getUpdateRemark());
+            }
+            this.save(flowInstance);
+            return ResponseData.operationSuccess("修改成功");
+        }
+        return ResponseData.operationFailure("该单据没有处于流程中的实例数据！");
+    }
 }

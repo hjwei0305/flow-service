@@ -591,4 +591,14 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData getMyFlowCollectInfo(@QueryParam("userId") String userId);
 
 
+
+
+    @POST
+    @Path("updateRemarkByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据ID修改流程实例说明", notes = "通过单据ID修改流程实例说明")
+    ResponseData updateRemarkByBusinessId(UpdateInstanceRemarkVo updateInstanceRemarkVo);
+
+
 }
