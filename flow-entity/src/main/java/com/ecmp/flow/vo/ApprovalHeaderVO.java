@@ -2,6 +2,7 @@ package com.ecmp.flow.vo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -107,6 +108,19 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private String flowInstanceCreatorId;
 
+    /**
+     * 允许选择的审批意见
+     */
+    private List<String> opinionList;
+
+
+    public List<String> getOpinionList() {
+        return opinionList;
+    }
+
+    public void setOpinionList(List<String> opinionList) {
+        this.opinionList = opinionList;
+    }
 
     public Integer getTrustState() {
         return trustState;
