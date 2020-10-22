@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,12 +217,17 @@ public class ExpressionUtil {
         params.put(Constants.STATUS, status);
         String messageLog = "开始调用【重置单据状态】接口，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         ResponseData<Boolean> result;
-        boolean boo;
+        Boolean boo;
         try {
             result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData<Boolean>>() {
             }, params);
             if (result.successful()) {
                 boo = result.getData();
+                if(boo == null){
+                    messageLog += "-接口返回data信息为空：" + result.getMessage();
+                    LogUtil.error(messageLog);
+                    throw new FlowException(getErrorLogString("【重置单据状态】"));
+                }
             } else {
                 messageLog += "-接口返回信息：" + result.getMessage();
                 LogUtil.error(messageLog);
