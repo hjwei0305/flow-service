@@ -93,6 +93,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("humanIntervention", true);
             resultMap.put("nodeInfoList", null);
+            resultMap.put("version", 6);
             return ResponseData.operationSuccessWithData(resultMap);
         }
 
@@ -117,6 +118,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("humanIntervention", false);
             resultMap.put("nodeInfoList", nodeInfoList);
+            resultMap.put("version", 6);
             return ResponseData.operationSuccessWithData(resultMap);
         }
         return ResponseData.operationSuccess();
