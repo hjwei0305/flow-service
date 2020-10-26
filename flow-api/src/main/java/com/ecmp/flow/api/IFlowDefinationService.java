@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
+import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
@@ -355,5 +356,10 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @ApiOperation(value = "获取组织机构下员工（可以包含子节点）", notes = "获取组织机构下员工（可以包含子节点）")
     ResponseData listUserByOrg(UserQueryVo userQueryVo);
 
-
+    @POST
+    @Path("listUserByOrgByWeb")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取组织机构下员工（可以包含子节点）", notes = "获取组织机构下员工（可以包含子节点）")
+    PageResult<Employee> listUserByOrgByWeb(UserQueryVo userQueryVo);
 }

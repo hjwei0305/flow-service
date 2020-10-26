@@ -185,6 +185,30 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         return ResponseData.operationSuccessWithData(result);
     }
 
+    @Override
+    public PageResult<Employee> listUserByOrgByWeb(UserQueryVo userQueryVo) {
+        if (StringUtils.isEmpty(userQueryVo.getOrganizationId())) {
+             LogUtil.error("组织机构ID不能为空！");
+             return  null;
+        }
+        UserQueryParamVo vo = new UserQueryParamVo();
+        vo.setOrganizationId(userQueryVo.getOrganizationId());
+        vo.setIncludeSubNode(userQueryVo.getIncludeSubNode() == null ? true : userQueryVo.getIncludeSubNode());
+        //快速查询
+        ArrayList<String> properties = new ArrayList();
+        properties.add("code");
+        properties.add("user.userName");
+        vo.setQuickSearchProperties(properties);
+        vo.setQuickSearchValue(userQueryVo.getQuickSearchValue() == null ? "" : userQueryVo.getQuickSearchValue());
+        //排序
+        List<SearchOrder> listOrder = new ArrayList<SearchOrder>();
+        listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
+        vo.setSortOrders(listOrder);
+        //分页
+        vo.setPageInfo(userQueryVo.getPageInfo() == null ? new PageInfo() : userQueryVo.getPageInfo());
+        return flowCommonUtil.getEmployeesByOrgIdAndQueryParam(vo);
+    }
+
 
     /**
      * 新增修改操作
