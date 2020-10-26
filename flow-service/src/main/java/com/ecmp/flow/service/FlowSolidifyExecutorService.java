@@ -394,6 +394,9 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 } else {
                     LogUtil.error("自动执行待办-查询待办失败！");
                 }
+            }else{
+                //非固化也存在跳过的可能
+                flowTaskService.checkAutomaticToDoTask(businessId);
             }
         } else {
             LogUtil.error("自动执行待办-参数为空！");

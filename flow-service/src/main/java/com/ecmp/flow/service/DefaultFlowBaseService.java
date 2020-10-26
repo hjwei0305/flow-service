@@ -497,12 +497,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             FlowStartResultVO flowStartResultVO = operateResultWithData.getData();
             if (flowStartResultVO != null) {
                 if (flowStartResultVO.getCheckStartResult()) {
-//                    new Thread(new Runnable() {//检测待办是否自动执行
-//                        @Override
-//                        public void run() {
-//                            flowSolidifyExecutorService.selfMotionExecuteTask(businessKey);
-//                        }
-//                    }).start();
+                    new Thread(new Runnable() {//检测待办是否自动执行
+                        @Override
+                        public void run() {
+                            flowSolidifyExecutorService.selfMotionExecuteTask(businessKey);
+                        }
+                    }).start();
                     return ResponseData.operationSuccessWithData(flowStartResultVO);
                 } else {
                     return ResponseData.operationFailure("启动流程失败,启动检查服务返回false!");
@@ -634,20 +634,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         flowTaskCompleteVO.setVariables(v);
         OperateResultWithData<FlowStatus> operateResult = flowTaskService.complete(flowTaskCompleteVO);
         if (operateResult.successful() && (StringUtils.isEmpty(endEventId) || "false".equals(endEventId))) { //处理成功并且不是结束节点调用
-//            new Thread(new Runnable() {//检测待办是否自动执行
-//                @Override
-//                public void run() {
-//                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
-//                }
-//            }).start();
-
             new Thread(new Runnable() {//检测待办是否自动执行
                 @Override
                 public void run() {
-                    flowTaskService.checkAutomaticToDoTask(businessId);
+                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
                 }
             }).start();
-
         }
         responseData.setSuccess(operateResult.successful());
         responseData.setMessage(operateResult.getMessage());
