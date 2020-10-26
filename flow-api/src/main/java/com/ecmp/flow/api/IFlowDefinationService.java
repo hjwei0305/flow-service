@@ -11,6 +11,7 @@ import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.vo.FlowStartResultVO;
 import com.ecmp.flow.vo.FlowStartVO;
+import com.ecmp.flow.vo.UserQueryByWebVo;
 import com.ecmp.flow.vo.UserQueryVo;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -361,5 +362,5 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取组织机构下员工（可以包含子节点）", notes = "获取组织机构下员工（可以包含子节点）")
-    PageResult<Employee> listUserByOrgByWeb(UserQueryVo userQueryVo);
+    PageResult<Employee> listUserByOrgByWeb(UserQueryByWebVo userQueryVo);
 }

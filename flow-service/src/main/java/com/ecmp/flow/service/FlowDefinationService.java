@@ -186,7 +186,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     @Override
-    public PageResult<Employee> listUserByOrgByWeb(UserQueryVo userQueryVo) {
+    public PageResult<Employee> listUserByOrgByWeb(UserQueryByWebVo userQueryVo) {
         if (StringUtils.isEmpty(userQueryVo.getOrganizationId())) {
              LogUtil.error("组织机构ID不能为空！");
              return  null;
@@ -205,7 +205,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
         vo.setSortOrders(listOrder);
         //分页
-        vo.setPageInfo(userQueryVo.getPageInfo() == null ? new PageInfo() : userQueryVo.getPageInfo());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(userQueryVo.getPage());
+        pageInfo.setRows(userQueryVo.getRows());
+        vo.setPageInfo(pageInfo);
         return flowCommonUtil.getEmployeesByOrgIdAndQueryParam(vo);
     }
 
