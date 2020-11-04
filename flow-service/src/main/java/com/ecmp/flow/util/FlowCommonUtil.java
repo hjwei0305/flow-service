@@ -289,22 +289,26 @@ public class FlowCommonUtil implements Serializable {
     public List<Executor> getExecutorsBySelfDef(String appModuleCode, String selfName, String path, FlowInvokeParams flowInvokeParams) {
         String messageLog = "调用【自定义执行人-" + selfName + "】";
         String mes = "-应用模块：" + appModuleCode + ",接口地址：" + path + ",参数值:" + JsonUtils.toJson(flowInvokeParams);
+        ResponseData<List<Executor>> result;
         List<Executor> executors;
-        Boolean isSuccess = true;
         try {
-            executors = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
+            result = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<ResponseData<List<Executor>>>() {
             }, flowInvokeParams);
-            if (executors == null) {
-                messageLog += "-返回执行人为空!";
-                isSuccess = false;
+            if (result.successful()) {
+                executors = result.getData();
+            } else {
+                messageLog += "-接口返回信息：" + result.getMessage();
+                LogUtil.error(messageLog);
+                throw new FlowException(getErrorLogString("【自定义执行人-" + selfName + "】"));
             }
         } catch (Exception e) {
             LogUtil.error(messageLog + mes + "-【调用异常】", e);
             throw new FlowException(messageLog + "-【调用异常】,详情请查看日志！", e);
         }
-        if (!isSuccess) {
-            LogUtil.info(messageLog + mes);
-            throw new FlowException(messageLog + ",详情请查看日志！");
+
+        if (executors.isEmpty()) {
+            LogUtil.error(messageLog + "返回执行人为空！");
+            throw new FlowException(getNulString("【自定义执行人-" + selfName + "】"));
         }
         return executors;
     }
