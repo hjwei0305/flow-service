@@ -6,6 +6,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.basic.vo.*;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -288,11 +289,12 @@ public class FlowCommonUtil implements Serializable {
 
     public List<Executor> getExecutorsBySelfDef(String appModuleCode, String selfName, String path, FlowInvokeParams flowInvokeParams) {
         String messageLog = "调用【自定义执行人-" + selfName + "】";
-        String mes = "-应用模块：" + appModuleCode + ",接口地址：" + path + ",参数值:" + JsonUtils.toJson(flowInvokeParams);
+        String url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode),path);
+        String mes = "-接口地址：" + url + ",参数值:" + JsonUtils.toJson(flowInvokeParams);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
-            result = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<ResponseData<List<Executor>>>() {
+            result = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData<List<Executor>>>() {
             }, flowInvokeParams);
             if (result.successful()) {
                 executors = result.getData();

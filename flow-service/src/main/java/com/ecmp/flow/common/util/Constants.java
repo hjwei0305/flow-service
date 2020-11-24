@@ -1,6 +1,7 @@
 package com.ecmp.flow.common.util;
 
 import com.ecmp.context.BaseApplicationContext;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.log.util.LogUtil;
 import org.apache.commons.lang.StringUtils;
@@ -81,13 +82,12 @@ public class Constants extends ConfigurableContants {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-//        String value = getProperty(key);
         String value = BaseApplicationContext.getProperty(key);
         if (value == null) {
             LogUtil.error("获取API基地址参数[" + key + "]失败！");
             throw new FlowException("获取API基地址参数[" + key + "]失败！");
         }
-        return getBaseApi() + value;
+        return  PageUrlUtil.buildUrl(getBaseApi(),value);
     }
 
     /**

@@ -33,8 +33,8 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Test
     public void sart_one() {
         StartFlowVo vo =new StartFlowVo();
-        vo.setBusinessKey("2BEA9832-12F6-11E9-B111-0242C0A8440B");
-        vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
+        vo.setBusinessKey("0157A985-2E22-11EB-A49D-0242C0A84403");
+        vo.setBusinessModelCode("com.changhong.ams.entity.request.StoreRequest");
         ResponseData res = null;
         try{
             res =  defaultFlowBaseService.startFlow(vo);
@@ -43,11 +43,11 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
         }
         System.out.println(JsonUtils.toJson(res));
 
-        try{
-            Thread.sleep(1000*20);  //20秒  因为有异步事件需要执行
-        }catch (Exception e){
-
-        }
+//        try{
+//            Thread.sleep(1000*20);  //20秒  因为有异步事件需要执行
+//        }catch (Exception e){
+//
+//        }
     }
 
 
