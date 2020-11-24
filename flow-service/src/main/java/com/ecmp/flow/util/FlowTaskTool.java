@@ -18,7 +18,6 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.StartEvent;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.DateUtils;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -1388,7 +1387,6 @@ public class FlowTaskTool {
                 flowTask.setPreId(preTask.getId());
             }
             flowTask.setPreId(preTask.getId());
-//            flowTask.setDepict(preTask.getDepict());
         }
         String nodeType = (String) currentNode.get("nodeType");
         if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)
@@ -1398,49 +1396,59 @@ public class FlowTaskTool {
                 flowTask.setCanMobile(true);
             }
             if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType)) {//能否批量审批
-//                net.sf.json.JSONObject executor = currentNode.getJSONObject("nodeConfig").getJSONObject("executor");
-                JSONObject executor = null;
-                JSONArray executorList = null;//针对两个条件以上的情况
-                if (currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)) {
-                    try {
-                        executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
-                    } catch (Exception e) {
-                        if (executor == null) {
-                            try {
-                                executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
-                            } catch (Exception e2) {
-                                e2.printStackTrace();
-                            }
-                            if (executorList != null && executorList.size() == 1) {
-                                executor = executorList.getJSONObject(0);
-                            }
-                        }
+//                JSONObject executor = null;
+//                JSONArray executorList = null;//针对两个条件以上的情况
+//                if (currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)) {
+//                    try {
+//                        executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
+//                    } catch (Exception e) {
+//                        if (executor == null) {
+//                            try {
+//                                executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+//                            } catch (Exception e2) {
+//                                e2.printStackTrace();
+//                            }
+//                            if (executorList != null && executorList.size() == 1) {
+//                                executor = executorList.getJSONObject(0);
+//                            }
+//                        }
+//                    }
+//                }
+//                if (executor != null && !executor.isEmpty()) {
+//                    String userType = (String) executor.get("userType");
+//                    if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
+//                        if (mustCommit == null || !mustCommit) {
+//                            if (checkNextNodesCanAprool(flowTask, null)) {
+//                                flowTask.setCanBatchApproval(true);
+//                            }
+//                        }
+//                    }
+//                } else if (executorList != null && executorList.size() > 1) {
+//                    Boolean canBatchApproval = false;
+//                    for (Object executorObject : executorList.toArray()) {
+//                        JSONObject executorTemp = (JSONObject) executorObject;
+//                        String userType = executorTemp.get("userType") + "";
+//                        if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+//                            canBatchApproval = false;
+//                            break;
+//                        }
+//                    }
+//                    if (mustCommit == null || !mustCommit) {
+//                        if (checkNextNodesCanAprool(flowTask, null)) {
+//                            flowTask.setCanBatchApproval(canBatchApproval);
+//                        }
+//                    }
+//                }
+
+                //不需要判断当前节点执行人类型，只需要判断是否允许批量，和下一节点信息是否允许当前节点批量提交
+                if (mustCommit == null || !mustCommit) {
+                    if (checkNextNodesCanAprool(flowTask, null)) {
+                        flowTask.setCanBatchApproval(true);
+                    } else {
+                        flowTask.setCanBatchApproval(false);
                     }
-                }
-                if (executor != null && !executor.isEmpty()) {
-                    String userType = (String) executor.get("userType");
-                    if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
-                        if (mustCommit == null || !mustCommit) {
-                            if (checkNextNodesCanAprool(flowTask, null)) {
-                                flowTask.setCanBatchApproval(true);
-                            }
-                        }
-                    }
-                } else if (executorList != null && executorList.size() > 1) {
-                    Boolean canBatchApproval = false;
-                    for (Object executorObject : executorList.toArray()) {
-                        JSONObject executorTemp = (JSONObject) executorObject;
-                        String userType = executorTemp.get("userType") + "";
-                        if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-                            canBatchApproval = false;
-                            break;
-                        }
-                    }
-                    if (mustCommit == null || !mustCommit) {
-                        if (checkNextNodesCanAprool(flowTask, null)) {
-                            flowTask.setCanBatchApproval(canBatchApproval);
-                        }
-                    }
+                } else {
+                    flowTask.setCanBatchApproval(false);
                 }
 
 
@@ -2300,24 +2308,12 @@ public class FlowTaskTool {
 
     boolean checkNextNodesCanAprool(FlowTask flowTask, JSONObject currentNode) {
         boolean result = true;
-//        String defObjStr = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
-//        JSONObject defObj = JSONObject.fromObject(defObjStr);
         Definition definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
         if (currentNode == null) {
             currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         }
         JSONArray targetNodes = currentNode.getJSONArray("target");
         String nodeType = currentNode.get("nodeType") + "";
-//        if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
-//
-//        } else if ("ParallelTask".equalsIgnoreCase(nodeType)||"SerialTask".equalsIgnoreCase(nodeType)) {
-//        }
-//        else if ("Normal".equalsIgnoreCase(nodeType)) {//普通任务
-//
-//        } else if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务
-//
-//        } else if ("Approve".equalsIgnoreCase(nodeType)) {//审批任务
-//        } else
         if ("ServiceTask".equals(nodeType)) {//服务任务不允许批量审批
             return false;
         } else if ("ReceiveTask".equals(nodeType)) {//接收任务不允许批量审批
@@ -2353,15 +2349,13 @@ public class FlowTaskTool {
                             JSONArray executors = nextNode.getJSONObject("nodeConfig").getJSONArray("executor");
                             executor = executors.getJSONObject(0);
                         } catch (Exception e) {
-                            e.printStackTrace();
                         }
                         // 再判断是否为单一对象
                         if (Objects.isNull(executor)) {
                             executor = nextNode.getJSONObject("nodeConfig").getJSONObject("executor");
                         }
                         String userType = (String) executor.get("userType");
-                        if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
-                        } else {
+                        if ("AnyOne".equalsIgnoreCase(userType)) {
                             return false;
                         }
                     }
