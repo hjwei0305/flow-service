@@ -2309,7 +2309,9 @@ public class FlowTaskTool {
     boolean checkNextNodesCanAprool(FlowTask flowTask, JSONObject currentNode) {
         boolean result = true;
         Definition definition = flowCommonUtil.flowDefinition(flowTask.getFlowInstance().getFlowDefVersion());
+        boolean approvePath = false;
         if (currentNode == null) {
+            approvePath = true;
             currentNode = definition.getProcess().getNodes().getJSONObject(flowTask.getActTaskDefKey());
         }
         JSONArray targetNodes = currentNode.getJSONArray("target");
@@ -2324,6 +2326,16 @@ public class FlowTaskTool {
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
+            if(approvePath){ //需要判断是否是同意分支
+                try{
+                    JSONObject uelJsonObject = jsonObject.getJSONObject("uel");
+                    if(!uelJsonObject.has("agree") || !uelJsonObject.getBoolean("agree")){
+                        continue;
+                    }
+                }catch (Exception e){
+                    continue;
+                }
+            }
             JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
             try {
                 if (nextNode.has("busType")) {
