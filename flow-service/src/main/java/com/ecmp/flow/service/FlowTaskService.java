@@ -2464,7 +2464,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
                     for (NodeInfo nodeInfo : nodeInfoList) {
                         String flowDefVersionId = nodeInfo.getFlowDefVersionId();
-                        NodeGroupInfo tempNodeGroupInfo = tempNodeGroupInfoMap.get(flowDefVersionId + nodeInfo.getId());
+                        Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                        NodeGroupInfo tempNodeGroupInfo;
+                        String mapKey;
+                        if (executorSet != null && executorSet.size() > 0) {
+                            mapKey = flowDefVersionId + nodeInfo.getId() + executorSet.size() + executorSet.iterator().next().getId();
+                            tempNodeGroupInfo = tempNodeGroupInfoMap.get(mapKey);
+                        } else {
+                            mapKey = flowDefVersionId + nodeInfo.getId();
+                            tempNodeGroupInfo = tempNodeGroupInfoMap.get(mapKey);
+                        }
                         if (tempNodeGroupInfo == null) {
                             tempNodeGroupInfo = new NodeGroupInfo();
                             tempNodeGroupInfo.setFlowDefVersionId(flowDefVersionId);
@@ -2473,7 +2482,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             BeanUtils.copyProperties(nodeInfo, tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
                             tempNodeGroupInfo.setExecutorSet(nodeInfo.getExecutorSet());
-                            tempNodeGroupInfoMap.put(flowDefVersionId + nodeInfo.getId(), tempNodeGroupInfo);
+                            tempNodeGroupInfoMap.put(mapKey, tempNodeGroupInfo);
                         } else {
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
                         }
