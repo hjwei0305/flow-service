@@ -37,13 +37,26 @@ public class DynamicEnvironmentPostProcessor implements EnvironmentPostProcessor
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 
-        String filePath  = System.getProperty("catalina.base")+"/webapps/flow-service.properties";
+        String filePath = "/usr/app/flow-service.properties";
         File configFile = new File(filePath);
-        if(!configFile.exists()){
-            filePath = "/usr/app/flow-service.properties";
-//            filePath = "D:\\usr\\app\\application.properties";
+        InputStream inputStream;
+        boolean local = false;
+        try {
+            if (!configFile.exists()) {
+                //如果不存在外部配置文件，默认是本地启动测试，使用项目中配置文件
+                inputStream = DynamicEnvironmentPostProcessor.class.getClassLoader().getResourceAsStream("flow-service.properties");
+                local = true;
+            } else {
+                inputStream = new FileInputStream(filePath);
+            }
+        } catch (IOException e) {
+            log.error("load properties error！", e);
+            System.out.println("load properties error!" + e.getMessage());
+            log.info("load properties from：flow-service.properties");
+            return;
         }
-        try (InputStream inputStream = new FileInputStream(filePath)) {
+
+        try {
             Properties source = new Properties();
             source.load(inputStream);
 
@@ -53,12 +66,17 @@ public class DynamicEnvironmentPostProcessor implements EnvironmentPostProcessor
             BaseApplicationContext baseContext = new BaseApplicationContext();
             baseContext.setEnvironment(environment);
 
-            log.info("load properties from：{}", filePath);
-            System.out.println("load properties from：" + filePath);
+            if (local) {
+                log.info("load properties from：{}", "localhost:flow-service.properties");
+                System.out.println("load properties from：localhost:flow-service.properties");
+            } else {
+                log.info("load properties from：{}", filePath);
+                System.out.println("load properties from：" + filePath);
+            }
         } catch (IOException e) {
             log.error("load properties error！", e);
             System.out.println("load properties error!" + e.getMessage());
-            log.info("load properties from：application.properties");
+            log.info("load properties from：flow-service.properties");
         }
     }
 
