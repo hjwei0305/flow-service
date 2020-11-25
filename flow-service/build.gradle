@@ -70,6 +70,14 @@ dependencies {
             "net.sf.dozer:dozer:5.5.1",
             "com.ecmp:notify-api:$notify_version"
     )
+
+    // 第三方依赖
+    compile("org.springframework.kafka:spring-kafka")
+    // 日志logback-kafka-appender
+    compile("com.github.danielwegener:logback-kafka-appender:0.2.0-RC2")
+    // logstash logback
+    compile("net.logstash.logback:logstash-logback-encoder:6.3")
+
 //    compile group: 'org.springframework.data', name: 'spring-data-couchbase', version: '3.0.8.RELEASE'
 
     // 测试依赖
