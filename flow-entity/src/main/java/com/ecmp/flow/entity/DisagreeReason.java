@@ -25,11 +25,17 @@ public class DisagreeReason extends BaseAuditableEntity implements ITenant , IRa
 
 
     /**
-     * 流程类型
+     * 所属流程类型ID
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "flow_type_id")
-    private FlowType flowType;
+    @Column(name = "flow_type_id")
+    private String flowTypeId;
+
+    /**
+     * 所属流程类型名称
+     */
+    @Column(name = "flow_type_name")
+    private String flowTypeName;
+
 
     /**
      * 原因Code
@@ -68,12 +74,20 @@ public class DisagreeReason extends BaseAuditableEntity implements ITenant , IRa
     private String tenantCode;
 
 
-    public FlowType getFlowType() {
-        return flowType;
+    public String getFlowTypeId() {
+        return flowTypeId;
     }
 
-    public void setFlowType(FlowType flowType) {
-        this.flowType = flowType;
+    public void setFlowTypeId(String flowTypeId) {
+        this.flowTypeId = flowTypeId;
+    }
+
+    public String getFlowTypeName() {
+        return flowTypeName;
+    }
+
+    public void setFlowTypeName(String flowTypeName) {
+        this.flowTypeName = flowTypeName;
     }
 
     public String getCode() {

@@ -13,7 +13,7 @@ import java.util.List;
 public interface DisagreeReasonDao extends BaseEntityDao<DisagreeReason> {
 
 
-    @Query("select k from com.ecmp.flow.entity.DisagreeReason k where k.flowType.id = :flowTypeId and  k.tenantCode = :tenantCode order by k.rank  ")
+    @Query("select k from com.ecmp.flow.entity.DisagreeReason k where k.flowTypeId = :flowTypeId and  k.tenantCode = :tenantCode order by k.rank  ")
     List<DisagreeReason> findByFlowTypeIdAndTenantCode(@Param("flowTypeId") String flowTypeId, @Param("tenantCode") String tenantCode);
 
 }
