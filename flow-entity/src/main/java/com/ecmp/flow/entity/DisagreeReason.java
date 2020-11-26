@@ -56,6 +56,12 @@ public class DisagreeReason extends BaseAuditableEntity implements ITenant , IRa
     private Integer rank;
 
     /**
+     * 启动状态
+     */
+    @Column(name = "status")
+    private Boolean status;
+
+    /**
      * 租户代码
      */
     @Column(name = "tenant_code")
@@ -101,6 +107,14 @@ public class DisagreeReason extends BaseAuditableEntity implements ITenant , IRa
 
     public void setRank(Integer rank) {
         this.rank = rank;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     @Override

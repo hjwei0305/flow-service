@@ -5,6 +5,7 @@ CREATE TABLE `flow_disagree_reason` (
 `name`  varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '原因简称' ,
 `depict`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '原因描述' ,
 `rank`  int(11) NULL DEFAULT NULL COMMENT '排序' ,
+`status`  tinyint(1) NULL DEFAULT 0 COMMENT '启用状态' ,
 `tenant_code`  varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '租户代码' ,
 `creator_id`  varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人ID' ,
 `creator_account`  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建者账号' ,
