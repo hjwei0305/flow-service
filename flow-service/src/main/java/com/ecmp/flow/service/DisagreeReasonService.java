@@ -5,12 +5,16 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IDisagreeReasonService;
 import com.ecmp.flow.dao.DisagreeReasonDao;
+import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DisagreeReason;
+import com.ecmp.log.util.LogUtil;
+import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -33,5 +37,24 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
         }
         List<DisagreeReason> list = disagreeReasonDao.findByFlowTypeIdAndTenantCode(typeId, ContextUtil.getTenantCode());
         return ResponseData.operationSuccessWithData(list);
+    }
+
+
+    public OperateResultWithData<DisagreeReason> save(DisagreeReason bean) {
+        OperateResultWithData<DisagreeReason> resultWithData;
+        try {
+            resultWithData = super.save(bean);
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            Throwable cause = e.getCause();
+            cause = cause.getCause();
+            SQLException sqlException = (SQLException) cause;
+            if (sqlException != null && sqlException.getSQLState().equals("23000")) {
+                resultWithData = OperateResultWithData.operationFailure("原因代码重复，请检查！");
+            } else {
+                resultWithData = OperateResultWithData.operationFailure(e.getMessage());
+            }
+            LogUtil.error(e.getMessage(), e);
+        }
+        return resultWithData;
     }
 }
