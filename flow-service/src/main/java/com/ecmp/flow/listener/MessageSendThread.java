@@ -10,6 +10,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.util.BpmnUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
 import com.ecmp.notity.entity.NotifyType;
@@ -23,8 +24,6 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -42,7 +41,6 @@ import java.util.*;
  */
 public class MessageSendThread implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(MessageBeforeListener.class);
 
     private String eventType;
     private DelegateExecution execution;
@@ -104,7 +102,7 @@ public class MessageSendThread implements Runnable {
                         notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
                         selectType = notifyExecutor.getJSONArray("type");
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+                        LogUtil.error(e.getMessage(), e);
                     }
                     if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
                         Object[] types = selectType.toArray();

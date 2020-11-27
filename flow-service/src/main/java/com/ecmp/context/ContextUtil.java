@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiClient;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.enums.UserType;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.EnumUtils;
 import com.ecmp.util.IdGenerator;
 import com.ecmp.util.JwtTokenUtil;
@@ -13,8 +14,6 @@ import com.ecmp.vo.SessionUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
 import java.net.InetAddress;
@@ -32,7 +31,6 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class ContextUtil extends BaseContextSupport {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContextUtil.class);
 
     //InheritableThreadLocal
     private static ThreadLocal<SessionUser> userTokenHold = new InheritableThreadLocal<>();
@@ -171,9 +169,6 @@ public class ContextUtil extends BaseContextSupport {
         if (sessionUser == null) {
             sessionUser = new SessionUser();
         }
-
-        /*Thread currentThread = Thread.currentThread();
-        LOGGER.debug(currentThread.getName() + "  |  " + currentThread.toString() + "  |  " + sessionUser);*/
         return sessionUser;
     }
 
@@ -294,9 +289,9 @@ public class ContextUtil extends BaseContextSupport {
 
             ContextUtil.setSessionUser(sessionUser);
         } catch (ExpiredJwtException e) {
-            LOGGER.error("token已过期", e);
+            LogUtil.error("token已过期", e);
         } catch (Exception e) {
-            LOGGER.error("错误的token", e);
+            LogUtil.error("错误的token", e);
         }
         return sessionUser;
     }

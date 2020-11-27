@@ -6,15 +6,12 @@ import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowTypeService;
 import com.ecmp.flow.basic.vo.AppModule;
 import com.ecmp.flow.dao.FlowTypeDao;
-import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.SearchVo;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +42,6 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
     private FlowCommonUtil flowCommonUtil;
 
 
-    private final Logger logger = LoggerFactory.getLogger(BusinessModel.class);
 
     protected BaseEntityDao<FlowType> getDao(){
         return this.flowTypeDao;

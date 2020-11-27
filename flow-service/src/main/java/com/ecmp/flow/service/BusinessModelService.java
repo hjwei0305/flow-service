@@ -25,8 +25,6 @@ import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +47,6 @@ import java.util.*;
 @Service
 public class BusinessModelService extends BaseEntityService<BusinessModel> implements IBusinessModelService {
 
-    private final Logger logger = LoggerFactory.getLogger(BusinessModel.class);
 
     @Autowired
     private BusinessModelDao businessModelDao;
@@ -385,7 +382,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             } else {
                 resultWithData = OperateResultWithData.operationFailure(e.getMessage());
             }
-            logger.error(e.getMessage(), e);
+            LogUtil.error(e.getMessage(), e);
         }
         clearFlowDefVersion();
         return resultWithData;

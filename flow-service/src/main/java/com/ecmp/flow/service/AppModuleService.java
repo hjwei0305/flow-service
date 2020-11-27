@@ -1,6 +1,5 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.entity.ITenant;
@@ -8,20 +7,17 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
-import com.ecmp.core.service.BaseService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.IAppModuleService;
 import com.ecmp.flow.dao.AppModuleDao;
 import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 
@@ -55,8 +51,6 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
         return appModuleDao;
     }
 
-    private final Logger logger = LoggerFactory.getLogger(BaseService.class);
-
 
     /**
      * 数据保存操作
@@ -80,8 +74,8 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
         }
         if (Objects.isNull(operateResultWithData) || operateResultWithData.successful()) {
             AppModule saveEntity = getDao().save(entity);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Saved entity id is {}", entity.getId());
+            if (LogUtil.isDebugEnabled()) {
+                LogUtil.debug("Saved entity id is {}", entity.getId());
             }
             // 应用模块保存成功！
             operateResultWithData = OperateResultWithData.operationSuccessWithData(saveEntity, "10055");

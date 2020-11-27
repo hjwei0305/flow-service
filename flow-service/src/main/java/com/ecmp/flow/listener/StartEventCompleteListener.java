@@ -24,8 +24,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +47,6 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class StartEventCompleteListener implements ExecutionListener {
-
-    private final Logger logger = LoggerFactory.getLogger(StartEventCompleteListener.class);
 
     public StartEventCompleteListener() {
     }

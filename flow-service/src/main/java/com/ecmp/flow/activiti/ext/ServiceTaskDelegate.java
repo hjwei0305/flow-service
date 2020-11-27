@@ -20,8 +20,6 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,8 +41,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
     public ServiceTaskDelegate() {
     }
-
-    private final Logger logger = LoggerFactory.getLogger(ServiceTaskDelegate.class);
 
     @Autowired
     private FlowDefVersionDao flowDefVersionDao;
@@ -147,7 +143,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                                         try {
                                             result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
                                         } catch (Exception e) {
-                                            logger.error(e.getMessage(), e);
+                                            LogUtil.error(e.getMessage(), e);
                                         }
                                         index--;
                                     }

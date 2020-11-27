@@ -23,8 +23,6 @@ import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import org.activiti.engine.ProcessEngine;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +46,6 @@ import java.util.Set;
 @Service
 public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> implements IFlowDefVersionService {
 
-    private final Logger logger = LoggerFactory.getLogger(FlowDefVersion.class);
 
     protected BaseEntityDao<FlowDefVersion> getDao() {
         return this.flowDefVersionDao;
@@ -101,10 +98,10 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         entity.setFlowDefination(flowDefination);
         flowDefVersionDao.save(entity);
-        logger.info("Saved FlowDefVersion id is {}", entity.getId());
+        LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
         flowDefination.setLastVersionId(entity.getId());
         flowDefinationDao.save(flowDefination);
-        logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+        LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
         OperateResultWithData<FlowDefVersion> operateResult;
         // 流程版本保存成功！
         operateResult = OperateResultWithData.operationSuccess("10056");
@@ -234,10 +231,10 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setSolidifyFlow(canAssolidifyFlow);
 
             flowDefVersionDao.save(entity);
-            logger.info("Saved FlowDefVersion id is {}", entity.getId());
+            LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
             flowDefination.setLastVersionId(entity.getId());
             flowDefinationDao.save(flowDefination);
-            logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+            LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
         } else {
             if (StringUtils.isNoneEmpty(process.getFlowDefVersionId())) {
                 entity = flowDefVersionDao.findOne(process.getFlowDefVersionId());
@@ -293,7 +290,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 flowDefination.setSubProcess(canAsSubProcess);
                 flowDefination.setSolidifyFlow(canAssolidifyFlow);
                 flowDefinationDao.save(flowDefination);
-                logger.info("Saved FlowDefVersion id is {}", entity.getId());
+                LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
             } else {//版本为空
                 entity = new FlowDefVersion();
                 entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
@@ -325,14 +322,14 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
                 entity.setEndCallServiceAync(process.getAfterEndServiceAync());
                 flowDefVersionDao.save(entity);
-                logger.info("Saved FlowDefVersion id is {}", entity.getId());
+                LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
                 flowDefination.setName(process.getName());
                 flowDefination.setLastVersionId(entity.getId());
                 flowDefination.setPriority(definition.getPriority());
                 flowDefination.setSubProcess(canAsSubProcess);
                 flowDefination.setSolidifyFlow(canAssolidifyFlow);
                 flowDefinationDao.save(flowDefination);
-                logger.info("Saved FlowDefination id is {}", flowDefination.getId());
+                LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
             }
 
         }

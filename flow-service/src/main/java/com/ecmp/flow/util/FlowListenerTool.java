@@ -26,8 +26,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.process.TransitionImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.GenericType;
@@ -73,8 +71,6 @@ public class FlowListenerTool {
 
     @Autowired
     private FlowCommonUtil flowCommonUtil;
-
-    private final Logger logger = LoggerFactory.getLogger(FlowListenerTool.class);
 
 
     //选择下一步执行人
@@ -476,7 +472,7 @@ public class FlowListenerTool {
                                     try {
                                         result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
                                     } catch (Exception e) {
-                                        logger.error(e.getMessage(), e);
+                                        LogUtil.error(e.getMessage(), e);
                                     }
                                     index--;
                                 }

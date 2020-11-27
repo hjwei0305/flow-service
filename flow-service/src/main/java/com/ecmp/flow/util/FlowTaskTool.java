@@ -37,8 +37,6 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -104,8 +102,6 @@ public class FlowTaskTool {
     @Autowired
     private TaskMakeOverPowerService taskMakeOverPowerService;
 
-    private final Logger logger = LoggerFactory.getLogger(FlowTaskTool.class);
-
     public FlowTaskTool() {
         System.out.println("FlowTaskTool init------------------------------------------");
     }
@@ -158,7 +154,7 @@ public class FlowTaskTool {
                     break;
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                LogUtil.error(e.getMessage(), e);
             }
         }
         return result;
@@ -979,7 +975,7 @@ public class FlowTaskTool {
             ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                     .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
-                logger.error(ContextUtil.getMessage("10003"));
+                LogUtil.error(ContextUtil.getMessage("10003"));
                 return OperateResult.operationFailure("10003");//流程定义未找到找到");
             }
 
@@ -993,13 +989,13 @@ public class FlowTaskTool {
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
                     .findActivity(currTask.getTaskDefinitionKey());
             if (currTask.getEndTime() == null) {// 当前任务可能已经被还原
-                logger.error(ContextUtil.getMessage("10008"));
+                LogUtil.error(ContextUtil.getMessage("10008"));
                 return OperateResult.operationFailure("10008");//当前任务可能已经被还原
             }
 
             Boolean resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
             if (!resultCheck) {
-                logger.info(ContextUtil.getMessage("10005"));
+                LogUtil.info(ContextUtil.getMessage("10005"));
                 return OperateResult.operationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
             }
 
@@ -1021,7 +1017,7 @@ public class FlowTaskTool {
             }
 
             if (historicActivityInstance == null) {
-                logger.error(ContextUtil.getMessage("10009"));
+                LogUtil.error(ContextUtil.getMessage("10009"));
                 return OperateResult.operationFailure("10009");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
@@ -1101,7 +1097,7 @@ public class FlowTaskTool {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return OperateResult.operationFailure(flowE.getMessage());
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            LogUtil.error(e.getMessage(), e);
             return OperateResult.operationFailure("10004");//流程取回失败，未知错误
         }
     }
@@ -1590,13 +1586,11 @@ public class FlowTaskTool {
                             }
                         }
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
                     }
                     try {
                         allowAddSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowAddSign");
                         allowSubtractSign = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("allowSubtractSign");
                     } catch (Exception eSign) {
-                        logger.error(eSign.getMessage(), eSign);
                     }
 
                 } else {
@@ -1977,7 +1971,7 @@ public class FlowTaskTool {
                     .getDeployedProcessDefinition(currTask
                             .getProcessDefinitionId());
             if (definition == null) {
-                logger.error(ContextUtil.getMessage("10003"));
+                LogUtil.error(ContextUtil.getMessage("10003"));
             }
             for (String includeNodeId : includeNodeIds) {
                 // 取得当前活动定义节点
@@ -2011,7 +2005,7 @@ public class FlowTaskTool {
                     .getDeployedProcessDefinition(currTask
                             .getProcessDefinitionId());
             if (definition == null) {
-                logger.error(ContextUtil.getMessage("10003"));
+                LogUtil.error(ContextUtil.getMessage("10003"));
             }
             for (String includeNodeId : includeNodeIds) {
                 // 取得当前活动定义节点
@@ -2135,14 +2129,12 @@ public class FlowTaskTool {
             try {
                 counterDecision = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getInt("counterDecision");
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
             }
             //会签结果是否即时生效
             Boolean immediatelyEnd = false;
             try {
                 immediatelyEnd = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("immediatelyEnd");
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
             }
 
             // 取得当前任务
@@ -2373,7 +2365,7 @@ public class FlowTaskTool {
                     }
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                LogUtil.error(e.getMessage(), e);
                 result = false;
             }
         }

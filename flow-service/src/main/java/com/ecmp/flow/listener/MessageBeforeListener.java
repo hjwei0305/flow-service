@@ -4,12 +4,11 @@ import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.log.util.LogUtil;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
@@ -30,7 +29,6 @@ import java.io.Serializable;
 //@Component(value="messageBeforeListener")
 public class MessageBeforeListener implements Serializable, org.activiti.engine.delegate.ExecutionListener{
 
-    private final Logger logger = LoggerFactory.getLogger(MessageBeforeListener.class);
 	public MessageBeforeListener(){}
     private static final long serialVersionUID = 1L;
     @Autowired
@@ -69,7 +67,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setFlowCommonUtil(flowCommonUtil);
             messageSendThread.run();
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
+            LogUtil.error(e.getMessage(),e);
         }
     }
 }

@@ -9,8 +9,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -29,9 +27,6 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivityBehavior {
-
-    protected static Logger log =  LoggerFactory.getLogger(ExclusiveGatewayActivityBehaviorExt.class);
-
 
     private RepositoryService repositoryService;
 

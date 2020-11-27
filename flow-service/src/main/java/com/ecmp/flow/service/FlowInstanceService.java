@@ -32,8 +32,6 @@ import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntit
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -57,8 +55,6 @@ import java.util.*;
  */
 @Service
 public class FlowInstanceService extends BaseEntityService<FlowInstance> implements IFlowInstanceService {
-
-    private final Logger logger = LoggerFactory.getLogger(FlowInstanceService.class);
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
@@ -1311,7 +1307,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     + ",FlowDefVersion.id=" + flowInstance.getFlowDefVersion().getId()
                     + ",appModule.code=" + appModule.getCode()
                     + ",Check the error before the end of the process and return the message :" + callBeforeEndResult.getMessage();
-            logger.info(message);
+            LogUtil.info(message);
             throw new FlowException(message);
         }
         return callBeforeEndResult;

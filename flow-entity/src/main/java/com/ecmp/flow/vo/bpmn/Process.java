@@ -1,11 +1,8 @@
 package com.ecmp.flow.vo.bpmn;
 
-import com.ecmp.flow.constant.Constants;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
@@ -29,7 +26,6 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Process extends BaseNode implements Serializable {
     private static final long serialVersionUID = 1L;
-//    private final Logger logger = LoggerFactory.getLogger(Process.class);
 
     /**
      * 流程名

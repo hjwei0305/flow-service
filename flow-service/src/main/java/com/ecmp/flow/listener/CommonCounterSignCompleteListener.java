@@ -5,8 +5,6 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -35,7 +33,6 @@ public class CommonCounterSignCompleteListener implements TaskListener{
 	}
     private static final long serialVersionUID = 1L;
 
-    private final Logger logger = LoggerFactory.getLogger(CommonCounterSignCompleteListener.class);
     public void notify(DelegateTask delegateTask) {
         Map<String,VariableInstance> processVariables =  runtimeService.getVariableInstances(delegateTask.getProcessInstanceId());
         Integer counterSignAgree = 0;//同意票数

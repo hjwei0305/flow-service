@@ -1,9 +1,7 @@
 package com.ecmp.flow.common.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.ecmp.log.util.LogUtil;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -37,8 +35,6 @@ import java.util.Properties;
  * *************************************************************************************************
  */
 public class ConfigurableContants {
-	protected static final Log logger = LogFactory
-			.getLog(ConfigurableContants.class);
 
 	protected static Properties p = new Properties();
 
@@ -50,17 +46,17 @@ public class ConfigurableContants {
 		try {
 			in = ConfigurableContants.class.getClassLoader().getResourceAsStream(propertyFileName);
 			if (in != null){
-				logger.debug("load " + propertyFileName + " into Contants!");
+				LogUtil.debug("load " + propertyFileName + " into Contants!");
 				p.load(in);
 			}
 		} catch (IOException e) {
-			logger.error("load " + propertyFileName + " into Contants error!",e);
+			LogUtil.error("load " + propertyFileName + " into Contants error!",e);
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
 				} catch (IOException e) {
-					logger.error("close " + propertyFileName + " error!",e);
+					LogUtil.error("close " + propertyFileName + " error!",e);
 				}
 			}
 		}

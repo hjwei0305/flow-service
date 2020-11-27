@@ -19,15 +19,13 @@ import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
-import com.ecmp.flow.vo.SignalPoolTaskVO;
+import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -53,7 +51,6 @@ import java.util.*;
 @Service
 public class DefaultBusinessModelService extends BaseEntityService<DefaultBusinessModel> implements IDefaultBusinessModelService {
 
-    private final Logger logger = LoggerFactory.getLogger(DefaultBusinessModelService.class);
 
     @Autowired
     private DefaultBusinessModelDao defaultBusinessModelDao;
@@ -213,7 +210,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
             }
             changeText = "before";
@@ -255,7 +252,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
 
             }
@@ -320,7 +317,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 try {
                     callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
                 if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
                     //测试跨业务实体子流程,并发多级子流程测试
@@ -535,7 +532,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
 
             }
@@ -581,7 +578,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    LogUtil.error(e.getMessage(), e);
                 }
 
             }
@@ -649,11 +646,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                                     return;
                                 } else {
                                     time = time * 2; //加倍
-                                    logger.error(resultTemp.getMessage());
                                 }
                             } catch (Exception e) {
                                 time = time * 2; //加倍
-                                logger.error(e.getMessage(), e);
                             }
                             index--;
                         }
@@ -723,11 +718,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 //                                    return;
 //                                } else {
 //                                    time = time * 2; //加倍
-//                                    logger.error(resultTemp.getMessage());
 //                                }
 //                            } catch (Exception e) {
 //                                time = time * 2; //加倍
-//                                logger.error(e.getMessage(), e);
 //                            }
 //                            index--;
 //                        }
@@ -828,11 +821,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                                     return;
                                 } else {
                                     time = time * 2; //加倍
-                                    logger.error(resultTemp.getMessage());
                                 }
                             } catch (Exception e) {
                                 time = time * 4; //加倍
-                                logger.error(e.getMessage(), e);
                             }
                             index--;
                         }

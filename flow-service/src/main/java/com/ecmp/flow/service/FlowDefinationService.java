@@ -20,7 +20,6 @@ import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.*;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.DateUtils;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -38,21 +37,12 @@ import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 
 import javax.ws.rs.core.GenericType;
@@ -77,7 +67,6 @@ import java.util.concurrent.TimeUnit;
 @Transactional
 public class FlowDefinationService extends BaseEntityService<FlowDefination> implements IFlowDefinationService {
 
-    private final Logger logger = LoggerFactory.getLogger(FlowDefinationService.class);
 
     protected BaseEntityDao<FlowDefination> getDao() {
         return this.flowDefinationDao;
@@ -230,15 +219,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         entity.setTenantCode(ContextUtil.getTenantCode());
         flowDefinationDao.save(entity);
-        logger.debug("Saved FlowDefination id is {}", entity.getId());
         if (flowDefVersion != null) {
             flowDefVersion.setFlowDefination(entity);
             flowDefVersion.setTenantCode(ContextUtil.getTenantCode());
             flowDefVersionDao.save(flowDefVersion);
-            logger.debug("Saved FlowDefVersion id is {}", entity.getId());
             entity.setLastVersionId(flowDefVersion.getId());
             flowDefinationDao.save(entity);
-            logger.debug("Saved FlowDefination id is {}", entity.getId());
         }
         OperateResultWithData<FlowDefination> operateResult;
         // 流程定义保存成功！
@@ -618,7 +604,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             initTask(flowInstance, variables);
                         }
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+                        LogUtil.error(e.getMessage(), e);
                         if (flowInstance != null) {
                             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
                             ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);

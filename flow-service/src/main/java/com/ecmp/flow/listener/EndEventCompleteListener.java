@@ -4,8 +4,6 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowInstanceDao;
-import com.ecmp.flow.dao.util.PageUrlUtil;
-import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.util.ExpressionUtil;
@@ -13,23 +11,18 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.JsonUtils;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.core.GenericType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -48,7 +41,6 @@ import java.util.Map;
 //@Component(value="endEventCompleteListener")
 public class EndEventCompleteListener implements ExecutionListener {
 
-    private final Logger logger = LoggerFactory.getLogger(EndEventCompleteListener.class);
 	public EndEventCompleteListener(){
 	}
     private static final long serialVersionUID = 1L;
