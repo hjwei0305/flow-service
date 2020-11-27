@@ -7,9 +7,8 @@ import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 @Path("disagreeReason")
 @Api(value = "IDisagreeReasonService 不同意原因服务API接口")
@@ -27,4 +26,15 @@ public interface IDisagreeReasonService extends IBaseService<DisagreeReason, Str
     ResponseData getDisagreeReasonByTypeId(@QueryParam("typeId") String typeId);
 
 
+    /**
+     * 通过ID修改启用状态
+     * @param id
+     * @return
+     */
+    @POST
+    @Path("updateStatusById")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过ID修改启用状态", notes = "通过ID修改启用状态")
+    ResponseData updateStatusById(@QueryParam("id")String id);
 }

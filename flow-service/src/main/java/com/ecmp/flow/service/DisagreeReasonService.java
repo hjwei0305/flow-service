@@ -5,7 +5,6 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IDisagreeReasonService;
 import com.ecmp.flow.dao.DisagreeReasonDao;
-import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.DisagreeReason;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
@@ -56,5 +55,18 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
             LogUtil.error(e.getMessage(), e);
         }
         return resultWithData;
+    }
+
+
+    @Override
+    public ResponseData updateStatusById(String id) {
+        DisagreeReason  bean =  disagreeReasonDao.findOne(id);
+        if (bean.getStatus() == true) {
+            bean.setStatus(false);
+        } else {
+            bean.setStatus(true);
+        }
+        disagreeReasonDao.save(bean);
+        return ResponseData.operationSuccessWithData(bean);
     }
 }
