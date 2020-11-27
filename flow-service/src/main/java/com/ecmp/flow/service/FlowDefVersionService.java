@@ -98,10 +98,8 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         entity.setFlowDefination(flowDefination);
         flowDefVersionDao.save(entity);
-        LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
         flowDefination.setLastVersionId(entity.getId());
         flowDefinationDao.save(flowDefination);
-        LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
         OperateResultWithData<FlowDefVersion> operateResult;
         // 流程版本保存成功！
         operateResult = OperateResultWithData.operationSuccess("10056");
@@ -231,10 +229,8 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setSolidifyFlow(canAssolidifyFlow);
 
             flowDefVersionDao.save(entity);
-            LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
             flowDefination.setLastVersionId(entity.getId());
             flowDefinationDao.save(flowDefination);
-            LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
         } else {
             if (StringUtils.isNoneEmpty(process.getFlowDefVersionId())) {
                 entity = flowDefVersionDao.findOne(process.getFlowDefVersionId());
@@ -290,7 +286,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 flowDefination.setSubProcess(canAsSubProcess);
                 flowDefination.setSolidifyFlow(canAssolidifyFlow);
                 flowDefinationDao.save(flowDefination);
-                LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
             } else {//版本为空
                 entity = new FlowDefVersion();
                 entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
@@ -322,14 +317,12 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
                 entity.setEndCallServiceAync(process.getAfterEndServiceAync());
                 flowDefVersionDao.save(entity);
-                LogUtil.info("Saved FlowDefVersion id is {}", entity.getId());
                 flowDefination.setName(process.getName());
                 flowDefination.setLastVersionId(entity.getId());
                 flowDefination.setPriority(definition.getPriority());
                 flowDefination.setSubProcess(canAsSubProcess);
                 flowDefination.setSolidifyFlow(canAssolidifyFlow);
                 flowDefinationDao.save(flowDefination);
-                LogUtil.info("Saved FlowDefination id is {}", flowDefination.getId());
             }
 
         }

@@ -3082,16 +3082,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 flowTaskTool.initCounterSignAddTask(flowInstance, currTask.getTaskDefinitionKey(), userId, preId);
                             }
                             resultDecTrue.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的加签操作执行成功;");
+                            LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的加签操作执行成功;");
                             continue;
                         } else {
                             resultDecFalseTwo.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的执行节点为非会签节点，无法加签;");
+                            LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的执行节点为非会签节点，无法加签;");
                             continue;
                         }
                     } else {
                         resultDecFalseThree.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法加签;");
+                        LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法加签;");
                         continue;
                     }
                 }
@@ -3183,7 +3183,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<String> userList = new ArrayList<>(userListArray);
                             if (!userList.contains(userId)) {
                                 resultDecFalseTwo.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,在当前任务节点找不到，减签失败;");
+                                LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,在当前任务节点找不到，减签失败;");
                                 continue;
                             }
                             String executionId = currTask.getExecutionId();
@@ -3194,7 +3194,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
                             if (completeCounter + 1 == instanceOfNumbers) {//最后一个任务
                                 resultDecFalseThree.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务已经到达最后一位执行人，减签失败;");
+                                LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务已经到达最后一位执行人，减签失败;");
                                 continue;
                             }
 
@@ -3245,13 +3245,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                                 } else {
                                     resultDecFalseFour.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                    LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,当前任务节点已执行，减签失败;");
+                                    LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,当前任务节点已执行，减签失败;");
                                     continue;
                                 }
                             } else {//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
                                 if (flowTaskListCurrent != null && !flowTaskListCurrent.isEmpty()) {
                                     resultDecFalseFive.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                    LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
+                                    LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
                                 } else {
                                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
@@ -3279,22 +3279,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         runtimeService.setVariable(processInstanceId, userListDesc, userList);//回写减签后的执行人列表
                                     } else {
                                         resultDecFalseSix.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,发现已经执行，减签操作执行失败;");
+                                        LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,发现已经执行，减签操作执行失败;");
                                         continue;
                                     }
                                 }
                             }
 
                             resultDecTrue.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,的减签操作执行成;");
+                            LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,的减签操作执行成;");
                         } else {
                             resultDecFalseSeven.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                            LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,执行节点为非会签节点，无法减签;");
+                            LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,执行节点为非会签节点，无法减签;");
                             continue;
                         }
                     } else {
                         resultDecFalseEight.append("【" + executor.getName() + "-" + executor.getCode() + "】");
-                        LogUtil.info(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法减签;");
+                        LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,任务可能已经执行完，无法减签;");
                         continue;
                     }
                 }
@@ -3392,28 +3392,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             if (lastSendTime == null) {
                                 //直接发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达，lastSendTime==null。");
+                                LogUtil.bizLog("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达，lastSendTime==null。");
                                 continue;
                             }
                             double hours = (System.currentTimeMillis() - lastSendTime.getTime()) / (1000 * 60 * 60.0);
                             if (hours >= jianGeTime) {
                                 //发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达。");
+                                LogUtil.bizLog("催办提醒：" + userEmailAlert.getUserId() + "，最长间隔时间到达。");
                             }
                         }
                         if (toDoAmount >= executorIdAndCountMap.get(userEmailAlert.getUserId())) {
                             if (lastSendTime == null) {
                                 //直接发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值，lastSendTime==null。");
+                                LogUtil.bizLog("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值，lastSendTime==null。");
                                 continue;
                             }
                             double hours = (System.currentTimeMillis() - lastSendTime.getTime()) / (1000 * 60 * 60.0);
                             if (hours >= 1) {
                                 //发送邮件
                                 emailSend(userEmailAlert.getUserId());
-                                LogUtil.info("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值。");
+                                LogUtil.bizLog("催办提醒：" + userEmailAlert.getUserId() + "，待办数量超过阀值。");
                             }
                         }
                     }
@@ -3463,7 +3463,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     String url = Constants.getUsderEmailAlertUpdateLastTimesUrl();
                     OperateResult result = ApiClient.postViaProxyReturnResult(url, new GenericType<OperateResult>() {
                     }, receiverIds);
-                    LogUtil.info("催办send email to userId=" + userId + ",userName = " + userName + "，重置时间状态=" + (result != null ? result.getMessage() : "失败"));
+                    LogUtil.bizLog("催办send email to userId=" + userId + ",userName = " + userName + "，重置时间状态=" + (result != null ? result.getMessage() : "失败"));
                 }
             }).start();
         }

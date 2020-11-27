@@ -995,7 +995,7 @@ public class FlowTaskTool {
 
             Boolean resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
             if (!resultCheck) {
-                LogUtil.info(ContextUtil.getMessage("10005"));
+                LogUtil.bizLog(ContextUtil.getMessage("10005"));
                 return OperateResult.operationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
             }
 

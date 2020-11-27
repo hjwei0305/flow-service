@@ -1307,7 +1307,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     + ",FlowDefVersion.id=" + flowInstance.getFlowDefVersion().getId()
                     + ",appModule.code=" + appModule.getCode()
                     + ",Check the error before the end of the process and return the message :" + callBeforeEndResult.getMessage();
-            LogUtil.info(message);
             throw new FlowException(message);
         }
         return callBeforeEndResult;
