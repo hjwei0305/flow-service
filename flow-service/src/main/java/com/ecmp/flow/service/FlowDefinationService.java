@@ -177,8 +177,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Override
     public PageResult<Employee> listUserByOrgByWeb(UserQueryByWebVo userQueryVo) {
         if (StringUtils.isEmpty(userQueryVo.getOrganizationId())) {
-             LogUtil.error("组织机构ID不能为空！");
-             return  null;
+            LogUtil.error("组织机构ID不能为空！");
+            return null;
         }
         UserQueryParamVo vo = new UserQueryParamVo();
         vo.setOrganizationId(userQueryVo.getOrganizationId());
@@ -502,7 +502,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     String msg = "启动前事件【" + flowServiceUrl.getName() + "】";
@@ -561,12 +561,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 //            throw new FlowException("流程已经在启动中，请不要重复提交！");
 //        }
 
-        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("flowStart_" + businessKey,businessKey);
-        if( !setValue ){
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("flowStart_" + businessKey, businessKey);
+        if (!setValue) {
             throw new FlowException("流程已经在启动中，请不要重复提交！");
-        }else{
+        } else {
             //启动redis检查设置10分钟过期
-            redisTemplate.expire("flowStart_" + businessKey,10 * 60, TimeUnit.SECONDS);
+            redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
         }
 
         try {
@@ -647,7 +647,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
         if (checkFlowInstanceActivate(flowStartVO.getBusinessKey())) {
-            String message = ContextUtil.getMessage("10051", flowStartVO.getBusinessKey());
+            String message = ContextUtil.getMessage("该单据已经在流程中，请不要重复启动！");
+            LogUtil.error("该单据已经在流程中，请不要重复启动！单据ID=" + flowStartVO.getBusinessKey());
             return OperateResultWithData.operationFailure(message);
         }
         OperateResultWithData resultWithData = OperateResultWithData.operationSuccess();
@@ -1350,9 +1351,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 });
 
                 ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
-                Set<Executor> setExecutors =  (Set<Executor>)responseData.getData();
+                Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
                 List<Executor> executors = null;
-                if(setExecutors != null ){
+                if (setExecutors != null) {
                     executors = new ArrayList<>(setExecutors);
                 }
                 if (executors != null && executors.size() != 0) {
