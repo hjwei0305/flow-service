@@ -16,4 +16,7 @@ public interface DisagreeReasonDao extends BaseEntityDao<DisagreeReason> {
     @Query("select k from com.ecmp.flow.entity.DisagreeReason k where k.flowTypeId = :flowTypeId and  k.tenantCode = :tenantCode order by k.rank  ")
     List<DisagreeReason> findByFlowTypeIdAndTenantCode(@Param("flowTypeId") String flowTypeId, @Param("tenantCode") String tenantCode);
 
+
+    @Query("select k from com.ecmp.flow.entity.DisagreeReason k where ( k.flowTypeId = :flowTypeId or k.flowTypeId = 'commonReason'  )  and  k.tenantCode = :tenantCode order by k.rank  ")
+    List<DisagreeReason> findByFlowTypeIdAndCommon(@Param("flowTypeId") String flowTypeId, @Param("tenantCode") String tenantCode);
 }

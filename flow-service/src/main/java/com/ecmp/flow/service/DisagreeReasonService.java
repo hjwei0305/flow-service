@@ -35,6 +35,21 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
             return ResponseData.operationFailure("参数流程类型ID不能为空！");
         }
         List<DisagreeReason> list = disagreeReasonDao.findByFlowTypeIdAndTenantCode(typeId, ContextUtil.getTenantCode());
+        if ("commonReason".equals(typeId)) { //全局通用意见中默认添加其他选项
+            DisagreeReason bean = list.stream().filter(a -> "common_else".equals(a.getCode())).findFirst().orElse(null);
+            if (bean == null) {
+                bean = new DisagreeReason();
+                bean.setCode("common_else");
+                bean.setName("其它");
+                bean.setRank(0);
+                bean.setDepict("如果选择其他，请注明详细原因");
+                try {
+                    bean = disagreeReasonDao.save(bean);
+                    list.add(bean);
+                } catch (Exception e) {
+                }
+            }
+        }
         return ResponseData.operationSuccessWithData(list);
     }
 
@@ -60,7 +75,7 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
 
     @Override
     public ResponseData updateStatusById(String id) {
-        DisagreeReason  bean =  disagreeReasonDao.findOne(id);
+        DisagreeReason bean = disagreeReasonDao.findOne(id);
         if (bean.getStatus() == true) {
             bean.setStatus(false);
         } else {
@@ -69,4 +84,14 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
         disagreeReasonDao.save(bean);
         return ResponseData.operationSuccessWithData(bean);
     }
+
+
+    public List<DisagreeReason> getDisReasonListByTypeId(String typeId) {
+        if (StringUtils.isEmpty(typeId)) {
+            return null;
+        }
+        return disagreeReasonDao.findByFlowTypeIdAndCommon(typeId, ContextUtil.getTenantCode());
+    }
+
+
 }
