@@ -60,6 +60,9 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
     public OperateResultWithData<DisagreeReason> save(DisagreeReason bean) {
         OperateResultWithData<DisagreeReason> resultWithData;
         try {
+            if("common_else".equals(bean.getCode()) && !"其他".equals(bean.getName())){
+                return OperateResultWithData.operationFailure("原因其他为系统默认创建，不能更改！");
+            }
             resultWithData = super.save(bean);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             Throwable cause = e.getCause();
