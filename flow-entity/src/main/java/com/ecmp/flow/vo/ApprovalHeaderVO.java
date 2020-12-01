@@ -1,5 +1,7 @@
 package com.ecmp.flow.vo;
 
+import com.ecmp.flow.entity.DisagreeReason;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -109,10 +111,23 @@ public class ApprovalHeaderVO implements Serializable{
     private String flowInstanceCreatorId;
 
     /**
-     * 允许选择的审批意见
+     * 审批意见（6.0未添加，只是添加值方便前端判断）
      */
     private List<String> opinionList;
 
+    /**
+     * 不同意原因（如果存在，那么点击不同意就必须选择）
+     */
+    private List<DisagreeReason> disagreeReasonList;
+
+
+    public List<DisagreeReason> getDisagreeReasonList() {
+        return disagreeReasonList;
+    }
+
+    public void setDisagreeReasonList(List<DisagreeReason> disagreeReasonList) {
+        this.disagreeReasonList = disagreeReasonList;
+    }
 
     public List<String> getOpinionList() {
         return opinionList;

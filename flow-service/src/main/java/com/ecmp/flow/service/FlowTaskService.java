@@ -153,6 +153,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private DefaultFlowBaseService defaultFlowBaseService;
 
+    @Autowired
+    private DisagreeReasonService disagreeReasonService;
+
 
     /**
      * 保存推送信息
@@ -1739,6 +1742,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (normalInfo.has("defaultOpinion")) {
             result.setCurrentNodeDefaultOpinion(normalInfo.getString("defaultOpinion"));
         }
+
+        //是否需要选择不同意原因
+        if (normalInfo.has("chooseDisagreeReason")) {
+            Boolean chooseDisagreeReason = normalInfo.getBoolean("chooseDisagreeReason");
+            if (chooseDisagreeReason) {
+                String flowTypeId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+                List<DisagreeReason> list = disagreeReasonService.getDisReasonListByTypeId(flowTypeId);
+                result.setDisagreeReasonList(list);
+            }
+        }
+
 
         if (!StringUtils.isEmpty(preId)) {
             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id

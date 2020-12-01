@@ -43,6 +43,8 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
                 bean.setFlowTypeName("全局通用原因");
                 bean.setCode("common_else");
                 bean.setName("其它");
+                bean.setRank(99);
+                bean.setStatus(true);
                 bean.setDepict("如果选择其他，请注明详细原因");
                 try {
                     bean = disagreeReasonDao.save(bean);
