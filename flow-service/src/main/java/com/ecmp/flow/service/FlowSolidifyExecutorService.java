@@ -434,7 +434,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     }
                     //模拟下一不节点信息成功
                     if (responseData.getSuccess()) {
-                        String taskListString = "";
+                        String taskListString;
                         String endEventId = null;
                         if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
                             taskListString = "[]";
@@ -468,8 +468,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             //自动执行待办
                             long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),
-                                    "同意【自动执行】", taskListString.toString(),
-                                    endEventId, false, approved, currentTime);
+                                    "同意【自动执行】", taskListString,
+                                    endEventId,null, false, approved, currentTime);
                         } catch (Exception e) {
                             LogUtil.error("自动执行待办报错：" + e.getMessage(), e);
                         }

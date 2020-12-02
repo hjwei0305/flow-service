@@ -288,9 +288,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 });
 
                 ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
-                Set<Executor> setExecutors =  (Set<Executor>)responseData.getData();
+                Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
                 List<Executor> executors = null;
-                if(setExecutors != null ){
+                if (setExecutors != null) {
                     executors = new ArrayList<>(setExecutors);
                 }
                 if (executors != null && executors.size() != 0) {
@@ -423,7 +423,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 startFlowVo.getTaskList(), startFlowVo.getAnonymousNodeId());
     }
 
-    @Override
+    //    @Override
     public ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                                   String typeId, String flowDefKey, String taskList, String anonymousNodeId) throws NoSuchMethodException, SecurityException {
         Map<String, Object> userMap = new HashMap<String, Object>();
@@ -530,13 +530,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public ResponseData completeTask(CompleteTaskVo completeTaskVo) throws Exception {
         return this.completeTask(completeTaskVo.getTaskId(), completeTaskVo.getBusinessId(),
                 completeTaskVo.getOpinion(), completeTaskVo.getTaskList(), completeTaskVo.getEndEventId(),
-                completeTaskVo.isManualSelected(), completeTaskVo.getApproved(), completeTaskVo.getLoadOverTime());
+                completeTaskVo.getDisagreeReasonCode(), completeTaskVo.isManualSelected(),
+                completeTaskVo.getApproved(), completeTaskVo.getLoadOverTime());
     }
 
 
-    @Override
+    //    @Override
     public ResponseData completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId,
-                                     boolean manualSelected, String approved, Long loadOverTime) throws Exception {
+                                     String disagreeReasonCode, boolean manualSelected, String approved, Long loadOverTime) throws Exception {
         ResponseData responseData = new ResponseData();
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
@@ -547,7 +548,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         flowTaskCompleteVO.setTaskId(taskId);
         flowTaskCompleteVO.setOpinion(opinion);
         Map<String, String> selectedNodesMap = new HashMap<>();
-        Map<String, Object> v = new HashMap<String, Object>();
+        Map<String, Object> v = new HashMap<>();
         if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
 
             //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
@@ -629,6 +630,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         if (loadOverTime != null) {
             v.put("loadOverTime", loadOverTime);
+        }
+        if(StringUtils.isNotEmpty(disagreeReasonCode)){
+            v.put("disagreeReasonCode", disagreeReasonCode);
         }
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
         flowTaskCompleteVO.setVariables(v);

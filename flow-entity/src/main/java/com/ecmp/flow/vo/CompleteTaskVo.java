@@ -17,12 +17,22 @@ public class CompleteTaskVo implements Serializable {
 
     private String endEventId;
 
+    private String disagreeReasonCode;
+
     private boolean manualSelected;
 
     private String approved;
 
     private Long loadOverTime;
 
+
+    public String getDisagreeReasonCode() {
+        return disagreeReasonCode;
+    }
+
+    public void setDisagreeReasonCode(String disagreeReasonCode) {
+        this.disagreeReasonCode = disagreeReasonCode;
+    }
 
     public String getTaskId() {
         return taskId;
