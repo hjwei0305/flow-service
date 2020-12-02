@@ -423,7 +423,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 startFlowVo.getTaskList(), startFlowVo.getAnonymousNodeId());
     }
 
-    //    @Override
+    @Override
     public ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                                   String typeId, String flowDefKey, String taskList, String anonymousNodeId) throws NoSuchMethodException, SecurityException {
         Map<String, Object> userMap = new HashMap<String, Object>();
@@ -535,7 +535,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     }
 
 
-    //    @Override
+    @Override
     public ResponseData completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId,
                                      String disagreeReasonCode, boolean manualSelected, String approved, Long loadOverTime) throws Exception {
         ResponseData responseData = new ResponseData();
@@ -572,7 +572,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
                 String flowTaskType = f.getFlowTaskType();
                 String callActivityPath = f.getCallActivityPath();
-                List<String> userList = new ArrayList<String>();
+                List<String> userList = new ArrayList<>();
                 if (StringUtils.isNotEmpty(callActivityPath)) {
                     selectedNodesMap.put(callActivityPath, f.getNodeId());
                     List<String> userVarNameList = (List) v.get(callActivityPath + "_sonProcessSelectNodeUserV");

@@ -66,6 +66,27 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     private String actHistoryId;
 
     /**
+     * 不同意原因ID
+     */
+    @Column(name = "disagree_reason_id")
+    private String disagreeReasonId;
+
+
+    /**
+     * 不同意原因code
+     */
+    @Column(name = "disagree_reason_code")
+    private String disagreeReasonCode;
+
+
+    /**
+     * 不同意原因简称
+     */
+    @Column(name = "disagree_reason_name")
+    private String disagreeReasonName;
+
+
+    /**
      * 描述
      */
     @Column(name = "depict")
@@ -399,6 +420,29 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
         this.flowDefId = flowDefId;
     }
 
+    public String getDisagreeReasonId() {
+        return disagreeReasonId;
+    }
+
+    public void setDisagreeReasonId(String disagreeReasonId) {
+        this.disagreeReasonId = disagreeReasonId;
+    }
+
+    public String getDisagreeReasonCode() {
+        return disagreeReasonCode;
+    }
+
+    public void setDisagreeReasonCode(String disagreeReasonCode) {
+        this.disagreeReasonCode = disagreeReasonCode;
+    }
+
+    public String getDisagreeReasonName() {
+        return disagreeReasonName;
+    }
+
+    public void setDisagreeReasonName(String disagreeReasonName) {
+        this.disagreeReasonName = disagreeReasonName;
+    }
 
     public String getDepict() {
         return this.depict;

@@ -10,6 +10,7 @@ import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
+import com.ecmp.flow.service.DisagreeReasonService;
 import com.ecmp.flow.service.FlowDefinationService;
 import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.service.TaskMakeOverPowerService;
@@ -101,6 +102,9 @@ public class FlowTaskTool {
 
     @Autowired
     private TaskMakeOverPowerService taskMakeOverPowerService;
+
+    @Autowired
+    private DisagreeReasonService disagreeReasonService;
 
     public FlowTaskTool() {
         System.out.println("FlowTaskTool init------------------------------------------");
@@ -787,9 +791,9 @@ public class FlowTaskTool {
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
-                            if(boo == null){
-                               throw new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(v)+"】");
-                            }else if(boo){
+                            if (boo == null) {
+                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(v) + "】");
+                            } else if (boo) {
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                                 break;
                             }
@@ -810,9 +814,9 @@ public class FlowTaskTool {
                             String conditonFinal = conditionText.substring(conditionText.indexOf("#{") + 2,
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
-                            if(boo == null){
-                                throw  new FlowException("验证表达式失败！表达式：【"+conditonFinal+"】,带入参数：【"+ JsonUtils.toJson(v)+"】");
-                            }else if(boo){
+                            if (boo == null) {
+                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(v) + "】");
+                            } else if (boo) {
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                             }
                         } else {//其他的用UEL表达式验证
@@ -1271,7 +1275,7 @@ public class FlowTaskTool {
         if ("exclusiveGateway".equalsIgnoreCase(nextActivtityType) ||  //排他网关
                 "inclusiveGateway".equalsIgnoreCase(nextActivtityType)  //包容网关
                 || "parallelGateWay".equalsIgnoreCase(nextActivtityType)//并行网关
-                ) { //手工节点
+        ) { //手工节点
             result = true;
         }
         return result;
@@ -1635,7 +1639,7 @@ public class FlowTaskTool {
                             flowTask.setOwnerOrgCode(executor.getOrganizationCode());
                             flowTask.setOwnerOrgName(executor.getOrganizationName());
                             //通过授权用户ID和流程类型返回转授权信息（转办模式）
-                            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
                             if (taskMakeOverPower != null) {
                                 flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                                 flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
@@ -1787,7 +1791,7 @@ public class FlowTaskTool {
                                 flowTask.setOwnerOrgCode(executor.getOrganizationCode());
                                 flowTask.setOwnerOrgName(executor.getOrganizationName());
                                 //通过授权用户ID和流程类型返回转授权信息（转办模式）
-                                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId());
                                 if (taskMakeOverPower != null) {
                                     flowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                                     flowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -2318,13 +2322,13 @@ public class FlowTaskTool {
         for (int i = 0; i < targetNodes.size(); i++) {
             JSONObject jsonObject = targetNodes.getJSONObject(i);
             String targetId = jsonObject.getString("targetId");
-            if(approvePath){ //需要判断是否是同意分支
-                try{
+            if (approvePath) { //需要判断是否是同意分支
+                try {
                     JSONObject uelJsonObject = jsonObject.getJSONObject("uel");
-                    if(!uelJsonObject.has("agree") || !uelJsonObject.getBoolean("agree")){
+                    if (!uelJsonObject.has("agree") || !uelJsonObject.getBoolean("agree")) {
                         continue;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     continue;
                 }
             }
@@ -2425,6 +2429,19 @@ public class FlowTaskTool {
             } catch (Exception e) {
             }
         }
+
+        if (variables.get("disagreeReasonCode") != null) {
+            String disagreeReasonCode = (String) variables.get("disagreeReasonCode");
+            DisagreeReason disagreeReason = disagreeReasonService.getDisagreeReasonByCode(disagreeReasonCode);
+            if (disagreeReason == null) {
+                throw new FlowException("不同意原因代码错误：【" + disagreeReasonCode + "】");
+            } else {
+                flowHistory.setDisagreeReasonId(disagreeReason.getId());
+                flowHistory.setDisagreeReasonCode(disagreeReason.getCode());
+                flowHistory.setDisagreeReasonName(disagreeReason.getName());
+            }
+        }
+
 
         if (flowHistory.getActEndTime() == null) {
             flowHistory.setActEndTime(new Date());

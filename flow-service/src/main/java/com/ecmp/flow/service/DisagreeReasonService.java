@@ -100,4 +100,13 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
     }
 
 
+
+    public DisagreeReason getDisagreeReasonByCode(String code) {
+        if (StringUtils.isEmpty(code)) {
+            return null;
+        }
+        return  disagreeReasonDao.findByProperty("code",code);
+    }
+
+
 }

@@ -34,30 +34,30 @@ import java.util.List;
 public interface IDefaultFlowBaseService {
 
 
-//    /**
-//     * 通过流程定义key启动流程
-//     *
-//     * @param businessModelCode 业务实体code
-//     * @param businessKey       业务实体key
-//     * @param opinion           审批意见
-//     * @param typeId            流程类型id
-//     * @param flowDefKey        流程定义key
-//     * @param taskList          任务完成传输对象
-//     * @param anonymousNodeId   传输对象为anonymous时传入的节点id
-//     * @return
-//     */
-//    @POST
-//    @Path("startFlow")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(value = "通过流程定义key启动流程", notes = "通过流程定义key启动流程")
-//    ResponseData startFlow(@QueryParam("businessModelCode") String businessModelCode,
-//                           @QueryParam("businessKey") String businessKey,
-//                           @QueryParam("opinion") String opinion,
-//                           @QueryParam("typeId") String typeId,
-//                           @QueryParam("flowDefKey") String flowDefKey,
-//                           @QueryParam("taskList") String taskList,
-//                           @QueryParam("anonymousNodeId") String anonymousNodeId) throws NoSuchMethodException, SecurityException;
+    /**
+     * 通过流程定义key启动流程
+     *
+     * @param businessModelCode 业务实体code
+     * @param businessKey       业务实体key
+     * @param opinion           审批意见
+     * @param typeId            流程类型id
+     * @param flowDefKey        流程定义key
+     * @param taskList          任务完成传输对象
+     * @param anonymousNodeId   传输对象为anonymous时传入的节点id
+     * @return
+     */
+    @POST
+    @Path("startFlow")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程定义key启动流程", notes = "通过流程定义key启动流程")
+    ResponseData startFlow(@QueryParam("businessModelCode") String businessModelCode,
+                           @QueryParam("businessKey") String businessKey,
+                           @QueryParam("opinion") String opinion,
+                           @QueryParam("typeId") String typeId,
+                           @QueryParam("flowDefKey") String flowDefKey,
+                           @QueryParam("taskList") String taskList,
+                           @QueryParam("anonymousNodeId") String anonymousNodeId) throws NoSuchMethodException, SecurityException;
 
 
     /**
@@ -134,32 +134,33 @@ public interface IDefaultFlowBaseService {
     ResponseData completeTask(CompleteTaskVo completeTaskVo) throws Exception;
 
 
-//    /**
-//     * 完成任务
-//     *
-//     * @param taskId         节点ID
-//     * @param businessId     业务表单ID
-//     * @param opinion        审批意见
-//     * @param taskList       任务完成传输对象
-//     * @param endEventId
-//     * @param manualSelected
-//     * @param approved
-//     * @param loadOverTime
-//     * @return 操作结果
-//     */
-//    @POST
-//    @Path("completeTask")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @ApiOperation(value = "完成任务", notes = "完成任务")
-//    ResponseData completeTask(@QueryParam("taskId") String taskId,
-//                              @QueryParam("businessId") String businessId,
-//                              @QueryParam("opinion") String opinion,
-//                              @QueryParam("taskList") String taskList,
-//                              @QueryParam("endEventId") String endEventId,
-//                              @QueryParam("manualSelected") boolean manualSelected,
-//                              @QueryParam("approved") String approved,
-//                              @QueryParam("loadOverTime") Long loadOverTime) throws Exception;
+    /**
+     * 完成任务
+     *
+     * @param taskId         节点ID
+     * @param businessId     业务表单ID
+     * @param opinion        审批意见
+     * @param taskList       任务完成传输对象
+     * @param endEventId
+     * @param manualSelected
+     * @param approved
+     * @param loadOverTime
+     * @return 操作结果
+     */
+    @POST
+    @Path("completeTask")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "完成任务", notes = "完成任务")
+    ResponseData completeTask(@QueryParam("taskId") String taskId,
+                              @QueryParam("businessId") String businessId,
+                              @QueryParam("opinion") String opinion,
+                              @QueryParam("taskList") String taskList,
+                              @QueryParam("endEventId") String endEventId,
+                              @QueryParam("disagreeReasonCode") String disagreeReasonCode,
+                              @QueryParam("manualSelected") boolean manualSelected,
+                              @QueryParam("approved") String approved,
+                              @QueryParam("loadOverTime") Long loadOverTime) throws Exception;
 
     /**
      * 回退（撤销）任务
