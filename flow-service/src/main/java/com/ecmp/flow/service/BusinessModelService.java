@@ -23,6 +23,7 @@ import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     private FlowHistoryService flowHistoryService;
     @Autowired
     private FlowTaskTool flowTaskTool;
+    @Autowired
+    private DisagreeReasonService disagreeReasonService;
 
 
     protected BaseEntityDao<BusinessModel> getDao() {
@@ -69,12 +72,12 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
     @Override
     public ResponseData getPropertiesByInstanceIdOfModile(String instanceId, String typeId, String id) {
-        ResponseData responseData = new ResponseData();
-        Boolean boo = true;  //是否为待办
+        Boolean taskBoo = true;  //是否为待办
         Boolean canMobile = true; //移动端是否可以审批
         Boolean canCancel = false; //如果是已办，是否可以撤回
         String historyId = "";//撤回需要的历史ID
         String flowTaskId = "";//待办ID
+        List<DisagreeReason> disagreeReasonList = null;
         String userId = ContextUtil.getUserId();
         Boolean isFlowtask = false;  //是否在待办中有数据
         if (StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(typeId)) {
@@ -85,11 +88,19 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     isFlowtask = true;
                     flowTaskId = flowTask.getId();
                     canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+                    //添加不同意原因
+                    String defJson = flowTask.getTaskJsonDef();
+                    JSONObject defObj = JSONObject.fromObject(defJson);
+                    JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                    if (normalInfo.has("chooseDisagreeReason") && normalInfo.getBoolean("chooseDisagreeReason")) {
+                        String flowTypeId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+                        disagreeReasonList = disagreeReasonService.getDisReasonListByTypeId(flowTypeId);
+                    }
                 }
             }
 
             if (!isFlowtask) {//TODO:待办里面没有，查询不到，默认取已办最后一条数据
-                boo = false;
+                taskBoo = false;
                 Search search = new Search();
                 search.addFilter(new SearchFilter("flowInstance.id", instanceId));
                 search.addFilter(new SearchFilter("executorId", userId));
@@ -113,9 +124,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
-                responseData.setSuccess(false);
-                responseData.setMessage("流程类型不存在！");
-                return responseData;
+                return ResponseData.operationFailure("流程类型不存在！");
             }
             String businessDetailServiceUrl;
             String apiBaseAddress;
@@ -128,53 +137,54 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 }
                 businessModelCode = flowType.getBusinessModel().getClassName();
             } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-                responseData.setSuccess(false);
-                responseData.setMessage("获取业务实体数据失败！");
-                return responseData;
+                LogUtil.error("获取业务实体数据失败！" + e.getMessage(), e);
+                return ResponseData.operationFailure("获取业务实体数据失败！");
             }
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
                 apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-                responseData.setSuccess(false);
-                responseData.setMessage("获取模块Api基地址失败！");
+                LogUtil.error("获取模块Api基地址失败！" + e.getMessage(), e);
+                return ResponseData.operationFailure("获取模块Api基地址失败！");
+            }
+
+            //请求业务系统
+            String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
+            ResponseData responseData = getPropertiesOfModile(url, businessModelCode, id);
+            if (responseData.getSuccess()) {
+                Map<String, Object> properties = (Map<String, Object>) responseData.getData();
+                properties.put("flowTaskIsInit", taskBoo); //添加是否是待办参数，true为待办
+                properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                if (!taskBoo) {
+                    properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
+                    properties.put("historyId", historyId);//撤回需要的历史ID
+                }
+                properties.put("flowTaskId", flowTaskId); //待办ID
+                if (!CollectionUtils.isEmpty(disagreeReasonList)) {
+                    properties.put("disagreeReasonList", disagreeReasonList); //不同意原因
+                }
+                return ResponseData.operationSuccessWithData(properties);
+            } else {
                 return responseData;
             }
-            String url =  PageUrlUtil.buildUrl(apiBaseAddress,businessDetailServiceUrl);
-            return this.getPropertiesByUrlOfModileByInstanceId(url, businessModelCode, id, boo, canMobile, canCancel, historyId, flowTaskId);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
-
-    public ResponseData getPropertiesByUrlOfModileByInstanceId(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId, String flowTaskId) {
-        ResponseData responseData = getPropertiesByUrlOfModile(url, businessModelCode, id, flowTaskIsInit, canMobile, canCancel, historyId);
-        if (responseData.getSuccess()) {
-            Map<String, Object> properties = (Map<String, Object>) responseData.getData();
-            properties.put("flowTaskId", flowTaskId);
-            responseData.setData(properties);
-        }
-        return responseData;
-    }
-
 
     @Override
     public ResponseData getPropertiesByTaskIdOfModile(String taskId, String typeId, String id) {
-        ResponseData responseData = new ResponseData();
-        Boolean boo = true;  //是否为待办
+        Boolean taskBoo = true;  //是否为待办
         Boolean canMobile = true; //移动端是否可以查看
         Boolean canCancel = false; //如果是已办，是否可以撤回
         String historyId = "";//撤回需要的历史ID
+        List<DisagreeReason> disagreeReasonList = null;
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
             //能查询到就是待办，查不到就是已处理
             FlowTask flowTask = flowTaskService.findOne(taskId);
             if (flowTask == null) {
-                boo = false;
+                taskBoo = false;
                 List<FlowHistory> historylist = flowHistoryService.findListByProperty("oldTaskId", taskId);
                 if (historylist != null && historylist.size() > 0) {
                     FlowHistory a = historylist.get(0);
@@ -192,12 +202,18 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             } else {
                 canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+                //添加不同意原因
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                if (normalInfo.has("chooseDisagreeReason") && normalInfo.getBoolean("chooseDisagreeReason")) {
+                    String flowTypeId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+                    disagreeReasonList = disagreeReasonService.getDisReasonListByTypeId(flowTypeId);
+                }
             }
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
-                responseData.setSuccess(false);
-                responseData.setMessage("流程类型不存在！");
-                return responseData;
+                return ResponseData.operationFailure("流程类型不存在！");
             }
 
 
@@ -212,33 +228,42 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 }
                 businessModelCode = flowType.getBusinessModel().getClassName();
             } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-                responseData.setSuccess(false);
-                responseData.setMessage("获取业务实体数据失败！");
-                return responseData;
+                LogUtil.error("获取业务实体数据失败！" + e.getMessage(), e);
+                return ResponseData.operationFailure("获取业务实体数据失败！");
             }
 
             try {
                 String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
                 apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
-                LogUtil.error(e.getMessage(), e);
-                responseData.setSuccess(false);
-                responseData.setMessage("获取模块Api基地址失败！");
+                LogUtil.error("获取模块Api基地址失败！" + e.getMessage(), e);
+                return ResponseData.operationFailure("获取模块Api基地址失败！");
+            }
+            //请求业务系统
+            String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
+            ResponseData responseData = getPropertiesOfModile(url, businessModelCode, id);
+            if (responseData.getSuccess()) {
+                Map<String, Object> properties = (Map<String, Object>) responseData.getData();
+                properties.put("flowTaskIsInit", taskBoo); //添加是否是待办参数，true为待办
+                properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                if (!taskBoo) {
+                    properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
+                    properties.put("historyId", historyId);//撤回需要的历史ID
+                }
+                if (!CollectionUtils.isEmpty(disagreeReasonList)) {
+                    properties.put("disagreeReasonList", disagreeReasonList); //不同意原因
+                }
+                return ResponseData.operationSuccessWithData(properties);
+            } else {
                 return responseData;
             }
-            String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
-            return this.getPropertiesByUrlOfModile(url, businessModelCode, id, boo, canMobile, canCancel, historyId);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
 
 
-    public ResponseData getPropertiesByUrlOfModile(String url, String businessModelCode, String id, Boolean flowTaskIsInit, Boolean canMobile, Boolean canCancel, String historyId) {
-        ResponseData responseData = new ResponseData();
+    public ResponseData getPropertiesOfModile(String url, String businessModelCode, String id) {
         if (StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(businessModelCode) && StringUtils.isNotEmpty(id)) {
             Map<String, Object> params = new HashMap();
             params.put("businessModelCode", businessModelCode);
@@ -247,63 +272,46 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             try {
                 Map<String, Object> properties = ApiClient.getEntityViaProxy(url, new GenericType<Map<String, Object>>() {
                 }, params);
-                properties.put("flowTaskIsInit", flowTaskIsInit); //添加是否是待办参数，true为待办
-                properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
-                if (!flowTaskIsInit) {
-                    properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
-                    properties.put("historyId", historyId);//撤回需要的历史ID
-                }
-                responseData.setData(properties);
+                return ResponseData.operationSuccessWithData(properties);
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                responseData.setSuccess(false);
-                responseData.setMessage("接口调用异常，请查看日志！");
+                return ResponseData.operationFailure("接口调用异常，请查看日志！");
             }
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
 
 
     @Override
     public ResponseData getProperties(String businessModelCode) {
-        ResponseData responseData = new ResponseData();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
             Map<String, String> result = ExpressionUtil.getPropertiesDecMap(businessModel);
             if (result != null) {
-                responseData.setData(result);
+                return ResponseData.operationSuccessWithData(result);
             } else {
-                responseData.setSuccess(false);
-                responseData.setMessage("调用接口异常，请查看日志！");
+                return ResponseData.operationFailure("调用接口异常，请查看日志！");
             }
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("获取业务实体失败！");
+            return ResponseData.operationFailure("获取业务实体失败！");
         }
-        return responseData;
     }
 
     @Override
     public ResponseData getPropertiesRemark(String businessModelCode) {
-        ResponseData responseData = new ResponseData();
         BusinessModel businessModel = this.findByClassName(businessModelCode);
         if (businessModel != null) {
             Map<String, String> result = ExpressionUtil.getPropertiesRemark(businessModel);
             if (result != null) {
-                responseData.setData(result);
+                return ResponseData.operationSuccessWithData(result);
             } else {
-                responseData.setSuccess(false);
-                responseData.setMessage("调用【获取条件属性的备注说明】接口异常，请查看日志！");
+                return ResponseData.operationFailure("调用【获取条件属性的备注说明】接口异常，请查看日志！");
             }
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("获取业务实体失败！");
+            return ResponseData.operationFailure("获取业务实体失败！");
         }
-        return responseData;
     }
 
 
