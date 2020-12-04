@@ -689,7 +689,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             //选择不同意原因逻辑检查
             if ("Approve".equalsIgnoreCase(nodeType) && normalInfo.has("chooseDisagreeReason") && normalInfo.getBoolean("chooseDisagreeReason")) {
                 String approved = variables.get("approved") + "";
-                if (!"true".equalsIgnoreCase(approved)) {
+                if ("true".equalsIgnoreCase(approved)) {
+                    variables.put("disagreeReasonCode", null);
+                } else {
                     if (variables.get("disagreeReasonCode") == null) {
                         throw new FlowException("审批不同意，请选择不同意原因！");
                     } else {
@@ -699,6 +701,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                 }
+            }else{
+                variables.put("disagreeReasonCode", null);
             }
 
 
