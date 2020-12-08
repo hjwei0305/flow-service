@@ -12,30 +12,35 @@ import org.apache.commons.lang3.StringUtils;
 public class PageUrlUtil {
     /**
      * 拼接完整的URL
+     *
      * @param baseAddress 基地址
-     * @param pageUrl 页面地址
+     * @param pageUrl     页面地址
      * @return 完整URL
      */
-    public static String buildUrl(String baseAddress, String pageUrl){
-        if (StringUtils.endsWith(baseAddress, "/")){
+    public static String buildUrl(String baseAddress, String pageUrl) {
+        if (StringUtils.endsWith(baseAddress, "/")) {
             baseAddress = StringUtils.substringBeforeLast(baseAddress, "/");
         }
-        if (StringUtils.startsWith(pageUrl, "/")){
+        if (StringUtils.startsWith(pageUrl, "/")) {
             pageUrl = StringUtils.substringAfter(pageUrl, "/");
+        }
+        if (StringUtils.isBlank(baseAddress)) {
+            return pageUrl;
         }
         return baseAddress + "/" + pageUrl;
     }
 
     /**
      * 拼接完整的URL
+     *
      * @param baseAddress 基地址
-     * @param pageUrl 页面地址
-     * @param params 参数
+     * @param pageUrl     页面地址
+     * @param params      参数
      * @return 完整URL
      */
-    public static String buildUrl(String baseAddress, String pageUrl, String params){
+    public static String buildUrl(String baseAddress, String pageUrl, String params) {
         String address = buildUrl(baseAddress, pageUrl);
-        if (StringUtils.containsAny(address, "?")){
+        if (StringUtils.containsAny(address, "?")) {
             return address + "&" + params;
         }
         return address + "?" + params;
