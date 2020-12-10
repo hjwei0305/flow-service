@@ -269,7 +269,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams) {
+    public ResponseData<List<Executor>> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams) {
         String businessId = flowInvokeParams.getId();
         List<Executor> executors = new ArrayList<Executor>();
         if (StringUtils.isNotEmpty(businessId)) {
@@ -284,15 +284,15 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 }
                 //获取执行人
                 if (idList.isEmpty()) {
-                    idList.add("00A0E06A-CAAF-11E7-AA54-0242C0A84202");
-                    idList.add("8A6A1592-4A95-11E7-A011-960F8309DEA7");
+                    idList.add("394DE15B-F6FF-11EA-8F02-0242C0A8460D");
+                    idList.add("A1206710-78AA-11EA-88E0-0242C0A84603");
 
                 }
                 //根据用户的id列表获取执行人
                 executors = flowCommonUtil.getBasicUserExecutors(idList);
             }
         }
-        return executors;
+        return  ResponseData.operationSuccessWithData(executors);
     }
 
 
@@ -411,16 +411,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return result;
     }
 
-    public FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
-        FlowOperateResult result = new FlowOperateResult();
-        String businessId = flowInvokeParams.getId();
-        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(businessId);
-        String changeText = "newServiceCall_failure";
-        entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
-        defaultBusinessModelDao.save(entity);
-        result.setSuccess(true);
-        result.setMessage("测试业务异常信息:" + new Date());
-        return result;
+    public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
+        return ResponseData.operationFailure("测试调用模块的报错信息是否传递！");
     }
 
     /**
@@ -506,48 +498,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData<FlowOperateResult> changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
-        Map<String, Object> variables = new HashMap<String, Object>();
-        try {
-            Thread.sleep(1000 * 20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            if (entity != null) {
-                try {
-
-                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                    if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
-                        //测试跨业务实体子流程,并发多级子流程测试
-                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
-                        for (String callActivityPath : callActivtiySonPaths) {
-                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-
-            }
-            String changeText = "before";
-            if (flowInvokeParams.getNextNodeUserInfo() != null) {
-                Map<String, List<String>> map = flowInvokeParams.getNextNodeUserInfo();
-                Set set = map.entrySet();
-                Iterator iterator = set.iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry mapentry = (Map.Entry) iterator.next();
-                    changeText += mapentry.getKey() + "/" + mapentry.getValue();
-                }
-//                changeText+=flowInvokeParams.getNextNodeUserInfo().get(0).get(0);
-            }
-            entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
+            entity.setWorkCaption(entity.getWorkCaption()+"：后台调用的事前事件接口！");
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
@@ -557,43 +511,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData<FlowOperateResult> changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
-        Map<String, Object> variables = new HashMap<String, Object>();
+    public ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            if (entity != null) {
-                try {
-
-                    List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                    if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
-                        //测试跨业务实体子流程,并发多级子流程测试
-                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
-                        for (String callActivityPath : callActivtiySonPaths) {
-                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-
-            }
-            String changeText = "after";
-            if (flowInvokeParams.getNextNodeUserInfo() != null) {
-                Map<String, List<String>> map = flowInvokeParams.getNextNodeUserInfo();
-                Set set = map.entrySet();
-                Iterator iterator = set.iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry mapentry = (Map.Entry) iterator.next();
-                    changeText += mapentry.getKey() + "/" + mapentry.getValue();
-                }
-//                changeText+=flowInvokeParams.getNextNodeUserInfo().get(0).get(0);
-            }
-            entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
+            entity.setWorkCaption(entity.getWorkCaption()+"：后台调用了事后事件接口！");
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
@@ -729,7 +650,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
 
                 //直接返回用户ID也可以直接进行待办添加（工作池任务添加执行人方式2）
-                return ResponseData.operationSuccessWithData("1592D012-A330-11E7-A967-02420B99179E,1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
+                //test123456/测试  20202020/test
+                return ResponseData.operationSuccessWithData("394DE15B-F6FF-11EA-8F02-0242C0A8460D,A1206710-78AA-11EA-88E0-0242C0A84603");
             }
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());

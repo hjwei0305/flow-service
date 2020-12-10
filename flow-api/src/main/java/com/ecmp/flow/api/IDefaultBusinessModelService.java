@@ -173,7 +173,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "自定义获取excutor", notes = "测试 自定义获取excutor")
-    List<Executor> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+    ResponseData getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
     /**
@@ -218,7 +218,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试异常服务", notes = "failureCall")
-    FlowOperateResult newServiceCallFailure(FlowInvokeParams flowInvokeParams);
+    ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams);
 
     /**
      * 流程事前事件测试
