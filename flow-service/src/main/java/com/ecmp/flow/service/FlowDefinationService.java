@@ -563,13 +563,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("flowStart_" + businessKey, businessKey);
         if (!setValue) {
-            throw new FlowException("流程已经在启动中，请不要重复提交！");
-        } else {
-            //启动redis检查设置10分钟过期
-            redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
+            Long remainingTime = redisTemplate.getExpire("flowStart_" + businessKey, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
+                remainingTime = 600L;
+            }
+            throw new FlowException("流程已经在启动中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
         }
 
         try {
+            //启动redis检查设置10分钟过期
+            redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
 
             if (checkFlowInstanceActivate(businessKey)) {
                 throw new FlowException("该单据已经启动，请不要重复启动！");

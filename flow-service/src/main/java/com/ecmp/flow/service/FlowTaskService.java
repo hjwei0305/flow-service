@@ -667,14 +667,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("complete_" + id, id);
         if (!setValue) {
-            throw new FlowException("任务已经在处理中，请不要重复提交！");
-        } else {
-            //处理redis检查设置10分钟过期
-            redisTemplate.expire("complete_" + id, 10 * 60, TimeUnit.SECONDS);
+            Long remainingTime = redisTemplate.getExpire("complete_" + id, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("complete_" + id, 10 * 60, TimeUnit.SECONDS);
+                remainingTime = 600L;
+            }
+            throw new FlowException("任务已经在处理中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
         }
 
-
         try {
+            //处理redis检查设置10分钟过期
+            redisTemplate.expire("complete_" + id, 10 * 60, TimeUnit.SECONDS);
 
             FlowTask flowTask = flowTaskDao.findOne(id);
             if (flowTask == null) {
@@ -701,7 +704,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                 }
-            }else{
+            } else {
                 variables.put("disagreeReasonCode", null);
             }
 
@@ -2708,13 +2711,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTurn_" + taskId, taskId);
         if (!setValue) {
-            throw new FlowException("任务已经在转办中，请不要重复提交！");
-        } else {
-            //如果设置成功，redis检查设置2分钟过期
-            redisTemplate.expire("taskTurn_" + taskId, 2 * 60, TimeUnit.SECONDS);
+            Long remainingTime = redisTemplate.getExpire("taskTurn_" + taskId, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("taskTurn_" + taskId, 2 * 60, TimeUnit.SECONDS);
+                remainingTime = 120L;
+            }
+            throw new FlowException("任务已经在转办中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
         }
 
         try {
+            //如果设置成功，redis检查设置2分钟过期
+            redisTemplate.expire("taskTurn_" + taskId, 2 * 60, TimeUnit.SECONDS);
+
             SessionUser sessionUser = ContextUtil.getSessionUser();
             OperateResult result = null;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
@@ -2832,13 +2840,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId, taskId);
         if (!setValue) {
-            throw new FlowException("任务已经在委托中，请不要重复提交！");
-        } else {
-            //如果设置成功，redis检查设置2分钟过期
-            redisTemplate.expire("taskTrust_" + taskId, 2 * 60, TimeUnit.SECONDS);
+            Long remainingTime = redisTemplate.getExpire("taskTrust_" + taskId, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("taskTrust_" + taskId, 2 * 60, TimeUnit.SECONDS);
+                remainingTime = 120L;
+            }
+            throw new FlowException("任务已经在委托中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
         }
 
         try {
+            //如果设置成功，redis检查设置2分钟过期
+            redisTemplate.expire("taskTrust_" + taskId, 2 * 60, TimeUnit.SECONDS);
+
             OperateResult result;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
