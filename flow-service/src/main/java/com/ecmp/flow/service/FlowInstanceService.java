@@ -747,6 +747,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult endByBusinessId(String businessId) {
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if(flowInstance == null){
+            return OperateResult.operationFailure("不存在流程中的数据，请检查参数和单据状态！");
+        }
         return this.end(flowInstance.getId());
     }
 
