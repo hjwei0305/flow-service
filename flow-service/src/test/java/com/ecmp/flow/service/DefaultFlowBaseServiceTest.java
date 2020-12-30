@@ -1,8 +1,10 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.vo.CompleteTaskVo;
 import com.ecmp.flow.vo.SolidifyStartFlowVo;
 import com.ecmp.flow.vo.StartFlowVo;
+import com.ecmp.notify.api.INotifyService;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import org.junit.Test;
@@ -33,8 +35,8 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Test
     public void sart_one() {
         StartFlowVo vo =new StartFlowVo();
-        vo.setBusinessKey("0157A985-2E22-11EB-A49D-0242C0A84403");
-        vo.setBusinessModelCode("com.changhong.ams.entity.request.StoreRequest");
+        vo.setBusinessKey("682C94AC-F3DF-11EA-939C-0242C0A84613");
+        vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
         ResponseData res = null;
         try{
             res =  defaultFlowBaseService.startFlow(vo);
@@ -54,12 +56,12 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Test
     public void sart_three() {
         StartFlowVo vo =new StartFlowVo();
-        vo.setBusinessKey("2BEA9832-12F6-11E9-B111-0242C0A8440B");
+        vo.setBusinessKey("216ECD7C-4A79-11EB-BBC4-0242C0A84620");
         vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
-        vo.setTypeId("C35B0B09-3640-11E7-9617-3C970EA9E0F7");
-        vo.setFlowDefKey("test2222");
+        vo.setTypeId("B2FC0C5F-5E87-11EA-AEE3-0242C0A8460D");
+        vo.setFlowDefKey("ak00002");
         vo.setOpinion("");
-        vo.setTaskList("[{\"nodeId\":\"UserTask_12\",\"userVarName\":\"UserTask_12_List_CounterSign\",\"flowTaskType\":\"countersign\",\"instancyStatus\":false,\"userIds\":\"1592D012-A330-11E7-A967-02420B99179E\"}]");
+        vo.setTaskList("[{\"nodeId\":\"UserTask_24\",\"userVarName\":\"UserTask_24_List_CounterSign\",\"flowTaskType\":\"countersign\",\"instancyStatus\":false,\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\"}]");
         vo.setAnonymousNodeId("");
         ResponseData res = null;
        try{

@@ -3,9 +3,11 @@ package com.ecmp.flow.listener;
 import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.basic.vo.Executor;
+import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.util.BpmnUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
@@ -14,6 +16,8 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
 import com.ecmp.notity.entity.NotifyType;
+import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
@@ -25,6 +29,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
 
+import javax.ws.rs.core.GenericType;
 import java.util.*;
 
 /**
@@ -272,34 +277,48 @@ public class MessageSendThread implements Runnable {
         }
     }
 
+
+    private void  sendNotifyMessage(EcmpMessage message){
+        String notifyUrl = Constants.getConfigValueByApi("NOTIFY_API");
+        String endNotifyPath = PageUrlUtil.buildUrl(notifyUrl, "/notify/send");
+        String messageLog = "开始调用【消息模块】，接口url=" + endNotifyPath + ",参数值" + JsonUtils.toJson(message);
+        try{
+            ResponseData result = ApiClient.postViaProxyReturnResult(endNotifyPath, new GenericType<ResponseData>() {}, message);
+            if (!result.successful()) {
+                LogUtil.error(messageLog + "-调用报错,返回错误信息【" + JsonUtils.toJson(result) + "】");
+            }
+        }catch (Exception e){
+            LogUtil.error(messageLog + "内部报错!", e);
+        }
+    }
+
+
     private void dingDingSend(EcmpMessage message, FlowDefVersion flowDefVersion) {
-        INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
         String taskName = (String) taskEntity.getActivity().getProperty("name");
         message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
-        List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+        List<NotifyType> notifyTypes = new ArrayList<>();
         notifyTypes.add(NotifyType.DingTalk);
         message.setNotifyTypes(notifyTypes);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                iNotifyService.send(message);
+                sendNotifyMessage(message);
             }
         }).start();
     }
 
     private void emailSend(EcmpMessage message, FlowDefVersion flowDefVersion) {
-        INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
         ExecutionEntity taskEntity = (ExecutionEntity) execution;
         String taskName = (String) taskEntity.getActivity().getProperty("name");
         message.setSubject(flowDefVersion.getName() + ":" + taskName);//流程名+任务名
-        List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
+        List<NotifyType> notifyTypes = new ArrayList<>();
         notifyTypes.add(NotifyType.EMAIL);
         message.setNotifyTypes(notifyTypes);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                iNotifyService.send(message);
+                sendNotifyMessage(message);
             }
         }).start();
     }
