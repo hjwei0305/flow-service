@@ -22,6 +22,7 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.*;
@@ -1311,35 +1312,34 @@ public class FlowTaskTool {
         return result;
     }
 
-    public static Boolean checkCanReject(PvmActivity currActivity, PvmActivity preActivity, ProcessInstance instance,
-                                         ProcessDefinitionEntity definition) {
+    public static ResponseData checkCanReject(PvmActivity currActivity, PvmActivity preActivity) {
         if (preActivity == null) {
-            return false;
+            return ResponseData.operationFailure("驳回失败：前置节点参数为空!");
         }
         String type = preActivity.getProperty("type") + "";
-        if ("callActivity".equalsIgnoreCase(type) || "ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)) {//上一步如果是子任务、服务任务/接收任务不允许驳回
-            return false;
+        if("callActivity".equalsIgnoreCase(type)){
+            return ResponseData.operationFailure("驳回失败：前置节点是子任务，不能驳回!");
+        }else if("ServiceTask".equalsIgnoreCase(type)){
+            return ResponseData.operationFailure("驳回失败：前置节点是服务任务，不能驳回!");
+        }else if("ReceiveTask".equalsIgnoreCase(type)){
+            return ResponseData.operationFailure("驳回失败：前置节点是接收任务，不能驳回!");
         }
         Boolean result = ifMultiInstance(currActivity);
         if (result) {//多任务实例不允许驳回
-            return false;
+            return ResponseData.operationFailure("驳回失败：前置节点是多任务实例，不能驳回!");
         }
         List<PvmTransition> currentInTransitionList = currActivity.getIncomingTransitions();
         for (PvmTransition currentInTransition : currentInTransitionList) {
             PvmActivity currentInActivity = currentInTransition.getSource();
             if (currentInActivity.getId().equals(preActivity.getId())) {
-                result = true;
-                break;
+                return ResponseData.operationSuccess();
             }
             Boolean ifExclusiveGateway = ifExclusiveGateway(currentInActivity);
             if (ifExclusiveGateway) {
-                result = checkCanReject(currentInActivity, preActivity, instance, definition);
-                if (result) {
-                    return result;
-                }
+                return checkCanReject(currentInActivity, preActivity);
             }
         }
-        return result;
+        return  ResponseData.operationFailure("驳回失败：没有找到符合的驳回条件！");
     }
 
     private void taskPropertityInit(FlowTask flowTask, FlowHistory preTask, JSONObject currentNode, Map<String, Object> variables) {

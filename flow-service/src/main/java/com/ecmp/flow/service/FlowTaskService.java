@@ -1162,37 +1162,26 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) throws Exception {
-        OperateResult result = OperateResult.operationSuccess("10006");
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
-            return OperateResult.operationFailure("10009");
+            return OperateResult.operationFailure("驳回失败：任务已经不存在，可能已经被处理！");
         }
         flowTask.setDepict(opinion);
-        String businessId = flowTask.getFlowInstance().getBusinessId();
         try {
             if (flowTask != null && StringUtils.isNotEmpty(flowTask.getPreId())) {
-                FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
+                FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());
                 if (preFlowTask == null) {
-                    return OperateResult.operationFailure("10016");
+                    return OperateResult.operationFailure("驳回失败：该节点前置节点不存在！");
                 } else {
-                    result = this.activitiReject(flowTask, preFlowTask);
+                    return this.activitiReject(flowTask, preFlowTask, variables);
                 }
             } else {
-                return OperateResult.operationFailure("10023");
+                return OperateResult.operationFailure("驳回失败：该节点前置节点为开始节点！");
             }
-        } catch (FlowException flowE) {
+        } catch (FlowException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return OperateResult.operationFailure(flowE.getMessage());
+            return OperateResult.operationFailure(e.getMessage());
         }
-//        if (result.successful()) {
-//            new Thread(new Runnable() {//检测待办是否自动执行
-//                @Override
-//                public void run() {
-//                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
-//                }
-//            }).start();
-//        }
-        return result;
     }
 
 
@@ -1204,18 +1193,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 结果
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask) throws Exception {
-        OperateResult result = OperateResult.operationSuccess("10015");
+    public OperateResult activitiReject(FlowTask currentTask, FlowHistory preFlowTask, Map<String, Object> variables) throws Exception {
         // 取得当前任务
-        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId())
-                .singleResult();
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
         // 取得流程实例
-        ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(currTask.getProcessInstanceId()).singleResult();
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
         if (instance == null) {
-            OperateResult.operationFailure("10009");
+            return OperateResult.operationFailure("驳回失败：流程实例不存在！");
         }
-        Map variables = new HashMap();
+        if (variables == null) {
+            variables = new HashMap();
+        }
         Map variablesProcess = instance.getProcessVariables();
         Map variablesTask = currTask.getTaskLocalVariables();
         if ((variablesProcess != null) && (!variablesProcess.isEmpty())) {
@@ -1226,30 +1214,29 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         // 取得流程定义
-        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
         if (definition == null) {
-            OperateResult.operationFailure("10009");
+            return OperateResult.operationFailure("驳回失败：流程定义获取失败！");
         }
 
         // 取得当前任务标节点的活动
-        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition)
-                .findActivity(currentTask.getActTaskDefKey());
+        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition).findActivity(currentTask.getActTaskDefKey());
         // 取得驳回目标节点的活动
         while ("cancel".equalsIgnoreCase(preFlowTask.getTaskStatus()) || "reject".equalsIgnoreCase(preFlowTask.getTaskStatus()) || preFlowTask.getActTaskDefKey().equals(currentTask.getActTaskDefKey())) {//如果前一任务为撤回或者驳回任务，则依次向上迭代
             String preFlowTaskId = preFlowTask.getPreId();
             if (StringUtils.isNotEmpty(preFlowTaskId)) {
                 preFlowTask = flowHistoryDao.findOne(preFlowTaskId);
             } else {
-                return OperateResult.operationFailure("10016");
+                return OperateResult.operationFailure("驳回失败：向上迭代任务不存在！");
             }
         }
-        ActivityImpl preActivity = ((ProcessDefinitionImpl) definition)
-                .findActivity(preFlowTask.getActTaskDefKey());
-        if (FlowTaskTool.checkCanReject(currentActivity, preActivity, instance,
-                definition)) {
+        ActivityImpl preActivity = ((ProcessDefinitionImpl) definition).findActivity(preFlowTask.getActTaskDefKey());
+
+        //检查是否满足驳回的条件
+        ResponseData checkResponse = FlowTaskTool.checkCanReject(currentActivity, preActivity);
+        if (checkResponse.getSuccess()) {
             //取活动，清除活动方向
-            List<PvmTransition> oriPvmTransitionList = new ArrayList<PvmTransition>();
+            List<PvmTransition> oriPvmTransitionList = new ArrayList<>();
             List<PvmTransition> pvmTransitionList = currentActivity
                     .getOutgoingTransitions();
             for (PvmTransition pvmTransition : pvmTransitionList) {
@@ -1274,12 +1261,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             for (PvmTransition pvmTransition : oriPvmTransitionList) {
                 pvmTransitionList.add(pvmTransition);
             }
-            //  variablesProcess.put("reject", 0);//将状态重置
             runtimeService.removeVariable(instance.getProcessInstanceId(), "reject");//将状态重置
+            return OperateResult.operationSuccess("驳回成功！");
         } else {
-            result = OperateResult.operationFailure("10016");
+            return OperateResult.operationFailure(checkResponse.getMessage());
         }
-        return result;
     }
 
     /**

@@ -30,6 +30,12 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void taskReject()throws Exception{
+        service.taskReject("D3438097-4A69-11EB-BEFF-0242C0A84620","测试",null);
+    }
+
+
+    @Test
     public void checkAutomaticToDoTask(){
         service.checkAutomaticToDoTask("2FFDBAE5-6509-11EA-A049-0242C0A8460D");
     }
