@@ -596,7 +596,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                     String actDefId = flowDefVersion.getActDefId();
                     variables.put(Constants.FLOW_DEF_VERSION_ID, flowDefVersion.getId());
-                    ProcessInstance processInstance = null;
+                    ProcessInstance processInstance;
                     if ((startUserId != null) && (!"".equals(startUserId))) {
                         processInstance = this.startFlowById(actDefId, startUserId, businessKey, variables);
                     } else {
@@ -664,9 +664,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (businessModel == null) {
                 return OperateResultWithData.operationFailure("业务实体未进行配置！");
             }
-            Map<String, Object> businessV = null;
             String businessId = flowStartVO.getBusinessKey();
-            businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
             if (flowStartVO.getVariables() == null || flowStartVO.getVariables().isEmpty()) {
                 flowStartVO.setVariables(businessV);
             } else {

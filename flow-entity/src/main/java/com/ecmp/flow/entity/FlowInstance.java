@@ -2,7 +2,6 @@ package com.ecmp.flow.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import javax.persistence.*;
 
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * *************************************************************************************************
@@ -36,7 +34,6 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	/**
 	 * 乐观锁-版本
 	 */
-	//@Version
 	@Column(name = "version")
 	private Integer version = 0;
 
@@ -77,6 +74,14 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	 */
 	@Column(name = "business_model_remark")
 	private String businessModelRemark;
+
+
+	/**
+	 * 业务单据启动时传的组织机构ID
+	 */
+	@Column(name = "business_org_id")
+	private String businessOrgId;
+
 
 //	/**
 //	 * 业务额外属性
@@ -143,17 +148,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	 * 拥有的流程历史
 	 */
 	@Transient
-//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowInstance")
-	private Set<FlowHistory> flowHistories = new HashSet<FlowHistory>(0);
+	private Set<FlowHistory> flowHistories = new HashSet<>(0);
 
 	/**
 	 * 拥有的流程任务
 	 */
 	@Transient
-//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowInstance")
-	private Set<FlowTask> flowTasks = new HashSet<FlowTask>(0);
-
-
+	private Set<FlowTask> flowTasks = new HashSet<>(0);
 
 
 	/**
@@ -337,7 +338,15 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 		this.businessName = businessName;
 	}
 
-//	public Map<String, Object> getBusinessExtraMap() {
+	public String getBusinessOrgId() {
+		return businessOrgId;
+	}
+
+	public void setBusinessOrgId(String businessOrgId) {
+		this.businessOrgId = businessOrgId;
+	}
+
+	//	public Map<String, Object> getBusinessExtraMap() {
 //		return businessExtraMap;
 //	}
 //

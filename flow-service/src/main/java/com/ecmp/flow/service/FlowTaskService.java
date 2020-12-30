@@ -1815,7 +1815,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
-        List<NodeInfo> result = null;
+        List<NodeInfo> result;
         List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(flowTask, approved, includeNodeIds);
         result = nodeInfoList;
         FlowInstance parentFlowInstance = flowTask.getFlowInstance().getParent();
@@ -2413,7 +2413,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public OperateResultWithData getSelectedNodesInfo(String taskId, String approved, String includeNodeIdsStr, Boolean solidifyFlow) throws NoSuchMethodException {
-        OperateResultWithData operateResultWithData = null;
         List<String> includeNodeIds = null;
         if (StringUtils.isNotEmpty(includeNodeIdsStr)) {
             String[] includeNodeIdsStringArray = includeNodeIdsStr.split(",");
@@ -2422,7 +2421,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
-        List<NodeInfo> nodeInfoList = null;
+        List<NodeInfo> nodeInfoList;
 
         try {
             nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
@@ -2432,11 +2431,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            operateResultWithData = OperateResultWithData.operationSuccess();
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
-                operateResultWithData.setData("EndEvent");
+                return OperateResultWithData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
-                operateResultWithData.setData("CounterSignNotEnd");
+                return OperateResultWithData.operationSuccessWithData("CounterSignNotEnd");
             } else {
                 if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程
                     FlowTask flowTask = flowTaskDao.findOne(taskId);
@@ -2444,14 +2442,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoList = flowSolidifyExecutorService.
                             setNodeExecutorByBusinessId(nodeInfoList, flowTask.getFlowInstance().getBusinessId());
                 }
-                operateResultWithData.setData(nodeInfoList);
+                return OperateResultWithData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
-            operateResultWithData = OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
+            return OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
         } else {
-            operateResultWithData = OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
+            return OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
         }
-        return operateResultWithData;
     }
 
 
@@ -3485,7 +3482,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             message.setContentTemplateCode("EMAIL_TEMPLATE_TODO_WARN");//模板代码
 
             message.setCanToSender(false);
-//            INotifyService iNotifyService = ApiClient.createProxy(INotifyService.class);
             INotifyService iNotifyService = ContextUtil.getBean(INotifyService.class);
             message.setSubject("催办提醒");
             List<NotifyType> notifyTypes = new ArrayList<NotifyType>();
@@ -3692,9 +3688,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowInstance == null) {
             return ResponseData.operationFailure("通过参数获取流程实例失败！");
         }
-        String businessModelCode = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
         String businessId = flowInstance.getBusinessId();
-        return getExecutorsByRequestExecutorsVo(requestExecutorsVos, businessModelCode, businessId);
+        if (StringUtils.isEmpty(flowInstance.getBusinessOrgId())) {
+            String businessModelCode = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
+            return getExecutorsByRequestExecutorsVo(requestExecutorsVos, businessModelCode, businessId);
+        } else {
+            if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId)) {
+                return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+            }
+            return this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, flowInstance.getBusinessOrgId());
+        }
     }
 
     @Override
@@ -3731,18 +3734,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public String getOrgIdByFlowTask(FlowTask flowTask) {
-        //从回调进来的参数flowTask.getActTaskId()可能为空（服务任务）
-        String currentOrgId;
         String actInstanceId;
-        if (StringUtils.isNotEmpty(flowTask.getActTaskId())) {
+        if (flowTask.getFlowInstance() != null) {
+            //流程实例里面添加了发起组织机构的字段，新的数据可以直接获取
+            if (StringUtils.isNotEmpty(flowTask.getFlowInstance().getBusinessOrgId())) {
+                return flowTask.getFlowInstance().getBusinessOrgId();
+            } else {
+                actInstanceId = flowTask.getFlowInstance().getActInstanceId();
+                Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
+                return processVariables.get("orgId").getValue() + "";
+            }
+        } else {
+            //从回调进来的参数flowTask.getActTaskId()可能为空（服务任务）
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
             actInstanceId = currTask.getProcessInstanceId();
-        } else {
-            actInstanceId = flowTask.getFlowInstance().getActInstanceId();
+            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
+            return processVariables.get("orgId").getValue() + "";
         }
-        Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(actInstanceId);
-        currentOrgId = processVariables.get("orgId").getValue() + "";
-        return currentOrgId;
     }
 
     @Override

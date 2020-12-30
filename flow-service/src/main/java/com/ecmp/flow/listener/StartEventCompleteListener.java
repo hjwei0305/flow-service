@@ -172,6 +172,10 @@ public class StartEventCompleteListener implements ExecutionListener {
         }
         flowInstance.setBusinessName(businessName);
 
+        String orgId = (String) variables.get(Constants.ORG_ID);
+        flowInstance.setBusinessOrgId(orgId);
+
+
         String flowDefVersionId = null;
         if (variables.containsKey(Constants.FLOW_DEF_VERSION_ID)) {
             flowDefVersionId = (String) variables.get(Constants.FLOW_DEF_VERSION_ID);//流程定义版本id
@@ -284,17 +288,4 @@ public class StartEventCompleteListener implements ExecutionListener {
         return result;
     }
 
-    /**
-     * 模拟异步,上传调用日志
-     *
-     * @param message
-     */
-    static void asyncUploadLog(String message) {
-        new Thread(new Runnable() {//模拟异步,上传调用日志
-            @Override
-            public void run() {
-                LogUtil.bizLog(message);
-            }
-        }).start();
-    }
 }
