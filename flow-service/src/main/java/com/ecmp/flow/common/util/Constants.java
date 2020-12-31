@@ -65,12 +65,7 @@ public class Constants extends ConfigurableContants {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-        String value = getProperty(key);
-        if (value == null) {
-            LogUtil.error("获取键值对参数[" + key + "]失败！");
-            throw new FlowException("获取键值对参数[" + key + "]失败！");
-        }
-        return value;
+        return getProperty(key);
     }
 
     /**
