@@ -344,6 +344,7 @@ public class MessageSendThread implements Runnable {
             contentTemplateParams.put("opinion", opinion);//审批意见
         }
         contentTemplateParams.put("workCaption", workCaption);//业务单据工作说明
+        contentTemplateParams.put("ECMP_BASIC_WEB_HOST",Constants.getBaseWeb());//web基地址
         return contentTemplateParams;
     }
 
