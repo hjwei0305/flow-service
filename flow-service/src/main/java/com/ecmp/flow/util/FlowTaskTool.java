@@ -2430,7 +2430,7 @@ public class FlowTaskTool {
             }
         }
 
-        if (variables.get("disagreeReasonCode") != null) {
+        if (variables != null && variables.get("disagreeReasonCode") != null) {
             String disagreeReasonCode = (String) variables.get("disagreeReasonCode");
             DisagreeReason disagreeReason = disagreeReasonService.getDisagreeReasonByCode(disagreeReasonCode);
             if (disagreeReason == null) {
