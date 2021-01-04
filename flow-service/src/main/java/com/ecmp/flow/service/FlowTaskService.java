@@ -156,6 +156,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private DisagreeReasonService disagreeReasonService;
 
+    @Autowired
+    private FlowTaskPushDao flowTaskPushDao;
+
 
     /**
      * 保存推送信息
@@ -4113,5 +4116,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    @Override
+    public void pushTheUnpushedTaskToBasicAgain() {
+        List<FlowTask> list = this.findAll();
+        List<FlowTask> needAddList = new ArrayList<>();
+        for (FlowTask bean : list) {
+            List<FlowTaskPush> flowTaskPushList = flowTaskPushDao.findListByProperty("flowTaskId", bean.getId());
+            if (CollectionUtils.isEmpty(flowTaskPushList)) {
+                needAddList.add(bean);
+            }
+        }
+        if (!CollectionUtils.isEmpty(needAddList)) {
+            LogUtil.bizLog("-------------------查询出未推送的待办总数：" + needAddList.size() + "个！");
+        } else {
+            LogUtil.bizLog("-------------------所有的待办都推送了！");
+        }
+        LogUtil.bizLog("------------------开始重新推送这些待办到BASIC模块！");
+        this.pushToBasic(needAddList, null, null, null);
+        LogUtil.bizLog("-----------------重新推送待办到BASIC模块已经完成！");
+    }
 }
 
