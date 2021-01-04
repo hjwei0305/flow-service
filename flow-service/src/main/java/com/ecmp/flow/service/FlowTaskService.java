@@ -210,7 +210,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public boolean getBooleanPushTaskToBasic() {
         Boolean pushBasic = false;
-        String pushBasicStr = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_BASIC");
+        String pushBasicStr = Constants.getFlowPropertiesByKey("FLOW_PUSH_TASK_BASIC");
         if (StringUtils.isNotEmpty(pushBasicStr)) {
             if ("true".equalsIgnoreCase(pushBasicStr.trim())) {
                 pushBasic = true;
@@ -375,7 +375,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         //取配置中心统一推送待办地址
-        String flowPushTaskUrl = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_URL");
+        String flowPushTaskUrl = Constants.getFlowPropertiesByKey("FLOW_PUSH_TASK_URL");
         if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
             pushModelOrUrl = true;
         }
@@ -407,7 +407,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         //取配置中心统一推送待办地址
-        flowPushTaskUrl = Constants.getConfigKeyValueProperties("FLOW_PUSH_TASK_URL");
+        flowPushTaskUrl = Constants.getFlowPropertiesByKey("FLOW_PUSH_TASK_URL");
         return flowPushTaskUrl;
     }
 
