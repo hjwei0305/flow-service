@@ -57,7 +57,7 @@ public class Constants extends ConfigurableContants {
     }
 
     /**
-     * 获取键值对配置参数
+     * 获取键值对配置参数（内部）
      *
      * @return
      */
@@ -94,7 +94,6 @@ public class Constants extends ConfigurableContants {
         if (StringUtils.isEmpty(key)) {
             return null;
         }
-//        String value = getProperty(key);
         String value = BaseApplicationContext.getProperty(key);
         if (value == null) {
             LogUtil.error("获取WEB基地址参数[" + key + "]失败！");
@@ -105,8 +104,17 @@ public class Constants extends ConfigurableContants {
 
 
     public static String getBasicServiceUrl() {
-        String BASIC_SERVICE_URL = getBaseApi() + BaseApplicationContext.getProperty("BASIC_API");
-        return BASIC_SERVICE_URL;
+        return getBaseApi() + BaseApplicationContext.getProperty("BASIC_API");
+    }
+
+
+    //推送basic任务的基地址（可以替换推送的基模块）
+    public static String getPushTaskBasicServiceUrl(){
+        String baseUrl =  getFlowPropertiesByKey("OVERWRITE_PUSH_BASIC_BASE_URL_TO");
+        if(StringUtils.isEmpty(baseUrl)){
+            baseUrl = "BASIC_API";
+        }
+        return getBaseApi() + BaseApplicationContext.getProperty(baseUrl);
     }
 
     //------------------------------------------------获取执行人--------------------------------//
@@ -280,7 +288,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicPushNewTaskUrl() {
-        String BASIC_PUSH_NEW_TASK_URL = getBasicServiceUrl() + getProperty(
+        String BASIC_PUSH_NEW_TASK_URL = getPushTaskBasicServiceUrl() + getProperty(
                 "basic.push.newTask", "/task/pushNewTask");
         return BASIC_PUSH_NEW_TASK_URL;
     }
@@ -291,7 +299,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicPushOldTaskUrl() {
-        String BASIC_PUSH_OLD_TASK_URL = getBasicServiceUrl() + getProperty(
+        String BASIC_PUSH_OLD_TASK_URL = getPushTaskBasicServiceUrl() + getProperty(
                 "basic.push.oldTask", "/task/pushOldTask");
         return BASIC_PUSH_OLD_TASK_URL;
     }
@@ -302,7 +310,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicPushDelTaskUrl() {
-        String BASIC_PUSH_DEL_TASK_URL = getBasicServiceUrl() + getProperty(
+        String BASIC_PUSH_DEL_TASK_URL = getPushTaskBasicServiceUrl() + getProperty(
                 "basic.push.delTask", "/task/pushDelTask");
         return BASIC_PUSH_DEL_TASK_URL;
     }
@@ -313,7 +321,7 @@ public class Constants extends ConfigurableContants {
      * @return
      */
     public static String getBasicPushEndTaskUrl() {
-        String BASIC_PUSH_END_TASK_URL = getBasicServiceUrl() + getProperty(
+        String BASIC_PUSH_END_TASK_URL = getPushTaskBasicServiceUrl() + getProperty(
                 "basic.push.endTask", "/task/pushEndTask");
         return BASIC_PUSH_END_TASK_URL;
     }
