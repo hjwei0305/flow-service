@@ -1,5 +1,4 @@
 rootProject.name = 'ecmp-flow'
 include 'flow-entity'
-include 'flow-dao'
 include 'flow-service'
 include 'flow-api'

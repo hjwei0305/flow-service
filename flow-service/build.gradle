@@ -29,13 +29,17 @@ dependencyManagement {
 // 依赖
 dependencies {
     compile project(':flow-entity')
-    compile project(':flow-dao')
     compile project(':flow-api')
 //    compile project(':flow-service-client')
 
     // zookeeper 注册中心
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
     compile("org.springframework.cloud:spring-cloud-starter-config")
+
+    compile(
+            "org.springframework.boot:spring-boot-starter",
+            "com.ecmp:jpa-ecmp-spring-boot-starter:$ecmp_version"
+    )
 
     compile(
             "org.springframework.boot:spring-boot-starter-web",
