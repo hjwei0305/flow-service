@@ -123,30 +123,21 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listAllOrgs() {
-        ResponseData responseData = new ResponseData();
         List<Organization> result = flowCommonUtil.getBasicAllOrgs();
-        responseData.setMessage("操作成功！");
-        responseData.setData(result);
-        return responseData;
+        return ResponseData.operationSuccessWithData(result);
     }
 
     @Override
     public ResponseData listAllOrgByPower() {
-        ResponseData responseData = new ResponseData();
         List<Organization> result = flowCommonUtil.getBasicAllOrgByPower();
-        responseData.setMessage("操作成功！");
-        responseData.setData(result);
-        return responseData;
+        return ResponseData.operationSuccessWithData(result);
     }
 
 
     @Override
     public ResponseData listAllUser(String organizationId) {
-        ResponseData responseData = new ResponseData();
         List<Employee> result = flowCommonUtil.getEmployeesByOrgId(organizationId);
-        responseData.setMessage("操作成功！");
-        responseData.setData(result);
-        return responseData;
+        return ResponseData.operationSuccessWithData(result);
     }
 
 
@@ -1309,7 +1300,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             try {
                 flowDefVersion = this.setSolidifyExecutorOfOnly(flowDefVersion, businessModelCode, businessId);
             } catch (Exception e) {
-                LogUtil.error(e.getMessage());
+                LogUtil.error(e.getMessage(), e);
             }
         }
 
@@ -1775,13 +1766,4 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         defaultBusinessModelDao.save(defaultBusinessModel);
     }
 
-    public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
-        if (e != null) {
-            LogUtil.error(e.getMessage());
-        }
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(false);
-        responseData.setMessage(msg);
-        return responseData;
-    }
 }

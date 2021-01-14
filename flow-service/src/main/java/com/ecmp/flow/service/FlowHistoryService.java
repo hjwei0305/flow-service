@@ -299,42 +299,36 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     @Override
     public ResponseData listFlowHistory(String businessModelId, Search searchConfig) {
-        ResponseData responseData = new ResponseData();
         try {
             PageResult<FlowHistory> pageList = this.findByBusinessModelId(businessModelId, searchConfig);
-            responseData.setData(pageList);
+            return ResponseData.operationSuccessWithData(pageList);
         } catch (Exception e) {
-            responseData.setSuccess(false);
-            responseData.setMessage(e.getMessage());
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure(e.getMessage());
         }
-        return responseData;
     }
 
     @Override
     public ResponseData listValidFlowHistory(UserFlowHistoryQueryParam queryParam) {
-       //设置只查询有效数据
-       List<SearchFilter> searchFilters = queryParam.getFilters();
-        if(searchFilters == null){
+        //设置只查询有效数据
+        List<SearchFilter> searchFilters = queryParam.getFilters();
+        if (searchFilters == null) {
             searchFilters = new ArrayList<>();
         }
-       SearchFilter filter = new SearchFilter("flowExecuteStatus","valid",SearchFilter.Operator.IN);
-       searchFilters.add(filter);
-       queryParam.setFilters(searchFilters);
-       return this.listFlowHistory(queryParam.getModelId(),queryParam);
+        SearchFilter filter = new SearchFilter("flowExecuteStatus", "valid", SearchFilter.Operator.IN);
+        searchFilters.add(filter);
+        queryParam.setFilters(searchFilters);
+        return this.listFlowHistory(queryParam.getModelId(), queryParam);
     }
 
     public ResponseData listFlowHistoryByFlowStatus(String businessModelId, Search searchConfig) {
-        ResponseData responseData = new ResponseData();
         try {
             PageResult<FlowHistory> pageList = this.findByBusinessModelIdAndFlowStatus(businessModelId, searchConfig);
-            responseData.setData(pageList);
+            return ResponseData.operationSuccessWithData(pageList);
         } catch (Exception e) {
-            responseData.setSuccess(false);
-            responseData.setMessage(e.getMessage());
-            LogUtil.error(e.getMessage());
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure(e.getMessage());
         }
-        return responseData;
     }
 
 
@@ -472,7 +466,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 beanVo.setBusinessModelRemark(flowInstance.getBusinessModelRemark());
 
                 String apiBaseAddress = Constants.getConfigValueByApi(businessModel.getAppModule().getApiBaseAddress());
-                beanVo.setBusinessDetailServiceUrl(PageUrlUtil.buildUrl(apiBaseAddress,businessModel.getBusinessDetailServiceUrl()));
+                beanVo.setBusinessDetailServiceUrl(PageUrlUtil.buildUrl(apiBaseAddress, businessModel.getBusinessDetailServiceUrl()));
                 phoneVoList.add(beanVo);
             });
             historyVoPage.setRows(phoneVoList);

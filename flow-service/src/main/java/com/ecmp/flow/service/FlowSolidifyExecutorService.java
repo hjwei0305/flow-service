@@ -81,19 +81,14 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
     public ResponseData getExecuteInfoByBusinessId(String businessId) {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
             if (flowInstance == null) {
-                responseData.setSuccess(false);
-                responseData.setMessage("流程实例不存在！");
-                return responseData;
+                return ResponseData.operationFailure("流程实例不存在！");
             }
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
             if (solidifylist == null || solidifylist.size() == 0) {
-                responseData.setSuccess(false);
-                responseData.setMessage("固化流程配置数据不存在！");
-                return responseData;
+                return ResponseData.operationFailure("固化流程配置数据不存在！");
             }
             Definition definitionP = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             List<NodeAndExecutes> list = new ArrayList<NodeAndExecutes>();
@@ -115,12 +110,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 NodeAndExecutes nodeAndExecutes = new NodeAndExecutes(flowNodeVO, executorList);
                 list.add(nodeAndExecutes);
             }
-            responseData.setData(list);
+            return ResponseData.operationSuccessWithData(list);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
 
 
@@ -151,9 +144,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      */
     @Transactional
     public ResponseData saveByExecutorVoList(List<FlowSolidifyExecutorVO> executorVoList, String businessModelCode, String businessId) {
-        ResponseData responseData = new ResponseData();
         if (executorVoList == null || executorVoList.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
-            return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+            return ResponseData.operationFailure("请求参数不能为空！");
         }
         //新启动流程时，清除以前的数据
         List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
@@ -187,9 +179,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 flowSolidifyExecutorDao.save(bean);
             });
         } catch (Exception e) {
-            return this.writeErrorLogAndReturnData(e, "节点信息、紧急状态、执行人不能为空！");
+            LogUtil.error(e.getMessage(), e);
+            return ResponseData.operationFailure("节点信息、紧急状态、执行人不能为空！");
         }
-        return responseData;
+        return ResponseData.operationSuccess();
     }
 
     /**
@@ -200,9 +193,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      * @return
      */
     public ResponseData setInstancyAndIdsByTaskList(List<FlowTaskCompleteWebVO> list, String businessId) {
-        ResponseData responseData = new ResponseData();
         if (list == null || list.size() == 0 || StringUtils.isEmpty(businessId)) {
-            return this.writeErrorLogAndReturnData(null, "参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
@@ -222,53 +214,14 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
                 List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
                 if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
-                    return this.writeErrorLogAndReturnData(null, "固化执行人未设置！");
+                    return ResponseData.operationFailure("固化执行人未设置！");
                 }
                 webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
                 webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
             }
         }
-        responseData.setData(list);
-        return responseData;
+        return ResponseData.operationSuccessWithData(list);
     }
-
-
-//    /**
-//     * 批量审批用（因为没有是否固化标志，可能查不出表信息，不提示报错）
-//     *
-//     * @param list       FlowTaskCompleteWebVO集合
-//     * @param businessId 业务表单id
-//     * @return
-//     */
-//    public ResponseData setInstancyAndIdsByTaskListOfBatch(List<FlowTaskCompleteWebVO> list, String businessId) {
-//        ResponseData responseData = new ResponseData();
-//        if (list == null || list.size() == 0 || StringUtils.isEmpty(businessId)) {
-//            return ResponseData.operationFailure("参数不全！");
-//        }
-//
-//        for (FlowTaskCompleteWebVO webvO : list) {
-//            //工作池任务
-//            if ("pooltask".equalsIgnoreCase(webvO.getFlowTaskType())) {
-//                webvO.setInstancyStatus(false);
-//                webvO.setUserIds(null);
-//            } else if ("serviceTask".equalsIgnoreCase(webvO.getFlowTaskType())) {
-//                webvO.setInstancyStatus(false);
-//                webvO.setUserIds(ContextUtil.getUserId());
-//            } else {
-//                Search search = new Search();
-//                search.addFilter(new SearchFilter("businessId", businessId));
-//                search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
-//                List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
-//                if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
-//                    return ResponseData.operationFailure("未找到固化配置！");
-//                }
-//                webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
-//                webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
-//            }
-//        }
-//        responseData.setData(list);
-//        return responseData;
-//    }
 
 
     /**
@@ -280,7 +233,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public ResponseData deleteByBusinessId(String businessId) {
         if (StringUtils.isEmpty(businessId)) {
-            return this.writeErrorLogAndReturnData(null, "参数不能为空！");
+            return ResponseData.operationFailure("参数不能为空！");
         }
         List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
         if (list != null) {
@@ -394,7 +347,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 } else {
                     LogUtil.error("自动执行待办-查询待办失败！");
                 }
-            }else{
+            } else {
                 //非固化也存在跳过的可能
                 flowTaskService.checkAutomaticToDoTask(businessId);
             }
@@ -469,7 +422,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),
                                     "同意【自动执行】", taskListString,
-                                    endEventId,null, false, approved, currentTime);
+                                    endEventId, null, false, approved, currentTime);
                         } catch (Exception e) {
                             LogUtil.error("自动执行待办报错：" + e.getMessage(), e);
                         }
@@ -490,7 +443,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      * @return
      */
     public ResponseData simulationGetSelectedNodesInfo(String taskId, String approved, Boolean solidifyFlow) throws Exception {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
@@ -514,32 +466,20 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
-                responseData.setData("EndEvent");
+                return ResponseData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
-                responseData.setData("CounterSignNotEnd");
+                return ResponseData.operationSuccessWithData("CounterSignNotEnd");
             } else {
                 if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程（不返回下一步执行人信息）
                     nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
                 }
-                responseData.setData(nodeInfoList);
+                return ResponseData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
-            responseData = this.writeErrorLogAndReturnData(null, "任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("任务不存在，可能已经被处理");
         } else {
-            responseData = this.writeErrorLogAndReturnData(null, "当前表单规则找不到符合条件的分支");
+            return ResponseData.operationFailure("当前表单规则找不到符合条件的分支");
         }
-        return responseData;
-    }
-
-
-    public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
-        if (e != null) {
-            LogUtil.error(e.getMessage(), e);
-        }
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(false);
-        responseData.setMessage(msg);
-        return responseData;
     }
 
 

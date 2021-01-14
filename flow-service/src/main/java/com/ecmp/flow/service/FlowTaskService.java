@@ -522,10 +522,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public ResponseData claimTaskOfPhone(String taskId) {
         String userId = ContextUtil.getUserId();
         OperateResult result = this.claim(taskId, userId);
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(result.successful());
-        responseData.setMessage(result.getMessage());
-        return responseData;
+        if (!result.successful()) {
+            return ResponseData.operationFailure(result.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
 
@@ -1119,10 +1119,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData rollBackToOfPhone(String preTaskId, String opinion) throws CloneNotSupportedException {
         OperateResult res = rollBackTo(preTaskId, opinion);
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(res.successful());
-        responseData.setMessage(res.getMessage());
-        return responseData;
+        if (!res.successful()) {
+            return ResponseData.operationFailure(res.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
     /**
@@ -1149,11 +1149,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData rejectTaskOfPhone(String taskId, String opinion) throws Exception {
-        ResponseData responseData = new ResponseData();
         OperateResult result = this.taskReject(taskId, opinion, null);
-        responseData.setSuccess(result.successful());
-        responseData.setMessage(result.getMessage());
-        return responseData;
+        if (!result.successful()) {
+            return ResponseData.operationFailure(result.getMessage());
+        }
+        return ResponseData.operationSuccess();
+
     }
 
     /**
@@ -1857,16 +1858,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public ResponseData listFlowTaskHeader() {
-        ResponseData responseData = new ResponseData();
         try {
             List<TodoBusinessSummaryVO> list = this.findTaskSumHeader("");
-            responseData.setData(list);
+            return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            responseData.setSuccess(false);
-            responseData.setMessage("操作失败！");
+            return ResponseData.operationFailure("操作失败！");
         }
-        return responseData;
     }
 
     /**
@@ -1882,27 +1880,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public ResponseData findTaskSumHeaderOfPhone() {
         List<TodoBusinessSummaryVO> list = this.findTaskSumHeader("");
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(true);
-        responseData.setMessage("成功");
         if (list == null) {
-            list = new ArrayList<TodoBusinessSummaryVO>();
+            list = new ArrayList<>();
         }
-        responseData.setData(list);
-        return responseData;
+        return ResponseData.operationSuccessWithData(list);
     }
 
 
     public ResponseData findTaskSumHeaderCanBatchApprovalOfPhone() {
-        ResponseData responseData = new ResponseData();
         List<TodoBusinessSummaryVO> result = this.findCommonTaskSumHeader(true, "");
-        responseData.setSuccess(true);
-        responseData.setMessage("操作成功!");
         if (result == null) {
-            result = new ArrayList<TodoBusinessSummaryVO>();
+            result = new ArrayList<>();
         }
-        responseData.setData(result);
-        return responseData;
+        return ResponseData.operationSuccessWithData(result);
     }
 
 
@@ -2283,16 +2273,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData listFlowTaskWithAllCount(Search search, String modelId) {
-        ResponseData responseData = new ResponseData();
         try {
             FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, "", search);
-            responseData.setData(resVo);
+            return ResponseData.operationSuccessWithData(resVo);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            responseData.setSuccess(false);
-            responseData.setMessage("操作失败！");
+            return ResponseData.operationFailure("操作失败！");
         }
-        return responseData;
     }
 
     @Override
@@ -2506,17 +2493,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public ResponseData getSelectedCanBatchNodesInfoOfPhone(String taskIds) throws NoSuchMethodException {
-        ResponseData responseData = new ResponseData();
         List<NodeGroupByFlowVersionInfo> nodeInfoList = this.findNexNodesGroupByVersionWithUserSetCanBatch(taskIds);
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
-            responseData.setSuccess(true);
-            responseData.setMessage("成功");
-            responseData.setData(nodeInfoList);
+            return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("选取的任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("选取的任务不存在，可能已经被处理");
         }
-        return responseData;
     }
 
     @Override
@@ -2637,7 +2619,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public ResponseData completeTaskBatchOfPhone(String flowTaskBatchCompleteWebVoStrs) {
-        ResponseData responseData = new ResponseData();
         List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = null;
         if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
             JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
@@ -2657,10 +2638,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
             return this.completeTaskBatch(flowTaskBatchCompleteWebVOList);
         } else {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数值错误！");
+            return ResponseData.operationFailure("参数值错误！");
         }
-        return responseData;
     }
 
 
@@ -3527,11 +3506,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 待办任务集合
      */
     public ResponseData findTasksByBusinessId(String businessId) {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(businessId)) {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
-            return responseData;
+            return ResponseData.operationFailure("参数不能为空！");
         }
         List<FlowTask> list = new ArrayList<FlowTask>();
         //通过业务单据id查询没有结束并且没有挂起的流程实例
@@ -3544,19 +3520,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             this.initFlowTasks(addList);
             list.addAll(addList);
         }
-        responseData.setSuccess(true);
-        responseData.setData(list);
-        return responseData;
+        return ResponseData.operationSuccessWithData(list);
     }
 
 
     public ResponseData getExecutorsByRequestExecutorsVoAndOrg(List<RequestExecutorsVo> requestExecutorsVos, String businessId, String orgId) {
 
         if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId) || StringUtils.isEmpty(orgId)) {
-            return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+            return ResponseData.operationFailure("请求参数不能为空！");
         }
 
-        ResponseData responseData = new ResponseData();
         List<Executor> executors = null;
         if (requestExecutorsVos.size() == 1) { //流程发起人、指定岗位、指定岗位类别、自定义执行人、任意执行人
             String userType = requestExecutorsVos.get(0).getUserType();
@@ -3583,7 +3556,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     flowInvokeParams.setJsonParam(param);
                     executors = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
                 } else {
-                    return this.writeErrorLogAndReturnData(null, "自定义执行人参数为空！");
+                    return ResponseData.operationFailure("自定义执行人参数为空！");
                 }
             } else if ("AnyOne".equalsIgnoreCase(userType)) { //任意执行人
 
@@ -3641,8 +3614,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         Set<Executor> setExecutors = new HashSet<>();
         setExecutors.addAll(executors);
-        responseData.setData(setExecutors);
-        return responseData;
+
+        return ResponseData.operationSuccessWithData(setExecutors);
     }
 
 
@@ -3683,7 +3656,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return getExecutorsByRequestExecutorsVo(requestExecutorsVos, businessModelCode, businessId);
         } else {
             if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId)) {
-                return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+                return ResponseData.operationFailure("请求参数不能为空！");
             }
             return this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, flowInstance.getBusinessOrgId());
         }
@@ -3692,7 +3665,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Override
     public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
         if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
-            return this.writeErrorLogAndReturnData(null, "请求参数不能为空！");
+            return ResponseData.operationFailure("请求参数不能为空！");
         }
 
         String orgId;
@@ -3701,24 +3674,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
             orgId = (String) businessV.get(Constants.ORG_ID);
             if (StringUtils.isEmpty(orgId)) {
-                return this.writeErrorLogAndReturnData(null, "业务单据组织机构为空！");
+                return ResponseData.operationFailure("业务单据组织机构为空！");
             }
         } catch (Exception e) {
-            return this.writeErrorLogAndReturnData(e, "获取业务单据组织机构失败！");
+            LogUtil.error("获取业务单据组织机构失败！", e);
+            return ResponseData.operationFailure("获取业务单据组织机构失败！");
         }
 
         return this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, orgId);
-    }
-
-
-    public ResponseData writeErrorLogAndReturnData(Exception e, String msg) {
-        if (e != null) {
-            LogUtil.error(e.getMessage(), e);
-        }
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(false);
-        responseData.setMessage(msg);
-        return responseData;
     }
 
 
@@ -4051,11 +4014,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 待办任务集合
      */
     public ResponseData findTasksNoUrlByBusinessId(String businessId) {
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isEmpty(businessId)) {
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
-            return responseData;
+            return ResponseData.operationFailure("参数不能为空！");
         }
         List<FlowTask> list = new ArrayList<>();
         //通过业务单据id查询没有结束并且没有挂起的流程实例
@@ -4066,9 +4026,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
             list.addAll(addList);
         }
-        responseData.setSuccess(true);
-        responseData.setData(list);
-        return responseData;
+        return ResponseData.operationSuccessWithData(list);
     }
 
 

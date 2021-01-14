@@ -520,10 +520,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public ResponseData claimTask(String taskId) {
         String userId = ContextUtil.getUserId();
         OperateResult result = flowTaskService.claim(taskId, userId);
-        ResponseData responseData = new ResponseData();
-        responseData.setSuccess(result.successful());
-        responseData.setMessage(result.getMessage());
-        return responseData;
+        if (!result.successful()) {
+            return ResponseData.operationFailure(result.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
     @Override
@@ -538,7 +538,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData completeTask(String taskId, String businessId, String opinion, String taskList, String endEventId,
                                      String disagreeReasonCode, boolean manualSelected, String approved, Long loadOverTime) throws Exception {
-        ResponseData responseData = new ResponseData();
         List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
         if (StringUtils.isNotEmpty(taskList)) {
             JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
@@ -631,7 +630,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (loadOverTime != null) {
             v.put("loadOverTime", loadOverTime);
         }
-        if(StringUtils.isNotEmpty(disagreeReasonCode)){
+        if (StringUtils.isNotEmpty(disagreeReasonCode)) {
             v.put("disagreeReasonCode", disagreeReasonCode);
         }
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
@@ -645,29 +644,31 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 }
             }).start();
         }
-        responseData.setSuccess(operateResult.successful());
-        responseData.setMessage(operateResult.getMessage());
-        return responseData;
+
+        if (!operateResult.successful()) {
+            return ResponseData.operationFailure(operateResult.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
 
     @Override
     public ResponseData rollBackTo(String preTaskId, String opinion) throws CloneNotSupportedException {
-        ResponseData responseData = new ResponseData();
         OperateResult result = flowTaskService.rollBackTo(preTaskId, opinion);
-        responseData.setSuccess(result.successful());
-        responseData.setMessage(result.getMessage());
-        return responseData;
+        if (!result.successful()) {
+            return ResponseData.operationFailure(result.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
 
     @Override
     public ResponseData rejectTask(String taskId, String opinion) throws Exception {
-        ResponseData responseData = new ResponseData();
         OperateResult result = flowTaskService.taskReject(taskId, opinion, null);
-        responseData.setSuccess(result.successful());
-        responseData.setMessage(result.getMessage());
-        return responseData;
+        if (!result.successful()) {
+            return ResponseData.operationFailure(result.getMessage());
+        }
+        return ResponseData.operationSuccess();
     }
 
 

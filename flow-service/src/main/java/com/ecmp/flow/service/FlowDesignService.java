@@ -85,7 +85,6 @@ public class FlowDesignService implements IFlowDesignService {
     public ResponseData save(SaveEntityVo entityVo) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException {
         String def = entityVo.getDef();
         Boolean deploy = entityVo.getDeploy();
-        ResponseData responseData = new ResponseData();
         if (StringUtils.isNotEmpty(def) || deploy != null) {
             JSONObject defObj = JSONObject.fromObject(def);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -95,21 +94,20 @@ public class FlowDesignService implements IFlowDesignService {
                 return ResponseData.operationFailure("流程代码以字母开头，允许数字或字母，且长度在6-80之间！");
             }
             definition.setDefJson(def);
+            OperateResultWithData<FlowDefVersion> result;
             if (!deploy) {
-                OperateResultWithData<FlowDefVersion> result = flowDefVersionService.save(definition);
-                responseData.setSuccess(result.successful());
-                responseData.setMessage(result.getMessage());
-                responseData.setData(result.getData());
+                result = flowDefVersionService.save(definition);
+                if (result.successful()) {
+                    return ResponseData.operationSuccessWithData(result.getData());
+                }
             } else {
-                OperateResultWithData<FlowDefVersion> result = flowDefVersionService.save(definition);
+                result = flowDefVersionService.save(definition);
                 if (result.successful()) {
                     flowDefinationService.deployById(result.getData().getFlowDefination().getId());
+                    return ResponseData.operationSuccessWithData(result.getData());
                 }
-                responseData.setSuccess(result.successful());
-                responseData.setMessage(result.getMessage());
-                responseData.setData(result.getData());
             }
-            return responseData;
+            return ResponseData.operationFailure(result.getMessage());
         } else {
             return ResponseData.operationFailure("参数不能为空！");
         }
@@ -201,14 +199,14 @@ public class FlowDesignService implements IFlowDesignService {
         //如果是固化流程，加载配合执行人信息
         if (def.getSolidifyFlow() != null && def.getSolidifyFlow() == true && ended == false) {
             if (StringUtils.isNotEmpty(businessId)) {
-                try{
+                try {
                     ResponseData res = flowSolidifyExecutorService.getExecuteInfoByBusinessId(businessId);
                     if (res.getSuccess()) {
                         data.put("solidifyExecutorsInfo", res.getData());
                     } else {
                         data.put("solidifyExecutorsInfo", null);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     LogUtil.error("加载固化执行人列表失败，详情请查看日志!", e);
                     return ResponseData.operationFailure("加载固化执行人列表失败，详情请查看日志!");
                 }

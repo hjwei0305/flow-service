@@ -36,7 +36,7 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     @Autowired
     private BusinessWorkPageUrlDao businessWorkPageUrlDao;
 
-    protected BaseEntityDao<WorkPageUrl> getDao(){
+    protected BaseEntityDao<WorkPageUrl> getDao() {
         return this.workPageUrlDao;
     }
 
@@ -47,62 +47,57 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     }
 
     @Override
-    public List<WorkPageUrl> findSelectEdByAppModuleId(String appModuleId,String businessModelId) {
+    public List<WorkPageUrl> findSelectEdByAppModuleId(String appModuleId, String businessModelId) {
         return workPageUrlDao.findSelectEd(appModuleId, businessModelId);
     }
 
     @Override
-    public List<WorkPageUrl> findNotSelectEdByAppModuleId(String appModuleId,String businessModelId) {
+    public List<WorkPageUrl> findNotSelectEdByAppModuleId(String appModuleId, String businessModelId) {
         return workPageUrlDao.findNotSelectEd(appModuleId, businessModelId);
     }
 
     @Override
-    public ResponseData listAllNotSelectEdByAppModuleId(String appModuleId, String businessModelId){
-        ResponseData responseData = new ResponseData();
-        if(StringUtils.isNotEmpty(appModuleId)&&StringUtils.isNotEmpty(businessModelId)){
-            List<WorkPageUrl> list =   this.findNotSelectEdByAppModuleId(appModuleId,businessModelId);
-            responseData.setData(list);
-        }else{
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+    public ResponseData listAllNotSelectEdByAppModuleId(String appModuleId, String businessModelId) {
+        if (StringUtils.isNotEmpty(appModuleId) && StringUtils.isNotEmpty(businessModelId)) {
+            List<WorkPageUrl> list = this.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
+            return ResponseData.operationSuccessWithData(list);
+        } else {
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
 
     @Override
-    public List<WorkPageUrl> findByFlowTypeId(String flowTypeId){
+    public List<WorkPageUrl> findByFlowTypeId(String flowTypeId) {
         return workPageUrlDao.findByFlowTypeId(flowTypeId);
     }
 
 
-    public List<WorkPageUrl> findSelectEdByBusinessModelId(String businessModelId){
-     return    workPageUrlDao.findSelectEdByBusinessModelId(businessModelId);
+    public List<WorkPageUrl> findSelectEdByBusinessModelId(String businessModelId) {
+        return workPageUrlDao.findSelectEdByBusinessModelId(businessModelId);
     }
 
     @Override
-    public  ResponseData listAllSelectEdByAppModuleId(String businessModelId){
-        ResponseData responseData = new ResponseData();
-        if(StringUtils.isNotEmpty(businessModelId)){
-            List<WorkPageUrl> list =   this.findSelectEdByBusinessModelId(businessModelId);
-            responseData.setData(list);
-        }else{
-            responseData.setSuccess(false);
-            responseData.setMessage("参数不能为空！");
+    public ResponseData listAllSelectEdByAppModuleId(String businessModelId) {
+        if (StringUtils.isNotEmpty(businessModelId)) {
+            List<WorkPageUrl> list = this.findSelectEdByBusinessModelId(businessModelId);
+            return ResponseData.operationSuccessWithData(list);
+        } else {
+            return ResponseData.operationFailure("参数不能为空！");
         }
-        return responseData;
     }
 
     /**
      * 数据删除操作
      * (检查工作界面是不是已经分配，已经分配的不能进行删除，给出提供)
+     *
      * @param id 待操作数据
      */
     @Override
     public OperateResult delete(String id) {
-      List<BusinessWorkPageUrl> list =  businessWorkPageUrlDao.findListByProperty("workPageUrlId",id);
-      if(list!=null&&list.size()>0){
-          return OperateResult.operationFailure("已分配的界面，不能进行删除！");
-      }
+        List<BusinessWorkPageUrl> list = businessWorkPageUrlDao.findListByProperty("workPageUrlId", id);
+        if (list != null && list.size() > 0) {
+            return OperateResult.operationFailure("已分配的界面，不能进行删除！");
+        }
         return super.delete(id);
     }
 }

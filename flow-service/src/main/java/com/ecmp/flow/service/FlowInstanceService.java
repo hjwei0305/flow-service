@@ -207,7 +207,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public List<FlowHistory> findLastByBusinessId(String businessId) {
         List<FlowHistory> flowHistoryList = flowHistoryDao.findLastByBusinessId(businessId);
         flowHistoryService.initFlowTaskAppModule(flowHistoryList);
-        return  flowHistoryList;
+        return flowHistoryList;
     }
 
     //因为中泰时间服务器问题，所以不能按照时间倒序查询
@@ -262,7 +262,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (Objects.nonNull(flowTask.getWorkPageUrl())) {
                 flowTaskVO.setWorkPageUrl(flowTask.getWorkPageUrl().getUrl());
             }
-            if(Objects.nonNull(flowTask.getFlowInstance())){
+            if (Objects.nonNull(flowTask.getFlowInstance())) {
                 flowTaskVO.setInstanceId(flowTask.getFlowInstance().getId());
             }
         }
@@ -747,7 +747,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult endByBusinessId(String businessId) {
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
-        if(flowInstance == null){
+        if (flowInstance == null) {
             return OperateResult.operationFailure("不存在流程中的数据，请检查参数和单据状态！");
         }
         return this.end(flowInstance.getId());
@@ -829,7 +829,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 org.springframework.beans.BeanUtils.copyProperties(oldFlowTask, newFlowTask);
                 newFlowTask.setId(null);
                 //通过授权用户ID和流程类型返回转授权信息（转办模式）
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),flowTypeId);
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTypeId);
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -866,7 +866,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             newFlowTask.setPriority(3);//设置为紧急
                         }
                     } catch (Exception e) {
-                        LogUtil.error(e.getMessage());
+                        LogUtil.error(e.getMessage(), e);
                     }
                 }
                 flowTaskDao.save(newFlowTask);
@@ -922,7 +922,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 needDelList.add(delFlowTask);
             }
             //通过授权用户ID和流程类型返回转授权信息（转办模式）
-            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(),newFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), newFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
             if (taskMakeOverPower != null) {
                 newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                 newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -959,7 +959,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         newFlowTask.setPriority(3);//设置为紧急
                     }
                 } catch (Exception e) {
-                    LogUtil.error(e.getMessage());
+                    LogUtil.error(e.getMessage(), e);
                 }
             }
             taskService.setAssignee(actTaskId, executor.getId());
@@ -1402,7 +1402,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public ResponseData listAllMyBillsHeader() {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        List groupResultList= flowInstanceDao.findBillsByGroup(userID);
+        List groupResultList = flowInstanceDao.findBillsByGroup(userID);
 
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
         if (groupResultList != null && !groupResultList.isEmpty()) {
@@ -1488,9 +1488,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         } else {
             if (search != null) {
                 List<SearchFilter> listFilter;
-                if(search.getFilters()==null){
+                if (search.getFilters() == null) {
                     listFilter = new ArrayList<>();
-                }else{
+                } else {
                     listFilter = search.getFilters();
                 }
                 listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
@@ -1505,41 +1505,40 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public ResponseData getAllMyBills(UserFlowBillsQueryParam queryParam) {
         //设置流程状态
         List<SearchFilter> searchFilters = queryParam.getFilters();
-        if(searchFilters == null){
+        if (searchFilters == null) {
             searchFilters = new ArrayList<>();
-        }else{
+        } else {
             //前端可能在高级查询的filter中添加该查询
-           for(int i=0 ; i<searchFilters.size();i++){
-               SearchFilter filter =  searchFilters.get(i);
-               if("flowStatus".equalsIgnoreCase(filter.getFieldName())){
-                   if(filter.getValue() != null){
-                       queryParam.setFlowStatus(filter.getValue().toString());
-                       searchFilters.remove(i);
-                   }
-               }
-           }
+            for (int i = 0; i < searchFilters.size(); i++) {
+                SearchFilter filter = searchFilters.get(i);
+                if ("flowStatus".equalsIgnoreCase(filter.getFieldName())) {
+                    if (filter.getValue() != null) {
+                        queryParam.setFlowStatus(filter.getValue().toString());
+                        searchFilters.remove(i);
+                    }
+                }
+            }
         }
-        if("inflow".equalsIgnoreCase(queryParam.getFlowStatus())){ //流程中
-            SearchFilter filter1 = new SearchFilter("ended",false,SearchFilter.Operator.EQ);
-            SearchFilter filter2 = new SearchFilter("manuallyEnd",false,SearchFilter.Operator.EQ);
+        if ("inflow".equalsIgnoreCase(queryParam.getFlowStatus())) { //流程中
+            SearchFilter filter1 = new SearchFilter("ended", false, SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd", false, SearchFilter.Operator.EQ);
             searchFilters.add(filter1);
             searchFilters.add(filter2);
-        }else if("ended".equalsIgnoreCase(queryParam.getFlowStatus())){ //正常结束
-            SearchFilter filter1 = new SearchFilter("ended",true,SearchFilter.Operator.EQ);
-            SearchFilter filter2 = new SearchFilter("manuallyEnd",false,SearchFilter.Operator.EQ);
+        } else if ("ended".equalsIgnoreCase(queryParam.getFlowStatus())) { //正常结束
+            SearchFilter filter1 = new SearchFilter("ended", true, SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd", false, SearchFilter.Operator.EQ);
             searchFilters.add(filter1);
             searchFilters.add(filter2);
-        }else if("abnormalEnd".equalsIgnoreCase(queryParam.getFlowStatus())){ //异常终止
-            SearchFilter filter1 = new SearchFilter("ended",true,SearchFilter.Operator.EQ);
-            SearchFilter filter2 = new SearchFilter("manuallyEnd",true,SearchFilter.Operator.EQ);
+        } else if ("abnormalEnd".equalsIgnoreCase(queryParam.getFlowStatus())) { //异常终止
+            SearchFilter filter1 = new SearchFilter("ended", true, SearchFilter.Operator.EQ);
+            SearchFilter filter2 = new SearchFilter("manuallyEnd", true, SearchFilter.Operator.EQ);
             searchFilters.add(filter1);
             searchFilters.add(filter2);
         }
-        return     this.getMyBillsByModeId(queryParam.getModelId(),queryParam);
+        return this.getMyBillsByModeId(queryParam.getModelId(), queryParam);
     }
 
     public ResponseData getMyBills(Search search) {
-        ResponseData responseData = new ResponseData();
         if (search != null) {
             SessionUser user = ContextUtil.getSessionUser();
             String creatorId = user.getUserId();
@@ -1625,16 +1624,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 results.setRecords(flowInstancePageResult.getRecords());
                 results.setPage(flowInstancePageResult.getPage());
                 results.setTotal(flowInstancePageResult.getTotal());
-                responseData.setData(results);
+                return ResponseData.operationSuccessWithData(results);
             } catch (Exception e) {
-                responseData.setSuccess(false);
-                responseData.setMessage(e.getMessage());
                 LogUtil.error(e.getMessage(), e);
+                return ResponseData.operationFailure(e.getMessage());
             }
         } else {
             return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
         }
-        return responseData;
     }
 
 
@@ -1819,16 +1816,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         } else if (StringUtils.isNotEmpty(businessId)) {
             result = this.getProcessTrackVO(businessId);
         }
-        ResponseData responseData = new ResponseData();
         if (result == null || result.isEmpty()) {
-            responseData.setSuccess(false);
-            responseData.setMessage("历史记录为空！");
+            return ResponseData.operationFailure("历史记录为空！");
         } else {
-            responseData.setSuccess(true);
-            responseData.setMessage("操作成功！");
-            responseData.setData(result);
+            return ResponseData.operationSuccessWithData(result);
         }
-        return responseData;
     }
 
 
