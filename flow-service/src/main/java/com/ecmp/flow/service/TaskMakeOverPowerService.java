@@ -440,12 +440,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 List<FlowTask> addList = new ArrayList<>();
                 //是否推送信息到baisc
                 Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-                Boolean pushModelOrUrl = null;
                 for (FlowTask flowTask : taskList) {
-                    //是否推送信息到业务模块或者直接配置的url
-                    if (pushModelOrUrl == null) {
-                        pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowTask.getFlowInstance());
-                    }
                     //暂时先不变所属人，方便查看哪些是转授权出去的
                     FlowTask taskBean = new FlowTask();
                     BeanUtils.copyProperties(flowTask, taskBean);
@@ -462,7 +457,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                     } else {
                         taskBean.setDepict("【转授权-" + entity.getUserName() + "授权】");
                     }
-                    if (pushBasic || pushModelOrUrl) {
+                    if (pushBasic) {
                         needDelList.add(flowTask);
                         addList.add(taskBean);
                     }
@@ -470,26 +465,13 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                     flowTaskService.save(taskBean);
                 }
 
-
-                if (pushBasic || pushModelOrUrl) {
-                    if (pushBasic) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                flowTaskService.pushToBasic(addList, null, needDelList, null);
-                            }
-                        }).start();
-                    }
-                    if (pushModelOrUrl) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), needDelList, TaskStatus.DELETE);
-                                flowTaskService.pushTaskToModelOrUrl(taskList.get(0).getFlowInstance(), addList, TaskStatus.INIT);
-                            }
-                        }).start();
-                    }
-
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushToBasic(addList, null, needDelList, null);
+                        }
+                    }).start();
                 }
             }
         }

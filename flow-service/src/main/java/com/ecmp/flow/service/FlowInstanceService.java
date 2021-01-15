@@ -817,10 +817,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             FlowTask oldFlowTask = flowTaskDao.findByActTaskId(actTaskId);
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            //是否推送信息到业务模块或者直接配置的url
-            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(oldFlowTask.getFlowInstance());
-            List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
-            List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
+            List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
+            List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
 
             String flowTypeId = oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
 
@@ -876,24 +874,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             needDelList.add(oldFlowTask);
             flowTaskDao.delete(oldFlowTask);
 
-            if (pushBasic || pushModelOrUrl) {
-                if (pushBasic) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
-                        }
-                    }).start();
-                }
-                if (pushModelOrUrl) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            flowTaskService.pushTaskToModelOrUrl(oldFlowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
-                            flowTaskService.pushTaskToModelOrUrl(oldFlowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
-                        }
-                    }).start();
-                }
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                    }
+                }).start();
             }
             return ResponseData.operationSuccessWithData(needAddList);
         } else {
@@ -915,10 +902,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             org.springframework.beans.BeanUtils.copyProperties(newFlowTask, delFlowTask);
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            //是否推送信息到业务模块或者直接配置的url
-            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(newFlowTask.getFlowInstance());
-            List<FlowTask> needDelList = new ArrayList<FlowTask>();  //需要删除的待办
-            if (pushBasic || pushModelOrUrl) {
+            List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
+            if (pushBasic) {
                 needDelList.add(delFlowTask);
             }
             //通过授权用户ID和流程类型返回转授权信息（转办模式）
@@ -967,27 +952,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             flowTaskDao.save(newFlowTask);
 
             List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
-            if (pushBasic || pushModelOrUrl) {
+            if (pushBasic) {
                 needAddList.add(newFlowTask);
-                if (pushBasic) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
-                        }
-                    }).start();
-                }
-                if (pushModelOrUrl) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needDelList, TaskStatus.DELETE);
-                            flowTaskService.pushTaskToModelOrUrl(newFlowTask.getFlowInstance(), needAddList, TaskStatus.INIT);
-                        }
-                    }).start();
-                }
-            }
 
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                    }
+                }).start();
+            }
             result = OperateResultWithData.operationSuccess();
             result.setData(newFlowTask);
         } else {
@@ -1130,9 +1104,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     if (fTemp.isEnded()) {
                         continue;
                     }
-                    //是否推送信息到业务模块或者直接配置的url
-                    Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(fTemp);
-                    List<FlowTask> needDelList = new ArrayList<FlowTask>();
+                    List<FlowTask> needDelList = new ArrayList<>();
 
                     Set<FlowTask> flowTaskList = fTemp.getFlowTasks();
                     if (flowTaskList != null && !flowTaskList.isEmpty()) {
@@ -1162,7 +1134,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             flowHistory.setActEndTime(now);
                             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.END.getCode());//终止
                             flowHistoryDao.save(flowHistory);
-                            if (pushBasic || pushModelOrUrl) {//是否推送信息到baisc、<业务模块>、<配置的url>
+                            if (pushBasic) {//是否推送信息到baisc
                                 needDelList.add(flowTask);
                             }
                             flowTaskDao.delete(flowTask);
@@ -1208,14 +1180,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             @Override
                             public void run() {
                                 flowTaskService.pushToBasic(null, null, needDelList, null);
-                            }
-                        }).start();
-                    }
-                    if (pushModelOrUrl) {  //流程终止时，异步推送成已办<业务模块>、<配置的url>
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                flowTaskService.pushTaskToModelOrUrl(fTemp, needDelList, TaskStatus.DELETE);
                             }
                         }).start();
                     }

@@ -109,7 +109,8 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             responseData = this.pushAgainToBasic(pushStatus, flowTaskList);
         } else if (TYPE_BUSINESS.equalsIgnoreCase(pushType)) { //推送到业务模块
             responseData = this.pushAgainToBusiness(pushStatus, flowTaskList);
-        } else {
+        }
+        else {
             responseData = ResponseData.operationFailure("推送类型不能识别!");
         }
         return responseData;

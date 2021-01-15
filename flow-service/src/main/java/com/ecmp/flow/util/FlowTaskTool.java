@@ -1162,15 +1162,13 @@ public class FlowTaskTool {
                     .taskDefinitionKey(nextActivity.getId()).list();
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            //是否推送信息到业务模块或者直接配置的url
-            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
 
             List<FlowTask> needDelList = new ArrayList<FlowTask>();
             for (Task nextTask : nextTasks) {
                 taskService.deleteRuningTask(nextTask.getId(), false);
                 historyService.deleteHistoricActivityInstancesByTaskId(nextTask.getId());
                 historyService.deleteHistoricTaskInstance(nextTask.getId());
-                if (pushBasic || pushModelOrUrl) {
+                if (pushBasic) {
                     List<FlowTask> needDel = flowTaskDao.findListByProperty("actTaskId", nextTask.getId());
                     needDelList.addAll(needDel);
                 }
@@ -1181,14 +1179,6 @@ public class FlowTaskTool {
                     @Override
                     public void run() {
                         flowTaskService.pushToBasic(null, null, needDelList, null);
-                    }
-                }).start();
-            }
-            if (pushModelOrUrl) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
                     }
                 }).start();
             }
@@ -1558,10 +1548,8 @@ public class FlowTaskTool {
             flowName = definition.getProcess().getName();
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            //是否推送信息到业务模块或者直接配置的url
-            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
 
-            List<FlowTask> pushTaskList = new ArrayList<FlowTask>();  //需要推送到basic的待办
+            List<FlowTask> pushTaskList = new ArrayList<>();  //需要推送到basic的待办
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
@@ -1673,7 +1661,7 @@ public class FlowTaskTool {
                             flowTask.setFlowInstance(flowInstance);
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
-                            if (pushBasic || pushModelOrUrl) {
+                            if (pushBasic) {
                                 pushTaskList.add(flowTask);
                             }
                         }
@@ -1740,7 +1728,7 @@ public class FlowTaskTool {
                                     flowTask.setFlowInstance(flowInstance);
                                     taskPropertityInit(flowTask, preTask, currentNode, variables);
                                     flowTaskDao.save(flowTask);
-                                    if (pushBasic || pushModelOrUrl) {
+                                    if (pushBasic) {
                                         pushTaskList.add(flowTask);
                                     }
                                 }
@@ -1766,7 +1754,7 @@ public class FlowTaskTool {
                                 flowTask.setFlowInstance(flowInstance);
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
-                                if (pushBasic || pushModelOrUrl) {
+                                if (pushBasic) {
                                     pushTaskList.add(flowTask);
                                 }
                             }
@@ -1821,7 +1809,7 @@ public class FlowTaskTool {
                                 flowTask.setFlowInstance(flowInstance);
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
-                                if (pushBasic || pushModelOrUrl) {
+                                if (pushBasic) {
                                     pushTaskList.add(flowTask);
                                 }
                             } else {
@@ -1840,17 +1828,6 @@ public class FlowTaskTool {
                     }
                 }).start();
             }
-            //需要异步推送待办到<业务模块>、<配置的url>
-            if (pushModelOrUrl && pushTaskList != null && pushTaskList.size() > 0) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance, pushTaskList, TaskStatus.INIT);
-                    }
-                }).start();
-            }
-
-
         }
     }
 
