@@ -26,6 +26,14 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+
+    @Test
+    public void taskFailTheCompensation() {
+        String instanceId = "47ED9C73-56D1-11EB-9ECA-0242C0A84413";
+        service.taskFailTheCompensation(instanceId);
+    }
+
+
     @Test
     public void findTaskByBusinessIdAndActTaskKey() {
         String id = "BC808F8B-81BB-11E9-9D74-0242C0A84410";

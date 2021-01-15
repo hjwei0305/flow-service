@@ -442,7 +442,6 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData listMyBillsHeader(MyBillsHeaderVo myBillsHeaderVo);
 
 
-
     /**
      * 查询我的单据汇总列表
      *
@@ -483,7 +482,6 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData getAllMyBills(UserFlowBillsQueryParam queryParam);
 
 
-
     /**
      * 根据业务实体获取我的单据
      *
@@ -513,8 +511,6 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "根据业务实体获取我的单据(关联待办执行人)", notes = "根据业务实体获取我的单据(关联待办执行人)")
     ResponseData getMyBillsAndExecutorByModeId(@QueryParam("appModelCode") String appModelCode, @QueryParam("modelId") String modelId, Search searchConfig);
-
-
 
 
     /**
@@ -591,14 +587,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData getMyFlowCollectInfo(@QueryParam("userId") String userId);
 
 
-
-
     @POST
     @Path("updateRemarkByBusinessId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据ID修改流程实例说明", notes = "通过单据ID修改流程实例说明")
     ResponseData updateRemarkByBusinessId(UpdateInstanceRemarkVo updateInstanceRemarkVo);
+
+
+    @GET
+    @Path("taskFailTheCompensation")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "待办生成失败的补偿机制接口", notes = "待办生成失败的补偿机制接口")
+    ResponseData taskFailTheCompensation(@QueryParam("instanceId") String instanceId);
 
 
 }

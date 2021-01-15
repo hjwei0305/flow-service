@@ -37,9 +37,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * *************************************************************************************************
@@ -101,6 +103,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private FlowHistoryService flowHistoryService;
+
+    @Autowired
+    private FlowTaskTool flowTaskTool;
+
 
     /**
      * 撤销流程实例
@@ -1864,4 +1870,62 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         return ResponseData.operationFailure("该单据没有处于流程中的实例数据！");
     }
+
+
+    /**
+     * 待办生产失败的补偿接口
+     *
+     * @param instanceId
+     * @return
+     */
+    @Override
+    public ResponseData taskFailTheCompensation(String instanceId) {
+
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskCompensation_" + instanceId, instanceId);
+        if (!setValue) {
+            Long remainingTime = redisTemplate.getExpire("taskCompensation_" + instanceId, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("taskCompensation_" + instanceId, 10 * 60, TimeUnit.SECONDS);
+                remainingTime = 600L;
+            }
+            throw new FlowException("待办补偿已经在处理中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
+        }
+
+        try {
+
+            redisTemplate.expire("taskCompensation_" + instanceId, 10 * 60, TimeUnit.SECONDS);
+
+            if (StringUtils.isEmpty(instanceId)) {
+                return ResponseData.operationFailure("补偿失败：参数【流程实例ID】为空！");
+            }
+            FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
+            if (flowInstance == null) {
+                return ResponseData.operationFailure("补偿失败：找不到对应的流程实例！");
+            }
+            if (flowInstance.isEnded()) {
+                return ResponseData.operationFailure("补偿失败：当前流程实例已结束！");
+            }
+            List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(instanceId);
+            if (!CollectionUtils.isEmpty(flowTaskList)) {
+                return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
+            }
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(instanceId);
+            Map<String, Object> variables = runtimeService.getVariables(flowInstance.getActInstanceId());
+            FlowHistory preTask = null;
+            if (!CollectionUtils.isEmpty(flowHistoryList)) {
+                preTask = flowHistoryList.get(flowHistoryList.size() - 1);
+            }
+            //重新生产待办任务
+            flowTaskTool.initTask(flowInstance, preTask, null, variables);
+            return ResponseData.operationSuccess("补偿成功，新的待办已生成！");
+        } catch (Exception e) {
+            LogUtil.error("补偿失败：程序报错--" + e.getMessage(), e);
+            return ResponseData.operationFailure("补偿失败：程序报错，详情请查看日志！");
+        } finally {
+            //启动的时候设置的检查参数
+            redisTemplate.delete("taskCompensation_" + instanceId);
+        }
+    }
+
+
 }
