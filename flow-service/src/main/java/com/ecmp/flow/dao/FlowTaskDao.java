@@ -49,7 +49,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      * @param executorId
      * @return
      */
-    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey and ft.executorId = :executorId")
+    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.actInstanceId  = :actInstanceId and ft.actTaskDefKey = :actTaskDefKey and  (ft.executorId = :executorId or  ft.ownerId = :executorId )")
     List<FlowTask> findByActTaskDefKeyAndActInstanceIdAndExecutorId(@Param("actTaskDefKey") String actTaskDefKey, @Param("actInstanceId") String actInstanceId, @Param("executorId") String executorId);
 
 
