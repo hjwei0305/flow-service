@@ -674,6 +674,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (flowTask == null) {
                 return OperateResultWithData.operationFailure("任务不存在，可能已经被处理!");
             }
+            if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) { //发起委托的任务
+                return OperateResultWithData.operationFailure("当前任务已委托出去，等待委托方处理后才能处理！");
+            }
 
             String taskJsonDef = flowTask.getTaskJsonDef();
             JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
@@ -2776,6 +2779,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             OperateResult result;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
+
+                if(flowTask.getTrustState() != null && flowTask.getTrustState() == 1){
+                    return OperateResult.operationFailure("当前任务已经委托出去，不能重复进行委托操作！");
+                }
+
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 //通过用户ID获取执行人
                 Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
