@@ -135,14 +135,14 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         return OperateResultWithData.operationSuccess(status == FlowDefinationStatus.Freeze ? "10018" : "10019");
     }
 
-    public PageResult<FlowDefVersion> findByPage(Search searchConfig){
-        List<SearchFilter> filters = searchConfig.getFilters();
-        SearchFilter  filter =new SearchFilter();
-        filter.setFieldName("versionCode");
-        filter.setOperator(SearchFilter.Operator.GE);
-        filter.setValue(1);
-        filter.setFieldType("Integer");
-        filters.add(filter);
+    public PageResult<FlowDefVersion> findByPage(Search searchConfig) {
+//        List<SearchFilter> filters = searchConfig.getFilters();
+//        SearchFilter  filter =new SearchFilter();
+//        filter.setFieldName("versionCode");
+//        filter.setOperator(SearchFilter.Operator.GE);
+//        filter.setValue(1);
+//        filter.setFieldType("Integer");
+//        filters.add(filter);
         return super.findByPage(searchConfig);
     }
 
@@ -163,22 +163,22 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Process process = definition.getProcess();
         FlowDefination flowDefination = null;
         Boolean canAsSubProcess = definition.getSubProcess();
-        Boolean canAssolidifyFlow =  definition.getSolidifyFlow();
+        Boolean canAssolidifyFlow = definition.getSolidifyFlow();
         flowDefination = flowDefinationDao.findByDefKey(process.getId());
-        if(StringUtils.isEmpty(definition.getId())&&flowDefination!=null){  //新增的流程定义
+        if (StringUtils.isEmpty(definition.getId()) && flowDefination != null) {  //新增的流程定义
             return OperateResultWithData.operationFailure("流程代码重复！");
         }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
 
         String defJson = definition.getDefJson();
-        try{
-            ResponseData  responseData = flowDefinationService.resetPositionByJson(defJson);
-            if(responseData.getSuccess()){
-                defJson = (String)responseData.getData();
+        try {
+            ResponseData responseData = flowDefinationService.resetPositionByJson(defJson);
+            if (responseData.getSuccess()) {
+                defJson = (String) responseData.getData();
             }
-        }catch (Exception e){
-            LogUtil.error("重置位置报错！",e);
+        } catch (Exception e) {
+            LogUtil.error("重置位置报错！", e);
         }
 
         if (flowDefination == null) {//定义为空

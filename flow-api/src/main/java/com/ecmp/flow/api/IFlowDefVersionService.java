@@ -39,6 +39,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
 
     /**
      * 保存一个实体
+     *
      * @param flowDefVersion 实体
      * @return 保存后的实体
      */
@@ -46,7 +47,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Path("save")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "保存实体",notes = "测试 保存实体")
+    @ApiOperation(value = "保存实体", notes = "测试 保存实体")
     OperateResultWithData<FlowDefVersion> save(FlowDefVersion flowDefVersion);
 
     /**
@@ -63,22 +64,24 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
 
     /**
      * 通过json流程定义数据，保存流程版本定义
+     *
      * @param definition json对象实体
-     * @throws    JAXBException  jaxb解析异常
-     * @throws    CloneNotSupportedException 复制异常
      * @return 保存后的流程版本定义实体
+     * @throws JAXBException              jaxb解析异常
+     * @throws CloneNotSupportedException 复制异常
      */
     @POST
     @Path("jsonSave")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "json流程定义保存实体",notes = "测试 json流程定义保存实体")
-    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException;
+    @ApiOperation(value = "json流程定义保存实体", notes = "测试 json流程定义保存实体")
+    OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException;
 
 
     /**
      * 切换版本状态
-     * @param id 单据id
+     *
+     * @param id     单据id
      * @param status 状态
      * @return 结果
      */
@@ -86,7 +89,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Path("changeStatus/{id}/{status}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "改变流程版本状态",notes = "测试 改变流程版本状态")
-    public OperateResultWithData<FlowDefVersion> changeStatus(@PathParam("id") String id, @PathParam("status") FlowDefinationStatus status);
+    @ApiOperation(value = "改变流程版本状态", notes = "测试 改变流程版本状态")
+    OperateResultWithData<FlowDefVersion> changeStatus(@PathParam("id") String id, @PathParam("status") FlowDefinationStatus status);
 
 }
