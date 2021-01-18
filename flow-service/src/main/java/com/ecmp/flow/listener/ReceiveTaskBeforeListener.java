@@ -85,16 +85,22 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     flowTask.setFlowInstance(flowInstance);
-                    String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
-                    AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                    if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
-                        ownerName = appModule.getName();
-                    }
+
+//                    String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
+//                    AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
+//                    if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
+//                        ownerName = appModule.getName();
+//                    }
+//                    flowTask.setOwnerName(ownerName);
+//                    flowTask.setExecutorName(ownerName);
+
+                    //接收任务将待办执行人和拥有者名称改为任务名称
+                    flowTask.setOwnerName(flowTaskName);
+                    flowTask.setExecutorName(flowTaskName);
+
                     flowTask.setOwnerAccount(Constants.ADMIN);
-                    flowTask.setOwnerName(ownerName);
                     flowTask.setExecutorAccount(Constants.ADMIN);
                     flowTask.setExecutorId("");
-                    flowTask.setExecutorName(ownerName);
                     flowTask.setCandidateAccount("");
                     flowTask.setActDueDate(now);
 
@@ -102,6 +108,11 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     flowTask.setPreId(null);
                     flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
+
+                    //接收任务添加配置是否可以发起人终止
+                    Boolean canSuspension = normal.get("allowTerminate") != null ? (Boolean) normal.get("allowTerminate") : null;
+                    flowTask.setCanSuspension(canSuspension);
+
 
                     //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
                     ApplicationContext applicationContext = ContextUtil.getApplicationContext();

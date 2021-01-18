@@ -21,7 +21,6 @@ import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
-import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
@@ -292,7 +291,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 executors = flowCommonUtil.getBasicUserExecutors(idList);
             }
         }
-        return  ResponseData.operationSuccessWithData(executors);
+        return ResponseData.operationSuccessWithData(executors);
     }
 
 
@@ -501,7 +500,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     public ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption()+"：后台调用的事前事件接口！");
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用的事前事件接口！");
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
@@ -514,7 +513,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     public ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption()+"：后台调用了事后事件接口！");
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！");
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
@@ -545,36 +544,35 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                         }
                     }
                 }
-                String changeText = "ReceiveCall";
-                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
+                entity.setWorkCaption(entity.getWorkCaption() + ":ReceiveID:" + receiveTaskActDefId);
                 defaultBusinessModelDao.save(entity);
-                final String fReceiveTaskActDefId = receiveTaskActDefId;
-                new Thread(new Runnable() {//模拟异步
-                    @Override
-                    public void run() {
-                        long time = 20; //默认20秒
-                        int index = 20;//重试20次
-                        while (index > 0) {
-                            try {
-                                Thread.sleep(1000 * time);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                                OperateResult resultTemp = proxy.signalByBusinessId(flowInvokeParams.getId(), fReceiveTaskActDefId, variables);
-                                if (resultTemp.successful()) {
-                                    return;
-                                } else {
-                                    time = time * 2; //加倍
-                                }
-                            } catch (Exception e) {
-                                time = time * 2; //加倍
-                            }
-                            index--;
-                        }
-                    }
-                }).start();
+//                final String fReceiveTaskActDefId = receiveTaskActDefId;
+//                new Thread(new Runnable() {//模拟异步
+//                    @Override
+//                    public void run() {
+//                        long time = 20; //默认20秒
+//                        int index = 20;//重试20次
+//                        while (index > 0) {
+//                            try {
+//                                Thread.sleep(1000 * time);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            try {
+//                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+//                                OperateResult resultTemp = proxy.signalByBusinessId(flowInvokeParams.getId(), fReceiveTaskActDefId, variables);
+//                                if (resultTemp.successful()) {
+//                                    return;
+//                                } else {
+//                                    time = time * 2; //加倍
+//                                }
+//                            } catch (Exception e) {
+//                                time = time * 2; //加倍
+//                            }
+//                            index--;
+//                        }
+//                    }
+//                }).start();
             }
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
