@@ -10,17 +10,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 
 /**
- * *************************************************************************************************
- * <p/>
- * 实现功能：bmpn节点基类
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/4/7 16:38      陈飞(fly)                  新建
- * 1.0.01      2017/4/18 14:38      谭军(tanjun)               增加ID
- * <p/>
- * *************************************************************************************************
+ * bmpn节点基类
  */
 @XmlRootElement(name = "definitions")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -29,9 +19,6 @@ public class Definition implements Serializable {
 
     @XmlAttribute
     private String xmlns = "http://www.omg.org/spec/BPMN/20100524/MODEL";
-
-//    @XmlAttribute
-//    private String xs = "http://www.w3.org/2001/XMLSchema";
 
     @XmlAttribute
     private String expressionLanguage = "http://www.w3.org/1999/XPath";
@@ -104,6 +91,35 @@ public class Definition implements Serializable {
     @XmlTransient
     private Boolean solidifyFlow;
 
+    /**
+     * 流程额定工时（小时）
+     */
+    @XmlTransient
+    private Integer timing;
+
+
+    /**
+     * 任务提前预警时间（小时）
+     */
+    @XmlTransient
+    private Integer earlyWarningTime;
+
+
+    public Integer getTiming() {
+        return timing;
+    }
+
+    public void setTiming(Integer timing) {
+        this.timing = timing;
+    }
+
+    public Integer getEarlyWarningTime() {
+        return earlyWarningTime;
+    }
+
+    public void setEarlyWarningTime(Integer earlyWarningTime) {
+        this.earlyWarningTime = earlyWarningTime;
+    }
 
     public Boolean getSolidifyFlow() {
         return solidifyFlow;
@@ -182,7 +198,6 @@ public class Definition implements Serializable {
         Process process = new Process();
         process.setName("测试");
         process.setId("1122");
-      //  process.setStartUEL("{23sfsfsf}");
         df.setDefJson("sdfsdfs");
         JSONObject nodes = JSONObject.fromObject("{\"StartEvent_0\":{\"type\":\"StartEvent\",\"x\":188,\"y\":136,\"id\":\"StartEvent_0\",\"target\":[{\"targetId\":\"UserTask_2\",\"uel\":\"\"}],\"name\":\"开始\",\"nodeConfig\":{}},\"EndEvent_1\":{\"type\":\"EndEvent\",\"x\":704,\"y\":232,\"id\":\"EndEvent_1\",\"target\":[],\"name\":\"结束\",\"nodeConfig\":{}},\"UserTask_2\":{\"type\":\"UserTask\",\"x\":438,\"y\":185,\"id\":\"UserTask_2\",\"target\":[{\"targetId\":\"EndEvent_1\",\"uel\":\"\"}],\"name\":\"普通任务\",\"nodeConfig\":{\"normal\":{\"name\":\"普通任务\",\"executeTime\":\"44\",\"workPageName\":\"默认审批页面\",\"workPageUrl\":\"http://localhost:8081/lookApproveBill/show\",\"allowTerminate\":true,\"allowPreUndo\":true,\"allowReject\":true},\"executor\":{\"userType\":\"AnyOne\"},\"event\":{\"beforeExcuteService\":\"\",\"afterExcuteService\":\"\",\"afterExcuteServiceId\":\"\"},\"notify\":null}}}");
         process.setNodes(nodes);

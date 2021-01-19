@@ -11,17 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Date;
 
 /**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 流程历史模型Entity定义
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
- * <p/>
- * *************************************************************************************************
+ * 流程历史
  */
 @Entity
 @Table(name = "flow_history")
@@ -37,32 +27,32 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     /**
      * 流程名称
      */
-    @Column(name = "flow_name", nullable = false, length = 80)
+    @Column(name = "flow_name")
     private String flowName;
 
     /**
      * 流程任务名
      */
-    @Column(name = "flow_task_name", nullable = false, length = 80)
+    @Column(name = "flow_task_name")
     private String flowTaskName;
 
     /**
      * 流程运行ID
      */
-    @Column(name = "flow_run_id", length = 36, nullable = true)
+    @Column(name = "flow_run_id")
     private String flowRunId;
 
     /**
      * 流程定义ID
      */
-    @Column(name = "flow_def_id", length = 36)
+    @Column(name = "flow_def_id")
     private String flowDefId;
 
 
     /**
      * 关联的实际流程引擎历史ID
      */
-    @Column(name = "act_history_id", nullable = false, length = 36)
+    @Column(name = "act_history_id")
     private String actHistoryId;
 
     /**
@@ -96,7 +86,7 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     /**
      * 租户代码
      */
-    @Column(name = "tenant_code", length = 10)
+    @Column(name = "tenant_code")
     private String tenantCode;
 
     /**
@@ -148,14 +138,14 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     /**
      * 流程引擎的实际任务定义KEY
      */
-    @Column(name = "act_task_def_key", nullable = false)
+    @Column(name = "act_task_def_key")
     private String actTaskDefKey;
 
 
     /**
      * 执行人名称
      */
-    @Column(name = "executor_name", length = 80)
+    @Column(name = "executor_name")
     private String executorName;
 
     /**
@@ -198,7 +188,7 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     /**
      * 任务状态
      */
-    @Column(name = "task_status", length = 80)
+    @Column(name = "task_status")
     private String taskStatus;
 
 
@@ -295,6 +285,19 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
 
 
     /**
+     * 任务额定工时（小时）
+     */
+    @Column(name = "timing")
+    private Double timing;
+
+    /**
+     * 是否超时
+     */
+    @Transient
+    private Boolean ifTimeout;
+
+
+    /**
      * web基地址
      */
     @Transient
@@ -333,27 +336,41 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     /**
      * minimal constructor
      */
-    public FlowHistory(String flowName, String flowTaskName, String flowRunId,
-                       String flowInstanceId) {
+    public FlowHistory(String flowName, String flowTaskName, String flowRunId) {
         this.flowName = flowName;
         this.flowTaskName = flowTaskName;
         this.flowRunId = flowRunId;
-//		this.flowInstanceId = flowInstanceId;
     }
 
     /**
      * full constructor
      */
     public FlowHistory(FlowInstance flowInstance, String flowName,
-                       String flowTaskName, String flowRunId, String flowInstanceId,
+                       String flowTaskName, String flowRunId,
                        String flowDefId, String depict) {
         this.flowInstance = flowInstance;
         this.flowName = flowName;
         this.flowTaskName = flowTaskName;
         this.flowRunId = flowRunId;
-//		this.flowInstanceId = flowInstanceId;
         this.flowDefId = flowDefId;
         this.depict = depict;
+    }
+
+
+    public Boolean getIfTimeout() {
+        return ifTimeout;
+    }
+
+    public void setIfTimeout(Boolean ifTimeout) {
+        this.ifTimeout = ifTimeout;
+    }
+
+    public Double getTiming() {
+        return timing;
+    }
+
+    public void setTiming(Double timing) {
+        this.timing = timing;
     }
 
     public String getTaskExecutors() {
@@ -403,14 +420,6 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     public void setFlowRunId(String flowRunId) {
         this.flowRunId = flowRunId;
     }
-
-//	public String getFlowInstanceId() {
-//		return this.flowInstanceId;
-//	}
-//
-//	public void setFlowInstanceId(String flowInstanceId) {
-//		this.flowInstanceId = flowInstanceId;
-//	}
 
     public String getFlowDefId() {
         return this.flowDefId;
@@ -564,14 +573,6 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
         this.preId = preId;
     }
 
-//	public String getNextId() {
-//		return nextId;
-//	}
-//
-//	public void setNextId(String nextId) {
-//		this.nextId = nextId;
-//	}
-
     public String getTaskStatus() {
         return taskStatus;
     }
@@ -649,7 +650,6 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
                 .append("flowName", flowName)
                 .append("flowTaskName", flowTaskName)
                 .append("flowRunId", flowRunId)
-//				.append("flowInstanceId", flowInstanceId)
                 .append("webBaseAddress", this.getWebBaseAddress())
                 .append("apiBaseAddress", this.getApiBaseAddress())
                 .append("webBaseAddressAbsolute", this.getWebBaseAddressAbsolute())

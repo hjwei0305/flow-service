@@ -7,34 +7,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.*;
 
+
 /**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 流程定义版本实体模型Entity定义
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
- * <p/>
- * *************************************************************************************************
+ * 流程版本
  */
 @Entity
 @Table(name = "flow_def_version", uniqueConstraints = @UniqueConstraint(columnNames = "def_key"))
-@Cacheable(true)
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable, ITenant {
+
 
     /**
      * 乐观锁-版本
      */
-    //@Version
     @Column(name = "version")
     private Integer version = 0;
 
@@ -50,31 +38,31 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
      * 定义ID
      */
 
-    @Column(name = "act_def_id", length = 36)
+    @Column(name = "act_def_id")
     private String actDefId;
 
     /**
      * 定义KEY
      */
-    @Column(name = "def_key", nullable = false)
+    @Column(name = "def_key")
     private String defKey;
 
     /**
      * 名称
      */
-    @Column(name = "name", nullable = false, length = 80)
+    @Column(name = "name")
     private String name;
 
     /**
      * 部署ID
      */
-    @Column(name = "act_deploy_id", length = 36)
+    @Column(name = "act_deploy_id")
     private String actDeployId;
 
     /**
      * 启动条件UEL
      */
-    @Column(name = "start_uel", length = 6000)
+    @Column(name = "start_uel")
     private String startUel;
 
     /**
@@ -101,16 +89,9 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 租户代码
      */
-    @Column(name = "tenant_code", length = 10)
+    @Column(name = "tenant_code")
     private String tenantCode;
 
-//    /**
-//     * 流程BPMN文本
-//     */
-//    @Lob
-//    @Basic(fetch = FetchType.LAZY)
-//    @Column(name = "def_bpmn")
-//    private String defBpmn;
 
     /**
      * 最终定义XML
@@ -129,14 +110,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 当前流程版本状态
      */
-    @Column(name = "flow_defination_status", length = 2, nullable = false)
+    @Column(name = "flow_defination_status")
     private FlowDefinationStatus flowDefinationStatus;
 
     /**
      * 拥有的流程实例
      */
     @Transient
-//	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "flowDefVersion")
     private Set<FlowInstance> flowInstances = new HashSet<FlowInstance>(0);
 
     /**
@@ -159,15 +139,29 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
 
 
     /**
+     * 流程额定工时（小时）
+     */
+    @Column(name = "timing")
+    private Integer timing;
+
+
+    /**
+     * 任务提前预警时间（小时）
+     */
+    @Column(name = "early_warning_time")
+    private Integer earlyWarningTime;
+
+
+    /**
      * 启动时调用检查服务ID
      */
-    @Column(name = "start_check_service_url", length = 36)
+    @Column(name = "start_check_service_url")
     private String startCheckServiceUrlId;
 
     /**
      * 启动时调用检查服务名称
      */
-    @Column(name = "start_check_service_name", length = 255)
+    @Column(name = "start_check_service_name")
     private String startCheckServiceUrlName;
 
     /**
@@ -180,13 +174,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 启动完成时调用服务id
      */
-    @Column(name = "start_after_service_id", length = 36)
+    @Column(name = "start_after_service_id")
     private String afterStartServiceId;
 
     /**
      * 启动完成时调用服务名称
      */
-    @Column(name = "start_after_service_name", length = 255)
+    @Column(name = "start_after_service_name")
     private String afterStartServiceName;
 
     /**
@@ -198,13 +192,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 流程结束前检查，调用服务ID
      */
-    @Column(name = "end_before_call_service_url", length = 36)
+    @Column(name = "end_before_call_service_url")
     private String endBeforeCallServiceUrlId;
 
     /**
      * 流程结束时，调用服务名称
      */
-    @Column(name = "end_before_call_service_name", length = 255)
+    @Column(name = "end_before_call_service_name")
     private String endBeforeCallServiceUrlName;
 
 
@@ -217,13 +211,13 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 流程结束时，调用服务，异步
      */
-    @Column(name = "end_call_service_url", length = 36)
+    @Column(name = "end_call_service_url")
     private String endCallServiceUrlId;
 
     /**
      * 流程结束时，调用服务名称，异步
      */
-    @Column(name = "end_call_service_name", length = 255)
+    @Column(name = "end_call_service_name")
     private String endCallServiceUrlName;
 
 
@@ -255,7 +249,7 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     public FlowDefVersion(FlowDefination flowDefination, String defKey,
                           String name, String actDeployId, String startUel,
                           Integer versionCode, Integer priority, String defJson,
-                          String defBpmn, String defXml, String depict, Set<FlowInstance> flowInstances) {
+                          String defXml, String depict, Set<FlowInstance> flowInstances) {
         this.flowDefination = flowDefination;
         this.defKey = defKey;
         this.name = name;
@@ -269,6 +263,22 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
         this.flowInstances = flowInstances;
     }
 
+
+    public Integer getTiming() {
+        return timing;
+    }
+
+    public void setTiming(Integer timing) {
+        this.timing = timing;
+    }
+
+    public Integer getEarlyWarningTime() {
+        return earlyWarningTime;
+    }
+
+    public void setEarlyWarningTime(Integer earlyWarningTime) {
+        this.earlyWarningTime = earlyWarningTime;
+    }
 
     public FlowDefination getFlowDefination() {
         return this.flowDefination;

@@ -10,21 +10,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.Date;
 
 /**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 流程任务实例模型Entity定义
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/21 10:20      詹耀(zhanyao)                新建
- * <p/>
- * *************************************************************************************************
+ * 流程待办任务
  */
 @Entity
 @Table(name = "flow_task")
-public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implements ITenant {
+public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implements ITenant {
 
 
     /**
@@ -88,7 +78,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     /**
      * 乐观锁- 版本
      */
-//	@Version
     @Column(name = "version")
     private Integer version = 0;
 
@@ -102,40 +91,37 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     /**
      * 名称
      */
-    @Column(name = "flow_name", nullable = false, length = 80)
+    @Column(name = "flow_name")
     private String flowName;
 
     /**
      * 任务名
      */
-    @Column(name = "task_name", nullable = false, length = 80)
+    @Column(name = "task_name")
     private String taskName;
 
     /**
      * 任务定义KEY
      */
-    @Column(name = "act_task_def_key", nullable = false)
+    @Column(name = "act_task_def_key")
     private String actTaskDefKey;
 
     /**
      * 任务表单URL
      */
-//    @Lob
-//    @Basic(fetch = FetchType.LAZY)
-//    @Column(name = "task_form_url", length = 65535)
     @Transient
     private String taskFormUrl;
 
     /**
      * 任务状态
      */
-    @Column(name = "task_status", length = 80)
+    @Column(name = "task_status")
     private String taskStatus;
 
     /**
      * 代理状态
      */
-    @Column(name = "proxy_status", length = 80)
+    @Column(name = "proxy_status")
     private String proxyStatus;
 
 
@@ -147,27 +133,21 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     private WorkPageUrl workPageUrl;
 
     /**
-     * 流程实例ID
-     */
-//	@Column(name = "flow_instanceId", nullable = false, length = 36)
-//	private String flowInstanceId;
-
-    /**
      * 流程定义ID
      */
-    @Column(name = "flow_definition_id", length = 36)
+    @Column(name = "flow_definition_id")
     private String flowDefinitionId;
 
     /**
      * 关联的实际流程引擎任务ID
      */
-    @Column(name = "act_task_id", nullable = false, length = 36)
+    @Column(name = "act_task_id")
     private String actTaskId;
 
     /**
      * 执行人名称
      */
-    @Column(name = "executor_name", length = 80)
+    @Column(name = "executor_name")
     private String executorName;
 
     /**
@@ -186,7 +166,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
      * 执行时间
      */
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "execute_date", length = 19)
+    @Column(name = "execute_date")
     private Date executeDate;
 
 
@@ -268,12 +248,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     @Column(name = "task_json_def")
     @Lob
     private String taskJsonDef;
-
-//	/**
-//	 * 业务摘要(工作说明)
-//	 */
-//	@Transient
-//	private String businessModelRemark;
 
     /**
      * 额定工时（分钟）
@@ -385,25 +359,36 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
     private String ownerOrgName;
 
 
+    /**
+     * 任务额定工时（小时）
+     */
+    @Column(name = "timing")
+    private Double timing;
+
+
+    /**
+     * 预警状态
+     */
+    @Transient
+    private String warningStatus;
+
+
     public FlowTask() {
     }
 
 
     public FlowTask(String flowName, String taskName, String actTaskDefKey,
-                    String flowInstanceId, String flowDefinitionId, Date executeDate) {
+                    String flowDefinitionId, Date executeDate) {
         this.flowName = flowName;
         this.taskName = taskName;
         this.actTaskDefKey = actTaskDefKey;
-//		this.flowInstanceId = flowInstanceId;
         this.flowDefinitionId = flowDefinitionId;
-
         this.executeDate = executeDate;
-
     }
 
     public FlowTask(FlowInstance flowInstance, String flowName,
                     String taskName, String actTaskDefKey, String taskFormUrl,
-                    String taskStatus, String proxyStatus, String flowInstanceId,
+                    String taskStatus, String proxyStatus,
                     String flowDefinitionId, String executorName,
                     String executorAccount, String candidateAccount,
                     Date executeDate, String depict) {
@@ -414,7 +399,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
         this.taskFormUrl = taskFormUrl;
         this.taskStatus = taskStatus;
         this.proxyStatus = proxyStatus;
-//		this.flowInstanceId = flowInstanceId;
         this.flowDefinitionId = flowDefinitionId;
         this.executorName = executorName;
         this.executorAccount = executorAccount;
@@ -423,6 +407,21 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
         this.depict = depict;
     }
 
+    public Double getTiming() {
+        return timing;
+    }
+
+    public void setTiming(Double timing) {
+        this.timing = timing;
+    }
+
+    public String getWarningStatus() {
+        return warningStatus;
+    }
+
+    public void setWarningStatus(String warningStatus) {
+        this.warningStatus = warningStatus;
+    }
 
     public FlowInstance getFlowInstance() {
         return this.flowInstance;
@@ -658,10 +657,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
         this.executeTime = executeTime;
     }
 
-//    @Override
-//    public int hashCode() {
-//        return HashCodeBuilder.reflectionHashCode(this);
-//    }
 
     @Override
     public String toString() {
@@ -669,9 +664,9 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
                 .append("id", this.getId())
                 .append("webBaseAddress", this.getWebBaseAddress())
                 .append("apiBaseAddress", this.getApiBaseAddress())
-                .append("webBaseAddressAbsolute",this.getWebBaseAddressAbsolute())
-                .append("apiBaseAddressAbsolute",this.getApiBaseAddressAbsolute())
-                .append("completeTaskServiceUrl",this.getCompleteTaskServiceUrl())
+                .append("webBaseAddressAbsolute", this.getWebBaseAddressAbsolute())
+                .append("apiBaseAddressAbsolute", this.getApiBaseAddressAbsolute())
+                .append("completeTaskServiceUrl", this.getCompleteTaskServiceUrl())
                 .append("taskFormUrl", this.getTaskFormUrl())
                 .append("canMobile", canMobile)
                 .append("canBatchApproval", canBatchApproval)
@@ -692,11 +687,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity  implemen
                 .append("businessDetailServiceUrl", businessDetailServiceUrl)
                 .toString();
     }
-
-//    @Override
-//    public boolean equals(Object obj) {
-//        return EqualsBuilder.reflectionEquals(this, obj);
-//    }
 
 
     @Override
