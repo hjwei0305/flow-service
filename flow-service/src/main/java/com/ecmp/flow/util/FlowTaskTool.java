@@ -2356,7 +2356,7 @@ public class FlowTaskTool {
         flowHistory.setDepict(flowTask.getDepict());
         flowHistory.setTaskStatus(flowTask.getTaskStatus());
         flowHistory.setOldTaskId(flowTask.getId());
-        flowHistory.setTiming(flowTask.getTiming());
+        flowHistory.setTiming(flowTask.getTiming() == null ? 0.00 : flowTask.getTiming());
 
         if (TaskStatus.REJECT.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //驳回
             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.REJECT.getCode());
