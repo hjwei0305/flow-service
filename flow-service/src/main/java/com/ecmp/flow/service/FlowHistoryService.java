@@ -566,6 +566,9 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
      */
     private void setHistoryIfTimeout(FlowHistory flowHistory) {
         if (flowHistory.getActStartTime() == null || flowHistory.getTiming() == null || flowHistory.getTiming() < 0.000001) {
+            if(flowHistory.getTiming() == null){
+                flowHistory.setTiming(0.00);
+            }
             flowHistory.setIfTimeout(false);
         } else {
             //实际用时
