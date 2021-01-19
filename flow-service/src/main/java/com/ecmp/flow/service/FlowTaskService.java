@@ -10,6 +10,7 @@ import com.ecmp.flow.api.IFlowTaskService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.UserEmailAlert;
 import com.ecmp.flow.common.util.Constants;
+import com.ecmp.flow.constant.EarlyWarningStatus;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
@@ -2303,22 +2304,77 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
         PageResult<FlowTask> pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
 
-        //说明添加授权人信息
+        //对待办信息进行特殊需求处理
         List<FlowTask> flowTaskList = pageResult.getRows();
-
-        initFlowTasks(flowTaskList);
-
-        flowTaskList.forEach(a -> {
-            if (!userId.equals(a.getExecutorId())) {
-                a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
+        for (FlowTask bean : flowTaskList) {
+            //实时计算预警状态
+            try {
+                this.setWarningStatusByTask(bean);
+            } catch (Exception e) {
+                LogUtil.error("待办设置预警状态失败，taskId=" + bean.getId(), e);
             }
-        });
+            //共同查看模式前台添加转授权备注
+            if (!userId.equals(bean.getExecutorId())) {
+                bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
+            }
+        }
+        //完成待办任务的URL设置
+        initFlowTasks(flowTaskList);
         resultVO.setRows(flowTaskList);
         resultVO.setRecords(pageResult.getRecords());
         resultVO.setPage(pageResult.getPage());
         resultVO.setTotal(pageResult.getTotal());
         resultVO.setAllTotal(pageResult.getRecords());
         return resultVO;
+    }
+
+
+    /**
+     * 为待办设置预警状态
+     *
+     * @param flowTask
+     */
+    public void setWarningStatusByTask(FlowTask flowTask) {
+        //任务的额定工时（可能带两位小数的小时）
+        Double timing = flowTask.getTiming();
+        //任务的额定工时（分钟）
+        Integer timingMinute;
+        //如果未设置额定工时，表示该任务时间不做考核
+        if (timing == null || timing < 0.000001) {
+            flowTask.setWarningStatus(EarlyWarningStatus.NORMAL.getCode());
+            return;
+        } else {
+            Double timingMin = timing * 60;
+            timingMinute = timingMin.intValue();
+        }
+        //任务到达时间
+        Date createDate = flowTask.getCreatedDate();
+
+        //当前时间
+        Calendar nowCalendar = Calendar.getInstance();
+
+        //任务到达时间+额定工时
+        Calendar createAddTiming = Calendar.getInstance();
+        createAddTiming.setTime(createDate);
+        createAddTiming.add(Calendar.MINUTE, timingMinute);
+
+        //当前时间>=任务到达时间+额定工时  (超时)
+        if (!nowCalendar.before(createAddTiming)) {
+            flowTask.setWarningStatus(EarlyWarningStatus.TIMEOUT.getCode());
+            return;
+        }
+        //流程定义中设置的提前预警时间（小时）
+        Integer earlyWarningTime = Optional.ofNullable(flowTask).map(FlowTask::getFlowInstance).map(FlowInstance::getFlowDefVersion).map(FlowDefVersion::getEarlyWarningTime).orElse(0);
+        //任务到达时间+额定工时-提前预警时间
+        createAddTiming.add(Calendar.HOUR, -earlyWarningTime);
+
+        //任务到达时间+额定工时-提前预警时间=<当前时间  (预警)
+        if (!nowCalendar.before(createAddTiming)) {
+            flowTask.setWarningStatus(EarlyWarningStatus.WARNING.getCode());
+        } else {
+            //当前时间<任务到达时间+额定工时-提前预警时间 (正常)
+            flowTask.setWarningStatus(EarlyWarningStatus.NORMAL.getCode());
+        }
     }
 
 
@@ -2774,7 +2830,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
 
-                if(flowTask.getTrustState() != null && flowTask.getTrustState() == 1){
+                if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) {
                     return OperateResult.operationFailure("当前任务已经委托出去，不能重复进行委托操作！");
                 }
 
