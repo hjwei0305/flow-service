@@ -26,13 +26,7 @@ public interface CustomFlowTaskDao {
      * 通过业务实体ID和用户获取待办信息（包括共同查看模式的转授权待办）
      */
     @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, String executorId, List<TaskMakeOverPower>  powerList, Search searchConfig);
-
-    /**
-     * 通过用户查询可批量审批待办（包括共同查看模式的转授权待办）
-     */
-    @Transactional(readOnly = true)
-    PageResult<FlowTask> findByPageCanBatchApprovalOfPower(String executorId, List<TaskMakeOverPower> powerList, Search searchConfig);
+    PageResult<FlowTask> findByPageByBusinessModelIdOfPower(String businessModelId, String executorId, List<TaskMakeOverPower> powerList, Search searchConfig);
 
     /**
      * 通过业务实体和用户查询批量审批待办（包括共同查看模式的转授权待办）
@@ -40,8 +34,10 @@ public interface CustomFlowTaskDao {
     @Transactional(readOnly = true)
     PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelIdOfPower(String businessModelId, String executorId, List<TaskMakeOverPower> powerList, Search searchConfig);
 
+
     @Transactional(readOnly = true)
     Long findCountByExecutorId(String executorId, Search searchConfig);
+
 
     @Transactional(readOnly = true)
     PageResult<FlowTask> findByPageByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig);

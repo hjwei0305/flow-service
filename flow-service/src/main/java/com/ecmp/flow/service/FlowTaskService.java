@@ -2090,28 +2090,25 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        PageResult<FlowTask> flowTaskPageResult;
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
-        if (StringUtils.isNotEmpty(businessModelId)) {
-            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
-        } else {
-            flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalOfPower(userId, powerList, searchConfig);
-        }
+        PageResult<FlowTask> flowTaskPageResult = flowTaskDao.findByPageCanBatchApprovalByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
 
-        //说明添加授权人信息
+        //对待办信息进行特殊需求处理
         List<FlowTask> flowTaskList = flowTaskPageResult.getRows();
-
-        initFlowTasks(flowTaskList);
-
-        flowTaskList.forEach(a -> {
-            if (!userId.equals(a.getExecutorId())) {
-                a.getFlowInstance().setBusinessModelRemark("【" + a.getExecutorName() + "-转授权】" + a.getFlowInstance().getBusinessModelRemark());
+        for (FlowTask bean : flowTaskList) {
+            //实时计算预警状态
+            try {
+                this.setWarningStatusByTask(bean);
+            } catch (Exception e) {
+                LogUtil.error("待办设置预警状态失败，taskId=" + bean.getId(), e);
             }
-        });
-
-        FlowTaskTool.changeTaskStatue(flowTaskPageResult);
+            //共同查看模式前台添加转授权备注
+            if (!userId.equals(bean.getExecutorId())) {
+                bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
+            }
+        }
         return flowTaskPageResult;
     }
 
