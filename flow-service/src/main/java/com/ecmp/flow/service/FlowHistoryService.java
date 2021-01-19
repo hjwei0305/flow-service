@@ -23,7 +23,9 @@ import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -542,6 +544,40 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             }
         }
         return result;
+    }
+
+
+    /**
+     * 计算流程历史是否超时（集合）
+     *
+     * @param list
+     */
+    public void setHistoryListIfTimeout(List<FlowHistory> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        list.forEach(this::setHistoryIfTimeout);
+    }
+
+    /**
+     * 计算流程历史是否超时（单个）
+     *
+     * @param flowHistory
+     */
+    private void setHistoryIfTimeout(FlowHistory flowHistory) {
+        if (flowHistory.getActStartTime() == null || flowHistory.getTiming() == null || flowHistory.getTiming() < 0.000001) {
+            flowHistory.setIfTimeout(false);
+        } else {
+            //实际用时
+            Double hour = new BigDecimal((double) (flowHistory.getActEndTime().getTime() - flowHistory.getActStartTime().getTime()) / (60 * 60 * 1000)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            //额定工时
+            Double timing = flowHistory.getTiming();
+            if (hour > timing) {
+                flowHistory.setIfTimeout(true);
+            } else {
+                flowHistory.setIfTimeout(false);
+            }
+        }
     }
 
 

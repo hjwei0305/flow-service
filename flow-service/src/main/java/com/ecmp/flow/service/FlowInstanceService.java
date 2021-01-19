@@ -359,15 +359,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     public List<ProcessTrackVO> getProcessTrackVO(String businessId) {
         List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessIdOrder(businessId);
-        List<ProcessTrackVO> result = new ArrayList<ProcessTrackVO>();
+        List<ProcessTrackVO> result = new ArrayList<>();
         Set<FlowInstance> flowInstanceListReal = new LinkedHashSet<>();
 
-        if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(flowInstanceList)) {
             flowInstanceListReal.addAll(flowInstanceList);
             for (FlowInstance flowInstance : flowInstanceList) {
                 FlowInstance parent = flowInstance.getParent();
                 while (parent != null) {
-                    // flowInstanceListReal.add(parent);
                     initSonFlowInstance(flowInstanceListReal, businessId, parent);//初始化兄弟节点相关任务
                     flowInstanceListReal.remove(parent);
                     parent = parent.getParent();
@@ -390,7 +389,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 List<FlowTask> flowTaskList = processTrackVO.getFlowTaskList();
                 flowTaskSort(flowTaskList);
 
-                if (flowHistoryList != null && !flowHistoryList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(flowHistoryList)) {
                     //去重复
                     Set<FlowHistory> tempFlowHistorySet = new LinkedHashSet<>();
                     tempFlowHistorySet.addAll(flowHistoryList);
@@ -511,6 +510,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+        //计算流程历史任务是否超时
+        flowHistoryService.setHistoryListIfTimeout(flowHistoryList);
+
         pv.setFlowHistoryList(flowHistoryList);
         pv.setFlowTaskList(newFlowTaskList);
 
