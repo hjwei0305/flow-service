@@ -2146,7 +2146,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         list.add(searchOrder);
         search.setSortOrders(list);
 
-        FlowTaskPageResultVO<FlowTask> flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, "", search);
+        FlowTaskPageResultVO<FlowTask> flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, search);
         FlowTaskPageResultVO<FlowTaskPhoneVo> phoneVoPage = new FlowTaskPageResultVO<FlowTaskPhoneVo>();
         phoneVoPage.setAllTotal(flowTaskPage.getAllTotal());
         phoneVoPage.setPage(flowTaskPage.getPage());
@@ -2240,13 +2240,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         list.add(searchOrder);
         search.setSortOrders(list);
 
-        return findByBusinessModelIdWithAllCount(businessModelId, "", search);
+        return findByBusinessModelIdWithAllCount(businessModelId, search);
     }
 
     @Override
     public ResponseData listFlowTaskWithAllCount(Search search, String modelId) {
         try {
-            FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, "", search);
+            FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, search);
             return ResponseData.operationSuccessWithData(resVo);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
@@ -2271,8 +2271,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             pageInfo.setRows(1000);
             search.setPageInfo(pageInfo);
         }
-        PageResult<FlowTask> pageResult = flowTaskDao.findByPageOfPower(userId, powerList, "", search);
-
+        PageResult<FlowTask> pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower("", userId, powerList, search);
 
         //说明添加授权人信息
         List<FlowTask> flowTaskList = pageResult.getRows();
@@ -2293,22 +2292,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, String appSign, Search searchConfig) {
+    public FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
-        FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
+        FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<>();
         if (StringUtils.isEmpty(userId) || "anonymous".equalsIgnoreCase(userId)) {
             throw new FlowException("会话超时，请重新登录！");
         }
-        PageResult<FlowTask> pageResult = null;
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
+        PageResult<FlowTask> pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
 
-        if (StringUtils.isNotEmpty(businessModelId)) {
-            pageResult = flowTaskDao.findByPageByBusinessModelIdOfPower(businessModelId, userId, powerList, searchConfig);
-        } else {
-            pageResult = flowTaskDao.findByPageOfPower(userId, powerList, appSign, searchConfig);
-        }
         //说明添加授权人信息
         List<FlowTask> flowTaskList = pageResult.getRows();
 
@@ -3718,7 +3712,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return resultVO;
         }
         // 一般待办查询结果
-        return findByBusinessModelIdWithAllCount(modelId, "", queryParam);
+        return findByBusinessModelIdWithAllCount(modelId, queryParam);
     }
 
 

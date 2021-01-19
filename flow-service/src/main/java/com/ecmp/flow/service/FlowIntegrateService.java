@@ -147,7 +147,7 @@ public class FlowIntegrateService implements IFlowIntegrateService {
         if (CollectionUtils.isNotEmpty(portalFlowTaskParam.getSearchOrders())) {
             search.setSortOrders(portalFlowTaskParam.getSearchOrders());
         }
-        FlowTaskPageResultVO<FlowTask> resVo = flowTaskService.findByBusinessModelIdWithAllCount(portalFlowTaskParam.getModelId(), "", search);
+        FlowTaskPageResultVO<FlowTask> resVo = flowTaskService.findByBusinessModelIdWithAllCount(portalFlowTaskParam.getModelId(), search);
         if (CollectionUtils.isNotEmpty(resVo.getRows())) {
             resVo.getRows().forEach(flowTask -> result.add(new PortalFlowTask(flowTask)));
         }
