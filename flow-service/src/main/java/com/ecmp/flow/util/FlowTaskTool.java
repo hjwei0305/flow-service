@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -1386,50 +1387,6 @@ public class FlowTaskTool {
                 flowTask.setCanMobile(true);
             }
             if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType)) {//能否批量审批
-//                JSONObject executor = null;
-//                JSONArray executorList = null;//针对两个条件以上的情况
-//                if (currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)) {
-//                    try {
-//                        executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
-//                    } catch (Exception e) {
-//                        if (executor == null) {
-//                            try {
-//                                executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
-//                            } catch (Exception e2) {
-//                                e2.printStackTrace();
-//                            }
-//                            if (executorList != null && executorList.size() == 1) {
-//                                executor = executorList.getJSONObject(0);
-//                            }
-//                        }
-//                    }
-//                }
-//                if (executor != null && !executor.isEmpty()) {
-//                    String userType = (String) executor.get("userType");
-//                    if ("StartUser".equalsIgnoreCase(userType) || "Position".equalsIgnoreCase(userType) || "PositionType".equalsIgnoreCase(userType)) {
-//                        if (mustCommit == null || !mustCommit) {
-//                            if (checkNextNodesCanAprool(flowTask, null)) {
-//                                flowTask.setCanBatchApproval(true);
-//                            }
-//                        }
-//                    }
-//                } else if (executorList != null && executorList.size() > 1) {
-//                    Boolean canBatchApproval = false;
-//                    for (Object executorObject : executorList.toArray()) {
-//                        JSONObject executorTemp = (JSONObject) executorObject;
-//                        String userType = executorTemp.get("userType") + "";
-//                        if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
-//                            canBatchApproval = false;
-//                            break;
-//                        }
-//                    }
-//                    if (mustCommit == null || !mustCommit) {
-//                        if (checkNextNodesCanAprool(flowTask, null)) {
-//                            flowTask.setCanBatchApproval(canBatchApproval);
-//                        }
-//                    }
-//                }
-
                 //不需要判断当前节点执行人类型，只需要判断是否允许批量，和下一节点信息是否允许当前节点批量提交
                 if (mustCommit == null || !mustCommit) {
                     if (checkNextNodesCanAprool(flowTask, null)) {
@@ -1440,9 +1397,18 @@ public class FlowTaskTool {
                 } else {
                     flowTask.setCanBatchApproval(false);
                 }
-
-
             }
+        }
+
+        //任务额定工时设置(换算成小时，保留两位小数)
+        try {
+            int executeDay = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeDay");
+            int executeHour = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeHour");
+            int executeMinute = currentNode.getJSONObject("nodeConfig").getJSONObject("normal").getInt("executeMinute");
+            int minute = executeDay * 24 * 60 + executeHour * 60 + executeMinute;
+            Double hour = new BigDecimal((float) minute / 60).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            flowTask.setTiming(hour);
+        } catch (Exception e) {
         }
 
     }
