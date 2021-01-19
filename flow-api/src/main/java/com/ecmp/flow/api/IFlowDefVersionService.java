@@ -67,15 +67,14 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
      *
      * @param definition json对象实体
      * @return 保存后的流程版本定义实体
-     * @throws JAXBException              jaxb解析异常
-     * @throws CloneNotSupportedException 复制异常
+     * @throws JAXBException jaxb解析异常
      */
     @POST
     @Path("jsonSave")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "json流程定义保存实体", notes = "测试 json流程定义保存实体")
-    OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException;
+    OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException;
 
 
     /**

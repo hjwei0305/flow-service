@@ -154,17 +154,18 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
      * @param definition
      * @return
      */
-    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException, CloneNotSupportedException {
+    public OperateResultWithData<FlowDefVersion> save(Definition definition) throws JAXBException {
         String flowTypeId = definition.getFlowTypeId();
         FlowType flowType = flowTypeDao.findOne(flowTypeId);
         if (flowType == null) { //流程版本必须指定流程类型
             return OperateResultWithData.operationFailure("10007");
         }
         Process process = definition.getProcess();
-        FlowDefination flowDefination = null;
         Boolean canAsSubProcess = definition.getSubProcess();
         Boolean canAssolidifyFlow = definition.getSolidifyFlow();
-        flowDefination = flowDefinationDao.findByDefKey(process.getId());
+        Integer timing = definition.getTiming();
+        Integer earlyWarningTime = definition.getEarlyWarningTime();
+        FlowDefination flowDefination = flowDefinationDao.findByDefKey(process.getId());
         if (StringUtils.isEmpty(definition.getId()) && flowDefination != null) {  //新增的流程定义
             return OperateResultWithData.operationFailure("流程代码重复！");
         }
@@ -190,13 +191,11 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefination.setName(process.getName());
             flowDefination.setDefKey(process.getId());
             if (process.getStartUEL() != null) {
-                // flowDefination.setStartUel(process.getStartUEL().toString());
                 entity.setStartUel(process.getStartUEL().toString());
             }
             flowDefination.setFlowType(flowType);
             flowDefination.setOrgId(definition.getOrgId());
             flowDefination.setOrgCode(definition.getOrgCode());
-            // flowDefination.setCurrentFlowDefVersion(1L);I
             flowDefination.setFlowDefinationStatus(FlowDefinationStatus.INIT);
             flowDefination.setPriority(definition.getPriority());
             flowDefination.setSubProcess(canAsSubProcess);
@@ -219,14 +218,14 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             entity.setEndCallServiceUrlId(process.getAfterEndServiceId());
             entity.setEndCallServiceUrlName(process.getAfterEndServiceName());
             entity.setEndCallServiceAync(process.getAfterStartServiceAync());
-//            entity.setVersionCode(1);
             entity.setFlowDefination(flowDefination);
             entity.setDefJson(defJson);
-//            entity.setDefBpmn(defBpm);
             entity.setDefXml(defBpm);
             entity.setPriority(definition.getPriority());
             entity.setSubProcess(canAsSubProcess);
             entity.setSolidifyFlow(canAssolidifyFlow);
+            entity.setTiming(timing);
+            entity.setEarlyWarningTime(earlyWarningTime);
 
             flowDefVersionDao.save(entity);
             flowDefination.setLastVersionId(entity.getId());
@@ -238,7 +237,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
             if (entity != null) {//版本不为空
                 if (!entity.getDefKey().equals(process.getId())) {
-//                    throw new RuntimeException("版本key与当前流程定义key不一致！");
                     entity = new FlowDefVersion();
                     entity.setActDefId(process.getId());
                     entity.setDefKey(process.getId());
@@ -254,18 +252,18 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     }
                 }
                 if (process.getStartUEL() != null) {
-                    // flowDefination.setStartUel(process.getStartUEL().toString());
                     entity.setStartUel(process.getStartUEL().toString());
                 }
                 entity.setFlowDefinationStatus(FlowDefinationStatus.INIT);
                 entity.setFlowDefination(flowDefination);
                 entity.setDefJson(defJson);
-//                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 entity.setName(process.getName());
                 entity.setPriority(definition.getPriority());
                 entity.setSubProcess(canAsSubProcess);
                 entity.setSolidifyFlow(canAssolidifyFlow);
+                entity.setTiming(timing);
+                entity.setEarlyWarningTime(earlyWarningTime);
                 entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
                 entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
                 entity.setStartCheckServiceAync(process.getBeforeStartServiceAync());
@@ -292,18 +290,17 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 entity.setActDefId(process.getId());
                 entity.setName(process.getName());
                 entity.setDefKey(process.getId());
-//                entity.setVersionCode(1);
                 entity.setFlowDefination(flowDefination);
                 entity.setDefJson(defJson);
-//                entity.setDefBpmn(defBpm);
                 entity.setDefXml(defBpm);
                 if (process.getStartUEL() != null) {
-                    // flowDefination.setStartUel(process.getStartUEL().toString());
                     entity.setStartUel(process.getStartUEL().toString());
                 }
                 entity.setPriority(definition.getPriority());
                 entity.setSubProcess(canAsSubProcess);
                 entity.setSolidifyFlow(canAssolidifyFlow);
+                entity.setTiming(timing);
+                entity.setEarlyWarningTime(earlyWarningTime);
                 entity.setStartCheckServiceUrlId(process.getBeforeStartServiceId());
                 entity.setStartCheckServiceUrlName(process.getBeforeStartServiceName());
                 entity.setStartCheckServiceAync(process.getBeforeStartServiceAync());
@@ -342,7 +339,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 redisTemplate.delete(keys);
             }
         }
-//        appModuleDao.clearLevel2Cache();//手动清除二级缓存
     }
 
     /**
