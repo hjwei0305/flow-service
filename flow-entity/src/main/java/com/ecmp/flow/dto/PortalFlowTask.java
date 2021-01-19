@@ -65,6 +65,21 @@ public class PortalFlowTask implements Serializable {
     private Date createdDate;
 
     /**
+     * 任务额定工时（小时）
+     */
+    private Double timing;
+
+    /**
+     * 预警状态
+     * EarlyWarningStatus.code
+     * ("normal", "正常")
+     * ("warning", "预警")
+     * ("timeout", "超时");
+     */
+    private String warningStatus;
+
+
+    /**
      * 默认构造函数
      */
     public PortalFlowTask() {
@@ -72,6 +87,7 @@ public class PortalFlowTask implements Serializable {
 
     /**
      * 通过工作流任务构造
+     *
      * @param flowTask 工作流任务
      */
     public PortalFlowTask(FlowTask flowTask) {
@@ -88,6 +104,8 @@ public class PortalFlowTask implements Serializable {
         taskName = flowTask.getTaskName();
         priority = flowTask.getPriority();
         createdDate = flowTask.getCreatedDate();
+        timing = flowTask.getTiming();
+        warningStatus = flowTask.getWarningStatus();
     }
 
     public String getId() {
@@ -96,6 +114,22 @@ public class PortalFlowTask implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Double getTiming() {
+        return timing;
+    }
+
+    public void setTiming(Double timing) {
+        this.timing = timing;
+    }
+
+    public String getWarningStatus() {
+        return warningStatus;
+    }
+
+    public void setWarningStatus(String warningStatus) {
+        this.warningStatus = warningStatus;
     }
 
     public String getTaskFormUrl() {
