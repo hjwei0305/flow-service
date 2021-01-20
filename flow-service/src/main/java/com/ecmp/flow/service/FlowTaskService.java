@@ -2440,13 +2440,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 //服务任务和接收任务包装前台展示
                 nodeInfoList.forEach(a -> {
-                    if ("ServiceTask".equals(a.getType())) {
+                    if ("serviceTask".equals(a.getType())) {
                         a.getExecutorSet().forEach(e -> {
                             e.setName("系统自动");
                             e.setCode(Constants.ADMIN);
                             e.setOrganizationName("系统自动执行的任务");
                         });
-                    } else if ("ReceiveTask".equals(a.getType())) {
+                    } else if ("receiveTask".equals(a.getType())) {
                         a.getExecutorSet().forEach(e -> {
                             e.setName("系统触发");
                             e.setCode(Constants.ADMIN);
