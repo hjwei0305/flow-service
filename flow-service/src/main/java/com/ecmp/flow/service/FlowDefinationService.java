@@ -728,10 +728,28 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     //固化流程字段不为空（兼容以前版本），并且选择了固化流程,提供流程定义的id
                     if (finalFlowDefination.getSolidifyFlow() != null && finalFlowDefination.getSolidifyFlow() == true) {
                         flowStartResultVO.setSolidifyFlow(true);
-                        nodeInfoList.get(0).setExecutorSet(null);//固化流程不需要下一节点人员
+                        nodeInfoList.forEach(a -> {
+                            a.setExecutorSet(null);
+                        });
                         flowStartResultVO.setFlowDefinationId(finalFlowDefination.getId());
                     } else {
                         flowStartResultVO.setSolidifyFlow(false);
+                        //服务任务和接收任务包装前台展示
+                        nodeInfoList.forEach(a -> {
+                            if ("ServiceTask".equals(a.getType())) {
+                                a.getExecutorSet().forEach(e ->{
+                                    e.setName("系统自动");
+                                    e.setCode(Constants.ADMIN);
+                                    e.setOrganizationName("系统自动执行的任务");
+                                });
+                            } else if ("ReceiveTask".equals(a.getType())) {
+                                a.getExecutorSet().forEach(e ->{
+                                    e.setName("系统触发");
+                                    e.setCode(Constants.ADMIN);
+                                    e.setOrganizationName("等待系统触发后执行");
+                                });
+                            }
+                        });
                     }
                     flowStartResultVO.setNodeInfoList(nodeInfoList);
                 }
@@ -742,6 +760,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         }
         return resultWithData;
     }
+
 
     private List<NodeInfo> initNodesInfo(List<NodeInfo> result, FlowStartVO flowStartVO, Definition definition, String nodeId) {
         NodeInfo nodeInfo = new NodeInfo();

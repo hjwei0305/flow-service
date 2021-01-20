@@ -86,24 +86,16 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     flowTask.setFlowInstance(flowInstance);
 
-//                    String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
-//                    AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-//                    if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
-//                        ownerName = appModule.getName();
-//                    }
-//                    flowTask.setOwnerName(ownerName);
-//                    flowTask.setExecutorName(ownerName);
 
-                    //接收任务将待办执行人和拥有者名称改为任务名称
-                    flowTask.setOwnerName(flowTaskName);
-                    flowTask.setExecutorName(flowTaskName);
-
+                    flowTask.setOwnerName("系统触发");
+                    flowTask.setExecutorName("系统触发");
                     flowTask.setOwnerAccount(Constants.ADMIN);
                     flowTask.setExecutorAccount(Constants.ADMIN);
                     flowTask.setExecutorId("");
+                    flowTask.setOwnerId("");
                     flowTask.setCandidateAccount("");
-                    flowTask.setActDueDate(now);
 
+                    flowTask.setActDueDate(now);
                     flowTask.setActTaskDefKey(actTaskDefKey);
                     flowTask.setPreId(null);
                     flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());

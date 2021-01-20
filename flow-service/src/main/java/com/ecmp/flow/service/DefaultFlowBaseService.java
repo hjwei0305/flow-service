@@ -426,13 +426,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData startFlow(String businessModelCode, String businessKey, String opinion,
                                   String typeId, String flowDefKey, String taskList, String anonymousNodeId) throws NoSuchMethodException, SecurityException {
-        Map<String, Object> userMap = new HashMap<String, Object>();
+        Map<String, Object> userMap = new HashMap<>();
         FlowStartVO flowStartVO = new FlowStartVO();
         flowStartVO.setBusinessKey(businessKey);
         flowStartVO.setBusinessModelCode(businessModelCode);
         flowStartVO.setFlowTypeId(typeId);
         flowStartVO.setFlowDefKey(flowDefKey);
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
         flowStartVO.setVariables(variables);
         if (StringUtils.isNotEmpty(taskList)) {
             variables.put("additionRemark", opinion);
@@ -440,7 +440,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 flowStartVO.setPoolTask(true);
                 userMap.put("anonymous", "anonymous");
                 Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
-                List<String> userList = new ArrayList<String>();
+                List<String> userList = new ArrayList<>();
                 selectedNodesUserMap.put(anonymousNodeId, userList);
                 variables.put("selectedNodesUserMap", selectedNodesUserMap);
             } else {
