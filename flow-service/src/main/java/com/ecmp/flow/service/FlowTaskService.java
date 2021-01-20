@@ -2437,6 +2437,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoList = flowSolidifyExecutorService.
                             setNodeExecutorByBusinessId(nodeInfoList, flowTask.getFlowInstance().getBusinessId());
                 }
+
+                //服务任务和接收任务包装前台展示
+                nodeInfoList.forEach(a -> {
+                    if ("ServiceTask".equals(a.getType())) {
+                        a.getExecutorSet().forEach(e -> {
+                            e.setName("系统自动");
+                            e.setCode(Constants.ADMIN);
+                            e.setOrganizationName("系统自动执行的任务");
+                        });
+                    } else if ("ReceiveTask".equals(a.getType())) {
+                        a.getExecutorSet().forEach(e -> {
+                            e.setName("系统触发");
+                            e.setCode(Constants.ADMIN);
+                            e.setOrganizationName("等待系统触发后执行");
+                        });
+                    }
+                });
+
                 return OperateResultWithData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
