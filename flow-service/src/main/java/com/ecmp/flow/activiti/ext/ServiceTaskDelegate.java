@@ -96,10 +96,10 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowHistory.setFlowInstance(flowInstance);
 
                     flowHistory.setOwnerAccount(Constants.ADMIN);
-                    flowHistory.setOwnerName(ContextUtil.getMessage("10048"));
+                    flowHistory.setOwnerName("系统自动");
                     flowHistory.setExecutorAccount(Constants.ADMIN);
                     flowHistory.setExecutorId("");
-                    flowHistory.setExecutorName(ContextUtil.getMessage("10048"));
+                    flowHistory.setExecutorName("系统自动");
                     flowHistory.setCandidateAccount("");
                     flowHistory.setActStartTime(new Date());
                     flowHistory.setActHistoryId(null);

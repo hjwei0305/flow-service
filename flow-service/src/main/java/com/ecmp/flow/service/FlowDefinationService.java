@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 
 
 import javax.ws.rs.core.GenericType;
@@ -734,22 +735,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         flowStartResultVO.setFlowDefinationId(finalFlowDefination.getId());
                     } else {
                         flowStartResultVO.setSolidifyFlow(false);
-                        //服务任务和接收任务包装前台展示
-                        nodeInfoList.forEach(a -> {
-                            if ("ServiceTask".equals(a.getType())) {
-                                a.getExecutorSet().forEach(e ->{
-                                    e.setName("系统自动");
-                                    e.setCode(Constants.ADMIN);
-                                    e.setOrganizationName("系统自动执行的任务");
-                                });
-                            } else if ("ReceiveTask".equals(a.getType())) {
-                                a.getExecutorSet().forEach(e ->{
-                                    e.setName("系统触发");
-                                    e.setCode(Constants.ADMIN);
-                                    e.setOrganizationName("等待系统触发后执行");
-                                });
-                            }
-                        });
                     }
                     flowStartResultVO.setNodeInfoList(nodeInfoList);
                 }
@@ -828,8 +813,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
-                Set<Executor> employeeSet = new HashSet<Executor>();
+            if (!CollectionUtils.isEmpty(employees)) {//服务任务前台展示执行人封装（ID为操作人）
+                employees.get(0).setName("系统自动");
+                employees.get(0).setCode(Constants.ADMIN);
+                employees.get(0).setOrganizationName("系统自动执行的任务");
+                Set<Executor> employeeSet = new HashSet<>();
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -842,8 +830,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
-                Set<Executor> employeeSet = new HashSet<Executor>();
+            if (!CollectionUtils.isEmpty(employees)) {//接收任务前台展示执行人封装（ID为操作人）
+                employees.get(0).setName("系统触发");
+                employees.get(0).setCode(Constants.ADMIN);
+                employees.get(0).setOrganizationName("等待系统触发后执行");
+                Set<Executor> employeeSet = new HashSet<>();
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -1179,8 +1170,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setFlowTaskType("serviceTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
-                Set<Executor> employeeSet = new HashSet<Executor>();
+            if (!CollectionUtils.isEmpty(employees)) {//服务任务前台展示执行人封装（ID为操作人）
+                employees.get(0).setName("系统自动");
+                employees.get(0).setCode(Constants.ADMIN);
+                employees.get(0).setOrganizationName("系统自动执行的任务");
+                Set<Executor> employeeSet = new HashSet<>();
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -1197,8 +1191,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setFlowTaskType("receiveTask");
             String startUserId = ContextUtil.getSessionUser().getUserId();
             List<Executor> employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
-            if (employees != null && !employees.isEmpty()) {//服务任务默认选择流程启动人
-                Set<Executor> employeeSet = new HashSet<Executor>();
+            if (!CollectionUtils.isEmpty(employees)) {//接收任务前台展示执行人封装（ID为操作人）
+                employees.get(0).setName("系统触发");
+                employees.get(0).setCode(Constants.ADMIN);
+                employees.get(0).setOrganizationName("等待系统触发后执行");
+                Set<Executor> employeeSet = new HashSet<>();
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -1234,8 +1231,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     private List<NodeInfo> findStartNextNodes(FlowDefination flowDefination, FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
         List<NodeInfo> result = null;
         if (flowDefination != null) {
-            result = new ArrayList<NodeInfo>();
-//            String startUEL = flowDefination.getStartUel();
+            result = new ArrayList<>();
             String versionId = flowDefination.getLastDeloyVersionId();
             FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {//当前

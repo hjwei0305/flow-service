@@ -1295,10 +1295,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("serviceTask");
                     String userId = ContextUtil.getSessionUser().getUserId();
-                    //通过用户id获取用户信息
                     Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
-                    if (executor != null) {//服务任务默认选择当前操作人
-                        Set<Executor> employeeSet = new HashSet<Executor>();
+                    if (executor != null) {//服务任务封装执行人信息（ID为操作人）
+                        executor.setName("系统自动");
+                        executor.setCode(Constants.ADMIN);
+                        executor.setOrganizationName("系统自动执行的任务");
+                        Set<Executor> employeeSet = new HashSet<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1307,10 +1309,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfo.setUiType("radiobox");
                     nodeInfo.setFlowTaskType("receiveTask");
                     String userId = ContextUtil.getSessionUser().getUserId();
-                    //通过用户id获取用户信息
                     Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
-                    if (executor != null) {//接收任务默认选择当前操作人
-                        Set<Executor> employeeSet = new HashSet<Executor>();
+                    if (executor != null) {//接收任务封装执行人信息（ID为操作人）
+                        executor.setName("系统触发");
+                        executor.setCode(Constants.ADMIN);
+                        executor.setOrganizationName("等待系统触发后执行");
+                        Set<Executor> employeeSet = new HashSet<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1415,9 +1419,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                         }
                                     } catch (Exception e) {
                                     }
-
-//                                    employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-//                                    }, flowInvokeParams);
                                     employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
                                 } else {
                                     //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
@@ -1442,7 +1443,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             JSONObject executorTemp = (JSONObject) executorObject;
                             String userType = executorTemp.get("userType") + "";
                             String ids = executorTemp.get("ids") + "";
-//                nodeInfo.setUiUserType(userType);
                             List<String> tempList = null;
                             if (StringUtils.isNotEmpty(ids)) {
                                 String[] idsShuZhu = ids.split(",");
@@ -1489,8 +1489,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             } catch (Exception e) {
                             }
-//                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-//                            }, flowInvokeParams);
                             employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
 
                         } else {
@@ -2437,24 +2435,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoList = flowSolidifyExecutorService.
                             setNodeExecutorByBusinessId(nodeInfoList, flowTask.getFlowInstance().getBusinessId());
                 }
-
-                //服务任务和接收任务包装前台展示
-                nodeInfoList.forEach(a -> {
-                    if ("serviceTask".equals(a.getType())) {
-                        a.getExecutorSet().forEach(e -> {
-                            e.setName("系统自动");
-                            e.setCode(Constants.ADMIN);
-                            e.setOrganizationName("系统自动执行的任务");
-                        });
-                    } else if ("receiveTask".equals(a.getType())) {
-                        a.getExecutorSet().forEach(e -> {
-                            e.setName("系统触发");
-                            e.setCode(Constants.ADMIN);
-                            e.setOrganizationName("等待系统触发后执行");
-                        });
-                    }
-                });
-
                 return OperateResultWithData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
