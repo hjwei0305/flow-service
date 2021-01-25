@@ -24,6 +24,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,17 +108,13 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 SearchOrder searchOrder = new SearchOrder();
                 search.addSortOrder(searchOrder.desc("lastEditedDate"));
                 List<FlowHistory> historylist = flowHistoryService.findByFilters(search);
-                if (historylist != null && historylist.size() > 0) {
-                    FlowHistory a = historylist.get(0);
-                    historyId = a.getId();
-                    if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
-                            a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
-                            a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
-                            a.getFlowInstance().isEnded() == false) {
-                        Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
-                        if (canCel) {
-                            canCancel = true;
-                        }
+                if (!CollectionUtils.isEmpty(historylist)) {
+                    FlowHistory flowHistory = historylist.get(0);
+                    historyId = flowHistory.getId();
+                    //动态设置撤回按钮是否显示
+                    flowHistoryService.dynamicallySetTheRecallButtonByOne(flowHistory);
+                    if (BooleanUtils.isTrue(flowHistory.getCanCancel())) {
+                        canCancel = true;
                     }
                 }
             }
@@ -186,20 +183,15 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             if (flowTask == null) {
                 taskBoo = false;
                 List<FlowHistory> historylist = flowHistoryService.findListByProperty("oldTaskId", taskId);
-                if (historylist != null && historylist.size() > 0) {
-                    FlowHistory a = historylist.get(0);
-                    historyId = a.getId();
-                    if (a != null && a.getCanCancel() != null && a.getCanCancel() == true &&
-                            a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus()) &&
-                            a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null &&
-                            a.getFlowInstance().isEnded() == false) {
-                        Boolean canCel = flowTaskTool.checkoutTaskRollBack(a);
-                        if (canCel) {
-                            canCancel = true;
-                        }
+                if (!CollectionUtils.isEmpty(historylist)) {
+                    FlowHistory flowHistory = historylist.get(0);
+                    historyId = flowHistory.getId();
+                    //动态设置撤回按钮是否显示
+                    flowHistoryService.dynamicallySetTheRecallButtonByOne(flowHistory);
+                    if (BooleanUtils.isTrue(flowHistory.getCanCancel())) {
+                        canCancel = true;
                     }
                 }
-
             } else {
                 canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
                 //添加不同意原因

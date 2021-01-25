@@ -921,11 +921,16 @@ public class FlowTaskTool {
             String taskId = flowHistory.getActHistoryId();
             // 取得当前任务
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+            if (currTask.getEndTime() == null) {// 当前任务可能已经被还原成待办（表示已经撤回了）
+                return false; //当前任务可能已经被还原
+            }
+
             // 取得流程实例
             ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
             if (instance == null) {
                 return false;  //流程实例不存在或者已经结束
             }
+
             // 取得流程定义
             ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
@@ -940,11 +945,8 @@ public class FlowTaskTool {
 
             // 取得下一步活动
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition).findActivity(currTask.getTaskDefinitionKey());
-            if (currTask.getEndTime() == null) {// 当前任务可能已经被还原
-                return false; //当前任务可能已经被还原
-            }
-
-            resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
+            //只判断下一步是否已经执行（如果执行了，不显示撤回按钮）
+            resultCheck = checkIfTheNextNodeHasBeenProcessed(currActivity, instance, currTask);
 
         } catch (Exception e) {
             LogUtil.error("检查是否可以撤回报错：{}", e.getMessage(), e);
@@ -1206,6 +1208,48 @@ public class FlowTaskTool {
     }
 
     /**
+     * 只判断下一步是否已经执行
+     *
+     * @param currActivity
+     * @param instance
+     * @param destnetionTask
+     * @return
+     */
+    public Boolean checkIfTheNextNodeHasBeenProcessed(PvmActivity currActivity, ProcessInstance instance, HistoricTaskInstance destnetionTask) {
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+        boolean result = true;
+
+        for (PvmTransition nextTransition : nextTransitionList) {
+            PvmActivity nextActivity = nextTransition.getDestination();
+            Boolean ifGateWay = ifGageway(nextActivity);
+            String type = nextActivity.getProperty("type") + "";
+            if (ifGateWay || "ManualTask".equalsIgnoreCase(type)) {
+                result = checkIfTheNextNodeHasBeenProcessed(nextActivity, instance, destnetionTask);
+                if (!result) {
+                    return result;
+                }
+            }
+            List<HistoricTaskInstance> completeTasks = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).finished().list();
+            for (HistoricTaskInstance h : completeTasks) {
+                if (h.getEndTime().after(destnetionTask.getEndTime())) {
+                    return false;
+                }
+            }
+            if (ifMultiInstance(currActivity)) {// 如果是多实例任务,判断当前任务是否已经流转到下一节点
+                List<HistoricTaskInstance> unCompleteTasks = historyService.createHistoricTaskInstanceQuery()
+                        .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).unfinished().list();
+                for (HistoricTaskInstance h : unCompleteTasks) {
+                    if (h.getStartTime().after(destnetionTask.getStartTime())) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * 检查下一节点是否已经执行完成
      *
      * @param currActivity
@@ -1308,11 +1352,11 @@ public class FlowTaskTool {
             return ResponseData.operationFailure("驳回失败：前置节点参数为空!");
         }
         String type = preActivity.getProperty("type") + "";
-        if("callActivity".equalsIgnoreCase(type)){
+        if ("callActivity".equalsIgnoreCase(type)) {
             return ResponseData.operationFailure("驳回失败：前置节点是子任务，不能驳回!");
-        }else if("ServiceTask".equalsIgnoreCase(type)){
+        } else if ("ServiceTask".equalsIgnoreCase(type)) {
             return ResponseData.operationFailure("驳回失败：前置节点是服务任务，不能驳回!");
-        }else if("ReceiveTask".equalsIgnoreCase(type)){
+        } else if ("ReceiveTask".equalsIgnoreCase(type)) {
             return ResponseData.operationFailure("驳回失败：前置节点是接收任务，不能驳回!");
         }
         Boolean result = ifMultiInstance(currActivity);
@@ -1330,7 +1374,7 @@ public class FlowTaskTool {
                 return checkCanReject(currentInActivity, preActivity);
             }
         }
-        return  ResponseData.operationFailure("驳回失败：没有找到符合的驳回条件！");
+        return ResponseData.operationFailure("驳回失败：没有找到符合的驳回条件！");
     }
 
     private void taskPropertityInit(FlowTask flowTask, FlowHistory preTask, JSONObject currentNode, Map<String, Object> variables) {

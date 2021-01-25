@@ -1,40 +1,25 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiJsonUtils;
-import com.ecmp.core.search.PageInfo;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchOrder;
-import com.ecmp.vo.ResponseData;
+import com.ecmp.flow.entity.FlowHistory;
+import com.ecmp.flow.util.FlowTaskTool;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class FlowHistoryServiceTest extends BaseContextTestCase {
 
     @Autowired
-    private FlowHistoryService  service;
+    private FlowTaskTool flowTaskTool;
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+
 
     @Test
-    public void listFlowHistory(){
-        String businessModelId="";
-        Search search = new Search();
-        search.setFilters(null);
-        search.setPageInfo(new PageInfo());
-        search.addQuickSearchProperty("flowName");
-        search.addQuickSearchProperty("flowTaskName");
-        search.addQuickSearchProperty("flowInstance.businessCode");
-        search.addQuickSearchProperty("flowInstance.businessModelRemark");
-        search.addQuickSearchProperty("flowInstance.creatorName");
-        search.addQuickSearchProperty("flowInstance.creatorAccount");
-        search.setQuickSearchValue("");
-        List<SearchOrder> sortOrders = new ArrayList<>();
-        SearchOrder searchOrder = new SearchOrder("createdDate",SearchOrder.Direction.DESC);
-        sortOrders.add(searchOrder);
-        search.setSortOrders(sortOrders);
-        ResponseData res = service.listFlowHistory(businessModelId,search);
-        System.out.print(ApiJsonUtils.toJson(res));
+    public void checkoutTaskRollBack() {
+        FlowHistory history = flowHistoryService.findOne("2A1BD648-5C92-11EB-8019-0242C0A84413");
+        Boolean boo = flowTaskTool.checkoutTaskRollBack(history);
+        System.out.println(boo);
     }
+
 
 }

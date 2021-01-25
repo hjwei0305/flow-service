@@ -20,6 +20,7 @@ import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.flow.vo.phone.FlowHistoryPhoneVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -364,6 +365,34 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return responseData;
     }
 
+
+    /**
+     * 动态设置撤回按钮是否显示（集合）
+     */
+    public void dynamicallySetTheRecallButton(List<FlowHistory> historyList) {
+        if (CollectionUtils.isEmpty(historyList)) {
+            return;
+        }
+        historyList.forEach(this::dynamicallySetTheRecallButtonByOne);
+    }
+
+    /**
+     * 动态设置撤回按钮是否显示（单个）
+     */
+    public void dynamicallySetTheRecallButtonByOne(FlowHistory bean) {
+        if (bean == null) {
+            return;
+        }
+        //前台撤回按钮显示逻辑：canCancel == true && taskStatus == "COMPLETED" && flowInstance.ended == false
+        if (BooleanUtils.isTrue(bean.getCanCancel()) && "COMPLETED".equalsIgnoreCase(bean.getTaskStatus()) &&
+                bean.getFlowInstance() != null && BooleanUtils.isFalse(bean.getFlowInstance().isEnded())) {
+            Boolean boo = flowTaskTool.checkoutTaskRollBack(bean);
+            if (!boo) { //不可以显示
+                bean.setCanCancel(false);
+            }
+        }
+    }
+
     public PageResult<FlowHistory> findByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         PageResult<FlowHistory> result;
@@ -372,44 +401,20 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         } else {
             result = flowHistoryDao.findByPage(userId, searchConfig);
         }
-        List<FlowHistory> list = result.getRows();
-        initFlowTaskAppModule(list);
-
-        if (result.getRows() != null && result.getRows().size() > 0) {
-            result.getRows().forEach(a -> {
-                //CompleteTaskView.js中撤回按钮显示的判断逻辑：
-                // (items[j].canCancel == true && items[j].taskStatus == "COMPLETED" && items[j].flowInstance.ended == false)
-                if (a.getCanCancel() != null && a.getCanCancel() == true
-                        && a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus())
-                        && a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null && a.getFlowInstance().isEnded() == false) {
-                    Boolean boo = flowTaskTool.checkoutTaskRollBack(a);
-                    if (!boo) { //不可以显示
-                        a.setCanCancel(false);
-                    }
-                }
-            });
-        }
+        //设置已办的API和WEB基地址
+        initFlowTaskAppModule(result.getRows());
+        //动态设置撤回按钮是否显示
+        this.dynamicallySetTheRecallButton(result.getRows());
         return result;
     }
 
     public PageResult<FlowHistory> findByBusinessModelIdAndFlowStatus(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         PageResult<FlowHistory> result = flowHistoryDao.findByPageByBusinessModelIdAndFlowStatus(businessModelId, userId, searchConfig);
-        List<FlowHistory> list = result.getRows();
-        initFlowTaskAppModule(list);
-
-        if (result.getRows() != null && result.getRows().size() > 0) {
-            result.getRows().forEach(a -> {
-                if (a.getCanCancel() != null && a.getCanCancel() == true
-                        && a.getTaskStatus() != null && "COMPLETED".equalsIgnoreCase(a.getTaskStatus())
-                        && a.getFlowInstance() != null && a.getFlowInstance().isEnded() != null && a.getFlowInstance().isEnded() == false) {
-                    Boolean boo = flowTaskTool.checkoutTaskRollBack(a);
-                    if (!boo) { //不可以显示
-                        a.setCanCancel(false);
-                    }
-                }
-            });
-        }
+        //设置已办的API和WEB基地址
+        initFlowTaskAppModule(result.getRows());
+        //动态设置撤回按钮是否显示
+        this.dynamicallySetTheRecallButton(result.getRows());
         return result;
     }
 
@@ -566,7 +571,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
      */
     private void setHistoryIfTimeout(FlowHistory flowHistory) {
         if (flowHistory.getActStartTime() == null || flowHistory.getTiming() == null || flowHistory.getTiming() < 0.000001) {
-            if(flowHistory.getTiming() == null){
+            if (flowHistory.getTiming() == null) {
                 flowHistory.setTiming(0.00);
             }
             flowHistory.setIfTimeout(false);
