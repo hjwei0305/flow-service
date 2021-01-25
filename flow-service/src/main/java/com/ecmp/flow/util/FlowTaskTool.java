@@ -1207,6 +1207,26 @@ public class FlowTaskTool {
         return true;
     }
 
+
+    /**
+     * 判断服务任务是否已经执行
+     *
+     * @param instance
+     * @param currActivity
+     */
+    public Boolean serviceTaskHasExecute(ProcessInstance instance, PvmActivity currActivity) {
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
+        if (flowInstance != null) {
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+            FlowHistory serHistory = flowHistoryList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
+            if (serHistory != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     /**
      * 只判断下一步是否已经执行
      *
@@ -1223,6 +1243,13 @@ public class FlowTaskTool {
             PvmActivity nextActivity = nextTransition.getDestination();
             Boolean ifGateWay = ifGageway(nextActivity);
             String type = nextActivity.getProperty("type") + "";
+            if ("ServiceTask".equalsIgnoreCase(type)) { //服务任务（说明撤回任务连接有服务任务，服务任务会自动执行，底层没有记录）
+                //判断服务任务是否已经执行
+                Boolean boo = this.serviceTaskHasExecute(instance, nextActivity);
+                if (boo) {
+                    return false;
+                }
+            }
             if (ifGateWay || "ManualTask".equalsIgnoreCase(type)) {
                 result = checkIfTheNextNodeHasBeenProcessed(nextActivity, instance, destnetionTask);
                 if (!result) {
