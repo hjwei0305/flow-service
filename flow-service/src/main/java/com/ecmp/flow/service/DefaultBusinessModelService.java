@@ -21,6 +21,7 @@ import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
@@ -295,64 +296,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
 
-    /**
-     * @param id         业务单据id
-     * @param changeText 参数文本
-     * @return
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public boolean testReceiveCall(String id, String changeText) {
-        boolean result = false;
-        String receiveTaskActDefId = null;
-        Map<String, Object> variables = new HashMap<String, Object>();
-
-        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
-        if (entity != null) {
-            if (StringUtils.isNotEmpty(changeText)) {
-                JSONObject jsonObject = JSONObject.fromObject(changeText);
-                //HashMap<String,Object> params =   JsonUtils.fromJson(changeText, new TypeReference<HashMap<String,Object>>() {});
-                receiveTaskActDefId = jsonObject.get("receiveTaskActDefId") + "";
-                List<String> callActivtiySonPaths = null;
-                try {
-                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
-                    for (String callActivityPath : callActivtiySonPaths) {
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
-                        }
-                    }
-                }
-            }
-            changeText = "ReceiveCall";
-            entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
-            defaultBusinessModelDao.save(entity);
-            final String fReceiveTaskActDefId = receiveTaskActDefId;
-            new Thread(new Runnable() {//模拟异步
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(1000 * 20);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                    proxy.signalByBusinessId(id, fReceiveTaskActDefId, variables);
-                }
-            }).start();
-
-            result = true;
-        }
-        return result;
-    }
-
     public boolean checkStartFlow(String id) {
         return true;
     }
@@ -521,17 +464,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return ResponseData.operationSuccess();
     }
 
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams) {
-        String receiveTaskActDefId = null;
-        Map<String, Object> variables = new HashMap<String, Object>();
+    public ResponseData<FlowOperateResult> testReceiveCall(FlowInvokeParams flowInvokeParams) {
+        Map<String, Object> variables = new HashMap<>();
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
-                receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = null;
-                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                String receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                 if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
@@ -546,33 +486,63 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 }
                 entity.setWorkCaption(entity.getWorkCaption() + ":ReceiveID:" + receiveTaskActDefId);
                 defaultBusinessModelDao.save(entity);
-//                final String fReceiveTaskActDefId = receiveTaskActDefId;
-//                new Thread(new Runnable() {//模拟异步
-//                    @Override
-//                    public void run() {
-//                        long time = 20; //默认20秒
-//                        int index = 20;//重试20次
-//                        while (index > 0) {
-//                            try {
-//                                Thread.sleep(1000 * time);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                            try {
-//                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-//                                OperateResult resultTemp = proxy.signalByBusinessId(flowInvokeParams.getId(), fReceiveTaskActDefId, variables);
-//                                if (resultTemp.successful()) {
-//                                    return;
-//                                } else {
-//                                    time = time * 2; //加倍
-//                                }
-//                            } catch (Exception e) {
-//                                time = time * 2; //加倍
-//                            }
-//                            index--;
-//                        }
-//                    }
-//                }).start();
+            }
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData<FlowOperateResult> testReceiveCallNew(FlowInvokeParams flowInvokeParams) {
+        String receiveTaskActDefId;
+        Map<String, Object> variables = new HashMap<String, Object>();
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            if (entity != null) {
+                receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
+                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
+                    for (String callActivityPath : callActivtiySonPaths) {
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
+                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                        }
+                    }
+                }
+                entity.setWorkCaption(entity.getWorkCaption() + ":ReceiveID:" + receiveTaskActDefId);
+                defaultBusinessModelDao.save(entity);
+                final String fReceiveTaskActDefId = receiveTaskActDefId;
+                new Thread(new Runnable() {//模拟异步
+                    @Override
+                    public void run() {
+                        long time = 10; //默认10秒
+                        int index = 3;//重试3次
+                        while (index > 0) {
+                            try {
+                                Thread.sleep(1000 * time);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+                                OperateResult resultTemp = proxy.signalByBusinessId(flowInvokeParams.getId(), fReceiveTaskActDefId, variables);
+                                if (resultTemp.successful()) {
+                                    return;
+                                } else {
+                                    LogUtil.error(resultTemp.getMessage());
+                                }
+                            } catch (Exception e) {
+                                LogUtil.error(e.getMessage(), e);
+                            }
+                            index--;
+                        }
+                    }
+                }).start();
             }
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());

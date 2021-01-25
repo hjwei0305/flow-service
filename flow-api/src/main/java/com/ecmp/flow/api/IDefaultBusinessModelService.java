@@ -2,7 +2,6 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.api.IFindByPageService;
-import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.vo.FlowInvokeParams;
@@ -14,28 +13,9 @@ import io.swagger.annotations.ApiOperation;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
 
-/**
- * *************************************************************************************************
- * <p>
- * 实现功能： 默认业务表单服务API接口定义
- * </p>
- * <p>
- * ------------------------------------------------------------------------------------------------
- * </p>
- * <p>
- * 版本          变更时间             变更人                     变更原因
- * </p>
- * <p>
- * ------------------------------------------------------------------------------------------------
- * </p>
- * <p>
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
- * </p>
- * *************************************************************************************************
- */
+
 @Path("defaultBusinessModel")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -131,15 +111,11 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态", notes = "测试")
     ResponseData resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
-                       @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+                            @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
 
 
     /**
      * 测试事前
-     *
-     * @param id        单据id
-     * @param paramJson json参数
-     * @return 执行结果
      */
     @POST
     @Path("changeCreateDepict")
@@ -150,10 +126,6 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 测试事后
-     *
-     * @param id        单据id
-     * @param paramJson json参数
-     * @return 执行结果
      */
     @POST
     @Path("changeCompletedDepict")
@@ -164,31 +136,34 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 测试自定义执行人选择
-     *
-     * @param flowInvokeParams 流程参数
-     * @return 执行结果
      */
     @POST
     @Path("getPersonToExecutorConfig")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "自定义获取excutor", notes = "测试 自定义获取excutor")
+    @ApiOperation(value = "测试自定义执行人选择", notes = "测试自定义执行人选择")
     ResponseData getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
     /**
-     * 接收任务测试接口
-     *
-     * @param id         业务单据id
-     * @param changeText 参数文本
-     * @return 结果
+     * 接收任务（不触发）
      */
     @POST
     @Path("testReceiveCall")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试ReceiveCall", notes = "测试ReceiveCall")
-    boolean testReceiveCall(@QueryParam("id") String id, @QueryParam("paramJson") String changeText);
+    @ApiOperation(value = "接收任务（不触发）", notes = "接收任务（不触发）")
+    ResponseData testReceiveCall(FlowInvokeParams flowInvokeParams);
+
+    /**
+     * 接收任务（触发）
+     */
+    @POST
+    @Path("testReceiveCallNew")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "接收任务（触发）", notes = "接收任务（触发）")
+    ResponseData testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
 
     @GET
@@ -222,6 +197,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 流程事前事件测试
+     *
      * @param flowInvokeParams
      * @return
      */
@@ -234,6 +210,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 流程事后事件测试
+     *
      * @param flowInvokeParams
      * @return
      */
@@ -244,18 +221,6 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
     ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
-
-    /**
-     * 接收任务测试
-     * @param flowInvokeParams
-     * @return
-     */
-    @POST
-    @Path("testReceiveCallNew")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试testReceiveCallNew", notes = "testReceiveCallNew")
-    ResponseData testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
     @GET
     @Path("testPJoin")
@@ -273,6 +238,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
     /**
      * 工作池任务测试
+     *
      * @param flowInvokeParams
      * @return
      */
