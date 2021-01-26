@@ -965,52 +965,43 @@ public class FlowTaskTool {
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
         // 流程成功撤回！
-        OperateResult result = OperateResult.operationSuccess("10064");
+        OperateResult result = OperateResult.operationSuccess("撤回成功！");
         String taskId = flowHistory.getActHistoryId();
         try {
-            Map<String, Object> variables;
             // 取得当前任务
-            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(taskId)
-                    .singleResult();
-            // 取得流程实例
-            ProcessInstance instance = runtimeService.createProcessInstanceQuery()
-                    .processInstanceId(currTask.getProcessInstanceId()).singleResult();
-            if (instance == null) {
-                return OperateResult.operationFailure("10002");//流程实例不存在或者已经结束
+            HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+            if (currTask.getEndTime() == null) {// 当前任务可能已经被还原成待办（表示已经撤回了）
+                return OperateResult.operationFailure("撤回失败：当前任务已经还原！");
             }
-            variables = instance.getProcessVariables();
-            Map variablesTask = currTask.getTaskLocalVariables();
+
+            // 取得流程实例
+            ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+            if (instance == null) {
+                return OperateResult.operationFailure("撤回失败：流程实例不存在或者已经结束！");
+            }
+
             // 取得流程定义
-            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
-                    .getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+            ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
-                LogUtil.error(ContextUtil.getMessage("10003"));
-                return OperateResult.operationFailure("10003");//流程定义未找到找到");
+                return OperateResult.operationFailure("撤回失败：流程定义未找到！");
             }
 
             String executionId = currTask.getExecutionId();
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
-            List<HistoricVariableInstance> historicVariableInstances = historyService.createHistoricVariableInstanceQuery().executionId(executionId).list();
             if (execution == null) {
-                return OperateResult.operationFailure("10014");//当前任务不允许撤回
-            }
-            // 取得下一步活动
-            ActivityImpl currActivity = ((ProcessDefinitionImpl) definition)
-                    .findActivity(currTask.getTaskDefinitionKey());
-            if (currTask.getEndTime() == null) {// 当前任务可能已经被还原
-                LogUtil.error(ContextUtil.getMessage("10008"));
-                return OperateResult.operationFailure("10008");//当前任务可能已经被还原
+                return OperateResult.operationFailure("撤回失败：当前任务已经流转，不允许撤回！");
             }
 
-            Boolean resultCheck = checkNextNodeNotCompleted(currActivity, instance, definition, currTask);
-            if (!resultCheck) {
-                LogUtil.bizLog(ContextUtil.getMessage("10005"));
-                return OperateResult.operationFailure("10005");//下一任务正在执行或者已经执行完成，退回失败
+            // 取得下一步活动
+            ActivityImpl currActivity = ((ProcessDefinitionImpl) definition).findActivity(currTask.getTaskDefinitionKey());
+
+            OperateResult resultCheck = checkNextNodeNotCompleted(currActivity, instance, currTask);
+            if (!resultCheck.successful()) {
+                return resultCheck;
             }
 
             HistoricActivityInstance historicActivityInstance = null;
-            HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery()
-                    .executionId(executionId);
+            HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery().executionId(executionId);
             if (his != null) {
                 List<HistoricActivityInstance> historicActivityInstanceList = his.activityId(currTask.getTaskDefinitionKey()).orderByHistoricActivityInstanceEndTime().desc().list();
                 if (historicActivityInstanceList != null && !historicActivityInstanceList.isEmpty()) {
@@ -1026,8 +1017,7 @@ public class FlowTaskTool {
             }
 
             if (historicActivityInstance == null) {
-                LogUtil.error(ContextUtil.getMessage("10009"));
-                return OperateResult.operationFailure("10009");//当前任务找不到
+                return OperateResult.operationFailure("撤回失败：当前任务找不到！");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
                 if (execution.getActivityId() != null) {
@@ -1058,12 +1048,9 @@ public class FlowTaskTool {
             TaskEntity newTask = TaskEntity.create(new Date());
             newTask.setAssignee(currTask.getAssignee());
             newTask.setCategory(currTask.getCategory());
-            // newTask.setDelegationState(delegationState);
             newTask.setDescription(currTask.getDescription());
             newTask.setDueDate(currTask.getDueDate());
             newTask.setFormKey(currTask.getFormKey());
-            // newTask.setLocalizedDescription(currTask.getl);
-            // newTask.setLocalizedName(currTask.get);
             newTask.setName(currTask.getName());
             newTask.setOwner(currTask.getOwner());
             newTask.setParentTaskId(currTask.getParentTaskId());
@@ -1102,12 +1089,9 @@ public class FlowTaskTool {
             //初始化回退后的新任务
             initTask(flowHistory.getFlowInstance(), flowHistory, currTask.getTaskDefinitionKey(), null);
             return result;
-        } catch (FlowException flowE) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return OperateResult.operationFailure(flowE.getMessage());
         } catch (Exception e) {
-            LogUtil.error(e.getMessage(), e);
-            return OperateResult.operationFailure("10004");//流程取回失败，未知错误
+            LogUtil.error("撤回失败：" + e.getMessage(), e);
+            return OperateResult.operationFailure("撤回失败：详情请查看日志！");
         }
     }
 
@@ -1320,25 +1304,37 @@ public class FlowTaskTool {
      *
      * @param currActivity
      * @param instance
-     * @param definition
      * @param destnetionTask
      * @return
      */
-    public Boolean checkNextNodeNotCompleted(PvmActivity currActivity, ProcessInstance instance,
-                                             ProcessDefinitionEntity definition, HistoricTaskInstance destnetionTask) {
+    public OperateResult checkNextNodeNotCompleted(PvmActivity currActivity, ProcessInstance instance, HistoricTaskInstance destnetionTask) {
         List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
-        boolean result = true;
+        OperateResult result = OperateResult.operationSuccess();
 
         for (PvmTransition nextTransition : nextTransitionList) {
             PvmActivity nextActivity = nextTransition.getDestination();
             Boolean ifGateWay = ifGageway(nextActivity);
             String type = nextActivity.getProperty("type") + "";
-            if ("callActivity".equalsIgnoreCase(type) || "ServiceTask".equalsIgnoreCase(type) || "ReceiveTask".equalsIgnoreCase(type)) {//服务任务/接收任务不允许撤回
-                return false;
+            if ("ServiceTask".equalsIgnoreCase(type)) { //服务任务（说明撤回任务连接有服务任务，服务任务会自动执行，底层没有记录）
+                //判断服务任务是否已经执行
+                Boolean boo = this.serviceTaskHasExecute(instance, nextActivity);
+                if (boo) {
+                    return OperateResult.operationFailure("撤回失败：服务任务已执行，不允许撤回！");
+                }
+            }
+            if ("ReceiveTask".equalsIgnoreCase(type)) { //接收任务（说明撤回任务连接有接收任务，判断接收任务是否执行）
+                //判断接收任务是否已经执行
+                Boolean boo = this.receiveTaskHasExecute(instance, nextActivity);
+                if (boo) {
+                    return OperateResult.operationFailure("撤回失败：接收任务已执行或执行中，不允许撤回！");
+                }
+            }
+            if ("callActivity".equalsIgnoreCase(type)) { //子流程程（撤回任务连接有子流程，直接不允许撤回，先不判断）
+                return OperateResult.operationFailure("撤回失败：撤回节点连接有子流程，不允许撤回！");
             }
             if (ifGateWay || "ManualTask".equalsIgnoreCase(type)) {
-                result = checkNextNodeNotCompleted(nextActivity, instance, definition, destnetionTask);
-                if (!result) {
+                result = checkNextNodeNotCompleted(nextActivity, instance, destnetionTask);
+                if (!result.successful()) {
                     return result;
                 }
             }
@@ -1346,14 +1342,13 @@ public class FlowTaskTool {
                     .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).finished().list();
             for (HistoricTaskInstance h : completeTasks) {
                 if (h.getEndTime().after(destnetionTask.getEndTime())) {
-                    return false;
+                    return OperateResult.operationFailure("撤回失败：下一节点已执行，不允许撤回！");
                 }
             }
             if (ifMultiInstance(currActivity)) {// 如果是多实例任务,判断当前任务是否已经流转到下一节点
 
                 List<HistoricTaskInstance> unCompleteTasks = historyService.createHistoricTaskInstanceQuery()
-                        .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).unfinished()
-                        .list();
+                        .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).unfinished().list();
                 for (HistoricTaskInstance h : unCompleteTasks) {
                     if (h.getStartTime().after(destnetionTask.getStartTime())) {
                         return result;

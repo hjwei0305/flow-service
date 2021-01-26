@@ -1052,28 +1052,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 撤回到指定任务节点,加撤销意见
-     *
-     * @param id
-     * @return
+     * 将来弃用，新方法是rollBackToHis
      */
+    @Deprecated
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResult rollBackTo(String id, String opinion) {
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
         if (flowHistory == null) {
-            return OperateResult.operationFailure("撤回失败：找不到需要撤回的历史信息！");
+            return OperateResult.operationFailure("撤回失败：找不到需要撤回的节点！");
         }
         return flowTaskTool.taskRollBack(flowHistory, opinion);
     }
+
 
     @Override
     public ResponseData rollBackToHis(RollBackParam rollBackParam) {
         String id = rollBackParam.getId();
         String opinion = rollBackParam.getOpinion();
         if (StringUtils.isEmpty(id)) {
-            return ResponseData.operationFailure("撤回节点ID不能为空！");
+            return ResponseData.operationFailure("撤回失败：撤回节点ID不能为空！");
         }
         if (StringUtils.isEmpty(opinion)) {
-            return ResponseData.operationFailure("撤回意见不能为空！");
+            return ResponseData.operationFailure("撤回失败：撤回意见不能为空！");
         }
         return this.rollBackTo(id, opinion);
     }

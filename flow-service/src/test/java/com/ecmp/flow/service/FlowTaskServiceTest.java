@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.util.JsonUtils;
@@ -28,6 +29,15 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowTaskService service;
     @Autowired
     private FlowDefinationService flowDefinationService;
+
+    @Test
+    public void rollBackToHis(){
+        RollBackParam param = new RollBackParam();
+        param.setId("7CD8A7AE-5EBF-11EB-8EFB-0242C0A84413");
+        param.setOpinion("测试");
+        ResponseData responseData = service.rollBackToHis(param);
+        System.out.println(ApiJsonUtils.toJson(responseData));
+    }
 
     @Test
     public void rollBackTo() {

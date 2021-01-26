@@ -120,7 +120,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @param id      任务id
      * @param opinion 意见
      * @return 操作结果
-     * @throws CloneNotSupportedException 不能复制对象
      */
     @POST
     @Path("rollBackTo/{id}")
@@ -134,7 +133,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      *
      * @param rollBackParam 撤回接口参数
      * @return 操作结果
-     * @throws CloneNotSupportedException 不能复制对象
      */
     @POST
     @Path("rollBackToHis")
@@ -150,7 +148,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @param preTaskId 任务id
      * @param opinion   意见
      * @return 操作结果
-     * @throws CloneNotSupportedException 不能复制对象
      */
     @POST
     @Path("rollBackToOfPhone")
