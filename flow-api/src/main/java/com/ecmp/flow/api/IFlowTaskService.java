@@ -23,25 +23,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Map;
 
-/**
- * *************************************************************************************************
- * <p>
- * 实现功能：流程任务服务API接口定义
- * </p>
- * <p>
- * ------------------------------------------------------------------------------------------------
- * </p>
- * <p>
- * 版本          变更时间             变更人                     变更原因
- * </p>
- * <p>
- * ------------------------------------------------------------------------------------------------
- * </p>
- * <p>
- * 1.0.00      2017/3/31 11:39      谭军(tanjun)                新建
- * </p>
- * *************************************************************************************************
- */
+
 @Path("flowTask")
 @Api(value = "IFlowTaskService 流程任务服务API接口")
 @Produces(MediaType.APPLICATION_JSON)
@@ -145,7 +127,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务", notes = "测试")
-    OperateResult rollBackTo(@PathParam("id") String id, String opinion) throws CloneNotSupportedException;
+    OperateResult rollBackTo(@PathParam("id") String id, String opinion);
 
     /**
      * 撤回任务到指定节点（新）
@@ -159,8 +141,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务到指定节点", notes = "撤回任务到指定节点")
-    ResponseData rollBackToHis(RollBackParam rollBackParam) throws CloneNotSupportedException;
-
+    ResponseData rollBackToHis(RollBackParam rollBackParam);
 
 
     /**
@@ -176,7 +157,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "撤回任务(移动端专用)", notes = "撤回任务(移动端专用)")
-    ResponseData rollBackToOfPhone(@QueryParam("preTaskId") String preTaskId, @QueryParam("opinion") String opinion) throws CloneNotSupportedException;
+    ResponseData rollBackToOfPhone(@QueryParam("preTaskId") String preTaskId, @QueryParam("opinion") String opinion);
 
     /**
      * 驳回任务（动态驳回）
@@ -538,7 +519,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      *
      * @param searchConfig    查询条件
      * @param businessModelId 为空查询全部
-     * @param appSign         应用标识
      * @return 可批量审批待办信息
      */
     @POST
@@ -671,9 +651,9 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds) throws NoSuchMethodException;
 
 
-
     /**
      * 通过任务IDS获取下一步节点信息(6.0新)
+     *
      * @param taskIds 任务IDs
      * @return 下一步执行的节点信息(带用户信息与版本分组), 带分组
      */
@@ -682,8 +662,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDS获取下一步节点信息", notes = "通过任务IDS获取下一步节点信息")
-    ResponseData<List<NodeGroupByFlowVersionInfo>>  getBatchNextNodes(List<String> taskIds);
-
+    ResponseData<List<NodeGroupByFlowVersionInfo>> getBatchNextNodes(List<String> taskIds);
 
 
     /**
@@ -924,6 +903,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 查询当前用户的待办工作
+     *
      * @param queryParam 查询参数
      * @return 分页查询结果
      */

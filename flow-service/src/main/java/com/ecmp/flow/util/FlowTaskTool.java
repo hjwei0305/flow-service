@@ -44,6 +44,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -1226,6 +1227,34 @@ public class FlowTaskTool {
         return false;
     }
 
+    /**
+     * 判断接收任务是否已经执行
+     *
+     * @param instance
+     * @param currActivity
+     */
+    public Boolean receiveTaskHasExecute(ProcessInstance instance, PvmActivity currActivity) {
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
+        if (flowInstance != null) {
+            List<FlowTask> taskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+            if (!CollectionUtils.isEmpty(taskList)) {
+                FlowTask receiveTask = taskList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
+                if (receiveTask != null) { //接收任务还未触发
+                    return true;
+                }
+            }
+
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+            if (!CollectionUtils.isEmpty(flowHistoryList)) {
+                FlowHistory serHistory = flowHistoryList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
+                if (serHistory != null) { //接收任务已经触发执行过
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /**
      * 只判断下一步是否已经执行
@@ -1249,6 +1278,16 @@ public class FlowTaskTool {
                 if (boo) {
                     return false;
                 }
+            }
+            if ("ReceiveTask".equalsIgnoreCase(type)) { //接收任务（说明撤回任务连接有接收任务，判断接收任务是否执行）
+                //判断接收任务是否已经执行
+                Boolean boo = this.receiveTaskHasExecute(instance, nextActivity);
+                if (boo) {
+                    return false;
+                }
+            }
+            if ("callActivity".equalsIgnoreCase(type)) { //子流程程（撤回任务连接有子流程，直接不允许撤回，先不判断）
+                return false;
             }
             if (ifGateWay || "ManualTask".equalsIgnoreCase(type)) {
                 result = checkIfTheNextNodeHasBeenProcessed(nextActivity, instance, destnetionTask);

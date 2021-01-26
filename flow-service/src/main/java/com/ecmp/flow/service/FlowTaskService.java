@@ -1057,26 +1057,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public OperateResult rollBackTo(String id, String opinion) throws CloneNotSupportedException {
+    public OperateResult rollBackTo(String id, String opinion) {
         FlowHistory flowHistory = flowHistoryDao.findOne(id);
         if (flowHistory == null) {
-            return OperateResult.operationFailure("撤回节点不能找到！");
+            return OperateResult.operationFailure("撤回失败：找不到需要撤回的历史信息！");
         }
-        String businessId = flowHistory.getFlowInstance().getBusinessId();
-        OperateResult result = flowTaskTool.taskRollBack(flowHistory, opinion);
-//        if (result.successful()) {
-//            new Thread(new Runnable() {//检测待办是否自动执行
-//                @Override
-//                public void run() {
-//                    flowSolidifyExecutorService.selfMotionExecuteTask(businessId);
-//                }
-//            }).start();
-//        }
-        return result;
+        return flowTaskTool.taskRollBack(flowHistory, opinion);
     }
 
     @Override
-    public ResponseData rollBackToHis(RollBackParam rollBackParam) throws CloneNotSupportedException {
+    public ResponseData rollBackToHis(RollBackParam rollBackParam) {
         String id = rollBackParam.getId();
         String opinion = rollBackParam.getOpinion();
         if (StringUtils.isEmpty(id)) {
@@ -1090,7 +1080,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData rollBackToOfPhone(String preTaskId, String opinion) throws CloneNotSupportedException {
+    public ResponseData rollBackToOfPhone(String preTaskId, String opinion) {
         OperateResult res = rollBackTo(preTaskId, opinion);
         if (!res.successful()) {
             return ResponseData.operationFailure(res.getMessage());

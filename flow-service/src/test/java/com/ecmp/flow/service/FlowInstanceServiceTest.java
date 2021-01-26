@@ -26,6 +26,12 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+    @Test
+    public void signalByBusinessId() {
+        Map<String, Object> variables = new HashMap<>();
+        OperateResult operateResult = service.signalByBusinessId("5ADAB785-5EEF-11EB-A837-0242C0A84413", "ReceiveTask_179", variables);
+        System.out.println(JsonUtils.toJson(operateResult));
+    }
 
     @Test
     public void taskFailTheCompensation() {
