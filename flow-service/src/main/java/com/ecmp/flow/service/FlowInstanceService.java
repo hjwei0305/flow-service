@@ -1860,13 +1860,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(updateInstanceRemarkVo.getBusinessId());
         if (flowInstance != null && !flowInstance.isEnded()) { //只考虑还在流程中的流程实例
+            String newRemark;
             String oldRemark = flowInstance.getBusinessModelRemark();
             int i = oldRemark.lastIndexOf("【附加说明");
             if (i != -1) { //有附加说明
-                flowInstance.setBusinessModelRemark(updateInstanceRemarkVo.getUpdateRemark() + oldRemark.substring(i));
+                newRemark = updateInstanceRemarkVo.getUpdateRemark() + oldRemark.substring(i);
             } else {
-                flowInstance.setBusinessModelRemark(updateInstanceRemarkVo.getUpdateRemark());
+                newRemark = updateInstanceRemarkVo.getUpdateRemark();
             }
+            if (StringUtils.isNotEmpty(newRemark) && newRemark.length() >= 2000) {
+                return ResponseData.operationFailure("工作说明限定长度2000，实际长度为：" + newRemark.length());
+            }
+            flowInstance.setBusinessModelRemark(newRemark);
             this.save(flowInstance);
             return ResponseData.operationSuccess("修改成功");
         }
