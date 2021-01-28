@@ -3887,6 +3887,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void automaticToDoTask(List<FlowTask> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
             FlowTask task = taskList.get(i);
+            Boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
+            if (!canMobile) {
+                continue;
+            }
             ResponseData responseData = ResponseData.operationFailure("模拟请求下一步失败！");
             try {
                 //模拟请求下一步数据
