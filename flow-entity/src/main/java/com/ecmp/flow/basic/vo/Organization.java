@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class Organization extends BaseAuditableEntity
         implements TreeEntity<Organization>, ITenant, IFrozen, IDataAuthTreeEntity {
+
+    private static final long serialVersionUID = 1L;
     /**
      * 组织机构代码
      */

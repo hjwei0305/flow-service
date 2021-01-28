@@ -3,19 +3,12 @@ package com.ecmp.flow.basic.vo;
 import com.ecmp.core.entity.BaseAuditableEntity;
 import com.ecmp.core.entity.ITenant;
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：企业员工实体
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/5/5 11:35      秦有宝                     新建
- * <p/>
- * *************************************************************************************************
- */
-public class Employee extends BaseAuditableEntity implements ITenant {
+import java.io.Serializable;
+
+
+public class Employee extends BaseAuditableEntity implements ITenant, Serializable {
+
+    private static final long serialVersionUID = 1L;
     /**
      * 员工编号
      */

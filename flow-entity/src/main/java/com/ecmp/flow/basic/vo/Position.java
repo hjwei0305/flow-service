@@ -4,9 +4,12 @@ import com.ecmp.core.entity.BaseAuditableEntity;
 import com.ecmp.core.entity.ICodeUnique;
 import com.ecmp.core.entity.ITenant;
 
+import java.io.Serializable;
+
 
 public class Position extends BaseAuditableEntity
-        implements ITenant,ICodeUnique {
+        implements ITenant,ICodeUnique, Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 代码
      */
