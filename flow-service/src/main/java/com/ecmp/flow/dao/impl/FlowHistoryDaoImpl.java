@@ -6,6 +6,7 @@ import com.ecmp.flow.dao.CustomFlowHistoryDao;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -41,7 +42,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
 
-        if (searchFilters!=null && searchFilters.size()>0 ) {
+        if (!CollectionUtils.isEmpty(searchFilters)) {
             SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
             for(SearchFilter filters :  searchFilters){
                 if("flowExecuteStatus".equals(filters.getFieldName())){
@@ -76,7 +77,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             }
         }
 
-        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+        if (StringUtils.isNotEmpty(quickSearchValue) &&  !CollectionUtils.isEmpty(quickSearchProperties)) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
             for (String s : quickSearchProperties) {
@@ -91,7 +92,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        if (sortOrders != null && sortOrders.size() > 0) {
+        if (!CollectionUtils.isEmpty(sortOrders)) {
             for (int i = 0; i < sortOrders.size(); i++) {
                 SearchOrder searchOrder = sortOrders.get(i);
                 if (i == 0) {
@@ -136,7 +137,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             hqlQuery += "  and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
         }
 
-        if (searchFilters != null && searchFilters.size() > 0 && searchFilters.get(0).getValue() != null) {
+        if (!CollectionUtils.isEmpty(searchFilters) && searchFilters.get(0).getValue() != null) {
             for (int i = 0; i < searchFilters.size(); i++) {
                 SearchFilter filters = searchFilters.get(i);
                 if ("ended".equals(filters.getFieldName())) {
@@ -151,7 +152,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             }
         }
 
-        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+        if (StringUtils.isNotEmpty(quickSearchValue) && !CollectionUtils.isEmpty(quickSearchProperties)) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
             for (String s : quickSearchProperties) {
@@ -166,7 +167,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        if (sortOrders != null && sortOrders.size() > 0) {
+        if (!CollectionUtils.isEmpty(sortOrders)) {
             for (int i = 0; i < sortOrders.size(); i++) {
                 SearchOrder searchOrder = sortOrders.get(i);
                 if (i == 0) {
@@ -250,7 +251,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
 
-        if (searchFilters!=null && searchFilters.size()>0 ) {
+        if (!CollectionUtils.isEmpty(searchFilters)) {
             for(SearchFilter filters :  searchFilters){
                 if("flowExecuteStatus".equals(filters.getFieldName())){
                     if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
@@ -287,7 +288,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         }
 
 
-        if (StringUtils.isNotEmpty(quickSearchValue) && quickSearchProperties != null && !quickSearchProperties.isEmpty()) {
+        if (StringUtils.isNotEmpty(quickSearchValue) && !CollectionUtils.isEmpty(quickSearchProperties)) {
             StringBuffer extraHql = new StringBuffer(" and (");
             boolean first = true;
             for (String s : quickSearchProperties) {
@@ -302,7 +303,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             hqlCount += extraHql.toString();
             hqlQuery += extraHql.toString();
         }
-        if (sortOrders != null && sortOrders.size() > 0) {
+        if (!CollectionUtils.isEmpty(sortOrders)) {
             for (int i = 0; i < sortOrders.size(); i++) {
                 SearchOrder searchOrder = sortOrders.get(i);
                 if (i == 0) {

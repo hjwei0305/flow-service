@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     public List<NodeInfo> setNodeExecutorByBusinessId(List<NodeInfo> nodeInfoList, String businessId) {
         if (StringUtils.isNotEmpty(businessId)) {
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-            if (solidifylist != null && solidifylist.size() > 0) {
+            if (!CollectionUtils.isEmpty(solidifylist)) {
                 nodeInfoList.forEach(nodeInfo -> {
                     FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(nodeInfo.getId())).findFirst().orElse(null);
                     if (bean != null) {
@@ -144,12 +145,12 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      */
     @Transactional
     public ResponseData saveByExecutorVoList(List<FlowSolidifyExecutorVO> executorVoList, String businessModelCode, String businessId) {
-        if (executorVoList == null || executorVoList.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
+        if (CollectionUtils.isEmpty(executorVoList) || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
             return ResponseData.operationFailure("请求参数不能为空！");
         }
         //新启动流程时，清除以前的数据
         List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             list.forEach(bean -> flowSolidifyExecutorDao.delete(bean));
         }
 
@@ -255,7 +256,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             String taskKey = task.getActTaskDefKey();
             String taskUserId = task.getExecutorId();
             List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-            if (list != null && list.size() > 0) {
+            if (!CollectionUtils.isEmpty(list)) {
                 int maxInt = list.stream().mapToInt(FlowSolidifyExecutor::getTaskOrder).max().getAsInt();
                 FlowSolidifyExecutor bean = list.stream().filter(a -> taskKey.equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
                 if (bean != null && bean.getExecutorIds().indexOf(taskUserId) != -1) { //转办和委托（实际执行人不是启动时设置的人的情况）
@@ -280,13 +281,13 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     public void selfMotionExecuteTask(String businessId) {
         if (StringUtils.isNotEmpty(businessId)) {
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-            if (solidifylist != null && solidifylist.size() > 0) {//说明该单据走的固化流程
+            if (!CollectionUtils.isEmpty(solidifylist)) {//说明该单据走的固化流程
                 //根据业务id查询待办
                 ResponseData responseData = flowTaskService.findTasksNoUrlByBusinessId(businessId);
                 if (responseData.getSuccess()) {
                     List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
-                    if (taskList != null && taskList.size() > 0) {
-                        List<FlowTask> needLsit = new ArrayList<FlowTask>();//需要自动跳过的任务
+                    if (!CollectionUtils.isEmpty(taskList)) {
+                        List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
                         for (FlowTask flowTask : taskList) {
                             FlowSolidifyExecutor bean = solidifylist.stream().
                                     filter(a -> a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
@@ -296,11 +297,11 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                     //检查已经执行过的任务中，待执行人相同的数据
                                     List<FlowSolidifyExecutor> executeList = solidifylist.stream().
                                             filter(a -> (a.getTaskOrder() > 0 && a.getExecutorIds().indexOf(flowTask.getExecutorId()) != -1)).collect(Collectors.toList());
-                                    if (executeList != null && executeList.size() > 0) {
+                                    if (!CollectionUtils.isEmpty(executeList)) {
                                         //检查相同数据中有多少是单签（单签待办很多，实际执行人只有一个）
                                         List<FlowSolidifyExecutor> singleSignList = executeList.stream().
                                                 filter(a -> a.getNodeType().equalsIgnoreCase("SingleSign")).collect(Collectors.toList());
-                                        if (singleSignList != null && singleSignList.size() > 0) {
+                                        if (!CollectionUtils.isEmpty(singleSignList)) {
                                             if (executeList.size() != singleSignList.size()) {
                                                 //执行过的不全是单签，该任务需要自动跳过
                                                 needLsit.add(flowTask);
@@ -308,7 +309,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                                 //单签里面实际执行人中有没有当前任务的执行人
                                                 List<FlowSolidifyExecutor> trueExecuteList = singleSignList.stream().
                                                         filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().indexOf(flowTask.getExecutorId()) != -1)).collect(Collectors.toList());
-                                                if (trueExecuteList != null & trueExecuteList.size() > 0) {
+                                                if (!CollectionUtils.isEmpty(trueExecuteList)) {
                                                     //单签实际执行人有当前的执行人，该任务需要自动跳过
                                                     needLsit.add(flowTask);
                                                 }
@@ -326,7 +327,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                 } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
                                     List<FlowSolidifyExecutor> updateList = solidifylist.stream().
                                             filter(a -> a.getTaskOrder() >= bean.getTaskOrder()).collect(Collectors.toList());
-                                    if (updateList != null && updateList.size() > 0) {
+                                    if (!CollectionUtils.isEmpty(updateList)) {
                                         updateList.forEach(a -> {
                                             a.setTrueExecutorIds(null);
                                             a.setTaskOrder(0);
@@ -339,7 +340,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         }
 
                         //需要自动跳过的任务
-                        if (needLsit != null && needLsit.size() > 0) {
+                        if (!CollectionUtils.isEmpty(needLsit)) {
                             this.needSelfMotionTaskList(needLsit, solidifylist);
                         }
 
@@ -365,7 +366,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      */
     @Transactional
     public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
-        if (taskList != null && taskList.size() > 0 && solidifylist != null && solidifylist.size() > 0) {
+        if (!CollectionUtils.isEmpty(taskList)  && !CollectionUtils.isEmpty(solidifylist)) {
             for (int i = 0; i < taskList.size(); i++) {
                 FlowTask task = taskList.get(i);
                 Boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
@@ -449,7 +450,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         //可能路径（人工网关默认选择一条路径）
         List<NodeInfo> list = flowTaskService.findNextNodes(taskId);
         List<NodeInfo> nodeInfoList = null;
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             if (list.size() == 1) {
                 nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, null);
             } else {
@@ -464,7 +465,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             }
         }
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return ResponseData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {

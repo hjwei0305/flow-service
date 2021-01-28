@@ -28,6 +28,7 @@ import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
@@ -109,7 +110,7 @@ public class MessageSendThread implements Runnable {
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
                     }
-                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                    if (!CollectionUtils.isEmpty(selectType)) {
                         Object[] types = selectType.toArray();
                         for (Object type : types) {
                             if ("EMAIL".equalsIgnoreCase(type.toString())) {
@@ -117,7 +118,7 @@ public class MessageSendThread implements Runnable {
                                 String senderId = ContextUtil.getUserId();
                                 message.setSenderId(senderId);
                                 List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
-                                if (receiverIds == null || receiverIds.isEmpty()) {
+                                if (CollectionUtils.isEmpty(receiverIds)) {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
@@ -136,7 +137,7 @@ public class MessageSendThread implements Runnable {
                                 String senderId = ContextUtil.getUserId();
                                 message.setSenderId(senderId);
                                 List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
-                                if (receiverIds == null || receiverIds.isEmpty()) {
+                                if (CollectionUtils.isEmpty(receiverIds)) {
                                     continue;
                                 }
                                 message.setReceiverIds(receiverIds);
@@ -155,7 +156,7 @@ public class MessageSendThread implements Runnable {
                     //发送给流程启动人
                     JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter");
                     selectType = notifyStarter.getJSONArray("type");
-                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                    if (!CollectionUtils.isEmpty(selectType)) {
                         Object[] types = selectType.toArray();
                         for (Object type : types) {
                             if ("EMAIL".equalsIgnoreCase(type.toString())) {
@@ -194,13 +195,13 @@ public class MessageSendThread implements Runnable {
                     //发送给选定的岗位
                     JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");
                     selectType = notifyPosition.getJSONArray("type");
-                    if (selectType != null && !selectType.isEmpty() && selectType.size() > 0) {
+                    if (!CollectionUtils.isEmpty(selectType)) {
                         Object[] types = selectType.toArray();
                         for (Object type : types) {
                             if ("EMAIL".equalsIgnoreCase(type.toString())) {
                                 JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
-                                if (notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()) {
-                                    List<String> idList = new ArrayList<String>();
+                                if (!CollectionUtils.isEmpty(notifyPositionJsonArray)) {
+                                    List<String> idList = new ArrayList<>();
                                     for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
                                         JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
                                         String positionId = jsonObject.getString("id");
@@ -208,11 +209,10 @@ public class MessageSendThread implements Runnable {
                                             idList.add(positionId);
                                         }
                                     }
-                                    List<Executor> employees;
-                                    employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
-                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
-                                    List<String> receiverIds = new ArrayList<String>();
-                                    if (employees != null && !employees.isEmpty()) {
+                                    List<Executor> employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
+                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<>();
+                                    List<String> receiverIds = new ArrayList<>();
+                                    if (!CollectionUtils.isEmpty(employees)) {
                                         for (Executor executor : employees) {
                                             linkedHashSetReceiverIds.add(executor.getId());
                                         }
@@ -238,8 +238,8 @@ public class MessageSendThread implements Runnable {
 
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉
                                 JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
-                                if (notifyPositionJsonArray != null && !notifyPositionJsonArray.isEmpty()) {
-                                    List<String> idList = new ArrayList<String>();
+                                if (!CollectionUtils.isEmpty(notifyPositionJsonArray)) {
+                                    List<String> idList = new ArrayList<>();
                                     for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
                                         JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
                                         String positionId = jsonObject.getString("id");
@@ -247,11 +247,10 @@ public class MessageSendThread implements Runnable {
                                             idList.add(positionId);
                                         }
                                     }
-                                    List<Executor> employees;
-                                    employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
-                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<String>();
-                                    List<String> receiverIds = new ArrayList<String>();
-                                    if (employees != null && !employees.isEmpty()) {
+                                    List<Executor> employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, "");
+                                    Set<String> linkedHashSetReceiverIds = new LinkedHashSet<>();
+                                    List<String> receiverIds = new ArrayList<>();
+                                    if (!CollectionUtils.isEmpty(employees)) {
                                         for (Executor executor : employees) {
                                             linkedHashSetReceiverIds.add(executor.getId());
                                         }

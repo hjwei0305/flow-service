@@ -26,9 +26,9 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.common.util.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import java.sql.SQLException;
@@ -83,7 +83,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean isFlowtask = false;  //是否在待办中有数据
         if (StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(typeId)) {
             List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(instanceId);
-            if (flowTaskList != null && flowTaskList.size() > 0) {
+            if (!CollectionUtils.isEmpty(flowTaskList)) {
                 FlowTask flowTask = flowTaskList.stream().filter(a -> userId.equals(a.getExecutorId())).findFirst().orElse(null);
                 if (flowTask != null) { //TODO:如果待办中有当前用户的，默认就是查询的待办(实际可能是从已办过来的)
                     isFlowtask = true;
@@ -313,7 +313,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         List<ConditionVo> list = new ArrayList<>();
         if (responseData.getSuccess() && responseData.getData() != null) {
             Map<String, String> result = (Map<String, String>) responseData.getData();
-            if (result.size() > 0) {
+            if (!CollectionUtils.isEmpty(result)) {
                 result.forEach((key, value) -> {
                     ConditionVo bean = new ConditionVo();
                     bean.setCode(key);
@@ -392,7 +392,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         String pattern = "FLowGetLastFlowDefVersion_*";
         if (redisTemplate != null) {
             Set<String> keys = redisTemplate.keys(pattern);
-            if (keys != null && !keys.isEmpty()) {
+            if (!CollectionUtils.isEmpty(keys)) {
                 redisTemplate.delete(keys);
             }
         }
@@ -402,13 +402,13 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         List<AppModule> appModuleList;
         List<String> appModuleCodeList = null;
         appModuleList = flowCommonUtil.getBasicTenantAppModule();
-        if (appModuleList != null && !appModuleList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(appModuleList)) {
             appModuleCodeList = new ArrayList<>();
             for (AppModule appModule : appModuleList) {
                 appModuleCodeList.add(appModule.getCode());
             }
         }
-        if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(appModuleCodeList)) {
             SearchFilter searchFilter = new SearchFilter("appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
             searchConfig.addFilter(searchFilter);
         }
@@ -422,13 +422,13 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         List<String> appModuleCodeList = null;
         try {
             appModuleList = flowCommonUtil.getBasicTenantAppModule();
-            if (appModuleList != null && !appModuleList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(appModuleList)) {
                 appModuleCodeList = new ArrayList<>();
                 for (AppModule appModule : appModuleList) {
                     appModuleCodeList.add(appModule.getCode());
                 }
             }
-            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(appModuleCodeList)) {
                 result = businessModelDao.findByAppModuleCodes(appModuleCodeList);
             }
 

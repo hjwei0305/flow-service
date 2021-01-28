@@ -9,6 +9,7 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -197,7 +198,7 @@ public class ApiClient {
     private static WebClient createClient(String appModuleCode, String path, Map<String, Object> params) {
         WebClient client = createProxy(appModuleCode, path);
         //拼装请求路径
-        if (params != null && !params.isEmpty()) {
+        if (!CollectionUtils.isEmpty(params)) {
             for (Map.Entry<String, Object> p : params.entrySet()) {
                 client.query(p.getKey(), p.getValue());
             }
@@ -461,7 +462,7 @@ public class ApiClient {
     private static WebClient createClient(String url, Map<String, Object> params) {
         WebClient client = createProxy(url);
         //拼装请求路径
-        if (params != null && !params.isEmpty()) {
+        if (!CollectionUtils.isEmpty(params)) {
             for (Map.Entry<String, Object> p : params.entrySet()) {
                 client.query(p.getKey(), p.getValue());
             }

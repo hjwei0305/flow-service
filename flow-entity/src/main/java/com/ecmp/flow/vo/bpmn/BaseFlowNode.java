@@ -104,10 +104,6 @@ public class BaseFlowNode extends BaseNode implements Serializable {
 
     public List<BaseFlowNode> getTargetNodes() {
         return null;
-//        if (this.target == null || this.target.size() == 0) {
-//            return null;
-//        }
-//        return (List<BaseFlowNode>) JSONArray.toCollection(this.target, BaseFlowNode.class);
     }
 
     public void setTargetNodes(List<BaseFlowNode> targetNodes) {

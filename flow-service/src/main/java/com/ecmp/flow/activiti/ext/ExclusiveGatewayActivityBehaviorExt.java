@@ -10,6 +10,7 @@ import org.activiti.engine.impl.bpmn.behavior.ExclusiveGatewayActivityBehavior;
 import org.activiti.engine.impl.pvm.PvmTransition;
 import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         repositoryService = (RepositoryService) applicationContext.getBean("repositoryService");
         List<PvmTransition> outSequenceList = execution.getActivity().getOutgoingTransitions();
-        if (outSequenceList != null && outSequenceList.size() > 0) {
+        if (!CollectionUtils.isEmpty(outSequenceList)) {
             for (PvmTransition pv : outSequenceList) {
                 String conditionText = (String) pv.getProperty(Constants.CONDITION_TEXT);
                 if(conditionText != null && conditionText.startsWith("#{")){

@@ -252,18 +252,15 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Override
     @Transactional
     public String deployByVersionId(String id) throws UnsupportedEncodingException {
-        String deployId = null;
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(id);
-        Deployment deploy = null;
-        deploy = this.deploy(flowDefVersion.getName(), flowDefVersion.getDefXml());
-        deployId = deploy.getId();
+        Deployment deploy = this.deploy(flowDefVersion.getName(), flowDefVersion.getDefXml());
+        String deployId = deploy.getId();
         flowDefVersion.setActDeployId(deployId);//回写流程发布ID
         ProcessDefinitionEntity activtiFlowDef = getProcessDefinitionByDeployId(deployId);
         flowDefVersion.setVersionCode(activtiFlowDef.getVersion());//回写版本号
         flowDefVersion.setActDefId(activtiFlowDef.getId());//回写引擎对应流程定义ID
         flowDefVersion.setFlowDefinationStatus(FlowDefinationStatus.Activate);
         flowDefVersionDao.save(flowDefVersion);
-//        clearFlowDefVersion(id);//清除缓存
         clearFlowDefVersion();
 
         FlowDefination flowDefination = flowDefVersion.getFlowDefination();
@@ -272,12 +269,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         flowDefination.setStartUel(flowDefVersion.getStartUel());
         flowDefination.setName(flowDefVersion.getName());
         flowDefinationDao.save(flowDefination);
-//        //清除缓存
-//        String pattern = "FlowFindByTypeCodeAndOrgCode_*";
-//        Set<String> keys = redisTemplate.keys(pattern);
-//        if (keys!=null&&!keys.isEmpty()){
-//            redisTemplate.delete(keys);
-//        }
         return deployId;
     }
 
@@ -285,7 +276,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         String pattern = "FLowGetLastFlowDefVersion_*";
         if (redisTemplate != null) {
             Set<String> keys = redisTemplate.keys(pattern);
-            if (keys != null && !keys.isEmpty()) {
+            if (!CollectionUtils.isEmpty(keys)) {
                 redisTemplate.delete(keys);
             }
         }
@@ -420,12 +411,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
      */
     private FlowDefination flowDefLuYou(Map<String, Object> businessModelMap, FlowType flowType, List<String> orgParentCodeList, int level) throws NoSuchMethodException, SecurityException {
         FlowDefination finalFlowDefination = null;
-        if (orgParentCodeList.isEmpty()) {
+        if (CollectionUtils.isEmpty(orgParentCodeList)) {
             return null;
         }
         String orgCode = orgParentCodeList.get(level);
         List<FlowDefination> flowDefinationList = flowDefinationDao.findByTypeCodeAndOrgCode(flowType.getCode(), orgCode);
-        if (flowDefinationList != null && flowDefinationList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowDefinationList)) {
             for (FlowDefination flowDefination : flowDefinationList) {
                 String startUelStr = flowDefination.getStartUel();
                 if (!StringUtils.isEmpty(startUelStr)) {
@@ -627,7 +618,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         boolean result = false;
         if (StringUtils.isNotEmpty(businessKey)) {
             List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessId(businessKey);
-            if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(flowInstanceList)) {
                 for (FlowInstance flowInstance : flowInstanceList) {
                     if (flowInstance.isEnded() != true) {
                         result = true;
@@ -658,12 +649,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
             String businessId = flowStartVO.getBusinessKey();
             Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            if (flowStartVO.getVariables() == null || flowStartVO.getVariables().isEmpty()) {
+            if (CollectionUtils.isEmpty(flowStartVO.getVariables())) {
                 flowStartVO.setVariables(businessV);
             } else {
                 flowStartVO.getVariables().putAll(businessV);
             }
-            if (userMap != null && !userMap.isEmpty()) {//判断是否选择了下一步的用户
+            if (!CollectionUtils.isEmpty(userMap)) {//判断是否选择了下一步的用户
                 Map<String, Object> v = flowStartVO.getVariables();
                 v.putAll(userMap);
                 if (v.get("additionRemark") != null
@@ -702,7 +693,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
                 List<String> orgParentCodeList;
-                if (flowTypeList != null && !flowTypeList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(flowTypeList)) {
                     flowTypeListVO = new ArrayList<>();
                     flowStartResultVO.setFlowTypeList(flowTypeListVO);
                     String orgId = (String) businessV.get(Constants.ORG_ID);
@@ -843,7 +834,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             nodeInfo.setFlowTaskType(userTaskTemp.getNodeType());
         }
 
-        if (executor != null && !executor.isEmpty()) {
+        if (!CollectionUtils.isEmpty(executor)) {
             String userType = executor.get("userType") + "";
             String ids = executor.get("ids") + "";
             Set<Executor> employeeSet = new HashSet<Executor>();
@@ -854,7 +845,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 if (StringUtils.isEmpty(startUserId)) {
                     startUserId = ContextUtil.getSessionUser().getUserId();
                 }
-//                employees = flowCommonUtil.getBasicExecutors(Arrays.asList(startUserId));
                 employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
             } else {
                 String selfDefId = executor.get("selfDefId") + "";
@@ -894,13 +884,13 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             }
-            if (employees != null && !employees.isEmpty()) {
+            if (!CollectionUtils.isEmpty(employees)) {
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
-        } else if (executorList != null && executorList.size() > 1) {
-            Set<Executor> employeeSet = new HashSet<Executor>();
-            List<Executor> employees = null;
+        } else if (!CollectionUtils.isEmpty(executorList)) {
+            Set<Executor> employeeSet = new HashSet<>();
+            List<Executor> employees;
             String selfDefId = null;
             List<String> orgDimensionCodes = null;//组织维度代码集合
             List<String> positionIds = null;//岗位代码集合
@@ -910,7 +900,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 JSONObject executorTemp = (JSONObject) executorObject;
                 String userType = executorTemp.get("userType") + "";
                 String ids = executorTemp.get("ids") + "";
-//                nodeInfo.setUiUserType(userType);
                 List<String> tempList = null;
                 if (StringUtils.isNotEmpty(ids)) {
                     String[] idsShuZhu = ids.split(",");
@@ -942,7 +931,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 flowInvokeParams.setOrganizationIds(orgIds);
                 flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
                 flowInvokeParams.setJsonParam(param);
-                String nodeCode = "";
+                String nodeCode;
                 try {
                     JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
                     nodeCode = normal.getString("nodeCode");
@@ -953,8 +942,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 } catch (Exception e) {
                 }
-//                employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-//                }, flowInvokeParams);
                 employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
             } else {
                 if (positionTypesIds != null && orgIds != null) {
@@ -966,7 +953,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds, orgDimensionCodes, orgId);
                 }
             }
-            if (employees != null && !employees.isEmpty()) {
+            if (!CollectionUtils.isEmpty(employees)) {
                 employeeSet.addAll(employees);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -993,9 +980,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
         if ("ExclusiveGateway".equalsIgnoreCase(busType)) {//如果是系统排他网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
-            List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
-            List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
-            if (businessV.isEmpty()) {
+            List<NodeInfo> resultDefault = new ArrayList<>();
+            List<NodeInfo> resultCurrent = new ArrayList<>();
+            if (CollectionUtils.isEmpty(businessV)) {
                 BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                 businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
             }
@@ -1008,7 +995,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 JSONObject uel = jsonObject.getJSONObject("uel");
                 JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
                 String busType2 = nextNode.get("busType") + "";
-                if (uel != null && !uel.isEmpty()) {
+                if (!CollectionUtils.isEmpty(uel)) {
                     String isDefault = uel.get("isDefault") + "";
                     if ("true".equalsIgnoreCase(isDefault)) {
                         busType2Default = busType2;
@@ -1054,7 +1041,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             //其他路径都没有的时候，再去请求默认路径
-            if (resultCurrent == null || resultCurrent.isEmpty()) {
+            if (CollectionUtils.isEmpty(resultCurrent)) {
                 if (busType2Default != null && nextNodeDefault != null && targetIdDefault != null) {
                     if (checkGateway(busType2Default)) {
                         this.findXunFanNodesInfo(resultDefault, flowStartVO, flowDefination, definition, nextNodeDefault, businessVName);
@@ -1066,7 +1053,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
 
-            if ((resultCurrent == null || resultCurrent.isEmpty()) && (resultDefault != null && !resultDefault.isEmpty())) {
+            if ( CollectionUtils.isEmpty(resultCurrent) && !CollectionUtils.isEmpty(resultDefault) ) {
                 resultCurrent.addAll(resultDefault);
             }
             result.addAll(resultCurrent);
@@ -1089,9 +1076,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             result.addAll(resultCurrent);
         } else if ("InclusiveGateway".equalsIgnoreCase(busType)) {//如果是系统包容网关
             JSONArray targetNodes = jsonObjectNode.getJSONArray("target");
-            List<NodeInfo> resultDefault = new ArrayList<NodeInfo>();
-            List<NodeInfo> resultCurrent = new ArrayList<NodeInfo>();
-            if (businessV.isEmpty()) {
+            List<NodeInfo> resultDefault = new ArrayList<>();
+            List<NodeInfo> resultCurrent = new ArrayList<>();
+            if (CollectionUtils.isEmpty(businessV)) {
                 BusinessModel businessModel = flowDefination.getFlowType().getBusinessModel();
                 businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, flowStartVO.getBusinessKey(), false);
             }
@@ -1102,7 +1089,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 JSONObject nextNode = definition.getProcess().getNodes().getJSONObject(targetId);
                 String busType2 = nextNode.get("busType") + "";
 
-                if (uel != null && !uel.isEmpty()) {
+                if (!CollectionUtils.isEmpty(uel)) {
                     String isDefault = uel.get("isDefault") + "";
                     if ("true".equalsIgnoreCase(isDefault)) {
                         if (checkGateway(busType2)) {
@@ -1152,7 +1139,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
             }
             result.addAll(resultCurrent);
-            if ((result == null || result.isEmpty()) && (resultDefault != null && !resultDefault.isEmpty())) {
+            if ( CollectionUtils.isEmpty(result) && !CollectionUtils.isEmpty(resultDefault)) {
                 result.addAll(resultDefault);
             }
 
@@ -1236,7 +1223,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             FlowDefVersion flowDefVersion = flowCommonUtil.getLastFlowDefVersion(versionId);
             if (flowDefVersion.getFlowDefinationStatus() != FlowDefinationStatus.Activate) {//当前
                 List<FlowDefVersion> flowDefVersionsActivates = flowDefVersionDao.findByFlowDefinationIdActivate(flowDefination.getId());
-                if (flowDefVersionsActivates != null && !flowDefVersionsActivates.isEmpty()) {
+                if (!CollectionUtils.isEmpty(flowDefVersionsActivates)) {
                     flowDefVersion = flowDefVersionsActivates.get(0);
                 }
             }
@@ -1246,7 +1233,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 StartEvent startEvent = startEventList.get(0);
                 JSONObject startEventNode = definition.getProcess().getNodes().getJSONObject(startEvent.getId());
                 result = this.findXunFanNodesInfo(result, flowStartVO, flowDefination, definition, startEventNode, null);
-                if (!result.isEmpty()) {
+                if (!CollectionUtils.isEmpty(result)) {
                     for (NodeInfo nodeInfo : result) {
                         nodeInfo.setCurrentTaskType(startEvent.getType());
                     }
@@ -1269,7 +1256,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         for (FlowDefVersion flowDefVersion : flowDefVersions) {
             String actDeployId = flowDefVersion.getActDeployId();
             List<FlowInstance> flowInstanceList = flowInstanceDao.findByFlowDefVersionId(flowDefVersion.getId());
-            if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(flowInstanceList)) {
                 result = OperateResult.operationFailure("10024");
                 return result;
             }
@@ -1499,7 +1486,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         List<ProcessDefinition> lists = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey) // 使用key查询
                 .list();
         // 遍历,获取流程定义的id
-        if (lists != null && lists.size() > 0) {
+        if (!CollectionUtils.isEmpty(lists)) {
             for (ProcessDefinition processDefinition : lists) {
                 // 获取部署ID
                 String deploymentId = processDefinition.getDeploymentId();
@@ -1756,7 +1743,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 StartEvent startEvent = startEventList.get(0);
                 JSONObject startEventNode = definitionSon.getProcess().getNodes().getJSONObject(startEvent.getId());
                 result = this.findXunFanNodesInfo(result, flowStartVO, flowDefination, definitionSon, startEventNode, businessVName);
-                if (!result.isEmpty()) {
+                if (!CollectionUtils.isEmpty(result)) {
                     for (NodeInfo nodeInfo : result) {
                         nodeInfo.setCurrentTaskType(startEvent.getType());
                         if (StringUtils.isEmpty(nodeInfo.getCallActivityPath())) {

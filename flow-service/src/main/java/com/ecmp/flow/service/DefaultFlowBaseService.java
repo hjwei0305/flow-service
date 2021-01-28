@@ -134,7 +134,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public List<NodeInfo> setNewStartFlowInfo(String businessId) {
         List<FlowTask> flowTaskList = flowInstanceService.findCurrentTaskByBusinessId(businessId);
         List<NodeInfo> nodeInfoList = new ArrayList<>();
-        if (flowTaskList != null && flowTaskList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
             for (FlowTask flowTask : flowTaskList) {
                 NodeInfo oldNodeInfo = nodeInfoList.stream().filter(a -> a.getId().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
                 if (oldNodeInfo == null) {
@@ -446,7 +446,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             } else {
                 JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
                 List<FlowTaskCompleteWebVO> flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
-                if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(flowTaskCompleteList)) {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
                     FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
                     if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true && StringUtils.isEmpty(firstBean.getUserIds())) {
@@ -548,8 +548,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         flowTaskCompleteVO.setOpinion(opinion);
         Map<String, String> selectedNodesMap = new HashMap<>();
         Map<String, Object> v = new HashMap<>();
-        if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
-
+        if (!CollectionUtils.isEmpty(flowTaskCompleteList)) {
             //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
             FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
             if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true && StringUtils.isEmpty(firstBean.getUserIds())) {
@@ -675,7 +674,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData nextNodesInfo(String taskId) throws NoSuchMethodException {
         List<NodeInfo> nodeInfoList = flowTaskService.findNextNodes(taskId);
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
             return ResponseData.operationFailure("任务不存在，可能已经被处理");
@@ -787,11 +786,11 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
-        if (flowInstanceList != null && flowInstanceList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowInstanceList)) {
             FlowInstance instance = flowInstanceList.get(0);
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskService.findByInstanceId(instance.getId());
-            if (addList != null && addList.size() > 0) {
+            if (!CollectionUtils.isEmpty(addList)) {
                 List<Executor> listExecutors = new ArrayList<Executor>();
                 addList.forEach(a -> {
                     Executor e = new Executor();

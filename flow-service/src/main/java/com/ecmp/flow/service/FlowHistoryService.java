@@ -95,7 +95,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     }
 
     private List<FlowHistory> initUrl(List<FlowHistory> result) {
-        if (result != null && !result.isEmpty()) {
+        if (!CollectionUtils.isEmpty(result)) {
             for (FlowHistory flowHistory : result) {
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
@@ -124,7 +124,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     public List<TodoBusinessSummaryVO> findHisTorySumHeader(String appSign, String dataType) {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        List groupResultList = null;
+        List groupResultList;
         if (StringUtils.isNotEmpty(dataType) && !"all".equals(dataType)) {
             if ("record".equals(dataType)) {//记录数据
                 groupResultList = flowHistoryDao.findHisByExecutorIdGroupRecord(userID);
@@ -135,8 +135,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             groupResultList = flowHistoryDao.findHisByExecutorIdGroup(userID);
         }
 
-        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
-        if (groupResultList != null && !groupResultList.isEmpty()) {
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
             while (it.hasNext()) {
                 Object[] res = (Object[]) it.next();
@@ -166,7 +166,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 }
             }
         }
-        if (!businessModelCountMap.isEmpty()) {
+        if (!CollectionUtils.isEmpty(businessModelCountMap)) {
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
@@ -195,8 +195,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             groupResultList = flowHistoryDao.findHisByExecutorIdGroup(userID);
         }
 
-        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
-        if (groupResultList != null && !groupResultList.isEmpty()) {
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
             while (it.hasNext()) {
                 Object[] res = (Object[]) it.next();
@@ -226,7 +226,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 }
             }
         }
-        if (!businessModelCountMap.isEmpty()) {
+        if (!CollectionUtils.isEmpty(businessModelCountMap)) {
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
@@ -257,7 +257,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         String userID = ContextUtil.getUserId();
         List groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
-        if (groupResultList != null && !groupResultList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
             while (it.hasNext()) {
                 Object[] res = (Object[]) it.next();
@@ -276,7 +276,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 businessModelCountMap.put(businessModel, oldCount + count);
             }
         }
-        if (!businessModelCountMap.isEmpty()) {
+        if (!CollectionUtils.isEmpty(businessModelCountMap)) {
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
@@ -447,15 +447,15 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         } else {
             searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
         }
-        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        List<SearchOrder> list = new ArrayList<>();
         list.add(searchOrder);
         searchConfig.setSortOrders(list);
 
         PageResult<FlowHistory> historyPage = this.findByBusinessModelId(businessModelId, searchConfig);
-        PageResult<FlowHistoryPhoneVo> historyVoPage = new PageResult<FlowHistoryPhoneVo>();
-        if (historyPage.getRows() != null && historyPage.getRows().size() > 0) {
+        PageResult<FlowHistoryPhoneVo> historyVoPage = new PageResult<>();
+        if (!CollectionUtils.isEmpty(historyPage.getRows())) {
             List<FlowHistory> historyList = historyPage.getRows();
-            List<FlowHistoryPhoneVo> phoneVoList = new ArrayList<FlowHistoryPhoneVo>();
+            List<FlowHistoryPhoneVo> phoneVoList = new ArrayList<>();
             historyList.forEach(bean -> {
                 FlowHistoryPhoneVo beanVo = new FlowHistoryPhoneVo();
                 FlowInstance flowInstance = bean.getFlowInstance();
@@ -478,7 +478,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             });
             historyVoPage.setRows(phoneVoList);
         } else {
-            historyVoPage.setRows(new ArrayList<FlowHistoryPhoneVo>());
+            historyVoPage.setRows(new ArrayList<>());
         }
         historyVoPage.setPage(historyPage.getPage());
         historyVoPage.setRecords(historyPage.getRecords());
@@ -524,7 +524,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
 
     public List<FlowHistory> initFlowTaskAppModule(List<FlowHistory> result) {
-        if (result != null && !result.isEmpty()) {
+        if (!CollectionUtils.isEmpty(result)) {
             for (FlowHistory flowHistory : result) {
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);

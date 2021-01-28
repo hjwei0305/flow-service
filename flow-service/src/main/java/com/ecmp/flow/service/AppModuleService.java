@@ -17,6 +17,7 @@ import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -88,23 +89,22 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
         String pattern = "FLowGetLastFlowDefVersion_*";
         if (redisTemplate != null) {
             Set<String> keys = redisTemplate.keys(pattern);
-            if (keys != null && !keys.isEmpty()) {
+            if (!CollectionUtils.isEmpty(keys)) {
                 redisTemplate.delete(keys);
             }
         }
     }
 
     public PageResult<AppModule> findByPage(Search searchConfig) {
-        List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
+        List<com.ecmp.flow.basic.vo.AppModule> appModuleList = flowCommonUtil.getBasicTenantAppModule();
         List<String> appModuleCodeList = null;
-        appModuleList = flowCommonUtil.getBasicTenantAppModule();
-        if (appModuleList != null && !appModuleList.isEmpty()) {
-            appModuleCodeList = new ArrayList<String>();
+        if (!CollectionUtils.isEmpty(appModuleList)) {
+            appModuleCodeList = new ArrayList<>();
             for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
                 appModuleCodeList.add(appModule.getCode());
             }
         }
-        if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(appModuleCodeList)) {
             SearchFilter searchFilter = new SearchFilter("code", appModuleCodeList, SearchFilter.Operator.IN);
             searchConfig.addFilter(searchFilter);
         }
@@ -114,17 +114,17 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
 
     public List<AppModule> findAllByAuth() {
         List<AppModule> result = null;
-        List<com.ecmp.flow.basic.vo.AppModule> appModuleList = null;
+        List<com.ecmp.flow.basic.vo.AppModule> appModuleList;
         List<String> appModuleCodeList = null;
         try {
             appModuleList =  flowCommonUtil.getBasicTenantAppModule();
-            if (appModuleList != null && !appModuleList.isEmpty()) {
-                appModuleCodeList = new ArrayList<String>();
+            if (!CollectionUtils.isEmpty(appModuleList)) {
+                appModuleCodeList = new ArrayList<>();
                 for (com.ecmp.flow.basic.vo.AppModule appModule : appModuleList) {
                     appModuleCodeList.add(appModule.getCode());
                 }
             }
-            if (appModuleCodeList != null && !appModuleCodeList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(appModuleCodeList)) {
                 result = appModuleDao.findByCodes(appModuleCodeList);
             }
 

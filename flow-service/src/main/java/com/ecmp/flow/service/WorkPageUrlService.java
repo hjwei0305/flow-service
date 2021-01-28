@@ -12,6 +12,7 @@ import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -95,7 +96,7 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     @Override
     public OperateResult delete(String id) {
         List<BusinessWorkPageUrl> list = businessWorkPageUrlDao.findListByProperty("workPageUrlId", id);
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             return OperateResult.operationFailure("已分配的界面，不能进行删除！");
         }
         return super.delete(id);

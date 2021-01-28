@@ -170,7 +170,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskList 推送的任务集合
      */
     public void savePushAndControlInfo(String type, String status, String url, Boolean success, List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
+        if (!CollectionUtils.isEmpty(taskList)) {
             try {
                 //判断进来的任务是不是属于同一个实例
                 String oneFlowInstanceId = taskList.get(0).getFlowInstance().getId();
@@ -182,7 +182,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         List<FlowTask> needList = new ArrayList<>();
                         needList.add(flowtask);
                         List<FlowTaskPushControl> list = flowTaskPushControlService.getByInstanceAndNodeAndTypeAndStatus(flowtask.getFlowInstance().getId(), flowtask.getActTaskDefKey(), type, status);
-                        if (list == null || list.size() == 0) {
+                        if (CollectionUtils.isEmpty(list)) {
                             //新建推送任务父表和任务列表
                             flowTaskPushControlService.saveNewControlInfo(type, status, url, success, needList);
                         } else {
@@ -192,7 +192,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 } else { //taskList属于同实例
                     List<FlowTaskPushControl> list = flowTaskPushControlService.getByInstanceAndNodeAndTypeAndStatus(taskList.get(0).getFlowInstance().getId(), taskList.get(0).getActTaskDefKey(), type, status);
-                    if (list == null || list.size() == 0) {
+                    if (CollectionUtils.isEmpty(list)) {
                         //新建推送任务父表和任务列表
                         flowTaskPushControlService.saveNewControlInfo(type, status, url, success, taskList);
                     } else {
@@ -231,13 +231,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     public Boolean pushToBasic(List<FlowTask> newList, List<FlowTask> oldList, List<FlowTask> delList, FlowTask endTask) {
         Boolean boo = false;
-        if (delList != null && delList.size() > 0) { //删除待办
+        if (!CollectionUtils.isEmpty(delList)) { //删除待办
             boo = pushDelTaskToBasic(delList);
         }
-        if (oldList != null && oldList.size() > 0) { //待办转已办
+        if (!CollectionUtils.isEmpty(oldList)) { //待办转已办
             boo = pushOldTaskToBasic(oldList);
         }
-        if (newList != null && newList.size() > 0) {  //新增待办
+        if (!CollectionUtils.isEmpty(newList)) {  //新增待办
             boo = pushNewTaskToBasic(newList);
         }
         if (endTask != null) { //归档（终止）
@@ -253,8 +253,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Override
     public Boolean pushNewTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
-            List<String> idList = new ArrayList<String>();
+        if (!CollectionUtils.isEmpty(taskList)) {
+            List<String> idList = new ArrayList<>();
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             this.initFlowTasks(taskList); //添加待办处理地址等
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
@@ -282,8 +282,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Override
     public Boolean pushOldTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
-            List<String> idList = new ArrayList<String>();
+        if (!CollectionUtils.isEmpty(taskList)) {
+            List<String> idList = new ArrayList<>();
             taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
             String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
@@ -309,7 +309,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Override
     public Boolean pushDelTaskToBasic(List<FlowTask> taskList) {
-        if (taskList != null && taskList.size() > 0) {
+        if (!CollectionUtils.isEmpty(taskList)) {
             List<String> idList = new ArrayList<String>();
             taskList.forEach(a -> {
                 a.getFlowInstance().setFlowTasks(null);
@@ -422,11 +422,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param taskList     需要推送的待办
      */
     public Boolean pushTaskToModelOrUrl(FlowInstance flowInstance, List<FlowTask> taskList, TaskStatus taskStatus) {
-        if (taskList != null && taskList.size() > 0) {
+        if (!CollectionUtils.isEmpty(taskList)) {
             //得到具体推送地址
             String flowPushTaskUrl = this.getPushModelOrUrlStr(flowInstance);
             if (StringUtils.isNotEmpty(flowPushTaskUrl)) {
-                List<String> idList = new ArrayList<String>();
+                List<String> idList = new ArrayList<>();
                 taskList.forEach(a -> {
                     a.getFlowInstance().setFlowTasks(null);
                     a.setTaskStatus(taskStatus.toString());
@@ -525,7 +525,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Map<String, String> manualSelectedNodes = flowTaskCompleteVO.getManualSelectedNode();
         OperateResultWithData<FlowStatus> result;
         try {
-            if (manualSelectedNodes == null || manualSelectedNodes.isEmpty()) {//非人工选择任务的情况
+            if (CollectionUtils.isEmpty(manualSelectedNodes)) {//非人工选择任务的情况
                 result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
             } else {//人工选择任务的情况
                 FlowTask flowTask = flowTaskDao.findOne(taskId);
@@ -568,7 +568,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     variables.put("approveResult", null);
                     //执行任务
                     result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    if (!oriPvmTransitionMap.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
                         for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
                             PvmTransition pvmTransition = entry.getKey();
                             String uelText = entry.getValue();
@@ -621,7 +621,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     //执行任务
                     result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    if (!oriPvmTransitionMap.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
                         for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
                             PvmTransition pvmTransition = entry.getKey();
                             String uelText = entry.getValue();
@@ -773,7 +773,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String businessId = flowInstance.getBusinessId();
             BusinessModel businessModel = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
             Map<String, Object> v = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
-            if (v != null && !v.isEmpty()) {
+            if (!CollectionUtils.isEmpty(v)) {
                 if (variables == null) {
                     variables = new HashMap<>();
                 }
@@ -1033,7 +1033,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
         List<PvmTransition> nextNodes = currentNode.getOutgoingTransitions();
-        if (nextNodes != null && nextNodes.size() > 0) {
+        if (!CollectionUtils.isEmpty(nextNodes)) {
             for (PvmTransition node : nextNodes) {
                 PvmActivity nextActivity = node.getDestination();
                 if (FlowTaskTool.ifGageway(nextActivity) || "ManualTask".equalsIgnoreCase(nextActivity.getProperty("type") + "")) {
@@ -1177,10 +1177,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         Map variablesProcess = instance.getProcessVariables();
         Map variablesTask = currTask.getTaskLocalVariables();
-        if ((variablesProcess != null) && (!variablesProcess.isEmpty())) {
+        if (!CollectionUtils.isEmpty(variablesProcess)) {
             variables.putAll(variablesProcess);
         }
-        if ((variablesTask != null) && (!variablesTask.isEmpty())) {
+        if (!CollectionUtils.isEmpty(variablesTask)) {
             variables.putAll(variablesTask);
         }
 
@@ -1265,7 +1265,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNexNodesWithUserSet(FlowTask flowTask, String approved, List<String> includeNodeIds) throws NoSuchMethodException {
         List<NodeInfo> nodeInfoList = flowTaskTool.findNextNodesWithCondition(flowTask, approved, includeNodeIds);
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -1318,7 +1318,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoSonMap.put(nodeInfo, nodeInfoListSons);
                 } else {
                     Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                    if (executorSet != null && !executorSet.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(executorSet)) {
                         continue;
                     }
                     JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
@@ -1342,7 +1342,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 } catch (Exception e2) {
                                     e2.printStackTrace();
                                 }
-                                if (executorList != null && executorList.size() == 1) {
+                                if (!CollectionUtils.isEmpty(executorList) && executorList.size() == 1) {
                                     executor = executorList.getJSONObject(0);
                                 }
                             }
@@ -1368,7 +1368,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
 
-                    if (executor != null && !executor.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(executor)) {
                         String userType = (String) executor.get("userType");
                         String ids = (String) executor.get("ids");
                         Set<Executor> employeeSet = new HashSet<Executor>();
@@ -1421,13 +1421,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                         }
-                        if (employees != null && !employees.isEmpty()) {
+                        if (!CollectionUtils.isEmpty(employees)) {
                             employeeSet.addAll(employees);
                             nodeInfo.setExecutorSet(employeeSet);
                         }
-                    } else if (executorList != null && executorList.size() > 1) {
-                        Set<Executor> employeeSet = new HashSet<Executor>();
-                        List<Executor> employees = null;
+                    } else if ( !CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
+                        Set<Executor> employeeSet = new HashSet<>();
+                        List<Executor> employees;
                         String selfDefId = null;
                         List<String> orgDimensionCodes = null;//组织维度代码集合
                         List<String> positionIds = null;//岗位代码集合
@@ -1494,14 +1494,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds, orgDimensionCodes, currentOrgId);
                             }
                         }
-                        if (employees != null && !employees.isEmpty()) {
+                        if (!CollectionUtils.isEmpty(employees)) {
                             employeeSet.addAll(employees);
                             nodeInfo.setExecutorSet(employeeSet);
                         }
                     }
                 }
             }
-            if (nodeInfoSonMap != null && !nodeInfoSonMap.isEmpty()) {
+            if (!CollectionUtils.isEmpty(nodeInfoSonMap)) {
                 for (Map.Entry<NodeInfo, List<NodeInfo>> entry : nodeInfoSonMap.entrySet()) {
                     nodeInfoList.remove(entry.getKey());
                     nodeInfoList.addAll(entry.getValue());
@@ -1523,7 +1523,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<NodeInfo> findNexNodesWithUserSetSolidifyFlow(FlowTask flowTask, String approved, List<String> includeNodeIds) throws NoSuchMethodException {
         List<NodeInfo> nodeInfoList = flowTaskTool.findNextNodesWithCondition(flowTask, approved, includeNodeIds);
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             String flowDefJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
@@ -1572,7 +1572,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoSonMap.put(nodeInfo, nodeInfoListSons);
                 } else {
                     Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                    if (executorSet != null && !executorSet.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(executorSet)) {
                         continue;
                     }
 
@@ -1614,12 +1614,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         search.addFilter(new SearchFilter("businessId", businessId));
                         search.addFilter(new SearchFilter("actTaskDefKey", nodeInfo.getId()));
                         List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
-                        if (solidifyExecutorlist != null && solidifyExecutorlist.size() > 0) {
+                        if (!CollectionUtils.isEmpty(solidifyExecutorlist)) {
                             String userIds = solidifyExecutorlist.get(0).getExecutorIds();
                             String[] idArray = userIds.split(",");
                             List<String> idList = Arrays.asList(idArray);
                             List<Executor> list = flowCommonUtil.getBasicUserExecutors(idList);
-                            if (list != null && list.size() > 0) {
+                            if (!CollectionUtils.isEmpty(list)) {
                                 Set result = new HashSet(list);
                                 nodeInfo.setExecutorSet(result);
                             }
@@ -1627,7 +1627,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
-            if (nodeInfoSonMap != null && !nodeInfoSonMap.isEmpty()) {
+            if (!CollectionUtils.isEmpty(nodeInfoSonMap)) {
                 for (Map.Entry<NodeInfo, List<NodeInfo>> entry : nodeInfoSonMap.entrySet()) {
                     nodeInfoList.remove(entry.getKey());
                     nodeInfoList.addAll(entry.getValue());
@@ -1777,7 +1777,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTaskTempSrc = new FlowTask();
         BeanUtils.copyProperties(flowTask, flowTaskTempSrc);
 
-        while (parentFlowInstance != null && nodeInfoList != null && !nodeInfoList.isEmpty() && nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//针对子流程结束节点
+        while (parentFlowInstance != null &&  !CollectionUtils.isEmpty(nodeInfoList) && nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//针对子流程结束节点
             FlowTask flowTaskTemp = new FlowTask();
             BeanUtils.copyProperties(flowTaskTempSrc, flowTaskTemp);
 
@@ -1865,7 +1865,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
         List<TaskMakeOverPower> list = taskMakeOverPowerService.findPowerByPowerUser(userId);
         int allTodoSum = 0;
-        if (list != null && !list.isEmpty()) {
+        if (!CollectionUtils.isEmpty(list)) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower bean = list.get(i);
                 if (StringUtils.isNotEmpty(bean.getFlowTypeId())) { //流程类型
@@ -1892,7 +1892,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List groupResultList = new ArrayList();
 
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userID);
-        if (powerList != null && !powerList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(powerList)) {
             if (batchApproval == true) {
                 for (int i = 0; i < powerList.size(); i++) {
                     TaskMakeOverPower bean = powerList.get(i);
@@ -1920,8 +1920,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             groupResultList.addAll(list);
         }
 
-        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<BusinessModel, Integer>();
-        if (groupResultList != null && !groupResultList.isEmpty()) {
+        Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
             while (it.hasNext()) {
                 Object[] res = (Object[]) it.next();
@@ -1950,7 +1950,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
         }
-        if (!businessModelCountMap.isEmpty()) {
+        if (!CollectionUtils.isEmpty(businessModelCountMap)) {
             for (Map.Entry<BusinessModel, Integer> map : businessModelCountMap.entrySet()) {
                 TodoBusinessSummaryVO todoBusinessSummaryVO = new TodoBusinessSummaryVO();
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
@@ -2007,7 +2007,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         phoneVoPage.setPage(flowTaskPage.getPage());
         phoneVoPage.setRecords(flowTaskPage.getRecords());
         phoneVoPage.setTotal(flowTaskPage.getTotal());
-        if (flowTaskPage.getRows() != null && flowTaskPage.getRows().size() > 0) {
+        if (!CollectionUtils.isEmpty(flowTaskPage.getRows())) {
             List<FlowTask> taskList = flowTaskPage.getRows();
             List<FlowTaskBatchPhoneVO> phoneVoList = new ArrayList<FlowTaskBatchPhoneVO>();
             taskList.forEach(bean -> {
@@ -2137,14 +2137,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         search.setSortOrders(list);
 
         FlowTaskPageResultVO<FlowTask> flowTaskPage = findByBusinessModelIdWithAllCount(businessModelId, search);
-        FlowTaskPageResultVO<FlowTaskPhoneVo> phoneVoPage = new FlowTaskPageResultVO<FlowTaskPhoneVo>();
+        FlowTaskPageResultVO<FlowTaskPhoneVo> phoneVoPage = new FlowTaskPageResultVO<>();
         phoneVoPage.setAllTotal(flowTaskPage.getAllTotal());
         phoneVoPage.setPage(flowTaskPage.getPage());
         phoneVoPage.setRecords(flowTaskPage.getRecords());
         phoneVoPage.setTotal(flowTaskPage.getTotal());
-        if (flowTaskPage.getAllTotal() != 0 && flowTaskPage.getRows() != null && flowTaskPage.getRows().size() > 0) {
+        if (flowTaskPage.getAllTotal() != 0 && !CollectionUtils.isEmpty(flowTaskPage.getRows())) {
             List<FlowTask> taskList = flowTaskPage.getRows();
-            List<FlowTaskPhoneVo> phoneVoList = new ArrayList<FlowTaskPhoneVo>();
+            List<FlowTaskPhoneVo> phoneVoList = new ArrayList<>();
             taskList.forEach(bean -> {
                 FlowTaskPhoneVo beanVo = new FlowTaskPhoneVo();
                 FlowType flowType = bean.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType();
@@ -2370,7 +2370,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<BatchApprovalFlowTaskGroupVO> getBatchApprovalFlowTasks(List<String> taskIdArray) throws NoSuchMethodException {
         List<BatchApprovalFlowTaskGroupVO> result = new ArrayList<>();
         List<FlowTask> flowTaskList = this.findByIds(taskIdArray);
-        if (flowTaskList != null && !flowTaskList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
             for (FlowTask flowTask : flowTaskList) {
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(flowTask, "true", null);
                 BatchApprovalFlowTaskGroupVO batchApprovalFlowTaskGroupVO = new BatchApprovalFlowTaskGroupVO();
@@ -2417,7 +2417,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return OperateResultWithData.operationFailure("获取下一节点信息错误:" + e.getMessage());
         }
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return OperateResultWithData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
@@ -2446,11 +2446,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String[] includeNodeIdsStringArray = taskIds.split(",");
             taskIdList = Arrays.asList(includeNodeIdsStringArray);
         }
-        if (taskIdList != null && !taskIdList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(taskIdList)) {
             String approved = "true";
             for (String taskId : taskIdList) {
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
-                if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(nodeInfoList)) {
                     all.addAll(nodeInfoList);
                 }
             }
@@ -2459,24 +2459,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(String taskIds) throws NoSuchMethodException {
-        List<NodeGroupInfo> all = new ArrayList<NodeGroupInfo>();
+        List<NodeGroupInfo> all = new ArrayList<>();
         List<String> taskIdList = null;
         if (StringUtils.isNotEmpty(taskIds)) {
             String[] includeNodeIdsStringArray = taskIds.split(",");
             taskIdList = Arrays.asList(includeNodeIdsStringArray);
         }
-        if (taskIdList != null && !taskIdList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(taskIdList)) {
             String approved = "true";
             Map<String, NodeGroupInfo> tempNodeGroupInfoMap = new HashMap<>();
             for (String taskId : taskIdList) {
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
-                if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(nodeInfoList)) {
                     for (NodeInfo nodeInfo : nodeInfoList) {
                         String flowDefVersionId = nodeInfo.getFlowDefVersionId();
                         Set<Executor> executorSet = nodeInfo.getExecutorSet();
                         NodeGroupInfo tempNodeGroupInfo;
                         String mapKey;
-                        if (executorSet != null && executorSet.size() > 0) {
+                        if (!CollectionUtils.isEmpty(executorSet)) {
                             mapKey = flowDefVersionId + nodeInfo.getId() + executorSet.size() + executorSet.iterator().next().getId();
                             tempNodeGroupInfo = tempNodeGroupInfoMap.get(mapKey);
                         } else {
@@ -2505,7 +2505,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     public ResponseData getSelectedCanBatchNodesInfoOfPhone(String taskIds) throws NoSuchMethodException {
         List<NodeGroupByFlowVersionInfo> nodeInfoList = this.findNexNodesGroupByVersionWithUserSetCanBatch(taskIds);
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
             return ResponseData.operationFailure("选取的任务不存在，可能已经被处理");
@@ -2538,7 +2538,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<NodeGroupByFlowVersionInfo> all = new ArrayList<NodeGroupByFlowVersionInfo>();
         List<NodeGroupInfo> nodeGroupInfoList = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
         Map<String, NodeGroupByFlowVersionInfo> nodeGroupByFlowVersionInfoMap = new HashMap<String, NodeGroupByFlowVersionInfo>();
-        if (nodeGroupInfoList != null && !nodeGroupInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeGroupInfoList)) {
             for (NodeGroupInfo nodeGroupInfo : nodeGroupInfoList) {
                 String flowDefVersionId = nodeGroupInfo.getFlowDefVersionId();
                 NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = nodeGroupByFlowVersionInfoMap.get(flowDefVersionId);
@@ -2576,11 +2576,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return
      */
     public ResponseData completeTaskBatch(List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList) {
-        if (flowTaskBatchCompleteWebVOList != null && flowTaskBatchCompleteWebVOList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowTaskBatchCompleteWebVOList)) {
             int total = 0;//记录处理任务总数
             for (FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO : flowTaskBatchCompleteWebVOList) {
                 List<String> taskIdList = flowTaskBatchCompleteWebVO.getTaskIdList();
-                if (taskIdList != null && !taskIdList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(taskIdList)) {
                     for (String taskId : taskIdList) {
                         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
                         completeTaskVo.setTaskId(taskId);
@@ -2593,7 +2593,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         completeTaskVo.setOpinion("同意(批量)");
                         List<FlowTaskCompleteWebVO> flowTaskCompleteWebVOList = flowTaskBatchCompleteWebVO.getFlowTaskCompleteList();
                         Boolean endEventId = null;
-                        if (flowTaskCompleteWebVOList != null && flowTaskCompleteWebVOList.size() > 0) {
+                        if (!CollectionUtils.isEmpty(flowTaskCompleteWebVOList)) {
                             for (FlowTaskCompleteWebVO f : flowTaskCompleteWebVOList) {
                                 if (endEventId == null && f.getFlowTaskType() == null && f.getNodeId().indexOf("EndEvent") != -1) {
                                     endEventId = true;
@@ -2633,8 +2633,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = null;
         if (StringUtils.isNotEmpty(flowTaskBatchCompleteWebVoStrs)) {
             JSONArray jsonArray = JSONArray.fromObject(flowTaskBatchCompleteWebVoStrs);//把String转换为json
-            if (jsonArray != null && !jsonArray.isEmpty()) {
-                flowTaskBatchCompleteWebVOList = new ArrayList<FlowTaskBatchCompleteWebVO>();
+            if (!CollectionUtils.isEmpty(jsonArray)) {
+                flowTaskBatchCompleteWebVOList = new ArrayList<>();
                 for (int i = 0; i < jsonArray.size(); i++) {
                     FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO = new FlowTaskBatchCompleteWebVO();
                     JSONObject jsonObject = (JSONObject) jsonArray.get(i);
@@ -2658,8 +2658,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public OperateResultWithData<Integer> completeBatch(FlowTaskBatchCompleteVO flowTaskBatchCompleteVO) {
         List<String> taskIdList = flowTaskBatchCompleteVO.getTaskIdList();
         int total = 0;
-        OperateResultWithData result = null;
-        if (taskIdList != null && !taskIdList.isEmpty()) {
+        OperateResultWithData result;
+        if (!CollectionUtils.isEmpty(taskIdList)) {
             for (String taskId : taskIdList) {
                 FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
                 BeanUtils.copyProperties(flowTaskBatchCompleteVO, flowTaskCompleteVO);
@@ -2914,7 +2914,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public List<Executor> getCounterSignExecutorList(String actInstanceId, String taskActKey) throws Exception {
         List<Executor> result = null;
         List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
-        if (flowTaskList != null && !flowTaskList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
             FlowTask flowTaskTemp = flowTaskList.get(0);
             // 取得当前任务
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
@@ -3017,7 +3017,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         continue;
                     }
                     List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
-                    if (flowTaskList != null && !flowTaskList.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(flowTaskList)) {
                         FlowTask flowTaskTemp = flowTaskList.get(0);
                         // 取得当前任务
                         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTaskTemp.getActTaskId())
@@ -3137,7 +3137,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         continue;
                     }
                     List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
-                    if (flowTaskList != null && !flowTaskList.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(flowTaskList)) {
                         FlowTask flowTaskTemp = flowTaskList.get(0);
                         FlowInstance flowInstance = flowTaskTemp.getFlowInstance();
                         // 取得当前任务
@@ -3180,7 +3180,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                             List<FlowTask> flowTaskListCurrent = flowTaskDao.findByActTaskDefKeyAndActInstanceIdAndExecutorId(taskActKey, actInstanceId, userId);
                             if (isSequential == false) {//并行会签，需要清空对应的执行人任务信息
-                                if (flowTaskListCurrent != null && !flowTaskListCurrent.isEmpty()) {
+                                if (!CollectionUtils.isEmpty(flowTaskListCurrent)) {
                                     //是否推送信息到baisc
                                     Boolean pushBasic = this.getBooleanPushTaskToBasic();
                                     runtimeService.setVariable(executionId, "nrOfInstances", (instanceOfNumbers - 1));
@@ -3215,14 +3215,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                     continue;
                                 }
                             } else {//串行会签不允许对当前在线的任务进行直接减签，未来可扩展允许
-                                if (flowTaskListCurrent != null && !flowTaskListCurrent.isEmpty()) {
+                                if (!CollectionUtils.isEmpty(flowTaskListCurrent)) {
                                     resultDecFalseFive.append("【" + executor.getName() + "-" + executor.getCode() + "】");
                                     LogUtil.bizLog(executor.getName() + "【" + executor.getCode() + "】,id='" + executor.getId() + "'的用户,串行会签不允许对当前在线的执行人直接减签操作，减签失败;");
                                     continue;
                                 } else {
                                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
                                     boolean canDel = true;
-                                    if (flowHistoryList != null && !flowHistoryList.isEmpty()) {
+                                    if (!CollectionUtils.isEmpty(flowHistoryList)) {
                                         while (flowHistoryList.size() > userList.size()) {
                                             for (int index = 0; index < userList.size(); index++) {
                                                 flowHistoryList.remove(index);
@@ -3343,13 +3343,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (executorIdAndCountList != null && !executorIdAndCountList.isEmpty()) {
             Map<String, Long> executorIdAndCountMap = executorIdAndCountList.stream().collect(Collectors.toMap(FlowTaskExecutorIdAndCount::getExecutorId, FlowTaskExecutorIdAndCount::getCount));
             //调用basic个人基本信息
-            if (executorIdAndCountMap != null && !executorIdAndCountMap.isEmpty()) {
+            if (!CollectionUtils.isEmpty(executorIdAndCountMap)) {
                 Set<String> userIdSet = executorIdAndCountMap.keySet();
 
                 String url = Constants.getUserEmailAlertFindByUserIdsUrl();
                 List<UserEmailAlert> userEmailAlertList = ApiClient.postViaProxyReturnResult(url, new GenericType<List<UserEmailAlert>>() {
                 }, userIdSet);
-                if (userEmailAlertList != null && !userEmailAlertList.isEmpty()) {
+                if (!CollectionUtils.isEmpty(userEmailAlertList)) {
                     for (UserEmailAlert userEmailAlert : userEmailAlertList) {
                         Integer jianGeTime = userEmailAlert.getHours();//间隔时间
                         Integer toDoAmount = userEmailAlert.getToDoAmount();//待办数量阀值
@@ -3392,7 +3392,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     private void emailSend(String userId) {
         String userName;
         List<FlowTaskExecutorIdAndCount> list = flowTaskDao.findAllTaskKeyAndCountByExecutorId(userId);
-        if (list != null && !list.isEmpty()) {
+        if (!CollectionUtils.isEmpty(list)) {
             Map<String, Object> contentTemplateParams = new HashMap<>();
             userName = list.get(0).getExecutorName();
             List<CuiBanEmailTemplate> toDoItems = new ArrayList<>();
@@ -3478,7 +3478,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTask> list = new ArrayList<FlowTask>();
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
-        if (flowInstanceList != null && flowInstanceList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowInstanceList)) {
             FlowInstance instance = flowInstanceList.get(0);
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
@@ -3711,7 +3711,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             } else {
                 List<FlowHistory> historylist = flowHistoryService.findListByProperty("oldTaskId", taskId);
-                if (historylist != null && historylist.size() > 0) {
+                if (!CollectionUtils.isEmpty(historylist)) {
                     FlowHistory history = historylist.get(0);
                     String webBaseAddressConfig = history.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                     String webBaseAddress = Constants.getConfigValueByWeb(webBaseAddressConfig);
@@ -3843,7 +3843,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         ResponseData responseData = this.findTasksNoUrlByBusinessId(businessId);
         if (responseData.getSuccess()) {
             List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
-            if (taskList != null && taskList.size() > 0) {
+            if (!CollectionUtils.isEmpty(taskList)) {
                 List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
                 for (FlowTask flowTask : taskList) {
                     if (StringUtils.isNotEmpty(flowTask.getPreId())) {
@@ -3868,7 +3868,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
                 //需要自动执行的待办
-                if (needLsit != null && needLsit.size() > 0) {
+                if (!CollectionUtils.isEmpty(needLsit)) {
                     this.automaticToDoTask(needLsit);
                 }
             } else {
@@ -3887,7 +3887,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void automaticToDoTask(List<FlowTask> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
             FlowTask task = taskList.get(i);
-            ResponseData responseData = null;
+            ResponseData responseData = ResponseData.operationFailure("模拟请求下一步失败！");
             try {
                 //模拟请求下一步数据
                 responseData = this.simulationGetNodesInfo(task.getId(), "true");
@@ -3986,7 +3986,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTask> list = new ArrayList<>();
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
-        if (flowInstanceList != null && flowInstanceList.size() > 0) {
+        if (!CollectionUtils.isEmpty(flowInstanceList)) {
             FlowInstance instance = flowInstanceList.get(0);
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
@@ -4010,7 +4010,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //可能路径
         List<NodeInfo> list = this.findNextNodes(taskId);
         List<NodeInfo> nodeInfoList = null;
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             if (list.size() == 1) {
                 nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
             } else {
@@ -4024,7 +4024,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             }
         }
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return ResponseData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {

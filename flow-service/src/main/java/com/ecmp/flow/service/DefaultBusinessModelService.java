@@ -32,6 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -190,14 +191,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
         if (entity != null) {
-//            defaultBusinessModelDao.saveAndFlush(entity);
             if (StringUtils.isNotEmpty(changeText)) {
 
                 try {
                     JSONObject jsonObject = JSONObject.fromObject(changeText);
-                    List<String> callActivtiySonPaths = null;
-                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                    if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    List<String> callActivtiySonPaths =  jsonObject.getJSONArray("callActivtiySonPaths");
+                    if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                         List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -232,14 +231,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
         if (entity != null) {
-//            defaultBusinessModelDao.saveAndFlush(entity);
             if (StringUtils.isNotEmpty(changeText)) {
-
                 try {
                     JSONObject jsonObject = JSONObject.fromObject(changeText);
-                    List<String> callActivtiySonPaths = null;
-                    callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                    if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                    List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
+                    if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                         List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -271,19 +267,19 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData<List<Executor>> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams) {
         String businessId = flowInvokeParams.getId();
-        List<Executor> executors = new ArrayList<Executor>();
+        List<Executor> executors = new ArrayList<>();
         if (StringUtils.isNotEmpty(businessId)) {
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
             if (defaultBusinessModel != null) {
                 String orgid = defaultBusinessModel.getOrgId();
                 //根据组织机构ID获取员工集合
                 List<Employee> employeeList = flowCommonUtil.getEmployeesByOrgId(orgid);
-                List<String> idList = new ArrayList<String>();
+                List<String> idList = new ArrayList<>();
                 for (Employee e : employeeList) {
                     idList.add(e.getId());
                 }
                 //获取执行人
-                if (idList.isEmpty()) {
+                if (CollectionUtils.isEmpty(idList)) {
                     idList.add("394DE15B-F6FF-11EA-8F02-0242C0A8460D");
                     idList.add("A1206710-78AA-11EA-88E0-0242C0A84603");
 
@@ -472,7 +468,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             if (entity != null) {
                 String receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
                 List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                     List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -502,7 +498,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             if (entity != null) {
                 receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
                 List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                     List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -559,9 +555,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
                 taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = null;
-                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                     List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -631,15 +626,14 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams) {
         System.out.println(flowInvokeParams.getPoolTaskCode());
         FlowOperateResult result = new FlowOperateResult();
-        String taskActDefId = null;
-        Map<String, Object> variables = new HashMap<String, Object>();
+        String taskActDefId;
+        Map<String, Object> variables = new HashMap<>();
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
                 taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = null;
-                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                     List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
@@ -652,7 +646,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                     }
                 }
                 String changeText = "PoolCallPoolCreate";
-                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
+                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText + ":" + taskActDefId);
                 defaultBusinessModelDao.save(entity);
             }
         } catch (Exception e) {
@@ -661,7 +655,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         }
         result.setSuccess(true);
         result.setMessage("test success!");
-//        result.setUserId("8A6A1592-4A95-11E7-A011-960F8309DEA7");
         return result;
     }
 
@@ -674,9 +667,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
                 taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = null;
-                callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (callActivtiySonPaths != null && !callActivtiySonPaths.isEmpty()) {
+                List<String> callActivtiySonPaths =  flowInvokeParams.getCallActivitySonPaths();
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
                     List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();

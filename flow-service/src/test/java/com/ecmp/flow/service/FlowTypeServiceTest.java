@@ -5,6 +5,7 @@ import com.ecmp.flow.entity.FlowType;
 import com.ecmp.vo.OperateResultWithData;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class FlowTypeServiceTest extends BaseContextTestCase {
     @Test
     public void save() {
         List<BusinessModel> businessModels = businessModelService.findAll();
-        if (businessModels != null && businessModels.size() > 0) {
+        if (!CollectionUtils.isEmpty(businessModels)) {
             FlowType flowType = new FlowType();
             flowType.setBusinessModel(businessModels.get(0));
             flowType.setCode("test_mac");

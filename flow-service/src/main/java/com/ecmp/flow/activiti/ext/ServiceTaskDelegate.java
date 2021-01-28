@@ -22,6 +22,7 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -111,7 +112,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
 
                     List<String> paths = flowListenerTool.getCallActivitySonPaths(flowTask);
-                    if (!paths.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(paths)) {
                         tempV.put(Constants.CALL_ACTIVITY_SON_PATHS, paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                     }
                     String param = JsonUtils.toJson(tempV);
@@ -128,7 +129,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
                         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
-                        if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
+                        if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList) ) { //如果是开始节点，手动回滚
                             new Thread() {
                                 public void run() {
                                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();

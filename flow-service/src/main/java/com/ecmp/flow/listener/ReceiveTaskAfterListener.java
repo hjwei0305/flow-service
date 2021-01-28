@@ -18,6 +18,7 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
             FlowTask flowTask = null;
             FlowHistory flowHistory = new FlowHistory();
             List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(actTaskDefKey, actProcessInstanceId);
-            if (flowTaskList != null && !flowTaskList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(flowTaskList)) {
                 flowTask = flowTaskList.get(0);
                 flowTaskDao.delete(flowTask);
             }

@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
             this.setCommonInfo(entity);
             //将转授权信息转换成控制到流程类型的集合
             List<TaskMakeOverPower> powerList = this.changeToMiniTypeList(entity);
-            if (powerList != null && !powerList.isEmpty()) {
+            if (!CollectionUtils.isEmpty(powerList)) {
                 for (int i = 0; i < powerList.size(); i++) {
                     TaskMakeOverPower bean = powerList.get(i);
                     //规则检查
@@ -302,7 +303,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = bean.getPowerStartDate();
         Date endDate = bean.getPowerEndDate();
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
@@ -334,7 +335,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         Date startDate = bean.getPowerStartDate();
         Date endDate = bean.getPowerEndDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
@@ -366,7 +367,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         Date startDate = bean.getPowerStartDate();
         Date endDate = bean.getPowerEndDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        if (list != null && list.size() > 0) {
+        if (!CollectionUtils.isEmpty(list)) {
             for (int i = 0; i < list.size(); i++) {
                 TaskMakeOverPower a = list.get(i);
                 Date start = a.getPowerStartDate();
@@ -435,7 +436,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 && MakeOverPowerType.TURNTODO.getCode().equalsIgnoreCase(entity.getMakeOverPowerType())) { //转办模式
             //得到历史数据中需要转办的任务
             List<FlowTask> taskList = getNeedTurnTodoList(entity);
-            if (taskList != null && taskList.size() > 0) {
+            if (!CollectionUtils.isEmpty(taskList)) {
                 List<FlowTask> needDelList = new ArrayList<>();
                 List<FlowTask> addList = new ArrayList<>();
                 //是否推送信息到baisc
@@ -580,7 +581,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
 
 
     private List<FlowHistory> initWebUrl(List<FlowHistory> result) {
-        if (result != null && !result.isEmpty()) {
+        if (!CollectionUtils.isEmpty(result)) {
             for (FlowHistory flowHistory : result) {
                 FlowInstance flowInstance = flowHistory.getFlowInstance();
                 String webBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
@@ -697,7 +698,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         if (boo) {
             if (StringUtils.isNotEmpty(executorId) && StringUtils.isNotEmpty(typeId)) {
                 List<TaskMakeOverPower> listPower = this.findPowerIdByUser(executorId, typeId);
-                if (listPower != null && listPower.size() > 0) {
+                if (!CollectionUtils.isEmpty(listPower)) {
                     return listPower.get(0);  //因为有限制，逻辑上满足的只会有一个
                 }
             }

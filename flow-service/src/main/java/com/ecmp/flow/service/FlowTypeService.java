@@ -14,6 +14,7 @@ import com.ecmp.vo.OperateResultWithData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
         String pattern = "FLowGetLastFlowDefVersion_*";
         if(redisTemplate!=null){
             Set<String> keys = redisTemplate.keys(pattern);
-            if (keys!=null&&!keys.isEmpty()){
+            if (!CollectionUtils.isEmpty(keys)){
                 redisTemplate.delete(keys);
             }
         }
@@ -109,16 +110,15 @@ public class FlowTypeService extends BaseEntityService<FlowType> implements IFlo
 
 
     public PageResult<FlowType> findByPage(Search searchConfig){
-        List<AppModule> appModuleList = null;
+        List<AppModule> appModuleList = flowCommonUtil.getBasicTenantAppModule();
         List<String > appModuleCodeList = null;
-        appModuleList = flowCommonUtil.getBasicTenantAppModule();
-        if(appModuleList!=null && !appModuleList.isEmpty()){
-            appModuleCodeList = new ArrayList<String>();
+        if(!CollectionUtils.isEmpty(appModuleList)){
+            appModuleCodeList = new ArrayList<>();
             for(AppModule appModule:appModuleList){
                 appModuleCodeList.add(appModule.getCode());
             }
         }
-        if(appModuleCodeList!=null && !appModuleCodeList.isEmpty()){
+        if(!CollectionUtils.isEmpty(appModuleCodeList)){
             SearchFilter searchFilter =   new SearchFilter("businessModel.appModule.code", appModuleCodeList, SearchFilter.Operator.IN);
             searchConfig.addFilter(searchFilter);
         }

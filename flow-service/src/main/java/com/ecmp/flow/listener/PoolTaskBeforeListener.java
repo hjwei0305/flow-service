@@ -23,6 +23,7 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -105,20 +106,20 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 ApplicationContext applicationContext = ContextUtil.getApplicationContext();
                 FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
                 List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
-                List<String> paths = new ArrayList<String>();
-                if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+                List<String> paths = new ArrayList<>();
+                if (!CollectionUtils.isEmpty(nodeInfoList)) {
                     for (NodeInfo nodeInfo : nodeInfoList) {
                         if (StringUtils.isNotEmpty(nodeInfo.getCallActivityPath())) {
                             paths.add(nodeInfo.getCallActivityPath());
                         }
                     }
                 }
-                if (!paths.isEmpty()) {
+                if (!CollectionUtils.isEmpty(paths)) {
                     tempV.put(Constants.CALL_ACTIVITY_SON_PATHS, paths);//提供给调用服务，子流程的绝对路径，用于存入单据id
                 }
                 String param = JsonUtils.toJson(tempV);
                 FlowOperateResult flowOperateResult = null;
-                String callMessage = null;
+                String callMessage ;
                 try {
                     flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                     if (flowOperateResult != null && flowOperateResult.isSuccess() && StringUtils.isNotEmpty(flowOperateResult.getUserId())) {
@@ -133,7 +134,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
 
-                    if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
+                    if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList)) { //如果是开始节点，手动回滚
                         new Thread() {
                             public void run() {
                                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
