@@ -177,7 +177,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<DefaultBusinessModel> save(DefaultBusinessModel entity) {
         Validation.notNull(entity, "持久化对象不能为空");
-//        String businessCode = NumberGenerator.getNumber(DefaultBusinessModel.class);
         String businessCode = CodeGenerator.genCodes(6, 1).get(0);
         if (StringUtils.isEmpty(entity.getBusinessCode())) {
             entity.setBusinessCode(businessCode);
@@ -187,7 +186,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String changeCreateDepict(String id, String changeText) {
-        Map<String, Object> variables = new HashMap<String, Object>();
+        Map<String, Object> variables = new HashMap<>();
 
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
         if (entity != null) {
@@ -199,12 +198,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                     if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                         for (String callActivityPath : callActivtiySonPaths) {
                             if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                                 Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                                initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                             }
                         }
                     }
@@ -238,12 +235,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                     if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                         //测试跨业务实体子流程,并发多级子流程测试
                         List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                        List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                         for (String callActivityPath : callActivtiySonPaths) {
                             if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                                 Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                                initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                             }
                         }
                     }
@@ -371,16 +366,12 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * 仅针对跨业务实体子任务的测试初始化方法
      *
      * @param defaultBusinessModelList
-     * @param defaultBusinessModel2List
-     * @param defaultBusinessModel3List
      * @param callActivityPathMap
      * @param variables
      * @param parentBusinessModel
      */
-    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, List<DefaultBusinessModel2> defaultBusinessModel2List, List<DefaultBusinessModel3> defaultBusinessModel3List, Map<String, String> callActivityPathMap, Map<String, Object> variables, IBusinessFlowEntity parentBusinessModel) {
+    protected void initCallActivityBusiness(List<DefaultBusinessModel> defaultBusinessModelList, Map<String, String> callActivityPathMap, Map<String, Object> variables, DefaultBusinessModel parentBusinessModel) {
         IDefaultBusinessModelService defaultBusinessModelService = ApiClient.createProxy(IDefaultBusinessModelService.class);
-        IDefaultBusinessModel2Service defaultBusinessModel2Service = ApiClient.createProxy(IDefaultBusinessModel2Service.class);
-        IDefaultBusinessModel3Service defaultBusinessModel3Service = ApiClient.createProxy(IDefaultBusinessModel3Service.class);
 
         IFlowDefinationService flowDefinationService = ApiClient.createProxy(IFlowDefinationService.class);
 
@@ -403,34 +394,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 variables.put(realPathKey, defaultBusinessModelId);
                 defaultBusinessModel = resultWithData.getData();
                 defaultBusinessModelList.add(defaultBusinessModel);
-            } else if ("com.ecmp.flow.entity.DefaultBusinessModel2".equals(sonBusinessModelCode)) {
-                DefaultBusinessModel2 defaultBusinessModel2Son = new DefaultBusinessModel2();
-                BeanUtils.copyProperties(parentBusinessModel, defaultBusinessModel2Son);
-                String name = "temp_测试跨业务实体子流程_采购实体" + System.currentTimeMillis();
-                defaultBusinessModel2Son.setName(name);
-                defaultBusinessModel2Son.setFlowStatus(FlowStatus.INPROCESS);
-                defaultBusinessModel2Son.setWorkCaption(parentBusinessModel.getWorkCaption() + "||" + name);
-                defaultBusinessModel2Son.setId(null);
-                defaultBusinessModel2Son.setBusinessCode(null);
-                OperateResultWithData<DefaultBusinessModel2> resultWithData = defaultBusinessModel2Service.save(defaultBusinessModel2Son);
-                String defaultBusinessModelId = resultWithData.getData().getId();
-                variables.put(realPathKey, defaultBusinessModelId);
-                defaultBusinessModel2Son = resultWithData.getData();
-                defaultBusinessModel2List.add(defaultBusinessModel2Son);
-            } else if ("com.ecmp.flow.entity.DefaultBusinessModel3".equals(sonBusinessModelCode)) {
-                DefaultBusinessModel3 defaultBusinessModel3Son = new DefaultBusinessModel3();
-                BeanUtils.copyProperties(parentBusinessModel, defaultBusinessModel3Son);
-                String name = "temp_测试跨业务实体子流程_销售实体" + System.currentTimeMillis();
-                defaultBusinessModel3Son.setName(name);
-                defaultBusinessModel3Son.setFlowStatus(FlowStatus.INPROCESS);
-                defaultBusinessModel3Son.setWorkCaption(parentBusinessModel.getWorkCaption() + "||" + name);
-                defaultBusinessModel3Son.setId(null);
-                defaultBusinessModel3Son.setBusinessCode(null);
-                OperateResultWithData<DefaultBusinessModel3> resultWithData = defaultBusinessModel3Service.save(defaultBusinessModel3Son);
-                String defaultBusinessModelId = resultWithData.getData().getId();
-                variables.put(realPathKey, defaultBusinessModelId);
-                defaultBusinessModel3Son = resultWithData.getData();
-                defaultBusinessModel3List.add(defaultBusinessModel3Son);
             }
         }
     }
@@ -471,12 +434,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                     for (String callActivityPath : callActivtiySonPaths) {
                         if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                         }
                     }
                 }
@@ -501,12 +462,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                     for (String callActivityPath : callActivtiySonPaths) {
                         if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                         }
                     }
                 }
@@ -559,12 +518,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                     for (String callActivityPath : callActivtiySonPaths) {
                         if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                         }
                     }
                 }
@@ -636,12 +593,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                     for (String callActivityPath : callActivtiySonPaths) {
                         if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                         }
                     }
                 }
@@ -671,12 +626,10 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
                     //测试跨业务实体子流程,并发多级子流程测试
                     List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    List<DefaultBusinessModel2> defaultBusinessModel2List = new ArrayList<>();
-                    List<DefaultBusinessModel3> defaultBusinessModel3List = new ArrayList<>();
                     for (String callActivityPath : callActivtiySonPaths) {
                         if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
                             Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, defaultBusinessModel2List, defaultBusinessModel3List, callActivityPathMap, variables, entity);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
                         }
                     }
                 }
@@ -730,15 +683,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         ApplicationContext applicationContext = ContextUtil.getApplicationContext();
         BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
         DefaultBusinessModel content = (DefaultBusinessModel) appModuleDao.findOne(id);
-        DefaultBusinessModel2 defaultBusinessModel2 = new DefaultBusinessModel2();
-        defaultBusinessModel2.setId("testId2");
-        defaultBusinessModel2.setBusinessCode("testBusinessCode2");
-        defaultBusinessModel2.setWorkCaption("testWorkCaption2");
-        defaultBusinessModel2.setName("testName2");
-        defaultBusinessModel2.setCount(4);
-        defaultBusinessModel2.setUnitPrice(3);
-        defaultBusinessModel2.setSum(defaultBusinessModel2.getCount() * defaultBusinessModel2.getUnitPrice());
-        content.setDefaultBusinessModel2(defaultBusinessModel2);
         return BusinessUtil.getPropertiesAndValues(content, null);
     }
 

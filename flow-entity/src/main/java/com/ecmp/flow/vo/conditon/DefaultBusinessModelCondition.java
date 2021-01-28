@@ -16,6 +16,7 @@ import com.ecmp.flow.entity.IConditionPojo;
  * <p/>
  * *************************************************************************************************
  */
+@Deprecated
 public class DefaultBusinessModelCondition extends com.ecmp.flow.entity.DefaultBusinessModel implements IConditionPojo {
 
     private Integer customeInt ;
