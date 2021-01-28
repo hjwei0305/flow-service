@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
  * <p/>
  * *************************************************************************************************
  */
+@Deprecated
 public interface IBusinessFlowEntity extends  IAuditable {
 
     //当前流程状态

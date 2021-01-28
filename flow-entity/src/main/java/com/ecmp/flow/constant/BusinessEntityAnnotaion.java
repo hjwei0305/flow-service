@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 //@Target(ElementType.FIELD) //字段、枚举的常量
 @Target(ElementType.TYPE) //类
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface BusinessEntityAnnotaion {
     /**
      * 转换对象全路径

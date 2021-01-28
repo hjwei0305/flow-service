@@ -37,6 +37,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
+@Deprecated
 public class CommonConditionService implements ICommonConditionService {
 
 

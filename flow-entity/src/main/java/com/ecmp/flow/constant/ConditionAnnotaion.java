@@ -20,6 +20,7 @@ import java.lang.annotation.Target;
 //@Target(ElementType.FIELD) //字段、枚举的常量
 @Target(ElementType.METHOD) //方法
 @Retention(RetentionPolicy.RUNTIME)
+@Deprecated
 public @interface ConditionAnnotaion {
     /**
      * 字段中文名称

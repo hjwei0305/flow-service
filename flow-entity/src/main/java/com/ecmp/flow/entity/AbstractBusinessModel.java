@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
  * *************************************************************************************************
  */
 @MappedSuperclass
+@Deprecated
 public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAuditableEntity implements IBusinessFlowEntity{
 
     @Transient
@@ -42,13 +43,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
      */
     @Column(name = "name",length = 80,nullable = false)
     private  String name;
-
-//    /**
-//     * 乐观锁-版本
-//     */
-//    @Version
-//    @Column(name = "version")
-//    private Integer version = 0;
 
     /**
      * 当前流程状态
@@ -136,14 +130,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
     public void setName(String name) {
         this.name = name;
     }
-
-//    public Integer getVersion() {
-//        return version;
-//    }
-//
-//    public void setVersion(Integer version) {
-//        this.version = version;
-//    }
 
     @Override
     public FlowStatus getFlowStatus() {
@@ -265,7 +251,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
                 .append("orgPath", this.orgPath)
                 .append("orgId", this.orgId)
                 .append("orgName", this.orgName)
-//                .append("version", this.version)
                 .append("flowStatus", this.flowStatus)
                 .append("priority", this.priority)
                 .toString();

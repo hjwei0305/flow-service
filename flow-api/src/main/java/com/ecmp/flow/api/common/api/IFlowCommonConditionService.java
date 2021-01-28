@@ -31,6 +31,7 @@ import java.util.Map;
  */
 @Path("condition")
 @Api(value = "IFlowCommonConditionService 条件通用服务API接口")
+@Deprecated
 public interface IFlowCommonConditionService extends ICommonConditionService {
 
     /**

@@ -19,6 +19,7 @@ import java.util.Map;
  * *************************************************************************************************
  */
 @Component
+@Deprecated
 public class FlowCommonConditionService extends CommonConditionService implements IFlowCommonConditionService {
 
 

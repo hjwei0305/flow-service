@@ -10,6 +10,7 @@ import java.io.Serializable;
  * @author tanjun
  *
  */
+@Deprecated
 public interface IConditionPojo extends Serializable{
 //    public JSONObject toJsonObject();
 
