@@ -165,8 +165,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 String userIds = executorVo.getExecutorIds();
                 String[] idArray = userIds.split(",");
                 StringBuilder executorIds = null;
-                for (int i = 0; i < idArray.length; i++) {
-                    String id = idArray[i];
+                for (String id : idArray) {
                     if (!id.equals("undefined") && !id.equals("null")) {
                         if (executorIds == null) {
                             executorIds = new StringBuilder();
@@ -228,8 +227,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     /**
      * 通过BusinessId删除固化流程执行人列表
      *
-     * @param businessId 业务表单id
-     * @return
      */
     @Transactional
     public ResponseData deleteByBusinessId(String businessId) {
@@ -247,9 +244,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     /**
      * 记录固化逻辑执行顺序
      *
-     * @param businessId 表单id
-     * @param task
-     * @return
      */
     public void manageSolidifyFlowByBusinessIdAndTaskKey(String businessId, FlowTask task) {
         if (StringUtils.isNotEmpty(businessId) && StringUtils.isNotEmpty(task.getActTaskDefKey())) {
@@ -259,7 +253,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             if (!CollectionUtils.isEmpty(list)) {
                 int maxInt = list.stream().mapToInt(FlowSolidifyExecutor::getTaskOrder).max().getAsInt();
                 FlowSolidifyExecutor bean = list.stream().filter(a -> taskKey.equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
-                if (bean != null && bean.getExecutorIds().indexOf(taskUserId) != -1) { //转办和委托（实际执行人不是启动时设置的人的情况）
+                if (bean != null && bean.getExecutorIds().contains(taskUserId)) { //转办和委托（实际执行人不是启动时设置的人的情况）
                     if ("SingleSign".equalsIgnoreCase(bean.getNodeType())) {  //单签任务设置实际执行人
                         bean.setTrueExecutorIds(task.getExecutorId());
                     }
@@ -296,7 +290,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                 if (bean.getTaskOrder() == 0) { //该节点未执行过
                                     //检查已经执行过的任务中，待执行人相同的数据
                                     List<FlowSolidifyExecutor> executeList = solidifylist.stream().
-                                            filter(a -> (a.getTaskOrder() > 0 && a.getExecutorIds().indexOf(flowTask.getExecutorId()) != -1)).collect(Collectors.toList());
+                                            filter(a -> (a.getTaskOrder() > 0 && a.getExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
                                     if (!CollectionUtils.isEmpty(executeList)) {
                                         //检查相同数据中有多少是单签（单签待办很多，实际执行人只有一个）
                                         List<FlowSolidifyExecutor> singleSignList = executeList.stream().
@@ -308,7 +302,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                             } else {
                                                 //单签里面实际执行人中有没有当前任务的执行人
                                                 List<FlowSolidifyExecutor> trueExecuteList = singleSignList.stream().
-                                                        filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().indexOf(flowTask.getExecutorId()) != -1)).collect(Collectors.toList());
+                                                        filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
                                                 if (!CollectionUtils.isEmpty(trueExecuteList)) {
                                                     //单签实际执行人有当前的执行人，该任务需要自动跳过
                                                     needLsit.add(flowTask);
@@ -367,9 +361,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
         if (!CollectionUtils.isEmpty(taskList)  && !CollectionUtils.isEmpty(solidifylist)) {
-            for (int i = 0; i < taskList.size(); i++) {
-                FlowTask task = taskList.get(i);
-                Boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
+            for (FlowTask task : taskList) {
+                boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
                 if (!canMobile) {
                     continue;
                 }
@@ -379,7 +372,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     if ("CounterSign".equalsIgnoreCase(bean.getNodeType()) || "Approve".equalsIgnoreCase(bean.getNodeType())) { //跳过处理默认同意
                         approved = "true";
                     }
-                    ResponseData responseData = null;
+                    ResponseData responseData = ResponseData.operationFailure("模拟下一步失败！");
                     try {
                         //模拟请求下一步数据
                         responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved, true);
@@ -397,7 +390,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             endEventId = "true";
                         } else {
                             List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
-                            List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<FlowTaskCompleteWebVO>();
+                            List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<>();
                             nodeInfoList.forEach(nodeInfo -> {
                                 FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
                                 taskWebVO.setNodeId(nodeInfo.getId());
@@ -438,10 +431,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     /**
      * 模拟请求下一步数据flow-web/flowClient/getSelectedNodesInfo
      *
-     * @param taskId
-     * @param approved
-     * @param solidifyFlow
-     * @return
      */
     public ResponseData simulationGetSelectedNodesInfo(String taskId, String approved, Boolean solidifyFlow) throws Exception {
         if (StringUtils.isEmpty(approved)) {
@@ -471,7 +460,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return ResponseData.operationSuccessWithData("CounterSignNotEnd");
             } else {
-                if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程（不返回下一步执行人信息）
+                if (solidifyFlow != null && solidifyFlow) { //表示为固化流程（不返回下一步执行人信息）
                     nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
                 }
                 return ResponseData.operationSuccessWithData(nodeInfoList);

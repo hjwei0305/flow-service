@@ -10,10 +10,8 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.DateUtils;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
@@ -21,6 +19,7 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,6 +64,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private BusinessModelDao businessModelDao;
 
 
+    /**
+     * 固化检查设置并启动流程
+     */
     @Override
     public ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) throws Exception {
         String businessId = solidifyStartFlowVo.getBusinessId();
@@ -126,55 +128,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     /**
-     * 封装新启动的流程的第一步节点信息
-     *
-     * @param businessId
-     * @return
-     */
-    public List<NodeInfo> setNewStartFlowInfo(String businessId) {
-        List<FlowTask> flowTaskList = flowInstanceService.findCurrentTaskByBusinessId(businessId);
-        List<NodeInfo> nodeInfoList = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(flowTaskList)) {
-            for (FlowTask flowTask : flowTaskList) {
-                NodeInfo oldNodeInfo = nodeInfoList.stream().filter(a -> a.getId().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
-                if (oldNodeInfo == null) {
-                    NodeInfo nodeInfo = new NodeInfo();
-                    nodeInfo.setId(flowTask.getActTaskDefKey());
-                    String taskJsonDef = flowTask.getTaskJsonDef();
-                    JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-                    String nodeType = taskJsonDefObj.get("nodeType") + "";
-                    nodeInfo.setFlowTaskType(nodeType);
-                    nodeInfo.setName(flowTask.getTaskName());
-                    Set<Executor> executorSet = new HashSet<>();
-                    Executor executor = new Executor();
-                    executor.setId(flowTask.getExecutorId());
-                    executor.setName(flowTask.getExecutorName());
-                    executor.setCode(flowTask.getExecutorAccount());
-                    executorSet.add(executor);
-                    nodeInfo.setExecutorSet(executorSet);
-                    nodeInfoList.add(nodeInfo);
-                } else {
-                    Set<Executor> executorSet = oldNodeInfo.getExecutorSet();
-                    Executor executor = new Executor();
-                    executor.setId(flowTask.getExecutorId());
-                    executor.setName(flowTask.getExecutorName());
-                    executor.setCode(flowTask.getExecutorAccount());
-                    executorSet.add(executor);
-                }
-            }
-        }
-        return nodeInfoList;
-    }
-
-
-    /**
      * 通过参数自动启动固化流程
      *
-     * @param businessId
-     * @param businessModelCode
-     * @param typeId
-     * @param flowDefKey
-     * @return
      */
     public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) throws Exception {
         if (StringUtils.isEmpty(businessId)) {
@@ -225,10 +180,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     /**
      * 报错固化执行人
      *
-     * @param map
-     * @param businessModelCode
-     * @param businessId
-     * @return
      */
     public ResponseData saveAutoSolidifyExecutorInfo(Map<String, SolidifyStartExecutorVo> map, String businessModelCode, String businessId) {
         List<SolidifyStartExecutorVo> list = new ArrayList<>();
@@ -246,10 +197,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     /**
      * 检查并得到所有满足节点执行人信息（单候选人和单签多候选人）
      *
-     * @param flowDefVersion
-     * @param businessModelCode
-     * @param businessId
-     * @return
      */
     public Map<String, SolidifyStartExecutorVo> checkAndgetSolidifyExecutorsInfo(FlowDefVersion flowDefVersion, String businessModelCode, String businessId) {
         BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
@@ -267,7 +214,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
             String id = (String) positionObj.get("id");
             String nodeType = (String) positionObj.get("nodeType");
-            if (id.indexOf("UserTask") != -1) {
+            if (id.contains("UserTask")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
                 List<RequestExecutorsVo> requestExecutorsList = new ArrayList<RequestExecutorsVo>();
@@ -275,8 +222,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     RequestExecutorsVo bean = new RequestExecutorsVo();
                     String userType = list.get("userType");
                     if (!"AnyOne".equals(userType)) {
-                        String ids = "";
-                        if (userType.indexOf("SelfDefinition") != -1) {
+                        String ids;
+                        if (userType.contains("SelfDefinition")) {
                             ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
                         } else {
                             ids = list.get("ids");
@@ -293,7 +240,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 if (setExecutors != null) {
                     executors = new ArrayList<>(setExecutors);
                 }
-                if (executors != null && executors.size() != 0) {
+                if (!CollectionUtils.isEmpty(executors)) {
                     if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
                         SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
                         bean.setActTaskDefKey(id);
@@ -326,6 +273,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         });
         return map;
     }
+
+
 
     @Override
     public ResponseData startFlowByBusinessAndType(StartFlowBusinessAndTypeVo startParam) {
@@ -383,7 +332,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             Set<Executor> executors = nodeInfo.getExecutorSet();
             if (!CollectionUtils.isEmpty(executors)) {
                 String uiType = nodeInfo.getUiType();
-                List<String> userList = new ArrayList<String>();
+                List<String> userList = new ArrayList<>();
                 if (uiType.equalsIgnoreCase("checkbox")) {
                     for (Executor executor : executors) {
                         userList.add(executor.getId());
@@ -449,10 +398,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 if (!CollectionUtils.isEmpty(flowTaskCompleteList)) {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
                     FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
-                    if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true && StringUtils.isEmpty(firstBean.getUserIds())) {
+                    if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() && StringUtils.isEmpty(firstBean.getUserIds())) {
                         IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
                         ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessKey);
-                        if (solidifyData.getSuccess() == false) {
+                        if (!solidifyData.getSuccess()) {
                             return solidifyData;
                         }
                         flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
@@ -551,9 +500,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (!CollectionUtils.isEmpty(flowTaskCompleteList)) {
             //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
             FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
-            if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() == true && StringUtils.isEmpty(firstBean.getUserIds())) {
+            if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() && StringUtils.isEmpty(firstBean.getUserIds())) {
                 ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
-                if (solidifyData.getSuccess() == false) {
+                if (!solidifyData.getSuccess()) {
                     return solidifyData;
                 }
                 flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
@@ -693,19 +642,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             approved = "true";
         }
         List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
-//        try {
-//            nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
-//        } catch (Exception e) {
-//            LogUtil.error("获取下一节点信息错误，详情请查看日志！", e);
-//            return ResponseData.operationFailure("获取下一节点信息错误，详情请查看日志！");
-//        }
+
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return ResponseData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return ResponseData.operationSuccessWithData("CounterSignNotEnd");
             } else {
-                if (solidifyFlow != null && solidifyFlow == true) { //表示为固化流程（不返回下一步执行人信息）
+                if (BooleanUtils.isTrue(solidifyFlow)) { //表示为固化流程（不返回下一步执行人信息）
                     nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
                 }
                 return ResponseData.operationSuccessWithData(nodeInfoList);
