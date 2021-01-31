@@ -10,8 +10,8 @@ LABEL maintainer="hua.feng@changhong.com"
 ENV JAVA_OPTS=""  APP_NAME="flow-service"
 
 # 添加应用
-ADD  $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
-RUN sudo chown  sei $APP_NAME/build/libs/$APP_NAME.jar
+ADD --chown=sei $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
+
 # 开放8080端口
 EXPOSE 8080
 
