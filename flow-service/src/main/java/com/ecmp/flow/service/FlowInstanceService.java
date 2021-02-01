@@ -1868,7 +1868,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             } else {
                 newRemark = updateInstanceRemarkVo.getUpdateRemark();
             }
-            if (StringUtils.isNotEmpty(newRemark) && newRemark.length() >= 2000) {
+            if (StringUtils.isNotEmpty(newRemark) && newRemark.length() > 2000) {
                 return ResponseData.operationFailure("工作说明限定长度2000，实际长度为：" + newRemark.length());
             }
             flowInstance.setBusinessModelRemark(newRemark);

@@ -1090,6 +1090,7 @@ public class FlowTaskTool {
             initTask(flowHistory.getFlowInstance(), flowHistory, currTask.getTaskDefinitionKey(), null);
             return result;
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LogUtil.error("撤回失败：" + e.getMessage(), e);
             return OperateResult.operationFailure("撤回失败：详情请查看日志！");
         }

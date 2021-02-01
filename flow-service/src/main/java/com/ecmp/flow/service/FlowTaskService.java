@@ -763,7 +763,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 flowTask.setExecutorOrgName(executor.getOrganizationName());
             }
 
-            if (StringUtils.isNotEmpty(flowTask.getDepict()) && flowTask.getDepict().length() >= 2000) {
+            if (StringUtils.isNotEmpty(flowTask.getDepict()) && flowTask.getDepict().length() > 2000) {
                 throw new FlowException("审批意见限定长度2000,实际长度为：" + flowTask.getDepict().length());
             }
             variables.put("opinion", flowTask.getDepict());

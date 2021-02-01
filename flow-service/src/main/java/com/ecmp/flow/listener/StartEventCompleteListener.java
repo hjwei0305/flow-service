@@ -148,7 +148,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String workCaption = null;
         if (variables.containsKey(Constants.WORK_CAPTION)) {
             workCaption = (String) variables.get(Constants.WORK_CAPTION);//工作说明
-            if (StringUtils.isNotEmpty(workCaption) && workCaption.length() >= 2000) {
+            if (StringUtils.isNotEmpty(workCaption) && workCaption.length() > 2000) {
                 throw new FlowException("工作说明限定长度2000，实际长度为：" + workCaption.length());
             }
         }
@@ -157,7 +157,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String businessCode = null;
         if (variables.containsKey(Constants.BUSINESS_CODE)) {
             businessCode = (String) variables.get(Constants.BUSINESS_CODE);//业务code
-            if (StringUtils.isNotEmpty(businessCode) && businessCode.length() >= 2000) {
+            if (StringUtils.isNotEmpty(businessCode) && businessCode.length() > 2000) {
                 throw new FlowException("业务单号限定长度2000,实际长度为：" + businessCode.length());
             }
         }
@@ -166,7 +166,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String businessName = null;
         if (variables.containsKey(Constants.NAME)) {
             businessName = (String) variables.get(Constants.NAME);//业务单据名称
-            if (StringUtils.isNotEmpty(businessName) && businessName.length() >= 100) {
+            if (StringUtils.isNotEmpty(businessName) && businessName.length() > 100) {
                 throw new FlowException("业务单据名称限定长度100,实际长度为：" + businessName.length());
             }
         }
