@@ -10,11 +10,10 @@ LABEL maintainer="hua.feng@changhong.com"
 ENV JAVA_OPTS=""  APP_NAME="flow-service"
 
 # 添加应用
-ADD --chown=sei $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
+ADD $APP_NAME/build/libs/$APP_NAME.jar $APP_NAME.jar
 
 # 开放8080端口
 EXPOSE 8080
 
 # 启动应用
-USER sei
 ENTRYPOINT ["sh","-c","java -server -XX:InitialRAMPercentage=75.0  -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC $JAVA_OPTS -jar $APP_NAME.jar --server.servlet.context-path=/$APP_NAME --server.port=8080"]
