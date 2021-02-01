@@ -36,6 +36,9 @@ dependencies {
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
     compile("org.springframework.cloud:spring-cloud-starter-config")
 
+    // redis连接池配置需要
+    compile("org.apache.commons:commons-pool2")
+
     compile(
             "org.springframework.boot:spring-boot-starter",
             "com.ecmp:jpa-ecmp-spring-boot-starter:$ecmp_version"
