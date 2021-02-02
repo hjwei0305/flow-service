@@ -1421,7 +1421,7 @@ public class FlowTaskTool {
         } else if ("ReceiveTask".equalsIgnoreCase(type)) {
             return ResponseData.operationFailure("驳回失败：前置节点是接收任务，不能驳回!");
         }
-        Boolean result = ifMultiInstance(currActivity);
+        boolean result = ifMultiInstance(currActivity);
         if (result) {//多任务实例不允许驳回
             return ResponseData.operationFailure("驳回失败：前置节点是多任务实例，不能驳回!");
         }
@@ -1431,9 +1431,12 @@ public class FlowTaskTool {
             if (currentInActivity.getId().equals(preActivity.getId())) {
                 return ResponseData.operationSuccess();
             }
-            Boolean ifExclusiveGateway = ifExclusiveGateway(currentInActivity);
+            boolean ifExclusiveGateway = ifExclusiveGateway(currentInActivity);
             if (ifExclusiveGateway) {
-                return checkCanReject(currentInActivity, preActivity);
+                ResponseData responseData = checkCanReject(currentInActivity, preActivity);
+                if (responseData.successful()) {
+                    return responseData;
+                }
             }
         }
         return ResponseData.operationFailure("驳回失败：没有找到符合的驳回条件！");

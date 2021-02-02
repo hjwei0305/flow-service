@@ -31,7 +31,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
     @Test
-    public void rollBackToHis(){
+    public void rollBackToHis() {
         RollBackParam param = new RollBackParam();
         param.setId("7CD8A7AE-5EBF-11EB-8EFB-0242C0A84413");
         param.setOpinion("测试");
@@ -47,7 +47,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void taskReject() throws Exception {
-        service.taskReject("D3438097-4A69-11EB-BEFF-0242C0A84620", "测试", null);
+        service.taskReject("2DE719E8-6519-11EB-9C0E-0242C0A84620", "111", null);
     }
 
 
