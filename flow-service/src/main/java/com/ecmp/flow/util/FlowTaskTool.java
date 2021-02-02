@@ -853,7 +853,7 @@ public class FlowTaskTool {
     }
 
     public List<PvmActivity> initPvmActivityList(PvmNodeInfo pvmNodeInfo, List<PvmActivity> results) {
-        if (pvmNodeInfo != null &&  !CollectionUtils.isEmpty(pvmNodeInfo.getChildren())) {
+        if (pvmNodeInfo != null && !CollectionUtils.isEmpty(pvmNodeInfo.getChildren())) {
             Set<PvmNodeInfo> children = pvmNodeInfo.getChildren();
             for (PvmNodeInfo p : children) {
                 PvmActivity currActivity = p.getCurrActivity();
@@ -1171,7 +1171,7 @@ public class FlowTaskTool {
                     }
                 }).start();
             }
-            if ( !CollectionUtils.isEmpty(nextTasks) && (ifGageway(currActivity))) {
+            if (!CollectionUtils.isEmpty(nextTasks) && (ifGageway(currActivity))) {
 
                 List<HistoricActivityInstance> gateWayActivityList = historyService.createHistoricActivityInstanceQuery()
                         .processInstanceId(destnetionTask.getProcessInstanceId()).activityId(currActivity.getId())
@@ -2555,7 +2555,8 @@ public class FlowTaskTool {
      * @param variables    当前提交参数
      * @param isSequential 并串行（false为并行）
      */
-    public void counterSignImmediatelyEnd(FlowTask flowTask, FlowInstance flowInstance, Map<String, Object> variables, Boolean isSequential) {
+    public void counterSignImmediatelyEnd(FlowTask flowTask, FlowInstance flowInstance, Map<String, Object> variables,
+                                          Boolean isSequential, String executionId, Integer instanceOfNumbers) {
         String actInstanceId = flowInstance.getActInstanceId();
         String taskActKey = flowTask.getActTaskDefKey();
         String currentExecutorId = flowTask.getExecutorId();
@@ -2584,6 +2585,12 @@ public class FlowTaskTool {
             }
         } else {//并行有待办，将弃权人待办转已办(底层直接删除)
             List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            //是否推送信息到业务模块或者直接配置的url
+            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
+            //需要删除的待办
+            List<FlowTask> delList = new ArrayList<>();
             for (FlowTask bean : flowTaskList) {
                 if (!bean.getId().equals(flowTask.getId())) {
                     HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
@@ -2592,27 +2599,38 @@ public class FlowTaskTool {
                     flowHistory.setActHistoryId(null);
                     //如果是转授权转办模式（获取转授权记录信息）
                     String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                    flowHistory.setDepict(overPowerStr + "【系统自动弃权】");
+                    if (bean.getTrustState() != null && bean.getTrustState() == 2) {
+                        flowHistory.setDepict(overPowerStr + "【会签委托自动清除】");
+                    } else {
+                        flowHistory.setDepict(overPowerStr + "【系统自动弃权】");
+                    }
                     flowHistoryDao.save(flowHistory);
+                    delList.add(bean);
+                    flowTaskDao.delete(bean);
                 }
             }
-        }
-
-        String userIds = null;
-        for (String uId : userList) {
-            if (userIds == null) {
-                userIds = uId;
-            } else {
-                userIds += "," + uId;
+            if (pushModelOrUrl) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushTaskToModelOrUrl(flowInstance, delList, TaskStatus.DELETE);
+                    }
+                }).start();
+            }
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushToBasic(null, null, delList, null);
+                    }
+                }).start();
             }
         }
-
-        //会签去除不需要审批的人
-        try {
-            flowTaskService.counterSignDel(actInstanceId, taskActKey, userIds);
-        } catch (Exception e) {
-            LogUtil.error(e.getMessage(), e);
-            throw new FlowException("会签即时生效失败，详情请查看日志!", e);
+        //完成总次数 = 总循环次数 - 1
+        runtimeService.setVariable(executionId, "nrOfCompletedInstances", instanceOfNumbers - 1);
+        //如果是并行，设置当前活动个数为1
+        if (!isSequential) {
+            runtimeService.setVariable(executionId, "nrOfActiveInstances", 1);
         }
     }
 

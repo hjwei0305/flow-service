@@ -268,8 +268,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_NEW, url, responseData.getSuccess(), taskList);
-                return responseData.getSuccess();
             }
+            return responseData.getSuccess();
         }
         return false;
     }
@@ -296,8 +296,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_OLD, url, responseData.getSuccess(), taskList);
-                return responseData.getSuccess();
             }
+            return responseData.getSuccess();
         }
         return false;
     }
@@ -310,7 +310,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Override
     public Boolean pushDelTaskToBasic(List<FlowTask> taskList) {
         if (!CollectionUtils.isEmpty(taskList)) {
-            List<String> idList = new ArrayList<String>();
+            List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.getFlowInstance().setFlowTasks(null);
                 idList.add("【id=" + a.getId() + "】");
@@ -326,8 +326,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 LogUtil.error(messageLog, e);
             } finally {
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_DEL, url, responseData.getSuccess(), taskList);
-                return responseData.getSuccess();
             }
+            return responseData.getSuccess();
         }
         return false;
     }
@@ -350,11 +350,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 messageLog += "-推送归档任务异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
             } finally {
-                List<FlowTask> taskList = new ArrayList<FlowTask>();
+                List<FlowTask> taskList = new ArrayList<>();
                 taskList.add(task);
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_END, url, responseData.getSuccess(), taskList);
-                return responseData.getSuccess();
             }
+            return responseData.getSuccess();
         }
         return false;
     }
@@ -459,8 +459,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     } else {  //已办
                         this.savePushAndControlInfo(Constants.TYPE_BUSINESS, Constants.STATUS_BUSINESS_COMPLETED, flowPushTaskUrl, success, taskList);
                     }
-                    return success;
                 }
+                return success;
             }
         }
         return false;
@@ -858,7 +858,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         counterSignAgree++;
                         if (counterDecision <= ((counterSignAgree / (instanceOfNumbers + 0.0)) * 100)) {//通过
-                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+                            //清除其他会签执行人
+                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential, executionId, instanceOfNumbers);
                             variables.put("approveResult", true);
                             counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
                         }
@@ -870,7 +871,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                         counterSignOpposition++;
                         if ((100 - counterDecision) < ((counterSignOpposition / (instanceOfNumbers + 0.0)) * 100)) {//不通过
-                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential);//删除其他会签执行人
+                            //清除其他会签执行人
+                            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowInstance, variables, isSequential, executionId, instanceOfNumbers);
                             variables.put("approveResult", false);
                             counterSignLastTask = true; //即时结束后，当前任务算最后一个节点
                         }
@@ -1425,7 +1427,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             employeeSet.addAll(employees);
                             nodeInfo.setExecutorSet(employeeSet);
                         }
-                    } else if ( !CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
+                    } else if (!CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
                         Set<Executor> employeeSet = new HashSet<>();
                         List<Executor> employees;
                         String selfDefId = null;
@@ -1777,7 +1779,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTask flowTaskTempSrc = new FlowTask();
         BeanUtils.copyProperties(flowTask, flowTaskTempSrc);
 
-        while (parentFlowInstance != null &&  !CollectionUtils.isEmpty(nodeInfoList) && nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//针对子流程结束节点
+        while (parentFlowInstance != null && !CollectionUtils.isEmpty(nodeInfoList) && nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//针对子流程结束节点
             FlowTask flowTaskTemp = new FlowTask();
             BeanUtils.copyProperties(flowTaskTempSrc, flowTaskTemp);
 
