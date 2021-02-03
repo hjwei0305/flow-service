@@ -129,7 +129,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
     /**
      * 通过参数自动启动固化流程
-     *
      */
     public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) throws Exception {
         if (StringUtils.isEmpty(businessId)) {
@@ -179,7 +178,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
     /**
      * 报错固化执行人
-     *
      */
     public ResponseData saveAutoSolidifyExecutorInfo(Map<String, SolidifyStartExecutorVo> map, String businessModelCode, String businessId) {
         List<SolidifyStartExecutorVo> list = new ArrayList<>();
@@ -196,7 +194,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
     /**
      * 检查并得到所有满足节点执行人信息（单候选人和单签多候选人）
-     *
      */
     public Map<String, SolidifyStartExecutorVo> checkAndgetSolidifyExecutorsInfo(FlowDefVersion flowDefVersion, String businessModelCode, String businessId) {
         BusinessModel businessModel = businessModelDao.findByProperty("className", businessModelCode);
@@ -273,7 +270,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         });
         return map;
     }
-
 
 
     @Override
@@ -643,15 +639,12 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
 
-        if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 return ResponseData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return ResponseData.operationSuccessWithData("CounterSignNotEnd");
             } else {
-                if (BooleanUtils.isTrue(solidifyFlow)) { //表示为固化流程（不返回下一步执行人信息）
-                    nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
-                }
                 return ResponseData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {

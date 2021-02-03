@@ -226,7 +226,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     /**
      * 通过BusinessId删除固化流程执行人列表
-     *
      */
     @Transactional
     public ResponseData deleteByBusinessId(String businessId) {
@@ -243,7 +242,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     /**
      * 记录固化逻辑执行顺序
-     *
      */
     public void manageSolidifyFlowByBusinessIdAndTaskKey(String businessId, FlowTask task) {
         if (StringUtils.isNotEmpty(businessId) && StringUtils.isNotEmpty(task.getActTaskDefKey())) {
@@ -360,7 +358,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      */
     @Transactional
     public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
-        if (!CollectionUtils.isEmpty(taskList)  && !CollectionUtils.isEmpty(solidifylist)) {
+        if (!CollectionUtils.isEmpty(taskList) && !CollectionUtils.isEmpty(solidifylist)) {
             for (FlowTask task : taskList) {
                 boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
                 if (!canMobile) {
@@ -375,7 +373,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     ResponseData responseData = ResponseData.operationFailure("模拟下一步失败！");
                     try {
                         //模拟请求下一步数据
-                        responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved, true);
+                        responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved);
                     } catch (Exception e) {
                         LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
                     }
@@ -430,9 +428,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     /**
      * 模拟请求下一步数据flow-web/flowClient/getSelectedNodesInfo
-     *
      */
-    public ResponseData simulationGetSelectedNodesInfo(String taskId, String approved, Boolean solidifyFlow) throws Exception {
+    public ResponseData simulationGetSelectedNodesInfo(String taskId, String approved) throws Exception {
         if (StringUtils.isEmpty(approved)) {
             approved = "true";
         }
@@ -460,9 +457,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return ResponseData.operationSuccessWithData("CounterSignNotEnd");
             } else {
-                if (solidifyFlow != null && solidifyFlow) { //表示为固化流程（不返回下一步执行人信息）
-                    nodeInfoList.forEach(nodeInfo -> nodeInfo.setExecutorSet(null));
-                }
                 return ResponseData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
