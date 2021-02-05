@@ -1,6 +1,5 @@
 package com.ecmp.flow.activiti.ext;
 
-import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
@@ -87,7 +86,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     FlowHistory flowHistory = new FlowHistory();
                     flowHistory.setTaskJsonDef(currentNode.toString());
                     flowHistory.setFlowName(definition.getProcess().getName());
-                    flowHistory.setDepict(ContextUtil.getMessage("10047"));//服务任务【自动执行】
+                    flowHistory.setDepict("服务任务【自动执行】");//服务任务【自动执行】
                     flowHistory.setFlowTaskName(flowTaskName);
                     flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();

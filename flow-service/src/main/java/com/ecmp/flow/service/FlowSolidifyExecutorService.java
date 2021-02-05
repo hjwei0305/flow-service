@@ -367,8 +367,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(task.getActTaskDefKey())).findFirst().orElse(null);
                 if (bean != null) {
                     String approved = null; //是否同意
+                    String opinion = "【自动执行】";
                     if ("CounterSign".equalsIgnoreCase(bean.getNodeType()) || "Approve".equalsIgnoreCase(bean.getNodeType())) { //跳过处理默认同意
                         approved = "true";
+                        opinion = "同意【自动执行】";
                     }
                     ResponseData responseData = ResponseData.operationFailure("模拟下一步失败！");
                     try {
@@ -413,7 +415,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             //自动执行待办
                             long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),
-                                    "同意【自动执行】", taskListString,
+                                    opinion, taskListString,
                                     endEventId, null, false, approved, currentTime);
                         } catch (Exception e) {
                             LogUtil.error("自动执行待办报错：" + e.getMessage(), e);

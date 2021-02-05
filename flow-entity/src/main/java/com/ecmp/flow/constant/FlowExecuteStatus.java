@@ -33,11 +33,13 @@ public enum FlowExecuteStatus implements Serializable {
 
     RECALL("recall", "撤回"),
 
-    REJECT("reject","驳回"),
+    REJECT("reject", "驳回"),
 
-    END("end","终止"),
+    END("end", "终止"),
 
-    AUTO("auto", "自动执行");
+    AUTO("auto", "自动执行"),
+
+    HAVEREAD("haveRead", "已阅");
 
 
     private String code;

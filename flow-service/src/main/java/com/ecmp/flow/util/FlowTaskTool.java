@@ -2470,7 +2470,17 @@ public class FlowTaskTool {
             try {
                 String approved = (String) variables.get("approved");
                 if (approved == null || "null".equalsIgnoreCase(approved)) { //提交
-                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.SUBMIT.getCode());
+                    String defJson = flowTask.getTaskJsonDef();
+                    JSONObject defObj = JSONObject.fromObject(defJson);
+                    JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                    String nodeType = (String) defObj.get("nodeType");
+                    if (nodeType.equalsIgnoreCase("ParallelTask")
+                            && normalInfo.has("carbonCopyOrReport")
+                            && normalInfo.getBoolean("carbonCopyOrReport")) {
+                        flowHistory.setFlowExecuteStatus(FlowExecuteStatus.HAVEREAD.getCode());
+                    } else {
+                        flowHistory.setFlowExecuteStatus(FlowExecuteStatus.SUBMIT.getCode());
+                    }
                 } else if ("true".equalsIgnoreCase(approved)) { //同意
                     flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AGREE.getCode());
                 } else if ("false".equalsIgnoreCase(approved)) {  //不同意
