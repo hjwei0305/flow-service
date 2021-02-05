@@ -30,6 +30,15 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowDefinationService flowDefinationService;
 
+
+    @Test
+    public void getApprovalHeaderVO() {
+        String taskId = "4FBE1BFA-6683-11EB-8467-0242C0A84413";
+        ApprovalHeaderVO vo = service.getApprovalHeaderVO(taskId);
+        System.out.println(ApiJsonUtils.toJson(vo));
+    }
+
+
     @Test
     public void rollBackToHis() {
         RollBackParam param = new RollBackParam();

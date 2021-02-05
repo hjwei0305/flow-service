@@ -120,6 +120,21 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private List<DisagreeReason> disagreeReasonList;
 
+    /**
+     * 抄送或呈报
+     */
+    private Boolean carbonCopyOrReport;
+
+
+    public Boolean getCarbonCopyOrReport() {
+        return carbonCopyOrReport;
+    }
+
+    public void setCarbonCopyOrReport(Boolean carbonCopyOrReport) {
+        this.carbonCopyOrReport = carbonCopyOrReport;
+    }
+
+
 
     public List<DisagreeReason> getDisagreeReasonList() {
         return disagreeReasonList;

@@ -1,9 +1,7 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.api.IDefaultFlowBaseService;
-import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
@@ -19,7 +17,6 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -395,8 +392,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     //如果是固化流程的启动，设置参数里面的紧急状态和执行人列表
                     FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
                     if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() && StringUtils.isEmpty(firstBean.getUserIds())) {
-                        IFlowSolidifyExecutorService solidifyProxy = ApiClient.createProxy(IFlowSolidifyExecutorService.class);
-                        ResponseData solidifyData = solidifyProxy.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessKey);
+                        ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessKey);
                         if (!solidifyData.getSuccess()) {
                             return solidifyData;
                         }
@@ -410,7 +406,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         String flowTaskType = f.getFlowTaskType();
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
                         //如果不是工作池任务，又没有选择用户的，提示错误
-                        if (!"poolTask".equalsIgnoreCase(flowTaskType) && (f.getUserIds() == null || StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
+                        if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
                             return ResponseData.operationFailure("请选择下一节点用户！");
                         }
                         if (f.getUserIds() == null) { //react的工作池任务参数不是anonymous，而是userIds为null
@@ -536,7 +532,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
                 } else {
                     //如果不是工作池任务，又没有选择用户的，提示错误
-                    if (!"poolTask".equalsIgnoreCase(flowTaskType) && (f.getUserIds() == null || StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
+                    if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
                         return ResponseData.operationFailure("请选择下一节点用户！");
                     }
 
@@ -728,7 +724,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskService.findByInstanceId(instance.getId());
             if (!CollectionUtils.isEmpty(addList)) {
-                List<Executor> listExecutors = new ArrayList<Executor>();
+                List<Executor> listExecutors = new ArrayList<>();
                 addList.forEach(a -> {
                     Executor e = new Executor();
                     e.setId(a.getExecutorId());

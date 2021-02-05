@@ -1708,6 +1708,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             result.setDisagreeReasonList(list);
         }
 
+        //如果配置了抄送/呈报
+        if (normalInfo.has("carbonCopyOrReport") && normalInfo.getBoolean("carbonCopyOrReport")) {
+            //目前只有并行任务可以配置抄送/呈报
+            String nodeType = (String) defObj.get("nodeType");
+            if (nodeType.equalsIgnoreCase("ParallelTask")) {
+                try {
+                    //需要单独检查是否后一个节点是结束节点，如果不是，默认不生效
+                    ResponseData responseData = this.whetherNeedCarbonCopyOrReport(id);
+                    result.setCarbonCopyOrReport(responseData.successful());
+                } catch (Exception e) {
+                    LogUtil.error("检查是否满足抄送和呈报配置需求报错：", e);
+                    result.setCarbonCopyOrReport(false);
+                }
+            }
+        }
+
 
         if (!StringUtils.isEmpty(preId)) {
             preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
@@ -1731,6 +1747,43 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setFlowInstanceCreatorId(flowTask.getFlowInstance().getCreatorId());
         return result;
     }
+
+
+    /**
+     * 检查是否满足抄送/呈报要求
+     * 因为只有并行任务，要求只有唯一分支，并且唯一分支连接结束节点
+     */
+    public ResponseData whetherNeedCarbonCopyOrReport(String flowTaskId) throws Exception {
+        //可能路径
+        List<NodeInfo> list = this.findNextNodes(flowTaskId);
+        List<NodeInfo> nodeInfoList = null;
+        if (!CollectionUtils.isEmpty(list)) {
+            if (list.size() == 1) {
+                nodeInfoList = this.findNexNodesWithUserSet(flowTaskId, null, null);
+            } else {
+                String gateWayName = list.get(0).getGateWayName();
+                if (StringUtils.isNotEmpty(gateWayName) && "人工排他网关".equals(gateWayName)) {
+                    //人工网关不处理
+                    return ResponseData.operationFailure("人工网关不处理！");
+                } else {
+                    nodeInfoList = this.findNexNodesWithUserSet(flowTaskId, null, null);
+                }
+            }
+        }
+
+        if (!CollectionUtils.isEmpty(nodeInfoList)) {
+            if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+                return ResponseData.operationSuccessWithData("EndEvent");
+            } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
+                return ResponseData.operationSuccessWithData("CounterSignNotEnd");
+            } else {
+                return ResponseData.operationFailure("不满足抄送和呈报配置要求！");
+            }
+        } else {
+            return ResponseData.operationFailure("当前规则找不到符合条件的分支！");
+        }
+    }
+
 
     public List<NodeInfo> findNexNodesWithUserSet(String id) throws NoSuchMethodException {
         FlowTask flowTask = flowTaskDao.findOne(id);
