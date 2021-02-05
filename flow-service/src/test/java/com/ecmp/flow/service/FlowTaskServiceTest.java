@@ -32,6 +32,13 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void haveReadTaskByTaskId(){
+        String taskId = "4FBE1BFA-6683-11EB-8467-0242C0A84413";
+        ResponseData responseData = service.haveReadTaskByTaskId(taskId);
+        System.out.println(ApiJsonUtils.toJson(responseData));
+    }
+
+    @Test
     public void getApprovalHeaderVO() {
         String taskId = "4FBE1BFA-6683-11EB-8467-0242C0A84413";
         ApprovalHeaderVO vo = service.getApprovalHeaderVO(taskId);

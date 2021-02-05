@@ -4105,5 +4105,68 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         this.pushToBasic(needAddList, null, null, null);
         LogUtil.bizLog("-----------------重新推送待办到BASIC模块已经完成！");
     }
+
+
+    @Override
+    public ResponseData haveReadTaskByTaskId(String taskId) {
+        if (StringUtils.isNotEmpty(taskId)) {
+            FlowTask flowTask = this.findOne(taskId);
+            if (flowTask != null) {
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                String nodeType = defObj.getString("nodeType");
+                JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                if (nodeType.equalsIgnoreCase("ParallelTask")
+                        && normalInfo.has("carbonCopyOrReport")
+                        && normalInfo.getBoolean("carbonCopyOrReport")) {
+                    //已阅模拟请求下一步
+                    ResponseData responseNodeInfo;
+                    try {
+                        //需要单独检查是否后一个节点是结束节点，如果不是，默认失败
+                        responseNodeInfo = this.whetherNeedCarbonCopyOrReport(flowTask.getId());
+                    } catch (Exception e) {
+                        LogUtil.error("已阅失败：模拟下一步失败！", e);
+                        return ResponseData.operationFailure("已阅失败：模拟下一步失败，不能自动执行！");
+                    }
+
+                    if (responseNodeInfo.successful()) {
+                        String endEventId = null;
+                        if ("EndEvent".equalsIgnoreCase(responseNodeInfo.getData().toString())) { //结束节点
+                            endEventId = "true";
+                        }
+
+                        try {
+                            //自动执行待办
+                            long currentTime = System.currentTimeMillis();
+                            ResponseData responseData = defaultFlowBaseService.completeTask(flowTask.getId(),
+                                    flowTask.getFlowInstance().getBusinessId(), "【已阅】", "[]",
+                                    endEventId, null, false, null, currentTime);
+
+                            if (responseData.successful()) {
+                                return ResponseData.operationSuccess("已阅成功！");
+                            } else {
+                                return ResponseData.operationFailure("已阅失败:" + responseData.getMessage());
+                            }
+                        } catch (Exception e) {
+                            LogUtil.error("已阅失败：自动执行报错！", e);
+                            return ResponseData.operationFailure("已阅失败：自动执行报错，详情请查看日志！");
+                        }
+                    } else {
+                        return ResponseData.operationFailure("已阅失败：" + responseNodeInfo.getMessage());
+                    }
+                } else {
+                    return ResponseData.operationFailure("已阅失败：当前节点不是抄送（呈报）节点！");
+                }
+            } else {
+                return ResponseData.operationFailure("已阅失败：任务不存在，可能已经被处理！");
+            }
+        } else {
+            return ResponseData.operationFailure("已阅失败：参数任务ID不能为空！");
+        }
+    }
+
+
+
+
 }
 

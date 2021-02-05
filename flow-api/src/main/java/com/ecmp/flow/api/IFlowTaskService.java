@@ -918,4 +918,17 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "重新推送未推送过的待办到BASIC", notes = "重新推送未推送过的待办到BASIC")
     void pushTheUnpushedTaskToBasicAgain();
 
+
+    /**
+     * 已阅任务（抄送/呈报）
+     *
+     * @param taskId 待办任务ID
+     * @return
+     */
+    @GET
+    @Path("haveReadTaskByTaskId")
+    @ApiOperation(value = "已阅任务（抄送/呈报）", notes = "已阅任务（抄送/呈报）")
+    ResponseData haveReadTaskByTaskId(@QueryParam("taskId") String taskId);
+
+
 }
