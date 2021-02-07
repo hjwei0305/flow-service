@@ -3913,8 +3913,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (!CollectionUtils.isEmpty(needLsit)) {
                     this.automaticToDoTask(needLsit);
                 }
-            } else {
-                LogUtil.error("自动执行-查询待办为空！");
             }
         } else {
             LogUtil.error("自动执行-查询待办失败！");
