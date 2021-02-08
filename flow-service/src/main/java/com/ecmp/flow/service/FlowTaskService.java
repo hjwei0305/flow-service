@@ -1693,6 +1693,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         String defJson = flowTask.getTaskJsonDef();
         JSONObject defObj = JSONObject.fromObject(defJson);
         JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+        String nodeType = (String) defObj.get("nodeType");
 
         result.setOpinionList(null);
 
@@ -1709,18 +1710,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         //如果配置了抄送/呈报
-        if (normalInfo.has("carbonCopyOrReport") && normalInfo.getBoolean("carbonCopyOrReport")) {
-            //目前只有并行任务可以配置抄送/呈报
-            String nodeType = (String) defObj.get("nodeType");
-            if (nodeType.equalsIgnoreCase("ParallelTask")) {
-                try {
-                    //需要单独检查是否后一个节点是结束节点，如果不是，默认不生效
-                    ResponseData responseData = this.whetherNeedCarbonCopyOrReport(id);
-                    result.setCarbonCopyOrReport(responseData.successful());
-                } catch (Exception e) {
-                    LogUtil.error("检查是否满足抄送和呈报配置需求报错：", e);
-                    result.setCarbonCopyOrReport(false);
-                }
+        if (nodeType.equalsIgnoreCase("ParallelTask")
+                && normalInfo.has("carbonCopyOrReport")
+                && normalInfo.getBoolean("carbonCopyOrReport")) {
+            try {
+                //需要单独检查是否后一个节点是结束节点，如果不是，默认不生效
+                ResponseData responseData = this.whetherNeedCarbonCopyOrReport(id);
+                result.setCarbonCopyOrReport(responseData.successful());
+            } catch (Exception e) {
+                LogUtil.error("检查是否满足抄送和呈报配置需求报错：", e);
+                result.setCarbonCopyOrReport(false);
             }
         }
 
@@ -4162,8 +4161,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return ResponseData.operationFailure("已阅失败：参数任务ID不能为空！");
         }
     }
-
-
 
 
 }

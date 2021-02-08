@@ -175,6 +175,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean taskBoo = true;  //是否为待办
         Boolean canMobile = true; //移动端是否可以查看
         Boolean canCancel = false; //如果是已办，是否可以撤回
+        Boolean carbonCopyOrReport = false; //是否是抄送和呈报节点
         String historyId = "";//撤回需要的历史ID
         List<DisagreeReason> disagreeReasonList = null;
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
@@ -202,6 +203,21 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     String flowTypeId = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
                     disagreeReasonList = disagreeReasonService.getDisReasonListByTypeId(flowTypeId);
                 }
+
+                String nodeType = (String) defObj.get("nodeType");
+                //如果配置了抄送/呈报
+                if (nodeType.equalsIgnoreCase("ParallelTask")
+                        && normalInfo.has("carbonCopyOrReport")
+                        && normalInfo.getBoolean("carbonCopyOrReport")) {
+                    try {
+                        //需要单独检查是否后一个节点是结束节点，如果不是，默认不生效
+                        ResponseData responseData = flowTaskService.whetherNeedCarbonCopyOrReport(id);
+                        carbonCopyOrReport = responseData.getSuccess();
+                    } catch (Exception e) {
+                        LogUtil.error("移动端检查是否满足抄送和呈报配置需求报错：", e);
+                    }
+                }
+
             }
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
@@ -238,6 +254,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 Map<String, Object> properties = (Map<String, Object>) responseData.getData();
                 properties.put("flowTaskIsInit", taskBoo); //添加是否是待办参数，true为待办
                 properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                properties.put("carbonCopyOrReport", carbonCopyOrReport);//是否抄送和呈报节点
                 if (!taskBoo) {
                     properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
                     properties.put("historyId", historyId);//撤回需要的历史ID
