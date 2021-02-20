@@ -3895,8 +3895,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             String hisJson = flowHistory.getTaskJsonDef();
                             JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
                             String hisNodeType = hisJsonObj.get("nodeType") + "";
-                            //上一步如果是审批节点
-                            if ("Approve".equalsIgnoreCase(hisNodeType)) {
+                            //上一步如果是审批节点(并且同意)
+                            if ("Approve".equalsIgnoreCase(hisNodeType) && "agree".equalsIgnoreCase(flowHistory.getFlowExecuteStatus())) {
                                 String taskJsonDef = flowTask.getTaskJsonDef();
                                 JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
                                 String nodeType = taskJsonDefObj.get("nodeType") + "";
