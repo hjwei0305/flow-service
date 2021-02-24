@@ -30,6 +30,17 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowDefinationService flowDefinationService;
 
+    @Test
+    public void getAllCanAddNodeInfoList() {
+        try {
+            //加签列表
+            List<CanAddOrDelNodeInfo> list = service.getAllCanAddNodeInfoList();
+            //减签列表
+//            List<CanAddOrDelNodeInfo> list = service.getAllCanDelNodeInfoList();
+            System.out.println(ApiJsonUtils.toJson(list));
+        } catch (Exception e) {
+        }
+    }
 
     @Test
     public void haveReadTaskByTaskId(){

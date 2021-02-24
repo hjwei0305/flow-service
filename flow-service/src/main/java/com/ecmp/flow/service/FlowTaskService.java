@@ -3349,13 +3349,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public List<CanAddOrDelNodeInfo> getAllCanAddNodeInfoList() throws Exception {
-        List<CanAddOrDelNodeInfo> result = new ArrayList<CanAddOrDelNodeInfo>();
+        List<CanAddOrDelNodeInfo> result = new ArrayList<>();
         List<CanAddOrDelNodeInfo> resultDai = flowTaskDao.findByAllowAddSign(ContextUtil.getUserId());
         List<CanAddOrDelNodeInfo> resultStart = flowTaskDao.findByAllowAddSignStart(ContextUtil.getUserId());
         result.addAll(resultStart);
         result.addAll(resultDai);
-        Map<String, CanAddOrDelNodeInfo> tempMap = new HashMap<String, CanAddOrDelNodeInfo>();
+        Map<String, CanAddOrDelNodeInfo> tempMap = new HashMap<>();
         for (CanAddOrDelNodeInfo c : result) {
+            //设置执行人列表名称
+            this.setNameListByCanAddOrDelNodeInfo(c);
             tempMap.put(c.getActInstanceId() + c.getNodeKey(), c);
         }
         result.clear();
@@ -3364,18 +3366,33 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public List<CanAddOrDelNodeInfo> getAllCanDelNodeInfoList() throws Exception {
-        List<CanAddOrDelNodeInfo> result = new ArrayList<CanAddOrDelNodeInfo>();
+        List<CanAddOrDelNodeInfo> result = new ArrayList<>();
         List<CanAddOrDelNodeInfo> resultDai = flowTaskDao.findByAllowSubtractSign(ContextUtil.getUserId());
         List<CanAddOrDelNodeInfo> resultStart = flowTaskDao.findByAllowSubtractSignStart(ContextUtil.getUserId());
         result.addAll(resultStart);
         result.addAll(resultDai);
-        Map<String, CanAddOrDelNodeInfo> tempMap = new HashMap<String, CanAddOrDelNodeInfo>();
+        Map<String, CanAddOrDelNodeInfo> tempMap = new HashMap<>();
         for (CanAddOrDelNodeInfo c : result) {
+            //设置执行人列表名称
+            this.setNameListByCanAddOrDelNodeInfo(c);
             tempMap.put(c.getActInstanceId() + c.getNodeKey(), c);
         }
         result.clear();
         result.addAll(tempMap.values());
         return result;
+    }
+
+    public void setNameListByCanAddOrDelNodeInfo(CanAddOrDelNodeInfo nodeInfo) {
+        List<Executor> exeList = null;
+        try {
+            exeList = this.getCounterSignExecutorList(nodeInfo.getActInstanceId(), nodeInfo.getNodeKey());
+        } catch (Exception e) {
+            LogUtil.error("会签获取执行人列表失败！actInstanceId=" + nodeInfo.getActInstanceId() + ",taskActKey=" + nodeInfo.getNodeKey(), e);
+        }
+        if (!CollectionUtils.isEmpty(exeList)) {
+            List<String> exeNameList = exeList.stream().map(Executor::getName).collect(Collectors.toList());
+            nodeInfo.setExecutorNameList(StringUtils.join(exeNameList.toArray(), ","));
+        }
     }
 
     public OperateResult reminding() {

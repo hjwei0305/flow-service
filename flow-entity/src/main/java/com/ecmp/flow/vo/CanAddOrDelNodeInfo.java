@@ -16,7 +16,7 @@ import java.io.Serializable;
  * <p/>
  * *************************************************************************************************
  */
-public class CanAddOrDelNodeInfo  implements Serializable {
+public class CanAddOrDelNodeInfo implements Serializable {
     private String actInstanceId;//流程实例Id
     private String nodeKey;//流程节点定义key
     private String nodeName;//流程节点名称==taskName
@@ -26,11 +26,13 @@ public class CanAddOrDelNodeInfo  implements Serializable {
     private String businessModelRemark;//业务摘要(工作说明)
     private String flowName;//流程名称
     private String flowDefKey;//流程定义key
+    private String executorNameList;//当前执行人列表名称
 
-    public CanAddOrDelNodeInfo(){}
+    public CanAddOrDelNodeInfo() {
+    }
 
-    public CanAddOrDelNodeInfo(String actInstanceId,String nodeKey,String nodeName,String businessId,String businessCode
-    ,String businessName,String businessModelRemark,String flowName,String flowDefKey){
+    public CanAddOrDelNodeInfo(String actInstanceId, String nodeKey, String nodeName, String businessId, String businessCode
+            , String businessName, String businessModelRemark, String flowName, String flowDefKey) {
         this.actInstanceId = actInstanceId;
         this.nodeKey = nodeKey;
         this.nodeName = nodeName;
@@ -40,6 +42,14 @@ public class CanAddOrDelNodeInfo  implements Serializable {
         this.businessModelRemark = businessModelRemark;
         this.flowName = flowName;
         this.flowDefKey = flowDefKey;
+    }
+
+    public String getExecutorNameList() {
+        return executorNameList;
+    }
+
+    public void setExecutorNameList(String executorNameList) {
+        this.executorNameList = executorNameList;
     }
 
     public String getBusinessCode() {
