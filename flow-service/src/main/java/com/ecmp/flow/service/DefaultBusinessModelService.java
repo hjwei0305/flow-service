@@ -90,7 +90,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         Map<String, String> map = new HashMap<>();
         map.put("count", "【数字】，表示订单中购买的数量");
         map.put("unitPrice", "【数字】，表示订单中单个物体的价格");
-        map.put("customeInt", "【布尔值】：额外测试属性默认true");
+        map.put("customeInt", "【布尔值】：判断count是否等于1");
         return ResponseData.operationSuccessWithData(map);
     }
 
@@ -135,7 +135,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         Map<String, Object> map = new HashMap<>();
         map.put("unitPrice", bean.getUnitPrice());
         map.put("count", bean.getCount());
-        map.put("customeInt", true);
+        map.put("customeInt", bean.getCount() == 1 );
         map.put("name", bean.getName());
 
         map.put("orgId", bean.getOrgId());
@@ -416,6 +416,20 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！");
+            defaultBusinessModelDao.save(entity);
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData changeProperties(FlowInvokeParams flowInvokeParams) {
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            entity.setCount(1);
+            entity.setWorkCaption(entity.getWorkCaption() + "：修改count为1（customeInt）！");
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());

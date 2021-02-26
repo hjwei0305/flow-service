@@ -222,6 +222,20 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
 
 
+    /**
+     * 改变属性
+     *
+     * @param flowInvokeParams
+     * @return
+     */
+    @POST
+    @Path("changeProperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "changeProperties", notes = "changeProperties")
+    ResponseData changeProperties(FlowInvokeParams flowInvokeParams);
+
+
     @GET
     @Path("testPJoin")
     @Produces(MediaType.APPLICATION_JSON)
@@ -256,5 +270,7 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "testPoolTaskCreatePool", notes = "testPoolTaskCreatePool")
     FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
+
+
 
 }
