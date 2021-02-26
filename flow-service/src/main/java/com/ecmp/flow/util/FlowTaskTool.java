@@ -2600,8 +2600,6 @@ public class FlowTaskTool {
             List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
             //是否推送信息到baisc
             Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            //是否推送信息到业务模块或者直接配置的url
-            Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
             //需要删除的待办
             List<FlowTask> delList = new ArrayList<>();
             for (FlowTask bean : flowTaskList) {
@@ -2621,14 +2619,6 @@ public class FlowTaskTool {
                     delList.add(bean);
                     flowTaskDao.delete(bean);
                 }
-            }
-            if (pushModelOrUrl) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskService.pushTaskToModelOrUrl(flowInstance, delList, TaskStatus.DELETE);
-                    }
-                }).start();
             }
             if (pushBasic) {
                 new Thread(new Runnable() {

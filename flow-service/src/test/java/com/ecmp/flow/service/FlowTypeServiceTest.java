@@ -34,4 +34,15 @@ public class FlowTypeServiceTest extends BaseContextTestCase {
             System.out.println(op);
         }
     }
+
+    @Test
+    public  void getPropertiesByInstanceIdOfModile(){
+        businessModelService.getPropertiesByInstanceIdOfModile(
+                "B620C6D5-764E-11EB-A836-0242C0A84620",
+                "2FE697CC-6202-11EB-A18B-0242C0A84620",
+                "93423BD4-764E-11EB-843A-0242C0A8441B");
+    }
+
+
+
 }

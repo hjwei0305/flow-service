@@ -16,6 +16,7 @@ import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.log.util.LogUtil;
@@ -278,10 +279,19 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             params.put("businessModelCode", businessModelCode);
             params.put("id", id);
             String messageLog = "开始调用‘表单明细’接口（移动端），接口url=" + url + ",参数值" + JsonUtils.toJson(params);
+            ResponseData<Map<String,Object>> result;
+            Map<String, Object> properties;
             try {
-                Map<String, Object> properties = ApiClient.getEntityViaProxy(url, new GenericType<Map<String, Object>>() {
+                result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<Map<String,Object>>>() {
                 }, params);
-                return ResponseData.operationSuccessWithData(properties);
+                if (result.successful()) {
+                    properties = result.getData();
+                    return ResponseData.operationSuccessWithData(properties);
+                } else {
+                    messageLog += "-接口返回信息：" + result.getMessage();
+                    LogUtil.error(messageLog);
+                    return ResponseData.operationFailure("接口调用抛错，请查看日志！");
+                }
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
