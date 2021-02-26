@@ -90,7 +90,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         Map<String, String> map = new HashMap<>();
         map.put("count", "【数字】，表示订单中购买的数量");
         map.put("unitPrice", "【数字】，表示订单中单个物体的价格");
-        map.put("customeInt", "【数字】，1：表示普通订单，2：表示未检测的特殊订单，3：表示检验合格的特殊订单...");
+        map.put("customeInt", "【布尔值】：额外测试属性默认true");
         return ResponseData.operationSuccessWithData(map);
     }
 
@@ -111,7 +111,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         Map<String, Object> map = new HashMap<>();
         map.put("unitPrice", 0.0);
         map.put("count", 0);
-        map.put("customeInt", 0);
+        map.put("customeInt", true);
         map.put("name", "中文字符串");
         return ResponseData.operationSuccessWithData(map);
     }
@@ -135,7 +135,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         Map<String, Object> map = new HashMap<>();
         map.put("unitPrice", bean.getUnitPrice());
         map.put("count", bean.getCount());
-        map.put("customeInt", bean.getCount());
+        map.put("customeInt", true);
         map.put("name", bean.getName());
 
         map.put("orgId", bean.getOrgId());
