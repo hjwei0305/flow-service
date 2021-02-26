@@ -151,6 +151,11 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                             }.start();
                         }
                         throw new FlowException(callMessage);//抛出异常
+                    }else{
+                        //可能有动态改变属性的情况（页面上没有控制的地方，这里统一重新设置业务模块的参数）
+                        BusinessModel businessModel = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel();
+                        Map<String, Object> variables = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, false);
+                        delegateTask.setVariables(variables);
                     }
 
                     Calendar c = new GregorianCalendar();
