@@ -1,6 +1,8 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiJsonUtils;
+import com.ecmp.flow.dao.FlowTaskControlAndPushDao;
+import com.ecmp.flow.dao.FlowTaskPushControlDao;
 import com.ecmp.flow.entity.FlowTaskControlAndPush;
 import com.ecmp.flow.entity.FlowTaskPush;
 import com.ecmp.flow.vo.CleaningPushHistoryVO;
@@ -41,8 +43,16 @@ public class FlowTaskControlAndPushServiceTest extends BaseContextTestCase {
     public void cleaningPushHistoryData() {
         CleaningPushHistoryVO vo = new CleaningPushHistoryVO();
         vo.setAppModuleId("42839AC3-5E7F-11EA-9017-0242C0A8460D");
-        vo.setRecentDate(12);
+        vo.setBusinessModelId("B0E334A1-5E86-11EA-AEE3-0242C0A8460D");
+        vo.setFlowTypeId("B2FC0C5F-5E87-11EA-AEE3-0242C0A8460D");
+        vo.setRecentDate(11);
         controlService.cleaningPushHistoryData(vo);
+
+        try{
+            Thread.sleep(1000 * 60 * 5);
+        }catch (Exception e){
+        }
+
     }
 
 

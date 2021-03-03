@@ -67,8 +67,10 @@ public class FlowTaskControlAndPushService extends BaseRelationService<FlowTaskC
         try {
             String controlId = flowTaskPushControl.getId();
             List<FlowTaskControlAndPushVo> relationsList = flowTaskControlAndPushDao.getRelationsByControlId(controlId);
-            List<String> relationsIDList = relationsList.stream().map(FlowTaskControlAndPushVo::getId).collect(Collectors.toList());
-            flowTaskControlAndPushDao.deleteRelationsByIds(relationsIDList);
+            if (!CollectionUtils.isEmpty(relationsList)) {
+                List<String> relationsIDList = relationsList.stream().map(FlowTaskControlAndPushVo::getId).collect(Collectors.toList());
+                flowTaskControlAndPushDao.deleteRelationsByIds(relationsIDList);
+            }
             flowTaskPushControlDao.delete(controlId);
             relationsList.forEach(a -> {
                 String pushId = a.getPushId();
