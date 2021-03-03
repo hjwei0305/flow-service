@@ -13,16 +13,17 @@ import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.FlowTaskPush;
 import com.ecmp.flow.entity.FlowTaskPushControl;
 import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.vo.CleaningPushHistoryVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.ecmp.flow.common.util.Constants.*;
 
@@ -109,8 +110,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             responseData = this.pushAgainToBasic(pushStatus, flowTaskList);
         } else if (TYPE_BUSINESS.equalsIgnoreCase(pushType)) { //推送到业务模块
             responseData = this.pushAgainToBusiness(pushStatus, flowTaskList);
-        }
-        else {
+        } else {
             responseData = ResponseData.operationFailure("推送类型不能识别!");
         }
         return responseData;
@@ -136,13 +136,13 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         } else if (STATUS_BUSINESS_DEDLETE.equals(pushStatus)) {
             boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.DELETE);
         } else {
-            return  ResponseData.operationFailure("推送状态不能识别！");
+            return ResponseData.operationFailure("推送状态不能识别！");
         }
 
-        if(boo){
-            return  ResponseData.operationSuccess("重推成功，状态：【成功】！");
-        }else{
-            return  ResponseData.operationFailure("重推成功，状态：【失败】！");
+        if (boo) {
+            return ResponseData.operationSuccess("重推成功，状态：【成功】！");
+        } else {
+            return ResponseData.operationFailure("重推成功，状态：【失败】！");
         }
     }
 
@@ -162,13 +162,13 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         } else if (STATUS_BASIC_END.equals(pushStatus)) { //归档（终止）
             boo = flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
         } else {
-            return  ResponseData.operationFailure("推送状态不能识别！");
+            return ResponseData.operationFailure("推送状态不能识别！");
         }
 
-        if(boo){
-            return  ResponseData.operationSuccess("重推成功，状态：【成功】！");
-        }else{
-            return  ResponseData.operationFailure("重推成功，状态：【失败】！");
+        if (boo) {
+            return ResponseData.operationSuccess("重推成功，状态：【成功】！");
+        } else {
+            return ResponseData.operationFailure("重推成功，状态：【失败】！");
         }
     }
 
@@ -234,7 +234,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         relationParam.setChildIds(pushIdList);
         flowTaskControlAndPushService.insertRelationsByParam(relationParam);
         //如果推送不成功，进行重新推送3次（任何一次成功就终止）：第一次间隔1分钟，第二次间隔2分钟,第三次间隔3分钟
-        if(!success){
+        if (!success) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -416,6 +416,61 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         control.setTenantCode(ContextUtil.getTenantCode());
         flowTaskPushControlDao.save(control);
         return control;
+    }
+
+
+    @Override
+    public ResponseData cleaningPushHistoryData(CleaningPushHistoryVO cleaningPushHistoryVO) {
+        if (cleaningPushHistoryVO == null) {
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        if (cleaningPushHistoryVO.getRecentDate() == null) {
+            return ResponseData.operationFailure("参数【保留最近时间段】不能为空！");
+        }
+        String redisKey = ContextUtil.getTenantCode();
+        Search search = new Search();
+        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getAppModuleId())) {
+            search.addFilter(new SearchFilter("appModuleId", cleaningPushHistoryVO.getAppModuleId()));
+            redisKey += cleaningPushHistoryVO.getAppModuleId();
+        }
+        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getBusinessModelId())) {
+            search.addFilter(new SearchFilter("businessModelId", cleaningPushHistoryVO.getBusinessModelId()));
+            redisKey += cleaningPushHistoryVO.getBusinessModelId();
+        }
+        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getFlowTypeId())) {
+            search.addFilter(new SearchFilter("flowTypeId", cleaningPushHistoryVO.getFlowTypeId()));
+            redisKey += cleaningPushHistoryVO.getFlowTypeId();
+        }
+        redisKey += cleaningPushHistoryVO.getRecentDate();
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH, -cleaningPushHistoryVO.getRecentDate());
+        search.addFilter(new SearchFilter("pushEndDate", calendar.getTime(), SearchFilter.Operator.LT));
+        List<FlowTaskPushControl> list = flowTaskPushControlDao.findByFilters(search);
+        if (!CollectionUtils.isEmpty(list)) {
+            Boolean setValue = redisTemplate.opsForValue().setIfAbsent("pushCleaning_" + redisKey, redisKey);
+            if (!setValue) {
+                Long remainingTime = redisTemplate.getExpire("pushCleaning_" + redisKey, TimeUnit.SECONDS);
+                if (remainingTime == -1) {  //说明时间未设置进去（默认清理30分钟）
+                    redisTemplate.expire("pushCleaning_" + redisKey, 30 * 60, TimeUnit.SECONDS);
+                    remainingTime = 1800L;
+                }
+                return ResponseData.operationFailure("数据已经在清理中，请不要重复操作！剩余锁定时间：" + remainingTime + "秒！");
+            } else {
+                //异步清理历史数据
+                String finalRedisKey = redisKey;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskControlAndPushService.cleaningPushHistoryData(list, finalRedisKey);
+                    }
+                }).start();
+                return ResponseData.operationSuccess("数据正在清理中，可能需要一会，请稍后再进行查看！");
+            }
+        } else {
+            return ResponseData.operationSuccess("没有满足条件的数据需要清理！");
+        }
     }
 
 

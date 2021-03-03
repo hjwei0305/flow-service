@@ -3,6 +3,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.entity.FlowTaskPushControl;
+import com.ecmp.flow.vo.CleaningPushHistoryVO;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,5 +28,17 @@ public interface IFlowTaskPushControlService extends IBaseService<FlowTaskPushCo
     @Path("pushAgainByControlId")
     @ApiOperation(value = "新推送当前任务", notes = "通过推送控制表Id重新推送当前任务")
     ResponseData pushAgainByControlId(@QueryParam("pushControlId") String pushControlId);
+
+
+    /**
+     * 清理推送任务的历史数据
+     *
+     * @return
+     */
+    @POST
+    @Path("cleaningPushHistoryData")
+    @ApiOperation(value = "清理历史数据", notes = "清理历史数据")
+    ResponseData cleaningPushHistoryData(CleaningPushHistoryVO cleaningPushHistoryVO);
+
 
 }
