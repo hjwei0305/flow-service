@@ -182,7 +182,7 @@ public class Constants extends ConfigurableContants {
      */
     public static String getBasicOrgListByPowerUrl() {
         String BASIC_ORG_LISTALLORGS_URL;
-        String POWER_Url = getProperty("basic.org.listallorgbypower");
+        String POWER_Url = BaseApplicationContext.getProperty("basic.org.listallorgbypower");
         if (StringUtils.isNotEmpty(POWER_Url)) {
             BASIC_ORG_LISTALLORGS_URL = getBasicServiceUrl() + POWER_Url;
         } else {
