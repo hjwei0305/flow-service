@@ -492,4 +492,24 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
 
 
 
+    public ResponseData<Map<String, Object>> businessPropertiesAndValues(String businessModelCode, String id){
+        DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("unitPrice", bean.getUnitPrice());
+        map.put("count", bean.getCount());
+        map.put("customeInt", bean.getCount() == 1 );
+        map.put("name", bean.getName());
+
+        map.put("orgId", bean.getOrgId());
+        map.put("orgCode", bean.getOrgCode());
+        map.put("orgPath", bean.getOrgPath());
+        map.put("tenantCode", bean.getTenantCode());
+        map.put("workCaption", bean.getWorkCaption());
+        map.put("businessCode", bean.getBusinessCode());
+        map.put("id", bean.getId());
+        //目前移动端页面是和业务协调的类型字段
+        map.put("mobileBusinessType", "flowModle");
+        return ResponseData.operationSuccessWithData(map);
+    }
+
 }

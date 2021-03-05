@@ -2,6 +2,7 @@ package com.ecmp.flow.api;
 
 import com.ecmp.core.api.IBaseEntityService;
 import com.ecmp.core.api.IFindByPageService;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.vo.FlowInvokeParams;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 import java.util.Map;
 
 
@@ -208,7 +210,22 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "测试自定义执行人选择", notes = "测试自定义执行人选择")
-    ResponseData getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+    ResponseData<List<Executor>> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+
+
+    /**
+     * 表单明细接口（移动端）
+     * @param businessModelCode
+     * @param id
+     * @return
+     */
+    @GET
+    @Path("testPJoin")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "表单明细接口（移动端）", notes = "表单明细接口（移动端）")
+    ResponseData<Map<String, Object>> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id);
+
 
 
 }
